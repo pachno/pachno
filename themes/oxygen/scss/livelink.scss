@@ -1,0 +1,172 @@
+.fas.fa-leaf,
+.far.fa-leaf {
+  color: #1aaa55;
+  margin-right: .35em;
+}
+.livelink-banner {
+  border: 1px solid rgba(200, 200, 200, .3);
+  padding: 10px;
+  margin-bottom: 15px;
+  background-color: rgba(225, 225, 225, .2);
+}
+.livelink-banner .button, .livelink_connector_accounts .button {
+  padding: 5px 8px;
+  font-size: 1em;
+}
+.livelink-header {
+  text-transform: uppercase;
+  font-weight: 600;
+  margin: 0;
+  padding: 0;
+}
+.livelink-intro {
+  font-size: 1.1em;
+}
+.livelink-intro + .livelink-intro {
+  padding-top: 25px;
+}
+.livelink-import-list, .livelink_connector_accounts {
+  list-style: none;
+  margin: 0;
+  padding: 25px 0 0 0;
+  font-size: 1.1em;
+}
+.livelink_connector_accounts li .connector_logo,
+.livelink-import-list li .connector_logo {
+  margin-right: 3px;
+}
+.livelink-import-list li .live_import_type {
+  display: block;
+  /*margin-left: 16px;*/
+}
+.livelink-import-list li .project_name {
+  font-weight: 600;
+}
+.livelink-import-list li, .livelink_connector_accounts li {
+  padding: 10px 0;
+  border-bottom: 1px dotted #DDD;
+  display: flex;
+  font-size: .9em;
+}
+.livelink_connector_accounts li {
+  padding: 10px;
+  font-size: 1em;
+  transition: background-color .2s ease-in-out;
+  background-color: rgba(225, 225, 225, 0);
+}
+.livelink_connector_accounts li:hover {
+  background-color: rgba(225, 225, 225, .15);
+  border-radius: 3px;
+}
+.livelink_connector_accounts li .connected-ok {
+  display: none;
+  color: #1aaa55;
+  font-weight: 600;
+  text-transform: uppercase;
+  margin-left: 15px;
+  font-size: .8em;
+}
+.livelink_connector_accounts li .connected-ok .fas,
+.livelink_connector_accounts li .connected-ok .far {
+  color: #1aaa55;
+  font-weight: 600;
+}
+.livelink_connector_accounts li .not-connected {
+  display: inline-block;
+  color: #888;
+  font-weight: 300;
+  text-transform: uppercase;
+  margin-left: 15px;
+  font-size: .8em;
+}
+.livelink_connector_accounts li .not-connected .fas,
+.livelink_connector_accounts li .not-connected .far {
+  color: #888;
+  font-weight: 300;
+}
+.livelink_connector_accounts li.connected .not-connected,
+.livelink_connector_accounts li:not(.connected) .button-disconnect-livelink-connector,
+.livelink_connector_accounts li.connected .button-connect-livelink-connector {
+  display: none;
+}
+.livelink_connector_accounts li.connected .connected-ok {
+  display: inline-block;
+}
+.livelink-import-list li:last-child, .livelink_connector_accounts li:last-child {
+  border-bottom: none;
+}
+.livelink-import-list li .description, .livelink_connector_accounts li .description {
+  flex: 1 1 auto;
+  font-size: 1em;
+  line-height: 1.2em;
+}
+.livelink-import-list li .description .fas,
+.livelink-import-list li .description .far,
+.livelink_connector_accounts li .description .fas,
+.livelink_connector_accounts li .description .far {
+  color: #555;
+  margin-right: .35em;
+}
+.livelink-import-list li .button, .livelink_connector_accounts li .button {
+  flex: 0 0 auto;
+}
+.livelink-separator {
+  border: 0;
+  border-top: 1px dotted rgba(0, 0, 0, 0.3);
+  padding: 5px 100px;
+  width: 450px;
+  display: block;
+  margin: 5px auto 0 auto;
+  text-align: center;
+  box-sizing: border-box;
+}
+.livelink-separator legend {
+  text-align: center;
+  font-size: 1.2em;
+  text-transform: uppercase;
+  font-weight: 600;
+  width: 300px;
+  white-space: nowrap;
+  background-color: transparent;
+}
+.livelink_integration_settings {
+  padding: 15px 0;
+  display: none;
+}
+.repo-verified .livelink_integration_settings {
+  display: block;
+}
+.livelink_integration_settings .integrations_list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.livelink_integration_settings .integrations_list li {
+  padding: 5px;
+}
+.livelink_integration_settings .integrations_list .explanation {
+  padding: 5px;
+  display: block;
+}
+.step-form .visible-step {
+  display: none;
+}
+.step-form.step-1 .visible-step.step-1 {
+  display: initial;
+}
+.step-form.step-2 .visible-step.step-2 {
+  display: initial;
+}
+.step-form.step-3 .visible-step.step-3 {
+  display: initial;
+}
+.step-form.step-4 .visible-step.step-4 {
+  display: initial;
+}
+.livelink_project_badge, .livelink_project_badge:hover { display: inline-block; font-size: .65em; padding: 7px; font-weight: 300; background: rgba(225, 225, 225, .3); color: #777; border-radius: 5px; margin-left: .35em; border: none; text-decoration: none; }
+.livelink_project_badge:hover { background: rgba(195, 235, 195, .35); }
+.livelink_project_badge .fas,
+.livelink_project_badge .fab,
+.livelink_project_badge .far {
+  margin-right: .35em;
+}

@@ -33,7 +33,7 @@
                                                         break;
                                                 }
                                                 ?></a>
-                        <ul data-input="agileboard_type_input" class="fancydropdown-list">
+                        <ul data-input="agileboard_type_input" class="dropdown-container">
                             <li data-input-value="<?php echo AgileBoard::TYPE_GENERIC; ?>" data-display-name="<?php echo __('Generic planning board'); ?>" class="fancydropdown-item <?php if ($board->getType() == AgileBoard::TYPE_GENERIC) echo 'selected'; ?>">
                                 <h1><?php echo __('Generic planning board'); ?></h1>
                                 <?php echo image_tag('board_generic.png'); ?>
@@ -187,7 +187,7 @@
                             }
 
                         ?></a>
-                        <ul data-input="use_swimlane_input" class="fancydropdown-list" data-callback="Pachno.Project.Planning.toggleSwimlaneDetails">
+                        <ul data-input="use_swimlane_input" class="dropdown-container" data-callback="Pachno.Project.Planning.toggleSwimlaneDetails">
                             <li data-input-value="0" data-swimlane-type="none" data-display-name="<?php echo __('Not used'); ?>" class="fancydropdown-item novalue <?php if (!$board->usesSwimlanes()) echo ' selected'; ?>" onclick="Pachno.Project.Planning.toggleSwimlaneDetails(this);"><p><?php echo __("Don't use swimlanes"); ?></p></li>
                             <li data-input-value="1" data-swimlane-type="<?php echo AgileBoard::SWIMLANES_ISSUES; ?>" data-display-name="<?php echo __('Issue swimlanes'); ?>" class="fancydropdown-item <?php if ($board->usesSwimlanes() && $board->getSwimlaneType() == AgileBoard::SWIMLANES_ISSUES) echo 'selected'; ?>" onclick="Pachno.Project.Planning.toggleSwimlaneDetails(this);">
                                 <h1><?php echo __('Issue swimlanes'); ?></h1>

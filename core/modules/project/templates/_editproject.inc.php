@@ -67,11 +67,10 @@
                         <label><?= __('Select type of project'); ?></label>
                     </td>
                     <td>
-                        <input type="hidden" name="project_type" value="classic" id="edit_project_type_input">
                         <div class="fancydropdown-container">
-
-                            <a href="javascript:void(0)" class="fancydropdown changeable" id="edit_project_type"><label><?= __('Classic software project'); ?></label><?= fa_image_tag('angle-down'); ?></a>
-                            <ul data-input="edit_project_type_input" class="fancydropdown-list">
+                            <input type="hidden" name="project_type" class="fancydropdown-input-target" value="classic" id="edit_project_type_input">
+                            <a href="javascript:void(0)" class="fancydropdown" id="edit_project_type"><label><?= __('Classic software project'); ?></label><?= fa_image_tag('angle-down'); ?></a>
+                            <ul class="dropdown-container list-mode">
                                 <li data-input-value="classic" data-display-name="<?php echo __('Classic software project'); ?>" class="fancydropdown-item selected">
                                     <h1><?php echo fa_image_tag('code') . __('Classic software project'); ?></h1>
                                     <p>

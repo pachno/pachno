@@ -33,7 +33,7 @@ define(['pachno/tools', 'pachno/index', 'domReady', 'jquery', 'mention'],
                 jQuery("body").on("click", ".fancydropdown", function (e) {
                     jQuery(this).toggleClass('selected');
                 });
-                jQuery("body").on("click", ".fancydropdown-item", function (e) {
+                jQuery("body").on("click", ".list-item", function (e) {
                     Pachno.Main.setFancyDropdownValue(this);
                 });
                 jQuery("body").on("click", ".dropper.dynamic_menu_link", function (e) {

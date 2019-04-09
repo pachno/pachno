@@ -441,6 +441,12 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
             $('fullpage_backdrop_content').observe('click', Pachno.Core._resizeWatcher);
             document.observe('keydown', Pachno.Core._escapeWatcher);
 
+            jQuery('body').on('change', '.fancydropdown input[type=checkbox]', Pachno.Main.updateFancyDropdownValues);
+            jQuery('body').on('change', '.fancydropdown input[type=radio]', Pachno.Main.updateFancyDropdownValues);
+            jQuery('.fancydropdown').each(function () {
+                Pachno.Main.updateFancyDropdownValues(jQuery(this));
+            });
+
             Pachno.Core.Pollers.Callbacks.dataPoller();
             Pachno.Main.Profile.toggleNotifications(false);
             Pachno.OpenID.init();
@@ -3628,17 +3634,24 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
         };
 
         Pachno.Main.setFancyDropdownValue = function (item) {
-            var dropdown = $(item).up('ul');
-            if ($(dropdown.dataset.input)) $(dropdown.dataset.input).setValue($(item).dataset.inputValue);
+            var dropdown = $(item).up('.fancydropdown-container');
+            if (dropdown.select('.fancydropdown-input-target').length > 0) $(dropdown.select('.fancydropdown-input-target')[0]).setValue($(item).dataset.inputValue);
             dropdown.dataset.selectedValue = $(item).dataset.inputValue;
             dropdown.childElements().each(function (elm) {
                 elm.removeClassName('selected');
             });
             $(item).addClassName('selected');
-            var dropdownfancylabel = $(item).up('ul').previous();
+            var dropdownfancylabel = $(item).up('.fancydropdown').previous();
             dropdownfancylabel.removeClassName('selected');
             if (!dropdownfancylabel.hasClassName('self-updateable')) dropdownfancylabel.update($(item).dataset.displayName);
         };
+
+        Pachno.Main.updateFancyDropdownValues = function (event) {
+            event.stopPropagation();
+            var $dropdown = $j(this).closest('.fancy-dropdown');
+            Fields.updateDropdownLabels($dropdown);
+        };
+
 
         Pachno.Project.Milestone.markFinished = function (form) {
             var url = form.action;
