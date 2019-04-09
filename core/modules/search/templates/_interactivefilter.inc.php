@@ -43,23 +43,24 @@ if ($filter instanceof SearchFilter): ?>
                 <div class="fancydropdown-container filter" data-filterkey="issuetype" data-value="<?= $filter->getValue(); ?>" data-all-value="<?= __('All'); ?>">
                     <div class="fancydropdown">
                         <input type="hidden" name="fs[issuetype][o]" value="<?= $filter->getOperator(); ?>">
-                        <input type="hidden" name="fs[issuetype][v]" value="" id="filter_issuetype_value_input">
                         <label><?= __('Issuetype'); ?></label>
                         <span class="value"><?php if (!$filter->hasValue()) echo __('All'); ?></span>
-                        <div class="interactive_menu">
-                            <h1><?= __('Filter on issuetype'); ?></h1>
-                            <input type="search" class="interactive_menu_filter" placeholder="<?= __('Filter values'); ?>">
+                        <?= fa_image_tag('angle-down', ['class' => 'expander']); ?>
+                        <div class="dropdown-container interactive_menu list-mode from-left">
+                            <div class="header"><?= __('Filter on issuetype'); ?></div>
+                            <div class="list-item filter-container">
+                                <input type="search" class="interactive_menu_filter" placeholder="<?= __('Filter values'); ?>">
+                            </div>
                             <div class="interactive_values_container">
-                                <ul class="interactive_menu_values">
-                                    <?php foreach ($filter->getAvailableValues() as $issuetype): ?>
-                                        <?php /** @var \pachno\core\entities\Issuetype $issuetype */ ?>
-                                        <li data-value="<?= $issuetype->getID(); ?>" class="filtervalue<?php if ($filter->hasValue($issuetype->getID())) echo ' selected'; ?>">
-                                            <?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far'); ?>
-                                            <input type="checkbox" value="<?= $issuetype->getID(); ?>" name="filters_issuetype_value_<?= $issuetype->getID(); ?>" data-text="<?= __($issuetype->getName()); ?>" id="filters_issuetype_value_<?= $issuetype->getID(); ?>" <?php if ($filter->hasValue($issuetype->getID())) echo 'checked'; ?>>
-                                            <label for="filters_issuetype_value_<?= $issuetype->getID(); ?>"><?= fa_image_tag($issuetype->getFontAwesomeIcon(), ['class' => 'issuetype-icon issuetype-' . $issuetype->getIcon()]) . __($issuetype->getName()); ?></label>
-                                        </li>
-                                    <?php endforeach; ?>
-                                </ul>
+                                <?php foreach ($filter->getAvailableValues() as $issuetype): ?>
+                                    <?php /** @var \pachno\core\entities\Issuetype $issuetype */ ?>
+                                    <input type="checkbox" class="fancycheckbox" value="<?= $issuetype->getID(); ?>" name="filters_issuetype_value_<?= $issuetype->getID(); ?>" id="filters_issuetype_value_<?= $issuetype->getID(); ?>" <?php if ($filter->hasValue($issuetype->getID())) echo 'checked'; ?>>
+                                    <label for="filters_issuetype_value_<?= $issuetype->getID(); ?>" class="list-item filtervalue">
+                                        <?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far'); ?>
+                                        <?= fa_image_tag($issuetype->getFontAwesomeIcon(), ['class' => 'issuetype-icon issuetype-' . $issuetype->getIcon()]); ?>
+                                        <span class="name value"><?= __($issuetype->getName()); ?></span>
+                                    </label>
+                                <?php endforeach; ?>
                             </div>
                         </div>
                     </div>
@@ -128,27 +129,25 @@ if ($filter instanceof SearchFilter): ?>
                 break;
             case 'blocking':
                 ?>
-                <div class="fancydropdown-container filter" id="interactive_filter_blocking" data-filterkey="blocking" data-value="<?= $filter->getValue(); ?>" data-all-value="<?= __('Any'); ?>">
+                <div class="fancydropdown-container filter" id="interactive_filter_blocking" data-filterkey="blocking" data-default-value="<?= __('Any'); ?>">
                     <div class="fancydropdown">
                         <input type="hidden" name="fs[blocking][o]" value="<?= $filter->getOperator(); ?>">
-                        <input type="hidden" name="fs[blocking][v]" value="" id="filter_blocking_value_input">
                         <label><?= __('Blocker status'); ?></label>
                         <span class="value"><?php if (!$filter->hasValue()) echo __('Any'); ?></span>
                         <div class="dropdown-container">
-                            <h1><?= __('Filter on blocker status'); ?></h1>
-                            <div class="interactive_values_container">
-                                <ul class="interactive_menu_values">
-                                    <li data-value="1" class="filtervalue <?php if ($filter->hasValue('1')) echo ' selected'; ?>" data-exclusive data-selection-group="1">
-                                        <?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far'); ?>
-                                        <input type="checkbox" value="1" name="filters_blocking_value" data-text="<?= __('Only blocker issues'); ?>" id="filters_blocking_value_yes" <?php if ($filter->hasValue('1')) echo 'checked'; ?>>
-                                        <label for="filters_blocking_value_yes"><?= __('Only blocker issues'); ?></label>
-                                    </li>
-                                    <li data-value="0" class="filtervalue <?php if ($filter->hasValue('0')) echo ' selected'; ?>" data-exclusive data-selection-group="1">
-                                        <?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far'); ?>
-                                        <input type="checkbox" value="0" name="filters_blocking_value" data-text="<?= __('Not blocker issues'); ?>" id="filters_blocking_value_none" <?php if ($filter->hasValue('0')) echo 'checked'; ?>>
-                                        <label for="filters_blocking_value_no"><?= __('Not blocker issues'); ?></label>
-                                    </li>
-                                </ul>
+                            <div class="header"><?= __('Filter on blocker status'); ?></div>
+                            <div class="list-mode">
+                                <input type="radio" name="fs[blocking][v]" value="1" class="fancycheckbox" <?php if ($filter->hasValue('1')) echo ' checked'; ?>>
+                                <label class="list-item" for="filters_blocking_value_yes">
+                                    <?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far'); ?>
+                                    <input type="checkbox" value="1" name="filters_blocking_value" data-text="<?= __('Only blocker issues'); ?>" id="filters_blocking_value_yes" <?php if ($filter->hasValue('1')) echo 'checked'; ?>>
+                                    <span class="name value"><?= __('Only blocker issues'); ?></span>
+                                </label>
+                                <input type="radio" name="fs[blocking][v]" value="0" class="fancycheckbox" <?php if ($filter->hasValue('0')) echo ' checked'; ?>>
+                                <label for="filters_blocking_value_no" class="list-item">
+                                    <?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far'); ?>
+                                    <span class="name value"><?= __('Not blocker issues'); ?></span>
+                                </label>
                             </div>
                         </div>
                         <div class="filter_remove_button" onclick="Pachno.Search.removeFilter($(this).up('.filter'));"><?= fa_image_tag('times'); ?></div>

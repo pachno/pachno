@@ -4,15 +4,15 @@ define(['pachno/tools', 'pachno/index', 'domReady', 'jquery', 'mention'],
         domReady(function () {
             Pachno.Main.Helpers.MarkitUp($$('textarea.markuppable'));
             (function ($) {
-                jQuery('body').on('click', '.list-item.expandable .expander', function (event) {
+                jQuery('body').on('click', '.expandable .expander', function (event) {
                     event.stopPropagation();
                     event.preventDefault();
 
-                    jQuery(this).parent('.list-item').toggleClass('expanded');
+                    jQuery(this).parent('.expandable').toggleClass('expanded');
                 });
 
                 jQuery("body").on("click", ".dropper", function (e) {
-                    var is_visible = jQuery(this).hasClass('button-pressed');
+                    var is_visible = jQuery(this).hasClass('active');
                     Pachno.Main.Profile.clearPopupsAndButtons();
                     if (!is_visible) {
                         Pachno.Main.Helpers.toggler(jQuery(this));
@@ -31,10 +31,9 @@ define(['pachno/tools', 'pachno/index', 'domReady', 'jquery', 'mention'],
                 //     }
                 // });
                 jQuery("body").on("click", ".fancydropdown", function (e) {
-                    jQuery(this).toggleClass('selected');
-                });
-                jQuery("body").on("click", ".list-item", function (e) {
-                    Pachno.Main.setFancyDropdownValue(this);
+                    console.log('fadsf');
+                    e.stopPropagation();
+                    jQuery(this).toggleClass('active');
                 });
                 jQuery("body").on("click", ".dropper.dynamic_menu_link", function (e) {
                     var menu = jQuery(this).next()[0];

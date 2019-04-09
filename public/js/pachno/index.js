@@ -98,7 +98,6 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
                 failedmessage: 'pachno_failedmessage'
             },
             debug: false,
-            activated_popoutmenu: undefined,
             autocompleter_url: undefined,
             autocompleter: undefined,
             available_fields: ['shortname', 'description', 'user_pain', 'reproduction_steps', 'category', 'resolution', 'priority', 'reproducability', 'percent_complete', 'severity', 'edition', 'build', 'component', 'estimated_time', 'spent_time', 'milestone', 'owned_by']
@@ -282,26 +281,6 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
             }
         };
 
-        /**
-         * Toggles one breadcrumb item in the breadcrumb bar
-         */
-        Pachno.Core._toggleBreadcrumbItem = function (item) {
-            item.up('li').next().toggleClassName('popped_out');
-            item.toggleClassName('activated');
-        };
-
-        /**
-         * Toggles one breadcrumb item in the breadcrumb bar
-         */
-        Pachno.Core._hideBreadcrumbItem = function () {
-            if ($('submenu')) {
-                $('submenu').select('.popped_out').each(function (element) {
-                    element.removeClassName('popped_out');
-                    element.previous().down('.activated').removeClassName('activated');
-                });
-            }
-        };
-
         Pachno.Core._detachFile = function (url, file_id, base_id, loading_indicator) {
             Pachno.Main.Helpers.ajax(url, {
                 loading: {
@@ -444,7 +423,7 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
             jQuery('body').on('change', '.fancydropdown input[type=checkbox]', Pachno.Main.updateFancyDropdownValues);
             jQuery('body').on('change', '.fancydropdown input[type=radio]', Pachno.Main.updateFancyDropdownValues);
             jQuery('.fancydropdown').each(function () {
-                Pachno.Main.updateFancyDropdownValues(jQuery(this));
+                Pachno.Main.updateFancyDropdownLabel(jQuery(this));
             });
 
             Pachno.Core.Pollers.Callbacks.dataPoller();
@@ -1051,24 +1030,6 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
             Pachno.Main.Helpers.MarkitUp(ce);
         };
 
-        Pachno.Main.toggleBreadcrumbMenuPopout = function (event) {
-            var item = event.findElement('a');
-            if (Pachno.activated_popoutmenu != undefined && Pachno.activated_popoutmenu != item && item != undefined) {
-                Pachno.Core._toggleBreadcrumbItem(Pachno.activated_popoutmenu);
-                Pachno.activated_popoutmenu = undefined;
-            }
-            if (item != undefined && item.hasClassName('submenu_activator')) {
-                Pachno.Core._toggleBreadcrumbItem(item);
-                Pachno.activated_popoutmenu = item;
-            } else {
-                Pachno.activated_popoutmenu = undefined;
-            }
-
-            if (item == undefined) {
-                Pachno.Core._hideBreadcrumbItem();
-            }
-        };
-
         Pachno.Main.findIdentifiable = function (url, field) {
             Pachno.Main.Helpers.ajax(url, {
                 form: field + '_form',
@@ -1538,11 +1499,12 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
         };
 
         Pachno.Main.Profile.clearPopupsAndButtons = function (event) {
-            $$('.popup_box').each(function (element) {
-                var prev = $(element).previous('.button-pressed');
-                if (prev) {
-                    prev.removeClassName('button-pressed');
-                }
+            jQuery('.dropper.active').each(function () {
+                jQuery(this).removeClass('active');
+            });
+
+            jQuery('.fancydropdown.active').each(function () {
+                jQuery(this).removeClass('active');
             });
         };
 
@@ -3633,23 +3595,55 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
             });
         };
 
-        Pachno.Main.setFancyDropdownValue = function (item) {
-            var dropdown = $(item).up('.fancydropdown-container');
-            if (dropdown.select('.fancydropdown-input-target').length > 0) $(dropdown.select('.fancydropdown-input-target')[0]).setValue($(item).dataset.inputValue);
-            dropdown.dataset.selectedValue = $(item).dataset.inputValue;
-            dropdown.childElements().each(function (elm) {
-                elm.removeClassName('selected');
-            });
-            $(item).addClassName('selected');
-            var dropdownfancylabel = $(item).up('.fancydropdown').previous();
-            dropdownfancylabel.removeClassName('selected');
-            if (!dropdownfancylabel.hasClassName('self-updateable')) dropdownfancylabel.update($(item).dataset.displayName);
+        // Pachno.Main.setFancyDropdownValue = function (item) {
+        //     var dropdown = $(item).up('.fancydropdown-container');
+        //     if (dropdown.select('.fancydropdown-input-target').length > 0) $(dropdown.select('.fancydropdown-input-target')[0]).setValue($(item).dataset.inputValue);
+        //     dropdown.dataset.selectedValue = $(item).dataset.inputValue;
+        //     dropdown.childElements().each(function (elm) {
+        //         elm.removeClassName('selected');
+        //     });
+        //     $(item).addClassName('selected');
+        //     var dropdownfancylabel = $(item).up('.fancydropdown').previous();
+        //     dropdownfancylabel.removeClassName('selected');
+        //     if (!dropdownfancylabel.hasClassName('self-updateable')) dropdownfancylabel.update($(item).dataset.displayName);
+        // };
+
+        Pachno.Main.updateDropdownLabels = function ($dropdown) {
+            var $label = $dropdown.find('> .value');
+            if ($label.length > 0) {
+                var auto_close = false;
+                var values = [];
+                $dropdown.find('input[type=checkbox],input[type=radio]').each(function () {
+                    var $input = jQuery(this);
+
+                    if ($input.attr('type') == 'radio') {
+                        auto_close = true;
+                    }
+
+                    if ($input.is(':checked')) {
+                        var $label = jQuery($input.next('label')),
+                            $value = jQuery($label.find('.value')[0]);
+
+                        values.push($value.text());
+                    }
+                });
+
+                if (values.length > 0) {
+                    $label.html(values.join(', '));
+                } else {
+                    $label.html($dropdown.data('default-label'));
+                }
+
+                if (auto_close) {
+                    $dropdown.removeClass('selected');
+                }
+            }
         };
 
         Pachno.Main.updateFancyDropdownValues = function (event) {
             event.stopPropagation();
-            var $dropdown = $j(this).closest('.fancy-dropdown');
-            Fields.updateDropdownLabels($dropdown);
+            var $dropdown = jQuery(this).closest('.fancydropdown');
+            Pachno.Main.updateDropdownLabels($dropdown);
         };
 
 
@@ -6690,13 +6684,13 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
         };
 
         Pachno.Search.initializeFilterField = function (filter, hidden) {
-            filter.on('click', Pachno.Search.toggleInteractiveFilter);
-            filter.select('li.filtervalue').each(function (filtervalue) {
-                filtervalue.on('click', Pachno.Search.toggleFilterValue);
-            });
+            // filter.on('click', Pachno.Search.toggleInteractiveFilter);
+            // filter.select('li.filtervalue').each(function (filtervalue) {
+            //     filtervalue.on('click', Pachno.Search.toggleFilterValue);
+            // });
             Pachno.Search.initializeFilterSearchValues(filter);
             Pachno.Search.initializeFilterNavigation(filter);
-            Pachno.Search.calculateFilterDetails(filter);
+            // Pachno.Search.calculateFilterDetails(filter);
             if (!hidden && filter.dataset.isdate == '') {
                 var filter_key = filter.dataset.filterkey;
                 Calendar.setup({
@@ -6754,12 +6748,12 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
                         return;
                     if (filtervalue !== '') {
                         if (elm.innerHTML.toLowerCase().indexOf(filtervalue.toLowerCase()) !== -1 || elm.hasClassName('selected')) {
-                            elm.addClassName('unfiltered');
+                            elm.addClassName('hidden');
                         } else {
-                            elm.removeClassName('unfiltered');
+                            elm.removeClassName('hidden');
                         }
                     } else {
-                        elm.addClassName('unfiltered');
+                        elm.addClassName('hidden');
                     }
                     elm.removeClassName('highlighted');
                 });
@@ -6876,10 +6870,6 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
             $$('#find_issues_form .filter').each(function (filter) {
                 Pachno.Search.initializeFilterField(filter, false);
             });
-            ['interactive_plus_button', 'interactive_template_button', 'interactive_grouping_button', 'interactive_save_button'].each(function (element) {
-                if ($(element))
-                    $(element).on('click', Pachno.Search.toggleInteractiveFilter);
-            });
             Pachno.Search.initializeFilterSearchValues($('search_column_settings_container'));
             Pachno.Search.initializeFilterSearchValues($('search_grouping_container'));
             $('search_columns_container').select('li').each(function (element) {
@@ -6890,13 +6880,6 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
             });
             $$('.template-picker').each(function (element) {
                 element.on('click', Pachno.Search.pickTemplate);
-            });
-            document.observe('click', function (event, element) {
-                if (['INPUT'].indexOf(event.target.nodeName) != -1)
-                    return;
-                $$('.filter,.interactive_plus_button').each(function (element) {
-                    element.removeClassName('selected');
-                });
             });
             var sff = $('searchbuilder_filterstrip_filtercontainer');
             $('interactive_filters_availablefilters_container').select('li').each(function (element) {
@@ -6990,28 +6973,7 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
             Pachno.Search.toggleInteractiveFilterElement(this);
         };
 
-        Pachno.Search.toggleInteractiveFilterElement = function (element) {
-            var is_selected = element.hasClassName('selected');
-            $$('.filter,.interactive_plus_button').each(function (elm) {
-                if (elm != element)
-                    elm.removeClassName('selected');
-            });
-            if (is_selected)
-            {
-                element.removeClassName('selected');
-            }
-            else
-            {
-                element.addClassName('selected');
-                var search_inputs = (element.hasClassName('interactive_plus_button')) ? element.next().select('input[type=search]') : element.select('input[type=search]');
-                if (search_inputs.size() > 0)
-                    search_inputs[0].focus();
-            }
-
-            if (element.id == 'interactive_template_button' && element.hasClassName('selected')) {
-                Pachno.Search.initializeIssuesPerPageSlider();
-            }
-        };
+        // Pachno.Search.initializeIssuesPerPageSlider();
 
         Pachno.Search.moveIssuesPerPageSlider = function (step) {
             var steps = [25, 50, 100, 250, 500];
@@ -7758,7 +7720,7 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
             if (elm.data('target')) {
                 $(elm.data('target')).toggleClassName('force-active');
             } else {
-                elm.toggleClass("button-pressed");
+                elm.toggleClass("active");
             }
         };
 

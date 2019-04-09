@@ -1,0 +1,45 @@
+.fancycheckbox {
+  display: none;
+}
+.fancycheckbox + label {
+  display: inline-block;
+  color: #555;
+  transition: color .2s ease-in-out;
+}
+.fancycheckbox:disabled + label,
+.fancycheckbox:disabled + label + .explanation {
+  color: #DDD;
+}
+.fancycheckbox:checked + label {
+  color: #88AB75;
+}
+.fancycheckbox:disabled + label {
+  color: #DDD;
+}
+.fancycheckbox:focus + label {
+  color: #558;
+}
+.fancycheckbox + label .fas.unchecked,
+.fancycheckbox + label .far.unchecked,
+.fancycheckbox:checked + label .fas.checked,
+.fancycheckbox:checked + label .far.checked,
+.fancycheckbox + .list-item .fas.unchecked,
+.fancycheckbox + .list-item .far.unchecked,
+.fancycheckbox:checked + .list-item .fas.checked,
+.fancycheckbox:checked + .list-item .far.checked {
+  display: inline-block;
+  margin-right: 5px;
+}
+.fancycheckbox + label .fas.checked,
+.fancycheckbox + label .far.checked,
+.fancycheckbox:checked + label .fas.unchecked,
+.fancycheckbox:checked + label .far.unchecked,
+.fancycheckbox + .list-item .fas.checked,
+.fancycheckbox + .list-item .far.checked,
+.fancycheckbox:checked + .list-item .fas.unchecked,
+.fancycheckbox:checked + .list-item .far.unchecked {
+  display: none;
+}
+.fancycheckbox + label ~ .fancycheckbox + label {
+  margin-left: 10px;
+}

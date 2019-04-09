@@ -8,6 +8,9 @@
   },
   "dependencies": {},
   "devDependencies": {
+    "grunt": "^1.0.4",
+    "grunt-sass": "^3.0.2",
+    "load-grunt-tasks": "^4.0.0",
     "node-sass": "^4.11.0"
   },
   "scripts": {

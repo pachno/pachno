@@ -8,7 +8,7 @@
     <span class="icon"><?php if ($issue->hasIssueType()) echo fa_image_tag($issue->getIssueType()->getFontAwesomeIcon(), ['class' => (($issue->hasIssueType()) ? 'issuetype-icon issuetype-' . $issue->getIssueType()->getIcon() : 'issuetype-icon issuetype-unknown')]); ?></span>
     <span class="name">
         <span class="title"><?= $issue->getFormattedTitle(true, false); ?></span>
-        <span class="additional_information">
+        <span class="description">
             <span class="status_badge" style="background-color: <?php echo $issue->getStatus()->getColor(); ?>;color: <?php echo $issue->getStatus()->getTextColor(); ?>;"><span><?php echo __($issue->getStatus()->getName()); ?></span></span>
             <?php if ($issue->getPriority() instanceof \pachno\core\entities\Priority): ?>
                 <span class="priority priority_<?= $issue->getPriority()->getValue(); ?>"><?= fa_image_tag($issue->getPriority()->getFontAwesomeIcon(), [], $issue->getPriority()->getFontAwesomeIconStyle()) . $issue->getPriority()->getName(); ?></span>

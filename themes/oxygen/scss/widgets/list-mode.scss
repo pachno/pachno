@@ -1,0 +1,259 @@
+.list-mode {
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  min-width: 200px;
+  max-width: 300px;
+
+  &.updating {
+    opacity: 0.2;
+  }
+
+  .list-item,
+  .list-item:hover {
+    padding: 0 8px;
+    display: flex;
+    flex-direction: row;
+    color: #141823;
+    border-radius: 5px;
+    border: none;
+    margin: 0 10px 5px 10px;
+    align-content: flex-start;
+    align-items: center;
+    justify-content: flex-start;
+    justify-items: flex-start;
+    font-size: .9rem;
+    text-transform: none;
+
+    &:hover {
+      background-color: rgba(100, 100, 100, .1);
+    }
+    &.selected {
+      background-color: rgba(100, 100, 100, .1);
+
+      .icon {
+        color: #0C8990;
+      }
+    }
+
+    &.expandable {
+      padding-right: 0;
+
+      &.multiline span.name {
+        display: flex;
+        flex-direction: column;
+        font-size: .85em;
+
+        & .title {
+          font-size: 1.2em;
+          font-weight: 600;
+        }
+      }
+
+      &.expanded {
+        .name {
+          color: #0C8990;
+          font-weight: 600;
+        }
+
+        .icon {
+          color: #0C8990;
+        }
+      }
+    }
+
+    .name {
+      flex: 1 1 auto;
+      align-self: center;
+      padding: 7px 0;
+      font-weight: 400;
+      font-size: 1em;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
+    }
+
+    .indicator {
+      display: none;
+      flex: 0 0 auto;
+      text-align: center;
+    }
+
+    &.filter-container,
+    &.text-input-container {
+      border-bottom: 1px dotted rgba(0, 0, 0, .2);
+      margin-bottom: 7px;
+      padding-bottom: 7px;
+      border-radius: 0;
+
+      &:hover {
+        background: transparent;
+      }
+
+      input[type=text],
+      input[type=search] {
+        border: none;
+        background: rgba(200, 200, 200, .1);
+        padding: .3em .7em;
+        border-radius: 4px;
+        color: #141823;
+        flex: 1 1 auto;
+
+        &.filtering + .indicator {
+          display: inline-block;
+        }
+      }
+    }
+
+    &.separator {
+      padding: 5px 0 0 0;
+      margin: 0 5px 5px 5px;
+      border-bottom: 1px dotted rgba(0, 0, 0, 0.2);
+      background-color: transparent;
+      cursor: default;
+    }
+
+    .icon {
+      flex: 0 0 25px;
+      padding: 10px 0;
+      color: rgb(100, 100, 100);
+      align-self: center;
+      text-align: center;
+    }
+
+    > a,
+    > a:hover {
+      color: #141823;
+      border: none;
+      flex: 1 1 auto;
+      display: flex;
+      align-items: center;
+    }
+  }
+}
+.submenu {
+  &.columns {
+    flex-direction: row;
+
+    &.three-columns .column {
+      flex: 1 1 33%;
+    }
+
+    &.two-columns .column {
+      flex: 1 1 50%;
+    }
+  }
+
+  .list-item {
+    color: #141823;
+    padding: 0 10px;
+    font-size: .95em;
+    margin: 5px 10px;
+
+    .icon {
+      font-size: 1.1em;
+      padding-left: 10px;
+    }
+  }
+}
+
+.filtered {
+  .list-item:not(.sticky) {
+    display: none;
+
+    &.separator,
+    &.hidden {
+      display: none;
+    }
+
+    &.visible {
+      display: block;
+    }
+
+    &.highlighted {
+      color: #0C8990;
+    }
+  }
+}
+
+.submenu .list-item span.name {
+  font-size: .95em;
+}
+.submenu {
+  border-top: 1px solid rgba(100, 100, 100, .2);
+}
+.expandable {
+  .expander {
+    transform: rotate(0);
+    cursor: pointer;
+    padding: 10px;
+  }
+
+  + .submenu {
+    display: none;
+
+    .list-item {
+      color: #141823;
+      padding: 0 10px;
+      margin: 5px 5px 0 32px;
+    }
+  }
+
+  &.expanded {
+    &:not(button) .expander {
+      transform: rotate(180deg);
+      color: #0C8990;
+    }
+
+    & + .submenu {
+      display: initial;
+      border-bottom: 1px solid rgba(100, 100, 100, .2);
+      padding-bottom: 5px;
+    }
+  }
+
+}
+.collapsed {
+  .expandable {
+    &.expanded + .submenu {
+      display: none;
+    }
+
+    .expander {
+      display: none;
+    }
+  }
+
+  .list-mode {
+    min-width: 0;
+
+    .list-item {
+      &,
+      &:hover {
+        justify-content: center;
+        padding: 0;
+        font-size: 1rem;
+      }
+      .icon:first-child {
+        padding: 10px;
+        flex: 1 1 auto;
+      }
+      .icon:not(:first-child) {
+        display: none;
+      }
+      .name {
+        display: none;
+      }
+    }
+  }
+}
+
+.list-mode, .submenu {
+  .header {
+    text-transform: none;
+    color: rgb(150, 150, 150);
+    font-size: .75rem;
+    padding: 15px 0 5px 15px;
+  }
+}

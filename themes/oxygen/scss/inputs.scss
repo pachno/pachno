@@ -1,0 +1,55 @@
+input, select, textarea {
+  font-family: 'Source Sans Pro', sans-serif;
+  font-size: 1em;
+  color: #555;
+  border: none;
+  border-bottom: 1px solid #AAA;
+  padding: 2px;
+  vertical-align: middle;
+  font-weight: 300;
+  background-color: #FFF;
+}
+
+input[type="text"], input[type="email"], input[type="search"], input[type="password"], input[type="url"], textarea, select {
+  box-shadow: none;
+  vertical-align: middle;
+}
+input[type="text"]:focus, input[type="email"]:focus, input[type="search"]:focus, input[type="password"]:focus, input[type="url"]:focus, textarea:focus, select:focus {
+  border-bottom-color: #0C8990;
+}
+
+input[type="image"] {
+  border: 0;
+  padding: 0;
+  width: 16px;
+  height: 16px;
+  background-color: transparent;
+}
+
+input[type="checkbox"] {
+  margin: 0;
+  vertical-align: middle;
+}
+
+input[type="text"][disabled], input[type="email"][disabled], input[type="url"][disabled], input[type="search"][disabled], input[type="password"][disabled], textarea[disabled], select[disabled] {
+  background-color: #F9F9F9;
+  color: #BBB;
+}
+
+button::-moz-focus-inner,
+input[type="reset"]::-moz-focus-inner,
+input[type="button"]::-moz-focus-inner,
+input[type="submit"]::-moz-focus-inner,
+input[type="file"] > input[type="button"]::-moz-focus-inner {
+  border: 0;
+  padding: 0;
+  margin: 0;
+}
+
+input::-webkit-input-placeholder {
+  color: #BBB;
+}
+
+input:-moz-placeholder {
+  color: #BBB;
+}

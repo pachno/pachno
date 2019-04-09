@@ -85,7 +85,7 @@
         public static function createFilter($key, $options = [], SavedSearch $search = null)
         {
             if (isset($options['o'])) $options['operator'] = $options['o'];
-            if (isset($options['v'])) $options['value'] = $options['v'];
+            if (isset($options['v'])) $options['value'] = (is_array($options['v'])) ? implode(',', $options['v']) : $options['v'];
 
             $options = array_merge(['operator' => '=', 'value' => ''], $options);
             $filter = new \pachno\core\entities\SearchFilter();
@@ -241,7 +241,8 @@
                         {
                             if (isset($subdetails['o']))
                             {
-                                $return_filters[$key][] = self::createFilter($key, array('o' => $subdetails['o'], 'v' => $details[$i+1]['v']), $search);
+                                $v = (is_array($details[$i+1]['v'])) ? implode(',', $details[$i+1]['v']) : $details[$i+1]['v'];
+                                $return_filters[$key][] = self::createFilter($key, array('o' => $subdetails['o'], 'v' => $v), $search);
                             }
 
                             continue;

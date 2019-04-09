@@ -1,0 +1,150 @@
+.button .indicator, button .indicator { display: none; margin-right: .35em; }
+.submitting .button .indicator, .submitting button .indicator, .button.submitting .indicator, button.submitting .indicator { display: inline-block; }
+
+input[type=submit], input[type=button], button {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  outline: 0;
+}
+
+input[type=submit], input[type=submit]:hover,
+input[type=button], input[type=button]:hover,
+button, button:hover,
+.button, .button:hover {
+  line-height: 17px;
+  margin: 0;
+  cursor: pointer;
+  border: none;
+  border-radius: 2px;
+  font-family: 'Source Sans Pro', sans-serif;
+  vertical-align: middle;
+  /*background: #3c1642;*/
+  /*color: rgba(0, 0, 0, .7);*/
+  background: #44AF69;
+  color: #FFF;
+  outline: 0;
+  box-shadow: 0 3px 1px -2px rgba(0,0,0,.2),0 2px 2px 0 rgba(0,0,0,.14),0 1px 5px 0 rgba(0,0,0,.12);
+  text-transform: uppercase;
+  font-size: .9rem;
+  padding: .42rem 1rem;
+  transition: background-color .2s ease-in-out;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+button + button, button + button:hover,
+a.button + button, a.button + button:hover,
+button + a.button, button + a.button:hover,
+a.button + a.button, a.button + a.button:hover {
+  margin-left: 7px;
+}
+button img, a.button img { vertical-align: middle; display: inline-block; margin-right: 5px; }
+button.button-icon img, a.button.button-icon img { margin-right: 0; }
+button .fas, a.button .fas, button .far, a.button .far { display: inline-block; vertical-align: middle; margin: 0 5px 0 0; }
+button .material-icons, a.button .material-icons {
+  vertical-align: middle;
+  margin-right: .3em;
+  font-size: 1em;
+}
+button .fas:last-child, a.button .fas:last-child, button .far:last-child, a.button .far:last-child, button .material-icons:last-child, a.button .material-icons:last-child { margin-right: 0; }
+button span, a.button span { vertical-align: middle; display: inline-block; }
+
+button:hover, input[type=submit]:hover, a.button:hover {
+  box-shadow: 0 2px 4px -1px rgba(0,0,0,.2),0 4px 5px 0 rgba(0,0,0,.14),0 1px 10px 0 rgba(0,0,0,.12);
+}
+button:active, input[type=submit]:active, a.button:active {
+  box-shadow: 0 3px 1px -2px rgba(0,0,0,.2),0 2px 2px 0 rgba(0,0,0,.14),0 1px 5px 0 rgba(0,0,0,.12);
+  background: #DBD69E;
+}
+button:disabled, input[type=submit]:disabled, a.button:disabled,
+button.disabled, input[type=submit].disabled, a.button.disabled {
+  box-shadow: none;
+  background: rgba(200, 200, 200, .2);
+  color: rgb(150, 150, 150);
+}
+input[type="button"]::-moz-focus-inner {
+  border: 0;
+}
+button::-moz-focus-inner {
+  border: 0;
+}
+a.button::-moz-focus-inner {
+  border: 0;
+}
+button:focus, input[type=submit]:focus, a.button:focus {
+  outline: 0;
+}
+input[type=submit]:active, input[type=button]:active, button:active, a.button:active, input[type=submit].activated, button.activated, a.button.activated {
+  box-shadow: inset 0 0 2px rgba(150, 150, 150, 0.4);
+}
+button.secondary,
+a.button.secondary,
+.backdrop_box a.button:not(.primary),
+.backdrop_box button:not(.primary),
+.fullpage_backdrop_content button:not(.primary),
+.fullpage_backdrop_content a.button:not(.primary) {
+  background: transparent;
+  color: #3c1642;
+  box-shadow: none;
+  border-radius: 4px;
+  text-align: center;
+}
+.popup_message button.secondary {
+  color: rgb(255, 170, 0);
+}
+button.icon,
+a.button.icon {
+  background: transparent;
+  box-shadow: none;
+  color: rgb(100, 100, 100);
+}
+button.icon,
+a.button.icon {
+  /*border-radius: 100%;*/
+  /*min-width: 34px;*/
+  padding: 7px 10px;
+  box-sizing: border-box;
+}
+.icon .fas, .icon .far {
+  min-width: 16px;
+}
+button.secondary.active ,
+a.button.secondary.active {
+  background-color: rgba(200, 200, 200, .3);
+}
+button.secondary:hover,
+a.button.secondary:hover,
+button.icon:hover,
+a.button.icon:hover,
+.backdrop_box a.button:not(.primary):hover,
+.backdrop_box button:not(.primary):hover,
+.fullpage_backdrop_content button:not(.primary):hover,
+.fullpage_backdrop_content a.button:not(.primary):hover {
+  background: rgba(220, 220, 220, .15);
+}
+.button-group > button,
+.button-group > a.button {
+  margin: 0 3px;
+}
+.button-group {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  justify-items: flex-end;
+  padding: 10px;
+  flex: 0 0 auto;
+}
+
+.dialog-query-buttons {
+  padding: 0 10px;
+  /*height: 40px;*/
+  display: flex;
+  margin: 10px 0;
+  justify-content: flex-end;
+  align-items: center;
+  font-size: .75rem;
+  justify-self: flex-end;
+  flex: 1 1 auto;
+}

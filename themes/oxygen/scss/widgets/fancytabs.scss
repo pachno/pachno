@@ -1,0 +1,59 @@
+.fancytabs {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin: 0;
+  flex-wrap: nowrap;
+  padding: 1rem 0;
+  overflow-x: auto;
+}
+.fancytabs .tab {
+  padding: 1rem;
+  font-size: .85rem;
+  font-weight: 600;
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  color: #141823;
+  border-bottom: 3px solid transparent;
+  margin: 0;
+  position: relative;
+  flex-wrap: nowrap;
+  max-width: 200px;
+}
+.fancytabs .spacer {
+  flex: 1 1 auto;
+}
+.fancytabs .button-container {
+  flex: 0 0 auto;
+  align-items: center;
+  display: flex;
+  justify-content: flex-end;
+}
+.fancytabs .tab .name {
+  flex: 1 1 auto;
+  white-space: normal;
+  line-height: 1.2em;
+}
+.fancytabs .tab .icon {
+  flex: 0 0 auto;
+  margin-right: .6em;
+  font-size: .95em;
+}
+.fancytabs .tab.selected {
+  color: rgb(255, 170, 0);
+}
+.fancytabs .tab.selected::after {
+  content: '';
+  display: block;
+  width: 50%;
+  height: 3px;
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: rgb(255, 170, 0);
+}
