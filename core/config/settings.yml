@@ -1,0 +1,4 @@
+core:
+    debug: true
+    log_file: ~
+    minified_assets: false

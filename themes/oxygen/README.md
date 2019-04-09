@@ -1,0 +1,1 @@
+"Oxygen" is the default theme for Pachno. Sporting vibrant colors and a recognizable look, this is what you get out of the box.

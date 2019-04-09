@@ -1,0 +1,119 @@
+#!/usr/bin/env php
+<?php
+
+    use pachno\core\framework;
+
+    // Define Pachno paths and related constants
+    define('bin/pachno', true);
+
+    $path = realpath(getcwd());
+    require $path . DIRECTORY_SEPARATOR . "vendor" . DIRECTORY_SEPARATOR . "autoload.php";
+
+    defined('PACHNO_PATH') || define('PACHNO_PATH', realpath(getcwd() . DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR);
+
+    if (!defined('PACHNO_CONFIG_PATH')) {
+        if (file_exists(getenv('HOME') . DIRECTORY_SEPARATOR . '.remote_server'))
+            define('PACHNO_CONFIG_PATH', getenv('HOME') . DIRECTORY_SEPARATOR);
+        else
+            define('PACHNO_CONFIG_PATH', PACHNO_PATH);
+    }
+
+    try {
+        // Include the "engine" script, which initializes and sets up stuff
+        \pachno\core\framework\Context::bootstrap();
+    } catch (Exception $e) {
+        framework\cli\Command::cli_echo("An error occured when trying to initialize the command line client:\n", 'white', 'bold');
+        framework\cli\Command::cli_echo($e->getMessage() . "\n", 'red', 'bold');
+        die();
+    }
+
+    // Set up all available search paths for cli commands
+    $command_paths = [];
+    foreach (scandir(PACHNO_INTERNAL_MODULES_PATH) as $module_name) {
+        if (in_array($module_name, array('.', '..')) || !is_dir(PACHNO_INTERNAL_MODULES_PATH . $module_name))
+            continue;
+
+        $module_cli_path = PACHNO_INTERNAL_MODULES_PATH . $module_name . DIRECTORY_SEPARATOR . 'cli' . DIRECTORY_SEPARATOR;
+        if (file_exists($module_cli_path)) {
+            $command_paths[$module_name] = $module_cli_path;
+        }
+    }
+    try {
+        framework\Context::checkInstallMode();
+
+        foreach (framework\Context::getModules() as $module_name => $module) {
+            $module_cli_path = PACHNO_MODULES_PATH . $module_name . DIRECTORY_SEPARATOR . 'cli' . DIRECTORY_SEPARATOR;
+            if (file_exists($module_cli_path)) {
+                $command_paths[$module_name] = $module_cli_path;
+            }
+        }
+    } catch (\Exception $e) {
+        framework\cli\Command::cli_echo("\n");
+        framework\cli\Command::cli_echo(str_pad('-', strlen($e->getMessage()), '-') . "\n");
+        framework\cli\Command::cli_echo($e->getMessage() . "\n");
+        framework\cli\Command::cli_echo(str_pad('-', strlen($e->getMessage()), '-') . "\n");
+        framework\cli\Command::cli_echo("\n");
+    }
+
+    // Set up all cli commands
+    $commands = ['main' => []];
+    foreach ($command_paths as $module_name => $command_path) {
+        $_path_handle = opendir($command_path);
+        while ($command_class_file = readdir($_path_handle)) {
+            if (($classname = substr($command_class_file, 0, strpos($command_class_file, '.'))) != '') {
+                $new_classname = (framework\Context::isInternalModule($module_name)) ? "\\pachno\\core\\modules\\{$module_name}\\cli\\{$classname}" : "\\pachno\\modules\\{$module_name}\\cli\\{$classname}";
+                $module = framework\Context::getModule($module_name);
+                $command = new $new_classname($module);
+                if ($command instanceof framework\cli\Command) {
+                    $commands[$module_name][$command->getCommandName()] = $command;
+                    foreach ($command->getCommandAliases() as $alias) {
+                        $commands[$module_name][$alias] = $command;
+                    }
+                }
+            }
+        }
+    }
+    framework\cli\Command::setAvailableCommands($commands);
+
+    if ($argc < 2) {
+        // Show usage if no parameters are provided
+        framework\cli\Command::cli_echo("Pachno command line tool\n\n");
+        framework\cli\Command::cli_echo("Usage: ", 'white', 'bold');
+        framework\cli\Command::cli_echo(framework\cli\Command::getCommandLineName() . " [");
+        framework\cli\Command::cli_echo('command', 'green', 'bold');
+        framework\cli\Command::cli_echo("]\n");
+        framework\cli\Command::cli_echo("Type " . framework\cli\Command::getCommandLineName() . ' ');
+        framework\cli\Command::cli_echo('help', 'green', 'bold');
+        framework\cli\Command::cli_echo(" for more information.\n\n");
+    } else {
+        // Process arguments and invoke command if available
+        try {
+            framework\cli\Command::processArguments();
+            $module_command = explode(':', $argv[1]);
+            $module_name = (count($module_command) == 2) ? $module_command[0] : 'main';
+            $command = (count($module_command) == 2) ? $module_command[1] : $module_command[0];
+
+            framework\Context::reinitializeI18n();
+
+            if (array_key_exists($module_name, $commands) && array_key_exists($command, $commands[$module_name])) {
+                $class = $commands[$module_name][$command];
+                framework\Context::setCLIRouting($module_name, $command);
+                $class->execute();
+            } else {
+                framework\cli\Command::cli_echo("\n");
+                framework\cli\Command::cli_echo("Unknown command\n", 'red', 'bold');
+                framework\cli\Command::cli_echo("Type " . framework\cli\Command::getCommandLineName() . ' ');
+                framework\cli\Command::cli_echo('help', 'green', 'bold');
+                framework\cli\Command::cli_echo(" for more information about the cli tool.\n\n");
+            }
+        } catch (Exception $e) {
+            framework\cli\Command::cli_echo("\n");
+            framework\cli\Command::cliError('', $e);
+//            framework\cli\Command::cli_echo($e->getMessage() . "\n\n", 'red');
+            framework\cli\Command::cli_echo("Type " . framework\cli\Command::getCommandLineName() . ' ');
+            framework\cli\Command::cli_echo('help', 'green', 'bold');
+            framework\cli\Command::cli_echo(" for more information about the cli tool.\n\n");
+        }
+    }
+
+    return true;

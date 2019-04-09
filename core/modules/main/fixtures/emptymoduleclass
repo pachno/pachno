@@ -1,0 +1,66 @@
+<?php
+
+    namespace pachno\modules\module_key;
+
+    use pachno\core\framework;
+
+    /**
+     * module_description
+     *
+     * @author
+     * @version 0.1
+     * @license http://opensource.org/licenses/MPL-2.0 Mozilla Public License 2.0 (MPL 2.0)
+     * @package module_key
+     * @subpackage core
+     */
+
+    /**
+     * module_description
+     *
+     * @package module_key
+     * @subpackage core
+     *
+     * @Table(name="\pachno\core\entities\tables\Modules")
+     */
+    class module_name extends \pachno\core\entities\Module
+    {
+
+        const VERSION = '0.1';
+
+        protected $_name = 'module_name';
+        protected $_longname = 'module_name';
+        protected $_description = 'module_name description here';
+        protected $_module_config_title = 'module_name';
+        protected $_module_config_description = 'Set up the module_name module from this section';
+
+        /**
+         * Return an instance of this module
+         *
+         * @return module_name
+         */
+        public static function getModule()
+        {
+            return framework\Context::getModule('module_key');
+        }
+
+        protected function _initialize()
+        {
+        }
+
+        protected function _addListeners()
+        {
+        }
+
+        protected function _install($scope)
+        {
+        }
+
+        protected function _loadFixtures($scope)
+        {
+        }
+
+        protected function _uninstall()
+        {
+        }
+
+    }

@@ -1,0 +1,488 @@
+---
+
+- hosts: all
+  become: yes
+  tasks:
+
+    - name: Set configuration options for Debian packages
+      debconf:
+        name: "{{ item.package }}"
+        question: "{{ item.question }}"
+        vtype: "{{ item.type }}"
+        value: "{{ item.value }}"
+      with_items:
+        - package: slapd
+          question: slapd/domain
+          type: string
+          value: "pachno.local"
+
+    - name: Install MariaDB, Apache httpd with PHP support, and OpenLDAP server
+      apt:
+        name: "{{ item }}"
+        state: present
+      with_items:
+        # Database server.
+        - mariadb-server
+        - mariadb-client
+        - python-mysqldb
+        # Apache + PHP base requirements.
+        - apache2
+        - libapache2-mod-php7.0
+        - libapache2-mod-ruid2
+        - php-gd
+        - php-curl
+        - php-mysql
+        - php-mbstring
+        - php-xml
+        # Composer dependencies.
+        - unzip
+        # HTTPS/TLS.
+        - gnutls-bin
+        # Developer tools.
+        - php-xdebug
+        # LDAP server.
+        - slapd
+        - ldap-utils
+        - python-ldap
+        - php-ldap
+      notify:
+        - Restart apache2
+
+    - name: Create directories for storing artefacts
+      file:
+        path: "{{ item }}"
+        state: directory
+        owner: vagrant
+        group: vagrant
+        mode: 0750
+      with_items:
+        - /vagrant/artefacts/
+        - /vagrant/artefacts/x509/
+
+    - name: Deploy templates for generating certificates
+      template:
+        src: "x509/{{ item }}.j2"
+        dest: "/vagrant/artefacts/x509/{{ item }}"
+        owner: vagrant
+        group: vagrant
+        mode: 0640
+      with_items:
+        - ca.cfg
+        - apache2.cfg
+        - slapd.cfg
+
+    - name: Create CA private key
+      command: certtool --sec-param high --generate-privkey --outfile /vagrant/artefacts/x509/ca.key.pem
+      args:
+        creates: /vagrant/artefacts/x509/ca.key.pem
+      become_user: vagrant
+
+    - name: Create server private keys
+      command: "certtool --sec-param normal --generate-privkey --outfile /vagrant/artefacts/x509/{{ item }}.key.pem"
+      args:
+        creates: "/vagrant/artefacts/x509/{{ item }}.key.pem"
+      with_items:
+        - apache2
+        - slapd
+      become_user: vagrant
+
+    - name: Issue the CA certificate
+      command: certtool --template /vagrant/artefacts/x509/ca.cfg --generate-self-signed --load-privkey /vagrant/artefacts/x509/ca.key.pem --outfile /vagrant/artefacts/x509/ca.cert.pem
+      args:
+        creates: /vagrant/artefacts/x509/ca.cert.pem
+      become_user: vagrant
+
+    - name: Deploy the CA certificate
+      copy:
+        src: /vagrant/artefacts/x509/ca.cert.pem
+        dest: /usr/local/share/ca-certificates/ca.crt
+        owner: root
+        group: root
+        mode: 0644
+      register: ca_certificate_deployed
+
+    - name: Update CA certificate cache
+      command: /usr/sbin/update-ca-certificates
+      when: ca_certificate_deployed.changed
+
+    - name: Issue Apache2 server certificate
+      command: certtool --generate-certificate
+               --load-ca-privkey "/vagrant/artefacts/x509/ca.key.pem" --load-ca-certificate "/vagrant/artefacts/x509/ca.cert.pem"
+               --template "/vagrant/artefacts/x509/apache2.cfg"
+               --load-privkey "/vagrant/artefacts/x509/apache2.key.pem"
+               --outfile "/vagrant/artefacts/x509/apache2.cert.pem"
+      args:
+        creates: "/vagrant/artefacts/x509/apache2.cert.pem"
+      become_user: vagrant
+
+    - name: Issue slapd server certificate
+      command: certtool --generate-certificate
+               --load-ca-privkey "/vagrant/artefacts/x509/ca.key.pem" --load-ca-certificate "/vagrant/artefacts/x509/ca.cert.pem"
+               --template "/vagrant/artefacts/x509/slapd.cfg"
+               --load-privkey "/vagrant/artefacts/x509/slapd.key.pem"
+               --outfile "/vagrant/artefacts/x509/slapd.cert.pem"
+      args:
+        creates: "/vagrant/artefacts/x509/slapd.cert.pem"
+      become_user: vagrant
+
+    - name: Make sure all users can traverse into directory containing private keys
+      file:
+        path: /etc/ssl/private/
+        mode: o+x
+
+    - name: Deploy private key for Apache2
+      copy:
+        src: /vagrant/artefacts/x509/apache2.key.pem
+        dest: /etc/ssl/private/apache2.key.pem
+        owner: root
+        group: root
+        mode: 0640
+      notify:
+        - Restart apache2
+
+    - name: Deploy certificate for Apache2
+      copy:
+        src: /vagrant/artefacts/x509/apache2.cert.pem
+        dest: /etc/ssl/certs/apache2.cert.pem
+        owner: root
+        group: root
+        mode: 0644
+      notify:
+        - Restart apache2
+
+    - name: Deploy private key for slapd
+      copy:
+        src: /vagrant/artefacts/x509/slapd.key.pem
+        dest: /etc/ssl/private/slapd.key.pem
+        owner: root
+        group: openldap
+        mode: 0640
+      notify:
+        - Restart slapd
+
+    - name: Deploy certificate for slapd
+      copy:
+        src: /vagrant/artefacts/x509/slapd.cert.pem
+        dest: /etc/ssl/certs/slapd.cert.pem
+        owner: root
+        group: root
+        mode: 0644
+      notify:
+        - Restart slapd
+
+    - name: Set-up LDAP server to listen on legacy SSL port
+      lineinfile:
+        dest: /etc/default/slapd
+        state: present
+        backrefs: yes
+        regexp: '^SLAPD_SERVICES=.*'
+        line: 'SLAPD_SERVICES="ldap:/// ldaps:/// ldapi:///"'
+      notify:
+        - Restart slapd
+
+    - name: Set-up LDAP client configuration
+      copy:
+        src: ldap.conf
+        dest: /etc/ldap/ldap.conf
+        owner: root
+        group: root
+        mode: 0644
+
+    - name: Configure LDAP server logging
+      ldap_attr:
+        dn: cn=config
+        name: olcLogLevel
+        values: 256
+        state: exact
+
+    # We need to have this hack around TLS configuration because OpenLDAP
+    # expects both private key and certificate to be set at the same
+    # time.
+    #
+    # OpenLDAP server behaviour is a bit weird around this thing, so here
+    # is what happens:
+    #
+    # 1. First we set the private key, but ignore all errors. This has not
+    #    yet changed the private key path, though.
+    #
+    # 2. Then we set the certificate. This succeeds, but the private key
+    #    path still has the old value. If we haven't done the step (1),
+    #    this task would fail too.
+    #
+    # 3. Now we can finally change the private key too, and LDAP server
+    #    will be able to validate it against the corresponding certificate.
+    #
+    # See https://github.com/ansible/ansible/issues/25665 for more
+    # information.
+    - name: Configure TLS private key (ignore errors)
+      ldap_attr:
+        dn: cn=config
+        name: olcTLSCertificateKeyFile
+        values: "/etc/ssl/private/slapd.key.pem"
+        state: exact
+      failed_when: false
+
+    - name: Configure TLS certificate
+      ldap_attr:
+        dn: cn=config
+        name: olcTLSCertificateFile
+        values: "/etc/ssl/certs/slapd.cert.pem"
+        state: exact
+
+    - name: Configure TLS private key
+      ldap_attr:
+        dn: cn=config
+        name: olcTLSCertificateKeyFile
+        values: "/etc/ssl/private/slapd.key.pem"
+        state: exact
+
+    - name: Set-up permissions
+      ldap_attr:
+        dn: 'olcDatabase={1}mdb,cn=config'
+        name: olcAccess
+        values:
+          - >-
+            {0}to *
+            by dn.exact=gidNumber=0+uidNumber=0,cn=peercred,cn=external,cn=auth manage
+            by dn="cn=admin,dc=pachno,dc=local" manage
+            by * break
+          - >-
+            {1}to attrs=userPassword,shadowLastChange
+            by self write
+            by anonymous auth
+            by * none
+          - >-
+            {2}to dn.base=""
+            by * read
+          - >-
+            {3}to *
+            by self write
+            by dn="cn=admin,dc=pachno,dc=local" write
+            by users read
+            by * none
+        state: exact
+
+    - name: Create directory structure
+      ldap_entry:
+        dn: "{{ item.dn }}"
+        objectClass: "{{ item.objectClass }}"
+        attributes: "{{ item.attributes }}"
+      with_items:
+        # Base LDAP directory structure.
+        - dn: ou=people,dc=pachno,dc=local
+          objectClass: organizationalUnit
+          attributes:
+            ou: people
+
+        - dn: ou=groups,dc=pachno,dc=local
+          objectClass: organizationalUnit
+          attributes:
+            ou: groups
+
+        - dn: ou=services,dc=pachno,dc=local
+          objectClass: organizationalUnit
+          attributes:
+            ou: services
+
+        # Services.
+        - dn: cn=pachno,ou=services,dc=pachno,dc=local
+          objectClass:
+            - applicationProcess
+            - simpleSecurityObject
+          attributes:
+            cn: pachno
+            userPassword: pachno
+
+        # Users.
+        - dn: uid=administrator,ou=people,dc=pachno,dc=local
+          objectClass: inetOrgPerson
+          attributes:
+            uid: administrator
+            userPassword: administrator
+            givenName: Admin
+            sn: Adminsky
+            cn: Admin Adminsky
+            mail: administrator@pachno.local
+
+        - dn: uid=user1,ou=people,dc=pachno,dc=local
+          objectClass: inetOrgPerson
+          attributes:
+            uid: user1
+            userPassword: user1
+            givenName: First
+            sn: User
+            cn: First User
+            mail: user1@pachno.local
+
+        - dn: uid=user2,ou=people,dc=pachno,dc=local
+          objectClass: inetOrgPerson
+          attributes:
+            uid: user2
+            userPassword: user2
+            givenName: Second
+            sn: User
+            cn: Second User
+            mail: user2@pachno.local
+
+        - dn: uid=user3,ou=people,dc=pachno,dc=local
+          objectClass: inetOrgPerson
+          attributes:
+            uid: user3
+            userPassword: user3
+            givenName: Third
+            sn: User
+            cn: Third User
+            mail: user3@pachno.local
+
+        - dn: uid=user4,ou=people,dc=pachno,dc=local
+          objectClass: inetOrgPerson
+          attributes:
+            uid: user4
+            userPassword: user4
+            givenName: Fourth
+            sn: User
+            cn: Fourth User
+            mail: user4@pachno.local
+
+        - dn: uid=user5,ou=people,dc=pachno,dc=local
+          objectClass: inetOrgPerson
+          attributes:
+            uid: user5
+            userPassword: user5
+            givenName: Fifth
+            sn: User
+            cn: Fifth User
+            mail: user5@pachno.local
+
+        - dn: uid=usernoaccess,ou=people,dc=pachno,dc=local
+          objectClass: inetOrgPerson
+          attributes:
+            uid: usernoaccess
+            userPassword: usernoaccess
+            givenName: Ignored
+            sn: User
+            cn: Ignored User
+            mail: usernoaccess@pachno.local
+
+        # Groups.
+        - dn: cn=pachno1,ou=groups,dc=pachno,dc=local
+          objectClass: groupOfUniqueNames
+          attributes:
+            cn: pachno
+            uniqueMember:
+              - uid=administrator,ou=people,dc=pachno,dc=local
+              - uid=user1,ou=people,dc=pachno,dc=local
+
+        - dn: cn=pachno2,ou=groups,dc=pachno,dc=local
+          objectClass: groupOfUniqueNames
+          attributes:
+            cn: pachno
+            uniqueMember:
+              - uid=user2,ou=people,dc=pachno,dc=local
+              - uid=user3,ou=people,dc=pachno,dc=local
+
+        - dn: cn=pachno3,ou=groups,dc=pachno,dc=local
+          objectClass: groupOfUniqueNames
+          attributes:
+            cn: pachno
+            uniqueMember:
+              - uid=user4,ou=people,dc=pachno,dc=local
+              - uid=user5,ou=people,dc=pachno,dc=local
+
+        - dn: cn=groupnoaccess1,ou=groups,dc=pachno,dc=local
+          objectClass: groupOfNames
+          attributes:
+            cn: groupnoaccess1
+            member: uid=usernoaccess,ou=people,dc=pachno,dc=local
+
+        - dn: cn=groupnoaccess2,ou=groups,dc=pachno,dc=local
+          objectClass: groupOfNames
+          attributes:
+            cn: groupnoaccess2
+            member: uid=usernoaccess,ou=people,dc=pachno,dc=local
+
+    - name: Enable mod_ssl
+      apache2_module:
+        name: ssl
+        state: present
+      notify:
+        - Restart apache2
+
+    - name: Enable mod_rewrite
+      apache2_module:
+        name: rewrite
+        state: present
+      notify:
+        - Restart apache2
+
+    - name: Configure PHP extensions (Xdebug)
+      template:
+        src: php_extensions.ini.j2
+        dest: "{{ item }}"
+        owner: root
+        group: root
+        mode: 0644
+      with_items:
+        - /etc/php/7.0/apache2/conf.d/99-local.ini
+        - /etc/php/7.0/cli/conf.d/99-local.ini
+      notify:
+        - Restart apache2
+
+    - name: Replace Apache default virtual host configuration
+      copy:
+        src: vhost.conf
+        dest: /etc/apache2/sites-available/000-default.conf
+        owner: root
+        group: root
+        mode: 0644
+
+    - name: Create database
+      mysql_db:
+        name: pachno
+        encoding: utf8
+        collation: utf8_general_ci
+        state: present
+
+    - name: Create database user
+      mysql_user:
+        name: pachno
+        host: localhost
+        password: pachno
+        priv: 'pachno.*:ALL'
+        state: present
+
+    - name: Download composer
+      get_url:
+        url: https://getcomposer.org/download/1.3.0/composer.phar
+        checksum: sha256:92ce3125cae2015c5c1f7657e78a6e239ff47b714eb1418288abf45d55f3be27
+        dest: /usr/local/bin/composer
+        owner: vagrant
+        group: vagrant
+        mode: 0755
+
+    - name: Install Pachno requirements via composer
+      become_user: vagrant
+      composer:
+        command: install
+        no_dev: no
+        working_dir: /vagrant
+
+    - name: Deploy Pachno configuration file
+      copy:
+        src: b2db.yml
+        dest: /vagrant/core/config/b2db.yml
+        owner: vagrant
+        group: vagrant
+        mode: 0640
+
+  handlers:
+
+    - name: Restart apache2
+      service:
+        name: apache2
+        state: restarted
+
+    - name: Restart slapd
+      service:
+        name: slapd
+        state: restarted

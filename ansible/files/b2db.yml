@@ -1,0 +1,9 @@
+b2db:
+    username: pachno
+    password: "pachno"
+    dsn: "mysql:host=localhost;port=3306;dbname=pachno"
+    tableprefix: 'pachno_'
+
+core:
+    debug: true
+    log_file: /vagrant/pachno.log

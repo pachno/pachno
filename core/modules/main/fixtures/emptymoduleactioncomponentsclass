@@ -1,0 +1,14 @@
+<?php
+
+    namespace pachno\modules\module_key;
+
+    use pachno\core\framework;
+
+    /**
+     * actions for the module_key module
+     */
+    class Components extends framework\ActionComponent
+    {
+
+    }
+

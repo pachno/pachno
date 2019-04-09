@@ -1,0 +1,18 @@
+<?php
+
+    namespace pachno\modules\module_key\controllers;
+
+    use pachno\core\framework;
+
+    /**
+     * Main controller for the module_key module
+     */
+    class Main extends framework\Action
+    {
+
+        public function runIndex(framework\Request $request)
+        {
+        }
+
+    }
+

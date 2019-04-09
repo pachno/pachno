@@ -1,0 +1,1 @@
+<li id="tab_livelink"<?php if ($selected_tab == 'livelink'): ?> class="selected"<?php endif; ?>><?php echo javascript_link_tag(fa_image_tag('leaf', ['style' => 'width: 20px']) . __('Pachno Live Link'), array('onclick' => "Pachno.Main.Helpers.tabSwitcher('tab_livelink', 'project_config_menu');")); ?></li>

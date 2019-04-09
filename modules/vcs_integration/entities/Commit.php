@@ -1,0 +1,434 @@
+<?php
+
+    namespace pachno\modules\vcs_integration\entities;
+
+    use pachno\core\entities\Issue;
+    use pachno\core\helpers\TextParser,
+        \pachno\core\entities\Notification,
+        \pachno\core\entities\Project,
+        \pachno\core\entities\User,
+        pachno\modules\vcs_integration\entities\tables\Commits,
+        pachno\modules\vcs_integration\entities\tables\Files,
+        pachno\modules\vcs_integration\entities\tables\IssueLinks,
+        pachno\modules\vcs_integration\Vcs_integration;
+
+    /**
+     * Commit class, vcs_integration
+     *
+     * @author Philip Kent <kentphilip@gmail.com>
+     * @version 3.2
+     * @license http://opensource.org/licenses/MPL-2.0 Mozilla Public License 2.0 (MPL 2.0)
+     * @package pachno
+     * @subpackage vcs_integration
+     */
+
+    /**
+     * Commit class, vcs_integration
+     *
+     * @package pachno
+     * @subpackage vcs_integration
+     *
+     * @Table(name="\pachno\modules\vcs_integration\entities\tables\Commits")
+     */
+    class Commit extends \pachno\core\entities\common\IdentifiableScoped
+    {
+
+        /**
+         * Commit log.
+         * @var string
+         * @Column(type="text")
+         */
+        protected $_log = null;
+
+        /**
+         * Revision number/hash of previous commit
+         * @var string/integer
+         * @Column(type="string", length=40)
+         */
+        protected $_old_rev = null;
+
+        /**
+         * Revision number/hash of this commit
+         * @var string/integer
+         * @Column(type="string", length=40)
+         */
+        protected $_new_rev = null;
+
+        /**
+         * Commit author
+         * @var \pachno\core\entities\User
+         * @Relates(class="\pachno\core\entities\User")
+         * @Column(type="integer")
+         */
+        protected $_author = null;
+
+        /**
+         * POSIX timestamp of commit
+         * @var integer
+         * @Column(type="integer")
+         */
+        protected $_date = null;
+
+        /**
+         * Misc data
+         * @var string
+         * @Column(type="text")
+         */
+        protected $_data = null;
+
+        /**
+         * Misc data array
+         * @var array
+         */
+        protected $_data_array = null;
+
+        /**
+         * Affected files
+         * @var array
+         */
+        protected $_files = null;
+
+        /**
+         * Affected issues
+         * @var array
+         */
+        protected $_issues = null;
+
+        /**
+         * Project
+         * @var \pachno\core\entities\Project
+         * @Relates(class="\pachno\core\entities\Project")
+         *  @Column(type="integer", name="project_id")
+         */
+        protected $_project = null;
+
+        public function _addNotifications()
+        {
+            $parser = new TextParser($this->_log);
+            $parser->setOption('plain', true);
+            $parser->doParse();
+            foreach ($parser->getMentions() as $user)
+            {
+                if (!$this->getAuthor() || $user->getID() == $this->getAuthor())
+                    continue;
+
+                $notification = new \pachno\core\entities\Notification();
+                $notification->setTarget($this);
+                $notification->setTriggeredByUser($this->getAuthor());
+                $notification->setUser($user);
+                $notification->setNotificationType(Vcs_integration::NOTIFICATION_COMMIT_MENTIONED);
+                $notification->setModuleName('vcs_integration');
+                $notification->save();
+            }
+        }
+
+        protected function _postSave($is_new)
+        {
+            if ($is_new)
+            {
+                $this->_addNotifications();
+            }
+        }
+
+        protected function _parseMiscDataToArray() {
+            if (is_null($this->_data)) return array();
+
+            $array = array();
+            $misc_data = explode('|', $this->_data);
+
+            foreach ($misc_data as $data)
+            {
+                $key_value = explode(':', $data);
+
+                if (count($key_value) == 2)
+                {
+                    $array[$key_value[0]] = $key_value[1];
+                }
+            }
+
+            return $array;
+        }
+
+        protected function _parseMiscDataFromArray() {
+            if (is_null($this->_data_array) || ! count($this->_data_array)) return null;
+
+            $string = '';
+
+            foreach ($this->_data_array as $key => $value)
+            {
+                $string .= "{$key}:{$value}|";
+            }
+
+            return rtrim($string, '|');
+        }
+
+        /**
+         * Get the commit log for this commit
+         * 
+         * @return string
+         */
+        public function getLog()
+        {
+            return $this->_log;
+        }
+
+        /**
+         * Get this commit's revision number or hash
+         *
+         * @return mixed
+         */
+        public function getRevision()
+        {
+            return $this->_new_rev;
+        }
+
+        public function getRevisionString()
+        {
+            return (!is_numeric($this->getRevision())) ? mb_substr($this->getRevision(), 0, 7) : $this->getRevision();
+        }
+
+        /**
+         * Get the preceeding commit's revision number or hash
+         *
+         * @return mixed
+         */
+        public function getPreviousRevision()
+        {
+            return $this->_old_rev;
+        }
+
+        public function getPreviousRevisionString()
+        {
+            return (!is_numeric($this->getPreviousRevision())) ? mb_substr($this->getPreviousRevision(), 0, 7) : $this->getPreviousRevision();
+        }
+
+        /**
+         * Get the previous commit
+         *
+         * @return Commit
+         */
+        public function getPreviousCommit()
+        {
+            return tables\Commits::getTable()->getCommitByCommitId($this->_old_rev, $this->getProject()->getID());
+        }
+
+        /**
+         * Get the author of this commit
+         *
+         * @return \pachno\core\entities\User
+         */
+        public function getAuthor()
+        {
+            return $this->_author;
+        }
+
+        /**
+         * Get the POSIX timestamp of this comment
+         *
+         * @return integer
+         */
+        public function getDate()
+        {
+            return $this->_date;
+        }
+
+        /**
+         * Get any other data for this comment, will need parsing
+         *
+         * @return string
+         */
+        public function getMiscData()
+        {
+            return $this->_data;
+        }
+
+        /**
+         * Get any other data for this comment, is parsed to array
+         *
+         * @return array
+         */
+        public function getMiscDataArray()
+        {
+            if (is_null($this->_data_array))
+            {
+                $this->_data_array = $this->_parseMiscDataToArray();
+            }
+
+            return $this->_data_array;
+        }
+
+        /**
+         * Get an array of Vcs_integrationFiles affected by this commit
+         *
+         * @return array
+         */
+        public function getFiles()
+        {
+            $this->_populateAffectedFiles();
+            return $this->_files;
+        }
+
+        /**
+         * Get an array of \pachno\core\entities\Issues affected by this commit
+         *
+         * @return array|\pachno\core\entities\Issue
+         */
+        public function getIssues()
+        {
+            $this->_populateAffectedIssues();
+            return $this->_issues;
+        }
+
+        /**
+         * Get the project this commit applies to
+         *
+         * @return \pachno\core\entities\Project
+         */
+        public function getProject()
+        {
+            return $this->_b2dbLazyLoad('_project');
+        }
+
+        /**
+         * Set a new commit author
+         *
+         * @param \pachno\core\entities\User $user
+         */
+        public function setAuthor(\pachno\core\entities\User $user)
+        {
+            $this->_author = $user;
+        }
+
+        /**
+         * Set a new date for the commit
+         *
+         * @param integer $date
+         */
+        public function setDate($date)
+        {
+            $this->_date = $date;
+        }
+
+        /**
+         * Set a new log for the commit. This will not affect the issues which are affected
+         *
+         * @param string $log
+         */
+        public function setLog($log)
+        {
+            $this->_log = $log;
+        }
+
+        /**
+         * Set a new parent revision
+         *
+         * @param integer $revno
+         */
+        public function setPreviousRevision($revno)
+        {
+            $this->_old_rev = $revno;
+        }
+
+        /**
+         * Set THIS revisions revno
+         *
+         * @param integer $revno
+         */
+        public function setRevision($revno)
+        {
+            $this->_new_rev = $revno;
+        }
+
+        /**
+         * Set misc data for this commit (see other docs)
+         *
+         * @param string $data
+         */
+        public function setMiscData($data)
+        {
+            $this->_data = $data;
+        }
+
+        /**
+         * Set misc data array for this commit (see other docs)
+         *
+         * @param array $data
+         */
+        public function setMiscDataArray(array $data)
+        {
+            $this->_data_array = $data;
+            $this->_data = $this->_parseMiscDataFromArray();
+        }
+
+        /**
+         * Set the project this commit applies to
+         *
+         * @param \pachno\core\entities\Project $project
+         */
+        public function setProject(\pachno\core\entities\Project $project)
+        {
+            $this->_project = $project;
+        }
+
+        private function _populateAffectedFiles()
+        {
+            if ($this->_files === null)
+            {
+                $this->_files = tables\Files::getTable()->getByCommitID($this->_id);
+            }
+        }
+
+        private function _populateAffectedIssues()
+        {
+            if ($this->_issues === null)
+            {
+                $issuelinks = tables\IssueLinks::getTable()->getByCommitID($this->_id);
+                $issues = array();
+                foreach ($issuelinks as $issuelink) {
+                    if ($issuelink->getIssue() instanceof Issue) {
+                        $issues[$issuelink->getIssue()->getId()] = $issuelink->getIssue();
+                    }
+                }
+                $this->_issues = $issues;
+            }
+        }
+
+        /**
+         * Get all commits relating to issues inside a project
+         *
+         * @param integer $id
+         * @param integer $limit
+         * @param integer $offset
+         *
+         * @return mixed
+         */
+        public static function getByProject($id, $limit = 40, $offset = null, $branch = null, $gitlab_repos_nss = null)
+        {
+            $commits = tables\Commits::getTable()->getCommitsByProject($id, $limit, $offset, $branch, $gitlab_repos_nss);
+            return $commits;
+        }
+
+        /**
+         * Get Gitlab url for merge request bz provided id
+         *
+         * @param  integer $merge_request_id
+         * @return string
+         *
+         * @throws \Exception
+         */
+        public function getGitlabUrlForMergeRequestID($merge_request_id)
+        {
+            $base_url = \pachno\core\framework\Context::getModule('vcs_integration')->getSetting('browser_url_' . $this->getProject()->getID());
+            $misc_data_array = $this->getMiscDataArray();
+            $reposname = null;
+
+            if (array_key_exists('gitlab_repos_ns', $misc_data_array))
+            {
+                $reposname = $misc_data_array['gitlab_repos_ns'];
+                $base_url = rtrim($base_url, '/').'/'.$reposname;
+            }
+
+            return $base_url.'/merge_requests/'.$merge_request_id;
+        }
+
+    }

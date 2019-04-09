@@ -1,0 +1,73 @@
+{
+    "name" : "pachno/pachno",
+    "description" : "Pachno is a friendly project management and issue tracking tool",
+    "authors" : [{
+        "name" : "Daniel Andre Eikeland",
+        "email" : "zegenie@zegeniestudios.net"
+    }
+    ],
+    "support" : {
+        "email" : "support@pachno.com",
+        "forum" : "https://forum.pachno.com",
+        "issues" : "https://projects.pachno.com"
+    },
+    "license" : [
+        "MPL-2.0"
+    ],
+    "require" : {
+        "php": "^7.1|^7.2",
+        "thebuggenie/b2db" : "^3.0",
+        "swiftmailer/swiftmailer" : "4.2.*",
+        "webit/eval-math" : "^1.0",
+        "mustangostang/spyc": "0.5.*",
+        "realityking/pchart": "dev-master",
+        "phpoffice/phpexcel": "~1.8",
+        "kriswallsmith/assetic": "~1.2",
+        "lib-pcre" : "8.*",
+        "net/http" : "^1.1",
+        "guzzlehttp/guzzle": "^6.3",
+        "scrivo/highlight.php": "^9.0",
+        "ramsey/uuid": "^3.7",
+        "erusev/parsedown": "^1.7",
+        "ext-apc" : "*",
+        "ext-gd" : "*",
+        "ext-curl" : "*",
+        "ext-PDO" : "*",
+        "ext-iconv" : "*",
+        "ext-json" : "*",
+        "ext-mbstring" : "*",
+        "ext-pcre" : "*",
+        "ext-xml" : "*",
+        "ext-Reflection" : "*",
+        "ext-zip" : "*",
+        "easybook/geshi": "v1.0.8.19",
+        "league/html-to-markdown": "^4.8"
+    },
+    "require-dev" : {
+        "symfony/finder" : "~2.7",
+        "phpunit/phpunit": "4.*",
+        "phpunit/phpunit-skeleton-generator": "*"
+    },
+    "suggest" : {
+        "ext-apc" : "Enables APC caching of configuration files and table class definitions"
+    },
+
+    "autoload": {
+        "psr-4" : {
+            "pachno\\modules\\" : "modules/",
+            "pachno\\core\\" : "core/"
+        }
+    },
+    "minimum-stability" : "dev",
+    "prefer-stable" : true,
+    "scripts": {
+        "post-install-cmd": [
+            "pachno\\core\\modules\\installation\\controllers\\Main::createCacheFolder",
+            "pachno\\core\\modules\\installation\\controllers\\Main::checkAssetSymlink"
+        ],
+        "post-update-cmd": [
+            "pachno\\core\\modules\\installation\\controllers\\Main::createCacheFolder",
+            "pachno\\core\\modules\\installation\\controllers\\Main::checkAssetSymlink"
+        ]
+    }
+}
