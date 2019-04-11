@@ -32,7 +32,7 @@
     }
 
     > label {
-      flex: 1 1 auto;
+      flex: 0 0 auto;
       font-weight: 300;
       font-size: .9em;
       text-transform: uppercase;
@@ -44,6 +44,7 @@
       text-overflow: ellipsis;
       overflow: hidden;
       max-width: 250px;
+      min-width: 100px;
     }
 
     .fas {
@@ -54,6 +55,7 @@
     .remove-button {
       border-left: 1px solid rgba(100, 100, 100, 0.2);
       transition: background-color 0.3s ease;
+      padding: 0 8px;
 
       &:hover {
         border-color: rgba(100, 100, 100, 0.4);
@@ -74,7 +76,7 @@
       transform: scaleY(0);
       transform-origin: top;
       transition: opacity 0.3s ease, transform 0.3s ease-in-out;
-      max-height: 350px;
+      max-height: 450px;
       overflow: hidden;
       box-sizing: border-box;
       padding: 5px 0;
@@ -85,8 +87,9 @@
       top: calc(100% + 3px);
       right: 0;
 
+      &.list-mode,
       .list-mode {
-        max-height: 350px;
+        max-height: 450px;
         overflow-y: auto;
         overflow-x: hidden;
       }

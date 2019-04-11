@@ -21,7 +21,7 @@
     transform: scaleY(0);
     transform-origin: top;
     transition: opacity 0.3s ease, transform 0.3s ease-in-out;
-    max-height: 350px;
+    max-height: 450px;
     overflow: hidden;
     box-sizing: border-box;
     padding: 5px 0;
@@ -45,9 +45,11 @@
     }
 
     .list-mode {
-      max-height: 350px;
+      max-height: 450px;
       overflow-y: auto;
       overflow-x: hidden;
+      min-width: 200px;
+      max-width: 300px;
     }
   }
 

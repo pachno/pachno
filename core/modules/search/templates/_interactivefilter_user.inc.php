@@ -23,7 +23,7 @@
     <span class="value"><?php if (!$filter->hasValue()) echo __('Anyone'); ?></span>
     <div class="interactive_menu">
         <h1><?php echo __('Select user(s)'); ?></h1>
-        <input type="search" class="interactive_menu_filter" data-callback-url="<?php echo make_url('search_filter_findusers', array('filterkey' => $filter->getFilterKey())); ?>" placeholder="<?php echo __('Search for a user'); ?>"><?php echo image_tag('spinning_16.gif', array('class' => 'filter_indicator')); ?>
+        <input type="search" data-callback-url="<?php echo make_url('search_filter_findusers', array('filterkey' => $filter->getFilterKey())); ?>" placeholder="<?php echo __('Search for a user'); ?>"><?php echo image_tag('spinning_16.gif', array('class' => 'filter_indicator')); ?>
         <div class="interactive_values_container">
             <ul class="interactive_menu_values filter_callback_results">
             </ul>

@@ -3,8 +3,6 @@
   margin: 0;
   display: flex;
   flex-direction: column;
-  min-width: 200px;
-  max-width: 300px;
 
   &.updating {
     opacity: 0.2;
@@ -12,12 +10,12 @@
 
   .list-item,
   .list-item:hover {
-    padding: 0 8px;
+    padding: 0 7px;
     display: flex;
     flex-direction: row;
     color: #141823;
     border-radius: 5px;
-    border: none;
+    border: 1px solid transparent;
     margin: 0 10px 5px 10px;
     align-content: flex-start;
     align-items: center;
@@ -26,21 +24,36 @@
     font-size: .9rem;
     text-transform: none;
 
-    &:hover {
-      background-color: rgba(100, 100, 100, .1);
-    }
-    &.selected {
-      background-color: rgba(100, 100, 100, .1);
+    &.disabled {
+      color: rgba(0, 0, 0, .4);
 
       .icon {
-        color: #0C8990;
+        color: rgba(0, 0, 0, .4);
       }
     }
 
-    &.expandable {
-      padding-right: 0;
+    &:not(.disabled):hover {
+      background-color: rgba(100, 100, 100, .1);
+    }
+    &.selected {
+      background-color: #0C8990;
+      color: #FFF;
 
-      &.multiline span.name {
+      &:hover {
+        background-color: #0C8990;
+        color: #FFF;
+      }
+
+      .icon {
+        color: #FFF;
+      }
+    }
+
+    &.multiline {
+      .icon {
+        margin-right: .5em;
+      }
+      span.name {
         display: flex;
         flex-direction: column;
         font-size: .85em;
@@ -51,7 +64,17 @@
         }
       }
 
+    }
+
+    &.expandable {
+      padding-right: 0;
+
       &.expanded {
+        &.selected {
+          background-color: transparent;
+          border-color: #0C8990;
+        }
+
         .name {
           color: #0C8990;
           font-weight: 600;
@@ -85,6 +108,7 @@
       border-bottom: 1px dotted rgba(0, 0, 0, .2);
       margin-bottom: 7px;
       padding-bottom: 7px;
+      padding-left: 0;
       border-radius: 0;
 
       &:hover {
@@ -95,7 +119,7 @@
       input[type=search] {
         border: none;
         background: rgba(200, 200, 200, .1);
-        padding: .3em .7em;
+        padding: .45em .75em;
         border-radius: 4px;
         color: #141823;
         flex: 1 1 auto;
@@ -106,12 +130,14 @@
       }
     }
 
-    &.separator {
+    &.separator,
+    &.separator:hover {
       padding: 5px 0 0 0;
       margin: 0 5px 5px 5px;
-      border-bottom: 1px dotted rgba(0, 0, 0, 0.2);
+      border-bottom: 1px solid rgba(0, 0, 0, 0.2);
       background-color: transparent;
       cursor: default;
+      border-radius: 0;
     }
 
     .icon {
@@ -126,10 +152,14 @@
     > a:hover {
       color: #141823;
       border: none;
-      flex: 1 1 auto;
       display: flex;
       align-items: center;
+
+      &:not(.icon) {
+        flex: 1 1 auto;
+      }
     }
+
   }
 }
 .submenu {
@@ -145,7 +175,8 @@
     }
   }
 
-  .list-item {
+  .list-item,
+  .list-item:hover {
     color: #141823;
     padding: 0 10px;
     font-size: .95em;
@@ -159,7 +190,7 @@
 }
 
 .filtered {
-  .list-item:not(.sticky) {
+  .list-item:not(.sticky):not(.separator):not(.filter-container) {
     display: none;
 
     &.separator,
@@ -177,8 +208,9 @@
   }
 }
 
-.submenu .list-item span.name {
-  font-size: .95em;
+.submenu .list-item,
+.submenu .list-item:hover {
+  font-size: .85rem;
 }
 .submenu {
   border-top: 1px solid rgba(100, 100, 100, .2);
@@ -194,9 +226,8 @@
     display: none;
 
     .list-item {
-      color: #141823;
-      padding: 0 10px;
-      margin: 5px 5px 0 32px;
+      padding: 0 5px;
+      margin: 5px 5px 0 18px;
     }
   }
 

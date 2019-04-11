@@ -1,0 +1,58 @@
+.onboarding {
+  font-size: 1.6em;
+  font-weight: 300;
+  color: rgba(0, 0, 0, 0.6);
+  text-align: center;
+  line-height: 1.4em;
+  padding: 0 0 35px 0;
+  display: flex;
+  margin: 25px auto;
+  flex-direction: column;
+  align-items: center;
+
+  &.large {
+    width: 500px;
+
+    img {
+      display: inline-block;
+      width: calc(100% - 50px);
+    }
+  }
+
+  &.small {
+    width: 128px;
+
+    img {
+      width: calc(100% - 20px);
+    }
+  }
+
+  .helper-text {
+    text-align: center;
+    font-size: 1.3rem;
+    margin-top: 25px;
+
+    &:first-line {
+      font-size: 1.7rem;
+    }
+  }
+
+  img {
+    opacity: 1;
+    display: inline-block;
+    text-align: center;
+    vertical-align: middle;
+    margin: 0 25px;
+  }
+
+  .image-container {
+    border-radius: 100%;
+    padding: 65px;
+    overflow: hidden;
+    background-color: #FAFAFA;
+    width: 250px;
+    height: 250px;
+    display: flex;
+    align-items: center;
+  }
+}

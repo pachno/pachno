@@ -380,7 +380,7 @@
                                             <span class="value"><?php if (true || !$filter->hasValue()) echo __('All'); ?></span>
                                             <div class="interactive_menu">
                                                 <h1><?= __('Select category'); ?></h1>
-                                                <input type="search" class="interactive_menu_filter" placeholder="<?= __('Filter values'); ?>">
+                                                <input type="search" placeholder="<?= __('Filter values'); ?>">
                                                 <div class="interactive_values_container">
                                                     <ul class="interactive_menu_values">
                                                         <?php foreach (\pachno\core\entities\Category::getAll() as $category_id => $category): ?>
@@ -415,7 +415,7 @@
                                     <span class="value"><?= (empty($selected_project_subscriptions) && !$all_projects_subscription) ? __('No projects') : __('All my projects'); ?></span>
                                     <div class="interactive_menu">
                                         <h1><?= __('Select which projects to subscribe to'); ?></h1>
-                                        <input type="search" class="interactive_menu_filter" placeholder="<?= __('Filter projects'); ?>">
+                                        <input type="search" placeholder="<?= __('Filter projects'); ?>">
                                         <div class="interactive_values_container">
                                             <ul class="interactive_menu_values">
                                                 <li data-value="0" class="filtervalue <?php if ($all_projects_subscription) echo ' selected'; ?>" data-exclusive data-selection-group="1" data-exclude-group="2">
@@ -449,7 +449,7 @@
                                     <span class="value"><?php if (empty($selected_category_subscriptions)) echo __('None selected'); ?></span>
                                     <div class="interactive_menu">
                                         <h1><?= __('Select which categories to subscribe to'); ?></h1>
-                                        <input type="search" class="interactive_menu_filter" placeholder="<?= __('Filter categories'); ?>">
+                                        <input type="search" placeholder="<?= __('Filter categories'); ?>">
                                         <div class="interactive_values_container">
                                             <ul class="interactive_menu_values">
                                                 <?php foreach ($categories as $category_id => $category): ?>
@@ -509,7 +509,7 @@
                                     <span class="value"><?php if (empty($selected_category_notifications)) echo __('None selected'); ?></span>
                                     <div class="interactive_menu">
                                         <h1><?= __('Select which categories to subscribe to'); ?></h1>
-                                        <input type="search" class="interactive_menu_filter" placeholder="<?= __('Filter categories'); ?>">
+                                        <input type="search" placeholder="<?= __('Filter categories'); ?>">
                                         <div class="interactive_values_container">
                                             <ul class="interactive_menu_values">
                                                 <?php foreach ($categories as $category_id => $category): ?>

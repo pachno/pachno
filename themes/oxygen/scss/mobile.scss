@@ -323,9 +323,9 @@
     #find_issues { padding: 0; }
     #find_issues .results_header { padding: 6px; }
     #find_issues .results_header .button { display: none; }
-    .search_results h5 { font-size: 1em; text-transform: uppercase; color: rgba(48, 48, 48, 0.7); padding: 6px; }
-    .search_results h5 img { width: 16px; height: 16px; float: left; margin: 3px 5px -5px; }
-    #find_issues .bulk_action_container { display: none; }
+    .search-results h5 { font-size: 1em; text-transform: uppercase; color: rgba(48, 48, 48, 0.7); padding: 6px; }
+    .search-results h5 img { width: 16px; height: 16px; float: left; margin: 3px 5px -5px; }
+    #find_issues .bulk-action-container { display: none; }
     #find_issues .results_container thead { display: none; }
     #find_issues .results_container tbody tr { display: block; clear: both; position: relative; }
     #find_issues .results_container tbody tr.rowodd, #find_issues .results_container tbody tr.roweven { background-color: #FFF; border-bottom: 1px solid rgba(0, 0, 0, 0.2); border-top: 1px solid rgba(0, 0, 0, 0.1); }

@@ -1,0 +1,85 @@
+.form-container {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  font-size: 1rem;
+
+  .column {
+    flex: 1 1 auto;
+  }
+
+  .form-row {
+    flex: 1 1 100%;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: stretch;
+    align-content: flex-start;
+    padding: .5em;
+
+    &.submit-container {
+      justify-content: space-between;
+      justify-items: flex-end;
+      padding: .8em;
+
+      button:first-child:last-child,
+      .button:first-child:last-child {
+        margin-left: auto;
+      }
+    }
+
+    .helper-text {
+      flex: 1 1 100%;
+      color: rgb(153, 153, 153);
+      padding: .5em;
+    }
+
+    > label {
+      flex: 1 1 100%;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      font-size: .8em;
+      font-weight: 600;
+
+      .icon {
+        flex: 0 0 24px;
+        margin-right: .5em;
+      }
+    }
+
+    > input[type=text] {
+      flex: 1 1 100%;
+      padding: .2em;
+      font-size: 1em;
+
+      &.name-input-enhance {
+        font-size: 1.25em;
+        padding: .5em .2em;
+      }
+    }
+
+    > textarea {
+      flex: 0 0 400px;
+      border: none;
+      background: rgba(200, 200, 200, .1);
+      padding: .3em .7em;
+      border-radius: 4px;
+      color: #141823;
+    }
+
+    > .fancydropdown-container {
+      flex: 1 1 100%;
+
+      .fancydropdown {
+        > .value {
+          flex: 1 1 auto;
+          max-width: none;
+        }
+      }
+    }
+  }
+
+}

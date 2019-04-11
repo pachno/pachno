@@ -10,7 +10,7 @@
     <span class="value"><?php if (empty($selected_category_notifications)) echo __('None selected'); ?></span>
     <div class="interactive_menu">
         <h1><?= __('Select which categories to subscribe to'); ?></h1>
-        <input type="search" class="interactive_menu_filter" placeholder="<?= __('Filter categories'); ?>">
+        <input type="search" placeholder="<?= __('Filter categories'); ?>">
         <div class="interactive_values_container">
             <ul class="interactive_menu_values">
                 <?php foreach ($categories as $category_id => $category): ?>

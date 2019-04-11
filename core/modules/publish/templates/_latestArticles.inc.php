@@ -19,7 +19,7 @@
                 <?php endforeach; ?>
             </ul>
         <?php else: ?>
-            <div class="no_items"><?php echo __('There are no recent pages here'); ?></div>
+            <div><?php echo __('There are no recent pages here'); ?></div>
         <?php endif; ?>
     </div>
 </div>

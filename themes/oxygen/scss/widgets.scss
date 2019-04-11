@@ -4,3 +4,22 @@
 @import 'widgets/fancydropdown.scss';
 @import 'widgets/fancytabs.scss';
 @import 'widgets/list-mode.scss';
+@import 'widgets/slider.scss';
+@import 'widgets/paginator.scss';
+
+.count-badge {
+  font-weight: 300;
+  font-size: 0.8em;
+  color: rgba(50, 50, 50, 0.6);
+  margin-left: 5px;
+  border-radius: 3px;
+  display: inline-flex;
+  align-items: center;
+  vertical-align: middle;
+  padding: 3px 6px;
+  background-color: rgba(200, 200, 200, .3);
+}
+
+.count-badge span:first-child {
+  margin-right: 5px;
+}

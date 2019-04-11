@@ -13,7 +13,7 @@
     $recent_issues = \pachno\core\entities\tables\Issues::getSessionIssues();
 
 ?>
-<nav class="project-context" id="project-menu" data-project-id="<?= (\pachno\core\framework\Context::isProjectContext()) ? \pachno\core\framework\Context::getCurrentProject()->getId() : ''; ?>">
+<nav class="project-context sidebar" id="project-menu" data-project-id="<?= (\pachno\core\framework\Context::isProjectContext()) ? \pachno\core\framework\Context::getCurrentProject()->getId() : ''; ?>">
     <?php include_component('project/projectheader', ['subpage' => (isset($dashboard) && $dashboard instanceof \pachno\core\entities\Dashboard) ? $dashboard->getName() : '']); ?>
     <div class="list-mode">
         <?php $page = (in_array($pachno_response->getPage(), array('project_dashboard', 'project_scrum_sprint_details', 'project_timeline', 'project_team', 'project_roadmap', 'project_statistics', 'vcs_commitspage'))) ? $pachno_response->getPage() : 'project_dashboard'; ?>
@@ -26,7 +26,7 @@
             <?php include_component('project/projectinfolinks', array('submenu' => true)); ?>
         </div>
         <?php if ($pachno_user->canSearchForIssues()): ?>
-            <a href="<?= make_url('project_issues', ['project_key' => Context::getCurrentProject()->getKey()]); ?>" class="list-item expandable <?php if (in_array($pachno_response->getPage(), ['project_issues', 'viewissue'])): ?>selected expanded<?php endif; ?>">
+            <a href="<?= make_url('project_issues', ['project_key' => Context::getCurrentProject()->getKey()]); ?>" class="list-item expandable <?php if (in_array($pachno_response->getPage(), ['project_issues', 'viewissue'])): ?>expanded<?php endif; ?>">
                 <?= fa_image_tag('file-alt', ['class' => 'icon']); ?>
                 <span class="name"><?= __('Issues'); ?></span>
                 <?= fa_image_tag('angle-down', ['class' => 'expander']); ?>
@@ -55,16 +55,22 @@
                             <?= link_tag(make_url('project_issues', array('project_key' => Context::getCurrentProject()->getKey(), 'saved_search' => $savedsearch->getID(), 'search' => true)), fa_image_tag('search', ['class' => 'icon']) . '<span class="name">' . __($savedsearch->getName()) . '</span>', ['class' => 'list-item']); ?>
                         <?php endforeach; ?>
                     <?php else: ?>
-                        <a href="javascript:void(0);" class="list-item disabled"><span class="name"><?= __('No saved searches for this project'); ?></span></a>
+                        <a href="javascript:void(0);" class="list-item disabled">
+                            <?= fa_image_tag('info-circle', ['class' => 'icon']); ?>
+                            <span class="name"><?= __('Saved searches for this project will show here'); ?></span>
+                        </a>
                     <?php endif; ?>
                 </div>
                 <div class="list-mode">
-                    <div class="header"><?= __('Recently watched issues'); ?></div>
+                    <div class="header"><?= __('Recently visited issues'); ?></div>
                     <?php foreach ($recent_issues as $issue): ?>
                         <?php include_component('search/sessionissue', ['issue' => $issue]); ?>
                     <?php endforeach; ?>
                     <?php if (!count($recent_issues)): ?>
-                        <a href="javascript:void(0);" class="list-item disabled"><?= fa_image_tag('search', ['class' => 'icon']); ?><span class="name"><?= __('No recent issues'); ?></span></a>
+                        <a href="javascript:void(0);" class="list-item disabled">
+                            <?= fa_image_tag('info-circle', ['class' => 'icon']); ?>
+                            <span class="name"><?= __("Recently visited issues will appear here"); ?></span>
+                        </a>
                     <?php endif; ?>
                 </div>
             </div>
@@ -78,5 +84,11 @@
                 </a>
             <?php endif; ?>
         <?php endif; ?>
+    </div>
+    <div class="collapser list-mode">
+        <a class="list-item" href="javascript:void(0);">
+            <span class="icon"><?= fa_image_tag('angle-double-left'); ?></span>
+            <span class="name"><?= __('Toggle sidebar'); ?></span>
+        </a>
     </div>
 </nav>

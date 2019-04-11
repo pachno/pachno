@@ -16,7 +16,7 @@
                 <?php endforeach; ?>
             </ul>
         <?php else: ?>
-            <div id="nothing_links_here" class="no_items"><?php echo __("No other articles links to this article"); ?></div>
+            <div id="nothing_links_here"><?php echo __("No other articles links to this article"); ?></div>
         <?php endif; ?>
     </div>
 </div>

@@ -1,4 +1,8 @@
-<?php use pachno\core\entities\SearchFilter;
+<?php
+
+use pachno\core\entities\CustomDatatype;
+use pachno\core\entities\SearchFilter;
+use pachno\core\framework\Context;
 
 if ($filter instanceof SearchFilter): ?>
     <?php
@@ -7,31 +11,32 @@ if ($filter instanceof SearchFilter): ?>
         {
             case 'project_id':
                 ?>
-                <?php if (\pachno\core\framework\Context::isProjectContext()): ?>
+                <?php if (Context::isProjectContext()): ?>
                     <input type="hidden" name="fs[project_id][o]" value="=">
-                    <input type="hidden" name="fs[project_id][v]" value="<?= \pachno\core\framework\Context::getCurrentProject()->getID(); ?>" id="filter_project_id_value_input">
+                    <input type="hidden" name="fs[project_id][v]" value="<?= Context::getCurrentProject()->getID(); ?>" id="filter_project_id_value_input">
                 <?php else: ?>
-                    <div class="fancydropdown-container filter" data-filterkey="project_id" data-value="<?= $filter->getValue(); ?>" data-all-value="<?= __('All'); ?>">
+                    <div class="fancydropdown-container filter" data-filterkey="project_id">
                         <div class="fancydropdown">
                             <input type="hidden" name="fs[project_id][o]" value="<?= $filter->getOperator(); ?>">
                             <input type="hidden" name="fs[project_id][v]" value="" id="filter_project_id_value_input">
                             <label><?= __('Project(s)'); ?></label>
                             <span class="value"><?php if (!$filter->hasValue()) echo __('All'); ?></span>
-                            <div class="interactive_menu">
-                                <h1><?= __('Choose issues from project(s)'); ?></h1>
-                                <input type="search" class="interactive_menu_filter" placeholder="<?= __('Filter values'); ?>">
-                                <div class="interactive_values_container">
-                                    <ul class="interactive_menu_values">
-                                        <?php foreach ($filter->getAvailableValues() as $project): ?>
-                                            <li data-value="<?= $project->getID(); ?>" class="filtervalue<?php if ($filter->hasValue($project->getID())) echo ' selected'; ?>">
-                                                <?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far'); ?>
-                                                <?= image_tag($project->getSmallIconName(), array('class' => 'icon'), $project->hasSmallIcon()); ?>
-                                                <input type="checkbox" value="<?= $project->getID(); ?>" name="filters_project_id_value_<?= $project->getID(); ?>" data-text="<?= $project->getName(); ?>" id="filters_project_id_value_<?= $project->getID(); ?>" <?php if ($filter->hasValue($project->getID())) echo 'checked'; ?>>
-                                                <label for="filters_project_id_value_<?= $project->getID(); ?>"><?= $project->getName(); ?></label>
-                                            </li>
-                                        <?php endforeach; ?>
-                                    </ul>
+                            <?= fa_image_tag('angle-down', ['class' => 'expander']); ?>
+                            <div class="dropdown-container list-mode filter-values-container">
+                                <div class="header"><?= __('Choose issues from project(s)'); ?></div>
+                                <div class="list-item filter-container">
+                                    <input type="search" placeholder="<?= __('Filter values'); ?>">
                                 </div>
+                                <?php foreach ($filter->getAvailableValues() as $project): ?>
+                                    <input type="checkbox" value="<?= $project->getID(); ?>" class="fancycheckbox" name="filters_project_id_value_<?= $project->getID(); ?>" id="filters_project_id_value_<?= $project->getID(); ?>" <?php if ($filter->hasValue($project->getID())) echo 'checked'; ?>>
+                                    <label for="filters_project_id_value_<?= $project->getID(); ?>" class="list-item filtervalue">
+                                        <?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far'); ?>
+                                        <?php if ($project->hasSmallIcon()): ?>
+                                            <span class="icon"><?= image_tag($project->getSmallIconName(), [], $project->hasSmallIcon()); ?></span>
+                                        <?php endif; ?>
+                                        <span class="name value"><?= $project->getName(); ?></span>
+                                    </label>
+                                <?php endforeach; ?>
                             </div>
                         </div>
                     </div>
@@ -46,10 +51,10 @@ if ($filter instanceof SearchFilter): ?>
                         <label><?= __('Issuetype'); ?></label>
                         <span class="value"><?php if (!$filter->hasValue()) echo __('All'); ?></span>
                         <?= fa_image_tag('angle-down', ['class' => 'expander']); ?>
-                        <div class="dropdown-container interactive_menu list-mode from-left">
+                        <div class="dropdown-container list-mode from-left">
                             <div class="header"><?= __('Filter on issuetype'); ?></div>
                             <div class="list-item filter-container">
-                                <input type="search" class="interactive_menu_filter" placeholder="<?= __('Filter values'); ?>">
+                                <input type="search" placeholder="<?= __('Filter values'); ?>">
                             </div>
                             <div class="interactive_values_container">
                                 <?php foreach ($filter->getAvailableValues() as $issuetype): ?>
@@ -96,33 +101,34 @@ if ($filter instanceof SearchFilter): ?>
                         <input type="hidden" name="fs[subprojects][v]" value="" id="filter_subprojects_value_input">
                         <label><?= __('Subproject(s)'); ?></label>
                         <span class="value"><?php if (!$filter->hasValue()) echo __('All'); ?></span>
-                        <div class="interactive_menu">
-                            <h1><?= __('Include issues from subproject(s)'); ?></h1>
-                            <input type="search" class="interactive_menu_filter" placeholder="<?= __('Filter values'); ?>">
-                            <div class="interactive_values_container">
-                                <ul class="interactive_menu_values">
-                                    <li data-value="all" class="filtervalue <?php if ($filter->hasValue('all')) echo ' selected'; ?>" data-exclusive data-selection-group="1" data-exclude-group="2">
+                        <?= fa_image_tag('angle-down', ['class' => 'expander']); ?>
+                        <div class="dropdown-container list-mode">
+                            <div class="header"><?= __('Include issues from subproject(s)'); ?></div>
+                            <div class="list-item filter-container">
+                                <input type="search" placeholder="<?= __('Filter values'); ?>">
+                            </div>
+                            <div class="filter-values-container">
+                                <input type="checkbox" value="all" name="filters_subprojects_value_exclusive_all" class="fancycheckbox" id="filters_subprojects_value_all" <?php if ($filter->hasValue('all')) echo 'checked'; ?>>
+                                <label for="filters_subprojects_value_all" class="list-item filtervalue" data-exclusive data-selection-group="1" data-exclude-group="2">
+                                    <?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far'); ?>
+                                    <span class="name value"><?= __('All'); ?></span>
+                                </label>
+                                <input type="checkbox" value="none" name="filters_subprojects_value_exclusive_none" class="fancycheckbox" id="filters_subprojects_value_none" <?php if ($filter->hasValue('none')) echo 'checked'; ?>>
+                                <label for="filters_subprojects_value_none" class="list-item filtervalue" data-exclusive data-selection-group="1" data-exclude-group="2">
+                                    <?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far'); ?>
+                                    <span class="name value"><?= __('None'); ?></span>
+                                </label>
+                                <li class="list-item separator"></li>
+                                <?php foreach ($filter->getAvailableValues() as $subproject): ?>
+                                    <input type="checkbox" value="<?= $subproject->getID(); ?>" name="filters_subprojects_value_<?= $subproject->getID(); ?>" class="fancycheckbox" id="filters_subprojects_value_<?= $subproject->getID(); ?>" <?php if ($filter->hasValue($subproject->getID())) echo 'checked'; ?>>
+                                    <label for="filters_subprojects_value_<?= $subproject->getID(); ?>" class="list-item filtervalue" data-selection-group="2" data-exclude-group="1">
                                         <?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far'); ?>
-                                        <input type="checkbox" value="all" name="filters_subprojects_value_exclusive_all" data-text="<?= __('All'); ?>" id="filters_subprojects_value_all" <?php if ($filter->hasValue('all')) echo 'checked'; ?>>
-                                        <label for="filters_subprojects_value_all"><?= __('All'); ?></label>
-                                    </li>
-                                    <li data-value="none" class="filtervalue <?php if ($filter->hasValue('none')) echo ' selected'; ?>" data-exclusive data-selection-group="1" data-exclude-group="2">
-                                        <?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far'); ?>
-                                        <input type="checkbox" value="none" name="filters_subprojects_value_exclusive_none" data-text="<?= __('None'); ?>" id="filters_subprojects_value_none" <?php if ($filter->hasValue('none')) echo 'checked'; ?>>
-                                        <label for="filters_subprojects_value_none"><?= __('None'); ?></label>
-                                    </li>
-                                    <li class="separator"></li>
-                                    <?php foreach ($filter->getAvailableValues() as $subproject): ?>
-                                        <li data-value="<?= $subproject->getID(); ?>" class="filtervalue<?php if ($filter->hasValue($subproject->getID())) echo ' selected'; ?>" data-selection-group="2" data-exclude-group="1">
-                                            <?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far'); ?>
-                                            <input type="checkbox" value="<?= $subproject->getID(); ?>" name="filters_subprojects_value_<?= $subproject->getID(); ?>" data-text="<?= __($subproject->getName()); ?>" id="filters_subprojects_value_<?= $subproject->getID(); ?>" <?php if ($filter->hasValue($subproject->getID())) echo 'checked'; ?>>
-                                            <label for="filters_subprojects_value_<?= $subproject->getID(); ?>"><?= $subproject->getName(); ?>&nbsp;&nbsp;<span class="faded_out"><?= $subproject->getKey(); ?></span></label>
-                                        </li>
-                                    <?php endforeach; ?>
-                                </ul>
+                                        <span class="name value"><?= $subproject->getName(); ?>&nbsp;&nbsp;<span class="faded_out"><?= $subproject->getKey(); ?></span>
+                                    </label>
+                                <?php endforeach; ?>
                             </div>
                         </div>
-                        <div class="filter_remove_button" onclick="Pachno.Search.removeFilter($(this).up('.filter'));"><?= fa_image_tag('times'); ?></div>
+                        <div class="remove-button"><?= fa_image_tag('times'); ?></div>
                     </div>
                 </div>
                 <?php
@@ -134,23 +140,21 @@ if ($filter instanceof SearchFilter): ?>
                         <input type="hidden" name="fs[blocking][o]" value="<?= $filter->getOperator(); ?>">
                         <label><?= __('Blocker status'); ?></label>
                         <span class="value"><?php if (!$filter->hasValue()) echo __('Any'); ?></span>
-                        <div class="dropdown-container">
+                        <?= fa_image_tag('angle-down', ['class' => 'expander']); ?>
+                        <div class="dropdown-container list-mode">
                             <div class="header"><?= __('Filter on blocker status'); ?></div>
-                            <div class="list-mode">
-                                <input type="radio" name="fs[blocking][v]" value="1" class="fancycheckbox" <?php if ($filter->hasValue('1')) echo ' checked'; ?>>
-                                <label class="list-item" for="filters_blocking_value_yes">
-                                    <?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far'); ?>
-                                    <input type="checkbox" value="1" name="filters_blocking_value" data-text="<?= __('Only blocker issues'); ?>" id="filters_blocking_value_yes" <?php if ($filter->hasValue('1')) echo 'checked'; ?>>
-                                    <span class="name value"><?= __('Only blocker issues'); ?></span>
-                                </label>
-                                <input type="radio" name="fs[blocking][v]" value="0" class="fancycheckbox" <?php if ($filter->hasValue('0')) echo ' checked'; ?>>
-                                <label for="filters_blocking_value_no" class="list-item">
-                                    <?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far'); ?>
-                                    <span class="name value"><?= __('Not blocker issues'); ?></span>
-                                </label>
-                            </div>
+                            <input type="radio" name="fs[blocking][v]" value="1" class="fancycheckbox" id="filters_blocking_value_yes" <?php if ($filter->hasValue('1')) echo ' checked'; ?>>
+                            <label class="list-item" for="filters_blocking_value_yes">
+                                <?= fa_image_tag('check-circle', ['class' => 'checked'], 'far') . fa_image_tag('circle', ['class' => 'unchecked'], 'far'); ?>
+                                <span class="name value"><?= __('Only blocker issues'); ?></span>
+                            </label>
+                            <input type="radio" name="fs[blocking][v]" value="0" class="fancycheckbox" id="filters_blocking_value_no" <?php if ($filter->hasValue('0')) echo ' checked'; ?>>
+                            <label class="list-item" for="filters_blocking_value_no">
+                                <?= fa_image_tag('check-circle', ['class' => 'checked'], 'far') . fa_image_tag('circle', ['class' => 'unchecked'], 'far'); ?>
+                                <span class="name value"><?= __('Not blocker issues'); ?></span>
+                            </label>
                         </div>
-                        <div class="filter_remove_button" onclick="Pachno.Search.removeFilter($(this).up('.filter'));"><?= fa_image_tag('times'); ?></div>
+                        <div class="remove-button"><?= fa_image_tag('times'); ?></div>
                     </div>
                 </div>
                 <?php
@@ -168,45 +172,44 @@ if ($filter instanceof SearchFilter): ?>
                 break;
             case 'relation':
                 ?>
-                <div class="fancydropdown-container filter" id="interactive_filter_relation" data-filterkey="relation" data-value="<?= $filter->getValue(); ?>" data-all-value="<?= __('Any'); ?>">
+                <div class="fancydropdown-container filter" id="interactive_filter_relation" data-filterkey="relation">
                     <div class="fancydropdown">
                         <input type="hidden" name="fs[relation][o]" value="<?= $filter->getOperator(); ?>">
                         <input type="hidden" name="fs[relation][v]" value="" id="filter_relation_value_input">
                         <label><?= __('Relation'); ?></label>
                         <span class="value"><?php if (!$filter->hasValue()) echo __('Any'); ?></span>
-                        <div class="interactive_menu">
-                            <h1><?= __('Filter on relation'); ?></h1>
-                            <div class="interactive_values_container">
-                                <ul class="interactive_menu_values">
-                                    <li data-value="<?= SearchFilter::FILTER_RELATION_ONLY_CHILD; ?>" class="filtervalue <?php if ($filter->hasValue(SearchFilter::FILTER_RELATION_ONLY_CHILD)) echo ' selected'; ?>" data-exclusive data-selection-group="1">
-                                        <?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far'); ?>
-                                        <input type="checkbox" value="<?= SearchFilter::FILTER_RELATION_ONLY_CHILD; ?>" name="filters_relation_value" data-text="<?= __('Only child issues'); ?>" id="filters_relation_value_yes" <?php if ($filter->hasValue(SearchFilter::FILTER_RELATION_ONLY_CHILD)) echo 'checked'; ?>>
-                                        <label for="filters_relation_value_yes"><?= __('Only child issues'); ?></label>
-                                    </li>
-                                    <li data-value="<?= SearchFilter::FILTER_RELATION_WITHOUT_CHILD; ?>" class="filtervalue <?php if ($filter->hasValue(SearchFilter::FILTER_RELATION_WITHOUT_CHILD)) echo ' selected'; ?>" data-exclusive data-selection-group="1">
-                                        <?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far'); ?>
-                                        <input type="checkbox" value="<?= SearchFilter::FILTER_RELATION_WITHOUT_CHILD; ?>" name="filters_relation_value" data-text="<?= __('Without child issues'); ?>" id="filters_relation_value_yes" <?php if ($filter->hasValue(SearchFilter::FILTER_RELATION_WITHOUT_CHILD)) echo 'checked'; ?>>
-                                        <label for="filters_relation_value_yes"><?= __('Without child issues'); ?></label>
-                                    </li>
-                                    <li data-value="<?= SearchFilter::FILTER_RELATION_ONLY_PARENT; ?>" class="filtervalue <?php if ($filter->hasValue(SearchFilter::FILTER_RELATION_ONLY_PARENT)) echo ' selected'; ?>" data-exclusive data-selection-group="1">
-                                        <?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far'); ?>
-                                        <input type="checkbox" value="<?= SearchFilter::FILTER_RELATION_ONLY_PARENT; ?>" name="filters_relation_value" data-text="<?= __('Only parent issues'); ?>" id="filters_relation_value_yes" <?php if ($filter->hasValue(SearchFilter::FILTER_RELATION_ONLY_PARENT)) echo 'checked'; ?>>
-                                        <label for="filters_relation_value_yes"><?= __('Only parent issues'); ?></label>
-                                    </li>
-                                    <li data-value="<?= SearchFilter::FILTER_RELATION_WITHOUT_PARENT; ?>" class="filtervalue <?php if ($filter->hasValue(SearchFilter::FILTER_RELATION_WITHOUT_PARENT)) echo ' selected'; ?>" data-exclusive data-selection-group="1">
-                                        <?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far'); ?>
-                                        <input type="checkbox" value="<?= SearchFilter::FILTER_RELATION_WITHOUT_PARENT; ?>" name="filters_relation_value" data-text="<?= __('Without parent issues'); ?>" id="filters_relation_value_none" <?php if ($filter->hasValue(SearchFilter::FILTER_RELATION_WITHOUT_PARENT)) echo 'checked'; ?>>
-                                        <label for="filters_relation_value_no"><?= __('Without parent issues'); ?></label>
-                                    </li>
-                                    <li data-value="<?= SearchFilter::FILTER_RELATION_NEITHER_CHILD_NOR_PARENT; ?>" class="filtervalue <?php if ($filter->hasValue(SearchFilter::FILTER_RELATION_NEITHER_CHILD_NOR_PARENT)) echo ' selected'; ?>" data-exclusive data-selection-group="1">
-                                        <?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far'); ?>
-                                        <input type="checkbox" value="<?= SearchFilter::FILTER_RELATION_NEITHER_CHILD_NOR_PARENT; ?>" name="filters_relation_value" data-text="<?= __('Neither child nor parent issues'); ?>" id="filters_relation_value_yes" <?php if ($filter->hasValue(SearchFilter::FILTER_RELATION_NEITHER_CHILD_NOR_PARENT)) echo 'checked'; ?>>
-                                        <label for="filters_relation_value_yes"><?= __('Neither child nor parent issues'); ?></label>
-                                    </li>
-                                </ul>
+                        <?= fa_image_tag('angle-down', ['class' => 'expander']); ?>
+                        <div class="dropdown-container list-mode">
+                            <div class="header"><?= __('Filter on relation'); ?></div>
+                            <div class="interactive_menu_values">
+                                <input type="checkbox" class="fancycheckbox" value="<?= SearchFilter::FILTER_RELATION_ONLY_CHILD; ?>" name="filters_relation_value" data-text="<?= __('Only child issues'); ?>" id="filters_relation_value_<?= SearchFilter::FILTER_RELATION_ONLY_CHILD; ?>" <?php if ($filter->hasValue(SearchFilter::FILTER_RELATION_ONLY_CHILD)) echo 'checked'; ?>>
+                                <label for="filters_relation_value_<?= SearchFilter::FILTER_RELATION_ONLY_CHILD; ?>" class="list-item filtervalue">
+                                    <?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far'); ?>
+                                    <span class="name value"><?= __('Only child issues'); ?></span>
+                                </label>
+                                <input type="checkbox" class="fancycheckbox" value="<?= SearchFilter::FILTER_RELATION_WITHOUT_CHILD; ?>" name="filters_relation_value" data-text="<?= __('Without child issues'); ?>" id="filters_relation_value_<?= SearchFilter::FILTER_RELATION_WITHOUT_CHILD; ?>" <?php if ($filter->hasValue(SearchFilter::FILTER_RELATION_WITHOUT_CHILD)) echo 'checked'; ?>>
+                                <label for="filters_relation_value_<?= SearchFilter::FILTER_RELATION_WITHOUT_CHILD; ?>" class="list-item filtervalue">
+                                    <?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far'); ?>
+                                    <span class="name value"><?= __('Without child issues'); ?></span>
+                                </label>
+                                <input type="checkbox" class="fancycheckbox" value="<?= SearchFilter::FILTER_RELATION_ONLY_PARENT; ?>" name="filters_relation_value" data-text="<?= __('Only parent issues'); ?>" id="filters_relation_value_<?= SearchFilter::FILTER_RELATION_ONLY_PARENT; ?>" <?php if ($filter->hasValue(SearchFilter::FILTER_RELATION_ONLY_PARENT)) echo 'checked'; ?>>
+                                <label for="filters_relation_value_<?= SearchFilter::FILTER_RELATION_ONLY_PARENT; ?>" class="list-item filtervalue">
+                                    <?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far'); ?>
+                                    <span class="name value"><?= __('Only parent issues'); ?></span>
+                                </label>
+                                <input type="checkbox" class="fancycheckbox" value="<?= SearchFilter::FILTER_RELATION_WITHOUT_PARENT; ?>" name="filters_relation_value" data-text="<?= __('Without parent issues'); ?>" id="filters_relation_value_<?= SearchFilter::FILTER_RELATION_WITHOUT_PARENT; ?>" <?php if ($filter->hasValue(SearchFilter::FILTER_RELATION_WITHOUT_PARENT)) echo 'checked'; ?>>
+                                <label for="filters_relation_value_<?= SearchFilter::FILTER_RELATION_WITHOUT_PARENT; ?>" class="list-item filtervalue">
+                                    <?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far'); ?>
+                                    <span class="name value"><?= __('Without parent issues'); ?></span>
+                                </label>
+                                <input type="checkbox" class="fancycheckbox" value="<?= SearchFilter::FILTER_RELATION_NEITHER_CHILD_NOR_PARENT; ?>" name="filters_relation_value" data-text="<?= __('Neither child nor parent issues'); ?>" id="filters_relation_value_<?= SearchFilter::FILTER_RELATION_NEITHER_CHILD_NOR_PARENT; ?>" <?php if ($filter->hasValue(SearchFilter::FILTER_RELATION_NEITHER_CHILD_NOR_PARENT)) echo 'checked'; ?>>
+                                <label for="filters_relation_value_<?= SearchFilter::FILTER_RELATION_NEITHER_CHILD_NOR_PARENT; ?>" class="list-item filtervalue">
+                                    <?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far'); ?>
+                                    <span class="name value"><?= __('Neither child nor parent issues'); ?></span>
+                                </label>
                             </div>
                         </div>
-                        <div class="filter_remove_button" onclick="Pachno.Search.removeFilter($(this).up('.filter));"><?= image_tag('icon-mono-remove.png'); ?></div>
+                        <div class="remove-button"><?= fa_image_tag('times'); ?></div>
                     </div>
                 </div>
                 <?php
@@ -216,32 +219,32 @@ if ($filter instanceof SearchFilter): ?>
                 {
                     switch ($filter->getFilterType())
                     {
-                        case \pachno\core\entities\CustomDatatype::DATE_PICKER:
-                        case \pachno\core\entities\CustomDatatype::DATETIME_PICKER:
+                        case CustomDatatype::DATE_PICKER:
+                        case CustomDatatype::DATETIME_PICKER:
                             include_component('search/interactivefilter_date', compact('filter'));
                             break;
-                        case \pachno\core\entities\CustomDatatype::RADIO_CHOICE:
-                        case \pachno\core\entities\CustomDatatype::DROPDOWN_CHOICE_TEXT:
+                        case CustomDatatype::RADIO_CHOICE:
+                        case CustomDatatype::DROPDOWN_CHOICE_TEXT:
                             include_component('search/interactivefilter_choice', compact('filter'));
                             break;
-                        case \pachno\core\entities\CustomDatatype::COMPONENTS_CHOICE:
-                        case \pachno\core\entities\CustomDatatype::EDITIONS_CHOICE:
-                        case \pachno\core\entities\CustomDatatype::RELEASES_CHOICE:
-                        case \pachno\core\entities\CustomDatatype::MILESTONE_CHOICE:
+                        case CustomDatatype::COMPONENTS_CHOICE:
+                        case CustomDatatype::EDITIONS_CHOICE:
+                        case CustomDatatype::RELEASES_CHOICE:
+                        case CustomDatatype::MILESTONE_CHOICE:
                             include_component('search/interactivefilter_affected', compact('filter'));
                             break;
-                        case \pachno\core\entities\CustomDatatype::USER_CHOICE:
+                        case CustomDatatype::USER_CHOICE:
                             include_component('search/interactivefilter_user', compact('filter'));
                             break;
-                        case \pachno\core\entities\CustomDatatype::TEAM_CHOICE:
+                        case CustomDatatype::TEAM_CHOICE:
                             include_component('search/interactivefilter_team', compact('filter'));
                             break;
-                        case \pachno\core\entities\CustomDatatype::CLIENT_CHOICE:
+                        case CustomDatatype::CLIENT_CHOICE:
                             include_component('search/interactivefilter_client', compact('filter'));
                             break;
-                        case \pachno\core\entities\CustomDatatype::INPUT_TEXT:
-                        case \pachno\core\entities\CustomDatatype::INPUT_TEXTAREA_MAIN:
-                        case \pachno\core\entities\CustomDatatype::INPUT_TEXTAREA_SMALL:
+                        case CustomDatatype::INPUT_TEXT:
+                        case CustomDatatype::INPUT_TEXTAREA_MAIN:
+                        case CustomDatatype::INPUT_TEXTAREA_SMALL:
                             include_component('search/interactivefilter_text', compact('filter'));
                             break;
                     }

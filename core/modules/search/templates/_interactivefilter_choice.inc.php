@@ -35,7 +35,7 @@
 
     <div class="interactive_menu">
         <h1><?php echo $description; ?></h1>
-        <input type="search" class="interactive_menu_filter" placeholder="<?php echo __('Filter values'); ?>">
+        <input type="search" placeholder="<?php echo __('Filter values'); ?>">
 
         <div class="interactive_values_container">
             <ul class="interactive_menu_values">

@@ -43,7 +43,7 @@
                 <?php include_component('main/menulink', array('link_id' => $link['id'], 'link' => $link)); ?>
             <?php endforeach; ?>
         </ul>
-        <div style="padding-left: 5px;<?php if (count($links) > 0): ?> display: none;<?php endif; ?>" class="no_items" id="<?php echo $target_type; ?>_<?php echo $target_id; ?>_no_links"><?php echo __('There are no links in this menu'); ?></div>
+        <div style="padding-left: 5px;<?php if (count($links) > 0): ?> display: none;<?php endif; ?>" id="<?php echo $target_type; ?>_<?php echo $target_id; ?>_no_links"><?php echo __('There are no links in this menu'); ?></div>
         <div style="padding-left: 5px; text-align: center; display: none;" id="<?php echo $target_type; ?>_<?php echo $target_id; ?>_indicator"><?php echo image_tag('spinning_16.gif'); ?></div>
     </div>
 </div>

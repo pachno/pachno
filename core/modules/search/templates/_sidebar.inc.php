@@ -1,201 +1,213 @@
-<td class="saved_searches side_bar<?php if ($hide): ?> collapsed<?php endif; ?>" id="search_sidebar" data-project-id="<?= (\pachno\core\framework\Context::isProjectContext()) ? \pachno\core\framework\Context::getCurrentProject()->getId() : ''; ?>">
-    <div class="collapser_link" onclick="$('search_sidebar').toggleClassName('collapsed');">
-        <a href="javascript:void(0);">
-            <?= image_tag('sidebar_collapse.png', array('class' => 'collapser')); ?>
-            <?= image_tag('sidebar_expand.png', array('class' => 'expander')); ?>
+<?php
+
+use pachno\core\entities\SavedSearch;
+use pachno\core\framework\Context;
+/** @var SavedSearch[][] $savedsearches */
+
+?>
+<nav class="sidebar<?php if ($hide): ?> collapsed<?php endif; ?>" id="search-sidebar" data-project-id="<?= (Context::isProjectContext()) ? Context::getCurrentProject()->getId() : ''; ?>">
+    <div class="list-mode">
+        <div class="header"><?= __('Predefined searches'); ?></div>
+        <?php if (Context::isProjectContext()): ?>
+            <div class="list-item" data-search-id="predefined_<?= SavedSearch::PREDEFINED_SEARCH_PROJECT_OPEN_ISSUES; ?>">
+                <?= link_tag(make_url('project_open_issues', array('project_key' => Context::getCurrentProject()->getKey())), __('Open issues for this project'), ['class' => 'name']); ?>
+                <span class="count-badge">-</span>
+                <?= link_tag(make_url('project_open_issues', array('project_key' => Context::getCurrentProject()->getKey(), 'format' => 'rss')), fa_image_tag('rss-square', ['class' => 'rss-icon']), array('title' => __('Download feed'), 'class' => 'icon')); ?>
+            </div>
+            <div class="list-item" data-search-id="predefined_<?= SavedSearch::PREDEFINED_SEARCH_PROJECT_OPEN_ISSUES_INCLUDING_SUBPROJECTS; ?>">
+                <?= link_tag(make_url('project_allopen_issues', array('project_key' => Context::getCurrentProject()->getKey())), __('Open issues (including subprojects)'), ['class' => 'name']); ?>
+                <span class="count-badge">-</span>
+                <?= link_tag(make_url('project_allopen_issues', array('project_key' => Context::getCurrentProject()->getKey(), 'format' => 'rss')), fa_image_tag('rss-square', ['class' => 'rss-icon']), array('title' => __('Download feed'), 'class' => 'icon')); ?>
+            </div>
+            <div class="list-item" data-search-id="predefined_<?= SavedSearch::PREDEFINED_SEARCH_PROJECT_CLOSED_ISSUES; ?>">
+                <?= link_tag(make_url('project_closed_issues', array('project_key' => Context::getCurrentProject()->getKey())), __('Closed issues for this project'), ['class' => 'name']); ?>
+                <?= link_tag(make_url('project_closed_issues', array('project_key' => Context::getCurrentProject()->getKey(), 'format' => 'rss')), fa_image_tag('rss-square', ['class' => 'rss-icon']), array('title' => __('Download feed'), 'class' => 'icon')); ?>
+            </div>
+            <div class="list-item" data-search-id="predefined_<?= SavedSearch::PREDEFINED_SEARCH_PROJECT_CLOSED_ISSUES_INCLUDING_SUBPROJECTS; ?>">
+                <?= link_tag(make_url('project_allclosed_issues', array('project_key' => Context::getCurrentProject()->getKey())), __('Closed issues (including subprojects)'), ['class' => 'name']); ?>
+                <?= link_tag(make_url('project_allclosed_issues', array('project_key' => Context::getCurrentProject()->getKey(), 'format' => 'rss')), fa_image_tag('rss-square', ['class' => 'rss-icon']), array('title' => __('Download feed'), 'class' => 'icon')); ?>
+            </div>
+            <div class="list-item" data-search-id="predefined_<?= SavedSearch::PREDEFINED_SEARCH_PROJECT_WISHLIST; ?>">
+                <?= link_tag(make_url('project_wishlist_issues', array('project_key' => Context::getCurrentProject()->getKey())), __('Project wishlist'), ['class' => 'name']); ?>
+                <span class="count-badge">-</span>
+                <?= link_tag(make_url('project_wishlist_issues', array('project_key' => Context::getCurrentProject()->getKey(), 'format' => 'rss')), fa_image_tag('rss-square', ['class' => 'rss-icon']), array('title' => __('Download feed'), 'class' => 'icon')); ?>
+            </div>
+            <div class="list-item" data-search-id="predefined_<?= SavedSearch::PREDEFINED_SEARCH_PROJECT_MILESTONE_TODO; ?>">
+                <?= link_tag(make_url('project_milestone_todo_list', array('project_key' => Context::getCurrentProject()->getKey())), __('Milestone todo-list for this project'), ['class' => 'name']); ?>
+                <?= link_tag(make_url('project_milestone_todo_list', array('project_key' => Context::getCurrentProject()->getKey(), 'format' => 'rss')), fa_image_tag('rss-square', ['class' => 'rss-icon']), array('title' => __('Download feed'), 'class' => 'icon')); ?>
+            </div>
+            <div class="list-item" data-search-id="predefined_<?= SavedSearch::PREDEFINED_SEARCH_PROJECT_MOST_VOTED; ?>">
+                <?= link_tag(make_url('project_most_voted_issues', array('project_key' => Context::getCurrentProject()->getKey())), __('Most voted for issues'), ['class' => 'name']); ?>
+                <?= link_tag(make_url('project_most_voted_issues', array('project_key' => Context::getCurrentProject()->getKey(), 'format' => 'rss')), fa_image_tag('rss-square', ['class' => 'rss-icon']), array('title' => __('Download feed'), 'class' => 'icon')); ?>
+            </div>
+            <div class="list-item" data-search-id="predefined_<?= SavedSearch::PREDEFINED_SEARCH_PROJECT_REPORTED_THIS_MONTH; ?>">
+                <?= link_tag(make_url('project_month_issues', array('project_key' => Context::getCurrentProject()->getKey())), __('Issues reported this month'), ['class' => 'name']); ?>
+                <span class="count-badge">-</span>
+                <?= link_tag(make_url('project_month_issues', array('project_key' => Context::getCurrentProject()->getKey(), 'format' => 'rss')), fa_image_tag('rss-square', ['class' => 'rss-icon']), array('title' => __('Download feed'), 'class' => 'icon')); ?>
+            </div>
+            <?php if (!$pachno_user->isGuest()): ?>
+                <div class="list-item" data-search-id="predefined_<?= SavedSearch::PREDEFINED_SEARCH_MY_REPORTED_ISSUES; ?>">
+                    <?= link_tag(make_url('project_my_reported_issues', array('project_key' => Context::getCurrentProject()->getKey())), __('Issues reported by me'), ['class' => 'name']); ?>
+                    <span class="count-badge">-</span>
+                    <?= link_tag(make_url('project_my_reported_issues', array('project_key' => Context::getCurrentProject()->getKey(), 'format' => 'rss')), fa_image_tag('rss-square', ['class' => 'rss-icon']), array('title' => __('Download feed'), 'class' => 'icon')); ?>
+                </div>
+                <div class="list-item" data-search-id="predefined_<?= SavedSearch::PREDEFINED_SEARCH_MY_ASSIGNED_OPEN_ISSUES; ?>">
+                    <?= link_tag(make_url('project_my_assigned_issues', array('project_key' => Context::getCurrentProject()->getKey())), __('Open issues assigned to me'), ['class' => 'name']); ?>
+                    <span class="count-badge">-</span>
+                    <?= link_tag(make_url('project_my_assigned_issues', array('project_key' => Context::getCurrentProject()->getKey(), 'format' => 'rss')), fa_image_tag('rss-square', ['class' => 'rss-icon']), array('title' => __('Download feed'), 'class' => 'icon')); ?>
+                </div>
+                <div class="list-item" data-search-id="predefined_<?= SavedSearch::PREDEFINED_SEARCH_TEAM_ASSIGNED_OPEN_ISSUES; ?>">
+                    <?= link_tag(make_url('project_my_teams_assigned_issues', array('project_key' => Context::getCurrentProject()->getKey())), __('Open issues assigned to my teams'), ['class' => 'name']); ?>
+                    <span class="count-badge">-</span>
+                    <?= link_tag(make_url('project_my_teams_assigned_issues', array('project_key' => Context::getCurrentProject()->getKey(), 'format' => 'rss')), fa_image_tag('rss-square', ['class' => 'rss-icon']), array('title' => __('Download feed'), 'class' => 'icon')); ?>
+                </div>
+            <?php endif; ?>
+        <?php elseif (!$pachno_user->isGuest()): ?>
+            <div class="list-item" data-search-id="predefined_<?= SavedSearch::PREDEFINED_SEARCH_MY_REPORTED_ISSUES; ?>">
+                <?= link_tag(make_url('my_reported_issues'), __('Issues reported by me'), ['class' => 'name']); ?>
+                <span class="count-badge">-</span>
+                <?= link_tag(make_url('my_reported_issues', array('format' => 'rss')), fa_image_tag('rss-square', ['class' => 'rss-icon']), array('title' => __('Download feed'), 'class' => 'icon')); ?>
+            </div>
+            <div class="list-item" data-search-id="predefined_<?= SavedSearch::PREDEFINED_SEARCH_MY_ASSIGNED_OPEN_ISSUES; ?>">
+                <?= link_tag(make_url('my_assigned_issues'), __('Open issues assigned to me'), ['class' => 'name']); ?>
+                <span class="count-badge">-</span>
+                <?= link_tag(make_url('my_assigned_issues', array('format' => 'rss')), fa_image_tag('rss-square', ['class' => 'rss-icon']), array('title' => __('Download feed'), 'class' => 'icon')); ?>
+            </div>
+            <div class="list-item" data-search-id="predefined_<?= SavedSearch::PREDEFINED_SEARCH_MY_OWNED_OPEN_ISSUES; ?>">
+                <?= link_tag(make_url('my_owned_issues'), __('Open issues owned by me'), ['class' => 'name']); ?>
+                <span class="count-badge">-</span>
+                <?= link_tag(make_url('my_owned_issues', array('format' => 'rss')), fa_image_tag('rss-square', ['class' => 'rss-icon']), array('title' => __('Download feed'), 'class' => 'icon')); ?>
+            </div>
+            <?php if ($pachno_user->hasTeams()): ?>
+                <div class="list-item" data-search-id="predefined_<?= SavedSearch::PREDEFINED_SEARCH_TEAM_ASSIGNED_OPEN_ISSUES; ?>">
+                    <?= link_tag(make_url('my_teams_assigned_issues'), __('Open issues assigned to my teams'), ['class' => 'name']); ?>
+                    <span class="count-badge">-</span>
+                    <?= link_tag(make_url('my_teams_assigned_issues', array('format' => 'rss')), fa_image_tag('rss-square', ['class' => 'rss-icon']), array('title' => __('Download feed'), 'class' => 'icon')); ?>
+                </div>
+            <?php endif; ?>
+        <?php endif; ?>
+        <div class="header"><?= (Context::isProjectContext()) ? __('Your saved searches for this project') : __('Your saved searches'); ?></div>
+        <?php if (count($savedsearches['user']) > 0): ?>
+            <?php foreach ($savedsearches['user'] as $saved_search): ?>
+                <div id="saved_search_<?= $saved_search->getID(); ?>_container" class="list-item" data-search-id="<?= $saved_search->getID(); ?>">
+                    <?php if (Context::isProjectContext()): ?>
+                        <div>
+                            <?= link_tag(make_url('project_issues', array('project_key' => Context::getCurrentProject()->getKey(), 'saved_search' => $saved_search->getID(), 'search' => true, 'format' => 'rss')), fa_image_tag('rss-square', ['class' => 'rss-icon']), array('title' => __('Download feed'), 'class' => 'icon')); ?>
+                            <?php if (!Context::getCurrentProject()->isArchived()): ?>
+                                <div class="action_icons">
+                                    <?= link_tag(make_url('project_issues', array('project_key' => Context::getCurrentProject()->getKey(), 'saved_search' => $saved_search->getID(), 'search' => 0)).'#edit_modal', fa_image_tag('edit'), array('title' => __('Edit saved search'))); ?>
+                                    <?= javascript_link_tag(image_tag('icon_delete.png', array('title' => __('Delete saved search'))), array('onclick' => "$('delete_search_".$saved_search->getID()."').toggle();")); ?>
+                                </div>
+                            <?php endif; ?>
+                            <span class="count-badge">-</span>
+                            <?= link_tag(make_url('project_issues', array('project_key' => Context::getCurrentProject()->getKey(), 'saved_search' => $saved_search->getID(), 'search' => true)), __($saved_search->getName())); ?>
+                        </div>
+                        <?php if (!Context::getCurrentProject()->isArchived()): ?>
+                        <div class="rounded_box white shadowed" style="position: absolute; width: 300px; display: none;" id="delete_search_<?= $saved_search->getID(); ?>">
+                            <div class="header"><?= __('Do you really want to delete this saved search?'); ?></div>
+                            <div class="content">
+                                <?= __('This action cannot be reverted. Note: this will not modify any issues affected by this search'); ?>
+                                <div style="text-align: right; margin-top: 10px;">
+                                    <?= image_tag('spinning_16.gif', array('style' => 'margin-left: 5px; display: none;', 'id' => 'delete_search_'.$saved_search->getID().'_indicator')); ?>
+                                    <input type="submit" onclick="Pachno.Search.deleteSavedSearch('<?= make_url('project_issues', array('project_key' => Context::getCurrentProject()->getKey(), 'saved_search_id' => $saved_search->getID(), 'search' => 0, 'delete_saved_search' => true)); ?>', <?= $saved_search->getID(); ?>);" value="<?= __('Yes, delete'); ?>" style="font-weight: bold;">
+                                    <?= __('%yes_delete or %cancel', array('%yes_delete' => '', '%cancel' => javascript_link_tag(__('cancel'), array('onclick' => "$('delete_search_".$saved_search->getID()."').toggle();")))); ?>
+                                </div>
+                            </div>
+                        </div>
+                        <?php endif; ?>
+                        <?php if ($saved_search->getDescription() != ''): ?>
+                            <div style="clear: both; padding: 0 0 10px 26px; font-style: italic; font-size: 0.9em;"><?= $saved_search->getDescription(); ?></div>
+                        <?php endif; ?>
+                    <?php else: ?>
+                        <div style="clear: both;">
+                            <?= link_tag(make_url('search', array('saved_search' => $saved_search->getID(), 'search' => true, 'format' => 'rss')), fa_image_tag('rss-square', ['class' => 'rss-icon']), array('title' => __('Download feed'))); ?>
+                            <div class="action_icons">
+                                <?= link_tag(make_url('search', array('saved_search' => $saved_search->getID(), 'search' => 0)).'#edit_modal', fa_image_tag('edit'), array('title' => __('Edit saved search'))); ?>
+                                <?= javascript_link_tag(image_tag('icon_delete.png', array('title' => __('Delete saved search'))), array('onclick' => "$('delete_search_".$saved_search->getID()."').toggle();")); ?>
+                            </div>
+                            <span class="count-badge">-</span>
+                            <?= link_tag(make_url('search', array('saved_search' => $saved_search->getID(), 'search' => true)), __($saved_search->getName())); ?>
+                        </div>
+                        <div class="rounded_box white shadowed" style="position: absolute; width: 300px; display: none;" id="delete_search_<?= $saved_search->getID(); ?>">
+                            <div class="header"><?= __('Do you really want to delete this saved search?'); ?></div>
+                            <div class="content">
+                                <?= __('This action cannot be reverted. Note: this will not modify any issues affected by this search'); ?>
+                                <div style="text-align: right; margin-top: 10px;">
+                                    <?= image_tag('spinning_16.gif', array('style' => 'margin-left: 5px; display: none;', 'id' => 'delete_search_'.$saved_search->getID().'_indicator')); ?>
+                                    <input type="submit" onclick="Pachno.Search.deleteSavedSearch('<?= make_url('search', array('saved_search_id' => $saved_search->getID(), 'search' => 0, 'delete_saved_search' => true)); ?>', <?= $saved_search->getID(); ?>);" value="<?= __('Yes, delete'); ?>" style="font-weight: bold;">
+                                    <?= __('%yes_delete or %cancel', array('%yes_delete' => '', '%cancel' => javascript_link_tag(__('cancel'), array('onclick' => "$('delete_search_".$saved_search->getID()."').toggle();")))); ?>
+                                </div>
+                            </div>
+                        </div>
+                        <?php if ($saved_search->getDescription() != ''): ?>
+                            <div style="clear: both; padding: 0 0 10px 3px;"><?= $saved_search->getDescription(); ?></div>
+                        <?php endif; ?>
+                    <?php endif; ?>
+                </div>
+            <?php endforeach; ?>
+        <?php else: ?>
+            <div class="list-item disabled" id="no_public_saved_searches">
+                <span class="icon"><?= fa_image_tag('info-circle'); ?></span>
+                <span class="name"><?= __('Your saved searches will show up here'); ?></span>
+            </div>
+        <?php endif; ?>
+        <div class="header"><?= (Context::isProjectContext()) ? __('Public saved searches for this project') : __('Public saved searches'); ?></div>
+        <?php if (count($savedsearches['public']) > 0): ?>
+            <?php foreach ($savedsearches['public'] as $saved_search): ?>
+                <div id="saved_search_<?= $saved_search->getID(); ?>_container" class="list-item" data-search-id="<?= $saved_search->getID(); ?>">
+                    <div style="clear: both;">
+                        <?php if (Context::isProjectContext()): ?>
+                            <?= link_tag(make_url('project_issues', array('project_key' => Context::getCurrentProject()->getKey(), 'saved_search' => $saved_search->getID(), 'search' => true, 'format' => 'rss')), fa_image_tag('rss-square', ['class' => 'rss-icon']), array('title' => __('Download feed'))); ?>
+                            <?php if ($pachno_user->canCreatePublicSearches()): ?>
+                                <div class="action_icons">
+                                    <?= link_tag(make_url('project_issues', array('project_key' => Context::getCurrentProject()->getKey(), 'saved_search' => $saved_search->getID(), 'search' => 0)).'#edit_modal', fa_image_tag('edit'), array('title' => __('Edit saved search'))); ?>
+                                    <?= javascript_link_tag(image_tag('icon_delete.png', array('title' => __('Delete saved search'))), array('onclick' => "$('delete_search_".$saved_search->getID()."').toggle();")); ?>
+                                </div>
+                            <?php endif; ?>
+                            <span class="count-badge">-</span>
+                            <?= link_tag(make_url('project_issues', array('project_key' => Context::getCurrentProject()->getKey(), 'saved_search' => $saved_search->getID(), 'search' => true)), __($saved_search->getName())); ?>
+                        <?php else: ?>
+                            <?= link_tag(make_url('search', array('saved_search' => $saved_search->getID(), 'search' => true, 'format' => 'rss')), fa_image_tag('rss-square', ['class' => 'rss-icon']), array('title' => __('Download feed'))); ?>
+                            <?php if ($pachno_user->canCreatePublicSearches()): ?>
+                                <div class="action_icons">
+                                    <?= javascript_link_tag(image_tag('icon_delete.png', array('title' => __('Delete saved search'))), array('onclick' => "$('delete_search_".$saved_search->getID()."').toggle();")); ?>
+                                    <?= link_tag(make_url('search', array('saved_search' => $saved_search->getID(), 'search' => 0)).'#edit_modal', fa_image_tag('edit'), array('title' => __('Edit saved search'))); ?>
+                                </div>
+                            <?php endif; ?>
+                            <?= link_tag(make_url('search', array('saved_search' => $saved_search->getID(), 'search' => true)), __($saved_search->getName())); ?>
+                        <?php endif; ?>
+                    </div>
+                    <div class="rounded_box white shadowed" style="position: absolute; width: 300px; display: none;" id="delete_search_<?= $saved_search->getID(); ?>">
+                        <div class="header"><?= __('Do you really want to delete this saved search?'); ?></div>
+                        <div class="content">
+                            <?= __('This action cannot be reverted. Note: this will not modify any issues affected by this search'); ?>
+                            <div style="text-align: right; margin-top: 10px;">
+                                <?= image_tag('spinning_16.gif', array('style' => 'margin-left: 5px; display: none;', 'id' => 'delete_search_'.$saved_search->getID().'_indicator')); ?>
+                                <?php if (Context::isProjectContext()): ?>
+                                    <input type="submit" onclick="Pachno.Search.deleteSavedSearch('<?= make_url('project_issues', array('project_key' => Context::getCurrentProject()->getKey(), 'saved_search_id' => $saved_search->getID(), 'search' => 0, 'delete_saved_search' => true)); ?>', <?= $saved_search->getID(); ?>);" value="<?= __('Yes, delete'); ?>" style="font-weight: bold;">
+                                <?php else: ?>
+                                    <input type="submit" onclick="Pachno.Search.deleteSavedSearch('<?= make_url('search', array('saved_search_id' => $saved_search->getID(), 'search' => 0, 'delete_saved_search' => true)); ?>', <?= $saved_search->getID(); ?>);" value="<?= __('Yes, delete'); ?>" style="font-weight: bold;">
+                                <?php endif; ?>
+                                <?= __('%yes_delete or %cancel', array('%yes_delete' => '', '%cancel' => javascript_link_tag(__('cancel'), array('onclick' => "$('delete_search_".$saved_search->getID()."').toggle();")))); ?>
+                            </div>
+                        </div>
+                    </div>
+                    <?php if ($saved_search->getDescription() != ''): ?>
+                        <div style="clear: both; padding: 0 0 10px 3px;"><?= $saved_search->getDescription(); ?></div>
+                    <?php endif; ?>
+                </div>
+            <?php endforeach; ?>
+        <?php else: ?>
+            <div class="list-item disabled" id="no_public_saved_searches">
+                <span class="icon"><?= fa_image_tag('info-circle'); ?></span>
+                <span class="name"><?= __('Public saved searches will show up here'); ?></span>
+            </div>
+        <?php endif; ?>
+    </div>
+    <div class="collapser list-mode">
+        <a class="list-item" href="javascript:void(0);">
+            <span class="icon"><?= fa_image_tag('angle-double-left'); ?></span>
+            <span class="name"><?= __('Toggle sidebar'); ?></span>
         </a>
     </div>
-    <div class="container_divs_wrapper">
-        <div class="container_div">
-            <div class="header"><?= __('Predefined searches'); ?></div>
-            <ul class="simple_list content" style="font-size: 1em;">
-                <?php if (\pachno\core\framework\Context::isProjectContext()): ?>
-                    <li class="savedsearch-item" data-search-id="predefined_<?= \pachno\core\entities\SavedSearch::PREDEFINED_SEARCH_PROJECT_OPEN_ISSUES; ?>" style="clear: both;">
-                        <?= link_tag(make_url('project_open_issues', array('project_key' => \pachno\core\framework\Context::getCurrentProject()->getKey(), 'format' => 'rss')), fa_image_tag('rss-square', ['class' => 'rss-icon']), array('title' => __('Download feed'))); ?>
-                        <?= link_tag(make_url('project_open_issues', array('project_key' => \pachno\core\framework\Context::getCurrentProject()->getKey())), __('Open issues for this project')); ?><span class="count-badge">-</span>
-                    </li>
-                    <li class="savedsearch-item" data-search-id="predefined_<?= \pachno\core\entities\SavedSearch::PREDEFINED_SEARCH_PROJECT_OPEN_ISSUES_INCLUDING_SUBPROJECTS; ?>" style="clear: both;">
-                        <?= link_tag(make_url('project_allopen_issues', array('project_key' => \pachno\core\framework\Context::getCurrentProject()->getKey(), 'format' => 'rss')), fa_image_tag('rss-square', ['class' => 'rss-icon']), array('title' => __('Download feed'))); ?>
-                        <?= link_tag(make_url('project_allopen_issues', array('project_key' => \pachno\core\framework\Context::getCurrentProject()->getKey())), __('Open issues (including subprojects)')); ?><span class="count-badge">-</span>
-                    </li>
-                    <li class="savedsearch-item" data-search-id="predefined_<?= \pachno\core\entities\SavedSearch::PREDEFINED_SEARCH_PROJECT_CLOSED_ISSUES; ?>" style="clear: both;">
-                        <?= link_tag(make_url('project_closed_issues', array('project_key' => \pachno\core\framework\Context::getCurrentProject()->getKey(), 'format' => 'rss')), fa_image_tag('rss-square', ['class' => 'rss-icon']), array('title' => __('Download feed'))); ?>
-                        <?= link_tag(make_url('project_closed_issues', array('project_key' => \pachno\core\framework\Context::getCurrentProject()->getKey())), __('Closed issues for this project')); ?>
-                    </li>
-                    <li class="savedsearch-item" data-search-id="predefined_<?= \pachno\core\entities\SavedSearch::PREDEFINED_SEARCH_PROJECT_CLOSED_ISSUES_INCLUDING_SUBPROJECTS; ?>" style="clear: both;">
-                        <?= link_tag(make_url('project_allclosed_issues', array('project_key' => \pachno\core\framework\Context::getCurrentProject()->getKey(), 'format' => 'rss')), fa_image_tag('rss-square', ['class' => 'rss-icon']), array('title' => __('Download feed'))); ?>
-                        <?= link_tag(make_url('project_allclosed_issues', array('project_key' => \pachno\core\framework\Context::getCurrentProject()->getKey())), __('Closed issues (including subprojects)')); ?>
-                    </li>
-                    <li class="savedsearch-item" data-search-id="predefined_<?= \pachno\core\entities\SavedSearch::PREDEFINED_SEARCH_PROJECT_WISHLIST; ?>" style="clear: both; margin-bottom: 15px;">
-                        <?= link_tag(make_url('project_wishlist_issues', array('project_key' => \pachno\core\framework\Context::getCurrentProject()->getKey(), 'format' => 'rss')), fa_image_tag('rss-square', ['class' => 'rss-icon']), array('title' => __('Download feed'))); ?>
-                        <?= link_tag(make_url('project_wishlist_issues', array('project_key' => \pachno\core\framework\Context::getCurrentProject()->getKey())), __('Project wishlist')); ?><span class="count-badge">-</span>
-                    </li>
-                    <li class="savedsearch-item" data-search-id="predefined_<?= \pachno\core\entities\SavedSearch::PREDEFINED_SEARCH_PROJECT_MILESTONE_TODO; ?>">
-                        <?= link_tag(make_url('project_milestone_todo_list', array('project_key' => \pachno\core\framework\Context::getCurrentProject()->getKey(), 'format' => 'rss')), fa_image_tag('rss-square', ['class' => 'rss-icon']), array('title' => __('Download feed'))); ?>
-                        <?= link_tag(make_url('project_milestone_todo_list', array('project_key' => \pachno\core\framework\Context::getCurrentProject()->getKey())), __('Milestone todo-list for this project')); ?>
-                    </li>
-                    <li class="savedsearch-item" data-search-id="predefined_<?= \pachno\core\entities\SavedSearch::PREDEFINED_SEARCH_PROJECT_MOST_VOTED; ?>" style="clear: both; margin-bottom: 15px;">
-                        <?= link_tag(make_url('project_most_voted_issues', array('project_key' => \pachno\core\framework\Context::getCurrentProject()->getKey(), 'format' => 'rss')), fa_image_tag('rss-square', ['class' => 'rss-icon']), array('title' => __('Download feed'))); ?>
-                        <?= link_tag(make_url('project_most_voted_issues', array('project_key' => \pachno\core\framework\Context::getCurrentProject()->getKey())), __('Most voted for issues')); ?>
-                    </li>
-                    <li class="savedsearch-item" data-search-id="predefined_<?= \pachno\core\entities\SavedSearch::PREDEFINED_SEARCH_PROJECT_REPORTED_THIS_MONTH; ?>" style="clear: both;">
-                        <?= link_tag(make_url('project_month_issues', array('project_key' => \pachno\core\framework\Context::getCurrentProject()->getKey(), 'format' => 'rss')), fa_image_tag('rss-square', ['class' => 'rss-icon']), array('title' => __('Download feed'))); ?>
-                        <?= link_tag(make_url('project_month_issues', array('project_key' => \pachno\core\framework\Context::getCurrentProject()->getKey())), __('Issues reported this month')); ?><span class="count-badge">-</span>
-                    </li>
-                    <?php if (!$pachno_user->isGuest()): ?>
-                        <li class="savedsearch-item" data-search-id="predefined_<?= \pachno\core\entities\SavedSearch::PREDEFINED_SEARCH_MY_REPORTED_ISSUES; ?>" style="clear: both;">
-                            <?= link_tag(make_url('project_my_reported_issues', array('project_key' => \pachno\core\framework\Context::getCurrentProject()->getKey(), 'format' => 'rss')), fa_image_tag('rss-square', ['class' => 'rss-icon']), array('title' => __('Download feed'))); ?>
-                            <?= link_tag(make_url('project_my_reported_issues', array('project_key' => \pachno\core\framework\Context::getCurrentProject()->getKey())), __('Issues reported by me')); ?><span class="count-badge">-</span>
-                        </li>
-                        <li class="savedsearch-item" data-search-id="predefined_<?= \pachno\core\entities\SavedSearch::PREDEFINED_SEARCH_MY_ASSIGNED_OPEN_ISSUES; ?>" style="clear: both;">
-                            <?= link_tag(make_url('project_my_assigned_issues', array('project_key' => \pachno\core\framework\Context::getCurrentProject()->getKey(), 'format' => 'rss')), fa_image_tag('rss-square', ['class' => 'rss-icon']), array('title' => __('Download feed'))); ?>
-                            <?= link_tag(make_url('project_my_assigned_issues', array('project_key' => \pachno\core\framework\Context::getCurrentProject()->getKey())), __('Open issues assigned to me')); ?><span class="count-badge">-</span>
-                        </li>
-                        <li class="savedsearch-item" data-search-id="predefined_<?= \pachno\core\entities\SavedSearch::PREDEFINED_SEARCH_TEAM_ASSIGNED_OPEN_ISSUES; ?>" style="clear: both;">
-                            <?= link_tag(make_url('project_my_teams_assigned_issues', array('project_key' => \pachno\core\framework\Context::getCurrentProject()->getKey(), 'format' => 'rss')), fa_image_tag('rss-square', ['class' => 'rss-icon']), array('title' => __('Download feed'))); ?>
-                            <?= link_tag(make_url('project_my_teams_assigned_issues', array('project_key' => \pachno\core\framework\Context::getCurrentProject()->getKey())), __('Open issues assigned to my teams')); ?><span class="count-badge">-</span>
-                        </li>
-                    <?php endif; ?>
-                <?php elseif (!$pachno_user->isGuest()): ?>
-                    <li class="savedsearch-item" data-search-id="predefined_<?= \pachno\core\entities\SavedSearch::PREDEFINED_SEARCH_MY_REPORTED_ISSUES; ?>" style="clear: both;">
-                        <?= link_tag(make_url('my_reported_issues', array('format' => 'rss')), fa_image_tag('rss-square', ['class' => 'rss-icon']), array('title' => __('Download feed'))); ?>
-                        <?= link_tag(make_url('my_reported_issues'), __('Issues reported by me')); ?><span class="count-badge">-</span>
-                    </li>
-                    <li class="savedsearch-item" data-search-id="predefined_<?= \pachno\core\entities\SavedSearch::PREDEFINED_SEARCH_MY_ASSIGNED_OPEN_ISSUES; ?>" style="clear: both;">
-                        <?= link_tag(make_url('my_assigned_issues', array('format' => 'rss')), fa_image_tag('rss-square', ['class' => 'rss-icon']), array('title' => __('Download feed'))); ?>
-                        <?= link_tag(make_url('my_assigned_issues'), __('Open issues assigned to me')); ?><span class="count-badge">-</span>
-                    </li>
-                    <li class="savedsearch-item" data-search-id="predefined_<?= \pachno\core\entities\SavedSearch::PREDEFINED_SEARCH_MY_OWNED_OPEN_ISSUES; ?>" style="clear: both;">
-                        <?= link_tag(make_url('my_owned_issues', array('format' => 'rss')), fa_image_tag('rss-square', ['class' => 'rss-icon']), array('title' => __('Download feed'))); ?>
-                        <?= link_tag(make_url('my_owned_issues'), __('Open issues owned by me')); ?><span class="count-badge">-</span>
-                    </li>
-                    <?php if ($pachno_user->hasTeams()): ?>
-                        <li class="savedsearch-item" data-search-id="predefined_<?= \pachno\core\entities\SavedSearch::PREDEFINED_SEARCH_TEAM_ASSIGNED_OPEN_ISSUES; ?>" style="clear: both;">
-                            <?= link_tag(make_url('my_teams_assigned_issues', array('format' => 'rss')), fa_image_tag('rss-square', ['class' => 'rss-icon']), array('title' => __('Download feed'))); ?>
-                            <?= link_tag(make_url('my_teams_assigned_issues'), __('Open issues assigned to my teams')); ?><span class="count-badge">-</span>
-                        </li>
-                    <?php endif; ?>
-                <?php endif; ?>
-            </ul>
-        </div>
-        <div class="container_div">
-            <div class="header"><?= (\pachno\core\framework\Context::isProjectContext()) ? __('Your saved searches for this project') : __('Your saved searches'); ?></div>
-            <ul class="simple_list content my_saved_searches">
-                <?php if (count($savedsearches['user']) > 0): ?>
-                    <?php foreach ($savedsearches['user'] as $a_savedsearch): ?>
-                        <li id="saved_search_<?= $a_savedsearch->getID(); ?>_container" class="savedsearch-item" data-search-id="<?= $a_savedsearch->getID(); ?>">
-                            <?php if (\pachno\core\framework\Context::isProjectContext()): ?>
-                                <div style="clear: both;">
-                                    <?= link_tag(make_url('project_issues', array('project_key' => \pachno\core\framework\Context::getCurrentProject()->getKey(), 'saved_search' => $a_savedsearch->getID(), 'search' => true, 'format' => 'rss')), fa_image_tag('rss-square', ['class' => 'rss-icon']), array('title' => __('Download feed'))); ?>
-                                    <?php if (!\pachno\core\framework\Context::getCurrentProject()->isArchived()): ?>
-                                        <div class="action_icons">
-                                            <?= link_tag(make_url('project_issues', array('project_key' => \pachno\core\framework\Context::getCurrentProject()->getKey(), 'saved_search' => $a_savedsearch->getID(), 'search' => 0)).'#edit_modal', fa_image_tag('edit'), array('title' => __('Edit saved search'))); ?>
-                                            <?= javascript_link_tag(image_tag('icon_delete.png', array('title' => __('Delete saved search'))), array('onclick' => "$('delete_search_".$a_savedsearch->getID()."').toggle();")); ?>
-                                        </div>
-                                    <?php endif; ?>
-                                    <span class="count-badge">-</span>
-                                    <?= link_tag(make_url('project_issues', array('project_key' => \pachno\core\framework\Context::getCurrentProject()->getKey(), 'saved_search' => $a_savedsearch->getID(), 'search' => true)), __($a_savedsearch->getName())); ?>
-                                </div>
-                                <?php if (!\pachno\core\framework\Context::getCurrentProject()->isArchived()): ?>
-                                <div class="rounded_box white shadowed" style="position: absolute; width: 300px; display: none;" id="delete_search_<?= $a_savedsearch->getID(); ?>">
-                                    <div class="header"><?= __('Do you really want to delete this saved search?'); ?></div>
-                                    <div class="content">
-                                        <?= __('This action cannot be reverted. Note: this will not modify any issues affected by this search'); ?>
-                                        <div style="text-align: right; margin-top: 10px;">
-                                            <?= image_tag('spinning_16.gif', array('style' => 'margin-left: 5px; display: none;', 'id' => 'delete_search_'.$a_savedsearch->getID().'_indicator')); ?>
-                                            <input type="submit" onclick="Pachno.Search.deleteSavedSearch('<?= make_url('project_issues', array('project_key' => \pachno\core\framework\Context::getCurrentProject()->getKey(), 'saved_search_id' => $a_savedsearch->getID(), 'search' => 0, 'delete_saved_search' => true)); ?>', <?= $a_savedsearch->getID(); ?>);" value="<?= __('Yes, delete'); ?>" style="font-weight: bold;">
-                                            <?= __('%yes_delete or %cancel', array('%yes_delete' => '', '%cancel' => javascript_link_tag(__('cancel'), array('onclick' => "$('delete_search_".$a_savedsearch->getID()."').toggle();")))); ?>
-                                        </div>
-                                    </div>
-                                </div>
-                                <?php endif; ?>
-                                <?php if ($a_savedsearch->getDescription() != ''): ?>
-                                    <div style="clear: both; padding: 0 0 10px 26px; font-style: italic; font-size: 0.9em;"><?= $a_savedsearch->getDescription(); ?></div>
-                                <?php endif; ?>
-                            <?php else: ?>
-                                <div style="clear: both;">
-                                    <?= link_tag(make_url('search', array('saved_search' => $a_savedsearch->getID(), 'search' => true, 'format' => 'rss')), fa_image_tag('rss-square', ['class' => 'rss-icon']), array('title' => __('Download feed'))); ?>
-                                    <div class="action_icons">
-                                        <?= link_tag(make_url('search', array('saved_search' => $a_savedsearch->getID(), 'search' => 0)).'#edit_modal', fa_image_tag('edit'), array('title' => __('Edit saved search'))); ?>
-                                        <?= javascript_link_tag(image_tag('icon_delete.png', array('title' => __('Delete saved search'))), array('onclick' => "$('delete_search_".$a_savedsearch->getID()."').toggle();")); ?>
-                                    </div>
-                                    <span class="count-badge">-</span>
-                                    <?= link_tag(make_url('search', array('saved_search' => $a_savedsearch->getID(), 'search' => true)), __($a_savedsearch->getName())); ?>
-                                </div>
-                                <div class="rounded_box white shadowed" style="position: absolute; width: 300px; display: none;" id="delete_search_<?= $a_savedsearch->getID(); ?>">
-                                    <div class="header"><?= __('Do you really want to delete this saved search?'); ?></div>
-                                    <div class="content">
-                                        <?= __('This action cannot be reverted. Note: this will not modify any issues affected by this search'); ?>
-                                        <div style="text-align: right; margin-top: 10px;">
-                                            <?= image_tag('spinning_16.gif', array('style' => 'margin-left: 5px; display: none;', 'id' => 'delete_search_'.$a_savedsearch->getID().'_indicator')); ?>
-                                            <input type="submit" onclick="Pachno.Search.deleteSavedSearch('<?= make_url('search', array('saved_search_id' => $a_savedsearch->getID(), 'search' => 0, 'delete_saved_search' => true)); ?>', <?= $a_savedsearch->getID(); ?>);" value="<?= __('Yes, delete'); ?>" style="font-weight: bold;">
-                                            <?= __('%yes_delete or %cancel', array('%yes_delete' => '', '%cancel' => javascript_link_tag(__('cancel'), array('onclick' => "$('delete_search_".$a_savedsearch->getID()."').toggle();")))); ?>
-                                        </div>
-                                    </div>
-                                </div>
-                                <?php if ($a_savedsearch->getDescription() != ''): ?>
-                                    <div style="clear: both; padding: 0 0 10px 3px;"><?= $a_savedsearch->getDescription(); ?></div>
-                                <?php endif; ?>
-                            <?php endif; ?>
-                        </li>
-                    <?php endforeach; ?>
-                <?php else: ?>
-                    <li class="no_items" style="font-size: 1em;" id="no_user_saved_searches"><?= (\pachno\core\framework\Context::isProjectContext()) ? __("You don't have any saved searches for this project") : __("You don't have any saved searches"); ?></li>
-                <?php endif; ?>
-            </ul>
-        </div>
-        <div class="container_div">
-            <div class="header"><?= (\pachno\core\framework\Context::isProjectContext()) ? __('Public saved searches for this project') : __('Public saved searches'); ?></div>
-            <ul class="simple_list content my_saved_searches">
-                <?php if (count($savedsearches['public']) > 0): ?>
-                    <?php foreach ($savedsearches['public'] as $a_savedsearch): ?>
-                        <li id="saved_search_<?= $a_savedsearch->getID(); ?>_container" class="savedsearch-item" data-search-id="<?= $a_savedsearch->getID(); ?>">
-                            <div style="clear: both;">
-                                <?php if (\pachno\core\framework\Context::isProjectContext()): ?>
-                                    <?= link_tag(make_url('project_issues', array('project_key' => \pachno\core\framework\Context::getCurrentProject()->getKey(), 'saved_search' => $a_savedsearch->getID(), 'search' => true, 'format' => 'rss')), fa_image_tag('rss-square', ['class' => 'rss-icon']), array('title' => __('Download feed'))); ?>
-                                    <?php if ($pachno_user->canCreatePublicSearches()): ?>
-                                        <div class="action_icons">
-                                            <?= link_tag(make_url('project_issues', array('project_key' => \pachno\core\framework\Context::getCurrentProject()->getKey(), 'saved_search' => $a_savedsearch->getID(), 'search' => 0)).'#edit_modal', fa_image_tag('edit'), array('title' => __('Edit saved search'))); ?>
-                                            <?= javascript_link_tag(image_tag('icon_delete.png', array('title' => __('Delete saved search'))), array('onclick' => "$('delete_search_".$a_savedsearch->getID()."').toggle();")); ?>
-                                        </div>
-                                    <?php endif; ?>
-                                    <span class="count-badge">-</span>
-                                    <?= link_tag(make_url('project_issues', array('project_key' => \pachno\core\framework\Context::getCurrentProject()->getKey(), 'saved_search' => $a_savedsearch->getID(), 'search' => true)), __($a_savedsearch->getName())); ?>
-                                <?php else: ?>
-                                    <?= link_tag(make_url('search', array('saved_search' => $a_savedsearch->getID(), 'search' => true, 'format' => 'rss')), fa_image_tag('rss-square', ['class' => 'rss-icon']), array('title' => __('Download feed'))); ?>
-                                    <?php if ($pachno_user->canCreatePublicSearches()): ?>
-                                        <div class="action_icons">
-                                            <?= javascript_link_tag(image_tag('icon_delete.png', array('title' => __('Delete saved search'))), array('onclick' => "$('delete_search_".$a_savedsearch->getID()."').toggle();")); ?>
-                                            <?= link_tag(make_url('search', array('saved_search' => $a_savedsearch->getID(), 'search' => 0)).'#edit_modal', fa_image_tag('edit'), array('title' => __('Edit saved search'))); ?>
-                                        </div>
-                                    <?php endif; ?>
-                                    <?= link_tag(make_url('search', array('saved_search' => $a_savedsearch->getID(), 'search' => true)), __($a_savedsearch->getName())); ?>
-                                <?php endif; ?>
-                            </div>
-                            <div class="rounded_box white shadowed" style="position: absolute; width: 300px; display: none;" id="delete_search_<?= $a_savedsearch->getID(); ?>">
-                                <div class="header"><?= __('Do you really want to delete this saved search?'); ?></div>
-                                <div class="content">
-                                    <?= __('This action cannot be reverted. Note: this will not modify any issues affected by this search'); ?>
-                                    <div style="text-align: right; margin-top: 10px;">
-                                        <?= image_tag('spinning_16.gif', array('style' => 'margin-left: 5px; display: none;', 'id' => 'delete_search_'.$a_savedsearch->getID().'_indicator')); ?>
-                                        <?php if (\pachno\core\framework\Context::isProjectContext()): ?>
-                                            <input type="submit" onclick="Pachno.Search.deleteSavedSearch('<?= make_url('project_issues', array('project_key' => \pachno\core\framework\Context::getCurrentProject()->getKey(), 'saved_search_id' => $a_savedsearch->getID(), 'search' => 0, 'delete_saved_search' => true)); ?>', <?= $a_savedsearch->getID(); ?>);" value="<?= __('Yes, delete'); ?>" style="font-weight: bold;">
-                                        <?php else: ?>
-                                            <input type="submit" onclick="Pachno.Search.deleteSavedSearch('<?= make_url('search', array('saved_search_id' => $a_savedsearch->getID(), 'search' => 0, 'delete_saved_search' => true)); ?>', <?= $a_savedsearch->getID(); ?>);" value="<?= __('Yes, delete'); ?>" style="font-weight: bold;">
-                                        <?php endif; ?>
-                                        <?= __('%yes_delete or %cancel', array('%yes_delete' => '', '%cancel' => javascript_link_tag(__('cancel'), array('onclick' => "$('delete_search_".$a_savedsearch->getID()."').toggle();")))); ?>
-                                    </div>
-                                </div>
-                            </div>
-                            <?php if ($a_savedsearch->getDescription() != ''): ?>
-                                <div style="clear: both; padding: 0 0 10px 3px;"><?= $a_savedsearch->getDescription(); ?></div>
-                            <?php endif; ?>
-                        </li>
-                    <?php endforeach; ?>
-                <?php else: ?>
-                    <li class="no_items" style="font-size: 1em;" id="no_public_saved_searches"><?= (\pachno\core\framework\Context::isProjectContext()) ? __("There are no saved searches for this project") : __("There are no public saved searches"); ?></li>
-                <?php endif; ?>
-            </ul>
-        </div>
-    </div>
-</td>
+</nav>

@@ -1,5 +1,15 @@
-.button .indicator, button .indicator { display: none; margin-right: .35em; }
-.submitting .button .indicator, .submitting button .indicator, .button.submitting .indicator, button.submitting .indicator { display: inline-block; }
+.button .indicator, button .indicator {
+  display: inline-block;
+  margin-right: 0;
+  width: 0;
+  opacity: 0;
+  transition: width .2s ease-in-out, margin-left .2s ease-in-out;
+}
+.submitting .button .indicator, .submitting button .indicator, .button.submitting .indicator, button.submitting .indicator {
+  opacity: 1;
+  width: auto;
+  margin-left: .8em;
+}
 
 input[type=submit], input[type=button], button {
   -webkit-appearance: none;
@@ -59,6 +69,9 @@ button:active, input[type=submit]:active, a.button:active {
   background: #DBD69E;
 }
 button:disabled, input[type=submit]:disabled, a.button:disabled,
+button:disabled:hover, input[type=submit]:disabled:hover, a.button:disabled:hover,
+button:disabled:active, input[type=submit]:disabled:active, a.button:disabled:active,
+button:disabled:focus, input[type=submit]:disabled:focus, a.button:disabled:focus,
 button.disabled, input[type=submit].disabled, a.button.disabled {
   box-shadow: none;
   background: rgba(200, 200, 200, .2);

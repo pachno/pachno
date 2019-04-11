@@ -57,7 +57,7 @@
 </div>
 <?php elseif ($project->isIssuelistVisibleInFrontpageSummary() && count($project->getVisibleIssuetypes())): ?>
     <div class="frontpage-results">
-        <div class="search_results" style="clear: both;">
+        <div class="search-results" style="clear: both;">
             <?php $current_spent_time = -1; ?>
             <?php include_component(
                 'search/results_normal',

@@ -10,7 +10,7 @@
             <?php $extraClass = (!isset($size) || $size == 'small') ? "small" : ""; ?>
             <?php echo image_tag($user->getAvatarURL(), array('alt' => ' ', 'class' => 'avatar '.$extraClass), true); ?>
         <?php endif; ?>
-        <?php echo (isset($displayname)) ? $displayname : $user->getNameWithUsername(); ?>
+        <?php echo (isset($displayname)) ? $displayname : $user->getName(); ?>
     </a>
     <ul class="rounded_box white shadowed user_dropdown popup_box dropdown_box <?php if (isset($class)) echo $class; ?> more_actions_dropdown">
         <li class="header">

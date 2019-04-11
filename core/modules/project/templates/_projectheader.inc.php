@@ -4,15 +4,15 @@
     $selected_project = \pachno\core\framework\Context::getCurrentProject();
 
 ?>
-<div class="project-sidebar-info">
+<div class="header-banner">
     <?php \pachno\core\framework\Event::createNew('core', 'project/templates/projectheader', $selected_project)->trigger(); ?>
-        <div class="project-name">
+        <div class="header-name">
             <div class="image-container">
                 <?php echo image_tag($selected_project->getLargeIconName(), ['alt' => $selected_project->getName()], true); ?>
             </div>
-            <span class="project-name-span">
+            <span class="name-container">
                 <span><?php echo $selected_project->getName(); ?></span>
-                <span class="project-sub-page"><?php echo ($subpage != '') ? $subpage : __('Project dashboard'); ?></span>
+                <span class="info-container"><?php echo ($subpage != '') ? $subpage : __('Project dashboard'); ?></span>
             </span>
         </div>
         <?php \pachno\core\framework\Event::createNew('core', 'project/templates/projectheader/namelabel', $selected_project)->trigger(); ?>

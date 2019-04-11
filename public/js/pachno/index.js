@@ -248,13 +248,13 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
                     }
                 }
             }
-            if ($('bulk_action_form_top')) {
+            if ($('search-bulk-action-form')) {
                 var y = document.viewport.getScrollOffsets().top;
-                var co = $('bulk_action_form_top').up('.bulk_action_container').cumulativeOffset();
+                var co = $('search-bulk-action-form').up('.bulk_action_container').cumulativeOffset();
                 if (y >= co.top) {
-                    $('bulk_action_form_top').addClassName('fixed');
+                    $('search-bulk-action-form').addClassName('fixed');
                 } else {
-                    $('bulk_action_form_top').removeClassName('fixed');
+                    $('search-bulk-action-form').removeClassName('fixed');
                 }
             }
             if ($('whiteboard')) {
@@ -422,9 +422,7 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
 
             jQuery('body').on('change', '.fancydropdown input[type=checkbox]', Pachno.Main.updateFancyDropdownValues);
             jQuery('body').on('change', '.fancydropdown input[type=radio]', Pachno.Main.updateFancyDropdownValues);
-            jQuery('.fancydropdown').each(function () {
-                Pachno.Main.updateFancyDropdownLabel(jQuery(this));
-            });
+            Pachno.Main.updateWidgets();
 
             Pachno.Core.Pollers.Callbacks.dataPoller();
             Pachno.Main.Profile.toggleNotifications(false);
@@ -700,6 +698,7 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
             if (options.additional_params)
                 params += options.additional_params;
             var url_method = (options.url_method) ? options.url_method : 'post';
+            var $form = (options.form) ? jQuery('#' + options.form) : undefined;
 
             new Ajax.Request(url, {
                 asynchronous: true,
@@ -721,6 +720,14 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
                         if (options.loading.callback) {
                             options.loading.callback();
                         }
+                    }
+                    if ($form !== undefined) {
+                        $form.addClass('submitting');
+                        $form.find('button[type=submit]').each(function () {
+                            var $button = jQuery(this);
+                            $button.addClass('auto-disabled');
+                            $button.attr("disabled", true);
+                        })
                     }
                 },
                 onSuccess: function (response) {
@@ -782,6 +789,7 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
                     if (response.responseJSON == null && JSON != null) {
                         response.responseJSON = JSON.parse(response.responseText);
                     }
+                    Pachno.clearFormSubmit($form);
                     var json = (response.responseJSON) ? response.responseJSON : undefined;
                     if (response.responseJSON && (json.error || json.message)) {
                         Pachno.Main.Helpers.Message.error(json.error, json.message);
@@ -808,6 +816,7 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
                             options.exception.callback(json);
                         }
                     }
+                    Pachno.clearFormSubmit($form);
                 },
                 onComplete: function (response) {
                     if (Pachno.debug) {
@@ -821,9 +830,11 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
                         Pachno.Core.AjaxCalls.push({location: url, time: d, debug_id: d_id, loadtime: d_time, session_loadtime: d_session_time, calculated_loadtime: d_calculated_time });
                         Pachno.updateDebugInfo();
                     }
-                    $(options.loading.indicator).hide();
-                    if ($(options.loading.disable)) {
-                        $(options.loading.disabled).enable();
+                    if (options.loading) {
+                        $(options.loading.indicator).hide();
+                        if ($(options.loading.disable)) {
+                            $(options.loading.disabled).enable();
+                        }
                     }
                     if (options.complete) {
                         Pachno.Core._processCommonAjaxPostEvents(options.complete);
@@ -832,8 +843,20 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
                             options.complete.callback(json);
                         }
                     }
+                    Pachno.Main.updateWidgets();
                 }
             });
+        };
+
+        Pachno.clearFormSubmit = function ($form) {
+            if ($form !== undefined) {
+                $form.removeClass('submitting');
+                $form.find('button[type=submit].auto-disabled').each(function () {
+                    var $button = jQuery(this);
+                    $button.prop("disabled", false);
+                    $button.removeClass('auto-disabled');
+                })
+            }
         };
 
         Pachno.updateDebugInfo = function () {
@@ -877,7 +900,6 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
                             $('fullpage_backdrop_content').appear({duration: 0.2});
                             $('fullpage_backdrop_indicator').fade({duration: 0.2});
                             Pachno.Main.Helpers.MarkitUp($$('textarea.markuppable'));
-                            setTimeout(Pachno.Main.Helpers.initializeFancyFilters, 300);
                             if (callback)
                                 setTimeout((callback)(), 300);
                         }},
@@ -2549,14 +2571,6 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
                 success: {
                     callback: function(json) {
                         $('planning_whiteboard_columns_form_row').insert({bottom: json.component});
-                        if (json.status_element_id != undefined) {
-                            Pachno.Main.Helpers.initializeFancyFilters($(json.status_element_id));
-                            Pachno.Main.Helpers.recalculateFancyFilters($(json.status_element_id));
-                        }
-                        else {
-                            Pachno.Main.Helpers.initializeFancyFilters();
-                            Pachno.Main.Helpers.recalculateFancyFilters();
-                        }
                         Pachno.Project.Planning.Whiteboard.setSortOrder();
                     }
                 }
@@ -3071,7 +3085,6 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
                 Pachno.Project.Planning.Whiteboard.retrieveMilestoneStatus();
                 Pachno.Project.Planning.Whiteboard.retrieveWhiteboard();
             }
-            Pachno.Main.Helpers.initializeFancyFilters();
 
             jQuery('#planning_whiteboard_columns_form_row').sortable({
                 handle: '.draggable',
@@ -3608,7 +3621,7 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
         //     if (!dropdownfancylabel.hasClassName('self-updateable')) dropdownfancylabel.update($(item).dataset.displayName);
         // };
 
-        Pachno.Main.updateDropdownLabels = function ($dropdown) {
+        Pachno.Main.updateFancyDropdownLabel = function ($dropdown) {
             var $label = $dropdown.find('> .value');
             if ($label.length > 0) {
                 var auto_close = false;
@@ -3635,17 +3648,25 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
                 }
 
                 if (auto_close) {
-                    $dropdown.removeClass('selected');
+                    $dropdown.removeClass('active');
                 }
             }
         };
 
         Pachno.Main.updateFancyDropdownValues = function (event) {
             event.stopPropagation();
+            event.stopImmediatePropagation();
+            event.preventDefault();
+            console.log('updating labels');
             var $dropdown = jQuery(this).closest('.fancydropdown');
-            Pachno.Main.updateDropdownLabels($dropdown);
+            Pachno.Main.updateFancyDropdownLabel($dropdown);
         };
 
+        Pachno.Main.updateWidgets = function () {
+            jQuery('.fancydropdown').each(function () {
+                Pachno.Main.updateFancyDropdownLabel(jQuery(this));
+            });
+        };
 
         Pachno.Project.Milestone.markFinished = function (form) {
             var url = form.action;
@@ -3996,7 +4017,6 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
         Pachno.Project._submitDetails = function (url, form_id, pid) {
             Pachno.Main.Helpers.ajax(url, {
                 form: form_id,
-                loading: {indicator: form_id + '_indicator'},
                 success: {
                     callback: function (json) {
                         if ($('project_name_span'))
@@ -4122,10 +4142,14 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
         Pachno.Project.updatePrefix = function (url, project_id) {
             Pachno.Main.Helpers.ajax(url, {
                 form: 'project_info',
-                loading: {indicator: 'project_key_indicator'},
-                success: {update: 'project_key_input'}
+                success: {
+                    update: 'project_key_input',
+                    callback: function () {
+                        Pachno.clearFormSubmit(jQuery('#project_info'));
+                    }
+                }
             });
-        }
+        };
 
         Pachno.Project.clearReleaseCenterFilters = function () {
             var prcc = $('project_release_center_container');
@@ -6241,7 +6265,7 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
                     }
                 },
                 success: {
-                    update: 'search_results',
+                    update: 'search-results',
                     callback: function() {
                         jQuery('.paging_spinning').hide();
                     }
@@ -6287,7 +6311,7 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
 
         Pachno.Search.checkToggledCheckboxes = function () {
             var num_checked = 0,
-                sr = $('search_results');
+                sr = $('search-results');
 
             if (sr) {
                 sr.select('input[type=checkbox]').each(function (elm) {
@@ -6297,20 +6321,15 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
             }
 
             if (num_checked == 0) {
-                $('search_bulk_container_top').addClassName('unavailable');
-                $('search_bulk_container_bottom').addClassName('unavailable');
-                $('bulk_action_submit_top').addClassName('disabled');
-                $('bulk_action_submit_bottom').addClassName('disabled');
+                $('search-bulk-actions').addClassName('unavailable');
+                $('bulk_action_submit').addClassName('disabled');
             } else {
-                $('search_bulk_container_top').removeClassName('unavailable');
-                $('search_bulk_container_bottom').removeClassName('unavailable');
-                if ($('bulk_action_selector_top').getValue() != '')
-                    $('bulk_action_submit_top').removeClassName('disabled');
-
-                if ($('bulk_action_selector_bottom').getValue() != '')
-                    $('bulk_action_submit_bottom').removeClassName('disabled');
+                $('search-bulk-actions').removeClassName('unavailable');
+                if ($('bulk_action_selector').getValue() != '') {
+                    $('bulk_action_submit').removeClassName('disabled');
+                }
             }
-        }
+        };
 
         Pachno.Search.toggleCheckboxes = function () {
             var do_check = true;
@@ -6355,22 +6374,22 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
             Pachno.Search.checkToggledCheckboxes();
         };
 
-        Pachno.Search.bulkContainerChanger = function (mode) {
-            var sub_container_id = 'bulk_action_subcontainer_' + $('bulk_action_selector_' + mode).getValue();
+        Pachno.Search.bulkContainerChanger = function () {
+            var selected_radio_value = jQuery('input[name=search_bulk_action]:checked', '#search-bulk-action-form').val(),
+                sub_container_id = 'bulk_action_subcontainer_' + selected_radio_value;
+
+            console.log(sub_container_id);
             $$('.bulk_action_subcontainer').each(function (element) {
                 element.hide();
             });
-            if ($(sub_container_id + '_top')) {
-                $(sub_container_id + '_top').show();
-                $('bulk_action_submit_top').removeClassName('disabled');
-                $(sub_container_id + '_bottom').show();
-                $('bulk_action_submit_bottom').removeClassName('disabled');
-                var dropdown_element = $(sub_container_id + '_' + mode).down('.focusable');
+            if ($(sub_container_id)) {
+                $(sub_container_id).show();
+                $('bulk_action_submit').removeClassName('disabled');
+                var dropdown_element = $(sub_container_id + '').down('.focusable');
                 if (dropdown_element != undefined)
                     dropdown_element.focus();
             } else {
-                $('bulk_action_submit_top').addClassName('disabled');
-                $('bulk_action_submit_bottom').addClassName('disabled');
+                $('bulk_action_submit').addClassName('disabled');
             }
         };
 
@@ -6381,7 +6400,7 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
             if ($('bulk_action_selector_' + mode).getValue() == '') {
                 $('bulk_action_submit_' + mode).addClassName('disabled');
                 $('bulk_action_submit_' + opp_mode).addClassName('disabled');
-            } else if (!$('search_bulk_container_' + mode).hasClassName('unavailable')) {
+            } else if (!$('search-bulk-actions_' + mode).hasClassName('unavailable')) {
                 $('bulk_action_submit_' + mode).removeClassName('disabled');
                 $('bulk_action_submit_' + opp_mode).removeClassName('disabled');
             }
@@ -6531,20 +6550,20 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
             });
         };
 
-        Pachno.Search.bulkUpdate = function (url, mode) {
-            if ($('bulk_action_selector_' + mode).getValue() == '')
+        Pachno.Search.bulkUpdate = function (url) {
+            if ($('bulk_action_selector').getValue() == '')
                 return;
             var issues = '';
-            $('search_results').select('tbody input[type=checkbox]').each(function (element) {
+            $('search-results').select('tbody input[type=checkbox]').each(function (element) {
                 if (element.checked)
                     issues += '&issue_ids[' + element.getValue() + ']=' + element.getValue();
             });
 
-            if ($('bulk_action_selector_' + mode).getValue() == 'perform_workflow_step') {
-                Pachno.Main.Helpers.Backdrop.show($('bulk_action_subcontainer_perform_workflow_step_' + mode + '_url').getValue() + issues);
+            if ($('bulk_action_selector').getValue() == 'perform_workflow_step') {
+                Pachno.Main.Helpers.Backdrop.show($('bulk_action_subcontainer_perform_workflow_step_url').getValue() + issues);
             } else {
                 Pachno.Main.Helpers.ajax(url, {
-                    form: 'bulk_action_form_' + mode,
+                    form: 'search-bulk-action-form',
                     additional_params: issues,
                     loading: {
                         indicator: 'fullpage_backdrop',
@@ -6559,17 +6578,17 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
         };
 
         Pachno.Search.moveDown = function (event) {
-            var selected_elements = $('search_results').select('tr.selected');
+            var selected_elements = $('search-results').select('tr.selected');
             var old_selected_element = (selected_elements.size() == 0) ? undefined : selected_elements[0];
-            var new_selected_element = (old_selected_element == undefined) ? $('search_results').select('table tbody tr')[0] : old_selected_element.next();
+            var new_selected_element = (old_selected_element == undefined) ? $('search-results').select('table tbody tr')[0] : old_selected_element.next();
 
             Pachno.Search.move(old_selected_element, new_selected_element, event, true);
         };
 
         Pachno.Search.moveUp = function (event) {
-            var selected_elements = $('search_results').select('tr.selected');
+            var selected_elements = $('search-results').select('tr.selected');
             var old_selected_element = (selected_elements.size() == 0) ? undefined : selected_elements[selected_elements.size() - 1];
-            var new_selected_element = (old_selected_element == undefined) ? $('search_results').select('table tbody tr')[0] : old_selected_element.previous();
+            var new_selected_element = (old_selected_element == undefined) ? $('search-results').select('table tbody tr')[0] : old_selected_element.previous();
 
             Pachno.Search.move(old_selected_element, new_selected_element, event, true);
         };
@@ -6582,7 +6601,7 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
                 var ns = $(new_selected_element);
                 ns.addClassName('selected');
                 var offsets = ns.cumulativeOffset();
-                var dimensions = ($('bulk_action_form_top')) ? $('bulk_action_form_top').getDimensions() : ns.getDimensions();
+                var dimensions = ($('search-bulk-action-form')) ? $('search-bulk-action-form').getDimensions() : ns.getDimensions();
                 if (event)
                     event.preventDefault();
                 if (move) {
@@ -6602,7 +6621,7 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
         }
 
         Pachno.Search.moveTo = function (event) {
-            var selected_elements = $('search_results').select('tr.selected');
+            var selected_elements = $('search-results').select('tr.selected');
             if (selected_elements.size() > 0) {
                 var selected_issue = selected_elements[0];
                 var link = selected_issue.select('a.issue_link')[0];
@@ -6643,43 +6662,10 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
                     success: {
                         callback: function (json) {
                             results_container.update(json.results);
-                            window.setTimeout(function () {
-                                results_container.select('li.filtervalue').each(function (filtervalue) {
-                                    filtervalue.on('click', Pachno.Search.toggleFilterValue);
-                                });
-                            }, 250);
                             element.removeClassName('filtering');
                         }
                     }
                 });
-            }
-        };
-
-        Pachno.Search.initializeFilterSearchValues = function (filter) {
-            var si = filter.down('input[type=search]');
-            if (si != undefined)
-            {
-                si.dataset.previousValue = '';
-                if (si.dataset.callbackUrl !== undefined) {
-                    var fk = filter.dataset.filterKey;
-                    si.on('keyup', function (event, element) {
-                        if (Pachno.ift_observers[fk])
-                            clearTimeout(Pachno.ift_observers[fk]);
-                        if ((si.getValue().length >= 3 || si.getValue().length == 0) && si.getValue() != si.dataset.lastValue) {
-                            Pachno.ift_observers[fk] = setTimeout(function () {
-                                Pachno.Search.getFilterValues(si);
-                                si.dataset.lastValue = si.getValue();
-                            }, 1000);
-                        }
-                    });
-                } else {
-                    si.on('keyup', Pachno.Search.filterFilterOptions);
-                }
-                si.on('click', function (event, element) {
-                    event.stopPropagation();
-                    event.preventDefault();
-                });
-                filter.addClassName('searchable');
             }
         };
 
@@ -6688,8 +6674,8 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
             // filter.select('li.filtervalue').each(function (filtervalue) {
             //     filtervalue.on('click', Pachno.Search.toggleFilterValue);
             // });
-            Pachno.Search.initializeFilterSearchValues(filter);
-            Pachno.Search.initializeFilterNavigation(filter);
+            // Pachno.Search.initializeFilterSearchValues(filter);
+            // Pachno.Search.initializeFilterNavigation(filter);
             // Pachno.Search.calculateFilterDetails(filter);
             if (!hidden && filter.dataset.isdate == '') {
                 var filter_key = filter.dataset.filterkey;
@@ -6701,63 +6687,34 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
             }
         };
 
-        Pachno.Search.initializeFilterNavigation = function (filter) {
-            Event.observe(filter, 'keydown', function (event) {
-                if (Event.KEY_DOWN == event.keyCode) {
-                    Pachno.Search.moveFilterDown(event, filter);
-                    event.stopPropagation();
-                    event.preventDefault();
-                }
-                else if (Event.KEY_UP == event.keyCode) {
-                    Pachno.Search.moveFilterUp(event, filter);
-                    event.stopPropagation();
-                    event.preventDefault();
-                }
-                else if (Event.KEY_RETURN == event.keyCode) {
-                    var selected_elements = filter.select('li.highlighted');
-                    var current_selected_element = (selected_elements.size() == 0) ? undefined : selected_elements[0];
-                    if (current_selected_element != undefined) {
-                        Pachno.Search.toggleFilterValueElement(current_selected_element);
-                    }
-                }
-                else if (Event.KEY_ESC == event.keyCode) {
-                    Pachno.Search.toggleInteractiveFilterElement(filter);
-                }
-            });
-            filter.select('.filtervalue').each(function (elm) {
-                if (!elm.hasClassName('separator'))
-                    elm.addClassName('unfiltered');
-            });
-        };
-
-        Pachno.Search.filterFilterOptions = function (event, element) {
-            event.stopPropagation();
-            Pachno.Search.filterFilterOptionsElement(element);
-        };
-
         Pachno.Search.filterFilterOptionsElement = function (element) {
-            var filtervalue = element.getValue();
-            if (filtervalue !== element.dataset.previousValue) {
-                if (filtervalue !== '')
-                    element.up().addClassName('filtered');
-                else
-                    element.up().removeClassName('filtered');
+            var filtervalue = element.val().toLowerCase(),
+                $filterContainer = jQuery(element.closest('.filter-values-container'));
 
-                element.up().select('.filtervalue').each(function (elm) {
-                    if (elm.hasClassName('sticky'))
+            if (filtervalue !== element.data('previousValue')) {
+                if (filtervalue !== '') {
+                    $filterContainer.addClass('filtered');
+                } else {
+                    $filterContainer.removeClass('filtered');
+                }
+
+                $filterContainer.find('.filtervalue').each(function () {
+                    var $filterElement = jQuery(this);
+                    if ($filterElement.hasClass('sticky'))
                         return;
+
                     if (filtervalue !== '') {
-                        if (elm.innerHTML.toLowerCase().indexOf(filtervalue.toLowerCase()) !== -1 || elm.hasClassName('selected')) {
-                            elm.addClassName('hidden');
+                        if ($filterElement.text().toLowerCase().indexOf(filtervalue) !== -1 || $filterElement.hasClass('selected')) {
+                            $filterElement.addClass('visible');
                         } else {
-                            elm.removeClassName('hidden');
+                            $filterElement.removeClass('visible');
                         }
                     } else {
-                        elm.addClassName('hidden');
+                        $filterElement.addClass('visible');
                     }
-                    elm.removeClassName('highlighted');
+                    $filterElement.removeClass('highlighted');
                 });
-                element.dataset.previousValue = filtervalue;
+                element.data('previousValue', filtervalue);
             }
         };
 
@@ -6799,26 +6756,20 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
             if (this.hasClassName('disabled')) return;
 
             var filter_key = this.dataset.filter;
-            var filter_element = jQuery('#searchbuilder_filter_hiddencontainer .interactive_filter_' + filter_key);
+            var filter_element = jQuery('#search-filters-hidden-container .interactive_filter_' + filter_key);
 
             if (filter_element.data('isdate') == '') {
-                var filter_element_clone = filter_element.clone().appendTo('#searchbuilder_filterstrip_filtercontainer')[0];
-
-                setTimeout(function () {
-                    Pachno.Search.toggleInteractiveFilterElement(filter_element_clone);
-                    Pachno.Search.initializeFilterField(filter_element_clone, false);
-                }, 250);
+                var filter_element_clone = filter_element.clone().appendTo('#search-filters')[0];
             }
             else {
-                $('searchbuilder_filterstrip_filtercontainer').insert($('interactive_filter_' + filter_key).remove());
-                setTimeout(function () {
-                    Pachno.Search.toggleInteractiveFilterElement($('interactive_filter_' + filter_key));
-                }, 250);
-                this.addClassName('disabled');
+                $('search-filters').insert($('interactive_filter_' + filter_key).remove());
             }
+            this.addClassName('disabled');
         };
 
-        Pachno.Search.removeFilter = function (element) {
+        Pachno.Search.removeFilter = function (event) {
+            var element = jQuery(this).closest('.filter');
+
             if (jQuery(element).data('isdate') == '') {
                 var do_update = (jQuery('filter_' + element.dataset.filterkey + '_value_input', element).val() != '');
                 element.remove();
@@ -6826,10 +6777,7 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
             else {
                 var do_update = ($('filter_' + element.dataset.filterkey + '_value_input').getValue() != '');
                 $('additional_filter_' + element.dataset.filterkey + '_link').removeClassName('disabled');
-                element.select('.filtervalue').each(function (elm) {
-
-                });
-                $('searchbuilder_filter_hiddencontainer').insert(element.remove());
+                $('search-filters-hidden-container').insert(element.remove());
             }
 
             if (do_update)
@@ -6864,14 +6812,6 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
         Pachno.Search.initializeFilters = function () {
             var fif = $('find_issues_form');
             fif.reset();
-            $$('#searchbuilder_filter_hiddencontainer .filter').each(function (filter) {
-                Pachno.Search.initializeFilterField(filter, true);
-            });
-            $$('#find_issues_form .filter').each(function (filter) {
-                Pachno.Search.initializeFilterField(filter, false);
-            });
-            Pachno.Search.initializeFilterSearchValues($('search_column_settings_container'));
-            Pachno.Search.initializeFilterSearchValues($('search_grouping_container'));
             $('search_columns_container').select('li').each(function (element) {
                 element.on('click', Pachno.Search.updateColumnVisibility);
             });
@@ -6881,8 +6821,25 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
             $$('.template-picker').each(function (element) {
                 element.on('click', Pachno.Search.pickTemplate);
             });
-            var sff = $('searchbuilder_filterstrip_filtercontainer');
-            $('interactive_filters_availablefilters_container').select('li').each(function (element) {
+
+            let $body = jQuery('body');
+            $body.on('change', 'input[type=radio].bulk-action-checkbox', Pachno.Search.bulkContainerChanger);
+
+            $body.on('change', '.filter .fancydropdown input[type=checkbox],.filter .fancydropdown input[type=radio]', function () {
+                var filter = jQuery(this);
+                // if (jQuery('.filter_' + filter.data('filterkey'), filter).length) {
+                //     jQuery('.filter_' + filter.data('filterkey'), filter).data('dirty', 'dirty');
+                // }
+                // else {
+                //     $('filter_' + filter.data('filterkey')).data('dirty', 'dirty');
+                // }
+                Pachno.Search.liveUpdate(true);
+            });
+
+            Pachno.Search.initializeIssuesPerPageSlider();
+
+            var sff = $('search-filters');
+            $('add-search-filter-button').select('.list-item').each(function (element) {
                 element.on('click', Pachno.Search.addFilter);
                 if (sff.down('#interactive_filter_' + element.dataset.filter)) {
                     element.addClassName('disabled');
@@ -6973,8 +6930,6 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
             Pachno.Search.toggleInteractiveFilterElement(this);
         };
 
-        // Pachno.Search.initializeIssuesPerPageSlider();
-
         Pachno.Search.moveIssuesPerPageSlider = function (step) {
             var steps = [25, 50, 100, 250, 500];
             var value = steps[step - 1];
@@ -7029,16 +6984,13 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
                     callback: function (json) {
                         filters_containers.each(function (details) {
                             details['container'].update(json.results[details['filter'].dataset.filterkey]);
-                            window.setTimeout(function () {
-                                details['container'].select('li.filtervalue').each(function (filtervalue) {
-                                    filtervalue.on('click', Pachno.Search.toggleFilterValue);
-                                });
-                                var si = details['filter'].down('input[type=search]');
-                                if (si != undefined) {
-                                    si.dataset.previousValue = '';
-                                    Pachno.Search.filterFilterOptionsElement(si);
-                                }
-                            }, 250);
+                            // window.setTimeout(function () {
+                            //     var si = details['filter'].down('input[type=search]');
+                            //     if (si != undefined) {
+                            //         si.dataset.previousValue = '';
+                            //         Pachno.Search.filterFilterOptionsElement(si);
+                            //     }
+                            // }, 250);
                             details['container'].removeClassName('updating');
                         });
                     }
@@ -7063,7 +7015,7 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
         Pachno.Search.updateSavedSearchCounts = function () {
             var search_ids = '',
                 searchitems = $$('.savedsearch-item'),
-                project_id = $('project-menu').dataset.projectId;
+                project_id = ($('project-menu')) ? $('project-menu').dataset.projectId : 0;
 
             searchitems.each(function (searchitem) {
                 search_ids += '&search_ids[]='+$(searchitem).dataset.searchId;
@@ -7095,7 +7047,7 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
             var results_loaded = (fif.dataset.resultsLoaded != undefined && fif.dataset.resultsLoaded != '');
 
             if (force == true || results_loaded) {
-                $('project-menu').addClassName('collapsed');
+                jQuery('nav.sidebar').addClass('collapsed');
                 Pachno.Main.Helpers.ajax(url, {
                     params: parameters,
                     loading: {
@@ -7106,7 +7058,7 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
                             }
                         }
                     },
-                    success: {update: 'search_results'},
+                    success: {update: 'search-results'},
                     complete: {
                         callback: function (json) {
                             if (!results_loaded) {
@@ -7120,7 +7072,7 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
                             $('interactive_save_button').show();
                             fif.dataset.resultsLoaded = true;
                             fif.dataset.isSaved = undefined;
-                            $('search_results').select('th').each(function (header_elm) {
+                            $('search-results').select('th').each(function (header_elm) {
                                 if (!header_elm.hasClassName('nosort')) {
                                     header_elm.on('click', Pachno.Search.sortResults);
                                 }
@@ -7142,12 +7094,11 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
         };
 
         Pachno.Search.initializeIssuesPerPageSlider = function () {
-            var ipp_slider = $('issues_per_page_slider');
-            if (ipp_slider.dataset.initialized == undefined) {
-                var fip_value = $('filter_issues_per_page');
-                var ipp_value = $('issues_per_page_slider_value');
+            var $ipp_slider = jQuery('#issues-per-page-slider');
+            if (!$ipp_slider.data('initialized')) {
+                var filter_ipp_value = jQuery('filter_issues_per_page');
                 var step_start = 1;
-                switch (parseInt(fip_value.getValue())) {
+                switch (parseInt(filter_ipp_value.val())) {
                     case 25:
                         step_start = 1;
                         break;
@@ -7164,31 +7115,37 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
                         step_start = 5;
                         break;
                 }
-                new Control.Slider('issues_per_page_handle', ipp_slider, {
-                    range: $R(1, 5),
-                    values: [1, 2, 3, 4, 5],
-                    sliderValue: step_start,
-                    onSlide: function (step) {
-                        Pachno.Search.moveIssuesPerPageSlider(step);
-                    },
-                    onChange: function (step) {
-                        var value = Pachno.Search.moveIssuesPerPageSlider(step);
-                        Pachno.Search.setIssuesPerPage(value);
-                    }
-                });
-                ipp_slider.dataset.initialized = true;
+
+                jQuery('#issues-per-page-slider').slider();
+                // new Control.Slider('issues_per_page_handle', ipp_slider, {
+                //     range: $R(1, 5),
+                //     values: [1, 2, 3, 4, 5],
+                //     sliderValue: step_start,
+                //     onSlide: function (step) {
+                //         Pachno.Search.moveIssuesPerPageSlider(step);
+                //     },
+                //     onChange: function (step) {
+                //         var value = Pachno.Search.moveIssuesPerPageSlider(step);
+                //         Pachno.Search.setIssuesPerPage(value);
+                //     }
+                // });
+                $ipp_slider.data('initialized', true);
             }
         };
 
         Pachno.Search.setFilterValue = function (element, checked) {
-            if (element.hasClassName('separator'))
-                return;
-            if (checked) {
-                element.addClassName('selected');
-                element.down('input').checked = true;
+            if (element) {
+                if (element.hasClassName('separator'))
+                    return;
+                if (checked) {
+                    element.addClassName('selected');
+                    element.down('input').checked = true;
+                } else {
+                    element.removeClassName('selected');
+                    element.down('input').checked = false;
+                }
             } else {
-                element.removeClassName('selected');
-                element.down('input').checked = false;
+                console.error(element, 'not an element');
             }
         };
 
@@ -7243,35 +7200,6 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
                     }
                 }
             });
-        };
-
-        Pachno.Search.toggleFilterValue = function (event, element) {
-            event.stopPropagation();
-            event.stopImmediatePropagation();
-            event.preventDefault();
-            Pachno.Search.toggleFilterValueElement(this);
-        };
-
-        Pachno.Search.toggleFilterValueElement = function (element, checked) {
-            if (checked == undefined) {
-                if (element.down('input').checked) {
-                    Pachno.Search.setFilterValue(element, false);
-                } else {
-                    Pachno.Search.setFilterValue(element, true);
-                }
-            } else {
-                Pachno.Search.setFilterValue(element, checked);
-            }
-            Pachno.Search.setFilterSelectionGroupSelections(element);
-            var f_element = element.up('.filter');
-            Pachno.Search.calculateFilterDetails(f_element);
-            if (jQuery('.filter_' + f_element.dataset.filterkey + '_value_input', f_element).length) {
-                jQuery('.filter_' + f_element.dataset.filterkey + '_value_input', f_element).data('dirty', 'dirty');
-            }
-            else {
-                $('filter_' + f_element.dataset.filterkey + '_value_input').dataset.dirty = 'dirty';
-            }
-            Pachno.Search.liveUpdate(true);
         };
 
         Pachno.Search.calculateFilterDetails = function (filter) {
@@ -7359,9 +7287,9 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
                     Pachno.Search.moveTo(event);
                 }
             });
-            $('search_results').select('tr').each(function (element) {
+            $('search-results').select('tr').each(function (element) {
                 element.observe('click', function (event) {
-                    var selected_elements = $('search_results').select('tr.selected');
+                    var selected_elements = $('search-results').select('tr.selected');
                     var old_selected_element = (selected_elements.size() == 0) ? undefined : selected_elements[selected_elements.size() - 1];
                     Pachno.Search.move(old_selected_element, this, null, false);
                 });
@@ -7892,62 +7820,6 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
             });
         };
 
-        Pachno.Main.Helpers.toggleFancyFilterElement = function (element) {
-            var is_selected = element.hasClassName('selected');
-            $$('.fancyfilter').each(function (elm) {
-                if (elm != element)
-                    elm.removeClassName('selected');
-            });
-            if (is_selected)
-            {
-                element.removeClassName('selected');
-            }
-            else
-            {
-                element.addClassName('selected');
-            }
-        };
-
-        Pachno.Main.Helpers.initializeFancyFilterField = function (filter) {
-            if (!filter.hasClassName('initialized')) {
-                filter.on('click', Pachno.Main.Helpers.toggleFancyFilter);
-                filter.select('li.filtervalue').each(function (filtervalue) {
-                    filtervalue.on('click', Pachno.Main.Helpers.toggleFancyFilterValue);
-                });
-                Pachno.Main.Helpers.calculateFancyFilterDetails(filter);
-            }
-        };
-
-        Pachno.Main.Helpers.toggleFancyFilter = function (event, element) {
-            if (event) {
-                event.stopPropagation();
-                if (['INPUT'].indexOf(event.target.nodeName) != -1)
-                    return;
-            }
-            Pachno.Main.Helpers.toggleFancyFilterElement(this);
-        };
-
-        Pachno.Main.Helpers.setFancyFilterValue = function (element, checked) {
-            if (element.hasClassName('separator'))
-                return;
-            if (checked) {
-                element.addClassName('selected');
-                element.down('input').checked = true;
-            } else {
-                element.removeClassName('selected');
-                element.down('input').checked = false;
-            }
-        };
-
-        Pachno.Main.Helpers.toggleFancyFilterValue = function (event, element) {
-            event.stopPropagation();
-            event.stopImmediatePropagation();
-            event.preventDefault();
-            if (!$(this).hasClassName('disabled')) {
-                Pachno.Main.Helpers.toggleFancyFilterValueElement(this);
-            }
-        };
-
         Pachno.Main.Helpers.setFancyFilterSelectionGroupSelections = function (element) {
             var current_element = element;
             if (element.dataset.exclusive !== undefined) {
@@ -8014,27 +7886,6 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
             if (element.dataset.exclusive !== undefined) Pachno.Main.Helpers.toggleFancyFilterElement(f_element);
         };
 
-        Pachno.Main.Helpers.calculateFancyFilterDetails = function (filter) {
-            var string = '';
-            var value_string = '';
-            var selected_elements = [];
-            var selected_values = [];
-            filter.select('input[type=checkbox]').each(function (element) {
-                if (element.checked) {
-                    selected_elements.push(element.dataset.text);
-                    selected_values.push(element.getValue());
-                }
-            });
-            if (selected_elements.size() > 0) {
-                string = selected_elements.join(', ');
-                value_string = selected_values.join(',');
-            } else {
-                string = filter.dataset.noSelectionValue;
-            }
-            Pachno.Main.Helpers.updateFancyFilterVisibleValue(filter, string);
-            $('filter_' + filter.dataset.filterkey + '_value_input').setValue(value_string);
-        };
-
         Pachno.Main.Helpers.updateFancyFilterVisibleValue = function (filter, value) {
             filter.down('.value').update(value);
         };
@@ -8049,15 +7900,6 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
                     preferredFormat: 'hex'
                 });
             });
-        };
-
-        Pachno.Main.Helpers.initializeFancyFilters = function(fancyfilter) {
-            if (fancyfilter != undefined) {
-                Pachno.Main.Helpers.initializeFancyFilterField(fancyfilter);
-            }
-            else {
-                $$('.fancyfilter').each(Pachno.Main.Helpers.initializeFancyFilterField);
-            }
         };
 
         Pachno.Core.getPluginUpdates = function (type) {

@@ -1,35 +1,48 @@
 <?php
 
+    use pachno\core\framework;
+    use pachno\core\framework\Context;
+
+    /**
+     * @var \pachno\core\entities\User $pachno_user
+     * @var framework\Response $pachno_response
+     * @var framework\Request $pachno_request
+     * @var boolean $show_results
+     * @var string $searchtitle
+     * @var string $search_message
+     * @var string $search_error
+     */
+
     if ($show_results)
     {
         $pachno_response->setTitle($searchtitle);
     }
     else
     {
-        $pachno_response->setTitle((\pachno\core\framework\Context::isProjectContext()) ? __('Find issues for %project_name', array('%project_name' => \pachno\core\framework\Context::getCurrentProject()->getName())) : __('Find issues'));
+        $pachno_response->setTitle((Context::isProjectContext()) ? __('Find issues for %project_name', ['%project_name' => Context::getCurrentProject()->getName()]) : __('Find issues'));
     }
-    if (\pachno\core\framework\Context::isProjectContext())
+    if (Context::isProjectContext())
     {
-        $pachno_response->addBreadcrumb(__('Issues'), make_url('project_issues', array('project_key' => \pachno\core\framework\Context::getCurrentProject()->getKey())));
-        $pachno_response->addFeed(make_url('project_open_issues', array('project_key' => \pachno\core\framework\Context::getCurrentProject()->getKey(), 'format' => 'rss')), __('Open issues for %project_name', array('%project_name' => \pachno\core\framework\Context::getCurrentProject()->getName())));
-        $pachno_response->addFeed(make_url('project_allopen_issues', array('project_key' => \pachno\core\framework\Context::getCurrentProject()->getKey(), 'format' => 'rss')), __('Open issues for %project_name (including subprojects)', array('%project_name' => \pachno\core\framework\Context::getCurrentProject()->getName())));
-        $pachno_response->addFeed(make_url('project_closed_issues', array('project_key' => \pachno\core\framework\Context::getCurrentProject()->getKey(), 'format' => 'rss')), __('Closed issues for %project_name', array('%project_name' => \pachno\core\framework\Context::getCurrentProject()->getName())));
-        $pachno_response->addFeed(make_url('project_allclosed_issues', array('project_key' => \pachno\core\framework\Context::getCurrentProject()->getKey(), 'format' => 'rss')), __('Closed issues for %project_name (including subprojects)', array('%project_name' => \pachno\core\framework\Context::getCurrentProject()->getName())));
-        $pachno_response->addFeed(make_url('project_wishlist_issues', array('project_key' => \pachno\core\framework\Context::getCurrentProject()->getKey(), 'format' => 'rss')), __('Wishlist for %project_name', array('%project_name' => \pachno\core\framework\Context::getCurrentProject()->getName())));
-        $pachno_response->addFeed(make_url('project_milestone_todo_list', array('project_key' => \pachno\core\framework\Context::getCurrentProject()->getKey(), 'format' => 'rss')), __('Milestone todo-list for %project_name', array('%project_name' => \pachno\core\framework\Context::getCurrentProject()->getName())));
-        $pachno_response->addFeed(make_url('project_month_issues', array('project_key' => \pachno\core\framework\Context::getCurrentProject()->getKey(), 'format' => 'rss')), __('Issues reported for %project_name this month', array('%project_name' => \pachno\core\framework\Context::getCurrentProject()->getName())));
-        $pachno_response->addFeed(make_url('project_last_issues', array('project_key' => \pachno\core\framework\Context::getCurrentProject()->getKey(), 'format' => 'rss', 'units' => 30, 'time_unit' => 'days')), __('Issues reported for %project_name last 30 days', array('%project_name' => \pachno\core\framework\Context::getCurrentProject()->getName())));
-        if (!\pachno\core\entities\User::isThisGuest())
+        $pachno_response->addBreadcrumb(__('Issues'), make_url('project_issues', ['project_key' => Context::getCurrentProject()->getKey()]));
+        $pachno_response->addFeed(make_url('project_open_issues', ['project_key' => Context::getCurrentProject()->getKey(), 'format' => 'rss']), __('Open issues for %project_name', ['%project_name' => Context::getCurrentProject()->getName()]));
+        $pachno_response->addFeed(make_url('project_allopen_issues', ['project_key' => Context::getCurrentProject()->getKey(), 'format' => 'rss']), __('Open issues for %project_name (including subprojects)', array('%project_name' => Context::getCurrentProject()->getName())));
+        $pachno_response->addFeed(make_url('project_closed_issues', ['project_key' => Context::getCurrentProject()->getKey(), 'format' => 'rss']), __('Closed issues for %project_name', array('%project_name' => Context::getCurrentProject()->getName())));
+        $pachno_response->addFeed(make_url('project_allclosed_issues', ['project_key' => Context::getCurrentProject()->getKey(), 'format' => 'rss']), __('Closed issues for %project_name (including subprojects)', array('%project_name' => Context::getCurrentProject()->getName())));
+        $pachno_response->addFeed(make_url('project_wishlist_issues', ['project_key' => Context::getCurrentProject()->getKey(), 'format' => 'rss']), __('Wishlist for %project_name', array('%project_name' => Context::getCurrentProject()->getName())));
+        $pachno_response->addFeed(make_url('project_milestone_todo_list', ['project_key' => Context::getCurrentProject()->getKey(), 'format' => 'rss']), __('Milestone todo-list for %project_name', array('%project_name' => Context::getCurrentProject()->getName())));
+        $pachno_response->addFeed(make_url('project_month_issues', ['project_key' => Context::getCurrentProject()->getKey(), 'format' => 'rss']), __('Issues reported for %project_name this month', array('%project_name' => Context::getCurrentProject()->getName())));
+        $pachno_response->addFeed(make_url('project_last_issues', ['project_key' => Context::getCurrentProject()->getKey(), 'format' => 'rss', 'units' => 30, 'time_unit' => 'days']), __('Issues reported for %project_name last 30 days', array('%project_name' => Context::getCurrentProject()->getName())));
+        if (!$pachno_user->isGuest())
         {
-            $pachno_response->addFeed(make_url('project_my_reported_issues', array('project_key' => \pachno\core\framework\Context::getCurrentProject()->getKey(), 'format' => 'rss')), __('Issues reported by me') . ' ('.\pachno\core\framework\Context::getCurrentProject()->getName().')');
-            $pachno_response->addFeed(make_url('project_my_assigned_issues', array('project_key' => \pachno\core\framework\Context::getCurrentProject()->getKey(), 'format' => 'rss')), __('Open issues assigned to me') . ' ('.\pachno\core\framework\Context::getCurrentProject()->getName().')');
-            $pachno_response->addFeed(make_url('project_my_teams_assigned_issues', array('project_key' => \pachno\core\framework\Context::getCurrentProject()->getKey(), 'format' => 'rss')), __('Open issues assigned to my teams') . ' ('.\pachno\core\framework\Context::getCurrentProject()->getName().')');
+            $pachno_response->addFeed(make_url('project_my_reported_issues', array('project_key' => Context::getCurrentProject()->getKey(), 'format' => 'rss')), __('Issues reported by me') . ' ('. Context::getCurrentProject()->getName().')');
+            $pachno_response->addFeed(make_url('project_my_assigned_issues', array('project_key' => Context::getCurrentProject()->getKey(), 'format' => 'rss')), __('Open issues assigned to me') . ' ('. Context::getCurrentProject()->getName().')');
+            $pachno_response->addFeed(make_url('project_my_teams_assigned_issues', array('project_key' => Context::getCurrentProject()->getKey(), 'format' => 'rss')), __('Open issues assigned to my teams') . ' ('. Context::getCurrentProject()->getName().')');
         }
     }
     else
     {
         $pachno_response->addBreadcrumb(__('Issues'), make_url('search'));
-        if (!\pachno\core\entities\User::isThisGuest())
+        if (!$pachno_user->isGuest())
         {
             $pachno_response->addFeed(make_url('my_reported_issues', array('format' => 'rss')), __('Issues reported by me'));
             $pachno_response->addFeed(make_url('my_assigned_issues', array('format' => 'rss')), __('Open issues assigned to you'));
@@ -39,7 +52,11 @@
 
 ?>
 <div class="content-with-sidebar">
-    <?php include_component('project/sidebar'); ?>
+    <?php if (Context::isProjectContext()): ?>
+        <?php include_component('project/sidebar'); ?>
+    <?php else: ?>
+        <?php include_component('search/sidebar', ['hide' => $show_results]); ?>
+    <?php endif; ?>
     <div id="find_issues">
         <?php if ($search_error !== null): ?>
             <div class="redbox" style="margin: 0; vertical-align: middle;" id="search_error">
@@ -57,11 +74,21 @@
             <span id="findissues_search_title" style="<?php if (!$searchtitle) echo 'display: none'; ?>"><?php echo $searchtitle; ?></span>
             <span id="findissues_search_generictitle" style="<?php if ($searchtitle) echo 'display: none'; ?>"><?php echo __("Find issues"); ?></span>
             <span id="findissues_num_results" class="count-badge" style="<?php if (!$show_results) echo 'display: none;'; ?>"><?php echo __('%number_of issue(s)', array('%number_of' => '<span id="findissues_num_results_span">-</span>')); ?></span>
+            <?php if (!$pachno_user->isGuest()) include_component('search/bulkactions', array('mode' => 'bottom')); ?>
         </div>
         <?php include_component('search/searchbuilder', compact('search_object', 'show_results')); ?>
         <div id="search_results_container">
             <div id="search_results_loading_indicator" style="display: none;"><?php echo image_tag('spinning_30.gif'); ?></div>
-            <div id="search_results" class="search_results">
+            <div id="search-results" class="search-results">
+                <div class="onboarding large">
+                    <div class="image-container">
+                        <?= image_tag('/unthemed/onboarding_search_placeholder.png', [], true); ?>
+                    </div>
+                    <div class="helper-text">
+                        <?= __("Maybe you have issues, maybe you don't"); ?><br>
+                        <?= __('Start typing or selecting filters above to find out'); ?>
+                    </div>
+                </div>
             </div>
         </div>
         <script>
