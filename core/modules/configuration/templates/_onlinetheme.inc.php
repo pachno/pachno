@@ -9,7 +9,7 @@
     </div>
     <div class="theme-actions plugin-actions">
         <button class="install-button button" data-key="<?php echo htmlentities($onlinetheme->key); ?>"><?php echo image_tag('spinning_16.gif'); ?><span><?php echo __('Add'); ?></span></button>
-        <div class="status_badge theme_status plugin_status enabled">
+        <div class="status-badge theme_status plugin_status enabled">
             <?php echo __('Enabled'); ?>
         </div>
     </div>

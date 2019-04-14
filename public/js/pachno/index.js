@@ -218,7 +218,7 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
                 var y = document.viewport.getScrollOffsets().top;
                 var compare_coord = (vihc.hasClassName('fixed')) ? iv.offsetTop - 15 : vihc.offsetTop;
                 if (y >= compare_coord) {
-                    $('issue_main_container').addClassName('scroll-top');
+                    $('issue-main-container').addClassName('scroll-top');
                     $('issue_details_container').addClassName('scroll-top');
                     vihc.addClassName('fixed');
                     $('workflow_actions').addClassName('fixed');
@@ -236,7 +236,7 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
                         $('add_comment_button_container').update(button);
                     }
                 } else {
-                    $('issue_main_container').removeClassName('scroll-top');
+                    $('issue-main-container').removeClassName('scroll-top');
                     $('issue_details_container').removeClassName('scroll-top');
                     vihc.removeClassName('fixed');
                     $('workflow_actions').removeClassName('fixed');
@@ -2597,7 +2597,7 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
             $$('#whiteboard-headers .td').each(function (column, index) {
                 var counts = 0;
                 var status_counts = [];
-                column.select('.status_badge').each(function (status) {
+                column.select('.status-badge').each(function (status) {
                     status_counts[parseInt(status.dataset.statusId)] = 0;
                 });
                 $$('#whiteboard .tbody .tr').each(function (row) {
@@ -2613,7 +2613,7 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
                 });
                 if (column.down('.column_count.primary')) column.down('.column_count.primary').update(counts);
                 if (column.down('.column_count .count')) column.down('.column_count .count').update(counts);
-                column.select('.status_badge').each(function (status) {
+                column.select('.status-badge').each(function (status) {
                     status.update(status_counts[parseInt(status.dataset.statusId)]);
                 });
                 if ($('project_planning').hasClassName('type-kanban')) {
@@ -5972,13 +5972,13 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
             if ($('viewissue_changed') != undefined) {
                 if (!$('viewissue_changed').visible()) {
                     $('viewissue_changed').show();
-                    Effect.Pulsate($('issue_info_container'), {pulses: 3, duration: 2});
+                    Effect.Pulsate($('issue-messages-container'), {pulses: 3, duration: 2});
                 }
 
                 $(field + '_field').addClassName('issue_detail_changed');
                 if (field == 'issuetype') {
-                    jQuery("#workflow_actions input[type='submit'], #workflow_actions input[type='button']").prop("disabled", true);
-                    jQuery("#workflow_actions a").off('click');
+                    jQuery("#workflow-actions input[type='submit'], #workflow-actions input[type='button']").prop("disabled", true);
+                    jQuery("#workflow-actions a").off('click');
                 }
             }
 
@@ -5999,8 +5999,8 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
                         $('comment_save_changes').checked = false;
                 }
                 if (field == 'issuetype') {
-                    jQuery("#workflow_actions input[type='submit'], #workflow_actions input[type='button']").prop("disabled", false);
-                    jQuery("#workflow_actions a").on('click');
+                    jQuery("#workflow-actions input[type='submit'], #workflow-actions input[type='button']").prop("disabled", false);
+                    jQuery("#workflow-actions a").on('click');
                 }
             }
         }
@@ -6255,19 +6255,19 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
             });
         };
 
-        Pachno.Search.toPage = function (url, parameters, offset) {
+        Pachno.Search.toPage = function (url, parameters, offset, button) {
             parameters += '&offset=' + offset;
             Pachno.Main.Helpers.ajax(url, {
                 params: parameters,
                 loading: {
                     callback: function() {
-                        jQuery('.paging_spinning').show();
+                        jQuery(this).addClass('submitting');
                     }
                 },
                 success: {
                     update: 'search-results',
                     callback: function() {
-                        jQuery('.paging_spinning').hide();
+                        jQuery(this).removeClass('submitting');
                     }
                 }
             });
@@ -6325,7 +6325,8 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
                 $('bulk_action_submit').addClassName('disabled');
             } else {
                 $('search-bulk-actions').removeClassName('unavailable');
-                if ($('bulk_action_selector').getValue() != '') {
+                var selected_radio_value = jQuery('input[name=search_bulk_action]:checked', '#search-bulk-action-form').val();
+                if (selected_radio_value) {
                     $('bulk_action_submit').removeClassName('disabled');
                 }
             }
@@ -6342,7 +6343,7 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
                 do_check = $(this).checked;
             }
 
-            $(this).up('table').down('tbody').select('input[type=checkbox]').each(function (element) {
+            $(this).up('.results_container').down('.results_body').select('input[type=checkbox]').each(function (element) {
                 element.checked = do_check;
             });
 
@@ -6352,14 +6353,14 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
         Pachno.Search.toggleCheckbox = function () {
             var num_unchecked = 0;
             var num_checked = 0;
-            this.up('tbody').select('input[type=checkbox]').each(function (elm) {
+            this.up('.results_container').select('input[type=checkbox]').each(function (elm) {
                 if (!elm.checked)
                     num_unchecked++;
                 if (elm.checked)
                     num_checked++;
             });
 
-            var chk_box = this.up('table').down('thead').down('input[type=checkbox]');
+            var chk_box = this.up('.results_body').down('.row.header').down('input[type=checkbox]');
             if (num_unchecked == 0) {
                 chk_box.checked = true;
                 chk_box.removeClassName('semi-checked');

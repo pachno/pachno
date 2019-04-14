@@ -1,0 +1,86 @@
+.viewissue-container {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  text-align: left;
+  height: 100%;
+  overflow: hidden;
+}
+
+.issue-card {
+  display: flex;
+  flex: 1 1 auto;
+  margin-bottom: 1rem;
+  overflow: auto;
+  flex-direction: row;
+  box-sizing: border-box;
+
+  .issue-card-main {
+    border: none;
+    background: #FFF;
+    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 1px 5px 0 rgba(0, 0, 0, 0.12);
+    border-radius: 4px;
+    padding: 10px;
+    flex: 1 1 auto;
+    margin: 0 0 1em 1em;
+    overflow: hidden;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+
+    .workflow-actions-container {
+      flex: 0 0 auto;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: flex-end;
+
+      > ul {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        
+      }
+    }
+
+    .issue-details {
+      flex: 1 1 auto;
+      overflow: auto;
+      display: flex;
+      flex-direction: column;
+
+      fieldset {
+        border: none;
+        padding: 0;
+        margin: 0;
+        flex: 1 1 auto;
+        display: flex;
+        flex-direction: column;
+
+        legend {
+          border: none;
+          padding: 0;
+          flex: 0 0 auto;
+        }
+
+        .content {
+          flex: 1 1 auto;
+        }
+      }
+    }
+  }
+
+  .issue-fields {
+    flex: 0 0 350px;
+    margin: 2em;
+    padding: 2em;
+    display: flex;
+    flex-direction: column;
+    height: calc(100% - 4em);
+    box-sizing: border-box;
+    overflow: auto;
+  }
+}

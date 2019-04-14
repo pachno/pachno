@@ -20,7 +20,7 @@
             </td>
             <td<?php if (!$issue->getStatus() instanceof \pachno\core\entities\Datatype): ?> class="faded_out"<?php endif; ?>>
                 <?php if ($issue->getStatus() instanceof \pachno\core\entities\Datatype): ?>
-                    <div class="sc_status_color status_badge" style="background-color: <?php echo ($issue->getStatus() instanceof \pachno\core\entities\Datatype) ? $issue->getStatus()->getColor() : '#FFF'; ?>;"><span class="sc_status_name"><?php echo $issue->getStatus()->getName(); ?></span></div>
+                    <div class="sc_status_color status-badge" style="background-color: <?php echo ($issue->getStatus() instanceof \pachno\core\entities\Datatype) ? $issue->getStatus()->getColor() : '#FFF'; ?>;"><span class="sc_status_name"><?php echo $issue->getStatus()->getName(); ?></span></div>
                 <?php else: ?>
                     -
                 <?php endif; ?>

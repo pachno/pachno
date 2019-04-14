@@ -13,7 +13,7 @@
     $recent_issues = \pachno\core\entities\tables\Issues::getSessionIssues();
 
 ?>
-<nav class="project-context sidebar" id="project-menu" data-project-id="<?= (\pachno\core\framework\Context::isProjectContext()) ? \pachno\core\framework\Context::getCurrentProject()->getId() : ''; ?>">
+<nav class="project-context sidebar <?= (isset($collapsed) && $collapsed) ? 'collapsed' : ''; ?>" id="project-menu" data-project-id="<?= (\pachno\core\framework\Context::isProjectContext()) ? \pachno\core\framework\Context::getCurrentProject()->getId() : ''; ?>">
     <?php include_component('project/projectheader', ['subpage' => (isset($dashboard) && $dashboard instanceof \pachno\core\entities\Dashboard) ? $dashboard->getName() : '']); ?>
     <div class="list-mode">
         <?php $page = (in_array($pachno_response->getPage(), array('project_dashboard', 'project_scrum_sprint_details', 'project_timeline', 'project_team', 'project_roadmap', 'project_statistics', 'vcs_commitspage'))) ? $pachno_response->getPage() : 'project_dashboard'; ?>
@@ -45,7 +45,7 @@
                     <?php if (count($saved_searches['user']) + count($saved_searches['public'])): ?>
                         <?php if (!$pachno_user->isGuest()): ?>
                             <?php foreach ($saved_searches['user'] as $savedsearch): ?>
-                                <?= link_tag(make_url('project_issues', ['project_key' => Context::getCurrentProject()->getKey(), 'saved_search' => $savedsearch->getID(), 'search' => true]), fa_image_tag('user', ['title' => __('This is a saved search only visible to you'), 'class' => 'icon'], 'far') . '<span class="name">' . __($savedsearch->getName() . '</span>'), ['class' => 'list-item']); ?>
+                                <?= link_tag(make_url('project_issues', ['project_key' => Context::getCurrentProject()->getKey(), 'saved_search' => $savedsearch->getID(), 'search' => true]), fa_image_tag('user', ['title' => __('This is a saved search only visible to you'), 'class' => 'icon'], 'far') . '<span class="name">' . __($savedsearch->getName()) . '</span>', ['class' => 'list-item']); ?>
                             <?php endforeach; ?>
                             <?php if (count($saved_searches['user']) && count($saved_searches['public'])): ?>
                                 <div class="separator"></div>

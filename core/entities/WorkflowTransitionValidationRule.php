@@ -269,7 +269,7 @@
                             if ($field instanceof Milestone || $field instanceof Component || $field instanceof Edition || $field instanceof Build) {
                                 $return_values[] = $field->getProject()->getName() . ' - ' . $field->getName();
                             } elseif ($field instanceof Status) {
-                                $return_values[] = '<span class="status_badge" style="background-color: '.$field->getColor().'; color: '.$field->getTextColor().';">'.$field->getName().'</span>';
+                                $return_values[] = '<span class="status-badge" style="background-color: '.$field->getColor().'; color: '.$field->getTextColor().';">'.$field->getName().'</span>';
                             } else {
                                 $return_values[] = $field->getName();
                             }

@@ -26,7 +26,9 @@ use pachno\core\modules\search\controllers\Main;
 $current_count = 0;
 $current_estimated_time = Timeable::getZeroedUnitsWithPoints();
 $current_spent_time = $current_estimated_time;
-foreach ($search_object->getIssues() as $issue):
+?>
+<div class="results_container results_normal">
+<?php foreach ($search_object->getIssues() as $issue):
     // shows only issues with permissions, useful when if we're including subprojects
     if (!$issue->hasAccess())
         continue;
@@ -55,8 +57,8 @@ foreach ($search_object->getIssues() as $issue):
         </h5>
     <?php endif; ?>
     <?php if ($showtablestart): ?>
-        <div class="results_container results_normal">
-            <div class="row">
+        <div class="results_body">
+            <div class="row header">
                 <div class="column header invisible info-icons"></div>
                 <?php if (!$pachno_user->isGuest() && $actionable): ?>
                     <div class="column header nosort sca_action_selector"><input type="checkbox" id="results_issue_all_checkbox" class="fancycheckbox"><label for="results_issue_all_checkbox"><?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far'); ?></label></div>
@@ -140,7 +142,7 @@ foreach ($search_object->getIssues() as $issue):
         </div>
         <div class="column sc_status<?php if (!$issue->getStatus() instanceof Datatype): ?> faded_out<?php endif; ?>"<?php if (!in_array('status', $visible_columns)): ?> style="display: none;"<?php endif; ?>>
             <?php if ($issue->getStatus() instanceof Datatype): ?>
-                <div class="sc_status_color status_badge" style="background-color: <?php echo ($issue->getStatus() instanceof Datatype) ? $issue->getStatus()->getColor() : '#FFF'; ?>;"><span class="sc_status_name" style="color: <?php echo $issue->getStatus()->getTextColor(); ?>;"><?php echo $issue->getStatus()->getName(); ?></span></div>
+                <div class="sc_status_color status-badge" style="background-color: <?php echo ($issue->getStatus() instanceof Datatype) ? $issue->getStatus()->getColor() : '#FFF'; ?>;"><span class="sc_status_name" style="color: <?php echo $issue->getStatus()->getTextColor(); ?>;"><?php echo $issue->getStatus()->getName(); ?></span></div>
             <?php else: ?>
                 -
             <?php endif; ?>
@@ -197,7 +199,7 @@ foreach ($search_object->getIssues() as $issue):
                         break;
                     case CustomDatatype::STATUS_CHOICE:
                         if ($value instanceof Status):
-                            ?><div class="sc_status_color status_badge" style="background-color: <?php echo $value->getColor(); ?>;"><span class="sc_status_name" style="color: <?php echo $value->getTextColor(); ?>;"><?php echo $value->getName(); ?></span></div><?php
+                            ?><div class="sc_status_color status-badge" style="background-color: <?php echo $value->getColor(); ?>;"><span class="sc_status_name" style="color: <?php echo $value->getTextColor(); ?>;"><?php echo $value->getName(); ?></span></div><?php
                         endif;
                         break;
                     case CustomDatatype::CLIENT_CHOICE:
@@ -228,6 +230,7 @@ foreach ($search_object->getIssues() as $issue):
 <?php if ($current_count > 0): ?>
     </div>
 <?php endif; ?>
+</div>
 <script type="text/javascript">
     require(['jquery', 'domReady', 'pachno/index'], function (jQuery, domReady, pachno_index_js) {
         domReady(function () {

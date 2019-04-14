@@ -28,9 +28,25 @@
     background: #FFF;
     box-shadow: 0 3px 1px -2px rgba(0,0,0,.2),0 2px 2px 0 rgba(0,0,0,.14),0 1px 5px 0 rgba(0,0,0,.12);
     border-radius: 4px;
-    min-width: 100%;
     top: calc(100% + 3px);
     right: 0;
+
+    &.from-left {
+      right: auto;
+      left: 0;
+    }
+
+    &.from-center {
+      right: auto;
+      left: 50%;
+      transform: scaleY(0) translateX(-50%);
+    }
+
+    &.from-bottom {
+      top: auto;
+      bottom: 37px;
+      transform-origin: bottom;
+    }
 
     &.columns {
       flex-direction: row;
@@ -58,6 +74,10 @@
     &.active + .dropdown-container {
       transform: scaleY(1);
       opacity: 1;
+
+      &.from-center {
+        transform: scaleY(1) translateX(-50%);
+      }
     }
   }
 

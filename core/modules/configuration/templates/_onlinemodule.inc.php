@@ -13,7 +13,7 @@
         <?php else: ?>
             <button class="install-button button" onclick="Pachno.Main.Helpers.Message.success('<?= __('Add modules with one click'); ?>', '<?= __('With a valid subscription you can install modules straight from the control center'); ?>')"><span><?php echo __('Add'); ?></span></button>
         <?php endif; ?>
-        <div class="status_badge module_status plugin_status enabled">
+        <div class="status-badge module_status plugin_status enabled">
             <?php echo __('Enabled'); ?>
         </div>
     </div>

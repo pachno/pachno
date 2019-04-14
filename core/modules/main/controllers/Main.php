@@ -2473,7 +2473,7 @@ class Main extends framework\Action
 
                                 if ($customdatatype->getType() == entities\CustomDatatype::STATUS_CHOICE && isset($temp) && is_object($temp))
                                 {
-                                    $finalvalue = '<div class="status_badge" style="background-color: ' . $temp->getColor() . ';"><span>' . $temp->getName() . '</span></div>';
+                                    $finalvalue = '<div class="status-badge" style="background-color: ' . $temp->getColor() . ';"><span>' . $temp->getName() . '</span></div>';
                                 }
                                 elseif ($customdatatype->getType() == entities\CustomDatatype::USER_CHOICE && isset($temp) && is_object($temp))
                                 {

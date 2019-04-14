@@ -10,6 +10,7 @@
 
   .list-item,
   .list-item:hover {
+    position: relative;
     padding: 0 7px;
     display: flex;
     flex-direction: row;

@@ -65,7 +65,7 @@
                             <?php
                                 $target = ($action->getTargetValue()) ? \pachno\core\entities\Status::getB2DBTable()->selectById((int) $action->getTargetValue()) : '';
                                 if ($target instanceof \pachno\core\entities\Status)
-                                    echo __('Set status to %status', array('%status' => '<span id="workflowtransitionaction_'.$action->getID().'_value" style="font-weight: bold;"><span class="status_badge" style="background-color: '.$target->getColor().'; color: '.$target->getTextColor().';">' . $target->getName() . '</span></span>'));
+                                    echo __('Set status to %status', array('%status' => '<span id="workflowtransitionaction_'.$action->getID().'_value" style="font-weight: bold;"><span class="status-badge" style="background-color: '.$target->getColor().'; color: '.$target->getTextColor().';">' . $target->getName() . '</span></span>'));
                                 else
                                     echo __('Set status to %status', array('%status' => '<span id="workflowtransitionaction_'.$action->getID().'_value" style="font-weight: bold;">' . __('Status provided by user') . '</span>'));
                             ?>
@@ -140,7 +140,7 @@
                                     break;
                                 case \pachno\core\entities\CustomDatatype::STATUS_CHOICE:
                                     $target = ($action->getTargetValue()) ? \pachno\core\entities\ListTypes::getTable()->selectById((int) $action->getTargetValue()) : null;
-                                    echo __('Set issue field %key to %value', array('%key' => $action->getCustomActionType(), '%value' => '<span id="workflowtransitionaction_'.$action->getID().'_value" class="status_badge" style="background-color: '.$target->getColor().'; color: '.$target->getTextColor().';">' . (($action->getTargetValue()) ? $target->getName() : __('Value provided by user')) . '</span>'));
+                                    echo __('Set issue field %key to %value', array('%key' => $action->getCustomActionType(), '%value' => '<span id="workflowtransitionaction_'.$action->getID().'_value" class="status-badge" style="background-color: '.$target->getColor().'; color: '.$target->getTextColor().';">' . (($action->getTargetValue()) ? $target->getName() : __('Value provided by user')) . '</span>'));
                                     break;
                                 case \pachno\core\entities\CustomDatatype::DROPDOWN_CHOICE_TEXT:
                                 default:

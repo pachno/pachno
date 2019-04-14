@@ -98,6 +98,11 @@
         right: auto;
         left: 0;
       }
+
+      &.from-bottom {
+        top: auto;
+        bottom: calc(100% + 3px);
+      }
     }
 
     &.active {

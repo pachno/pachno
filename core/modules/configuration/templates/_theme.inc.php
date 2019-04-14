@@ -5,10 +5,10 @@
         '%author' => '<a href="https://pachno.com/themes/'.$theme['key'].'" class="author-link">'.$theme['author'].'</a>'
     )); ?>
     <p class="description"><?php echo $theme['description']; ?></p>
-    <div class="status_badge theme_status plugin_status<?php echo ($enabled) ? ' enabled' : ' disabled'; ?>">
+    <div class="status-badge theme_status plugin_status<?php echo ($enabled) ? ' enabled' : ' disabled'; ?>">
         <?php echo ($enabled) ? __('Current theme') : __('Disabled'); ?>
     </div>
-    <div class="status_badge theme_status plugin_status outofdate">
+    <div class="status-badge theme_status plugin_status outofdate">
         <?php echo __('Update available'); ?>
     </div>
     <?php if ($is_default_scope): ?>

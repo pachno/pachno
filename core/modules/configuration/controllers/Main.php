@@ -2021,7 +2021,7 @@
                                     break;
                                 case entities\WorkflowTransitionAction::ACTION_SET_STATUS:
                                     $target = ($this->action->getTargetValue()) ? tables\ListTypes::getTable()->selectById((int) $this->action->getTargetValue()) : null;
-                                    $text = ($this->action->getTargetValue()) ? '<span class="status_badge" style="background-color: '.$target->getColor().'; color: '.$target->getTextColor().';">'.$target->getName().'</span>' : $this->getI18n()->__('Status provided by user');
+                                    $text = ($this->action->getTargetValue()) ? '<span class="status-badge" style="background-color: '.$target->getColor().'; color: '.$target->getTextColor().';">'.$target->getName().'</span>' : $this->getI18n()->__('Status provided by user');
                                     break;
                                 case entities\WorkflowTransitionAction::ACTION_SET_PRIORITY:
                                     $text = ($this->action->getTargetValue()) ? tables\ListTypes::getTable()->selectById((int) $this->action->getTargetValue())->getName() : $this->getI18n()->__('Priority specified by user');
@@ -2077,7 +2077,7 @@
                                         case \pachno\core\entities\CustomDatatype::STATUS_CHOICE:
                                             if (is_numeric($this->action->getTargetValue())) {
                                                 $target = ($this->action->getTargetValue()) ? tables\ListTypes::getTable()->selectById((int) $this->action->getTargetValue()) : null;
-                                                $text = ($this->action->getTargetValue()) ? '<span class="status_badge" style="background-color: '.$target->getColor().'; color: '.$target->getTextColor().';">'.$target->getName().'</span>' : $this->getI18n()->__('Value provided by user');
+                                                $text = ($this->action->getTargetValue()) ? '<span class="status-badge" style="background-color: '.$target->getColor().'; color: '.$target->getTextColor().';">'.$target->getName().'</span>' : $this->getI18n()->__('Value provided by user');
                                             }
                                             break;
                                         case \pachno\core\entities\CustomDatatype::DROPDOWN_CHOICE_TEXT:

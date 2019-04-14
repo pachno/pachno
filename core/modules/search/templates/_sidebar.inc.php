@@ -90,58 +90,28 @@ use pachno\core\framework\Context;
         <?php if (count($savedsearches['user']) > 0): ?>
             <?php foreach ($savedsearches['user'] as $saved_search): ?>
                 <div id="saved_search_<?= $saved_search->getID(); ?>_container" class="list-item" data-search-id="<?= $saved_search->getID(); ?>">
-                    <?php if (Context::isProjectContext()): ?>
-                        <div>
-                            <?= link_tag(make_url('project_issues', array('project_key' => Context::getCurrentProject()->getKey(), 'saved_search' => $saved_search->getID(), 'search' => true, 'format' => 'rss')), fa_image_tag('rss-square', ['class' => 'rss-icon']), array('title' => __('Download feed'), 'class' => 'icon')); ?>
-                            <?php if (!Context::getCurrentProject()->isArchived()): ?>
-                                <div class="action_icons">
-                                    <?= link_tag(make_url('project_issues', array('project_key' => Context::getCurrentProject()->getKey(), 'saved_search' => $saved_search->getID(), 'search' => 0)).'#edit_modal', fa_image_tag('edit'), array('title' => __('Edit saved search'))); ?>
-                                    <?= javascript_link_tag(image_tag('icon_delete.png', array('title' => __('Delete saved search'))), array('onclick' => "$('delete_search_".$saved_search->getID()."').toggle();")); ?>
-                                </div>
-                            <?php endif; ?>
-                            <span class="count-badge">-</span>
-                            <?= link_tag(make_url('project_issues', array('project_key' => Context::getCurrentProject()->getKey(), 'saved_search' => $saved_search->getID(), 'search' => true)), __($saved_search->getName())); ?>
+                    <div style="clear: both;">
+                        <?= link_tag(make_url('search', array('saved_search' => $saved_search->getID(), 'search' => true, 'format' => 'rss')), fa_image_tag('rss-square', ['class' => 'rss-icon']), array('title' => __('Download feed'))); ?>
+                        <div class="action_icons">
+                            <?= link_tag(make_url('search', array('saved_search' => $saved_search->getID(), 'search' => 0)).'#edit_modal', fa_image_tag('edit'), array('title' => __('Edit saved search'))); ?>
+                            <?= javascript_link_tag(image_tag('icon_delete.png', array('title' => __('Delete saved search'))), array('onclick' => "$('delete_search_".$saved_search->getID()."').toggle();")); ?>
                         </div>
-                        <?php if (!Context::getCurrentProject()->isArchived()): ?>
-                        <div class="rounded_box white shadowed" style="position: absolute; width: 300px; display: none;" id="delete_search_<?= $saved_search->getID(); ?>">
-                            <div class="header"><?= __('Do you really want to delete this saved search?'); ?></div>
-                            <div class="content">
-                                <?= __('This action cannot be reverted. Note: this will not modify any issues affected by this search'); ?>
-                                <div style="text-align: right; margin-top: 10px;">
-                                    <?= image_tag('spinning_16.gif', array('style' => 'margin-left: 5px; display: none;', 'id' => 'delete_search_'.$saved_search->getID().'_indicator')); ?>
-                                    <input type="submit" onclick="Pachno.Search.deleteSavedSearch('<?= make_url('project_issues', array('project_key' => Context::getCurrentProject()->getKey(), 'saved_search_id' => $saved_search->getID(), 'search' => 0, 'delete_saved_search' => true)); ?>', <?= $saved_search->getID(); ?>);" value="<?= __('Yes, delete'); ?>" style="font-weight: bold;">
-                                    <?= __('%yes_delete or %cancel', array('%yes_delete' => '', '%cancel' => javascript_link_tag(__('cancel'), array('onclick' => "$('delete_search_".$saved_search->getID()."').toggle();")))); ?>
-                                </div>
+                        <span class="count-badge">-</span>
+                        <?= link_tag(make_url('search', array('saved_search' => $saved_search->getID(), 'search' => true)), __($saved_search->getName())); ?>
+                    </div>
+                    <div class="rounded_box white shadowed" style="position: absolute; width: 300px; display: none;" id="delete_search_<?= $saved_search->getID(); ?>">
+                        <div class="header"><?= __('Do you really want to delete this saved search?'); ?></div>
+                        <div class="content">
+                            <?= __('This action cannot be reverted. Note: this will not modify any issues affected by this search'); ?>
+                            <div style="text-align: right; margin-top: 10px;">
+                                <?= image_tag('spinning_16.gif', array('style' => 'margin-left: 5px; display: none;', 'id' => 'delete_search_'.$saved_search->getID().'_indicator')); ?>
+                                <input type="submit" onclick="Pachno.Search.deleteSavedSearch('<?= make_url('search', array('saved_search_id' => $saved_search->getID(), 'search' => 0, 'delete_saved_search' => true)); ?>', <?= $saved_search->getID(); ?>);" value="<?= __('Yes, delete'); ?>" style="font-weight: bold;">
+                                <?= __('%yes_delete or %cancel', array('%yes_delete' => '', '%cancel' => javascript_link_tag(__('cancel'), array('onclick' => "$('delete_search_".$saved_search->getID()."').toggle();")))); ?>
                             </div>
                         </div>
-                        <?php endif; ?>
-                        <?php if ($saved_search->getDescription() != ''): ?>
-                            <div style="clear: both; padding: 0 0 10px 26px; font-style: italic; font-size: 0.9em;"><?= $saved_search->getDescription(); ?></div>
-                        <?php endif; ?>
-                    <?php else: ?>
-                        <div style="clear: both;">
-                            <?= link_tag(make_url('search', array('saved_search' => $saved_search->getID(), 'search' => true, 'format' => 'rss')), fa_image_tag('rss-square', ['class' => 'rss-icon']), array('title' => __('Download feed'))); ?>
-                            <div class="action_icons">
-                                <?= link_tag(make_url('search', array('saved_search' => $saved_search->getID(), 'search' => 0)).'#edit_modal', fa_image_tag('edit'), array('title' => __('Edit saved search'))); ?>
-                                <?= javascript_link_tag(image_tag('icon_delete.png', array('title' => __('Delete saved search'))), array('onclick' => "$('delete_search_".$saved_search->getID()."').toggle();")); ?>
-                            </div>
-                            <span class="count-badge">-</span>
-                            <?= link_tag(make_url('search', array('saved_search' => $saved_search->getID(), 'search' => true)), __($saved_search->getName())); ?>
-                        </div>
-                        <div class="rounded_box white shadowed" style="position: absolute; width: 300px; display: none;" id="delete_search_<?= $saved_search->getID(); ?>">
-                            <div class="header"><?= __('Do you really want to delete this saved search?'); ?></div>
-                            <div class="content">
-                                <?= __('This action cannot be reverted. Note: this will not modify any issues affected by this search'); ?>
-                                <div style="text-align: right; margin-top: 10px;">
-                                    <?= image_tag('spinning_16.gif', array('style' => 'margin-left: 5px; display: none;', 'id' => 'delete_search_'.$saved_search->getID().'_indicator')); ?>
-                                    <input type="submit" onclick="Pachno.Search.deleteSavedSearch('<?= make_url('search', array('saved_search_id' => $saved_search->getID(), 'search' => 0, 'delete_saved_search' => true)); ?>', <?= $saved_search->getID(); ?>);" value="<?= __('Yes, delete'); ?>" style="font-weight: bold;">
-                                    <?= __('%yes_delete or %cancel', array('%yes_delete' => '', '%cancel' => javascript_link_tag(__('cancel'), array('onclick' => "$('delete_search_".$saved_search->getID()."').toggle();")))); ?>
-                                </div>
-                            </div>
-                        </div>
-                        <?php if ($saved_search->getDescription() != ''): ?>
-                            <div style="clear: both; padding: 0 0 10px 3px;"><?= $saved_search->getDescription(); ?></div>
-                        <?php endif; ?>
+                    </div>
+                    <?php if ($saved_search->getDescription() != ''): ?>
+                        <div style="clear: both; padding: 0 0 10px 3px;"><?= $saved_search->getDescription(); ?></div>
                     <?php endif; ?>
                 </div>
             <?php endforeach; ?>

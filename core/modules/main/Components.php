@@ -271,7 +271,7 @@
             }
         }
 
-        public function componentIssuedetailslistEditable()
+        public function componentIssueFields()
         {
             $this->setupVariables();
         }

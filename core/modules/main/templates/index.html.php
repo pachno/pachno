@@ -17,10 +17,10 @@
 
 ?>
 <div class="content-with-sidebar">
-    <div class="side_bar">
+    <nav class="sidebar">
         <?php include_component('main/menulinks', array('links' => $links, 'target_type' => 'main_menu', 'target_id' => 0, 'title' => __('Quick links'))); ?>
         <?php \pachno\core\framework\Event::createNew('core', 'index_left')->trigger(); ?>
-    </div>
+    </nav>
     <div class="main_area frontpage">
         <?php \pachno\core\framework\Event::createNew('core', 'index_right_top')->trigger(); ?>
         <?php if ($show_project_list): ?>

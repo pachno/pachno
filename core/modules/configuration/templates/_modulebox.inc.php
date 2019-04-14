@@ -6,24 +6,24 @@
     )); ?>
     <p class="description"><?php echo __($module->getDescription()); ?></p>
     <?php if ($module->getType() == \pachno\core\entities\Module::MODULE_AUTH): ?>
-        <div class="status_badge authentication-module">
+        <div class="status-badge authentication-module">
             <?php echo image_tag('cfg_icon_authentication.png') . __('Authentication module'); ?>
         </div>
     <?php endif; ?>
     <?php if ($module->getID()): ?>
-        <div class="status_badge module_status plugin_status<?php echo ($module->isEnabled()) ? ' enabled' : ' disabled'; ?>">
+        <div class="status-badge module_status plugin_status<?php echo ($module->isEnabled()) ? ' enabled' : ' disabled'; ?>">
             <?php echo ($module->isEnabled()) ? __('Enabled') : __('Disabled'); ?>
         </div>
-        <div class="status_badge module_status plugin_status outofdate">
+        <div class="status-badge module_status plugin_status outofdate">
             <?php echo __('Needs update'); ?>
         </div>
     <?php else: ?>
-        <div class="status_badge module_status plugin_status outofdate">
+        <div class="status-badge module_status plugin_status outofdate">
             <?php echo __('Not installed'); ?>
         </div>
     <?php endif; ?>
     <?php if ($module->isCore()): ?>
-        <div class="status_badge module_status plugin_status core">
+        <div class="status-badge module_status plugin_status core">
             <?php echo __('Core module'); ?>
         </div>
     <?php endif; ?>

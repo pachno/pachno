@@ -376,14 +376,14 @@
     .issue_info {
         border: 1px solid rgba(0, 0, 0, 0.1);
     }
-    #issue_info_container { margin-top: 5px; }
-    .mobile_leftmenu_visible #workflow_actions {
+    #issue-messages-container { margin-top: 5px; }
+    .mobile_leftmenu_visible #workflow-actions {
         display: none;
     }
-    .mobile_rightmenu_visible #workflow_actions {
+    .mobile_rightmenu_visible #workflow-actions {
         display: none;
     }
-    #workflow_actions.fixed {
+    #workflow-actions.fixed {
         top: 45px;
         right: 5px;
     }
@@ -391,8 +391,8 @@
     .title_left_images { width: 25px; }
     .title_left_images img { width: 16px; height: 16px; }
     .issue_navigation, #votes_additional, #user_pain_additional { display: none; }
-    #workflow_actions { top: 45px; }
-    #workflow_actions li.workflow { display: none; }
+    #workflow-actions { top: 45px; }
+    #workflow-actions li.workflow { display: none; }
 
     #issue_details_container {
         display: block;
@@ -430,13 +430,13 @@
     #viewissue_attached_information_container { display: none; }
     #viewissue_related_information_container { display: none; }
     #issue_timetracking_container { display: none; }
-    #workflow_actions .more_actions_dropdown { font-size: 1.15em; }
+    #workflow-actions .more_actions_dropdown { font-size: 1.15em; }
     .more_actions_dropdown li { height: 28px; }
     .more_actions_dropdown li a, .more_actions_dropdown li a:hover { padding: 5px; }
     .issue_details_detailed_toggler { padding: 10px 5px; display: block; text-align: right; }
     .issue_details_detailed_toggler .button { padding: 4px 8px; font-size: 1.1em; }
 
-    #issue_main_container {
+    #issue-main-container {
         display: block;
         width: auto;
     }

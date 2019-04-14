@@ -5,7 +5,7 @@
             <span class="actions"><a href="https://projects.pachno.com/pachno" target="_blank" class="button"><?= __('Report an issue'); ?></a></span>
         </div>
     <?php endif; ?>
-    <?php echo image_tag('footer_logo.png'); ?>
+    <?php echo image_tag('/logo_128.png', [], true); ?>
     <?php echo link_tag(make_url('about'), 'Pachno').'&nbsp;'.\pachno\core\framework\Settings::getVersion(); ?>
     <?php if ($pachno_user->canAccessConfigurationPage()): ?>
         | <b><?php echo link_tag(make_url('configure'), __('Configure %pachno_name', array('%pachno_name' => \pachno\core\framework\Settings::getSiteHeaderName()))); ?></b>

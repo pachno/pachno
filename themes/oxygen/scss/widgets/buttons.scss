@@ -107,6 +107,9 @@ a.button.secondary,
 .popup_message button.secondary {
   color: rgb(255, 170, 0);
 }
+button.secondary.highlight {
+  background-color: rgba(200, 200, 200, .3);
+}
 button.icon,
 a.button.icon {
   background: transparent;
@@ -136,6 +139,20 @@ a.button.icon:hover,
 .fullpage_backdrop_content button:not(.primary):hover,
 .fullpage_backdrop_content a.button:not(.primary):hover {
   background: rgba(220, 220, 220, .15);
+  color: #3c1642;
+  box-shadow: none;
+}
+button.secondary:disabled,
+a.button.secondary.disabled,
+button.icon.secondary:disabled,
+a.button.icon.secondary.disabled {
+  background: transparent;
+  color: rgba(200, 200, 200, .3);
+
+  &:hover {
+    background: transparent;
+    color: rgba(200, 200, 200, .3);
+  }
 }
 .button-group > button,
 .button-group > a.button {
