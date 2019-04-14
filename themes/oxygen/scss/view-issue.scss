@@ -1,17 +1,17 @@
-.viewissue-container {
+.viewissue-container,
+.content-with-sidebar > div.viewissue-container {
   display: flex;
   flex-direction: column;
   flex-wrap: nowrap;
   text-align: left;
   height: 100%;
-  overflow: hidden;
+  overflow: auto;
 }
 
 .issue-card {
   display: flex;
   flex: 1 1 auto;
   margin-bottom: 1rem;
-  overflow: auto;
   flex-direction: row;
   box-sizing: border-box;
 
@@ -23,7 +23,8 @@
     padding: 10px;
     flex: 1 1 auto;
     margin: 0 0 1em 1em;
-    overflow: hidden;
+    overflow: visible;
+    height: 100%;
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
@@ -42,34 +43,43 @@
         list-style: none;
         padding: 0;
         margin: 0;
-        
+
       }
     }
 
     .issue-details {
       flex: 1 1 auto;
-      overflow: auto;
+      display: flex;
+      flex-direction: column;
+    }
+
+    fieldset {
+      border: none;
+      padding: 0;
+      margin: 0;
+      flex: 1 1 auto;
       display: flex;
       flex-direction: column;
 
-      fieldset {
+      legend {
         border: none;
         padding: 0;
-        margin: 0;
-        flex: 1 1 auto;
-        display: flex;
-        flex-direction: column;
-
-        legend {
-          border: none;
-          padding: 0;
-          flex: 0 0 auto;
-        }
-
-        .content {
-          flex: 1 1 auto;
-        }
+        flex: 0 0 auto;
       }
+
+      .content {
+        flex: 1 1 auto;
+      }
+    }
+
+    .fancytabs {
+      flex: 0 0 auto;
+    }
+
+    .fancypanes {
+      display: flex;
+      flex-direction: column;
+      flex: 1 1 auto;
     }
   }
 

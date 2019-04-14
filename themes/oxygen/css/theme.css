@@ -12489,19 +12489,19 @@ nav.sidebar {
   border-radius: 3px;
   vertical-align: middle; }
 
-.viewissue-container {
+.viewissue-container,
+.content-with-sidebar > div.viewissue-container {
   display: flex;
   flex-direction: column;
   flex-wrap: nowrap;
   text-align: left;
   height: 100%;
-  overflow: hidden; }
+  overflow: auto; }
 
 .issue-card {
   display: flex;
   flex: 1 1 auto;
   margin-bottom: 1rem;
-  overflow: auto;
   flex-direction: row;
   box-sizing: border-box; }
   .issue-card .issue-card-main {
@@ -12512,7 +12512,8 @@ nav.sidebar {
     padding: 10px;
     flex: 1 1 auto;
     margin: 0 0 1em 1em;
-    overflow: hidden;
+    overflow: visible;
+    height: 100%;
     box-sizing: border-box;
     display: flex;
     flex-direction: column; }
@@ -12531,22 +12532,27 @@ nav.sidebar {
         margin: 0; }
     .issue-card .issue-card-main .issue-details {
       flex: 1 1 auto;
-      overflow: auto;
       display: flex;
       flex-direction: column; }
-      .issue-card .issue-card-main .issue-details fieldset {
+    .issue-card .issue-card-main fieldset {
+      border: none;
+      padding: 0;
+      margin: 0;
+      flex: 1 1 auto;
+      display: flex;
+      flex-direction: column; }
+      .issue-card .issue-card-main fieldset legend {
         border: none;
         padding: 0;
-        margin: 0;
-        flex: 1 1 auto;
-        display: flex;
-        flex-direction: column; }
-        .issue-card .issue-card-main .issue-details fieldset legend {
-          border: none;
-          padding: 0;
-          flex: 0 0 auto; }
-        .issue-card .issue-card-main .issue-details fieldset .content {
-          flex: 1 1 auto; }
+        flex: 0 0 auto; }
+      .issue-card .issue-card-main fieldset .content {
+        flex: 1 1 auto; }
+    .issue-card .issue-card-main .fancytabs {
+      flex: 0 0 auto; }
+    .issue-card .issue-card-main .fancypanes {
+      display: flex;
+      flex-direction: column;
+      flex: 1 1 auto; }
   .issue-card .issue-fields {
     flex: 0 0 350px;
     margin: 2em;

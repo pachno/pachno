@@ -119,7 +119,7 @@
                             <span class="name"><?= __('History'); ?></span>
                         </a>
                     </div>
-                    <div id="viewissue_activity_panes">
+                    <div id="viewissue_activity_panes" class="fancypanes">
                         <div id="tab_viewissue_comments_pane">
                             <fieldset class="comments" id="viewissue_comments_container">
                                 <div class="viewissue_comments_header">
