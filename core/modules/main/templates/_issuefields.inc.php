@@ -8,46 +8,15 @@
 <div class="issue-fields">
     <?php \pachno\core\framework\Event::createNew('core', 'viewissue_left_top', $issue)->trigger(); ?>
     <fieldset>
-        <legend onclick="$('issue_details_fieldslist_basics').toggle();"><?php echo __('Issue basics'); ?></legend>
-        <ul class="simple-list" id="issue_details_fieldslist_basics">
-            <li id="issuetype_field" class="issue_detail_field primary <?php if ($issue->isIssuetypeChanged()): ?>issue_detail_changed<?php endif; ?><?php if (!$issue->isIssuetypeMerged()): ?> issue_detail_unmerged<?php endif; ?>">
-                <dl class="viewissue_list">
-                    <dt id="issuetype_header">
-                        <?php echo __('Type of issue'); ?>
-                    </dt>
-                    <dd class="hoverable">
-                        <?php if ($issue->isEditable() && $issue->canEditIssuetype()): ?>
-                            <a href="javascript:void(0);" onclick="Pachno.Issues.Field.revert('<?php echo make_url('issue_revertfield', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => 'issuetype')); ?>', 'issuetype');" title="<?php echo __('Undo this change'); ?>"><?php echo fa_image_tag('undo-alt', ['class' => 'undo'], 'fas'); ?></a>
-                            <?php echo image_tag('spinning_16.gif', array('style' => 'display: none; float: left; margin: 5px 5px 0 0;', 'id' => 'issuetype_undo_spinning')); ?>
-                            <a href="javascript:void(0);" class="dropper dropdown_link" title="<?php echo __('Click to change issue type'); ?>"><?php echo image_tag('tabmenu_dropdown.png', array('class' => 'dropdown')); ?></a>
-                            <ul id="issuetype_change" class="popup_box more_actions_dropdown with-header">
-                                <li class="header"><?php echo __('Set issue type'); ?></li>
-                                <?php foreach ($issuetypes as $issuetype): ?>
-                                    <li>
-                                        <a href="javascript:void(0);" onclick="Pachno.Issues.Field.set('<?php echo make_url('issue_setfield', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => 'issuetype', 'issuetype_id' => $issuetype->getID())); ?>', 'issuetype');">
-                                            <?php echo fa_image_tag($issuetype->getFontAwesomeIcon(), ['class' => 'issuetype-icon issuetype-' . $issuetype->getIcon()]); ?>
-                                            <?php echo __($issuetype->getName()); ?>
-                                        </a>
-                                    </li>
-                                <?php endforeach; ?>
-                                <li id="issuetype_spinning" style="margin-top: 3px; display: none;"><?php echo image_tag('spinning_20.gif', array('style' => 'float: left; margin-right: 5px;')) . '&nbsp;' . __('Please wait'); ?>...</li>
-                                <li id="issuetype_change_error" class="error_message" style="display: none;"></li>
-                            </ul>
-                        <?php endif; ?>
-                        <span id="issuetype_content"><?php if ($issue->hasIssueType()) echo fa_image_tag($issue->getIssueType()->getFontAwesomeIcon(), ['class' => (($issue->hasIssueType()) ? 'issuetype-icon issuetype-' . $issue->getIssueType()->getIcon() : 'issuetype-icon issuetype-unknown')]) . __($issue->getIssueType()->getName()); ?></span>
-                        <span class="faded_out" id="no_issuetype"<?php if ($issue->getIssueType() instanceof \pachno\core\entities\Issuetype): ?> style="display: none;"<?php endif; ?>><?php echo __('Unknown issue type'); ?></span>
-                    </dd>
-                </dl>
-            </li>
-            <li id="shortname_field"<?php if (!$issue->isShortnameVisible()): ?> style="display: none;"<?php endif; ?> class="viewissue_shortname<?php if ($issue->isShortnameChanged()): ?> issue_detail_changed<?php endif; ?><?php if (!$issue->isShortnameMerged()): ?> issue_detail_unmerged<?php endif; ?> issue_detail_field hoverable">
+        <div class="header" onclick="$('issue_details_fieldslist_basics').toggle();"><?php echo __('Issue basics'); ?></div>
+        <ul class="fields-list" id="issue_details_fieldslist_basics">
+            <li id="shortname_field"<?php if (!$issue->isShortnameVisible()): ?> style="display: none;"<?php endif; ?> >
                 <dl class="viewissue_list">
                     <dt id="shortname_header">
                         <?php echo __('Issue label'); ?>
                     </dt>
                     <dd class="hoverable">
                         <?php if ($issue->isEditable() && $issue->canEditShortname()): ?>
-                            <a href="javascript:void(0);" onclick="Pachno.Issues.Field.revert('<?php echo make_url('issue_revertfield', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => 'shortname')); ?>', 'shortname');" title="<?php echo __('Undo this change'); ?>"><?php echo fa_image_tag('undo-alt', ['class' => 'undo'], 'fas'); ?></a>
-                            <?php echo image_tag('spinning_16.gif', array('style' => 'display: none; float: left; margin: 5px 5px 0 0;', 'id' => 'shortname_undo_spinning')); ?>
                             <a href="javascript:void(0);" class="dropper dropdown_link" title="<?php echo __('Click to edit issue label'); ?>"><?php echo image_tag('tabmenu_dropdown.png', array('class' => 'dropdown')); ?></a>
                             <ul id="shortname_change" class="popup_box more_actions_dropdown with-header">
                                 <li class="header"><?php echo __('Set issue label'); ?></li>
@@ -69,47 +38,11 @@
             <?php include_component('main/issuefield', array('field' => 'category', 'info' => $field, 'issue' => $issue)); ?>
             <?php $field = $fields_list['milestone']; unset($fields_list['milestone']); ?>
             <?php include_component('main/issuefield', array('field' => 'milestone', 'info' => $field, 'issue' => $issue)); ?>
-            <li id="status_field" class="issue_detail_field primary <?php if ($issue->isStatusChanged()): ?>issue_detail_changed<?php endif; ?><?php if (!$issue->isStatusMerged()): ?> issue_detail_unmerged<?php endif; ?>">
-                <dl class="viewissue_list">
-                    <dt id="status_header">
-                        <?php echo __('Status'); ?>
-                    </dt>
-                    <dd class="hoverable">
-                        <?php if ($issue->canEditStatus()): ?>
-                            <a href="javascript:void(0);" onclick="Pachno.Issues.Field.revert('<?php echo make_url('issue_revertfield', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => 'status')); ?>', 'status');" title="<?php echo __('Undo this change'); ?>"><?php echo fa_image_tag('undo-alt', ['class' => 'undo'], 'fas'); ?></a>
-                            <?php echo image_tag('spinning_16.gif', array('style' => 'display: none; float: left; margin-right: 5px;', 'id' => 'status_undo_spinning')); ?>
-                            <a href="javascript:void(0);" class="dropper dropdown_link" title="<?php echo __('Click to change status'); ?>"><?php echo image_tag('tabmenu_dropdown.png', array('class' => 'dropdown')); ?></a>
-                            <ul class="popup_box more_actions_dropdown" id="status_change">
-                                <?php foreach ($statuses as $status): ?>
-                                    <?php if (!$status->canUserSet($pachno_user)) continue; ?>
-                                    <li>
-                                        <a href="javascript:void(0);" onclick="Pachno.Issues.Field.set('<?php echo make_url('issue_setfield', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => 'status', 'status_id' => $status->getID())); ?>', 'status');">
-                                            <div class="status-badge" style="background-color: <?php echo $status->getColor(); ?>;color: <?php echo $status->getTextColor(); ?>;">
-                                                <span><?php echo __($status->getName()); ?></span>
-                                            </div>
-                                        </a>
-                                    </li>
-                                <?php endforeach; ?>
-                                <li id="status_spinning" style="margin-top: 3px; display: none;"><?php echo image_tag('spinning_20.gif', array('style' => 'float: left; margin-right: 5px;')) . '&nbsp;' . __('Please wait'); ?>...</li>
-                                <li id="status_change_error" class="error_message" style="display: none;"></li>
-                            </ul>
-                        <?php endif; ?>
-                        <div style="display: inline-block; float: left; width: auto;<?php if (!$issue->getStatus() instanceof \pachno\core\entities\Datatype): ?> display: none;<?php endif; ?>" id="status_table">
-                            <div class="status-badge" style="background-color: <?php echo ($issue->getStatus() instanceof \pachno\core\entities\Datatype) ? $issue->getStatus()->getColor() : '#FFF'; ?>;color: <?php echo ($issue->getStatus() instanceof \pachno\core\entities\Datatype) ? $issue->getStatus()->getTextColor() : '#333'; ?>;" id="status_<?php echo $issue->getID(); ?>_color">
-                                <span id="status_content"><?php if ($issue->getStatus() instanceof \pachno\core\entities\Datatype) echo __($issue->getStatus()->getName()); ?></span>
-                            </div>
-                        </div>
-                        <span class="faded_out" id="no_status"<?php if ($issue->getStatus() instanceof \pachno\core\entities\Datatype): ?> style="display: none;"<?php endif; ?>><?php echo __('Status not determined'); ?></span>
-                    </dd>
-                </dl>
-            </li>
-            <li class="viewissue_list issue_detail_field<?php if ($issue->isPercentCompletedChanged()): ?> issue_detail_changed<?php endif; ?><?php if (!$issue->isPercentCompletedMerged()): ?> issue_detail_unmerged<?php endif; ?>" id="percent_complete_field"<?php if (!$issue->isPercentCompletedVisible()): ?> style="display: none;"<?php endif; ?>>
+            <li id="percent_complete_field"<?php if (!$issue->isPercentCompletedVisible()): ?> style="display: none;"<?php endif; ?>>
                 <dl class="viewissue_list">
                     <dt id="percent_complete_header"><?php echo __('Progress'); ?></dt>
                     <dd id="percent_complete_content" class="hoverable">
                         <?php if ($issue->canEditPercentage()): ?>
-                            <a href="javascript:void(0);" onclick="Pachno.Issues.Field.revert('<?php echo make_url('issue_revertfield', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => 'percent_complete')); ?>', 'percent_complete');" title="<?php echo __('Undo this change'); ?>"><?php echo fa_image_tag('undo-alt', ['class' => 'undo'], 'fas'); ?></a>
-                            <?php echo image_tag('spinning_16.gif', array('style' => 'display: none; float: left; margin-right: 5px;', 'id' => 'percent_complete_undo_spinning')); ?>
                             <a href="javascript:void(0);" class="dropper dropdown_link" title="<?php echo __('Click to set percent completed'); ?>"><?php echo image_tag('tabmenu_dropdown.png', array('class' => 'dropdown')); ?></a>
                             <ul class="popup_box more_actions_dropdown with-header" id="percent_complete_change">
                                 <li class="header"><?php echo __('Set percent completed'); ?></li>
@@ -135,15 +68,13 @@
         </ul>
     </fieldset>
     <fieldset id="issue_details_fieldslist_pain_container" style="<?php if (!$issue->isUserPainVisible()): ?> display: none;<?php endif; ?>">
-        <legend onclick="$('issue_details_fieldslist_pain').toggle();"><?php echo __('User pain'); ?></legend>
-        <ul class="issue_details simple-list" id="issue_details_fieldslist_pain">
-            <li id="pain_bug_type_field" class="issue_detail_field<?php if ($issue->isPainBugTypeChanged()): ?> issue_detail_changed<?php endif; ?><?php if (!$issue->isPainBugTypeMerged()): ?> issue_detail_unmerged<?php endif; ?>" style="<?php if (!$issue->isUserPainVisible()): ?> display: none;<?php endif; ?>">
+        <div class="header" onclick="$('issue_details_fieldslist_pain').toggle();"><?php echo __('User pain'); ?></div>
+        <ul class="issue_details fields-list" id="issue_details_fieldslist_pain">
+            <li id="pain_bug_type_field" style="<?php if (!$issue->isUserPainVisible()): ?> display: none;<?php endif; ?>">
                 <dl class="viewissue_list">
                     <dt id="pain_bug_type_header"><?php echo __('Type of bug'); ?></dt>
                     <dd id="pain_bug_type_content">
                         <?php if ($issue->isUpdateable() && $issue->canEditUserPain()): ?>
-                            <a href="javascript:void(0);" onclick="Pachno.Issues.Field.revert('<?php echo make_url('issue_revertfield', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => 'pain_bug_type')); ?>', 'pain_bug_type');" title="<?php echo __('Undo this change'); ?>"><?php echo fa_image_tag('undo-alt', ['class' => 'undo'], 'fas'); ?></a>
-                            <?php echo image_tag('spinning_16.gif', array('style' => 'display: none; float: left; margin-right: 5px;', 'id' => 'pain_bug_type_undo_spinning')); ?>
                             <a href="javascript:void(0);" class="dropper dropdown_link" title="<?php echo __('Click to triage type of bug'); ?>"><?php echo image_tag('tabmenu_dropdown.png', array('class' => 'dropdown')); ?></a>
                             <ul class="popup_box more_actions_dropdown with-header" id="pain_bug_type_change">
                                 <li class="header"><?php echo __('Triage bug type'); ?></li>
@@ -167,13 +98,11 @@
                     </dd>
                 </dl>
             </li>
-            <li id="pain_likelihood_field" class="issue_detail_field<?php if ($issue->isPainLikelihoodChanged()): ?> issue_detail_changed<?php endif; ?><?php if (!$issue->isPainLikelihoodMerged()): ?> issue_detail_unmerged<?php endif; ?>" style="<?php if (!$issue->isUserPainVisible()): ?> display: none;<?php endif; ?>">
+            <li id="pain_likelihood_field" style="<?php if (!$issue->isUserPainVisible()): ?> display: none;<?php endif; ?>">
                 <dl class="viewissue_list">
                     <dt id="pain_likelihood_header"><?php echo __('Likelihood'); ?></dt>
                     <dd id="pain_likelihood_content">
                         <?php if ($issue->isUpdateable() && $issue->canEditUserPain()): ?>
-                            <a href="javascript:void(0);" onclick="Pachno.Issues.Field.revert('<?php echo make_url('issue_revertfield', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => 'pain_likelihood')); ?>', 'pain_likelihood');" title="<?php echo __('Undo this change'); ?>"><?php echo fa_image_tag('undo-alt', ['class' => 'undo'], 'fas'); ?></a>
-                            <?php echo image_tag('spinning_16.gif', array('style' => 'display: none; float: left; margin-right: 5px;', 'id' => 'pain_likelihood_undo_spinning')); ?>
                             <a href="javascript:void(0);" class="dropper dropdown_link" title="<?php echo __('Click to triage likelihood'); ?>"><?php echo image_tag('tabmenu_dropdown.png', array('class' => 'dropdown')); ?></a>
                             <ul class="popup_box more_actions_dropdown with-header" id="pain_likelihood_change">
                                 <li class="header"><?php echo __('Triage likelihood'); ?></li>
@@ -197,13 +126,11 @@
                     </dd>
                 </dl>
             </li>
-            <li id="pain_effect_field" class="issue_detail_field<?php if ($issue->isPainEffectChanged()): ?> issue_detail_changed<?php endif; ?><?php if (!$issue->isPainEffectMerged()): ?> issue_detail_unmerged<?php endif; ?>" style="<?php if (!$issue->isUserPainVisible()): ?> display: none;<?php endif; ?>">
+            <li id="pain_effect_field" style="<?php if (!$issue->isUserPainVisible()): ?> display: none;<?php endif; ?>">
                 <dl class="viewissue_list">
                     <dt id="pain_effect_header"><?php echo __('Effect'); ?></dt>
                     <dd id="pain_effect_content">
                         <?php if ($issue->isUpdateable() && $issue->canEditUserPain()): ?>
-                            <a href="javascript:void(0);" onclick="Pachno.Issues.Field.revert('<?php echo make_url('issue_revertfield', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => 'pain_effect')); ?>', 'pain_effect');" title="<?php echo __('Undo this change'); ?>"><?php echo fa_image_tag('undo-alt', ['class' => 'undo'], 'fas'); ?></a>
-                            <?php echo image_tag('spinning_16.gif', array('style' => 'display: none; float: left; margin-right: 5px;', 'id' => 'pain_effect_undo_spinning')); ?>
                             <a href="javascript:void(0);" class="dropper dropdown_link" title="<?php echo __('Click to triage effect'); ?>"><?php echo image_tag('tabmenu_dropdown.png', array('class' => 'dropdown')); ?></a>
                             <ul class="popup_box more_actions_dropdown with-header" id="pain_effect_change">
                                 <li class="header"><?php echo __('Triage effect'); ?></li>
@@ -230,47 +157,21 @@
         </ul>
     </fieldset>
     <fieldset id="viewissue_affected_container">
-        <legend>
+        <div class="header">
             <?php echo image_tag('spinning_16.gif', array('style' => 'display: none;', 'id' => 'issue_affected_indicator')) . __('Affected by this issue (%count)', array('%count' => '<span id="viewissue_affects_count">'.$affected_count.'</span>')); ?>
-        </legend>
+        </div>
         <div id="viewissue_affected">
             <?php include_component('main/issueaffected', array('issue' => $issue)); ?>
         </div>
     </fieldset>
     <fieldset>
-        <legend onclick="$('issue_details_fieldslist_people').toggle();"><?php echo __('People involved'); ?></legend>
-        <ul class="issue_details simple-list" id="issue_details_fieldslist_people">
-            <li id="posted_by_field" class="issue_detail_field<?php if ($issue->isPostedByChanged()): ?> issue_detail_changed<?php endif; ?><?php if (!$issue->isPostedByMerged()): ?> issue_detail_unmerged<?php endif; ?>">
-                <dl class="viewissue_list">
-                    <dt id="posted_by_header"><?php echo __('Posted by'); ?></dt>
-                    <dd id="posted_by_content">
-                        <?php if ($issue->isEditable() && $issue->canEditPostedBy()): ?>
-                            <a href="javascript:void(0);" onclick="Pachno.Issues.Field.revert('<?php echo make_url('issue_revertfield', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => 'posted_by')); ?>', 'posted_by');" title="<?php echo __('Undo this change'); ?>"><?php echo fa_image_tag('undo-alt', ['class' => 'undo'], 'fas'); ?></a>
-                            <?php echo image_tag('spinning_16.gif', array('style' => 'display: none; float: left; margin-right: 5px;', 'id' => 'posted_by_undo_spinning')); ?>
-                            <a href="javascript:void(0);" class="dropper dropdown_link" title="<?php echo __('Click to change owner'); ?>"><?php echo image_tag('tabmenu_dropdown.png', array('class' => 'dropdown')); ?></a>
-                            <?php include_component('main/identifiableselector', array(    'html_id'             => 'posted_by_change',
-                                                                                    'header'             => __('Change poster'),
-                                                                                    'allow_clear'        => false,
-                                                                                    'clear_link_text'    => '',
-                                                                                    'callback'             => "Pachno.Issues.Field.set('" . make_url('issue_setfield', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => 'posted_by', 'value' => '%identifiable_value')) . "', 'posted_by');",
-                                                                                    'base_id'            => 'posted_by',
-                                                                                    'absolute'            => true,
-                                                                                    'classes'            => 'popup_box more_actions_dropdown')); ?>
-                        <?php endif; ?>
-                        <div style="width: 170px; display: inline;" id="posted_by_name">
-                            <?php echo include_component('main/userdropdown', array('user' => $issue->getPostedBy())); ?>
-                        </div>
-                        <span id="no_posted_by" style="display: none;"> </span>
-                    </dd>
-                </dl>
-            </li>
-            <li id="owned_by_field" style="<?php if (!$issue->isOwnedByVisible()): ?> display: none;<?php endif; ?>" class="issue_detail_field<?php if ($issue->isOwnerChanged()): ?> issue_detail_changed<?php endif; ?><?php if (!$issue->isOwnerMerged()): ?> issue_detail_unmerged<?php endif; ?>">
+        <div class="header" onclick="$('issue_details_fieldslist_people').toggle();"><?php echo __('People involved'); ?></div>
+        <ul class="issue_details fields-list" id="issue_details_fieldslist_people">
+            <li id="owned_by_field" style="<?php if (!$issue->isOwnedByVisible()): ?> display: none;<?php endif; ?>">
                 <dl class="viewissue_list">
                     <dt id="owned_by_header"><?php echo __('Owned by'); ?></dt>
                     <dd id="owned_by_content">
                         <?php if ($issue->isUpdateable() && $issue->canEditOwner()): ?>
-                            <a href="javascript:void(0);" onclick="Pachno.Issues.Field.revert('<?php echo make_url('issue_revertfield', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => 'owned_by')); ?>', 'owned_by');" title="<?php echo __('Undo this change'); ?>"><?php echo fa_image_tag('undo-alt', ['class' => 'undo'], 'fas'); ?></a>
-                            <?php echo image_tag('spinning_16.gif', array('style' => 'display: none; float: left; margin-right: 5px;', 'id' => 'owned_by_undo_spinning')); ?>
                             <a href="javascript:void(0);" class="dropper dropdown_link" title="<?php echo __('Click to change owner'); ?>"><?php echo image_tag('tabmenu_dropdown.png', array('class' => 'dropdown')); ?></a>
                             <?php include_component('main/identifiableselector', array(    'html_id'             => 'owned_by_change',
                                                                                     'header'             => __('Change issue owner'),
@@ -294,13 +195,11 @@
                     </dd>
                 </dl>
             </li>
-            <li id="assigned_to_field" class="issue_detail_field primary<?php if ($issue->isAssigneeChanged()): ?> issue_detail_changed<?php endif; ?><?php if (!$issue->isAssigneeMerged()): ?> issue_detail_unmerged<?php endif; ?>">
+            <li id="assigned_to_field">
                 <dl class="viewissue_list">
                     <dt id="assigned_to_header"><?php echo __('Assigned to'); ?></dt>
                     <dd id="assigned_to_content">
                         <?php if ($issue->canEditAssignee() && $issue->isUpdateable()): ?>
-                            <a href="javascript:void(0);" onclick="Pachno.Issues.Field.revert('<?php echo make_url('issue_revertfield', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => 'assigned_to')); ?>', 'assigned_to');" title="<?php echo __('Undo this change'); ?>"><?php echo fa_image_tag('undo-alt', ['class' => 'undo'], 'fas'); ?></a>
-                            <?php echo image_tag('spinning_16.gif', array('style' => 'display: none; float: left; margin-right: 5px;', 'id' => 'assigned_to_undo_spinning')); ?>
                             <a href="javascript:void(0);" class="dropper dropdown_link" title="<?php echo __('Click to change assignee'); ?>"><?php echo image_tag('tabmenu_dropdown.png', array('class' => 'dropdown')); ?></a>
                             <?php include_component('main/identifiableselector', array(    'html_id'             => 'assigned_to_change',
                                                                                     'header'             => __('Assign this issue'),
@@ -326,7 +225,7 @@
                 <?php if ($issue->canEditAssignee() && $issue->isEditable()): ?>
                 <?php endif; ?>
             </li>
-            <li id="subscribers_field" class="issue_detail_field" style="position: relative;">
+            <li id="subscribers_field">
                 <dl class="viewissue_list">
                     <dt id="subscribers_header">
                         <?php echo __('Subscribers'); ?>
@@ -340,9 +239,9 @@
         </ul>
     </fieldset>
     <fieldset id="issue_timetracking_container">
-        <legend onclick="$('issue_details_fieldslist_time').toggle();"><?php echo __('Times and dates'); ?></legend>
-        <ul class="issue_details simple-list" id="issue_details_fieldslist_time">
-            <li id="posted_at_field" class="issue_detail_field primary">
+        <div class="header" onclick="$('issue_details_fieldslist_time').toggle();"><?php echo __('Times and dates'); ?></div>
+        <ul class="issue_details fields-list" id="issue_details_fieldslist_time">
+            <li id="posted_at_field">
                 <dl class="viewissue_list">
                     <dt id="posted_at_header">
                         <?php echo __('Posted at'); ?>
@@ -352,7 +251,7 @@
                     </dd>
                 </dl>
             </li>
-            <li id="updated_at_field" class="issue_detail_field">
+            <li id="updated_at_field">
                 <dl class="viewissue_list">
                     <dt id="updated_at_header">
                         <?php echo __('Last updated'); ?>
@@ -362,13 +261,11 @@
                     </dd>
                 </dl>
             </li>
-            <li id="estimated_time_field"<?php if (!$issue->isEstimatedTimeVisible()): ?> style="display: none;"<?php endif; ?> class="issue_detail_field<?php if ($issue->isEstimatedTimeChanged()): ?> issue_detail_changed<?php endif; ?><?php if (!$issue->isEstimatedTimeMerged()): ?> issue_detail_unmerged<?php endif; ?>">
+            <li id="estimated_time_field"<?php if (!$issue->isEstimatedTimeVisible()): ?> style="display: none;"<?php endif; ?>>
                 <dl class="viewissue_list">
                     <dt id="estimated_time_header"><?php echo __('Estimated time'); ?></dt>
                     <dd id="estimated_time_content">
                         <?php if ($issue->isUpdateable() && $issue->canEditEstimatedTime()): ?>
-                            <a href="javascript:void(0);" onclick="Pachno.Issues.Field.revert('<?php echo make_url('issue_revertfield', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => 'estimated_time')); ?>', 'estimated_time');" title="<?php echo __('Undo this change'); ?>"><?php echo fa_image_tag('undo-alt', ['class' => 'undo'], 'fas'); ?></a>
-                            <?php echo image_tag('spinning_16.gif', array('style' => 'display: none; float: left; margin-right: 5px;', 'id' => 'estimated_time_undo_spinning')); ?>
                             <a href="javascript:void(0);" class="dropper dropdown_link" title="<?php echo __('Click to estimate this issue'); ?>"><?php echo image_tag('tabmenu_dropdown.png', array('class' => 'dropdown')); ?></a>
                             <?php include_component('main/issueestimator', array('issue' => $issue, 'field' => 'estimated_time', 'mode' => 'left')); ?>
                         <?php endif; ?>
@@ -379,7 +276,7 @@
                     </dd>
                 </dl>
             </li>
-            <li id="spent_time_field" style="position: relative;<?php if (!$issue->isSpentTimeVisible()): ?> display: none;<?php endif; ?>" class="issue_detail_field<?php if ($issue->isSpentTimeChanged()): ?> issue_detail_changed<?php endif; ?><?php if (!$issue->isSpentTimeMerged()): ?> issue_detail_unmerged<?php endif; ?>">
+            <li id="spent_time_field" style="position: relative;<?php if (!$issue->isSpentTimeVisible()): ?> display: none;<?php endif; ?>">
                 <dl class="viewissue_list">
                     <dt id="spent_time_header"><?php echo __('Time spent'); ?></dt>
                     <dd id="spent_time_content">
@@ -396,22 +293,20 @@
     </fieldset>
     <?php if (count($fields_list) || count($customfields_list)): ?>
         <fieldset>
-            <legend onclick="$('issue_details_fieldslist').toggle();"><?php echo __('Issue details'); ?></legend>
-            <ul class="issue_details simple-list" id="issue_details_fieldslist">
+            <div class="header" onclick="$('issue_details_fieldslist').toggle();"><?php echo __('Issue details'); ?></div>
+            <ul class="issue_details fields-list" id="issue_details_fieldslist">
                 <?php foreach ($fields_list as $field => $info): ?>
                     <?php include_component('main/issuefield', compact('field', 'info', 'issue')); ?>
                 <?php endforeach; ?>
                 <?php foreach ($customfields_list as $field => $info): ?>
                     <?php if ($info['type'] == \pachno\core\entities\CustomDatatype::INPUT_TEXTAREA_MAIN): continue; endif; ?>
-                    <li id="<?php echo $field; ?>_field" class="issue_detail_field<?php if (!$info['merged']): ?> issue_detail_unmerged<?php elseif ($info['changed']): ?> issue_detail_changed<?php endif; ?>"<?php if (!$info['visible']): ?> style="display: none;"<?php endif; ?>>
+                    <li id="<?php echo $field; ?>_field" <?php if (!$info['visible']): ?> style="display: none;"<?php endif; ?>>
                         <dl class="viewissue_list">
                             <dt id="<?php echo $field; ?>_header">
                                 <?php echo $info['title']; ?>
                             </dt>
                             <dd id="<?php echo $field; ?>_content">
                                 <?php if ($issue->isUpdateable() && $issue->canEditCustomFields($field) && $info['editable']): ?>
-                                    <a href="javascript:void(0);" onclick="Pachno.Issues.Field.revert('<?php echo make_url('issue_revertfield', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => $field)); ?>', '<?php echo $field; ?>');" title="<?php echo __('Undo this change'); ?>"><?php echo fa_image_tag('undo-alt', ['class' => 'undo'], 'fas'); ?></a>
-                                    <?php echo image_tag('spinning_16.gif', array('style' => 'display: none; float: left; margin-right: 5px;', 'id' => $field . '_undo_spinning')); ?>
                                     <a href="javascript:void(0);" class="dropper dropdown_link" title="<?php echo $info['change_tip']; ?>"><?php echo image_tag('tabmenu_dropdown.png', array('class' => 'dropdown')); ?></a>
                                     <?php if ($info['type'] == \pachno\core\entities\CustomDatatype::USER_CHOICE): ?>
                                         <?php include_component('main/identifiableselector', array(    'html_id'             => $field.'_change',
@@ -684,9 +579,9 @@
         </fieldset>
     <?php endif; ?>
     <fieldset id="viewissue_attached_information_container">
-        <legend>
+        <div class="header">
             <?php echo __('Attachments (%count)', array('%count' => '<span id="viewissue_uploaded_attachments_count">'.(count($issue->getLinks()) + count($issue->getFiles())).'</span>')); ?>
-        </legend>
+        </div>
         <div id="viewissue_attached_information">
             <div id="viewissue_no_uploaded_files"<?php if (count($issue->getFiles()) + count($issue->getLinks()) > 0): ?> style="display: none;"<?php endif; ?>><?php echo __('There is nothing attached to this issue'); ?></div>
             <ul class="attached_items" id="viewissue_uploaded_links">
@@ -710,17 +605,17 @@
     </fieldset>
     <?php \pachno\core\framework\Event::createNew('core', 'viewissue_left_after_attachments', $issue)->trigger(); ?>
     <fieldset id="viewissue_related_information_container">
-        <legend>
+        <div class="header">
             <?php echo image_tag('spinning_16.gif', array('style' => 'display: none;', 'id' => 'related_issues_indicator')) . __('Child issues (%count)', array('%count' => '<span id="viewissue_related_issues_count">'.$issue->countChildIssues().'</span>')); ?>
-        </legend>
+        </div>
         <div id="viewissue_related_information">
             <?php include_component('main/relatedissues', array('issue' => $issue)); ?>
         </div>
     </fieldset>
     <fieldset id="viewissue_duplicate_issues_container">
-        <legend>
+        <div class="header">
             <?php echo image_tag('spinning_16.gif', array('style' => 'display: none;', 'id' => 'duplicate_issues_indicator')) . __('Duplicate issues (%count)', array('%count' => '<span id="viewissue_duplicate_issues_count">'.$issue->getNumberOfDuplicateIssues().'</span>')); ?>
-        </legend>
+        </div>
         <div id="viewissue_duplicate_issues">
             <?php include_component('main/duplicateissues', array('issue' => $issue)); ?>
         </div>

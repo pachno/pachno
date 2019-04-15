@@ -155,6 +155,7 @@
             }
 
             $this->issue = $issue;
+            $this->issuetypes = $this->issue->getProject()->getIssuetypeScheme()->getIssuetypes();
             $event = \pachno\core\framework\Event::createNew('core', 'viewissue', $issue)->trigger();
             $this->listenViewIssuePostError($event);
         }

@@ -30,6 +30,7 @@
     .module .rating { background-image:url('<?php echo $webroot; ?>images/star_faded_small.png'); }
     .module .rating .score { background-image:url('<?php echo $webroot; ?>images/star_small.png'); }
 
+    <?php /*
     .markItUp .markItUpButton1 a { background-image:url('<?php echo $webroot; ?>images/markitup/h1.png'); }
     .markItUp .markItUpButton2 a { background-image:url('<?php echo $webroot; ?>images/markitup/h2.png'); }
     .markItUp .markItUpButton3 a { background-image:url('<?php echo $webroot; ?>images/markitup/h3.png'); }
@@ -49,6 +50,7 @@
     .markItUpResizeHandle { background-image:url('<?php echo $webroot; ?>images/markitup/handle.png'); }
     .markItUpHeader ul .markItUpDropMenu { background-image: url('<?php echo $webroot; ?>images/markitup/menu.png'); }
     .markItUpHeader ul ul .markItUpDropMenu { background-image: url('<?php echo $webroot; ?>images/markitup/submenu.png'); }
+    */ ?>
 
     #user_notifications .toggling { background: url('<?php echo $webroot; ?>images/spinning_16.gif') no-repeat 374px 11px; }
 

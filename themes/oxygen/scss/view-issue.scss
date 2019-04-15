@@ -8,37 +8,105 @@
   overflow: auto;
 }
 
+.issue-state,
+.affected-state {
+  display: inline-flex;
+  padding: .15em .25em;
+  font-size: 1em;
+  border-radius: 3px;
+  border: 1px solid rgba(0, 0, 0, .1);
+
+  &.closed,
+  &.unconfirmed {
+    background-color: rgba(150, 150, 150, 0.2);
+    color: rgba(100, 100, 100, 0.7);
+  }
+
+  &.open,
+  &.confirmed {
+    background-color: rgba(177, 210, 143, 0.6);
+    color: rgba(107, 140, 73, 0.8);
+  }
+}
+
 .viewissue-container {
 
   .header-container {
     display: flex;
     flex-direction: row;
     align-items: center;
-    padding: 1rem;
+    padding: 1rem 1rem 1rem 0;
+    margin-left: 1rem;
+    max-width: 1650px;
+    box-sizing: border-box;
+
+    .toggle-favourite {
+      flex: 0 0 auto;
+      font-size: 2em;
+      padding: 0 .4em;
+    }
 
     .title-container {
       display: flex;
+      flex: 1 1 auto;
       flex-direction: column;
-      flex: 0 0 auto;
+      line-height: 1.75em;
 
       .title-crumbs {
-        padding: .35rem;
+        padding: 0 .35rem;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: flex-start;
+        line-height: 1.35em;
+
+        > a,
+        > a:hover {
+          border: none;
+          color: #141823;
+          font-size: 1.1em;
+          flex: 0 0 auto;
+          margin-left: .5em;
+        }
       }
 
       .title-name {
         font-size: 1.5rem;
         font-weight: 600;
       }
+
+      .posted-by-container {
+        flex: 0 0 auto;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+
+        .value {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+        }
+      }
+    }
+
+    .status-field > .status-badge {
+      font-size: 1.2em;
+      padding: .4em .8em;
     }
   }
 
   .issue-card {
     display: flex;
     flex: 0 0 auto;
-    margin-bottom: 1rem;
+    max-width: 1650px;
+    margin: 1rem;
     flex-direction: row;
     box-sizing: border-box;
     align-items: flex-start;
+    background: #FFF;
+    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 1px 5px 0 rgba(0, 0, 0, 0.12);
+    border-radius: 4px;
+    padding: 10px;
 
     fieldset {
       border: none;
@@ -48,29 +116,45 @@
       display: flex;
       flex-direction: column;
 
-      legend {
+      > .header {
         border: none;
         padding: 0;
         flex: 0 0 auto;
         display: flex;
-        align-items: center;
+        flex-direction: row;
+        align-items: flex-start;
+        justify-content: stretch;
         color: rgba(0, 0, 0, 0.6);
+        font-size: 1em;
 
-        .far,
-        .fas {
+        .icon {
           flex: 0 0 24px;
-          box-sizing: border-box;
+          display: flex;
+          flex-direction: column;
+          padding-top: .15em;
+          color: rgb(200, 200, 200);
+
+          .far,
+          .fas {
+            flex: 0 0 24px;
+            box-sizing: border-box;
+          }
         }
 
-        span {
+        .name {
           flex: 1 1 auto;
-          padding: 3px;
+          padding: 0;
+          font-size: 1.3em;
+          line-height: 1em;
+          font-weight: 600;
         }
       }
 
       .content {
         flex: 1 1 auto;
         margin-left: 24px;
+        font-size: 1.1em;
+        margin-bottom: 2em;
       }
 
       > ul {
@@ -111,34 +195,55 @@
 
     .issue-card-main {
       border: none;
-      background: #FFF;
-      box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 1px 5px 0 rgba(0, 0, 0, 0.12);
-      border-radius: 4px;
-      padding: 10px;
       flex: 1 1 auto;
-      margin: 0 0 1em 1em;
+      margin: 0;
       overflow: visible;
       box-sizing: border-box;
       display: flex;
       flex-direction: column;
 
-      .workflow-actions-container {
+      .card-header {
         flex: 0 0 auto;
         display: flex;
         flex-direction: row;
         align-items: center;
-        justify-content: flex-end;
+        padding: 0;
+        margin-bottom: 1.5em;
 
-        > ul {
+        .issuetype-field {
+          flex: 1 1 auto;
+          align-items: flex-start;
+          justify-content: center;
+
+          .issuetype-icon {
+            display: inline-block;
+            width: auto;
+            padding: .5em .8em .5em 0;
+          }
+        }
+
+        .workflow-actions-container {
+          flex: 1 1 auto;
           display: flex;
           flex-direction: row;
-          flex-wrap: nowrap;
-          list-style: none;
-          padding: 0;
-          margin: 0;
+          align-items: center;
+          justify-content: flex-end;
 
-          li + li {
-            margin-left: .35rem;
+          > ul {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: nowrap;
+            list-style: none;
+            padding: 0;
+            margin: 0;
+
+            > li {
+              position: relative;
+            }
+
+            li + li {
+              margin-left: .35rem;
+            }
           }
         }
       }
@@ -161,14 +266,23 @@
     }
 
     .issue-fields {
-      flex: 0 0 350px;
-      margin: 0;
-      padding: 1em 1.5em;
+      flex: 0 0 400px;
+      margin: 1em;
+      padding: 0 1em;
       display: flex;
+      border-left: 1px solid rgba(200, 200, 200, .3);
       flex-direction: column;
       height: calc(100% - 4em);
       box-sizing: border-box;
       overflow: auto;
+
+      .fields-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+      }
     }
   }
 }

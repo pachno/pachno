@@ -118,7 +118,10 @@ input.button.secondary.highlight {
 }
 button.icon,
 a.button.icon,
-input.button.icon {
+input.button.icon,
+button.icon:hover,
+a.button.icon:hover,
+input.button.icon:hover {
   background: transparent;
   box-shadow: none;
   color: rgb(100, 100, 100);

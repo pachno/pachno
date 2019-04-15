@@ -26,7 +26,7 @@
         <li id="affected_<?php echo $itemtype; ?>_<?php echo $item['a_id']; ?>_status_spinning" style="display: none;"><?php echo image_tag('spinning_20.gif') . '&nbsp;' . __('Please wait'); ?>...</li>
         <li id="affected_<?php echo $itemtype; ?>_<?php echo $item['a_id']; ?>_status_error" class="error_message" style="display: none;"></li>
     </ul>
-    <span onclick="Pachno.Issues.Affected.toggleConfirmed('<?php echo make_url('confirm_affected', array('issue_id' => $issue->getID(), 'affected_type' => $itemtype, 'affected_id' => $item['a_id'])); ?>', '<?php echo $itemtype.'_'.$item['a_id']; ?>');" class="affected_state <?php echo ($item['confirmed']) ? 'confirmed' : 'unconfirmed'; ?>"><span id="affected_<?php echo $itemtype; ?>_<?php echo $item['a_id']; ?>_state"><?php echo ($item['confirmed']) ? __('Confirmed') : __('Unconfirmed'); ?></span><?php echo image_tag('spinning_16.gif'); ?></span>
+    <span onclick="Pachno.Issues.Affected.toggleConfirmed('<?php echo make_url('confirm_affected', array('issue_id' => $issue->getID(), 'affected_type' => $itemtype, 'affected_id' => $item['a_id'])); ?>', '<?php echo $itemtype.'_'.$item['a_id']; ?>');" class="affected-state <?php echo ($item['confirmed']) ? 'confirmed' : 'unconfirmed'; ?>"><span id="affected_<?php echo $itemtype; ?>_<?php echo $item['a_id']; ?>_state"><?php echo ($item['confirmed']) ? __('Confirmed') : __('Unconfirmed'); ?></span><?php echo image_tag('spinning_16.gif'); ?></span>
     <?php if ($itemtype == 'build'): ?>
         <span class="faded_out">(<?php echo $item['build']->getVersionMajor().'.'.$item['build']->getVersionMinor().'.'.$item['build']->getVersionRevision(); ?>)</span>
     <?php endif; ?>

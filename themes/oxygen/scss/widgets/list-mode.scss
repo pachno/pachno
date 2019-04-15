@@ -8,6 +8,48 @@
     opacity: 0.2;
   }
 
+  .header-banner {
+    display: flex;
+    flex-direction: column;
+    flex: 0 0 auto;
+
+    .header-name {
+      display: flex;
+      flex-direction: row;
+      padding: .7em;
+      align-items: center;
+
+      .image-container {
+        flex: 0 0 2.8em;
+        margin-right: .7em;
+        padding: .7em;
+
+        > img {
+          width: 100%;
+        }
+      }
+
+      .name-container {
+        flex: 1 1 auto;
+        font-size: 1.55rem;
+        font-weight: 600;
+        line-height: 1.5rem;
+        display: flex;
+        flex-direction: column;
+        padding: .7em 0;
+      }
+    }
+
+    .info-container {
+      font-size: .6em;
+    }
+
+    .button-group {
+      padding: 15px;
+      justify-content: flex-end;
+    }
+  }
+
   .list-item,
   .list-item:hover {
     position: relative;

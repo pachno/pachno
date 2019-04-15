@@ -1,0 +1,176 @@
+.markItUp * {
+  margin: 0;
+  padding: 0;
+  outline: none;
+}
+
+.markItUp a:link,
+.markItUp a:visited {
+  color: #000;
+  text-decoration: none;
+}
+
+.markItUp {
+  margin: 0;
+}
+
+.markItUpContainer {
+  font: 11px 'Source Sans Pro', sans-serif;
+}
+
+.textarea_container {
+  position: relative;
+}
+textarea.markItUpEditor,
+textarea.markItUpEditor:focus {
+  box-sizing: border-box;
+  font: 1.4em 'Fira Mono', monospace;
+  padding: 5px;
+  width: 690px;
+  height: 320px;
+  clear: both;
+  line-height: 18px;
+  overflow: auto;
+  display: block;
+  font-family: 'Fira Mono', monospace;
+  border: 2px solid #0C8990;
+  border-radius: 0 0 4px 4px;
+}
+
+.markItUpPreviewFrame {
+  overflow: auto;
+  background-color: #FFF;
+  width: 99.9%;
+  height: 300px;
+  margin: 5px 0;
+}
+
+.markItUpFooter {
+  display: none;
+}
+
+.markItUpResizeHandle {
+  overflow: hidden;
+  width: 22px;
+  height: 5px;
+  margin-left: auto;
+  margin-right: auto;
+  cursor: n-resize;
+}
+
+.syntax_picker_container {
+  top: 5px;
+  right: 5px;
+  position: absolute;
+
+  .fancydropdown-container {
+    .fancydropdown {
+      background: rgb(255, 255, 255);
+      border-color: rgba(200, 200, 200, .3);
+      &:hover {
+        border-color: #0C8990;
+        cursor: pointer;
+      }
+      &.active {
+        border-color: #0C8990;
+      }
+    }
+  }
+}
+
+.markItUpHeader {
+  height: auto;
+  background-color: rgba(200, 200, 200, .3);
+  border-radius: 4px 4px 0 0;
+  display: block;
+  font-size: .9rem;
+
+  ul,
+  li {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  > ul {
+    display: flex;
+    align-items: center;
+    padding: .7em 0 .7em .7em;
+
+    > li {
+      flex: 0 0 auto;
+      display: flex;
+      position: relative;
+      align-items: center;
+
+      > a,
+      > a:hover {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 1.8em;
+        min-height: 1.8em;
+        box-sizing: border-box;
+        padding: .2em;
+        border: none;
+        border-radius: 4px;
+        font-size: 1em;
+        margin: 0;
+      }
+
+      &:hover > a {
+        background-color: rgba(200, 200, 200, .3);
+      }
+
+      > ul {
+        display: flex;
+        flex-direction: column;
+        transform: scaleY(0);
+        transform-origin: top left;
+        transition: transform .2s ease-in-out;
+        position: absolute;
+        top: 1.8em;
+        left: 0;
+        background: #FFF;
+        padding: .5em;
+        box-shadow: 0 3px 1px -2px rgba(0,0,0,.2),0 2px 2px 0 rgba(0,0,0,.14),0 1px 5px 0 rgba(0,0,0,.12);
+        border-radius: 4px;
+
+        > li {
+          padding: 0;
+
+          > a {
+            display: block;
+            padding: .35em;
+            border: none;
+            border-radius: 4px;
+            white-space: nowrap;
+
+            &:hover {
+              background-color: rgba(200, 200, 200, .3);
+            }
+          }
+        }
+      }
+
+      &:hover > ul {
+        transform: scaleY(1);
+      }
+    }
+  }
+}
+
+/* next rows of buttons */
+.markItUpHeader ul .markItUpSeparator {
+  margin: 0 10px;
+  width: 1px;
+  height: 16px;
+  overflow: hidden;
+  background-color: #CCC;
+}
+
+.markItUpHeader ul ul .markItUpSeparator {
+  width: auto;
+  height: 1px;
+  margin: 0;
+}

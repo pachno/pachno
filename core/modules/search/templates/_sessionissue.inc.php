@@ -9,7 +9,7 @@
     <span class="name">
         <span class="title"><?php //echo $issue->getFormattedTitle(true, false); ?></span>
         <span class="description">
-            <span class="status-badge" style="background-color: <?php echo $issue->getStatus()->getColor(); ?>;color: <?php echo $issue->getStatus()->getTextColor(); ?>;"><span><?php echo __($issue->getStatus()->getName()); ?></span></span>
+            <span class="status-badge" style="background-color: <?php echo ($issue->getStatus() instanceof \pachno\core\entities\Datatype) ? $issue->getStatus()->getColor() : '#FFF'; ?>;color: <?php echo ($issue->getStatus() instanceof \pachno\core\entities\Datatype) ? $issue->getStatus()->getTextColor() : '#333'; ?>;"><span><?php echo ($issue->getStatus() instanceof \pachno\core\entities\Datatype) ? __($issue->getStatus()->getName()) : __('Status not set'); ?></span></span>
             <?php if ($issue->getPriority() instanceof \pachno\core\entities\Priority): ?>
                 <span class="priority priority_<?= $issue->getPriority()->getValue(); ?>"><?= fa_image_tag($issue->getPriority()->getFontAwesomeIcon(), [], $issue->getPriority()->getFontAwesomeIconStyle()) . $issue->getPriority()->getName(); ?></span>
             <?php endif; ?>

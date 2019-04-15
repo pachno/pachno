@@ -956,53 +956,63 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
             elements.each(function (elm) {
                 if ($(elm).hasClassName('syntax_mw')) {
                     var ms = [
-                        {name: 'Heading 1', key: '1', openWith: '== ', closeWith: ' ==', placeHolder: 'Your title here...'},
-                        {name: 'Heading 2', key: '2', openWith: '=== ', closeWith: ' ===', placeHolder: 'Your title here...'},
-                        {name: 'Heading 3', key: '3', openWith: '==== ', closeWith: ' ====', placeHolder: 'Your title here...'},
-                        {name: 'Heading 4', key: '4', openWith: '===== ', closeWith: ' =====', placeHolder: 'Your title here...'},
-                        {name: 'Heading 5', key: '5', openWith: '====== ', closeWith: ' ======', placeHolder: 'Your title here...'},
+                        {name: 'Headings', dropMenu: [
+                                {name: 'Heading 1', key: '1', openWith: '== ', closeWith: ' ==', placeHolder: 'Your title here...'},
+                                {name: 'Heading 2', key: '2', openWith: '=== ', closeWith: ' ===', placeHolder: 'Your title here...'},
+                                {name: 'Heading 3', key: '3', openWith: '==== ', closeWith: ' ====', placeHolder: 'Your title here...'},
+                                {name: 'Heading 4', key: '4', openWith: '===== ', closeWith: ' =====', placeHolder: 'Your title here...'},
+                                {name: 'Heading 5', key: '5', openWith: '====== ', closeWith: ' ======', placeHolder: 'Your title here...'}
+                            ]
+                        },
                         {separator: '---------------'},
-                        {name: 'Bold', key: 'B', openWith: "'''", closeWith: "'''"},
-                        {name: 'Italic', key: 'I', openWith: "''", closeWith: "''"},
-                        {name: 'Stroke through', key: 'S', openWith: '<strike>', closeWith: '</strike>'},
+                        {name: '<i class="fas fa-bold"></i>', title:'Bold', key: 'B', openWith: "'''", closeWith: "'''"},
+                        {name: '<i class="fas fa-italic"></i>', title: 'Italic', key: 'I', openWith: "''", closeWith: "''"},
+                        {name: '<i class="fas fa-strikethrough"></i>', title: 'Strike through', key: 'S', openWith: '<strike>', closeWith: '</strike>'},
                         {separator: '---------------'},
-                        {name: 'Bulleted list', openWith: '(!(* |!|*)!)'},
-                        {name: 'Numeric list', openWith: '(!(# |!|#)!)'},
+                        {name: '<i class="fas fa-list-ul"></i>', title: 'Bulleted list', openWith: '(!(* |!|*)!)'},
+                        {name: '<i class="fas fa-list-ol"></i>', title: 'Numeric list', openWith: '(!(# |!|#)!)'},
                         {separator: '---------------'},
-                        {name: 'Picture', key: "P", replaceWith: '[[Image:[![Url:!:http://]!]|[![name]!]]]'},
-                        {name: 'Link', key: "L", openWith: "[[[![Url:!:http://]!]|", closeWith: ']]', placeHolder: 'Your text to link here...'},
-                        {name: 'Url', openWith: "[[![Url:!:http://]!] ", closeWith: ']', placeHolder: 'Your text to link here...'},
+                        {name: '<i class="fas fa-link"></i>', title: 'Attach', dropMenu: [
+                                {name: 'Simple link', openWith: "[[![Url:!:http://]!] ", closeWith: ']', placeHolder: 'Your text to link here...'},
+                                {name: 'Link with title', key: 'L', openWith: "[[[![Url:!:http://]!]|", closeWith: ']]', placeHolder: 'Your text to link here...'},
+                                {name: 'Link to picture', key: 'P', replaceWith: '[[Image:[![Url:!:http://]!]|[![name]!]]]'},
+                            ]},
                         {separator: '---------------'},
-                        {name: 'Quotes', openWith: '(!(> |!|>)!)', placeHolder: ''},
-                        {name: 'Code', openWith: '(!(<source lang="[![Language:!:php]!]">|!|<pre>)!)', closeWith: '(!(</source>|!|</pre>)!)'}
+                        {name: '<i class="fas fa-quote-right"></i>', title: 'Quotes', openWith: '(!(> |!|>)!)', placeHolder: ''},
+                        {name: '<i class="fas fa-code"></i>', title: 'Code', openWith: '(!(<source lang="[![Language:!:php]!]">|!|<pre>)!)', closeWith: '(!(</source>|!|</pre>)!)'}
                     ];
                 } else {
                     var ms = [
-                        {name: 'First Level Heading', key: '1', placeHolder: 'Your title here...', closeWith: function (markItUp) {
-                            return Pachno.Main.Helpers.miu.markdownTitle(markItUp, '=')
-                        }},
-                        {name: 'Second Level Heading', key: '2', placeHolder: 'Your title here...', closeWith: function (markItUp) {
-                            return Pachno.Main.Helpers.miu.markdownTitle(markItUp, '-')
-                        }},
-                        {name: 'Heading 3', key: '3', openWith: '### ', placeHolder: 'Your title here...'},
-                        {name: 'Heading 4', key: '4', openWith: '#### ', placeHolder: 'Your title here...'},
-                        {name: 'Heading 5', key: '5', openWith: '##### ', placeHolder: 'Your title here...'},
+                        {name: '<i class="fas fa-heading"></i>', title: 'Headings', dropMenu: [
+                                {name: 'Heading 1', key: '1', placeHolder: 'Your title here...', closeWith: function (markItUp) {
+                                    return Pachno.Main.Helpers.miu.markdownTitle(markItUp, '=')
+                                }},
+                                {name: 'Heading 2', key: '2', placeHolder: 'Your title here...', closeWith: function (markItUp) {
+                                    return Pachno.Main.Helpers.miu.markdownTitle(markItUp, '-')
+                                }},
+                                {name: 'Heading 3', key: '3', openWith: '### ', placeHolder: 'Your title here...'},
+                                {name: 'Heading 4', key: '4', openWith: '#### ', placeHolder: 'Your title here...'},
+                                {name: 'Heading 5', key: '5', openWith: '##### ', placeHolder: 'Your title here...'},
+                            ]
+                        },
                         {separator: '---------------'},
-                        {name: 'Bold', key: 'B', openWith: '**', closeWith: '**'},
-                        {name: 'Italic', key: 'I', openWith: '_', closeWith: '_'},
-                        {name: 'Stroke through', key: 'S', openWith: '~~', closeWith: '~~'},
+                        {name: '<i class="fas fa-bold"></i>', title:'Bold', key: 'B', openWith: '**', closeWith: '**'},
+                        {name: '<i class="fas fa-italic"></i>', title: 'Italic', key: 'I', openWith: '_', closeWith: '_'},
+                        {name: '<i class="fas fa-strikethrough"></i>', title: 'Strike through', key: 'S', openWith: '~~', closeWith: '~~'},
                         {separator: '---------------'},
-                        {name: 'Bulleted List', openWith: '- '},
-                        {name: 'Numeric List', openWith: function (markItUp) {
+                        {name: '<i class="fas fa-list-ul"></i>', title: 'Bulleted List', openWith: '- '},
+                        {name: '<i class="fas fa-list-ol"></i>', title: 'Numeric List', openWith: function (markItUp) {
                             return markItUp.line + '. ';
                         }},
                         {separator: '---------------'},
-                        {name: 'Picture', key: 'P', replaceWith: '![[![Alternative text]!]]([![Url:!:http://]!] "[![Title]!]")'},
-                        {name: 'Link', key: 'L', openWith: '[', closeWith: ']([![Url:!:http://]!] "[![Title]!]")', placeHolder: 'Your text to link here...'},
-                        {name: 'Url', openWith: '[', closeWith: ']([![Url:!:http://]!])', placeHolder: 'Your text to link here...'},
+                        {name: '<i class="fas fa-link"></i>', title: 'Attach', dropMenu: [
+                            {name: 'Simple link', openWith: '[', closeWith: ']([![Url:!:http://]!])', placeHolder: 'Your text to link here...'},
+                            {name: 'Link with title', key: 'L', openWith: '[', closeWith: ']([![Url:!:http://]!] "[![Title]!]")', placeHolder: 'Your text to link here...'},
+                            {name: 'Link to picture', key: 'P', replaceWith: '![[![Alternative text]!]]([![Url:!:http://]!] "[![Title]!]")'},
+                        ]},
                         {separator: '---------------'},
-                        {name: 'Quotes', openWith: '> '},
-                        {name: 'Code', openWith: '(!(\t|!|`)!)', closeWith: '(!(`)!)'}
+                        {name: '<i class="fas fa-quote-right"></i>', title: 'Quotes', openWith: '> '},
+                        {name: '<i class="fas fa-code"></i>', title: 'Code', openWith: '(!(\t|!|`)!)', closeWith: '(!(`)!)'}
                     ];
                 }
                 jQuery(elm).markItUpRemove();
@@ -6078,20 +6088,20 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
             Pachno.Main.Helpers.ajax(url, {
                 loading: {
                     callback: function () {
-                        $('affected_' + affected + '_state').up('.affected_state').addClassName('loading');
+                        $('affected_' + affected + '_state').up('.affected-state').addClassName('loading');
                     }
                 },
                 success: {
                     callback: function (json) {
                         $('affected_' + affected + '_state').update(json.text);
-                        $('affected_' + affected + '_state').up('.affected_state').toggleClassName('unconfirmed');
-                        $('affected_' + affected + '_state').up('.affected_state').toggleClassName('confirmed');
-                        $('affected_' + affected + '_state').up('.affected_state').removeClassName('loading');
+                        $('affected_' + affected + '_state').up('.affected-state').toggleClassName('unconfirmed');
+                        $('affected_' + affected + '_state').up('.affected-state').toggleClassName('confirmed');
+                        $('affected_' + affected + '_state').up('.affected-state').removeClassName('loading');
                     }
                 },
                 complete: {
                     callback: function () {
-                        $('affected_' + affected + '_state').up('.affected_state').removeClassName('loading');
+                        $('affected_' + affected + '_state').up('.affected-state').removeClassName('loading');
                     }
                 }
             });

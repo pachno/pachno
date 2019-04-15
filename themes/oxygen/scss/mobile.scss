@@ -334,7 +334,7 @@
     #find_issues .results_container tbody td.result_issue { display: block; font-size: 1em; padding: 0; width: 100%; }
     #find_issues .results_container tbody td.result_issue a.issue_link { margin: 0; display: block; width: auto; padding: 8px 32px 8px 8px; }
     #find_issues .results_container tbody td.result_issue a:hover { text-decoration: none; border: none; }
-    #find_issues .results_container tbody td.result_issue .issue_state { display: inline-block; }
+    #find_issues .results_container tbody td.result_issue .issue-state { display: inline-block; }
     #find_issues .results_container tbody td.result_issue .issue_no { display: inline-block; margin-right: 5px; font-size: 0.9em; color: #549D54; }
     #find_issues .results_container tbody td.result_issue .issue_title { width: 100%; display: block; }
     #find_issues .results_container tbody td.result_issue .sc_dash { display: none; }

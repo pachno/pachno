@@ -15,6 +15,6 @@
             <?php endif; ?>
         </div>
     <?php endif; ?>
-    <span class="issue_state <?php echo $issue->isClosed() ? 'closed' : 'open'; ?>"><?php echo $issue->isClosed() ? __('Closed') : __('Open'); ?></span>
+    <span class="issue-state <?php echo $issue->isClosed() ? 'closed' : 'open'; ?>"><?php echo $issue->isClosed() ? __('Closed') : __('Open'); ?></span>
     <?php include_component('main/statusbadge', ['status' => $issue->getStatus()]); ?>
 </li>

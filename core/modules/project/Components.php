@@ -41,6 +41,11 @@
             $this->prev_issue = null;
         }
 
+        public function componentViewIssueHeader()
+        {
+            $this->statuses = ($this->issue->getProject()->isFreelancingAllowed()) ? $this->issue->getProject()->getAvailableStatuses() : $this->issue->getAvailableStatuses();
+        }
+
         public function componentMilestone()
         {
             if (!isset($this->milestone))

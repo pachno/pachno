@@ -14,8 +14,8 @@
 
 ?>
 <nav class="project-context sidebar <?= (isset($collapsed) && $collapsed) ? 'collapsed' : ''; ?>" id="project-menu" data-project-id="<?= (\pachno\core\framework\Context::isProjectContext()) ? \pachno\core\framework\Context::getCurrentProject()->getId() : ''; ?>">
-    <?php include_component('project/projectheader', ['subpage' => (isset($dashboard) && $dashboard instanceof \pachno\core\entities\Dashboard) ? $dashboard->getName() : '']); ?>
     <div class="list-mode">
+        <?php include_component('project/projectheader', ['subpage' => (isset($dashboard) && $dashboard instanceof \pachno\core\entities\Dashboard) ? $dashboard->getName() : '']); ?>
         <?php $page = (in_array($pachno_response->getPage(), array('project_dashboard', 'project_scrum_sprint_details', 'project_timeline', 'project_team', 'project_roadmap', 'project_statistics', 'vcs_commitspage'))) ? $pachno_response->getPage() : 'project_dashboard'; ?>
         <a href="<?= make_url($page, ['project_key' => Context::getCurrentProject()->getKey()]); ?>" class="list-item expandable <?php if (in_array($pachno_response->getPage(), array('project_dashboard', 'project_scrum_sprint_details', 'project_timeline', 'project_team', 'project_roadmap', 'project_statistics', 'vcs_commitspage'))): ?>expanded<?php endif; ?>">
             <?= fa_image_tag('columns', ['class' => 'icon']); ?>
