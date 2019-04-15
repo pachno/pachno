@@ -6,7 +6,7 @@
             <div id="config_roles" style="position: relative; width: 730px;">
                 <h3>
                     <a class="dropper button"><?php echo __('Actions'); ?></a>
-                    <ul class="simple_list rounded_box white shadowed more_actions_dropdown dropdown_box popup_box">
+                    <ul class="simple-list rounded_box white shadowed more_actions_dropdown dropdown_box popup_box">
                         <li><?php echo link_tag(make_url('configure_permissions'), __('Show advanced permissions')); ?></li>
                     </ul>
                     <?php echo __('Configure roles'); ?>
@@ -27,7 +27,7 @@
                 <h5 style="margin-top: 10px;">
                     <?php echo __('Globally available roles'); ?>
                 </h5>
-                <ul id="global_roles_list" class="simple_list" style="width: 730px;">
+                <ul id="global_roles_list" class="simple-list" style="width: 730px;">
                     <?php foreach ($roles as $role): ?>
                         <?php include_component('configuration/role', array('role' => $role)); ?>
                     <?php endforeach; ?>

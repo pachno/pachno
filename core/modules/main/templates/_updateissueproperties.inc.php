@@ -21,7 +21,7 @@
             <?php if (!$issue instanceof \pachno\core\entities\Issue): ?>
                 <div class="message-box type-info"><?= fa_image_tag('info-circle') . __('This transition will be applied to %count selected issues', array('%count' => count($issues))); ?></div>
             <?php endif; ?>
-            <ul class="simple_list">
+            <ul class="simple-list">
                 <?php if ((($issue instanceof \pachno\core\entities\Issue && $issue->isUpdateable() && $issue->canEditAssignee()) || isset($issues)) && $transition->hasAction(\pachno\core\entities\WorkflowTransitionAction::ACTION_ASSIGN_ISSUE) && !$transition->getAction(\pachno\core\entities\WorkflowTransitionAction::ACTION_ASSIGN_ISSUE)->hasTargetValue()): ?>
                     <li id="transition_popup_assignee_div_<?= $transition->getID(); ?>">
                         <input type="hidden" name="assignee_id" id="popup_assigned_to_id_<?= $transition->getID(); ?>" value="<?= ($issue instanceof \pachno\core\entities\Issue && $issue->hasAssignee() ? $issue->getAssignee()->getID() : 0); ?>">

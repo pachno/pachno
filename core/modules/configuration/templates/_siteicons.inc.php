@@ -12,7 +12,7 @@
                             <?php echo image_tag(\pachno\core\framework\Settings::getFaviconUrl(), array('style' => 'width: 16px; height: 16px;'), \pachno\core\framework\Settings::isUsingCustomFavicon()); ?>
                         </div>
                         <div class="rounded_box lightgrey borderless" style="margin: 5px 0;">
-                            <ul class="simple_list" style="margin-top: 0;">
+                            <ul class="simple-list" style="margin-top: 0;">
                                 <li><input type="radio" id="small_no_change" name="small_icon_action" value="0" checked><label for="small_no_change"><?php echo __('Leave as is'); ?></label></li>
                                 <?php if (\pachno\core\framework\Settings::isUsingCustomFavicon()): ?>
                                     <li><input type="radio" id="small_clear_icon" name="small_icon_action" value="clear_file"><label for="small_clear_icon"><?php echo __('Remove icon and return to default'); ?></label></li>
@@ -31,7 +31,7 @@
                             <?php echo image_tag(\pachno\core\framework\Settings::getHeaderIconUrl(), array('style' => 'width: 24px; height: 24px;'), \pachno\core\framework\Settings::isUsingCustomHeaderIcon()); ?>
                         </div>
                         <div class="rounded_box lightgrey borderless" style="margin: 5px 0;">
-                            <ul class="simple_list" style="margin-top: 0;">
+                            <ul class="simple-list" style="margin-top: 0;">
                                 <li><input type="radio" id="large_no_change" name="large_icon_action" value="0" checked><label for="large_no_change"><?php echo __('Leave as is').'</span>'; ?></label></li>
                                 <?php if (\pachno\core\framework\Settings::isUsingCustomHeaderIcon()): ?>
                                     <li><input type="radio" id="large_clear_icon" name="large_icon_action" value="clear_file"><label for="large_clear_icon"><?php echo __('Remove icon and return to default'); ?></label></li>

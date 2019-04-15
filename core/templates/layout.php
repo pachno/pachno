@@ -130,8 +130,11 @@
                         'tablekit',
                         \pachno\core\framework\Settings::getThemeName() .'/theme',
                         'pachno',
+                        'hallo',
+                        'showdown.min',
+                        'turndown.browser.umd',
                         'pachno/index',
-                        'pachno/tools',
+                        'pachno/tools'
                     ] as $path): ?>
                     '<?= $path ?>': bust('<?= $path.$minified ?>'),
                     <?php endforeach; ?>
@@ -181,6 +184,9 @@
                     },
                     'bootstrap-typeahead': {
                         deps: ['jquery']
+                    },
+                    'hallo': {
+                        deps: ['jquery', 'jquery-ui']
                     },
                     'mention': {
                         deps: ['jquery', 'bootstrap-typeahead']

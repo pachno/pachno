@@ -26,7 +26,7 @@
     <div id="acl_<?php echo $issue->getID(); ?>_public" style="<?php if($issue->isLocked()): ?> display: none;<?php endif; ?>">
         <form action="<?php echo make_url('unlock_issue', array('issue_id' => $issue->getID())); ?>" onsubmit="Pachno.Issues.ACL.set('<?php echo make_url('unlock_issue', array('issue_id' => $issue->getID())); ?>', <?php echo $issue->getID(); ?>, 'public');return false;" method="post" id="acl_<?php echo $issue->getID(); ?>_publicform">
             <div class="backdrop_detail_content">
-                <ul class="issue_access_list simple_list" id="issue_<?php echo $issue->getID(); ?>_public_category_access_list" style="<?php if($issue->isUnlocked() && $issue->isUnlockedCategory()): ?> display: none;<?php endif; ?>">
+                <ul class="issue_access_list simple-list" id="issue_<?php echo $issue->getID(); ?>_public_category_access_list" style="<?php if($issue->isUnlocked() && $issue->isUnlockedCategory()): ?> display: none;<?php endif; ?>">
                     <li id="issue_<?php echo $issue->getID(); ?>_public_category_access_list_none" class="faded_out" style="<?php if (count($al_items)): ?>display: none; <?php endif; ?>padding: 5px;"><?php echo __('Noone else can see this issue'); ?></li>
                     <?php foreach ($al_items as $item): ?>
                         <?php include_component('main/issueaclformentry', array('target' => $item['target'])); ?>
@@ -45,7 +45,7 @@
     <div id="acl_<?php echo $issue->getID(); ?>_restricted" style="<?php if($issue->isUnlocked()): ?> display: none;<?php endif; ?>">
         <form action="<?php echo make_url('move_issue', array('issue_id' => $issue->getID())); ?>" method="post" onsubmit="Pachno.Issues.ACL.set('<?php echo make_url('lock_issue', array('issue_id' => $issue->getID())); ?>', <?php echo $issue->getID(); ?>, 'restricted');return false;" id="acl_<?php echo $issue->getID(); ?>_restrictedform">
             <div class="backdrop_detail_content">
-                <ul class="issue_access_list simple_list" id="issue_<?php echo $issue->getID(); ?>_restricted_access_list">
+                <ul class="issue_access_list simple-list" id="issue_<?php echo $issue->getID(); ?>_restricted_access_list">
                     <li id="issue_<?php echo $issue->getID(); ?>_restricted_access_list_none" class="faded_out" style="<?php if (count($al_items)): ?>display: none; <?php endif; ?>padding: 5px;"><?php echo __('Noone else can see this issue'); ?></li>
                     <?php foreach ($al_items as $item): ?>
                         <?php include_component('main/issueaclformentry', array('target' => $item['target'])); ?>

@@ -9,7 +9,7 @@
     <div class="project_left_container">
         <div class="project_left">
             <h3><?php echo __('Filters'); ?></h3>
-            <ul class="simple_list">
+            <ul class="simple-list">
                 <li class="selected"><a href="javascript:void(0);" onclick="Pachno.Project.clearReleaseCenterFilters(); $('project_release_center_container').addClassName('only_active');Pachno.Project.checkAndToggleNoBuildsMessage();Pachno.Project.toggleLeftSelection(this);"><?php echo __('Active releases'); ?></a></li>
                 <li><a href="javascript:void(0);" onclick="Pachno.Project.clearReleaseCenterFilters(); $('project_release_center_container').addClassName('only_archived');Pachno.Project.checkAndToggleNoBuildsMessage();Pachno.Project.toggleLeftSelection(this);"><?php echo __('Archived releases'); ?></a></li>
                 <li><a href="javascript:void(0);" onclick="Pachno.Project.clearReleaseCenterFilters(); $('project_release_center_container').addClassName('only_downloads');Pachno.Project.checkAndToggleNoBuildsMessage();Pachno.Project.toggleLeftSelection(this);"><?php echo __('With downloads'); ?></a></li>
@@ -33,7 +33,7 @@
                 </div>
             <?php endif; ?>
             <h3><?php echo __('Project releases'); ?></h3>
-            <ul class="simple_list" id="active_builds_0">
+            <ul class="simple-list" id="active_builds_0">
                 <?php if (count($selected_project->getNonEditionBuilds())): ?>
                     <?php foreach ($selected_project->getNonEditionBuilds() as $build): ?>
                         <?php include_component('buildbox', array('build' => $build)); ?>
@@ -44,7 +44,7 @@
             <?php if ($selected_project->isEditionsEnabled()): ?>
                 <?php foreach ($selected_project->getEditions() as $edition_id => $edition): ?>
                     <h3><?php echo __('%edition_name releases', array('%edition_name' => $edition->getName())); ?></h3>
-                    <ul class="simple_list" id="active_builds_<?php echo $edition_id; ?>">
+                    <ul class="simple-list" id="active_builds_<?php echo $edition_id; ?>">
                         <?php if (count($edition->getBuilds())): ?>
                             <?php foreach ($edition->getBuilds() as $build): ?>
                                 <?php include_component('buildbox', array('build' => $build)); ?>

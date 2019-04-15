@@ -608,14 +608,14 @@
             <?php if (count($pachno_user->getScopes()) > 1): ?>
                 <div id="tab_scopes_pane" style="display: none;">
                     <h3><?= __('Pending memberships'); ?></h3>
-                    <ul class="simple_list" id="pending_scope_memberships">
+                    <ul class="simple-list" id="pending_scope_memberships">
                         <?php foreach ($pachno_user->getUnconfirmedScopes() as $scope): ?>
                             <?php include_component('main/userscope', array('scope' => $scope)); ?>
                         <?php endforeach; ?>
                     </ul>
                     <span id="no_pending_scope_memberships" class="faded_out" style="<?php if (count($pachno_user->getUnconfirmedScopes())): ?>display: none;<?php endif; ?>"><?= __('You have no pending scope memberships'); ?></span>
                     <h3 style="margin-top: 20px;"><?= __('Confirmed memberships'); ?></h3>
-                    <ul class="simple_list" id="confirmed_scope_memberships">
+                    <ul class="simple-list" id="confirmed_scope_memberships">
                         <?php foreach ($pachno_user->getConfirmedScopes() as $scope_id => $scope): ?>
                             <?php include_component('main/userscope', array('scope' => $scope)); ?>
                         <?php endforeach; ?>

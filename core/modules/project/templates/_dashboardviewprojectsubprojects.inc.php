@@ -1,6 +1,6 @@
 <div class="dashboard_subprojects">
     <?php if (count($subprojects) > 0): ?>
-        <ul class="project_list simple_list" style="margin: 0;">
+        <ul class="project_list simple-list" style="margin: 0;">
         <?php foreach ($subprojects as $project): ?>
             <li><?php include_component('project/project', array('project' => $project)); ?></li>
         <?php endforeach; ?>

@@ -14,7 +14,7 @@
     <div class="project_left_container">
         <div class="project_left">
             <h3><?php echo __('Branch filters'); ?></h3>
-            <ul class="simple_list branch-list">
+            <ul class="simple-list branch-list">
                 <?php foreach ($branches as $branch): ?>
                     <li>
                         <a href="javascript:void(0);" onclick="Pachno.Project.showBranchCommits('<?php echo make_url('livelink_project_commits', array('project_key' => $selected_project->getKey())); ?>', '<?php echo $branch->getName(); ?>'); Pachno.Project.toggleLeftSelection(this);">

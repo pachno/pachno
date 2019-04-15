@@ -4159,7 +4159,7 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
         };
 
         Pachno.Project.checkAndToggleNoBuildsMessage = function () {
-            $$('.simple_list').each(function (elem) {
+            $$('.simple-list').each(function (elem) {
                 // If this list does not contain builds continue.
                 if (elem.id.indexOf('active_builds_') !== 0) return;
 
@@ -5823,7 +5823,7 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
                             $('description_edit').style.display = '';
                         }
                         else if (field == 'title') {
-                            $('title_field').toggleClassName('editing');
+                            $('title-field').toggleClassName('editing');
                         }
                     },
                     hide: field + '_change'

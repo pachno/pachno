@@ -143,9 +143,7 @@
                 if (ec != undefined)
                     ec.removeClassName('focussed');
             });
-            <?php if ($markuppable): ?>
-            Pachno.Main.Helpers.MarkitUp([$("<?php echo $base_id; ?>")]);
-            <?php endif; ?>
+            Pachno.Main.Helpers.hallo();
         });
     });
 </script>

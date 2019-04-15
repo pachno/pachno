@@ -6,7 +6,7 @@
     </div>
     <div id="backdrop_detail_content" class="backdrop_detail_content">
         <form action="<?php echo make_url('issue_edittimespent', array('project_key' => $entry->getIssue()->getProject()->getKey(), 'issue_id' => $entry->getIssueID(), 'entry_id' => $entry->getID())); ?>" onsubmit="Pachno.Issues.editTimeEntry(this);return false;">
-            <ul class="simple_list issue_timespent_form">
+            <ul class="simple-list issue_timespent_form">
                 <li>
                     <label for="issue_timespent_<?php echo $entry->getID(); ?>_day"><?php echo __('Time logged at'); ?></label>
                     <select id="issue_timespent_<?php echo $entry->getID(); ?>_day" name="edited_at[day]">

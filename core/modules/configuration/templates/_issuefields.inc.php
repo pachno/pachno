@@ -40,7 +40,7 @@
             <?php echo __('Existing choices'); ?>
             <?php echo image_tag('spinning_16.gif', array('style' => 'margin-right: 5px; display: none; float: right;', 'id' => $type . '_sort_indicator')); ?>
         </div>
-        <ul class="simple_list" id="<?php echo $type; ?>_list">
+        <ul class="simple-list" id="<?php echo $type; ?>_list">
             <?php if (count($items) > 0): ?>
                 <?php foreach ($items as $item): ?>
                     <?php include_component('issuefield', array('item' => $item, 'type' => $type, 'access_level' => $access_level)); ?>

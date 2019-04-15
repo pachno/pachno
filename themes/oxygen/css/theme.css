@@ -159,18 +159,6 @@ th {
   padding: 2px;
   background-color: #F5F5F5; }
 
-dt {
-  float: left;
-  width: 420px; }
-
-dt label {
-  padding-left: 0; }
-
-dd {
-  margin-left: 0;
-  margin-bottom: 15px;
-  vertical-align: middle; }
-
 label {
   font-weight: 600;
   margin: 0;
@@ -196,6 +184,18 @@ label > input[type="checkbox"] {
   font-family: 'Fira Mono', monospace;
   display: inline-block;
   margin: 0 5px; }
+
+.simple-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch; }
+  .simple-list li {
+    flex: 0 0 auto;
+    margin: 0;
+    padding: 0; }
 
 div.image_container {
   border: 1px solid #CCC;
@@ -2141,18 +2141,6 @@ ul.tab_menu_dropdown, .tab_menu_dropdown ul {
   padding: 10px; }
 
 /* end project frontpage menu */
-/* unformatted lists */
-.simple_list {
-  list-style-type: none;
-  padding: 0;
-  margin: 5px 0 0 0; }
-
-.simple_list.more_actions_dropdown {
-  margin-top: 12px; }
-
-.simple_list ul {
-  list-style-type: none; }
-
 /* generic header formatting */
 .header {
   font-weight: 600;
@@ -3222,14 +3210,6 @@ label[for=profile_prefer_wiki_markdown] {
   display: inline-block;
   vertical-align: top; }
 
-#add_post_action.more_actions_dropdown .column .simple_list {
-  margin-top: 0; }
-
-#add_post_action.more_actions_dropdown .column .simple_list li a {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap; }
-
 #add_post_action.more_actions_dropdown h1 {
   font-size: 0.9em;
   font-weight: 600;
@@ -3320,7 +3300,9 @@ ul.project_list > li {
   flex: 1 1 auto; }
 
 .project_overview {
-  clear: both; }
+  display: flex;
+  flex-direction: column;
+  padding: 1rem; }
 
 .client_dashboard .header, .project_overview .header {
   padding: 5px 5px 5px 2px;
@@ -3478,15 +3460,15 @@ ul.client_users li, ul.team_users li, ul.project_users li {
 .commits-list .commit .commit-details .button {
   padding: 4px 7px; }
 
-.simple_list.branch-list .branch-name {
+.simple-list.branch-list .branch-name {
   display: block;
   color: #555;
   font-weight: 300; }
 
-.simple_list.branch-list .selected .branch-name {
+.simple-list.branch-list .selected .branch-name {
   font-weight: 600; }
 
-.simple_list.branch-list .branch-last-updated {
+.simple-list.branch-list .branch-last-updated {
   display: block;
   font-size: .8em;
   color: #888; }
@@ -3645,9 +3627,6 @@ ul.client_users li, ul.team_users li, ul.project_users li {
 
 .commit-files .diffs .diff-preview .remove td.text pre::before {
   content: '-'; }
-
-.simple_list.branch-list .branch-last-updated .fas, .simple_list.branch-list .branch-last-updated .far {
-  margin: 0 3px; }
 
 #project_settings_roles {
   padding: 0 15px; }
@@ -4304,6 +4283,13 @@ input.padded {
 .affected_item .affected_state img {
   display: none; }
 
+.issue_state {
+  display: inline-block;
+  padding: .15em .25em;
+  font-size: 1em;
+  border-radius: 3px;
+  border: 1px solid rgba(0, 0, 0, 0.1); }
+
 .issue_state.closed, .affected_state.unconfirmed {
   background-color: rgba(150, 150, 150, 0.2);
   color: rgba(100, 100, 100, 0.7); }
@@ -4760,6 +4746,7 @@ ul.attached_items {
 
 .popup_box {
   display: block;
+  position: absolute;
   opacity: 0;
   transform: scaleY(0);
   transform-origin: top;
@@ -4806,16 +4793,6 @@ ul.attached_items {
   text-transform: uppercase;
   color: #888;
   font-size: 0.9em; }
-
-.issuedetailspopup ul.simple_list {
-  margin-top: 0; }
-
-.issuedetailspopup ul.simple_list > li:first-child {
-  padding-top: 0; }
-
-.issuedetailspopup ul.simple_list > li {
-  clear: both;
-  padding: 5px 0; }
 
 .issuedetailspopup li.faded_out {
   padding: 3px 3px 10px 3px; }
@@ -7650,42 +7627,6 @@ ul.files-list .action_D .filename {
 /*border: 1px solid rgba(100, 100, 100, .4);*/
 /*border-radius: 2px;*/
 /*}*/
-.project_left ul.simple_list {
-  margin-bottom: 30px; }
-
-.project_left ul.simple_list li {
-  position: relative;
-  box-sizing: border-box;
-  border: none;
-  border-radius: 5px; }
-
-.project_left ul.simple_list li.selected {
-  background-color: rgba(78, 129, 171, 0.2); }
-
-.project_left ul.simple_list li.selected a, .project_left ul.simple_list li.selected a:hover {
-  color: #555; }
-
-.project_left ul.simple_list li h3 {
-  margin-top: 25px; }
-
-.project_left ul.simple_list li img {
-  display: inline-block;
-  margin: 0 5px;
-  vertical-align: middle; }
-
-.project_left ul.simple_list li a, .project_left ul.simple_list li a:hover {
-  border: 1px solid transparent;
-  border-radius: 5px;
-  display: block;
-  color: #999;
-  padding: 3px;
-  font-size: 1.1em;
-  transition: border-color .2s ease-in-out, background-color .2s ease-in-out, color 0.3s ease;
-  margin-bottom: 3px; }
-
-.project_left ul.simple_list li:not(.selected) a:hover {
-  border-color: rgba(78, 129, 171, 0.2); }
-
 .dashboard_view_content .project_role {
   font-weight: 300;
   margin: 5px 0;
@@ -8092,21 +8033,6 @@ ul.files-list .action_D .filename {
 
 /* end roadmap */
 /* project releases styling */
-#project_releases_container .simple_list, #project_release_center_container .simple_list, #project_releases_container .faded_out, #project_release_center_container .faded_out {
-  padding: 0 15px; }
-
-#project_releases_container h3, #project_release_center_container h3 {
-  margin-top: 30px; }
-
-#project_releases_container h3:first-of-type, #project_release_center_container h3:first-of-type {
-  margin-top: 0; }
-
-#project_release_center_container.only_active .release_item, #project_release_center_container.only_archived .release_item.active, #project_release_center_container.only_downloads .release_item {
-  display: none; }
-
-#project_release_center_container.only_active .release_item.active, #project_release_center_container.only_archived .release_item, #project_release_center_container.only_downloads .release_item.download {
-  display: block; }
-
 .release_item {
   display: block;
   clear: both;
@@ -8268,11 +8194,6 @@ a:hover .issue_title {
 
 #config_scopes a.action_button {
   float: right; }
-
-#scopes_list ul.simple_list li span {
-  color: #333;
-  font-size: 1em;
-  font-weight: 300; }
 
 #scopes_list .scope_description {
   font-size: 0.9em; }
@@ -9187,15 +9108,6 @@ span.config_explanation > span.tooltip.from-above.leftie {
 #build_form li {
   margin-bottom: 5px; }
 
-#backdrop_detail_content .simple_list > li > input[name=small_icon_action],
-#backdrop_detail_content .simple_list > li > input[name=large_icon_action] {
-  margin-top: -1px !important; }
-
-#backdrop_detail_content .simple_list > li > input[name=small_icon],
-#backdrop_detail_content .simple_list > li > input[name=large_icon] {
-  margin-top: 7px;
-  margin-left: 4px; }
-
 #update_icons_indicator {
   margin-right: 5px;
   margin-top: 4px; }
@@ -9221,8 +9133,8 @@ span.config_explanation > span.tooltip.from-above.leftie {
   margin-bottom: 12px;
   line-height: 22px; }
 
-#global_roles_list .greybox .simple_list a,
-.project_roles_list .greybox .simple_list a {
+#global_roles_list .greybox .simple-list a,
+.project_roles_list .greybox .simple-list a {
   position: absolute;
   margin-top: 5px;
   margin-left: -23px; }
@@ -9301,27 +9213,27 @@ span.config_explanation > span.tooltip.from-above.leftie {
 .rounded_box.white.shadowed.copy_workflow_popup .content input[type=submit] {
   padding: 3px 14px; }
 
-.scheme_list.issuetype_scheme_list.simple_list > div {
+.scheme_list.issuetype_scheme_list.simple-list > div {
   margin: 0 0 10px 0 !important;
   padding: 15px 10px 10px 10px; }
 
-.scheme_list.issuetype_scheme_list.simple_list > div > .header {
+.scheme_list.issuetype_scheme_list.simple-list > div > .header {
   margin-bottom: 5px; }
 
-.scheme_list.issuetype_scheme_list.simple_list .rounded_box.white.borderless {
+.scheme_list.issuetype_scheme_list.simple-list .rounded_box.white.borderless {
   margin: 0 !important;
   padding: 10px; }
 
-.scheme_list.issuetype_scheme_list.simple_list .rounded_box.white.borderless select {
+.scheme_list.issuetype_scheme_list.simple-list .rounded_box.white.borderless select {
   width: 500px !important; }
 
-.scheme_list.issuetype_scheme_list.simple_list form {
+.scheme_list.issuetype_scheme_list.simple-list form {
   margin-top: 15px; }
 
-.scheme_list.issuetype_scheme_list.simple_list .content {
+.scheme_list.issuetype_scheme_list.simple-list .content {
   padding: 0 !important; }
 
-.scheme_list.issuetype_scheme_list.simple_list .content input[type=submit] {
+.scheme_list.issuetype_scheme_list.simple-list .content input[type=submit] {
   padding: 3px 14px !important; }
 
 #tab_schemes_pane > .content > br {
@@ -9984,10 +9896,10 @@ form#vcs div.config_explanation {
 #project_release_center #project_release_center_container #timeline .recent_activities {
   font-size: 1.1em; }
 
-.page-project_timeline .project_left ul.simple_list li a {
+.page-project_timeline .project_left ul.simple-list li a {
   padding-left: 29px; }
 
-.page-project_timeline .project_left ul.simple_list li img {
+.page-project_timeline .project_left ul.simple-list li img {
   position: absolute;
   left: 3px;
   margin-top: 1px; }
@@ -11264,10 +11176,13 @@ input[type=submit]:active, input[type=button]:active, button:active, a.button:ac
 
 button.secondary,
 a.button.secondary,
-.backdrop_box a.button:not(.primary),
+input.button.secondary,
+.backdrop_box input.button:not(.primary),
 .backdrop_box button:not(.primary),
+.backdrop_box a.button:not(.primary),
 .fullpage_backdrop_content button:not(.primary),
-.fullpage_backdrop_content a.button:not(.primary) {
+.fullpage_backdrop_content a.button:not(.primary),
+.fullpage_backdrop_content input.button:not(.primary) {
   background: transparent;
   color: #3c1642;
   box-shadow: none;
@@ -11277,19 +11192,18 @@ a.button.secondary,
 .popup_message button.secondary {
   color: #ffaa00; }
 
-button.secondary.highlight {
-  background-color: rgba(200, 200, 200, 0.3); }
+button.secondary.highlight,
+input.button.secondary.highlight {
+  border: 1px solid #3c1642;
+  color: #3c1642;
+  text-transform: none; }
 
 button.icon,
-a.button.icon {
+a.button.icon,
+input.button.icon {
   background: transparent;
   box-shadow: none;
-  color: #646464; }
-
-button.icon,
-a.button.icon {
-  /*border-radius: 100%;*/
-  /*min-width: 34px;*/
+  color: #646464;
   padding: 7px 10px;
   box-sizing: border-box; }
 
@@ -11297,36 +11211,46 @@ a.button.icon {
   min-width: 16px; }
 
 button.secondary.active,
-a.button.secondary.active {
+a.button.secondary.active,
+input.button.secondary.active {
   background-color: rgba(200, 200, 200, 0.3); }
 
 button.secondary:hover,
 a.button.secondary:hover,
+input.button.secondary:hover,
 button.icon:hover,
 a.button.icon:hover,
-.backdrop_box a.button:not(.primary):hover,
+input.button.icon:hover,
 .backdrop_box button:not(.primary):hover,
+.backdrop_box a.button:not(.primary):hover,
+.backdrop_box input.button:not(.primary):hover,
 .fullpage_backdrop_content button:not(.primary):hover,
-.fullpage_backdrop_content a.button:not(.primary):hover {
+.fullpage_backdrop_content a.button:not(.primary):hover,
+.fullpage_backdrop_content input.button:not(.primary):hover {
   background: rgba(220, 220, 220, 0.15);
   color: #3c1642;
   box-shadow: none; }
 
 button.secondary:disabled,
 a.button.secondary.disabled,
+input.button.secondary.disabled,
 button.icon.secondary:disabled,
-a.button.icon.secondary.disabled {
+a.button.icon.secondary.disabled,
+input.icon.secondary:disabled {
   background: transparent;
   color: rgba(200, 200, 200, 0.3); }
   button.secondary:disabled:hover,
   a.button.secondary.disabled:hover,
+  input.button.secondary.disabled:hover,
   button.icon.secondary:disabled:hover,
-  a.button.icon.secondary.disabled:hover {
+  a.button.icon.secondary.disabled:hover,
+  input.icon.secondary:disabled:hover {
     background: transparent;
     color: rgba(200, 200, 200, 0.3); }
 
 .button-group > button,
-.button-group > a.button {
+.button-group > a.button,
+.button-group > input.button {
   margin: 0 3px; }
 
 .button-group {
@@ -12498,13 +12422,67 @@ nav.sidebar {
   height: 100%;
   overflow: auto; }
 
-.issue-card {
+.viewissue-container .header-container {
   display: flex;
-  flex: 1 1 auto;
+  flex-direction: row;
+  align-items: center;
+  padding: 1rem; }
+  .viewissue-container .header-container .title-container {
+    display: flex;
+    flex-direction: column;
+    flex: 0 0 auto; }
+    .viewissue-container .header-container .title-container .title-crumbs {
+      padding: .35rem; }
+    .viewissue-container .header-container .title-container .title-name {
+      font-size: 1.5rem;
+      font-weight: 600; }
+
+.viewissue-container .issue-card {
+  display: flex;
+  flex: 0 0 auto;
   margin-bottom: 1rem;
   flex-direction: row;
-  box-sizing: border-box; }
-  .issue-card .issue-card-main {
+  box-sizing: border-box;
+  align-items: flex-start; }
+  .viewissue-container .issue-card fieldset {
+    border: none;
+    padding: 0;
+    margin: 0;
+    flex: 0 0 auto;
+    display: flex;
+    flex-direction: column; }
+    .viewissue-container .issue-card fieldset legend {
+      border: none;
+      padding: 0;
+      flex: 0 0 auto; }
+    .viewissue-container .issue-card fieldset .content {
+      flex: 1 1 auto; }
+    .viewissue-container .issue-card fieldset > ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      margin: 0;
+      padding: 0; }
+      .viewissue-container .issue-card fieldset > ul li {
+        flex: 0 0 auto; }
+        .viewissue-container .issue-card fieldset > ul li dl {
+          display: flex;
+          flex-direction: column;
+          align-items: flex-start;
+          margin: 0;
+          padding: 0; }
+          .viewissue-container .issue-card fieldset > ul li dl dt {
+            flex: 0 0 auto;
+            display: block;
+            margin: 0;
+            padding: 0; }
+          .viewissue-container .issue-card fieldset > ul li dl dd {
+            flex: 0 0 auto;
+            display: block;
+            margin: 0;
+            padding: 0; }
+  .viewissue-container .issue-card .issue-card-main {
     border: none;
     background: #FFF;
     box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 1px 5px 0 rgba(0, 0, 0, 0.12);
@@ -12513,50 +12491,38 @@ nav.sidebar {
     flex: 1 1 auto;
     margin: 0 0 1em 1em;
     overflow: visible;
-    height: 100%;
     box-sizing: border-box;
     display: flex;
     flex-direction: column; }
-    .issue-card .issue-card-main .workflow-actions-container {
+    .viewissue-container .issue-card .issue-card-main .workflow-actions-container {
       flex: 0 0 auto;
       display: flex;
       flex-direction: row;
       align-items: center;
       justify-content: flex-end; }
-      .issue-card .issue-card-main .workflow-actions-container > ul {
+      .viewissue-container .issue-card .issue-card-main .workflow-actions-container > ul {
         display: flex;
         flex-direction: row;
         flex-wrap: nowrap;
         list-style: none;
         padding: 0;
         margin: 0; }
-    .issue-card .issue-card-main .issue-details {
-      flex: 1 1 auto;
+        .viewissue-container .issue-card .issue-card-main .workflow-actions-container > ul li + li {
+          margin-left: .35rem; }
+    .viewissue-container .issue-card .issue-card-main .issue-details {
+      flex: 0 0 auto;
       display: flex;
       flex-direction: column; }
-    .issue-card .issue-card-main fieldset {
-      border: none;
-      padding: 0;
-      margin: 0;
-      flex: 1 1 auto;
-      display: flex;
-      flex-direction: column; }
-      .issue-card .issue-card-main fieldset legend {
-        border: none;
-        padding: 0;
-        flex: 0 0 auto; }
-      .issue-card .issue-card-main fieldset .content {
-        flex: 1 1 auto; }
-    .issue-card .issue-card-main .fancytabs {
+    .viewissue-container .issue-card .issue-card-main .fancytabs {
       flex: 0 0 auto; }
-    .issue-card .issue-card-main .fancypanes {
+    .viewissue-container .issue-card .issue-card-main .fancypanes {
       display: flex;
       flex-direction: column;
       flex: 1 1 auto; }
-  .issue-card .issue-fields {
+  .viewissue-container .issue-card .issue-fields {
     flex: 0 0 350px;
-    margin: 2em;
-    padding: 2em;
+    margin: 0;
+    padding: 1em 1.5em;
     display: flex;
     flex-direction: column;
     height: calc(100% - 4em);

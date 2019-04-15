@@ -4,7 +4,7 @@
 
 ?>
 <?php if ($project_count > 0): ?>
-    <ul class="project_list simple_list">
+    <ul class="project_list simple-list">
         <?php foreach ($projects as $project): ?>
             <li><?php include_component('project/project', compact('project')); ?></li>
         <?php endforeach; ?>

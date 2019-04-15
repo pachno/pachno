@@ -703,3 +703,10 @@ todo_add:
     action: addTodo
     parameters: [ ]
     csrf_enabled: false
+
+viewissue:
+    route: '/:project_key/issues/:issue_no'
+    module: project
+    action: viewIssue
+    parameters: [ ]
+    csrf_enabled: false

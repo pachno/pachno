@@ -16,7 +16,7 @@
         <p>
             <?= __('The list below shows all users manually subscribed to notifications about this issue. To toggle whether they receive notifications, click the star next to their name.'); ?>
         </p>
-        <ul id="subscribers_list" class="simple_list" style="margin-top: 15px;">
+        <ul id="subscribers_list" class="simple-list" style="margin-top: 15px;">
             <?php foreach ($users as $user): ?>
                 <?php include_component('main/issuesubscriber', compact('user', 'issue')); ?>
             <?php endforeach; ?>

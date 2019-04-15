@@ -94,10 +94,13 @@ input[type=submit]:active, input[type=button]:active, button:active, a.button:ac
 }
 button.secondary,
 a.button.secondary,
-.backdrop_box a.button:not(.primary),
+input.button.secondary,
+.backdrop_box input.button:not(.primary),
 .backdrop_box button:not(.primary),
+.backdrop_box a.button:not(.primary),
 .fullpage_backdrop_content button:not(.primary),
-.fullpage_backdrop_content a.button:not(.primary) {
+.fullpage_backdrop_content a.button:not(.primary),
+.fullpage_backdrop_content input.button:not(.primary) {
   background: transparent;
   color: #3c1642;
   box-shadow: none;
@@ -107,45 +110,51 @@ a.button.secondary,
 .popup_message button.secondary {
   color: rgb(255, 170, 0);
 }
-button.secondary.highlight {
-  background-color: rgba(200, 200, 200, .3);
+button.secondary.highlight,
+input.button.secondary.highlight {
+  border: 1px solid #3c1642;
+  color: #3c1642;
+  text-transform: none;
 }
 button.icon,
-a.button.icon {
+a.button.icon,
+input.button.icon {
   background: transparent;
   box-shadow: none;
   color: rgb(100, 100, 100);
-}
-button.icon,
-a.button.icon {
-  /*border-radius: 100%;*/
-  /*min-width: 34px;*/
   padding: 7px 10px;
   box-sizing: border-box;
 }
 .icon .fas, .icon .far {
   min-width: 16px;
 }
-button.secondary.active ,
-a.button.secondary.active {
+button.secondary.active,
+a.button.secondary.active,
+input.button.secondary.active {
   background-color: rgba(200, 200, 200, .3);
 }
 button.secondary:hover,
 a.button.secondary:hover,
+input.button.secondary:hover,
 button.icon:hover,
 a.button.icon:hover,
-.backdrop_box a.button:not(.primary):hover,
+input.button.icon:hover,
 .backdrop_box button:not(.primary):hover,
+.backdrop_box a.button:not(.primary):hover,
+.backdrop_box input.button:not(.primary):hover,
 .fullpage_backdrop_content button:not(.primary):hover,
-.fullpage_backdrop_content a.button:not(.primary):hover {
+.fullpage_backdrop_content a.button:not(.primary):hover,
+.fullpage_backdrop_content input.button:not(.primary):hover {
   background: rgba(220, 220, 220, .15);
   color: #3c1642;
   box-shadow: none;
 }
 button.secondary:disabled,
 a.button.secondary.disabled,
+input.button.secondary.disabled,
 button.icon.secondary:disabled,
-a.button.icon.secondary.disabled {
+a.button.icon.secondary.disabled,
+input.icon.secondary:disabled {
   background: transparent;
   color: rgba(200, 200, 200, .3);
 
@@ -155,7 +164,8 @@ a.button.icon.secondary.disabled {
   }
 }
 .button-group > button,
-.button-group > a.button {
+.button-group > a.button,
+.button-group > input.button {
   margin: 0 3px;
 }
 .button-group {

@@ -175,6 +175,15 @@ class Main extends framework\Action
      *
      * @param \pachno\core\framework\Request $request
      */
+    public function runEditIssue(framework\Request $request)
+    {
+    }
+
+    /**
+     * View an issue
+     *
+     * @param \pachno\core\framework\Request $request
+     */
     public function runViewIssue(framework\Request $request)
     {
         framework\Logging::log('Loading issue');

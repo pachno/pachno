@@ -5,7 +5,7 @@
 /** @var \pachno\core\framework\Response $pachno_response */
 
 ?>
-<div class="viewissue-header-container">
+<div class="header-container">
     <div class="toggle-favourite">
         <?php if ($pachno_user->isGuest()): ?>
             <?php echo image_tag('star_faded.png', array('id' => 'issue_favourite_faded_'.$issue->getId())); ?>
@@ -23,34 +23,25 @@
             <?php echo fa_image_tag('star', array('id' => 'issue_favourite_normal_'.$issue->getId(), 'class' => 'subscribed', 'style' => (!$pachno_user->isIssueStarred($issue->getID())) ? 'display: none;' : '', 'onclick' => "Pachno.Issues.toggleFavourite('".make_url('toggle_favourite_issue', array('issue_id' => $issue->getID(), 'user_id' => $pachno_user->getID()))."', ".$issue->getID().");")); ?>
         <?php endif; ?>
     </div>
-    <div id="title_field" class="<?php if ($issue->isTitleChanged()): ?>issue_detail_changed<?php endif; ?><?php if (!$issue->isTitleMerged()): ?> issue_detail_unmerged<?php endif; ?> hoverable">
-        <div class="viewissue_title">
-            <span class="faded_out" id="title_header">
-                <?php include_component('issueparent_crumbs', array('issue' => $issue)); ?>
+    <div id="title-field" class="title-container">
+        <span class="faded_out" id="title-crumbs">
+            <?php include_component('issueparent_crumbs', array('issue' => $issue)); ?>
+        </span>
+        <span id="title_content">
+            <span class="faded_out" id="no_title" <?php if ($issue->getTitle() != ''):?> style="display: none;" <?php endif; ?>><?php echo __('Nothing entered.'); ?></span>
+            <span id="title-name" class="title-name" title="<?php echo \pachno\core\framework\Context::getI18n()->decodeUTF8($issue->getTitle()); ?>">
+                <?php echo \pachno\core\framework\Context::getI18n()->decodeUTF8($issue->getTitle()); ?>
             </span>
-            <span id="issue_title">
-                <?php if ($issue->isEditable() && $issue->canEditTitle()): ?>
-                    <?php echo fa_image_tag('edit', array('class' => 'dropdown', 'id' => 'title_edit', 'onclick' => "$('title_field').toggleClassName('editing');$('title_change').show(); $('title_name').hide(); $('no_title').hide();")); ?>
-                    <a class="undo" href="javascript:void(0);" onclick="Pachno.Issues.Field.revert('<?php echo make_url('issue_revertfield', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => 'title')); ?>', 'title');" title="<?php echo __('Undo this change'); ?>"><?php echo fa_image_tag('undo-alt', ['class' => 'undo'], 'fas'); ?></a>
-                    <?php echo image_tag('spinning_16.gif', array('style' => 'display: none; float: left; margin-right: 5px;', 'id' => 'title_undo_spinning')); ?>
-                <?php endif; ?>
-                <span id="title_content">
-                    <span class="faded_out" id="no_title" <?php if ($issue->getTitle() != ''):?> style="display: none;" <?php endif; ?>><?php echo __('Nothing entered.'); ?></span>
-                    <span id="title_name" title="<?php echo \pachno\core\framework\Context::getI18n()->decodeUTF8($issue->getTitle()); ?>">
-                        <?php echo \pachno\core\framework\Context::getI18n()->decodeUTF8($issue->getTitle()); ?>
-                    </span>
-                </span>
+        </span>
+        <?php if ($issue->isEditable() && $issue->canEditTitle()): ?>
+            <span id="title_change" style="display: none;">
+                <form id="title_form" action="<?php echo make_url('issue_setfield', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => 'title')); ?>" method="post" onSubmit="Pachno.Issues.Field.set('<?php echo make_url('issue_setfield', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => 'title')) ?>', 'title'); return false;">
+                    <input type="text" name="value" value="<?php echo $issue->getTitle(); ?>"><span class="title_form_save_container"><?php echo __('%cancel or %save', array('%save' => '<input type="submit" class="button" value="'.__('Save').'">', '%cancel' => '<a href="#" onclick="$(\'title-field\').toggleClassName(\'editing\');$(\'title_change\').hide(); $(\'title_name\').show(); return false;">'.__('cancel').'</a>')); ?></span>
+                </form>
+                <?php echo image_tag('spinning_16.gif', array('style' => 'display: none; float: left; margin-right: 5px;', 'id' => 'title_spinning')); ?>
+                <span id="title_change_error" class="error_message" style="display: none;"></span>
             </span>
-            <?php if ($issue->isEditable() && $issue->canEditTitle()): ?>
-                <span id="title_change" style="display: none;">
-                    <form id="title_form" action="<?php echo make_url('issue_setfield', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => 'title')); ?>" method="post" onSubmit="Pachno.Issues.Field.set('<?php echo make_url('issue_setfield', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => 'title')) ?>', 'title'); return false;">
-                        <input type="text" name="value" value="<?php echo $issue->getTitle(); ?>"><span class="title_form_save_container"><?php echo __('%cancel or %save', array('%save' => '<input type="submit" class="button" value="'.__('Save').'">', '%cancel' => '<a href="#" onclick="$(\'title_field\').toggleClassName(\'editing\');$(\'title_change\').hide(); $(\'title_name\').show(); return false;">'.__('cancel').'</a>')); ?></span>
-                    </form>
-                    <?php echo image_tag('spinning_16.gif', array('style' => 'display: none; float: left; margin-right: 5px;', 'id' => 'title_spinning')); ?>
-                    <span id="title_change_error" class="error_message" style="display: none;"></span>
-                </span>
-            <?php endif; ?>
-        </div>
+        <?php endif; ?>
     </div>
     <div style="<?php if (!$issue->isVotesVisible()): ?> display: none;<?php endif; ?>" id="votes_additional"<?php if ($issue->isVotesVisible()): ?> class="visible"<?php endif; ?>>
         <div id="viewissue_votes">

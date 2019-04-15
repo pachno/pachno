@@ -1,4 +1,4 @@
-<ul class="client_users simple_list collection_user_list">
+<ul class="client_users simple-list collection_user_list">
     <?php foreach ($users as $user_id => $user): ?>
         <?php include_component('configuration/clientuserlistitem', compact('client', 'user_id', 'user')); ?>
     <?php endforeach; ?>

@@ -19,7 +19,7 @@
 <?php $module = (isset($module)) ? $module : 'core'; ?>
 <?php if ($pachno_user->canPostComments() && ((Context::isProjectContext() && !Context::getCurrentProject()->isArchived()) || !Context::isProjectContext())): ?>
     <?php if (!isset($show_button) || $show_button == true): ?>
-        <ul class="simple_list" id="add_comment_button_container">
+        <ul class="simple-list" id="add_comment_button_container">
             <li id="comment_add_button"><input class="button button-green first last" type="button" onclick="Pachno.Main.Comment.showPost();" value="<?= __('Post comment'); ?>"></li>
         </ul>
     <?php endif; ?>

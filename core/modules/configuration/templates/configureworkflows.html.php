@@ -24,7 +24,7 @@
                         </div>
                     </form>
                 </div>
-                <ul class="scheme_list workflow_list simple_list" id="workflows_list">
+                <ul class="scheme_list workflow_list simple-list" id="workflows_list">
                     <?php foreach ($workflows as $workflow): ?>
                         <?php include_component('configuration/workflow', array('workflow' => $workflow)); ?>
                     <?php endforeach; ?>

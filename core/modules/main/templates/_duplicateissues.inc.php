@@ -1,4 +1,4 @@
-<ul class="simple_list related_issues_list" id="related_duplicate_issues_inline">
+<ul class="simple-list related_issues_list" id="related_duplicate_issues_inline">
     <?php foreach ($duplicate_issues as $duplicate_issue): ?>
         <?php include_component('main/duplicatedissue', array('issue' => $duplicate_issue, 'duplicated_issue' => $issue)); ?>
     <?php endforeach; ?>

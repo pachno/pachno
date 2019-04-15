@@ -38,7 +38,7 @@
         </div>
     <?php endif; ?>
     <div class="content">
-        <ul class="simple_list" id="<?php echo $target_type; ?>_<?php echo $target_id; ?>_links">
+        <ul class="simple-list" id="<?php echo $target_type; ?>_<?php echo $target_id; ?>_links">
             <?php foreach ($links as $link): ?>
                 <?php include_component('main/menulink', array('link_id' => $link['id'], 'link' => $link)); ?>
             <?php endforeach; ?>

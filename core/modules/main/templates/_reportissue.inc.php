@@ -192,7 +192,7 @@
     <input type="hidden" name="project_id" id="project_id" value="<?= $selected_project->getID(); ?>">
     <?php if (isset($selected_milestone) || isset($selected_build) || isset($parent_issue)): ?>
         <div class="rounded_box lightyellow borderless">
-            <ul class="simple_list" style="padding: 5px; margin: 5px; font-size: 1.2em;">
+            <ul class="simple-list" style="padding: 5px; margin: 5px; font-size: 1.2em;">
                 <?php if (isset($selected_milestone)): ?>
                     <li>
                         <?= __('You are adding an issue to %milestone_name', array('%milestone_name' => '<b>'.$selected_milestone->getName().'</b>')); ?>
@@ -803,7 +803,7 @@
                                                                                       'use_form'            => false)); ?>
                         </div>
                         <div id="acl__public" style="display: none;">
-                            <ul class="issue_access_list simple_list" id="issue__public_category_access_list" style="display: none;">
+                            <ul class="issue_access_list simple-list" id="issue__public_category_access_list" style="display: none;">
                                 <li id="issue__public_category_access_list_none" class="faded_out" style="<?php if (count($al_items)): ?>display: none; <?php endif; ?>padding: 5px;"><?= __('Noone else can see this issue'); ?></li>
                                 <?php foreach ($al_items as $item): ?>
                                     <?php include_component('main/issueaclformentry', array('target' => $item['target'])); ?>
@@ -814,7 +814,7 @@
                             </div>
                         </div>
                         <div id="acl__restricted" style="display: none;">
-                            <ul class="issue_access_list simple_list" id="issue__restricted_access_list">
+                            <ul class="issue_access_list simple-list" id="issue__restricted_access_list">
                                 <li id="issue__restricted_access_list_none" class="faded_out" style="<?php if (count($al_items)): ?>display: none; <?php endif; ?>padding: 5px;"><?= __('Noone else can see this issue'); ?></li>
                                 <?php foreach ($al_items as $item): ?>
                                     <?php include_component('main/issueaclformentry', array('target' => $item['target'])); ?>

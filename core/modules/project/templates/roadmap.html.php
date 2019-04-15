@@ -14,7 +14,7 @@
     <div class="project_left_container">
         <div class="project_left">
             <h3><?php echo __('Roadmap filters'); ?></h3>
-            <ul class="simple_list">
+            <ul class="simple-list">
                 <li class="<?php if ($mode == 'upcoming') echo 'selected'; ?>"><a href="javascript:void(0);" onclick="Pachno.Project.clearRoadmapFilters(); $('project_roadmap_page').addClassName('upcoming');Pachno.Project.toggleLeftSelection(this);Pachno.Project.showRoadmap();"><?php echo __('Upcoming roadmap'); ?></a></li>
                 <li class="<?php if ($mode == 'all') echo 'selected'; ?>"><a href="javascript:void(0);" onclick="Pachno.Project.clearRoadmapFilters(); Pachno.Project.toggleLeftSelection(this);Pachno.Project.showRoadmap();"><?php echo __('Include past milestones'); ?></a></li>
                 <li><h3><?php echo __('Milestone details'); ?></h3></li>

@@ -3,7 +3,7 @@
         <?= image_tag('client_large.png', array('style' => 'float: left; margin-right: 5px;')); ?>
         <div style="position: absolute; right: 12px; top: 12px;">
             <button class="button dropper"><?= __('Actions'); ?></button>
-            <ul style="position: absolute; font-size: 1.1em; width: 200px; top: 23px; margin-top: 0; right: 0; text-align: right; z-index: 1000;" class="simple_list rounded_box white shadowed popup_box more_actions_dropdown" onclick="jQuery(this).prev().toggleClass('button-pressed');jQuery(this).toggle();">
+            <ul style="position: absolute; font-size: 1.1em; width: 200px; top: 23px; margin-top: 0; right: 0; text-align: right; z-index: 1000;" class="simple-list rounded_box white shadowed popup_box more_actions_dropdown" onclick="jQuery(this).prev().toggleClass('button-pressed');jQuery(this).toggle();">
                 <li>
                     <?= javascript_link_tag(__('Add member(s) to this client'), array('onclick' => '$(\'addmember_client_'.$client->getID().'\').toggle(\'block\');')); ?>
                 </li>

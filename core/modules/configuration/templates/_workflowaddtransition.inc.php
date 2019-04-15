@@ -2,7 +2,7 @@
     <div class="header"><?php echo __('Add outgoing transition from step "%step_name"', array('%step_name' => $step->getName())); ?></div>
     <div class="content">
         <form accept-charset="<?php echo \pachno\core\framework\Context::getI18n()->getCharset(); ?>" method="post" action="<?php echo make_url('configure_workflow_add_transition', array('workflow_id' => $step->getWorkflow()->getID(), 'step_id' => $step->getID())); ?>">
-            <ul class="simple_list">
+            <ul class="simple-list">
                 <li>
                     <input type="radio" name="add_transition_type" value="existing" id="step_<?php echo $step->getID(); ?>_add_existing_transition">
                     <label for="step_<?php echo $step->getID(); ?>_add_existing_transition"><?php echo __('Existing transition'); ?></label>

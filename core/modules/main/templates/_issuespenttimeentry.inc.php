@@ -1,4 +1,4 @@
-<ul class="simple_list">
+<ul class="simple-list">
     <li style="position: relative;">
         <label for="issue_<?php echo $issue->getID(); ?>_timeentry"><?php echo __('Add time spent'); ?></label>
         <input type="text" id="issue_<?php echo $issue->getID(); ?>_timeentry" name="timespent_manual" placeholder="<?php echo __("'1 hour', '1 day, 3 hours' or similar"); ?>." style="width: 250px;">

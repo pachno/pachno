@@ -11,7 +11,7 @@
     </div>
     <div id="backdrop_detail_content" class="backdrop_detail_content">
         <div class="project_left">
-            <ul class="simple_list" id="add_dashboard_views_menu">
+            <ul class="simple-list" id="add_dashboard_views_menu">
                 <li class="selected"><a href="javascript:void(0);" onclick="Pachno.Main.Dashboard.toggleMenu(this);" data-section="information"><?php echo __('Project information'); ?></a></li>
                 <?php if ($dashboard->getType() == Dashboard::TYPE_PROJECT): ?>
                         <li><a href="javascript:void(0);" onclick="Pachno.Main.Dashboard.toggleMenu(this);" data-section="statistics"><?php echo __('Statistics'); ?></a></li>

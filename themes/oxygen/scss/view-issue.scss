@@ -8,56 +8,43 @@
   overflow: auto;
 }
 
-.issue-card {
-  display: flex;
-  flex: 1 1 auto;
-  margin-bottom: 1rem;
-  flex-direction: row;
-  box-sizing: border-box;
+.viewissue-container {
 
-  .issue-card-main {
-    border: none;
-    background: #FFF;
-    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 1px 5px 0 rgba(0, 0, 0, 0.12);
-    border-radius: 4px;
-    padding: 10px;
-    flex: 1 1 auto;
-    margin: 0 0 1em 1em;
-    overflow: visible;
-    height: 100%;
-    box-sizing: border-box;
+  .header-container {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
+    align-items: center;
+    padding: 1rem;
 
-    .workflow-actions-container {
-      flex: 0 0 auto;
-      display: flex;
-      flex-direction: row;
-      align-items: center;
-      justify-content: flex-end;
-
-      > ul {
-        display: flex;
-        flex-direction: row;
-        flex-wrap: nowrap;
-        list-style: none;
-        padding: 0;
-        margin: 0;
-
-      }
-    }
-
-    .issue-details {
-      flex: 1 1 auto;
+    .title-container {
       display: flex;
       flex-direction: column;
+      flex: 0 0 auto;
+
+      .title-crumbs {
+        padding: .35rem;
+      }
+
+      .title-name {
+        font-size: 1.5rem;
+        font-weight: 600;
+      }
     }
+  }
+
+  .issue-card {
+    display: flex;
+    flex: 0 0 auto;
+    margin-bottom: 1rem;
+    flex-direction: row;
+    box-sizing: border-box;
+    align-items: flex-start;
 
     fieldset {
       border: none;
       padding: 0;
       margin: 0;
-      flex: 1 1 auto;
+      flex: 0 0 auto;
       display: flex;
       flex-direction: column;
 
@@ -65,32 +52,123 @@
         border: none;
         padding: 0;
         flex: 0 0 auto;
+        display: flex;
+        align-items: center;
+        color: rgba(0, 0, 0, 0.6);
+
+        .far,
+        .fas {
+          flex: 0 0 24px;
+          box-sizing: border-box;
+        }
+
+        span {
+          flex: 1 1 auto;
+          padding: 3px;
+        }
       }
 
       .content {
         flex: 1 1 auto;
+        margin-left: 24px;
+      }
+
+      > ul {
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        margin: 0;
+        padding: 0;
+
+        li {
+          flex: 0 0 auto;
+
+          dl {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            margin: 0;
+            padding: 0;
+
+            dt {
+              flex: 0 0 auto;
+              display: block;
+              margin: 0;
+              padding: 0;
+            }
+
+            dd {
+              flex: 0 0 auto;
+              display: block;
+              margin: 0;
+              padding: 0;
+            }
+          }
+        }
       }
     }
 
-    .fancytabs {
-      flex: 0 0 auto;
-    }
-
-    .fancypanes {
+    .issue-card-main {
+      border: none;
+      background: #FFF;
+      box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 1px 5px 0 rgba(0, 0, 0, 0.12);
+      border-radius: 4px;
+      padding: 10px;
+      flex: 1 1 auto;
+      margin: 0 0 1em 1em;
+      overflow: visible;
+      box-sizing: border-box;
       display: flex;
       flex-direction: column;
-      flex: 1 1 auto;
-    }
-  }
 
-  .issue-fields {
-    flex: 0 0 350px;
-    margin: 2em;
-    padding: 2em;
-    display: flex;
-    flex-direction: column;
-    height: calc(100% - 4em);
-    box-sizing: border-box;
-    overflow: auto;
+      .workflow-actions-container {
+        flex: 0 0 auto;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: flex-end;
+
+        > ul {
+          display: flex;
+          flex-direction: row;
+          flex-wrap: nowrap;
+          list-style: none;
+          padding: 0;
+          margin: 0;
+
+          li + li {
+            margin-left: .35rem;
+          }
+        }
+      }
+
+      .issue-details {
+        flex: 0 0 auto;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .fancytabs {
+        flex: 0 0 auto;
+      }
+
+      .fancypanes {
+        display: flex;
+        flex-direction: column;
+        flex: 1 1 auto;
+      }
+    }
+
+    .issue-fields {
+      flex: 0 0 350px;
+      margin: 0;
+      padding: 1em 1.5em;
+      display: flex;
+      flex-direction: column;
+      height: calc(100% - 4em);
+      box-sizing: border-box;
+      overflow: auto;
+    }
   }
 }

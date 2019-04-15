@@ -1,4 +1,4 @@
-<ul class="team_users simple_list collection_user_list">
+<ul class="team_users simple-list collection_user_list">
     <?php foreach ($users as $user_id => $user): ?>
         <?php include_component('configuration/teamuserlistitem', compact('team', 'user_id', 'user')); ?>
     <?php endforeach; ?>

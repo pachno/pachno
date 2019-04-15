@@ -146,21 +146,6 @@ th {
   background-color: #F5F5F5;
 }
 
-dt {
-  float: left;
-  width: 420px;
-}
-
-dt label {
-  padding-left: 0;
-}
-
-dd {
-  margin-left: 0;
-  margin-bottom: 15px;
-  vertical-align: middle;
-}
-
 label {
   font-weight: 600;
   margin: 0;
@@ -190,6 +175,21 @@ label > input[type="checkbox"] {
   font-family: 'Fira Mono', monospace;
   display: inline-block;
   margin: 0 5px;
+}
+
+.simple-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+
+  li {
+    flex: 0 0 auto;
+    margin: 0;
+    padding: 0;
+  }
 }
 
 div.image_container {
@@ -2525,21 +2525,6 @@ ul.tab_menu_dropdown, .tab_menu_dropdown ul {
 
 /* end project frontpage menu */
 
-/* unformatted lists */
-.simple_list {
-  list-style-type: none;
-  padding: 0;
-  margin: 5px 0 0 0;
-}
-
-.simple_list.more_actions_dropdown {
-  margin-top: 12px;
-}
-
-.simple_list ul {
-  list-style-type: none;
-}
-
 /* generic header formatting */
 .header {
   font-weight: 600;
@@ -3853,16 +3838,6 @@ label[for=profile_prefer_wiki_markdown] {
   vertical-align: top;
 }
 
-#add_post_action.more_actions_dropdown .column .simple_list {
-  margin-top: 0;
-}
-
-#add_post_action.more_actions_dropdown .column .simple_list li a {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
 #add_post_action.more_actions_dropdown h1 {
   font-size: 0.9em;
   font-weight: 600;
@@ -3972,7 +3947,9 @@ ul.project_list > li {
 }
 
 .project_overview {
-  clear: both;
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
 }
 
 .client_dashboard .header, .project_overview .header {
@@ -4165,17 +4142,17 @@ ul.client_users li, ul.team_users li, ul.project_users li {
   padding: 4px 7px;
 }
 
-.simple_list.branch-list .branch-name {
+.simple-list.branch-list .branch-name {
   display: block;
   color: #555;
   font-weight: 300;
 }
 
-.simple_list.branch-list .selected .branch-name {
+.simple-list.branch-list .selected .branch-name {
   font-weight: 600;
 }
 
-.simple_list.branch-list .branch-last-updated {
+.simple-list.branch-list .branch-last-updated {
   display: block;
   font-size: .8em;
   color: #888;
@@ -4364,10 +4341,6 @@ ul.client_users li, ul.team_users li, ul.project_users li {
 
 .commit-files .diffs .diff-preview .remove td.text pre::before {
   content: '-';
-}
-
-.simple_list.branch-list .branch-last-updated .fas, .simple_list.branch-list .branch-last-updated .far {
-  margin: 0 3px;
 }
 
 #project_settings_roles {
@@ -5158,6 +5131,14 @@ input.padded {
   display: none;
 }
 
+.issue_state {
+  display: inline-block;
+  padding: .15em .25em;
+  font-size: 1em;
+  border-radius: 3px;
+  border: 1px solid rgba(0, 0, 0, .1);
+}
+
 .issue_state.closed, .affected_state.unconfirmed {
   background-color: rgba(150, 150, 150, 0.2);
   color: rgba(100, 100, 100, 0.7);
@@ -5711,6 +5692,7 @@ ul.attached_items {
 
 .popup_box {
   display: block;
+  position: absolute;
   opacity: 0;
   transform: scaleY(0);
   transform-origin: top;
@@ -5765,19 +5747,6 @@ ul.attached_items {
   text-transform: uppercase;
   color: #888;
   font-size: 0.9em;
-}
-
-.issuedetailspopup ul.simple_list {
-  margin-top: 0;
-}
-
-.issuedetailspopup ul.simple_list > li:first-child {
-  padding-top: 0;
-}
-
-.issuedetailspopup ul.simple_list > li {
-  clear: both;
-  padding: 5px 0;
 }
 
 .issuedetailspopup li.faded_out {
@@ -9158,50 +9127,6 @@ ul.files-list .action_D .filename {
 /*}*/
 
 
-.project_left ul.simple_list {
-  margin-bottom: 30px;
-}
-
-.project_left ul.simple_list li {
-  position: relative;
-  box-sizing: border-box;
-  border: none;
-  border-radius: 5px;
-}
-
-.project_left ul.simple_list li.selected {
-  background-color: rgba(78, 129, 171, .2);
-}
-
-.project_left ul.simple_list li.selected a, .project_left ul.simple_list li.selected a:hover {
-  color: #555;
-}
-
-.project_left ul.simple_list li h3 {
-  margin-top: 25px;
-}
-
-.project_left ul.simple_list li img {
-  display: inline-block;
-  margin: 0 5px;
-  vertical-align: middle;
-}
-
-.project_left ul.simple_list li a, .project_left ul.simple_list li a:hover {
-  border: 1px solid transparent;
-  border-radius: 5px;
-  display: block;
-  color: #999;
-  padding: 3px;
-  font-size: 1.1em;
-  transition: border-color .2s ease-in-out, background-color .2s ease-in-out, color 0.3s ease;
-  margin-bottom: 3px;
-}
-
-.project_left ul.simple_list li:not(.selected) a:hover {
-  border-color: rgba(78, 129, 171, .2);
-}
-
 .dashboard_view_content .project_role {
   font-weight: 300;
   margin: 5px 0;
@@ -9694,26 +9619,6 @@ ul.files-list .action_D .filename {
 /* end roadmap */
 
 /* project releases styling */
-#project_releases_container .simple_list, #project_release_center_container .simple_list, #project_releases_container .faded_out, #project_release_center_container .faded_out {
-  padding: 0 15px;
-}
-
-#project_releases_container h3, #project_release_center_container h3 {
-  margin-top: 30px;
-}
-
-#project_releases_container h3:first-of-type, #project_release_center_container h3:first-of-type {
-  margin-top: 0;
-}
-
-#project_release_center_container.only_active .release_item, #project_release_center_container.only_archived .release_item.active, #project_release_center_container.only_downloads .release_item {
-  display: none;
-}
-
-#project_release_center_container.only_active .release_item.active, #project_release_center_container.only_archived .release_item, #project_release_center_container.only_downloads .release_item.download {
-  display: block;
-}
-
 .release_item {
   display: block;
   clear: both;
@@ -9910,12 +9815,6 @@ a:hover .issue_title {
 
 #config_scopes a.action_button {
   float: right;
-}
-
-#scopes_list ul.simple_list li span {
-  color: #333;
-  font-size: 1em;
-  font-weight: 300;
 }
 
 #scopes_list .scope_description {
@@ -11008,17 +10907,6 @@ span.config_explanation > span.tooltip.from-above.leftie {
   margin-bottom: 5px;
 }
 
-#backdrop_detail_content .simple_list > li > input[name=small_icon_action],
-#backdrop_detail_content .simple_list > li > input[name=large_icon_action] {
-  margin-top: -1px !important;
-}
-
-#backdrop_detail_content .simple_list > li > input[name=small_icon],
-#backdrop_detail_content .simple_list > li > input[name=large_icon] {
-  margin-top: 7px;
-  margin-left: 4px;
-}
-
 #update_icons_indicator {
   margin-right: 5px;
   margin-top: 4px;
@@ -11051,8 +10939,8 @@ span.config_explanation > span.tooltip.from-above.leftie {
   line-height: 22px;
 }
 
-#global_roles_list .greybox .simple_list a,
-.project_roles_list .greybox .simple_list a {
+#global_roles_list .greybox .simple-list a,
+.project_roles_list .greybox .simple-list a {
   position: absolute;
   margin-top: 5px;
   margin-left: -23px;
@@ -11154,33 +11042,33 @@ span.config_explanation > span.tooltip.from-above.leftie {
   padding: 3px 14px;
 }
 
-.scheme_list.issuetype_scheme_list.simple_list > div {
+.scheme_list.issuetype_scheme_list.simple-list > div {
   margin: 0 0 10px 0 !important;
   padding: 15px 10px 10px 10px;
 }
 
-.scheme_list.issuetype_scheme_list.simple_list > div > .header {
+.scheme_list.issuetype_scheme_list.simple-list > div > .header {
   margin-bottom: 5px;
 }
 
-.scheme_list.issuetype_scheme_list.simple_list .rounded_box.white.borderless {
+.scheme_list.issuetype_scheme_list.simple-list .rounded_box.white.borderless {
   margin: 0 !important;
   padding: 10px;
 }
 
-.scheme_list.issuetype_scheme_list.simple_list .rounded_box.white.borderless select {
+.scheme_list.issuetype_scheme_list.simple-list .rounded_box.white.borderless select {
   width: 500px !important;
 }
 
-.scheme_list.issuetype_scheme_list.simple_list form {
+.scheme_list.issuetype_scheme_list.simple-list form {
   margin-top: 15px;
 }
 
-.scheme_list.issuetype_scheme_list.simple_list .content {
+.scheme_list.issuetype_scheme_list.simple-list .content {
   padding: 0 !important;
 }
 
-.scheme_list.issuetype_scheme_list.simple_list .content input[type=submit] {
+.scheme_list.issuetype_scheme_list.simple-list .content input[type=submit] {
   padding: 3px 14px !important;
 }
 
@@ -12036,11 +11924,11 @@ form#vcs div.config_explanation {
   font-size: 1.1em;
 }
 
-.page-project_timeline .project_left ul.simple_list li a {
+.page-project_timeline .project_left ul.simple-list li a {
   padding-left: 29px;
 }
 
-.page-project_timeline .project_left ul.simple_list li img {
+.page-project_timeline .project_left ul.simple-list li img {
   position: absolute;
   left: 3px;
   margin-top: 1px;

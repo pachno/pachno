@@ -14,7 +14,7 @@ $all_columns = $selected_project->getIssueFields(false, array('status', 'milesto
                 <div class="planning_column_settings column_settings">
                     <h4><?= __('Select columns to show'); ?></h4>
                     <p class="faded_out"><?= __('Select which columns you would like to show in this result view. Your selection is saved until the next time you visit.'); ?></p>
-                    <ul class="simple_list pcs_list">
+                    <ul class="simple-list pcs_list">
                         <?php foreach ($all_columns as $fieldname => $fieldopts): ?>
                             <li class="pcs_<?= $fieldname; ?>">
                                 <input type="checkbox" class="fancycheckbox" id="planning_column_<?= $fieldname; ?>" name="planning_column[<?= $fieldname; ?>]" value="<?= $fieldname; ?>" <?php if (isset($selected_columns[$fieldname])): ?> checked<?php endif; ?>/>

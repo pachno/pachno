@@ -95,7 +95,7 @@
             <p class="faded_out" style="margin-bottom: 5px;">
                 <?= __('Please select which articles to import, from the list of available articles below. When you are finished, click the %import_articles button at the bottom', array('%import_articles' => __('Import articles'))); ?>
             </p>
-            <ul class="simple_list" id="import_articles_list">
+            <ul class="simple-list" id="import_articles_list">
             <?php foreach ($articles as $article_name => $details): ?>
                 <li class="article_category_<?= $details['category']; ?>" style="<?php if ($details['category'] != '') echo 'display: none;'; ?>">
                     <input type="checkbox" class="fancycheckbox" value="1" name="import_article[<?= $article_name; ?>]" id="import_article_<?= mb_strtolower($article_name); ?>"<?php if (!$details['exists']) echo ' selected'; ?>>&nbsp;

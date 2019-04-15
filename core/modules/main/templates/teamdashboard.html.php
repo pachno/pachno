@@ -22,7 +22,7 @@
             <?php if ($pachno_user->canAccessConfigurationPage(\pachno\core\framework\Settings::CONFIGURATION_SECTION_USERS)): ?>
                 <div class="project_header_right button-group">
                     <button class="button dropper first last" id="team_<?php echo $team->getID(); ?>_more_actions"><?= image_tag('spinning_16.gif', ['id' => 'team_members_' . $team->getID() . '_indicator', 'style' => 'display: none']); ?>&nbsp;<?php echo __('Actions'); ?></button>
-                    <ul style="margin-top: 28px; font-size: 1.1em;" class="simple_list rounded_box white shadowed popup_box more_actions_dropdown" onclick="$(this).toggle();">
+                    <ul style="margin-top: 28px; font-size: 1.1em;" class="simple-list rounded_box white shadowed popup_box more_actions_dropdown" onclick="$(this).toggle();">
                         <li><?php echo javascript_link_tag(fa_image_tag('user-plus').__('Add member(s) to this team'), array('onclick' => '$(\'addmember_team_'.$team->getID().'\').toggle(\'block\');')); ?></li>
                         <li class="separator"></li>
                         <li class="delete"><?php echo javascript_link_tag(fa_image_tag('times').__('Delete this team'), array('onclick' => "Pachno.Main.Helpers.Dialog.show('".__('Do you really want to delete this team?')."', '".__('If you delete this team, then all users in this team will be lose the permissions given via this team')."', {yes: {click: function() {Pachno.Config.Team.remove('".make_url('configure_users_delete_team', array('team_id' => $team->getID()))."', {$team->getID()}); }}, no: { click: Pachno.Main.Helpers.Dialog.dismiss }});")); ?></li>

@@ -9,7 +9,7 @@
     <div class="project_left_container">
         <div class="project_left">
             <h3><?php echo __('Number of issues per:'); ?></h3>
-            <ul class="simple_list" id="statistics_selector">
+            <ul class="simple-list" id="statistics_selector">
                 <li id="statistics_per_state_selector"><a href="javascript:void(0);" onclick="Pachno.Project.Statistics.get('<?php echo make_url('project_statistics_imagesets', array('project_key' => $selected_project->getKey(), 'set' => 'issues_per_state')); ?>', 'state');"><?php echo __('%number_of_issues_per State (open / closed)', array('%number_of_issues_per' => '')); ?></a></li>
                 <li id="statistics_per_category_selector"><a href="javascript:void(0);" onclick="Pachno.Project.Statistics.get('<?php echo make_url('project_statistics_imagesets', array('project_key' => $selected_project->getKey(), 'set' => 'issues_per_category')); ?>', 'category');"><?php echo __('%number_of_issues_per Category', array('%number_of_issues_per' => '')); ?></a></li>
                 <li id="statistics_per_priority_selector"><a href="javascript:void(0);" onclick="Pachno.Project.Statistics.get('<?php echo make_url('project_statistics_imagesets', array('project_key' => $selected_project->getKey(), 'set' => 'issues_per_priority')); ?>', 'priority');"><?php echo __('%number_of_issues_per Priority level', array('%number_of_issues_per' => '')); ?></a></li>

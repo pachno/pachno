@@ -39,7 +39,7 @@
                         </div>
                         <div id="users_more_actions_container" style="position: relative;">
                             <button class="button last dropper" id="users_more_actions" onclick="if ($(this).hasClassName('button-pressed')){ $('findusers').focus(); }"><?= __('Search'); ?></button>
-                            <ul id="users_more_actions_dropdown" style="width: 400px; font-size: 1.1em; z-index: 1000; margin-top: 21px;" class="simple_list rounded_box white shadowed popup_box more_actions_dropdown">
+                            <ul id="users_more_actions_dropdown" style="width: 400px; font-size: 1.1em; z-index: 1000; margin-top: 21px;" class="simple-list rounded_box white shadowed popup_box more_actions_dropdown">
                                 <li class="finduser_container">
                                     <label for="findusers"><?= __('Find user(s)'); ?>:</label><br>
                                     <form action="<?= make_url('configure_users_find_user'); ?>" method="post" onsubmit="Pachno.Config.User.show('<?= make_url('configure_users_find_user'); ?>', $('findusers').getValue());return false;">

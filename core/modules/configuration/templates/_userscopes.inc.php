@@ -6,7 +6,7 @@
     <form action="<?= make_url('configure_users_update_user_scopes', ['user_id' => $user->getID()]); ?>" method="post" onsubmit="Pachno.Config.User.updateScopes('<?= make_url('configure_users_update_user_scopes', ['user_id' => $user->getID()]); ?>', '<?= $user->getID(); ?>');return false;" id="edit_user_<?= $user->getID(); ?>_scopes_form">
         <div id="backdrop_detail_content" class="backdrop_detail_content">
             <?= __('The user can access the following scopes'); ?>
-            <ul class="simple_list user_scope_list">
+            <ul class="simple-list user_scope_list">
                 <?php foreach ($scopes as $scope): ?>
                     <li><input type="checkbox" style="float: left; margin-right: 3px;" name="scopes[<?= $scope->getID(); ?>]"<?php if ($user->isMemberOfScope($scope)): ?> checked<?php endif; ?><?php if ($scope->isDefault()): ?> disabled<?php endif; ?> id="user_<?= $user->getID(); ?>_scopes_<?= $scope->getID(); ?>"><label for="user_<?= $user->getID(); ?>_scopes_<?= $scope->getID(); ?>"><?= $scope->getName(); ?>&nbsp;<span class="faded_out" style="font-weight: normal;"><?= join(', ', $scope->getHostnames()); ?></span></label></li>
                 <?php endforeach; ?>

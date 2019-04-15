@@ -57,7 +57,7 @@
                                 <br>
                                 <i class="faded_out dark"><?php echo __('Keep in mind that the original issue type scheme is uneditable, so to make any changes, make a copy of the first issue type scheme, or edit one that is not the one shipped with Pachno'); ?></i>
                             </div>
-                            <ul class="scheme_list issuetype_scheme_list simple_list" id="issuetype_schemes_list">
+                            <ul class="scheme_list issuetype_scheme_list simple-list" id="issuetype_schemes_list">
                                 <?php foreach ($issue_type_schemes as $scheme): ?>
                                     <?php include_component('issuetypescheme', array('scheme' => $scheme)); ?>
                                 <?php endforeach; ?>
@@ -68,7 +68,7 @@
                             <div class="content">
                                 <?php echo __('In this tab you can edit issue type associations for this issue type scheme. Enable/disable available issue types, and set options such as reportable issue types and reportable/visible/required issue details.'); ?>
                             </div>
-                            <ul class="scheme_list issuetype_scheme_list simple_list">
+                            <ul class="scheme_list issuetype_scheme_list simple-list">
                                 <?php foreach ($issue_types as $type): ?>
                                     <?php include_component('issuetype', array('type' => $type, 'scheme' => $scheme)); ?>
                                 <?php endforeach; ?>

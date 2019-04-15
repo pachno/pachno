@@ -9,7 +9,7 @@
         <td valign="top" class="main_configuration_content">
             <?php include_component('configuration/workflowmenu', array('selected_tab' => 'schemes')); ?>
             <div class="content" style="width: 730px;">
-                <ul class="scheme_list workflow_list simple_list" id="workflow_schemes_list">
+                <ul class="scheme_list workflow_list simple-list" id="workflow_schemes_list">
                     <?php foreach ($schemes as $workflow_scheme): ?>
                         <?php include_component('configuration/workflowscheme', array('scheme' => $workflow_scheme)); ?>
                     <?php endforeach; ?>

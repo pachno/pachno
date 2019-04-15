@@ -103,7 +103,7 @@
                 <table style="clear: both; width: 780px;" cellpadding=0 cellspacing=0>
                     <td style="width: 200px;"><label><?php echo __('Release download'); ?></label></td>
                     <td>
-                        <ul class="simple_list" style="margin-top: 0;" id="edit_build_download_options">
+                        <ul class="simple-list" style="margin-top: 0;" id="edit_build_download_options">
                             <li><input type="radio" id="download_none" name="download" value="0"<?php if (!$build->hasDownload()) echo ' checked'; ?>><label for="download_none"><?php echo ($build->hasDownload()) ? __('Clear download information') : __('Leave as is %no_download', array('%no_download' => '<span class="faded_out">('.__('no download').')</span>')).'</span>'; ?></label></li>
                             <?php if ($build->hasFile()): ?>
                                 <li><input type="radio" id="download_leave_file" name="download" value="leave_file" checked><label for="download_leave_file"><?php echo __('Use existing file %filename', array('%filename' => '<span class="faded_out" style="font-weight: normal;">('.$build->getFile()->getOriginalFilename().')</span>')); ?></label></li>

@@ -3,7 +3,7 @@
         <?= image_tag('team_large.png', array('style' => 'float: left; margin-right: 5px;')); ?>
         <div style="position: absolute; right: 12px; top: 12px;">
             <button class="button dropper" id="team_<?= $team->getID(); ?>_more_actions"><?= __('Actions'); ?></button>
-            <ul id="team_<?= $team->getID(); ?>_more_actions_dropdown" style="font-size: 1.1em; width: 200px; top: 23px; margin-top: 0; text-align: right; z-index: 1000;" class="simple_list rounded_box white shadowed popup_box more_actions_dropdown" onclick="$(this).previous().toggleClassName('button-pressed');$(this).toggle();">
+            <ul id="team_<?= $team->getID(); ?>_more_actions_dropdown" style="font-size: 1.1em; width: 200px; top: 23px; margin-top: 0; text-align: right; z-index: 1000;" class="simple-list rounded_box white shadowed popup_box more_actions_dropdown" onclick="$(this).previous().toggleClassName('button-pressed');$(this).toggle();">
                 <li>
                     <?= javascript_link_tag(__('Add member(s) to this team'), array('onclick' => '$(\'addmember_team_'.$team->getID().'\').toggle(\'block\');')); ?>
                 </li>

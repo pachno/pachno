@@ -3,7 +3,7 @@
         <div class="project_save_container">
             <button class="button" onclick="$('new_project<?php echo $project->getID(); ?>_role').toggle();if ($('new_project<?php echo $project->getID(); ?>_role').visible()) { $('add_new_role_input').focus(); }"><?php echo __('Create project role'); ?></button>
             <a class="dropper button"><?php echo __('More actions'); ?></a>
-            <ul class="simple_list rounded_box white shadowed more_actions_dropdown popup_box">
+            <ul class="simple-list rounded_box white shadowed more_actions_dropdown popup_box">
                 <li><?php echo javascript_link_tag(__('Show advanced permissions'), array('onclick' => "$('project".$project->getID()."_settings_roles').toggle();$('project".$project->getID()."_settings_advanced_permissions').toggle();")); ?></li>
             </ul>
         </div>
@@ -19,7 +19,7 @@
                 <input type="submit" value="<?php echo __('Create role'); ?>" class="button" style="float: right; margin: 1px 1px 1px 5px;">
             </form>
         </div>
-        <ul id="project<?php echo $project->getID(); ?>_roles_list" class="simple_list project_roles_list" style="width: 788px;">
+        <ul id="project<?php echo $project->getID(); ?>_roles_list" class="simple-list project_roles_list" style="width: 788px;">
             <?php foreach ($project_roles as $role): ?>
                 <?php include_component('configuration/role', array('role' => $role)); ?>
             <?php endforeach; ?>

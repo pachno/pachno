@@ -1,4 +1,4 @@
-<ul class="simple_list">
+<ul class="simple-list">
 <?php if (count($role->getPermissions())): ?>
     <?php foreach ($role->getPermissions() as $permission): ?>
         <?php $permission_details = ($permission->getModule() == 'core') ? \pachno\core\framework\Context::getPermissionDetails($permission->getPermission()) : \pachno\core\framework\Context::getModule($permission->getModule())->getPermissionDetails($permission->getPermission()); ?>

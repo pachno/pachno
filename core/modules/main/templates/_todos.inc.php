@@ -8,7 +8,7 @@
             ]); ?>
         <?php echo image_tag('spinning_16.gif', ['id' => 'todos_sort_indicator', 'style' => 'display: none;']); ?>
         <?php if ($issue->canEditDescription()): ?>
-            <ul class="simple_list button_container"
+            <ul class="simple-list button_container"
                 id="add_todo_button_container">
                 <li id="todo_add_button"><input class="button first last"
                                                 type="button"
@@ -17,7 +17,7 @@
             </ul>
         <?php endif; ?>
     </legend>
-    <ul class="simple_list todos-list" id="todos_list">
+    <ul class="simple-list todos-list" id="todos_list">
         <?php if ($issue->countTodos()): ?>
             <?php foreach ($issue->getTodos()['issue'] as $todo_index => $todo): ?>
                 <?php include_component('main/todo',

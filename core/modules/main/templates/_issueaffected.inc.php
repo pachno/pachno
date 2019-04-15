@@ -1,4 +1,4 @@
-<ul class="simple_list related_issues_list" id="affected_list">
+<ul class="simple-list related_issues_list" id="affected_list">
     <?php if ($issue->getProject()->isEditionsEnabled()): ?>
         <?php foreach ($editions as $edition): ?>
             <?php include_component('main/affecteditem', array('item' => $edition, 'itemtype' => 'edition', 'itemtypename' => __('Edition'), 'issue' => $issue, 'statuses' => $statuses)); ?>

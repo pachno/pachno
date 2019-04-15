@@ -18,7 +18,7 @@
             <?php if (count($gitlab_repos_nss)): ?>
                 <?php foreach ($gitlab_repos_nss as $gitlab_repos_nss => $grn_branches): ?>
                     <h3><?php echo $gitlab_repos_nss; ?></h3>
-                    <ul class="simple_list">
+                    <ul class="simple-list">
                         <li><a href="javascript:void(0);" onclick="Pachno.Project.showBranchCommits('<?php echo make_url('vcs_commitspage', array('project_key' => $selected_project->getKey())); ?>', undefined, '<?php echo $gitlab_repos_nss; ?>'); Pachno.Project.toggleLeftSelection(this);"><?php echo __('All branches'); ?></a></li>
                         <?php foreach ($grn_branches as $branchname): ?>
                             <li><a href="javascript:void(0);" onclick="Pachno.Project.showBranchCommits('<?php echo make_url('vcs_commitspage', array('project_key' => $selected_project->getKey())); ?>', '<?php echo $branchname; ?>', '<?php echo $gitlab_repos_nss; ?>'); Pachno.Project.toggleLeftSelection(this);"><?php echo $branchname; ?></a></li>
@@ -27,7 +27,7 @@
                 <?php endforeach; ?>
             <?php else: ?>
                 <h3><?php echo __('Branch filters'); ?></h3>
-                <ul class="simple_list">
+                <ul class="simple-list">
                     <li><a href="javascript:void(0);" onclick="Pachno.Project.showBranchCommits('<?php echo make_url('vcs_commitspage', array('project_key' => $selected_project->getKey())); ?>'); Pachno.Project.toggleLeftSelection(this);"><?php echo __('All branches'); ?></a></li>
                     <?php foreach ($branches as $branchname): ?>
                         <li><a href="javascript:void(0);" onclick="Pachno.Project.showBranchCommits('<?php echo make_url('vcs_commitspage', array('project_key' => $selected_project->getKey())); ?>', '<?php echo $branchname; ?>'); Pachno.Project.toggleLeftSelection(this);"><?php echo $branchname; ?></a></li>

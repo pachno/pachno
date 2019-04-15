@@ -2,7 +2,7 @@
     <div class="project_save_container">
         <div class="button" onclick="$('add_people_to_project_container').toggle();"><?php echo __('Add people'); ?></div>
         <button class="button dropper"><?php echo __('More actions'); ?></button>
-        <ul class="simple_list rounded_box white shadowed rightie popup_box more_actions_dropdown">
+        <ul class="simple-list rounded_box white shadowed rightie popup_box more_actions_dropdown">
             <li><a href="javascript:void(0);" onclick="$('owned_by_change').up('td').down('label').toggleClassName('button-pressed');$('owned_by_change').toggle();"><?php echo __('Change / set project owner'); ?></a></li>
             <li><a href="javascript:void(0);" onclick="$('lead_by_change').up('td').down('label').toggleClassName('button-pressed');$('lead_by_change').toggle();"><?php echo __('Change / set project leader'); ?></a></li>
             <li><a href="javascript:void(0);" onclick="$('qa_by_change').up('td').down('label').toggleClassName('button-pressed');$('qa_by_change').toggle();"><?php echo __('Change / set project qa responsible'); ?></a></li>

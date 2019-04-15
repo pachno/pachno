@@ -9,7 +9,7 @@
     <?php \pachno\core\framework\Event::createNew('core', 'viewissue_left_top', $issue)->trigger(); ?>
     <fieldset>
         <legend onclick="$('issue_details_fieldslist_basics').toggle();"><?php echo __('Issue basics'); ?></legend>
-        <ul class="simple_list" id="issue_details_fieldslist_basics">
+        <ul class="simple-list" id="issue_details_fieldslist_basics">
             <li id="issuetype_field" class="issue_detail_field primary <?php if ($issue->isIssuetypeChanged()): ?>issue_detail_changed<?php endif; ?><?php if (!$issue->isIssuetypeMerged()): ?> issue_detail_unmerged<?php endif; ?>">
                 <dl class="viewissue_list">
                     <dt id="issuetype_header">
@@ -136,7 +136,7 @@
     </fieldset>
     <fieldset id="issue_details_fieldslist_pain_container" style="<?php if (!$issue->isUserPainVisible()): ?> display: none;<?php endif; ?>">
         <legend onclick="$('issue_details_fieldslist_pain').toggle();"><?php echo __('User pain'); ?></legend>
-        <ul class="issue_details simple_list" id="issue_details_fieldslist_pain">
+        <ul class="issue_details simple-list" id="issue_details_fieldslist_pain">
             <li id="pain_bug_type_field" class="issue_detail_field<?php if ($issue->isPainBugTypeChanged()): ?> issue_detail_changed<?php endif; ?><?php if (!$issue->isPainBugTypeMerged()): ?> issue_detail_unmerged<?php endif; ?>" style="<?php if (!$issue->isUserPainVisible()): ?> display: none;<?php endif; ?>">
                 <dl class="viewissue_list">
                     <dt id="pain_bug_type_header"><?php echo __('Type of bug'); ?></dt>
@@ -239,7 +239,7 @@
     </fieldset>
     <fieldset>
         <legend onclick="$('issue_details_fieldslist_people').toggle();"><?php echo __('People involved'); ?></legend>
-        <ul class="issue_details simple_list" id="issue_details_fieldslist_people">
+        <ul class="issue_details simple-list" id="issue_details_fieldslist_people">
             <li id="posted_by_field" class="issue_detail_field<?php if ($issue->isPostedByChanged()): ?> issue_detail_changed<?php endif; ?><?php if (!$issue->isPostedByMerged()): ?> issue_detail_unmerged<?php endif; ?>">
                 <dl class="viewissue_list">
                     <dt id="posted_by_header"><?php echo __('Posted by'); ?></dt>
@@ -341,7 +341,7 @@
     </fieldset>
     <fieldset id="issue_timetracking_container">
         <legend onclick="$('issue_details_fieldslist_time').toggle();"><?php echo __('Times and dates'); ?></legend>
-        <ul class="issue_details simple_list" id="issue_details_fieldslist_time">
+        <ul class="issue_details simple-list" id="issue_details_fieldslist_time">
             <li id="posted_at_field" class="issue_detail_field primary">
                 <dl class="viewissue_list">
                     <dt id="posted_at_header">
@@ -397,7 +397,7 @@
     <?php if (count($fields_list) || count($customfields_list)): ?>
         <fieldset>
             <legend onclick="$('issue_details_fieldslist').toggle();"><?php echo __('Issue details'); ?></legend>
-            <ul class="issue_details simple_list" id="issue_details_fieldslist">
+            <ul class="issue_details simple-list" id="issue_details_fieldslist">
                 <?php foreach ($fields_list as $field => $info): ?>
                     <?php include_component('main/issuefield', compact('field', 'info', 'issue')); ?>
                 <?php endforeach; ?>

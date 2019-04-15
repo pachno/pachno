@@ -1,47 +1,47 @@
 search_paginated:
-    route: '/issues/paginated/*'
+    route: '/find/paginated/*'
     module: search
     action: findIssuesPaginated
     parameters: [ ]
     csrf_enabled: false
 
 search_filter_findusers:
-    route: /issues/filter/:filterkey/findusers
+    route: /find/filter/:filterkey/findusers
     module: search
     action: filterFindUsers
     parameters: [ ]
     csrf_enabled: false
 
 search_filter_findteams:
-    route: /issues/filter/:filterkey/findteams
+    route: /find/filter/:filterkey/findteams
     module: search
     action: filterFindTeams
     parameters: [ ]
     csrf_enabled: false
 
 search_filter_findclients:
-    route: /issues/filter/:filterkey/findclients
+    route: /find/filter/:filterkey/findclients
     module: search
     action: filterFindClients
     parameters: [ ]
     csrf_enabled: false
 
 search_filter_getdynamicchoices:
-    route: /issues/filters/getdynamicchoices
+    route: /find/filters/getdynamicchoices
     module: search
     action: filterGetDynamicChoices
     parameters: [ ]
     csrf_enabled: false
 
 search_add_filter:
-    route: '/issues/add/filter/*'
+    route: '/find/add/filter/*'
     module: search
     action: addFilter
     parameters: [ ]
     csrf_enabled: false
 
 search_save:
-    route: /issues/save/search
+    route: /find/save/search
     module: search
     action: saveSearch
     parameters: [ ]
@@ -55,7 +55,7 @@ search_save_column_settings:
     csrf_enabled: false
 
 my_teams_assigned_issues:
-    route: '/issues/my/assigned/teams/*'
+    route: '/find/my/assigned/teams/*'
     module: search
     action: findIssues
     parameters:
@@ -64,7 +64,7 @@ my_teams_assigned_issues:
     csrf_enabled: false
 
 my_assigned_issues:
-    route: '/issues/my/assigned/*'
+    route: '/find/my/assigned/*'
     module: search
     action: findIssues
     parameters:
@@ -73,7 +73,7 @@ my_assigned_issues:
     csrf_enabled: false
 
 my_owned_issues:
-    route: '/issues/my/owned/*'
+    route: '/find/my/owned/*'
     module: search
     action: findIssues
     parameters:
@@ -82,7 +82,7 @@ my_owned_issues:
     csrf_enabled: false
 
 my_reported_issues:
-    route: '/issues/my/*'
+    route: '/find/my/*'
     module: search
     action: findIssues
     parameters:
@@ -91,14 +91,14 @@ my_reported_issues:
     csrf_enabled: false
 
 issues_bulk_update:
-    route: /issues/bulk
+    route: /find/bulk
     module: search
     action: bulkUpdateIssues
     parameters: [ ]
     csrf_enabled: false
 
 search:
-    route: '/issues/*'
+    route: '/find/*'
     module: search
     action: findIssues
     parameters: [ ]
@@ -122,7 +122,7 @@ opensearch:
     csrf_enabled: false
 
 project_open_issues:
-    route: '/:project_key/issues/open/*'
+    route: '/:project_key/find/open/*'
     module: search
     action: findIssues
     parameters:
@@ -131,7 +131,7 @@ project_open_issues:
     csrf_enabled: false
 
 project_allopen_issues:
-    route: '/:project_key/issues/allopen/*'
+    route: '/:project_key/find/allopen/*'
     module: search
     action: findIssues
     parameters:
@@ -140,7 +140,7 @@ project_allopen_issues:
     csrf_enabled: false
 
 project_closed_issues:
-    route: '/:project_key/issues/closed/*'
+    route: '/:project_key/find/closed/*'
     module: search
     action: findIssues
     parameters:
@@ -149,7 +149,7 @@ project_closed_issues:
     csrf_enabled: false
 
 project_allclosed_issues:
-    route: '/:project_key/issues/allclosed/*'
+    route: '/:project_key/find/allclosed/*'
     module: search
     action: findIssues
     parameters:
@@ -158,7 +158,7 @@ project_allclosed_issues:
     csrf_enabled: false
 
 project_wishlist_issues:
-    route: '/:project_key/issues/wishlist/*'
+    route: '/:project_key/find/wishlist/*'
     module: search
     action: findIssues
     parameters:
@@ -167,7 +167,7 @@ project_wishlist_issues:
     csrf_enabled: false
 
 project_milestone_todo_list:
-    route: '/:project_key/issues/todo/*'
+    route: '/:project_key/find/todo/*'
     module: search
     action: findIssues
     parameters:
@@ -176,7 +176,7 @@ project_milestone_todo_list:
     csrf_enabled: false
 
 project_most_voted_issues:
-    route: '/:project_key/issues/mostvoted/*'
+    route: '/:project_key/find/mostvoted/*'
     module: search
     action: findIssues
     parameters:
@@ -185,7 +185,7 @@ project_most_voted_issues:
     csrf_enabled: false
 
 project_month_issues:
-    route: '/:project_key/issues/this/month/*'
+    route: '/:project_key/find/this/month/*'
     module: search
     action: findIssues
     parameters:
@@ -194,7 +194,7 @@ project_month_issues:
     csrf_enabled: false
 
 project_last_issues:
-    route: '/:project_key/issues/last/:units/:time_unit/*'
+    route: '/:project_key/find/last/:units/:time_unit/*'
     module: search
     action: findIssues
     parameters:
@@ -203,7 +203,7 @@ project_last_issues:
     csrf_enabled: false
 
 project_my_teams_assigned_issues:
-    route: /:project_key/issues/my/assigned/teams
+    route: /:project_key/find/my/assigned/teams
     module: search
     action: findIssues
     parameters:
@@ -212,7 +212,7 @@ project_my_teams_assigned_issues:
     csrf_enabled: false
 
 project_my_assigned_issues:
-    route: '/:project_key/issues/my/assigned/*'
+    route: '/:project_key/find/my/assigned/*'
     module: search
     action: findIssues
     parameters:
@@ -221,7 +221,7 @@ project_my_assigned_issues:
     csrf_enabled: false
 
 project_my_owned_issues:
-    route: '/:project_key/issues/my/owned/*'
+    route: '/:project_key/find/my/owned/*'
     module: search
     action: findIssues
     parameters:
@@ -230,7 +230,7 @@ project_my_owned_issues:
     csrf_enabled: false
 
 project_my_reported_issues:
-    route: '/:project_key/issues/my/*'
+    route: '/:project_key/find/my/*'
     module: search
     action: findIssues
     parameters:
@@ -239,21 +239,21 @@ project_my_reported_issues:
     csrf_enabled: false
 
 project_search_paginated:
-    route: '/:project_key/issues/paginated/*'
+    route: '/:project_key/find/paginated/*'
     module: search
     action: findIssuesPaginated
     parameters: [ ]
     csrf_enabled: false
 
 project_search_add_filter:
-    route: '/:project_key/issues/add/filter/*'
+    route: '/:project_key/find/add/filter/*'
     module: search
     action: addFilter
     parameters: [ ]
     csrf_enabled: false
 
 project_issues:
-    route: '/:project_key/issues/find/*'
+    route: '/:project_key/find'
     module: search
     action: findIssues
     parameters: [ ]

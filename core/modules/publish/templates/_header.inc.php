@@ -34,7 +34,7 @@
                 <?php endif; ?>
                 <?php if (!isset($embedded) || !$embedded): ?>
                     <a class="button more_actions_button dropper last" id="more_actions_article_<?= $article->getID(); ?>_button"><?= __('More actions'); ?></a>
-                    <ul class="simple_list rounded_box white shadowed more_actions_dropdown popup_box" onclick="$('more_actions_article_<?= $article->getID(); ?>_button').toggleClassName('button-pressed');Pachno.Main.Profile.clearPopupsAndButtons();">
+                    <ul class="simple-list rounded_box white shadowed more_actions_dropdown popup_box" onclick="$('more_actions_article_<?= $article->getID(); ?>_button').toggleClassName('button-pressed');Pachno.Main.Profile.clearPopupsAndButtons();">
                         <?php if ($mode == 'edit'): ?>
                             <li><a href="javascript:void(0);" onclick="$('main_container').toggleClassName('distraction-free');"><?= fa_image_tag('arrows-alt') . __('Toggle distraction-free writing'); ?></a></li>
                             <li class="separator"></li>

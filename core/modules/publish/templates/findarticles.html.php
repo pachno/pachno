@@ -29,7 +29,7 @@
     <?php if (isset($resultcount)): ?>
         <?php if ($resultcount): ?>
             <div class="header_div" style="font-size: 1.3em;"><?php echo __('Found %num article(s)', array('%num' => $resultcount)); ?></div>
-            <ul class="simple_list wiki-find-articles-list">
+            <ul class="simple-list wiki-find-articles-list">
                 <?php foreach ($articles as $article): ?>
                 <li style="margin-bottom: 0;">
                     <?php echo link_tag(make_url('publish_article', array('article_name' => $article->getName())), $article->getName(), array('style' => 'font-size: 1.1em;')); ?><br>
