@@ -30,6 +30,16 @@
             $this->showtrace = (date('YmdHis', $this->previous_time) != date('YmdHis', $this->item->getTime()));
         }
 
+        public function componentIssueMoreActions()
+        {
+            if (!isset($this->show_workflow_transitions)) {
+                $this->show_workflow_transitions = true;
+            }
+            if (!isset($this->multi)) {
+                $this->multi = false;
+            }
+        }
+
         public function componentUserdropdown()
         {
             framework\Logging::log('user dropdown component');
@@ -271,7 +281,7 @@
             }
         }
 
-        public function componentIssueFields()
+        public function componentViewIssueFields()
         {
             $this->setupVariables();
         }

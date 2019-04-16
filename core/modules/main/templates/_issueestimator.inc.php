@@ -1,5 +1,5 @@
 <?php use pachno\core\entities\AgileBoard; ?>
-<ul class="<?php if (isset($mode) && $mode == 'inline'): ?>borderless<?php else: ?>popup_box <?php endif; ?> more_actions_dropdown" id="<?php echo $field . '_' . $issue_id; ?>_change" style="<?php if (isset($mode) && $mode == 'inline'): ?>position: relative;<?php endif; ?> <?php echo (isset($mode) && $mode == 'left') ? 'left' : 'right'; ?>: 0; text-align: left;">
+<ul class="<?php if (isset($mode) && $mode == 'inline'): ?>borderless<?php else: ?>dropdown-container <?php endif; ?>" id="<?php echo $field . '_' . $issue_id; ?>_change" style="<?php if (isset($mode) && $mode == 'inline'): ?>position: relative;<?php endif; ?> <?php echo (isset($mode) && $mode == 'left') ? 'left' : 'right'; ?>: 0; text-align: left;">
     <?php if (!isset($headers) || $headers == true): ?>
         <li class="header">
             <?php if ($field == 'estimated_time'): ?>

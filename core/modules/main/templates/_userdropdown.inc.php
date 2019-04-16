@@ -12,7 +12,7 @@
         <?php endif; ?>
         <?php echo (isset($displayname)) ? $displayname : $user->getName(); ?>
     </a>
-    <div class="dropdown-container">
+    <div class="dropdown-container from-left">
         <div class="list-mode">
             <div class="header-banner">
                 <div class="header-name">
@@ -32,6 +32,7 @@
                     <span class="name"><?php echo __('Last seen online at %time', ['%time' => \pachno\core\framework\Context::getI18n()->formatTime($user->getLastSeen(), 11)]); ?></span>
                 <?php endif; ?>
             </div>
+            <div class="list-item separator"></div>
             <?php \pachno\core\framework\Event::createNew('core', 'useractions_top', $user)->trigger(); ?>
             <?php if (\pachno\core\entities\User::isThisGuest() == false && $user->getID() != $pachno_user->getID()): ?>
                 <div class="list-item" style="<?php if ($pachno_user->isFriend($user)): ?> display: none;<?php endif; ?>" id="add_friend_<?php echo $user->getID() . '_' . $rnd_no; ?>">

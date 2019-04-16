@@ -13,7 +13,7 @@
     <div class="dropdown-container">
         <div class="list-mode">
             <?php if (!$issue->getProject()->isArchived() && $issue->canEditIssueDetails()): ?>
-                <?php if (!isset($multi) || !$multi): ?>
+                <?php if (!$multi && $show_workflow_transitions): ?>
                     <div class="header"><?php echo __('Workflow transition actions'); ?></div>
                     <?php if ($issue->isWorkflowTransitionsAvailable()): ?>
                         <?php foreach ($issue->getAvailableWorkflowTransitions() as $transition): ?>
@@ -24,9 +24,9 @@
                             <?php endif; ?>
                         <?php endforeach; ?>
                     <?php endif; ?>
-                <?php endif; ?>
-                <?php if (!isset($multi) || !$multi): ?>
-                    <div class="header"><?php echo __('Additional actions available'); ?></div>
+                    <?php if (!$multi): ?>
+                        <div class="header"><?php echo __('Additional actions available'); ?></div>
+                    <?php endif; ?>
                 <?php endif; ?>
                 <?php if ($issue->canEditMilestone()): ?>
                     <?php if ($issue->isOpen()): ?>

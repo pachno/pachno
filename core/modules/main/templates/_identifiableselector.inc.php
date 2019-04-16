@@ -1,7 +1,7 @@
 <div class="<?php if (isset($classes)): echo ' '.$classes; endif; ?> list-mode" id="<?php echo $html_id; ?>">
     <div class="header"><?php echo $header; ?></div>
     <?php if ($allow_clear): ?>
-        <a href="javascript:void(0);" onclick="<?php echo str_replace(array(urlencode('%identifiable_value'), '%identifiable_value'), array(0, 0), $callback); ?>">
+        <a href="javascript:void(0);" class="list-item" onclick="<?php echo str_replace(array(urlencode('%identifiable_value'), '%identifiable_value'), array(0, 0), $callback); ?>">
             <span class="icon"><?php echo fa_image_tag('times'); ?></span>
             <span class="name"><?= $clear_link_text; ?></span>
         </a>

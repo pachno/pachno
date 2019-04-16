@@ -19,17 +19,17 @@
         <?php include_component('project/sidebar', ['collapsed' => true]); ?>
         <div id="issue_<?php echo $issue->getID(); ?>" class="viewissue-container <?php if ($issue->isBlocking()) echo ' blocking'; ?>">
             <?php include_component('project/viewissueheader', ['issue' => $issue]); ?>
-            <?php include_component('project/issuemessages', compact('issue', 'error', 'issue_unsaved', 'workflow_message', 'issue_message', 'issue_file_uploaded')); ?>
+            <?php include_component('project/viewissuemessages', compact('issue', 'error', 'issue_unsaved', 'workflow_message', 'issue_message', 'issue_file_uploaded')); ?>
             <div id="issue-container" class="issue-card">
                 <div id="issue-main-container" class="issue-card-main">
                     <div class="card-header">
                         <div id="issuetype-field" class="issuetype-field dropper-container">
-                            <span id="issuetype_content" class="<?php if ($issue->isEditable() && $issue->canEditIssuetype()) echo 'dropper'; ?> issuetype-icon issuetype-<?= ($issue->hasIssueType()) ? $issue->getIssueType()->getIcon() : 'unknown'; ?>">
+                            <div id="issuetype_content" class="<?php if ($issue->isEditable() && $issue->canEditIssuetype()) echo 'dropper'; ?> issuetype-icon issuetype-<?= ($issue->hasIssueType()) ? $issue->getIssueType()->getIcon() : 'unknown'; ?>">
                                 <?php if ($issue->hasIssueType()) echo fa_image_tag($issue->getIssueType()->getFontAwesomeIcon(), ['class' => 'icon']); ?>
                                 <span class="name"><?= __($issue->getIssueType()->getName()); ?></span>
-                            </span>
+                            </div>
                             <?php if ($issue->isEditable() && $issue->canEditIssuetype()): ?>
-                                <div id="issuetype_change" class="dropdown-container">
+                                <div id="issuetype_change" class="dropdown-container from-left">
                                     <ul class="list-mode">
                                         <li class="header"><?php echo __('Change issue type'); ?></li>
                                         <?php foreach ($issuetypes as $issuetype): ?>
@@ -44,7 +44,7 @@
                                 </div>
                             <?php endif; ?>
                         </div>
-                        <?php include_component('project/issueworkflowbuttons', ['issue' => $issue]); ?>
+                        <?php include_component('project/viewissueworkflowbuttons', ['issue' => $issue]); ?>
                     </div>
                     <?php \pachno\core\framework\Event::createNew('core', 'viewissue::afterWorkflowButtons', $issue)->trigger(); ?>
                     <div class="issue-details">
@@ -95,6 +95,40 @@
                                     <div id="reproduction_steps_change_error" class="error_message" style="display: none;"></div>
                                 </div>
                             <?php endif; ?>
+                        </fieldset>
+                        <fieldset id="viewissue_attached_information_container">
+                            <div class="header">
+                                <span class="icon"><?= fa_image_tag('paperclip'); ?></span>
+                                <span class="name"><?php echo __('Attachments'); ?><span id="viewissue_uploaded_attachments_count" class="count-badge"><?= (count($issue->getLinks()) + count($issue->getFiles())); ?></span></span>
+                            </div>
+                            <div id="viewissue_attached_information" class="attachments-list content">
+                                <ul class="attached_items" id="viewissue_uploaded_links">
+                                    <?php foreach ($issue->getLinks() as $link_id => $link): ?>
+                                        <?php include_component('main/attachedlink', array('issue' => $issue, 'link' => $link, 'link_id' => $link['id'])); ?>
+                                    <?php endforeach; ?>
+                                </ul>
+                                <ul class="attached_items" id="viewissue_uploaded_files">
+                                    <?php foreach (array_reverse($issue->getFiles()) as $file_id => $file): ?>
+                                        <?php if (!$file->isImage()): ?>
+                                            <?php include_component('main/attachedfile', array('base_id' => 'viewissue_files', 'mode' => 'issue', 'issue' => $issue, 'file' => $file)); ?>
+                                        <?php endif; ?>
+                                    <?php endforeach; ?>
+                                    <?php foreach (array_reverse($issue->getFiles()) as $file_id => $file): ?>
+                                        <?php if ($file->isImage()): ?>
+                                            <?php include_component('main/attachedfile', array('base_id' => 'viewissue_files', 'mode' => 'issue', 'issue' => $issue, 'file' => $file)); ?>
+                                        <?php endif; ?>
+                                    <?php endforeach; ?>
+                                </ul>
+                            </div>
+                        </fieldset>
+                        <fieldset id="viewissue_related_information_container">
+                            <div class="header">
+                                <span class="icon"><?= fa_image_tag('list-alt', [], 'far'); ?></span>
+                                <span class="name"><?= __('Child issues'); ?><span id="viewissue_related_issues_count" class="count-badge"><?= $issue->countChildIssues(); ?></span></span>
+                            </div>
+                            <div id="viewissue_related_information" class="related-issues content">
+                                <?php include_component('main/relatedissues', array('issue' => $issue)); ?>
+                            </div>
                         </fieldset>
                         <?php include_component('main/issuemaincustomfields', ['issue' => $issue]); ?>
                         <?php /*
@@ -175,7 +209,9 @@
                         </div>
                     </div>
                 </div>
-                <?php include_component('main/issuefields', ['issue' => $issue]); ?>
+                <div class="issue-fields">
+                    <?php include_component('main/viewissuefields', ['issue' => $issue]); ?>
+                </div>
             </div>
         </div>
     </div>

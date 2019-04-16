@@ -4984,74 +4984,6 @@ input.padded {
   vertical-align: middle;
 }
 
-#upload_error_div {
-  margin: 10px 5px 5px 5px;
-}
-
-#viewissue_attached_information, #viewissue_related_information, #viewissue_duplicate_issues {
-  margin-top: -5px;
-}
-
-#viewissue_related_information li, #viewissue_attached_information li, #viewissue_duplicate_issues li {
-  width: 335px;
-  position: relative;
-}
-
-#viewissue_related_information li.closed > a, #viewissue_duplicate_issues li.closed > a {
-  color: #549D54;
-  text-decoration: line-through;
-}
-
-.userdropdown_container,
-.teamdropdown_container {
-  display: inline-block;
-  position: relative;
-}
-
-.teamdropdown_container .header {
-  display: flex;
-}
-
-.team_image_container {
-  flex: 0 0 40px;
-  padding: 2px;
-  height: 40px;
-  background: #FFF;
-  border: 1px solid #DDD;
-}
-
-.teamdropdown_container .team_name_container {
-  flex: 1 1 auto;
-  line-height: 1em;
-  padding-left: 5px;
-  font-size: 1.1rem;
-}
-
-.team_name_container .team_name {
-  vertical-align: middle;
-}
-
-.team_name_container .team_status {
-  display: block;
-  font-size: 0.7em;
-}
-
-
-#viewissue_affected {
-  margin: 5px 0 0 0;
-}
-
-#viewissue_log_loading_indicator {
-  display: inline-block;
-  vertical-align: middle;
-  margin-left: 5px;
-}
-
-#viewissue_log_items,
-#viewissue_vcs_integration_commits {
-  min-height: 36px;
-}
-
 #viewissue_log_items ul {
   list-style: none;
   margin: 0 0 10px 0;
@@ -5278,25 +5210,7 @@ h5.change-list {
   font-weight: 300;
 }
 
-ul.attached_items {
-  list-style: none;
-  padding: 0;
-  margin: 5px 0 0 0;
-}
-
-.attached_item a.downloadlink, .attached_item a.downloadlink:hover {
-  display: inline-block;
-  font-size: 1em;
-  width: 303px;
-  vertical-align: middle;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  padding: 0 5px 0 0;
-  text-decoration: none;
-  border: none;
-}
-
-.attached_item a.downloadlink img, .affected_item img {
+.affected_item img {
   display: inline-block;
   vertical-align: middle;
   margin-right: 5px;

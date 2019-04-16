@@ -81,6 +81,7 @@
         display: flex;
         flex-direction: row;
         align-items: center;
+        position: relative;
 
         .value {
           display: flex;
@@ -212,14 +213,16 @@
         margin-bottom: 1.5em;
 
         .issuetype-field {
-          flex: 1 1 auto;
+          flex: 0 0 auto;
           align-items: flex-start;
           justify-content: center;
+          margin-bottom: .35rem;
 
-          .issuetype-icon {
+          > .issuetype-icon {
             display: inline-block;
             width: auto;
-            padding: .5em .8em .5em 0;
+            padding: .5em 1.6em .5em 1em;
+            border-radius: 1.5em;
           }
         }
 
@@ -229,17 +232,50 @@
           flex-direction: row;
           align-items: center;
           justify-content: flex-end;
+          flex-wrap: wrap;
 
           > ul {
+            flex: 1 1 auto;
             display: flex;
             flex-direction: row;
             flex-wrap: nowrap;
+            align-items: flex-start;
+            align-content: flex-start;
+            justify-content: flex-end;
+            justify-items: flex-start;
             list-style: none;
             padding: 0;
             margin: 0;
 
             > li {
               position: relative;
+
+              &.workflow {
+                flex: 1 1 auto;
+                display: flex;
+                flex-direction: row;
+                flex-wrap: wrap;
+                align-items: center;
+                justify-content: flex-end;
+
+                .tooltip-container {
+                  position: relative;
+                  margin-bottom: .35rem;
+
+                  & + .tooltip-container {
+                    margin-left: .35rem;
+                  }
+                }
+              }
+
+              .not-editable {
+                color: rgb(150, 150, 150);
+                margin: 0 1.5em .35em 0;
+                display: flex;
+                align-items: center;
+                height: 100%;
+                position: relative;
+              }
             }
 
             li + li {
@@ -253,37 +289,147 @@
         flex: 0 0 auto;
         display: flex;
         flex-direction: column;
+
+        .content {
+          font-size: 1.15em;
+
+          p + p {
+            margin-top: 1em;
+          }
+        }
       }
 
-      .fancytabs {
-        flex: 0 0 auto;
+      .attached-items {
+        list-style: none;
+        padding: 0;
+        margin: 5px 0 0 0;
+
+        a.downloadlink,
+        a.downloadlink:hover {
+          display: inline-block;
+          font-size: 1em;
+          width: 303px;
+          vertical-align: middle;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          padding: 0 5px 0 0;
+          text-decoration: none;
+          border: none;
+
+          img {
+            display: inline-block;
+            vertical-align: middle;
+            margin-right: 5px;
+          }
+        }
       }
 
-      .fancypanes {
+      .fields-list {
         display: flex;
-        flex-direction: column;
-        flex: 1 1 auto;
+        flex-direction: row;
+        flex-wrap: wrap;
+
+        li {
+          flex: 1 1 auto;
+          max-width: 50%;
+          min-width: 33%;
+        }
       }
     }
 
     .issue-fields {
       flex: 0 0 400px;
-      margin: 1em;
+      margin: 1em 0 1em 1em;
       padding: 0 1em;
       display: flex;
-      border-left: 1px solid rgba(200, 200, 200, .3);
+      border-left: 1px solid rgba(150, 150, 150, .3);
       flex-direction: column;
       height: calc(100% - 4em);
       box-sizing: border-box;
-      overflow: auto;
+      box-shadow: 4px 0 7px -8px rgba(0, 0, 0, .3) inset;
+      border-radius: 0;
 
-      .fields-list {
-        list-style: none;
-        padding: 0;
-        margin: 0;
-        display: flex;
-        flex-direction: column;
+      fieldset {
+        > .header {
+
+          .name {
+            display: flex;
+            align-items: center;
+            font-weight: 300;
+            text-transform: uppercase;
+            color: rgb(125, 125, 125);
+            font-size: 1.2em;
+            padding: 0 0 .5em 0;
+          }
+        }
+
+        & + fieldset {
+          margin-top: 2em;
+        }
       }
+    }
+
+    .fields-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+
+      > li {
+        display: flex;
+        align-items: center;
+        position: relative;
+
+        > .label {
+          font-weight: 600;
+          flex: 0 1 140px;
+        }
+
+        > .value {
+          flex: 1 1 auto;
+          font-weight: 300;
+
+          .value-container {
+            display: flex;
+            flex-direction: row;
+            width: 100%;
+            align-items: center;
+            justify-content: stretch;
+            border-radius: 4px;
+            border: 1px solid transparent;
+            transition: background-color .25s ease-in-out, border .25s ease-in-out;
+            padding: .35em 0;
+
+            &.dropper {
+              padding: .6em;
+
+              &:hover,
+              &.active {
+                border-color: rgba(200, 200, 200, .3);
+              }
+            }
+
+            span {
+              flex: 1 1 auto;
+            }
+
+            .dropdown-indicator {
+              flex: 0 0 24;
+            }
+          }
+        }
+      }
+    }
+
+    .fancytabs {
+      flex: 0 0 auto;
+    }
+
+    .fancypanes {
+      display: flex;
+      flex-direction: column;
+      flex: 1 1 auto;
     }
   }
 }

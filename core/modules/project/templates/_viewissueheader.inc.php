@@ -47,9 +47,9 @@
             <div id="posted_by_content" class="dropper-container">
                 <div id="posted_by_name" class="value">
                     <?php echo include_component('main/userdropdown', ['user' => $issue->getPostedBy(), 'size' => 'medium']); ?>
-                    <a href="javascript:void(0);" class="button secondary dropper" title="<?php echo __('Click to change owner'); ?>"><?= fa_image_tag('angle-down'); ?></a>
                     <?php if ($issue->isEditable() && $issue->canEditPostedBy()): ?>
-                        <div class="dropdown-container">
+                        <a href="javascript:void(0);" class="button secondary dropper" title="<?php echo __('Click to change owner'); ?>"><?= fa_image_tag('angle-down'); ?></a>
+                        <div class="dropdown-container from-left">
                             <?php include_component('main/identifiableselector', [
                                 'html_id'             => 'posted_by_change',
                                 'header'             => __('Change poster'),
