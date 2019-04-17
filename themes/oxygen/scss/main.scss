@@ -4248,11 +4248,6 @@ input.padded {
   display: block;
 }
 
-.project_header_right .active, .milestone_box .header .dropper.active, #project_planning_action_strip .dropper.active, #report_form .reportissue_additional_information_container td.report_issue_help > .dropper.active {
-  box-shadow: 0 0 3px rgba(0, 0, 0, 0.3) inset;
-  border-radius: 2px;
-}
-
 #project_planning_action_strip .more_actions_dropdown {
   margin-top: -1px;
 }
@@ -7069,31 +7064,11 @@ h3 .dropdown_box a, h3 .dropdown_box a:hover {
   float: left;
 }
 
-.planning_container {
-  margin: 0 10px;
-}
-
-.planning_container h3, .project_information_main h3 {
-  font-weight: 600;
-  text-transform: uppercase;
-  color: #888;
-}
-
-.planning_container label {
-  float: left;
-  padding-top: 4px;
-}
-
-.planning_container label, .planning_container input[type="submit"], .planning_container input[type="submit"]:hover {
-  font-size: 0.9em;
-  font-weight: 600;
-}
-
-.planning_container .milestone_box.unavailable {
+.milestone_box.unavailable {
   display: none;
 }
 
-.planning_container.show_unavailable .milestone_box.unavailable, #project_planning.milestone-sort .milestone_box.unavailable {
+.show_unavailable .milestone_box.unavailable, .milestone-sort .milestone_box.unavailable {
   display: block;
 }
 

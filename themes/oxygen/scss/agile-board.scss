@@ -1,3 +1,19 @@
+.boards-container {
+  .fancydropdown-container {
+    .fancydropdown {
+      background: rgb(255, 255, 255);
+      border-color: rgba(200, 200, 200, .3);
+      &:hover {
+        border-color: #0C8990;
+        cursor: pointer;
+      }
+      &.active {
+        border-color: #0C8990;
+      }
+    }
+  }
+}
+
 .project-boards-list-container {
   padding: 1em;
 
@@ -21,7 +37,7 @@
     align-items: center;
     justify-content: flex-start;
     margin: 0;
-    font-size: 1rem;
+    font-size: .9rem;
 
     .board {
       margin: 0 .35rem .35rem 0;

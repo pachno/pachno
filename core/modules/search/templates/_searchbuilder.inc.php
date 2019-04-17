@@ -3,7 +3,7 @@
     $pachno_response->addJavascript('calendarview');
 
 ?>
-<div id="search-builder">
+<div id="search-builder" class="top-search-filters-container">
     <form accept-charset="<?= \pachno\core\framework\Context::getI18n()->getCharset(); ?>" action="<?= (\pachno\core\framework\Context::isProjectContext()) ? make_url('project_search_paginated', array('project_key' => \pachno\core\framework\Context::getCurrentProject()->getKey())) : make_url('search_paginated'); ?>" method="get" id="find_issues_form" <?php if ($show_results): ?>data-results-loaded<?php endif; ?> <?php if ($search_object->getID()): ?>data-is-saved<?php endif; ?> data-history-url="<?= (\pachno\core\framework\Context::isProjectContext()) ? make_url('project_issues', array('project_key' => \pachno\core\framework\Context::getCurrentProject()->getKey())) : make_url('search'); ?>" data-dynamic-callback-url="<?= make_url('search_filter_getdynamicchoices'); ?>" onsubmit="Pachno.Search.liveUpdate(true);return false;">
         <div class="search-and-filters-strip">
             <div class="search-strip">
@@ -134,8 +134,8 @@
                     </button>
                 <?php endif; ?>
             </div>
-            <div class="filters">
-                <div id="search-filters">
+            <div class="filters-strip">
+                <div id="search-filters" class="filters">
                     <?php include_component('search/interactivefilter', array('filter' => $search_object->getFilter('issuetype'))); ?>
                     <?php include_component('search/interactivefilter', array('filter' => $search_object->getFilter('status'))); ?>
                     <?php include_component('search/interactivefilter', array('filter' => $search_object->getFilter('category'))); ?>
@@ -151,7 +151,7 @@
                         <?php endif; ?>
                     <?php endforeach; ?>
                 </div>
-                <div class="dropper-container" id="add-search-filter-button">
+                <div class="dropper-container add-item-button" id="add-search-filter-button">
                     <a href="javascript:void(0)" class="button icon secondary dropper" id="interactive_plus_button"><?= fa_image_tag('plus'); ?></a>
                     <div class="dropdown-container list-mode columns <?= (count($nondatecustomfields)) ? 'three-columns' : 'two-columns'; ?>">
                         <div class="column">

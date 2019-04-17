@@ -89,7 +89,7 @@
   }
 }
 
-#search-builder {
+.top-search-filters-container {
   flex: 0 0 auto;
   display: flex;
   width: 100%;
@@ -137,7 +137,7 @@
       }
     }
 
-    .filters {
+    .filters-strip {
       flex: 0 0 auto;
       display: flex;
       width: 100%;
@@ -146,12 +146,12 @@
       justify-content: flex-start;
       margin-top: .35rem;
 
-      #add-search-filter-button {
+      .add-item-button {
         align-self: flex-start;
         margin-top: .35rem;
       }
 
-      #search-filters {
+      .filters {
         flex: 1 1 auto;
         display: flex;
         flex-wrap: wrap;
