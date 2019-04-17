@@ -1,0 +1,118 @@
+.project-boards-list-container {
+  padding: 1em;
+
+  h3 {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: 100%;
+    box-sizing: border-box;
+
+    .name {
+      flex: 1 1 auto;
+    }
+  }
+
+  .project-boards-list {
+    padding: 10px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-start;
+    margin: 0;
+    font-size: 1rem;
+
+    .board {
+      margin: 0 .35rem .35rem 0;
+      background: #FFF;
+      border: none;
+      box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.16), 0 0 1px 0 rgba(0, 0, 0, 0.16);
+      border-radius: 4px;
+      display: flex;
+      flex-direction: row;
+      position: relative;
+      width: 350px;
+      align-items: stretch;
+      transform: translateY(0);
+      transition: box-shadow .25s ease-in-out, transform .25s ease-in-out;
+      padding: 1em;
+      color: #141823;
+
+      &:hover {
+        border: none;
+        transform: translateY(-2px);
+        box-shadow: 0 3px 5px 0 rgba(27, 27, 36, .2);
+      }
+
+      .image-container {
+        flex: 0 0 40px;
+        margin-right: 1em;
+
+        img {
+          width: 40px;
+        }
+      }
+
+      .details {
+        flex: 1 1 auto;
+        align-items: flex-start;
+
+        .name {
+          font-size: 1.3em;
+          font-weight: 600;
+        }
+
+        .description {
+        }
+      }
+
+      .actions-container {
+        flex: 0 0 auto;
+        align-items: flex-start;
+      }
+    }
+  }
+}
+
+.project-boards-list ul li.add_board_container {
+  width: 80px;
+  padding: 12px;
+  background-color: rgba(200, 200, 200, 0.1);
+  font-size: 3.2em;
+  font-weight: 300;
+  color: rgba(100, 100, 100, 0.5);
+  text-align: center;
+  vertical-align: middle;
+  border: 1px dotted rgba(100, 100, 100, 0.5);
+  box-shadow: none;
+}
+
+.project-boards-list ul li.add_board_container:hover {
+  background-color: rgba(200, 200, 200, 0.2);
+  border-color: rgba(100, 100, 100, 0.6);
+  color: rgba(100, 100, 100, 0.7);
+  cursor: pointer;
+}
+
+.project-boards-list ul li .board_details {
+  display: inline-block;
+  width: 235px;
+  vertical-align: top;
+}
+
+.project-boards-list ul li .board_name {
+  font-size: 1.2em;
+  font-weight: 600;
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.project-boards-list ul li .board_description {
+  font-size: 1em;
+  font-weight: 300;
+  color: #888;
+  font-style: italic;
+}

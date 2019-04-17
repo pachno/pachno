@@ -1716,7 +1716,7 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
         };
 
         Pachno.Main.Comment.showPost = function () {
-            $$('.comment_editor').each(Element.hide);
+            $$('.comment-editor').each(Element.hide);
             $('comment_add_button').hide();
             $('comment_add').show();
             $('comment_bodybox').focus();
@@ -3587,7 +3587,7 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
                 success: {
                     enable: 'agileboard_save_button',
                     callback: function (json) {
-                        if ($('boards_list_container')) {
+                        if ($('boards-list-container')) {
                             if ($('agileboard_' + json.id)) {
                                 $('agileboard_' + json.id).replace(json.component);
                             } else {

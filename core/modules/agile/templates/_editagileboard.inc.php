@@ -5,7 +5,7 @@
 ?>
 <div class="backdrop_box large edit_agileboard sectioned">
     <div class="backdrop_detail_header">
-        <span><?php echo ($board->getId()) ? __('Edit agile board') : __('Add agile board'); ?></span>
+        <span><?php echo ($board->getId()) ? __('Edit board') : __('Create board'); ?></span>
         <a href="javascript:void(0);" class="closer" onclick="Pachno.Main.Helpers.Backdrop.reset();"><?= fa_image_tag('times'); ?></a>
     </div>
     <div id="backdrop_detail_content" class="backdrop_detail_content">

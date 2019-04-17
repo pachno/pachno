@@ -34,6 +34,11 @@
     &.from-left {
       right: auto;
       left: 0;
+
+      &.pop-out {
+        left: 20px;
+        top: 0;
+      }
     }
 
     &.from-center {
@@ -66,6 +71,21 @@
       overflow-x: hidden;
       min-width: 200px;
       max-width: 300px;
+
+      .header-banner {
+        .header-name {
+          padding: .3em;
+
+          .image-container {
+            padding-right: .3em;
+            margin-right: 0;
+          }
+
+          .name-container {
+            padding: .3em 0;
+          }
+        }
+      }
     }
   }
 

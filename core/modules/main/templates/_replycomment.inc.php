@@ -1,4 +1,4 @@
-<div id="comment_reply_<?= $comment->getID(); ?>" class="comment_reply comment_editor editor_container">
+<div id="comment_reply_<?= $comment->getID(); ?>" class="comment-reply comment-editor editor_container">
     <form id="comment_reply_form_<?= $comment->getID(); ?>" accept-charset="<?= mb_strtoupper(\pachno\core\framework\Context::getI18n()->getCharset()); ?>" action="<?= make_url('comment_add', array('comment_applies_id' => $comment->getTargetID(), 'comment_applies_type' => $comment->getTargetType(), 'comment_module' => $comment->getModuleName())); ?>" method="post" onsubmit="Pachno.Main.Comment.reply('<?= make_url('comment_add', array('comment_applies_id' => $comment->getTargetID(), 'comment_applies_type' => $comment->getTargetType(), 'comment_module' => $comment->getModuleName())); ?>', <?= $comment->getID(); ?>);return false;">
         <input type="hidden" name="reply_to_comment_id" value="<?= $comment->getID(); ?>" />
         <label for="comment_reply_visibility_<?= $comment->getID(); ?>"><?= __('Comment visibility'); ?> <span class="faded_out">(<?= __('whether to hide this comment for "regular users"'); ?>)</span></label><br />

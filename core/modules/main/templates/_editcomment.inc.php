@@ -1,4 +1,4 @@
-<div id="comment_edit_<?= $comment->getID(); ?>" class="comment_edit comment_editor editor_container">
+<div id="comment_edit_<?= $comment->getID(); ?>" class="comment-edit comment-editor editor_container">
     <form id="comment_edit_form_<?= $comment->getID(); ?>" class="syntax_<?= \pachno\core\framework\Settings::getSyntaxClass($comment->getSyntax()); ?>" action="<?= make_url('comment_update', array('comment_id' => $comment->getID())); ?>" method="post" onSubmit="Pachno.Main.Comment.update('<?= make_url('comment_update', array('comment_id' => $comment->getID())); ?>', '<?= $comment->getID(); ?>'); return false;">
         <input type="hidden" name="comment_id" value="<?= $comment->getID(); ?>" />
         <label for="comment_visibility"><?= __('Comment visibility'); ?> <span class="faded_out">(<?= __('whether to hide this comment for "regular users"'); ?>)</span></label><br />

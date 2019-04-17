@@ -212,13 +212,17 @@
   box-sizing: border-box;
 
   h5 {
-    margin: 0 0 0 2rem;
+    margin: 2rem 0 0 2rem;
     padding: 6px;
     font-size: 1.2em;
     font-weight: 600;
     text-transform: uppercase;
     border: none;
     background-color: transparent;
+
+    &:first-child {
+      margin-top: 0;
+    }
   }
 
   .results_container {
@@ -304,7 +308,16 @@
       &.info-icons {
         flex: 0 0 40px;
         display: flex;
-        justify-content: center;
+        justify-content: flex-end;
+        align-items: center;
+
+        .fas,
+        .far {
+          + .fas,
+          + .far {
+            margin-left: -.2em;
+          }
+        }
       }
 
       &.sca_action_selector,
@@ -317,6 +330,10 @@
       &.sc_title_container,
       &.result_issue {
         flex: 1 1 auto;
+        min-width: 300px;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
       }
 
       &.sc_actions {

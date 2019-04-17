@@ -65,6 +65,13 @@
             </div>
         </div>
     </div>
+    <?php if ($issue->isClosed()): ?>
+        <div class="is-closed">
+            <?= fa_image_tag('check'); ?>
+            <span class="name"><?= __('Done'); ?></span>
+            <span class="tooltip from-above"><?= __('This issue is marked as done / closed'); ?></span>
+        </div>
+    <?php endif; ?>
     <div id="status-field" class="dropper-container status-field">
         <div class="status-badge dropper" style="
             background-color: <?php echo ($issue->getStatus() instanceof \pachno\core\entities\Datatype) ? $issue->getStatus()->getColor() : '#FFF'; ?>;
@@ -93,26 +100,18 @@
             </div>
         <?php endif; ?>
     </div>
-    <div style="<?php if (!$issue->isVotesVisible()): ?> display: none;<?php endif; ?>" id="votes_additional"<?php if ($issue->isVotesVisible()): ?> class="visible"<?php endif; ?>>
-        <div id="viewissue_votes">
-            <div id="vote_down">
-                <?php $vote_down_options = ($issue->getProject()->isArchived() || $issue->hasUserVoted($pachno_user, false)) ? 'display: none;' : ''; ?>
-                <?php $vote_down_faded_options = ($vote_down_options == '') ? 'display: none;' : ''; ?>
-                <?php echo javascript_link_tag(fa_image_tag('minus'), array('onclick' => "Pachno.Issues.voteDown('".make_url('issue_vote', array('issue_id' => $issue->getID(), 'vote' => 'down'))."');", 'id' => 'vote_down_link', 'class' => 'image', 'style' => $vote_down_options)); ?>
-                <?php echo image_tag('spinning_16.gif', array('id' => 'vote_down_indicator', 'style' => 'display: none;')); ?>
-                <?php echo image_tag('action_vote_minus_faded.png', array('id' => 'vote_down_faded', 'style' => $vote_down_faded_options)); ?>
-            </div>
-            <div class="votes">
-                <div id="issue_votes"><?php echo $issue->getVotes(); ?></div>
-                <div class="votes_header"><?php echo __('Votes'); ?></div>
-            </div>
-            <div id="vote_up">
-                <?php $vote_up_options = ($issue->getProject()->isArchived() || $issue->hasUserVoted($pachno_user, true)) ? 'display: none;' : ''; ?>
-                <?php $vote_up_faded_options = ($vote_up_options == '') ? 'display: none;' : ''; ?>
-                <?php echo javascript_link_tag(fa_image_tag('plus'), array('onclick' => "Pachno.Issues.voteUp('".make_url('issue_vote', array('issue_id' => $issue->getID(), 'vote' => 'up'))."');", 'id' => 'vote_up_link', 'class' => 'image', 'style' => $vote_up_options)); ?>
-                <?php echo image_tag('spinning_16.gif', array('id' => 'vote_up_indicator', 'style' => 'display: none;')); ?>
-                <?php echo image_tag('action_vote_plus_faded.png', array('id' => 'vote_up_faded', 'style' => $vote_up_faded_options)); ?>
-            </div>
+    <div style="<?php if (!$issue->isVotesVisible()): ?> display: none;<?php endif; ?>" id="votes_additional" class="vote-container <?php if ($issue->isVotesVisible()): ?>visible<?php endif; ?> tooltip-container">
+        <a id="vote_down_link" href="javascript:void(0);" onclick="Pachno.Issues.voteDown('<?= make_url('issue_vote', array('issue_id' => $issue->getID(), 'vote' => 'down')); ?>');" style="<?= ($issue->getProject()->isArchived() || !$issue->hasUserVoted($pachno_user, true)) ? 'display: none;' : ''; ?>">
+            <?php echo fa_image_tag('spinner', ['id' => 'vote_down_indicator', 'style' => 'display: none;', 'class' => 'fa-spin']); ?>
+            <?php echo fa_image_tag('vote-yea'); ?>
+        </a>
+        <a id="vote_up_link" href="javascript:void(0);" onclick="Pachno.Issues.voteUp('<?= make_url('issue_vote', array('issue_id' => $issue->getID(), 'vote' => 'up')); ?>');" style="<?= ($issue->getProject()->isArchived() || $issue->hasUserVoted($pachno_user, true)) ? 'display: none;' : ''; ?>">
+            <?php echo fa_image_tag('spinner', ['id' => 'vote_up_indicator', 'style' => 'display: none;', 'class' => 'fa-spin']); ?>
+            <?php echo fa_image_tag('vote-yea'); ?>
+        </a>
+        <div class="vote-count"><?php echo $issue->getVotes(); ?></div>
+        <div class="tooltip from-right">
+            <?= __('Click to toggle a vote for this issue'); ?>
         </div>
     </div>
     <div style="<?php if (!$issue->isUserPainVisible()): ?> display: none;<?php endif; ?>" id="user_pain_additional"<?php if ($issue->isVotesVisible()): ?> class="visible"<?php endif; ?>>

@@ -20,6 +20,9 @@
     <nav class="sidebar">
         <?php include_component('main/menulinks', array('links' => $links, 'target_type' => 'main_menu', 'target_id' => 0, 'title' => __('Quick links'))); ?>
         <?php \pachno\core\framework\Event::createNew('core', 'index_left')->trigger(); ?>
+        <?php if (!$pachno_user->isGuest()): ?>
+            <?php include_component('main/onboarding_invite'); ?>
+        <?php endif; ?>
     </nav>
     <div class="main_area frontpage">
         <?php \pachno\core\framework\Event::createNew('core', 'index_right_top')->trigger(); ?>

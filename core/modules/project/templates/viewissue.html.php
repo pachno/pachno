@@ -48,7 +48,7 @@
                     </div>
                     <?php \pachno\core\framework\Event::createNew('core', 'viewissue::afterWorkflowButtons', $issue)->trigger(); ?>
                     <div class="issue-details">
-                        <fieldset id="description_field"<?php if (!$issue->isDescriptionVisible()): ?> style="display: none;"<?php endif; ?> class="viewissue_description<?php if ($issue->isDescriptionChanged()): ?> issue_detail_changed<?php endif; ?><?php if (!$issue->isDescriptionMerged()): ?> issue_detail_unmerged<?php endif; ?> hoverable">
+                        <div id="description_field"<?php if (!$issue->isDescriptionVisible()): ?> style="display: none;"<?php endif; ?> class="fields-list-container viewissue_description">
                             <div class="header" id="description_header">
                                 <span class="icon"><?= fa_image_tag('align-left'); ?></span>
                                 <span class="name"><?php echo __('Description'); ?></span>
@@ -66,8 +66,8 @@
                                     </div>
                                 </form>
                             <?php endif; ?>
-                        </fieldset>
-                        <fieldset id="reproduction_steps_field"<?php if (!$issue->isReproductionStepsVisible()): ?> style="display: none;"<?php endif; ?> class="hoverable<?php if ($issue->isReproduction_StepsChanged()): ?> issue_detail_changed<?php endif; ?><?php if (!$issue->isReproduction_StepsMerged()): ?> issue_detail_unmerged<?php endif; ?>">
+                        </div>
+                        <div id="reproduction_steps_field"<?php if (!$issue->isReproductionStepsVisible()): ?> style="display: none;"<?php endif; ?> class="fields-list-container">
                             <div class="header" id="reproduction_steps_header">
                                 <?php if (false && $issue->isEditable() && $issue->canEditReproductionSteps()): ?>
                                     <?php echo fa_image_tag('edit', ['class' => 'dropdown', 'id' => 'reproduction_steps_edit', 'onclick' => "$('reproduction_steps_change').show(); $('reproduction_steps_name').hide(); $('no_reproduction_steps').hide();", 'title' => __('Click here to edit reproduction steps')]); ?>
@@ -95,8 +95,8 @@
                                     <div id="reproduction_steps_change_error" class="error_message" style="display: none;"></div>
                                 </div>
                             <?php endif; ?>
-                        </fieldset>
-                        <fieldset id="viewissue_attached_information_container">
+                        </div>
+                        <div id="viewissue_attached_information_container" class="fields-list-container">
                             <div class="header">
                                 <span class="icon"><?= fa_image_tag('paperclip'); ?></span>
                                 <span class="name"><?php echo __('Attachments'); ?><span id="viewissue_uploaded_attachments_count" class="count-badge"><?= (count($issue->getLinks()) + count($issue->getFiles())); ?></span></span>
@@ -120,8 +120,8 @@
                                     <?php endforeach; ?>
                                 </ul>
                             </div>
-                        </fieldset>
-                        <fieldset id="viewissue_related_information_container">
+                        </div>
+                        <div id="viewissue_related_information_container" class="fields-list-container <?php if (!$issue->countChildIssues()) echo 'not-visible'; ?>">
                             <div class="header">
                                 <span class="icon"><?= fa_image_tag('list-alt', [], 'far'); ?></span>
                                 <span class="name"><?= __('Child issues'); ?><span id="viewissue_related_issues_count" class="count-badge"><?= $issue->countChildIssues(); ?></span></span>
@@ -129,7 +129,7 @@
                             <div id="viewissue_related_information" class="related-issues content">
                                 <?php include_component('main/relatedissues', array('issue' => $issue)); ?>
                             </div>
-                        </fieldset>
+                        </div>
                         <?php include_component('main/issuemaincustomfields', ['issue' => $issue]); ?>
                         <?php /*
                         <fieldset class="todos" id="viewissue_todos_container">
@@ -157,11 +157,8 @@
                          */ ?>
                     </div>
                     <?php \pachno\core\framework\Event::createNew('core', 'viewissue::afterMainDetails', $issue)->trigger(); ?>
+                    <?php /*
                     <div class="fancytabs" id="viewissue_activity">
-                        <a id="tab_viewissue_comments" class="tab selected" href="javascript:void(0);" onclick="Pachno.Main.Helpers.tabSwitcher('tab_viewissue_comments', 'viewissue_activity');">
-                            <?= fa_image_tag('comments', ['class' => 'icon']); ?>
-                            <span class="name"><?= __('Comments %count', ['%count' => '<span id="viewissue_comment_count" class="count-badge">' . $issue->countComments() . '</span>']); ?></span>
-                        </a>
                         <?php \pachno\core\framework\Event::createNew('core', 'viewissue_before_tabs', $issue)->trigger(); ?>
                         <a id="tab_viewissue_history" class="tab" href="javascript:void(0);" onclick="Pachno.Main.Helpers.tabSwitcher('tab_viewissue_history', 'viewissue_activity');">
                             <?= fa_image_tag('history', ['class' => 'icon']); ?>
@@ -169,31 +166,9 @@
                         </a>
                     </div>
                     <div id="viewissue_activity_panes" class="fancypanes">
-                        <div id="tab_viewissue_comments_pane">
-                            <fieldset class="comments" id="viewissue_comments_container">
-                                <div class="viewissue_comments_header">
-                                    <div class="dropper_container">
-                                        <?php echo fa_image_tag('spinner', ['class' => 'fa-spin', 'style' => 'display: none;', 'id' => 'comments_loading_indicator']); ?>
-                                        <span class="dropper"><?= fa_image_tag('cog') . __('Options'); ?></span>
-                                        <ul class="more_actions_dropdown dropdown_box popup_box rightie">
-                                            <li><a href="javascript:void(0);" id="comments_show_system_comments_toggle" onclick="$$('#comments_box .system_comment').each(function (elm) { $(elm).toggle(); });"><?php echo __('Toggle system-generated comments'); ?></a></li>
-                                            <li><a href="javascript:void(0);" onclick="Pachno.Main.Comment.toggleOrder('<?= \pachno\core\entities\Comment::TYPE_ISSUE; ?>', '<?= $issue->getID(); ?>');"><?php echo __('Sort comments in opposite direction'); ?></a></li>
-                                        </ul>
-                                    </div>
-                                    <?php if ($pachno_user->canPostComments() && ((\pachno\core\framework\Context::isProjectContext() && !\pachno\core\framework\Context::getCurrentProject()->isArchived()) || !\pachno\core\framework\Context::isProjectContext())): ?>
-                                        <ul class="simple-list button_container" id="add_comment_button_container">
-                                            <li id="comment_add_button"><input class="button first last" type="button" onclick="Pachno.Main.Comment.showPost();" value="<?php echo __('Post comment'); ?>"></li>
-                                        </ul>
-                                    <?php endif; ?>
-                                </div>
-                                <div id="viewissue_comments">
-                                    <?php include_component('main/comments', ['target_id' => $issue->getID(), 'mentionable_target_type' => 'issue', 'target_type' => \pachno\core\entities\Comment::TYPE_ISSUE, 'show_button' => false, 'comment_count_div' => 'viewissue_comment_count', 'save_changes_checked' => $issue->hasUnsavedChanges(), 'issue' => $issue, 'forward_url' => make_url('viewissue', ['project_key' => $issue->getProject()->getKey(), 'issue_no' => $issue->getFormattedIssueNo()], false)]); ?>
-                                </div>
-                            </fieldset>
-                        </div>
                         <?php \pachno\core\framework\Event::createNew('core', 'viewissue_after_tabs', $issue)->trigger(); ?>
                         <div id="tab_viewissue_history_pane" style="display:none;">
-                            <fieldset class="viewissue_history">
+                            <div class="viewissue_history">
                                 <div id="viewissue_log_items">
                                     <ul>
                                         <?php $previous_time = null; ?>
@@ -205,12 +180,40 @@
                                         <?php endforeach; ?>
                                     </ul>
                                 </div>
-                            </fieldset>
+                            </div>
                         </div>
-                    </div>
+                    </div> */ ?>
                 </div>
                 <div class="issue-fields">
                     <?php include_component('main/viewissuefields', ['issue' => $issue]); ?>
+                </div>
+            </div>
+            <div class="comments" id="viewissue_comments_container">
+                <div class="comments-header-strip">
+                    <div class="dropper-container">
+                        <button class="dropper secondary icon">
+                            <?php echo fa_image_tag('spinner', ['class' => 'fa-spin', 'style' => 'display: none;', 'id' => 'comments_loading_indicator']); ?>
+                            <?= fa_image_tag('cog'); ?>
+                        </button>
+                        <div class="dropdown-container">
+                            <div class="list-mode">
+                                <a href="javascript:void(0);" class="list-item" id="comments_show_system_comments_toggle" onclick="$$('#comments_box .system_comment').each(function (elm) { $(elm).toggle(); });">
+                                    <span class="icon"><?= fa_image_tag('comment-slash'); ?></span>
+                                    <span class="name"><?php echo __('Toggle system-generated comments'); ?></span>
+                                </a>
+                                <a href="javascript:void(0);" class="list-item" onclick="Pachno.Main.Comment.toggleOrder('<?= \pachno\core\entities\Comment::TYPE_ISSUE; ?>', '<?= $issue->getID(); ?>');">
+                                    <span class="icon"><?= fa_image_tag('arrows-alt-v'); ?></span>
+                                    <span class="name"><?php echo __('Sort comments in opposite direction'); ?></span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <?php if ($pachno_user->canPostComments() && ((\pachno\core\framework\Context::isProjectContext() && !\pachno\core\framework\Context::getCurrentProject()->isArchived()) || !\pachno\core\framework\Context::isProjectContext())): ?>
+                        <button class="button primary" id="comment_add_button" onclick="Pachno.Main.Comment.showPost();"><?php echo __('Post comment'); ?></button>
+                    <?php endif; ?>
+                </div>
+                <div id="viewissue_comments">
+                    <?php include_component('main/comments', ['target_id' => $issue->getID(), 'mentionable_target_type' => 'issue', 'target_type' => \pachno\core\entities\Comment::TYPE_ISSUE, 'show_button' => false, 'comment_count_div' => 'viewissue_comment_count', 'save_changes_checked' => $issue->hasUnsavedChanges(), 'issue' => $issue, 'forward_url' => make_url('viewissue', ['project_key' => $issue->getProject()->getKey(), 'issue_no' => $issue->getFormattedIssueNo()], false)]); ?>
                 </div>
             </div>
         </div>

@@ -656,12 +656,12 @@
             // offset the timestamp properly
             if (!$skipusertimestamp)
             {
-                $tz = \pachno\core\framework\Context::getUser()->getTimezone();
-                $tstamp = $tz->getOffset(new DateTime(null, \pachno\core\framework\Settings::getServerTimezone()));
+                $tz = Context::getUser()->getTimezone();
+                $tstamp = $tz->getOffset(new DateTime(null, Settings::getServerTimezone()));
             }
             else
             {
-                $tstamp = \pachno\core\framework\Settings::getServerTimezone()->getOffset(new DateTime('GMT'));
+                $tstamp = Settings::getServerTimezone()->getOffset(new DateTime('GMT'));
             }
             return $tstamp;
         }

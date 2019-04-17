@@ -18,23 +18,24 @@
   height: auto;
   padding: 10px;
   z-index: 200000;
-}
 
-.tooltip.from-above {
-  bottom: auto;
-  top: 35px;
-}
+  &.from-above {
+    bottom: auto;
+    top: 35px;
+  }
 
-.article .title_left_images .tooltip.from-above {
-  top: 35px;
-  left: -4px;
-}
+  &.from-right {
+    left: auto;
+    right: 0;
+  }
 
-.tooltip.big {
-  width: 450px;
+  &.big {
+    width: 450px;
+  }
 }
 
 *:hover > .tooltip, *:active > .tooltip, input:focus + .tooltip {
   opacity: 1;
   transform: scaleY(1);
+  z-index: 999999;
 }

@@ -30,7 +30,6 @@
 }
 
 .viewissue-container {
-
   .header-container {
     display: flex;
     flex-direction: row;
@@ -91,9 +90,71 @@
       }
     }
 
+    .is-closed {
+      color: rgb(150, 150, 150);
+      margin: 0 1em 0 0;
+      display: flex;
+      align-items: center;
+      height: 100%;
+      position: relative;
+      font-size: 1.1em;
+
+      .fas {
+        margin-right: .35em;
+      }
+
+      .tooltip {
+        margin-top: 2em;
+      }
+    }
+
     .status-field > .status-badge {
       font-size: 1.2em;
       padding: .4em .8em;
+    }
+
+    .vote-container {
+      flex: 0 0 auto;
+      padding: 0 .4em;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      line-height: 1.1em;
+      font-size: 1rem;
+
+      a,
+      a:hover {
+        border: none;
+        padding: .35em;
+        border-radius: 4px;
+      }
+
+      #vote_down_link {
+        color: #0c8990;
+
+        &:hover {
+          background-color: rgba(225, 225, 225, .25);
+        }
+      }
+
+      #vote_up_link {
+        color: rgb(150, 150, 150);
+
+        &:hover {
+          background-color: rgba(225, 225, 225, .25);
+        }
+      }
+
+      .fas,
+      .far {
+        font-size: 2em;
+      }
+
+      .vote-count {
+        font-weight: 600;
+        color: rgb(150, 150, 150);
+      }
     }
   }
 
@@ -101,22 +162,33 @@
     display: flex;
     flex: 0 0 auto;
     max-width: 1650px;
-    margin: 1rem;
+    margin: 0 1rem;
     flex-direction: row;
     box-sizing: border-box;
     align-items: flex-start;
     background: #FFF;
-    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 1px 5px 0 rgba(0, 0, 0, 0.12);
+    //box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 1px 5px 0 rgba(0, 0, 0, 0.12);
+    box-shadow: 0 1px 3px 0 rgba(27, 27, 36, .2);
     border-radius: 4px;
     padding: 10px;
 
-    fieldset {
+    .fields-list-container {
       border: none;
       padding: 0;
       margin: 0;
       flex: 0 0 auto;
       display: flex;
       flex-direction: column;
+      opacity: 1;
+      transform-origin: top center;
+      transition: transform .25s ease-in-out, opacity .25s ease-in-out, height .25s ease-in-out;
+      height: auto;
+
+      &.not-visible {
+        opacity: 0;
+        transform: scaleX(0);
+        height: 1px;
+      }
 
       > .header {
         border: none;
@@ -202,6 +274,7 @@
       overflow: visible;
       box-sizing: border-box;
       display: flex;
+      height: 100%;
       flex-direction: column;
 
       .card-header {
@@ -275,6 +348,10 @@
                 align-items: center;
                 height: 100%;
                 position: relative;
+
+                .fas, far {
+                  margin-right: .35em;
+                }
               }
             }
 
@@ -286,7 +363,7 @@
       }
 
       .issue-details {
-        flex: 0 0 auto;
+        flex: 1 1 auto;
         display: flex;
         flex-direction: column;
 
@@ -349,7 +426,7 @@
       box-shadow: 4px 0 7px -8px rgba(0, 0, 0, .3) inset;
       border-radius: 0;
 
-      fieldset {
+      .fields-list-container {
         > .header {
 
           .name {
@@ -363,7 +440,7 @@
           }
         }
 
-        & + fieldset {
+        & + .fields-list-container:not(.not-visible) {
           margin-top: 2em;
         }
       }
@@ -390,6 +467,10 @@
           flex: 1 1 auto;
           font-weight: 300;
 
+          .no-value {
+            color: rgb(200, 200, 200);
+          }
+
           .value-container {
             display: flex;
             flex-direction: row;
@@ -404,9 +485,19 @@
             &.dropper {
               padding: .6em;
 
+              .dropdown-indicator {
+                opacity: 0;
+                color: rgb(100, 100, 100);
+                transition: opacity .25s ease-in-out;
+              }
+
               &:hover,
               &.active {
                 border-color: rgba(200, 200, 200, .3);
+
+                .dropdown-indicator {
+                  opacity: 1;
+                }
               }
             }
 
@@ -424,6 +515,7 @@
 
     .fancytabs {
       flex: 0 0 auto;
+      align-self: flex-end;
     }
 
     .fancypanes {
@@ -431,5 +523,11 @@
       flex-direction: column;
       flex: 1 1 auto;
     }
+  }
+
+  .comments {
+    width: calc(100% - 2rem);
+    max-width: 1650px;
+    margin: 0 1rem 3rem 1rem;
   }
 }

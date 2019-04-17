@@ -1,7 +1,12 @@
     <?php if ($num_unread + $num_read == 0 && ! $filter_first_notification): ?>
-        <li class="disabled no-notifications">
-            <?= fa_image_tag('sun'); ?>
-            <?= __('You have no notifications'); ?>
+        <li class="onboarding">
+            <div class="image-container">
+                <?= image_tag('/unthemed/no-notifications.png', [], true); ?>
+            </div>
+            <div class="helper-text">
+                <?= __('No news is good news'); ?><br>
+                <?= __('You will be notified when something happens'); ?>
+            </div>
         </li>
     <?php else: ?>
         <?php foreach ($notifications as $notification): ?>

@@ -48,7 +48,7 @@
         </a>
         <div class="separator"></div>
         <?php if (count($pachno_user->getFriends()) == 0): ?>
-            <div class="disabled"><?php echo __("Your friends will appear here"); ?></div>
+            <div class="list-item disabled"><?php echo __("Your friends will appear here"); ?></div>
         <?php else: ?>
             <?php include_component('main/identifiableselectorresults', array('header' => false, 'users' => $pachno_user->getFriends(), 'callback' => $callback, 'team_callback' => ((isset($team_callback)) ? $team_callback : null))); ?>
         <?php endif; ?>

@@ -1,12 +1,23 @@
-<div class="header" style="margin: 2px 0 5px 0; padding: 3px 3px 7px 5px;"><?php echo __('Friends'); ?></div>
+<?php
+
+    /** @var \pachno\core\entities\User[] $friends */
+
+?>
+<div class="header"><?php echo __('Friends'); ?></div>
 <?php if (count($friends) > 0): ?>
     <?php foreach ($friends as $friend): ?>
-        <div style="padding: 5px 0 7px 0; clear: both; font-size: 0.95em;">
-            <div>
-                <?php echo include_component('main/userdropdown', array('user' => $friend)); ?>
-            </div>
+        <div class="list-item">
+            <div class="name"><?php echo include_component('main/userdropdown', array('user' => $friend)); ?></div>
         </div>
     <?php endforeach; ?>
 <?php else: ?>
-    <div class="faded_out" style="font-size: 0.9em; padding: 5px 5px 10px 5px;"><?php echo __("You haven't marked anyone as a friend"); ?></div>
+    <div class="onboarding">
+        <div class="image-container">
+            <?= image_tag('/unthemed/onboarding_friends.png', [], true); ?>
+        </div>
+        <div class="helper-text">
+            <?= __('Got friends?'); ?><br>
+            <?= __('Click their names and add them as friends in Pachno'); ?>
+        </div>
+    </div>
 <?php endif; ?>

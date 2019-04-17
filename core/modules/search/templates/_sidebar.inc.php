@@ -174,6 +174,9 @@ use pachno\core\framework\Context;
             </div>
         <?php endif; ?>
     </div>
+    <?php if (!$pachno_user->isGuest()): ?>
+        <?php include_component('main/onboarding_invite'); ?>
+    <?php endif; ?>
     <div class="collapser list-mode">
         <a class="list-item" href="javascript:void(0);">
             <span class="icon"><?= fa_image_tag('angle-double-left'); ?></span>

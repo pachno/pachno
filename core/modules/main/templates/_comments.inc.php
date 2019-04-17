@@ -23,12 +23,12 @@
             <li id="comment_add_button"><input class="button button-green first last" type="button" onclick="Pachno.Main.Comment.showPost();" value="<?= __('Post comment'); ?>"></li>
         </ul>
     <?php endif; ?>
-    <div id="comment_add" class="comment_add comment_editor" style="<?php if (!(isset($comment_error) && $comment_error)): ?>display: none; <?php endif; ?>margin-top: 5px;">
+    <div id="comment_add" class="comment_add comment-editor" style="<?php if (!(isset($comment_error) && $comment_error)): ?>display: none; <?php endif; ?>margin-top: 5px;">
         <div class="backdrop_detail_header">
             <span><?= __('Create a comment'); ?></span>
             <?= javascript_link_tag(fa_image_tag('times'), ['onclick' => "$('comment_add').hide();$('comment_add_button').show();", 'class' => 'closer']); ?>
         </div>
-        <div class="comment_add_main">
+        <div class="add-comment-container">
             <form id="comment_form" accept-charset="<?= mb_strtoupper(Context::getI18n()->getCharset()); ?>" action="<?= make_url('comment_add', array('comment_applies_id' => $target_id, 'comment_applies_type' => $target_type, 'comment_module' => $module)); ?>" method="post" onSubmit="Pachno.Main.Comment.add('<?= make_url('comment_add', array('comment_applies_id' => $target_id, 'comment_applies_type' => $target_type, 'comment_module' => 'core')); ?>', '<?= $comment_count_div; ?>');return false;">
                 <label for="comment_visibility"><?= __('Comment visibility'); ?> <span class="faded_out">(<?= __('whether to hide this comment for "regular users"'); ?>)</span></label><br />
                 <select class="comment_visibilitybox" id="comment_visibility" name="comment_visibility">
@@ -51,10 +51,15 @@
         </div>
     </div>
 <?php endif; ?>
-<div class="faded_out comments_none" id="comments_none" <?php if ($comment_count != 0): ?>style="display: none;"<?php endif; ?>><?= __('There are no comments'); ?></div>
-<?php if ($target_type == \pachno\core\entities\Comment::TYPE_ISSUE): ?>
-    <div class="initial-placeholder" <?php if ($comment_count == 0): ?>style="display: none;"<?php endif; ?>><span><?= fa_image_tag('check-circle', ['class' => 'icon'], 'far'); ?><span><?= __('Issue created'); ?></span></span></div>
-<?php endif; ?>
+<div class="onboarding" id="comments_none" <?php if ($comment_count != 0): ?>style="display: none;"<?php endif; ?>>
+    <div class="image-container">
+        <?= image_tag('/unthemed/mono/no-comments.png', [], true); ?>
+    </div>
+    <div class="helper-text">
+        <?= __('Expand, collaborate and share'); ?><br>
+        <?= __('Post a comment and get things done'); ?>
+    </div>
+</div>
 <div id="comments_box">
     <?php include_component('main/commentlist', compact('comment_count_div', 'mentionable_target_type', 'target_type', 'target_id', 'issue')); ?>
 </div>

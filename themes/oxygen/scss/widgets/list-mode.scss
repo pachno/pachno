@@ -12,6 +12,10 @@
     display: flex;
     flex-direction: column;
     flex: 0 0 auto;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background-color: #FFF;
 
     .header-name {
       display: flex;
@@ -75,6 +79,22 @@
       }
     }
 
+    .dropper-container {
+      border-left: 1px solid rgba(100, 100, 100, .1);
+
+      .fas,
+      .far {
+        padding: 10px;
+      }
+    }
+
+    &.active {
+      .dropper-container {
+        border-radius: 4px;
+        background-color: rgba(100, 100, 100, .1);
+      }
+    }
+
     &:not(.disabled):hover {
       background-color: rgba(100, 100, 100, .1);
     }
@@ -87,7 +107,13 @@
         color: #FFF;
       }
 
-      .icon {
+      > .icon,
+      > a .icon {
+        color: #FFF;
+      }
+
+      > .name,
+      > a .name {
         color: #FFF;
       }
     }
@@ -97,6 +123,8 @@
         margin-right: .5em;
       }
       span.name {
+        flex: 0 0 auto;
+        max-width: 250px;
         display: flex;
         flex-direction: column;
         font-size: .85em;
@@ -104,9 +132,17 @@
         & .title {
           font-size: 1.2em;
           font-weight: 600;
+          white-space: nowrap;
+          width: 100%;
+          overflow: hidden;
+          text-overflow: ellipsis;
         }
       }
 
+    }
+
+    &.with-pop-out {
+      padding-right: 0;
     }
 
     &.expandable {
@@ -318,6 +354,23 @@
       }
       .name {
         display: none;
+      }
+
+      .dropper-container {
+        .list-item {
+          justify-content: flex-start;
+          padding: 0 7px;
+          font-size: .95em;
+
+          .icon:first-child,
+          .icon:not(:first-child) {
+            display: flex;
+            flex: 0 0 24px;
+          }
+          .name {
+            display: flex;
+          }
+        }
       }
     }
   }

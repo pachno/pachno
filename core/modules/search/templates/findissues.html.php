@@ -53,7 +53,7 @@
 ?>
 <div class="content-with-sidebar">
     <?php if (Context::isProjectContext()): ?>
-        <?php include_component('project/sidebar'); ?>
+        <?php include_component('project/sidebar', ['dashboard' => __('Find issues')]); ?>
     <?php else: ?>
         <?php include_component('search/sidebar', ['hide' => $show_results]); ?>
     <?php endif; ?>

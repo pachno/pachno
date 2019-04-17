@@ -94,8 +94,8 @@ $current_spent_time = $current_estimated_time;
     <?php endif; ?>
     <div class="row <?php if ($issue->isClosed()): ?> closed<?php endif; ?><?php if ($issue->hasUnsavedChanges()): ?> changed<?php endif; ?><?php if ($issue->isBlocking()): ?> blocking<?php endif; ?> priority_<?php echo ($issue->getPriority() instanceof Priority) ? $issue->getPriority()->getValue() : 0; ?>" id="issue_<?php echo $issue->getID(); ?>">
         <div class="column info-icons invisible">
-            <?php if ((bool) rand(0, 1) || $issue->countUserComments()): ?>
-                <?= fa_image_tag('comment-o'); ?>
+            <?php if ($issue->countUserComments()): ?>
+                <?= fa_image_tag('comment', [], 'far'); ?>
             <?php endif; ?>
             <?php if ($issue->countFiles()): ?>
                 <?php echo fa_image_tag('paperclip', array('title' => __('This issue has %num attachments', array('%num' => $issue->countFiles())))); ?>
@@ -125,9 +125,9 @@ $current_spent_time = $current_estimated_time;
         <div class="column sc_assigned_to<?php if (!$issue->isAssigned()): ?> faded_out<?php endif; ?>"<?php if (!in_array('assigned_to', $visible_columns)): ?> style="display: none;"<?php endif; ?>>
             <?php if ($issue->isAssigned()): ?>
                 <?php if ($issue->getAssignee() instanceof User): ?>
-                    <?php echo include_component('main/userdropdown', array('user' => $issue->getAssignee())); ?>
+                    <?php echo include_component('main/userdropdown', ['user' => $issue->getAssignee(), 'size' => 'small']); ?>
                 <?php else: ?>
-                    <?php echo include_component('main/teamdropdown', array('team' => $issue->getAssignee())); ?>
+                    <?php echo include_component('main/teamdropdown', ['team' => $issue->getAssignee(), 'size' => 'small']); ?>
                 <?php endif; ?>
             <?php else: ?>
                 -

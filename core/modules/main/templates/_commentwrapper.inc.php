@@ -12,8 +12,8 @@
 ?>
 <?php $options = (isset($issue)) ? ['issue' => $issue] : []; ?>
 <?php if ($comment->isViewableByUser($pachno_user)): ?>
-    <div class="comment<?php if ($comment->isSystemComment()): ?> system_comment<?php endif; if (!$comment->isPublic()): ?> private_comment<?php endif; ?> syntax_<?= \pachno\core\framework\Settings::getSyntaxClass($comment->getSyntax()); ?>" id="comment_<?= $comment->getID(); ?>">
-        <div id="comment_view_<?= $comment->getID(); ?>" class="comment_main">
+    <div class="comment-container <?php if ($comment->isSystemComment()) echo 'system-comment '; if (!$comment->isPublic()) echo 'private-comment '; ?> syntax_<?= \pachno\core\framework\Settings::getSyntaxClass($comment->getSyntax()); ?>" id="comment_<?= $comment->getID(); ?>">
+        <div id="comment_view_<?= $comment->getID(); ?>" class="comment">
             <?php include_component('main/comment', ['comment' => $comment, 'options' => $options, 'comment_count_div' => $comment_count_div]); ?>
             <div class="comment-replies" id="comment_<?= $comment->getID(); ?>_replies">
                 <?php foreach ($comment->getReplies() as $reply): ?>
@@ -25,7 +25,7 @@
                     <?php include_component('main/replycomment', ['comment' => $comment, 'mentionable_target_type' => isset($mentionable_target_type) ? $mentionable_target_type : $comment->getTargetType()]); ?>
                     <div class="fake-reply">
                         <div class="avatar-container"><?php echo image_tag($pachno_user->getAvatarURL(), ['alt' => ' ', 'class' => 'avatar small'], true); ?></div>
-                        <a href="javascript:void(0);" onclick="$$('.comment_editor').each(function (elm) { elm.removeClassName('active'); });$('comment_reply_<?= $comment->getID(); ?>').addClassName('active');$('comment_reply_bodybox_<?= $comment->getID(); ?>').focus();"><?= __('Reply ...'); ?></a>
+                        <a href="javascript:void(0);" onclick="$$('.comment-editor').each(function (elm) { elm.removeClassName('active'); });$('comment_reply_<?= $comment->getID(); ?>').addClassName('active');$('comment_reply_bodybox_<?= $comment->getID(); ?>').focus();"><?= __('Reply ...'); ?></a>
                     </div>
                 </div>
             <?php endif; ?>

@@ -1,15 +1,17 @@
 <?php
 
+    /** @var \pachno\core\entities\Issue $issue */
+
     if (in_array($field, array('priority'))) $primary = true;
+    $canEditField = "canEdit".ucfirst($field);
 
 ?>
 <li id="<?php echo $field; ?>_field" <?php if (!$info['visible']): ?> style="display: none;"<?php endif; ?>>
     <div class="label" id="<?php echo $field; ?>_header">
         <?php echo $info['title']; ?>
     </div>
-    <div id="<?php echo $field; ?>_content" class="<?php if (isset($info['extra_classes'])) echo $info['extra_classes']; ?> value dropper-container">
-        <?php $canEditField = "canEdit".ucfirst($field); ?>
-        <div class="value-container dropper">
+    <div id="<?php echo $field; ?>_content" class="<?php if (isset($info['extra_classes'])) echo $info['extra_classes']; ?> value <?php if (count($info['choices']) && $issue->$canEditField()): ?>dropper-container<?php endif; ?>">
+        <div class="value-container <?php if (count($info['choices']) && $issue->$canEditField()): ?>dropper<?php endif; ?>">
             <?php if (array_key_exists('url', $info) && $info['url']): ?>
                 <a id="<?php echo $field; ?>_name"<?php if (!$info['name_visible']): ?> style="display: none;"<?php endif; ?> target="_new" href="<?php echo $info['current_url']; ?>"><?php echo $info['name']; ?></a>
             <?php else: ?>
@@ -18,9 +20,9 @@
                     <?php echo __($info['name']); ?>
                 </span>
             <?php endif; ?>
-            <span class="faded_out" id="no_<?php echo $field; ?>"<?php if (!$info['noname_visible']): ?> style="display: none;"<?php endif; ?>><?php echo __('Not determined'); ?></span>
+            <span class="no-value" id="no_<?php echo $field; ?>"<?php if (!$info['noname_visible']): ?> style="display: none;"<?php endif; ?>><?php echo __('Not determined'); ?></span>
             <?php if (array_key_exists('choices', $info) && count($info['choices']) && $issue->$canEditField()): ?>
-                <?php echo fa_image_tag('angle-down', ['dropdown-indicator']); ?>
+                <?php echo fa_image_tag('angle-down', ['class' => 'dropdown-indicator']); ?>
             <?php endif; ?>
         </div>
         <?php if (array_key_exists('choices', $info) && count($info['choices']) && $issue->$canEditField()): ?>
