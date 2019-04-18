@@ -18,7 +18,7 @@
             <?php if ($pachno_user->isGuest()): ?>
                 <?= image_tag('/unthemed/onboarding_login_more_projects.png', [], true); ?>
             <?php else: ?>
-                <?= image_tag('/unthemed/onboarding_no_projects.png', [], true); ?>
+                <?= image_tag('/unthemed/no-projects.png', [], true); ?>
             <?php endif; ?>
         </div>
         <div class="helper-text">

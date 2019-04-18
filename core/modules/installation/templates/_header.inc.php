@@ -307,7 +307,7 @@
     <body>
         <div class="installation_container">
             <div class="header_container">
-                <div class="logo_image_container"><img src="logo_white_192.png" alt="Pachno - Installation"></div>
+                <div class="logo_image_container"><img src="/logo_white_192.png" alt="Pachno - Installation"></div>
                 <div class="logo_name_container">
                     <div class="logo_name">Pachno</div>
                 </div>

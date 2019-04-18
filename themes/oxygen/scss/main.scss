@@ -3380,7 +3380,7 @@ ul.project_list > li {
 .project_overview {
   display: flex;
   flex-direction: column;
-  padding: 1rem;
+  padding: 0 1rem 1rem 1rem;
 }
 
 .client_dashboard .header, .project_overview .header {
