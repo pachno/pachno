@@ -92,6 +92,14 @@
         max-height: 450px;
         overflow-y: auto;
         overflow-x: hidden;
+
+        .list-item {
+          &.multiline {
+            span.name {
+              max-width: none;
+            }
+          }
+        }
       }
 
       &.from-left {
