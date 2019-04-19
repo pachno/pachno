@@ -10673,7 +10673,8 @@ input.icon.secondary:disabled {
     justify-content: flex-start;
     justify-items: flex-start;
     font-size: .9rem;
-    text-transform: none; }
+    text-transform: none;
+    transition: color .25s ease-in-out, background-color .25s ease-in-out; }
     .list-mode .list-item.disabled,
     .list-mode .list-item:hover.disabled {
       color: rgba(0, 0, 0, 0.4); }

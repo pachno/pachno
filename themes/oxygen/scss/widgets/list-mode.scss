@@ -70,6 +70,7 @@
     justify-items: flex-start;
     font-size: .9rem;
     text-transform: none;
+    transition: color .25s ease-in-out, background-color .25s ease-in-out;
 
     &.disabled {
       color: rgba(0, 0, 0, .4);
