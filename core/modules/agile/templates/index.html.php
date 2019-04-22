@@ -19,16 +19,14 @@
                 <?php include_component('agile/boardbox', compact('board')); ?>
             <?php endforeach; ?>
         </div>
-        <?php if (!(count($project_boards) + count($user_boards))): ?>
-            <div class="onboarding">
-                <div class="image-container">
-                    <?= image_tag('/unthemed/no-boards.png', [], true); ?>
-                </div>
-                <div class="helper-text">
-                    <?= __('Understand the full picture'); ?><br>
-                    <?= __('Boards lets you organize issues and tasks the way you want'); ?>
-                </div>
+        <div id="onboarding-no-boards" class="onboarding" style="<?php if (count($project_boards) + count($user_boards)) echo 'display: none;'; ?>">
+            <div class="image-container">
+                <?= image_tag('/unthemed/no-boards.png', [], true); ?>
             </div>
-        <?php endif; ?>
+            <div class="helper-text">
+                <?= __('Understand the full picture'); ?><br>
+                <?= __('Boards lets you organize issues and tasks the way you want'); ?>
+            </div>
+        </div>
     </div>
 </div>

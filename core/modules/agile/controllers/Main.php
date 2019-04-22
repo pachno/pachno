@@ -3,6 +3,7 @@
     namespace pachno\core\modules\agile\controllers;
 
     use pachno\core\entities\Issue;
+    use pachno\core\entities\Milestone;
     use pachno\core\framework,
         pachno\core\helpers;
 
@@ -192,6 +193,9 @@
             {
                 $column = new \pachno\core\entities\BoardColumn();
                 $column->setBoard($board);
+                if ($request->isPost()) {
+                    $column->save();
+                }
             }
 
             $column_id = $column->getColumnOrRandomID();
@@ -291,6 +295,10 @@
                 else
                 {
                     $milestone = \pachno\core\entities\tables\Milestones::getTable()->selectById((int) $request['milestone_id']);
+                    if (!$milestone instanceof Milestone) {
+                        $milestone = new Milestone();
+                        $milestone->setProject($this->board->getProject());
+                    }
                     return $this->renderJSON(array('component' => $this->getComponentHTML('agile/whiteboardcontent', array('board' => $this->board, 'milestone' => $milestone)), 'swimlanes' => $this->board->usesSwimlanes() ? 1 : 0));
                 }
             }
@@ -362,7 +370,7 @@
                             $column->setSortOrder($details['sort_order']);
                             if (array_key_exists('min_workitems', $details)) $column->setMinWorkitems($details['min_workitems']);
                             if (array_key_exists('max_workitems', $details)) $column->setMaxWorkitems($details['max_workitems']);
-                            $column->setStatusIds(explode(',', $details['status_ids']));
+                            $column->setStatusIds($details['status_ids']);
                             $column->save();
                             $saved_columns[$column->getID()] = $column->getID();
                             $cc++;

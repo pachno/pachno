@@ -7184,7 +7184,7 @@ h3 .dropdown_box a, h3 .dropdown_box a:hover {
   color: #AAA;
 }
 
-.whiteboard.edit-mode .fancydropdown, .whiteboard.edit-mode .whiteboard-view-mode, .whiteboard.edit-mode input[type=search] {
+.whiteboard.edit-mode .search-strip .fancydropdown-container, .whiteboard.edit-mode .settings-dropper, .whiteboard.edit-mode .whiteboard-view-mode, .whiteboard.edit-mode input[type=search] {
   display: none;
 }
 
@@ -7193,121 +7193,11 @@ h3 .dropdown_box a, h3 .dropdown_box a:hover {
 }
 
 .whiteboard.edit-mode .edit-mode-buttons, .whiteboard.edit-mode #planning_whiteboard_columns_form {
-  display: block;
+  display: flex;
 }
 
 #planning_whiteboard {
   position: relative;
-}
-
-.whiteboard-columns {
-  width: 100%;
-  height: 100%;
-  table-layout: fixed;
-  padding: 0;
-  margin: 0;
-  box-sizing: border-box;
-}
-
-.whiteboard-columns td,
-.whiteboard-columns .td {
-  width: auto;
-  padding: 0;
-  position: relative;
-  box-sizing: border-box;
-}
-
-.whiteboard-columns td.ui-sortable-placeholder,
-.whiteboard-columns .td.ui-sortable-placeholder {
-  width: 35px;
-  border: 2px dotted #CCC;
-  background-color: rgba(225, 225, 225, 0.3);
-  height: 100%;
-  display: table-cell;
-  visibility: visible;
-}
-
-.whiteboard.edit-mode .edit-column .draggable {
-  position: absolute;
-  right: 35px;
-  top: 10px;
-}
-
-.whiteboard.edit-mode .edit-column .remover {
-  position: absolute;
-  right: 10px;
-  top: 10px;
-}
-
-.whiteboard.edit-mode .edit-column .remover:hover {
-  text-decoration: none;
-  border: none;
-}
-
-.whiteboard.edit-mode .edit-column > label {
-  display: block;
-  font-weight: 600;
-  padding-left: 0;
-}
-
-.whiteboard.edit-mode .edit-column input.column-name {
-  padding: 5px;
-  font-size: 1.1em;
-  width: 100%;
-  box-sizing: border-box;
-}
-
-.whiteboard.edit-mode .edit-column > label.workload-label {
-  display: inline-block;
-  width: 40%;
-  margin: 10px 5% 5px 0;
-}
-
-.whiteboard.edit-mode .edit-column input.column-workload {
-  width: 10%;
-  font-size: 1.1em;
-  padding: 5px;
-  margin-right: 33%;
-}
-
-.whiteboard.edit-mode .edit-column p {
-  margin: 15px 0 10px;
-}
-
-.whiteboard.edit-mode .edit-column .fancyfilter {
-  display: block;
-  max-width: none;
-  margin: 8px 0 0 0;
-}
-
-.whiteboard.edit-mode .edit-column {
-  display: block;
-  float: none;
-  width: auto;
-  background: -webkit-linear-gradient(top, rgba(245, 245, 245, 1) 0%, rgba(255, 255, 255, 1) 25%);
-  background: linear-gradient(to bottom, rgba(245, 245, 245, 1) 0%, rgba(255, 255, 255, 1) 25%);
-  box-sizing: border-box;
-  position: relative;
-  border: 1px solid rgba(200, 200, 200, 0.5);
-  border-bottom: none;
-  padding: 15px;
-  margin: 0 5px;
-  height: 400px;
-}
-
-.whiteboard.edit-mode .edit-column:after {
-  content: '';
-  display: block;
-  width: auto;
-  height: 50px;
-  background: -webkit-linear-gradient(top, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 1) 100%);
-  background: linear-gradient(to bottom, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 1) 100%);
-  position: absolute;
-  box-sizing: border-box;
-  left: -1px;
-  right: -1px;
-  bottom: 0;
-  margin: 0;
 }
 
 .whiteboard-columns thead td,
@@ -7560,48 +7450,8 @@ h3 .dropdown_box a, h3 .dropdown_box a:hover {
   border-right: none;
 }
 
-.whiteboard-issue {
-  position: relative;
-  display: block;
-  padding: 0;
-  margin: 10px;
-  background-color: #FFF;
-  border: 1px solid rgba(100, 100, 100, 0.2);
-  border-radius: 2px;
-  transition: opacity 0.3s ease;
-  opacity: 1;
-  z-index: 1;
-}
-
 .whiteboard-issue.issue-closed {
   opacity: 0.7;
-}
-
-.whiteboard-issue.ui-draggable {
-  cursor: move;
-}
-
-.whiteboard-issue.ui-draggable-dragging,
-.whiteboard-issue.gs-draggable {
-  box-shadow: 0 0 5px rgba(200, 200, 200, 0.3);
-  z-index: 1011 !important;
-}
-
-.whiteboard-issue .issue_header, .whiteboard-issue .issue_header:hover {
-  color: #555;
-  display: block;
-  border: 0;
-  padding: 6px 0 5px 0;
-  margin: 0 5px 0 17px;
-  text-decoration: none;
-  font-size: 1em;
-  font-weight: 600;
-  line-height: 1.6;
-}
-
-.whiteboard-issue .extra {
-  display: none;
-  margin: 0 5px 0 17px;
 }
 
 #whiteboard {

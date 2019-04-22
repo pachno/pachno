@@ -10,7 +10,7 @@
     </div>
     <div id="backdrop_detail_content" class="backdrop_detail_content">
         <div class="form-container">
-            <form accept-charset="<?php echo \pachno\core\framework\Context::getI18n()->getCharset(); ?>" action="<?php echo make_url('agile_board', array('project_key' => $board->getProject()->getKey(), 'board_id' => $board->getID())); ?>" method="post" id="edit_agileboard_form" onsubmit="Pachno.Project.Planning.saveAgileBoard(this);return false;" data-board-id="<?php echo (int) $board->getId(); ?>">
+            <form accept-charset="<?php echo \pachno\core\framework\Context::getI18n()->getCharset(); ?>" action="<?php echo make_url('agile_board', array('project_key' => $board->getProject()->getKey(), 'board_id' => $board->getID())); ?>" method="post" id="edit-agileboard-form" onsubmit="Pachno.Project.Planning.saveAgileBoard(this);return false;" data-board-id="<?php echo (int) $board->getId(); ?>">
                 <input type="hidden" name="is_private" value="<?php echo (int) $board->isPrivate(); ?>">
                 <input type="hidden" name="type" value="<?php echo $board->getType(); ?>" id="agileboard_type_input">
                 <input type="hidden" name="swimlane" value="<?php echo $board->getSwimlaneType(); ?>" id="swimlane_input">

@@ -94,11 +94,20 @@
   display: flex;
   width: 100%;
   flex-direction: row;
+  flex-wrap: wrap;
 
   form {
     display: flex;
     width: 100%;
     flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  > .header {
+    flex: 0 0 auto;
+    width: 100%;
+    padding: 0 0 .5rem 0;
+    text-align: center;
   }
 
   .search-and-filters-strip {

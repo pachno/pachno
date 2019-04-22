@@ -2577,7 +2577,7 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
                 loading: {
                     indicator: 'planning_indicator'
                 },
-                url_method: 'get',
+                url_method: 'post',
                 success: {
                     callback: function(json) {
                         $('planning_whiteboard_columns_form_row').insert({bottom: json.component});
@@ -2592,11 +2592,13 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
             Pachno.Main.Profile.clearPopupsAndButtons();
         };
 
-        Pachno.Project.Planning.Whiteboard.saveColumns = function(form) {
+        Pachno.Project.Planning.Whiteboard.saveColumns = function() {
+            var url = $('planning_whiteboard_columns_form').action;
+
             $('planning_indicator').show();
-            Pachno.Main.Helpers.ajax(form.action, {
+            Pachno.Main.Helpers.ajax(url, {
                 url_method: 'post',
-                form: form,
+                form: 'planning_whiteboard_columns_form',
                 failure: {
                     hide: 'planning_indicator'
                 }
@@ -2682,7 +2684,7 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
             var wb = $('whiteboard');
             wb.removeClassName('initialized');
             var mi = $('selected_milestone_input');
-            var milestone_id = parseInt(mi.dataset.selectedValue);
+            var milestone_id = (mi.dataset.selectedValue) ? parseInt(mi.dataset.selectedValue) : 0;
 
             Pachno.Main.Helpers.ajax(wb.dataset.whiteboardUrl, {
                 additional_params: '&milestone_id=' + milestone_id,
@@ -3571,6 +3573,9 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
                     callback: function (json) {
                         $('agileboard_' + json.board_id).remove();
                         Pachno.Main.Helpers.Dialog.dismiss();
+                        if ($('agileboards').childElements().size() == 0) {
+                            $('onboarding-no-boards').show();
+                        }
                     }
                 }
             });
@@ -3579,21 +3584,18 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
         Pachno.Project.Planning.saveAgileBoard = function (item) {
             var url = item.action;
             Pachno.Main.Helpers.ajax(url, {
-                form: item,
-                loading: {
-                    indicator: 'agileboard_edit_indicator',
-                    disable: 'agileboard_save_button'
-                },
+                form: 'edit-agileboard-form',
                 success: {
-                    enable: 'agileboard_save_button',
                     callback: function (json) {
-                        if ($('boards-list-container')) {
+                        if ($('agileboards')) {
                             if ($('agileboard_' + json.id)) {
                                 $('agileboard_' + json.id).replace(json.component);
                             } else {
-                                var container = (json.private == 1) ? $('add_board_user_link') : $('add_board_project_link');
-                                container.insert({before: json.component});
+                                $('onboarding-no-boards').hide();
+                                var container = $('agileboards');
+                                container.insert(json.component);
                             }
+                            Pachno.clearFormSubmit(jQuery(item));
                             Pachno.Main.Helpers.Backdrop.reset();
                         } else if ($('project_planning') && parseInt($('project_planning').dataset.boardId) == parseInt(json.id) && $('project_planning').hasClassName('whiteboard')) {
                             Pachno.Main.Helpers.Backdrop.reset();

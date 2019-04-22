@@ -1,18 +1,28 @@
 <?php
 
+    /** @var AgileBoard $board */
     use pachno\core\entities\AgileBoard;
     $pachno_response->addBreadcrumb(__('Planning'), make_url('agile_whiteboard', array('project_key' => $selected_project->getKey(), 'board_id' => $board->getId())));
     $pachno_response->setTitle(__('"%project_name" agile whiteboard', array('%project_name' => $selected_project->getName())));
 
 ?>
 <div class="content-with-sidebar">
-    <?php include_component('project/sidebar', ['dashboard' => __('Releases')]); ?>
+    <?php include_component('project/sidebar', ['dashboard' => __('Releases'), 'collapsed' => true]); ?>
     <div id="project_planning" class="project_info_container boards-container whiteboard <?php if ($board->getType() == AgileBoard::TYPE_GENERIC) echo 'type-generic'; if ($board->getType() == AgileBoard::TYPE_SCRUM) echo 'type-scrum'; if ($board->getType() == AgileBoard::TYPE_KANBAN) echo 'type-kanban'; ?>" data-last-refreshed="<?php echo time(); ?>" data-poll-url="<?php echo make_url('agile_poll', array('project_key' => $selected_project->getKey(), 'board_id' => $board->getID(), 'mode' => 'whiteboard')); ?>" data-retrieve-issue-url="<?php echo make_url('agile_retrieveissue', array('project_key' => $selected_project->getKey(), 'board_id' => $board->getID(), 'mode' => 'whiteboard')); ?>" data-board-id="<?php echo $board->getID(); ?>">
         <div class="planning_indicator" id="planning_indicator"><?php echo image_tag('spinning_30.gif'); ?></div>
-        <h3>
-            <span class="name"><?= $board->getName(); ?></span>
-        </h3>
         <div class="top-search-filters-container" id="project_planning_action_strip">
+            <div class="header">
+                <div class="fancytabs">
+                    <a class="tab" href="<?= make_url('agile_board', array('project_key' => $board->getProject()->getKey(), 'board_id' => $board->getID())); ?>">
+                        <span class="icon"><?= fa_image_tag('stream'); ?></span>
+                        <span class="name"><?= ($board->getType() == AgileBoard::TYPE_GENERIC) ? __('Planning') : __('Backlog'); ?></span>
+                    </a>
+                    <a class="tab selected" href="<?= make_url('agile_whiteboard', array('project_key' => $board->getProject()->getKey(), 'board_id' => $board->getID())); ?>">
+                        <span class="icon"><?= fa_image_tag('columns'); ?></span>
+                        <span class="name"><?= __('Whiteboard'); ?></span>
+                    </a>
+                </div>
+            </div>
             <div class="search-and-filters-strip">
                 <div class="search-strip">
                     <div class="fancydropdown-container filter">
@@ -21,6 +31,10 @@
                             <span class="value"></span>
                             <?= fa_image_tag('angle-down', ['class' => 'expander']); ?>
                             <div class="dropdown-container list-mode from-left" id="selected_milestone_input" data-status-url="<?php echo make_url('agile_whiteboardmilestonestatus', array('project_key' => $board->getProject()->getKey(), 'board_id' => $board->getID(), 'mode' => 'getmilestonestatus')); ?>">
+                                <div class="list-item disabled" id="milestone-list-no-milestones" style="<?php if (count($board->getMilestones())) echo 'display: none;'; ?>">
+                                    <span class="icon"><?= fa_image_tag('info-circle'); ?></span>
+                                    <span class="name"><?= __('There are no milestones'); ?></span>
+                                </div>
                                 <?php foreach ($board->getMilestones() as $milestone): ?>
                                     <input type="radio" name="selected_milestone" id="selected_milestone_<?= $milestone->getId(); ?>" class="fancycheckbox" <?php if ($selected_milestone instanceof \pachno\core\entities\Milestone && $selected_milestone->getID() == $milestone->getID()) echo 'checked'; ?>>
                                     <label class="list-item multiline" for="selected_milestone_<?= $milestone->getId(); ?>" data-board-value="<?php echo $board->getID(); ?>" onclick="window.location='#<?php echo $milestone->getID(); ?>';">
@@ -33,7 +47,7 @@
                                                 <span><?php echo __('End date'); ?></span>
                                                 <span><?php echo ($milestone->getScheduledDate()) ? \pachno\core\framework\Context::getI18n()->formatTime($milestone->getScheduledDate(), 22, true, true) : '-'; ?></span>
                                             </span>
-                                        </dl>
+                                        </span>
                                     </label>
                                 <?php endforeach; ?>
                             </div>
@@ -42,18 +56,35 @@
                     <input type="search" class="planning_filter_title" id="planning_filter_title_input" disabled placeholder="<?php echo __('Filter issues by title'); ?>">
                     <?php if ($pachno_user->canManageProject($selected_project)): ?>
                         <div class="edit-mode-buttons">
-                            <?php if (count($board->getColumns())): ?>
-                                <a class="button" href="javascript:void(0);" onclick="Pachno.Project.Planning.Whiteboard.toggleEditMode();"><?php echo __('Cancel'); ?></a>
-                            <?php endif; ?>
-                            <a class="button" href="javascript:void(0);" onclick="Pachno.Project.Planning.Whiteboard.addColumn(this);" data-url="<?php echo make_url('agile_whiteboardcolumn', array('project_key' => $board->getProject()->getKey(), 'board_id' => $board->getID())); ?>"><?php echo __('Add column'); ?></a>
-                            <a class="button" href="javascript:void(0);" onclick="Pachno.Project.Planning.Whiteboard.saveColumns($('planning_whiteboard_columns_form'));"><?php echo __('Save columns'); ?></a>
+                            <a class="button secondary highlighted" href="javascript:void(0);" onclick="Pachno.Project.Planning.Whiteboard.addColumn(this);" data-url="<?php echo make_url('agile_whiteboardcolumn', array('project_key' => $board->getProject()->getKey(), 'board_id' => $board->getID())); ?>">
+                                <?= fa_image_tag('plus', ['class' => 'icon']); ?>
+                                <span class="name"><?php echo __('Add column'); ?></span>
+                            </a>
+                            <a class="button primary" href="javascript:void(0);" onclick="Pachno.Project.Planning.Whiteboard.saveColumns();">
+                                <?= fa_image_tag('save', ['class' => 'icon']); ?>
+                                <span class="name"><?php echo __('Save columns'); ?></span>
+                            </a>
                         </div>
                     <?php endif; ?>
-                    <a class="button secondary icon" href="javascript:void(0);" onclick="$('main_container').toggleClassName('fullscreen');"><?php echo fa_image_tag('arrows-alt'); ?></a>
-                    <div class="dropper-container">
-                        <button class="button secondary icon dropper"><?= fa_image_tag('stream'); ?></button>
+                    <div class="dropper-container settings-dropper">
+                        <button class="button secondary icon dropper"><?= fa_image_tag('cog'); ?></button>
                         <div class="dropdown-container">
                             <div class="list-mode">
+                                <a class="list-item" href="javascript:void(0);" onclick="Pachno.Main.Helpers.Backdrop.show('<?php echo make_url('get_partial_for_backdrop', array('key' => 'agileboard', 'project_id' => $board->getProject()->getID(), 'board_id' => $board->getID())); ?>');" title="<?php echo __('Edit this board'); ?>">
+                                    <span class="icon"><?php echo fa_image_tag('edit'); ?></span>
+                                    <span class="name"><?= __('Edit this board'); ?></span>
+                                </a>
+                                <a class="list-item" href="javascript:void(0);" onclick="Pachno.Project.Planning.Whiteboard.toggleEditMode();">
+                                    <span class="icon"><?php echo fa_image_tag('columns'); ?></span>
+                                    <span class="name"><?= __('Manage columns'); ?></span>
+                                </a>
+                                <span class="list-item separator"></span>
+                                <a class="list-item" href="javascript:void(0);" onclick="$('main_container').toggleClassName('fullscreen');">
+                                    <span class="icon"><?php echo fa_image_tag('arrows-alt'); ?></span>
+                                    <span class="name"><?= __('Toggle fullscreen mode'); ?></span>
+                                </a>
+                                <span class="list-item separator"></span>
+                                <div class="header"><?= __('Card display'); ?></div>
                                 <input type="radio" class="fancycheckbox" name="card_mode" value="simple" checked id="card_mode_simple">
                                 <label for="card_mode_simple" class="list-item" onclick="Pachno.Project.Planning.Whiteboard.setViewMode(this, 'simple');">
                                     <span class="icon"><?php echo fa_image_tag('list'); ?></span>
@@ -70,30 +101,28 @@
                 </div>
             </div>
         </div>
-        <div id="planning_whiteboard">
+        <div id="planning_whiteboard" class="whiteboard-columns-container">
             <div class="planning_indicator" id="whiteboard_indicator"><?php echo image_tag('spinning_30.gif'); ?></div>
             <?php if ($pachno_user->canManageProject($selected_project)): ?>
-                <form id="planning_whiteboard_columns_form" onsubmit="Pachno.Project.Planning.Whiteboard.saveColumns(this);return false;" action="<?php echo make_url('agile_whiteboard', array('project_key' => $board->getProject()->getKey(), 'board_id' => $board->getID())); ?>">
-                    <table class="whiteboard-columns">
-                        <tr id="planning_whiteboard_columns_form_row">
-                            <?php foreach ($board->getColumns() as $column): ?>
-                                <?php include_component('agile/editboardcolumn', compact('column')); ?>
-                            <?php endforeach; ?>
-                        </tr>
-                    </table>
+                <form id="planning_whiteboard_columns_form" class="whiteboard-columns" action="<?php echo make_url('agile_whiteboard', array('project_key' => $board->getProject()->getKey(), 'board_id' => $board->getID())); ?>">
+                    <div class="row" id="planning_whiteboard_columns_form_row">
+                        <?php foreach ($board->getColumns() as $column): ?>
+                            <?php include_component('agile/editboardcolumn', compact('column')); ?>
+                        <?php endforeach; ?>
+                    </div>
                 </form>
             <?php endif; ?>
-            <div class="table whiteboard-columns <?php echo ($board->usesSwimlanes()) ? ' swimlanes' : ' no-swimlanes'; ?>" id="whiteboard" data-whiteboard-url="<?php echo make_url('agile_whiteboardissues', array('project_key' => $board->getProject()->getKey(), 'board_id' => $board->getID())); ?>" data-swimlane-type="<?php echo $board->getSwimlaneType(); ?>">
-                <div class="thead" id="whiteboard-headers-placeholder">
-                    <div class="tr">
+            <div class="whiteboard-columns <?php echo ($board->usesSwimlanes()) ? ' swimlanes' : ' no-swimlanes'; ?>" id="whiteboard" data-whiteboard-url="<?php echo make_url('agile_whiteboardissues', array('project_key' => $board->getProject()->getKey(), 'board_id' => $board->getID())); ?>" data-swimlane-type="<?php echo $board->getSwimlaneType(); ?>">
+                <div class="header" id="whiteboard-headers-placeholder">
+                    <div class="row">
                         <?php foreach ($board->getColumns() as $column): ?>
-                            <div class="td">&nbsp;</div>
+                            <div class="column">&nbsp;</div>
                         <?php endforeach; ?>
                     </div>
                 </div>
                 <?php if (count($board->getColumns())): ?>
-                    <div class="thead" id="whiteboard-headers">
-                        <div class="tr">
+                    <div class="header" id="whiteboard-headers">
+                        <div class="row">
                             <?php foreach ($board->getColumns() as $column): ?>
                                 <?php include_component('agile/boardcolumnheader', compact('column')); ?>
                             <?php endforeach; ?>

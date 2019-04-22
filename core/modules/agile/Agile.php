@@ -79,8 +79,6 @@
         /**
          * Header "Agile" menu and board list
          *
-         * @Listener(module="core", identifier="project/templates/projectheader")
-         *
          * @param \pachno\core\framework\Event $event
          */
         public function projectHeaderLinks(framework\Event $event)

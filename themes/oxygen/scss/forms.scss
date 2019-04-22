@@ -33,6 +33,17 @@
     align-content: flex-start;
     padding: .5em;
 
+    &.header {
+      justify-content: space-between;
+      justify-items: flex-end;
+      padding: .5em;
+
+      button:first-child:last-child,
+      .button:first-child:last-child {
+        margin-left: auto;
+      }
+    }
+
     &.submit-container {
       justify-content: space-between;
       justify-items: flex-end;
