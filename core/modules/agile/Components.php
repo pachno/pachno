@@ -2,6 +2,7 @@
 
     namespace pachno\core\modules\agile;
 
+    use pachno\core\entities\SavedSearch;
     use pachno\core\framework;
 
     /**
@@ -14,12 +15,12 @@
         {
             $i18n = framework\Context::getI18n();
             $this->autosearches = array(
-                \pachno\core\entities\SavedSearch::PREDEFINED_SEARCH_PROJECT_OPEN_ISSUES => $i18n->__('Project open issues (recommended)'),
-                \pachno\core\entities\SavedSearch::PREDEFINED_SEARCH_PROJECT_OPEN_ISSUES_INCLUDING_SUBPROJECTS => $i18n->__('Project open issues (including subprojects)'),
-                \pachno\core\entities\SavedSearch::PREDEFINED_SEARCH_PROJECT_CLOSED_ISSUES => $i18n->__('Project closed issues'),
-                \pachno\core\entities\SavedSearch::PREDEFINED_SEARCH_PROJECT_CLOSED_ISSUES_INCLUDING_SUBPROJECTS => $i18n->__('Project closed issues (including subprojects)'),
-                \pachno\core\entities\SavedSearch::PREDEFINED_SEARCH_PROJECT_REPORTED_THIS_MONTH => $i18n->__('Project issues reported last month'),
-                \pachno\core\entities\SavedSearch::PREDEFINED_SEARCH_PROJECT_WISHLIST => $i18n->__('Project wishlist')
+                SavedSearch::PREDEFINED_SEARCH_PROJECT_OPEN_ISSUES => $i18n->__('Project open issues (recommended)'),
+                SavedSearch::PREDEFINED_SEARCH_PROJECT_OPEN_ISSUES_INCLUDING_SUBPROJECTS => $i18n->__('Project open issues (including subprojects)'),
+                SavedSearch::PREDEFINED_SEARCH_PROJECT_CLOSED_ISSUES => $i18n->__('Project closed issues'),
+                SavedSearch::PREDEFINED_SEARCH_PROJECT_CLOSED_ISSUES_INCLUDING_SUBPROJECTS => $i18n->__('Project closed issues (including subprojects)'),
+                SavedSearch::PREDEFINED_SEARCH_PROJECT_REPORTED_THIS_MONTH => $i18n->__('Project issues reported last month'),
+                SavedSearch::PREDEFINED_SEARCH_PROJECT_WISHLIST => $i18n->__('Project wishlist')
             );
             $this->savedsearches = \pachno\core\entities\tables\SavedSearches::getTable()->getAllSavedSearchesByUserIDAndPossiblyProjectID(framework\Context::getUser()->getID(), $this->board->getProject()->getID());
             $this->issuetypes = $this->board->getProject()->getIssuetypeScheme()->getIssuetypes();

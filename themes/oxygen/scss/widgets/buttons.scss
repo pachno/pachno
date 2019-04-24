@@ -33,6 +33,7 @@ button, button:hover,
   /*color: rgba(0, 0, 0, .7);*/
   background: #44AF69;
   color: #FFF;
+  font-weight: 300;
   outline: 0;
   box-shadow: 0 3px 1px -2px rgba(0,0,0,.2),0 2px 2px 0 rgba(0,0,0,.14),0 1px 5px 0 rgba(0,0,0,.12);
   text-transform: uppercase;
@@ -45,34 +46,33 @@ button, button:hover,
 }
 
 button + button, button + button:hover,
-a.button + button, a.button + button:hover,
-button + a.button, button + a.button:hover,
-a.button + a.button, a.button + a.button:hover {
+.button + button, .button + button:hover,
+button + .button, button + .button:hover,
+.button + .button, .button + .button:hover {
   margin-left: 7px;
 }
-button img, a.button img { vertical-align: middle; display: inline-block; margin-right: 5px; }
-button.button-icon img, a.button.button-icon img { margin-right: 0; }
-button .fas, a.button .fas, button .far, a.button .far { display: inline-block; vertical-align: middle; margin: 0 5px 0 0; }
-button .material-icons, a.button .material-icons {
+button img, .button img { vertical-align: middle; display: inline-block; margin-right: 5px; }
+button.button-icon img, .button.button-icon img { margin-right: 0; }
+button .fas, .button .fas, button .far, .button .far { display: inline-block; vertical-align: middle; margin: 0 5px 0 0; }
+button .material-icons, .button .material-icons {
   vertical-align: middle;
   margin-right: .3em;
   font-size: 1em;
 }
-button .fas:last-child, a.button .fas:last-child, button .far:last-child, a.button .far:last-child, button .material-icons:last-child, a.button .material-icons:last-child { margin-right: 0; }
-button span, a.button span { vertical-align: middle; display: inline-block; }
+button .fas:last-child, .button .fas:last-child, button .far:last-child, .button .far:last-child, button .material-icons:last-child, .button .material-icons:last-child { margin-right: 0; }
 
-button:hover, input[type=submit]:hover, a.button:hover {
+button:hover, input[type=submit]:hover, .button:hover {
   box-shadow: 0 2px 4px -1px rgba(0,0,0,.2),0 4px 5px 0 rgba(0,0,0,.14),0 1px 10px 0 rgba(0,0,0,.12);
 }
-button:active, input[type=submit]:active, a.button:active {
+button:active, input[type=submit]:active, .button:active {
   box-shadow: 0 3px 1px -2px rgba(0,0,0,.2),0 2px 2px 0 rgba(0,0,0,.14),0 1px 5px 0 rgba(0,0,0,.12);
   background: #DBD69E;
 }
-button:disabled, input[type=submit]:disabled, a.button:disabled,
-button:disabled:hover, input[type=submit]:disabled:hover, a.button:disabled:hover,
-button:disabled:active, input[type=submit]:disabled:active, a.button:disabled:active,
-button:disabled:focus, input[type=submit]:disabled:focus, a.button:disabled:focus,
-button.disabled, input[type=submit].disabled, a.button.disabled {
+button:disabled, input[type=submit]:disabled, .button:disabled,
+button:disabled:hover, input[type=submit]:disabled:hover, .button:disabled:hover,
+button:disabled:active, input[type=submit]:disabled:active, .button:disabled:active,
+button:disabled:focus, input[type=submit]:disabled:focus, .button:disabled:focus,
+button.disabled, input[type=submit].disabled, .button.disabled {
   box-shadow: none;
   background: rgba(200, 200, 200, .2);
   color: rgb(150, 150, 150);
@@ -83,24 +83,24 @@ input[type="button"]::-moz-focus-inner {
 button::-moz-focus-inner {
   border: 0;
 }
-a.button::-moz-focus-inner {
+.button::-moz-focus-inner {
   border: 0;
 }
-button:focus, input[type=submit]:focus, a.button:focus {
+button:focus, input[type=submit]:focus, .button:focus {
   outline: 0;
 }
-input[type=submit]:active, input[type=button]:active, button:active, a.button:active, input[type=submit].activated, button.activated, a.button.activated {
+input[type=submit]:active, input[type=button]:active, button:active, .button:active, input[type=submit].activated, button.activated, .button.activated {
   //box-shadow: inset 0 0 2px rgba(150, 150, 150, 0.4);
   box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.16) inset, 0 0 1px 0 rgba(0, 0, 0, 0.16) inset;
 }
 button.secondary,
-a.button.secondary,
 input.button.secondary,
+.button.secondary,
 .backdrop_box input.button:not(.primary),
 .backdrop_box button:not(.primary),
-.backdrop_box a.button:not(.primary),
+.backdrop_box .button:not(.primary),
 .fullpage_backdrop_content button:not(.primary),
-.fullpage_backdrop_content a.button:not(.primary),
+.fullpage_backdrop_content .button:not(.primary),
 .fullpage_backdrop_content input.button:not(.primary) {
   background: transparent;
   color: #3c1642;
@@ -112,16 +112,17 @@ input.button.secondary,
   color: rgb(255, 170, 0);
 }
 button.secondary.highlight,
-input.button.secondary.highlight {
+input.button.secondary.highlight,
+.button.secondary.highlight {
   border: 1px solid #3c1642;
   color: #3c1642;
   text-transform: none;
 }
 button.icon,
-a.button.icon,
+.button.icon,
 input.button.icon,
 button.icon:hover,
-a.button.icon:hover,
+.button.icon:hover,
 input.button.icon:hover {
   background: transparent;
   box-shadow: none;
@@ -133,31 +134,31 @@ input.button.icon:hover {
   min-width: 16px;
 }
 button.secondary.active,
-a.button.secondary.active,
+.button.secondary.active,
 input.button.secondary.active {
   background-color: rgba(200, 200, 200, .3);
 }
 button.secondary:hover,
-a.button.secondary:hover,
+.button.secondary:hover,
 input.button.secondary:hover,
 button.icon:hover,
-a.button.icon:hover,
+.button.icon:hover,
 input.button.icon:hover,
 .backdrop_box button:not(.primary):hover,
-.backdrop_box a.button:not(.primary):hover,
+.backdrop_box .button:not(.primary):hover,
 .backdrop_box input.button:not(.primary):hover,
 .fullpage_backdrop_content button:not(.primary):hover,
-.fullpage_backdrop_content a.button:not(.primary):hover,
+.fullpage_backdrop_content .button:not(.primary):hover,
 .fullpage_backdrop_content input.button:not(.primary):hover {
   background: rgba(220, 220, 220, .15);
   color: #3c1642;
   box-shadow: none;
 }
 button.secondary:disabled,
-a.button.secondary.disabled,
+.button.secondary.disabled,
 input.button.secondary.disabled,
 button.icon.secondary:disabled,
-a.button.icon.secondary.disabled,
+.button.icon.secondary.disabled,
 input.icon.secondary:disabled {
   background: transparent;
   color: rgba(200, 200, 200, .3);
@@ -168,7 +169,7 @@ input.icon.secondary:disabled {
   }
 }
 .button-group > button,
-.button-group > a.button,
+.button-group > .button,
 .button-group > input.button {
   margin: 0 3px;
 }

@@ -122,9 +122,23 @@
     .column {
       flex: 0 0 300px;
       padding: 0 1rem;
+      border: 1px solid transparent;
+      background-color: transparent;
+      border-radius: 4px;
+      transition: background-color .25s ease-in-out, border .25s ease-in-out;
       margin: 0 0 0 .5rem;
       position: relative;
       box-sizing: border-box;
+
+      &.drop-valid {
+        background-color: rgba(12, 137, 144, .2);
+        border: 1px solid rgba(12, 137, 144, .4);
+
+        &.drop-hover {
+          background-color: rgba(12, 137, 144, .5);
+          border: 1px solid rgba(12, 137, 144, .7);
+        }
+      }
 
       .ui-sortable-placeholder {
         width: 35px;
@@ -193,6 +207,7 @@
       transform: translateY(0);
       transition: box-shadow .25s ease-in-out, transform .25s ease-in-out;
       color: #141823;
+      margin-top: .5rem;
 
       &:hover {
         border: none;
@@ -216,6 +231,20 @@
         }
       }
 
+      .form-container {
+        .form-row {
+          > .fancydropdown-container {
+            flex: 1 1 100%;
+
+            .fancydropdown {
+              > .value {
+                max-width: 200px;
+              }
+            }
+          }
+        }
+      }
+
       p {
         margin: 15px 0 10px;
       }
@@ -236,13 +265,21 @@
   box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.16), 0 0 1px 0 rgba(0, 0, 0, 0.16);
   border-radius: 4px;
   transform: translateY(0);
-  transition: box-shadow .25s ease-in-out, transform .25s ease-in-out;
   color: #141823;
+  transition: box-shadow .25s ease-in-out;
 
-  &:hover {
-    border: none;
-    transform: translateY(-2px);
-    box-shadow: 0 3px 5px 0 rgba(27, 27, 36, .2);
+  &.gs-draggable {
+    box-shadow: 0 5px 16px rgba(0,0,0,0.19);
+  }
+
+  &:not(.gs-draggable) {
+    transition: box-shadow .25s ease-in-out, transform .25s ease-in-out;
+
+    &:hover {
+      border: none;
+      transform: translateY(-2px);
+      box-shadow: 0 3px 5px 0 rgba(27, 27, 36, .2);
+    }
   }
 
   &.ui-draggable {
@@ -271,5 +308,391 @@
   .extra {
     display: none;
     margin: 0 5px 0 17px;
+  }
+
+  .issue_release,
+  .issue_component,
+  .epic_badge {
+    display: inline-block;
+    padding: 3px 6px;
+    background: #F5F5F5;
+    border-radius: 2px;
+    color: #777;
+    border: 1px solid rgba(100, 100, 100, 0.3);
+    vertical-align: middle;
+    margin: 1px 1px 0 1px;
+    line-height: 1em;
+    text-shadow: none;
+  }
+
+  .issue_estimates {
+    margin: 0;
+    vertical-align: middle;
+    display: inline-block;
+    line-height: 1em;
+  }
+
+  .status-badge,
+  .epic_badge,
+  &.blocking img.blocking {
+    display: inline-block;
+    vertical-align: middle;
+    margin: 1px 1px 0 0;
+    border-radius: 2px;
+    border: 1px solid rgba(0, 0, 0, 0.4);
+    opacity: 0.6;
+  }
+
+  &.blocking img.blocking {
+    opacity: 1;
+  }
+}
+
+.milestones-list {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
+  margin: 0;
+  padding: 0;
+}
+
+.milestone-box {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
+  flex: 0 0 auto;
+  padding: 1rem;
+
+  &.unavailable {
+    display: none;
+  }
+
+  @at-root .show-unavailable &.unavailable {
+    display: flex;
+  }
+
+  .header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    flex: 0 0 auto;
+
+    .main-details {
+      flex: 1 1 auto;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      justify-content: flex-start;
+      margin: 0;
+      padding: 0;
+      font-weight: 300;
+
+      .name-container {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+
+        .name {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          justify-content: flex-start;
+          flex: 0 0 auto;
+          font-weight: 600;
+          font-size: 1.2em;
+          margin-right: .5em;
+          min-width: 300px;
+          max-width: 400px;
+
+          button {
+            font-size: .8em;
+          }
+        }
+
+        .percentage {
+          flex: 1 0 300px;
+          display: inline-block;
+          width: auto;
+          max-width: 300px;
+          min-width: 150px;
+          background-color: rgb(225, 225, 225);
+          height: 10px;
+          font-weight: 300;
+          font-size: .8em;
+          border-radius: 3px;
+          position: relative;
+
+          .filler {
+            display: block;
+            position: absolute;
+            left: 0;
+            top: 0;
+            border-radius: 3px;
+            height: 10px;
+            transform: scaleX(0);
+            background-color: rgba(12, 137, 144, .6);
+            width: 100%;
+            transform-origin: top left;
+            transition: transform 2.5s ease-in-out;
+          }
+        }
+      }
+
+      .dates {
+        flex: 0 0 auto;
+        display: flex;
+        font-size: .9em;
+        font-weight: 300;
+        flex-direction: row;
+        align-items: center;
+        justify-content: flex-start;
+        color: rgba(0, 0, 0, .4);
+
+        :first-child {
+          margin-left: 0;
+        }
+
+        .far,
+        .fas {
+          margin: 0 .35rem;
+        }
+      }
+    }
+
+    .milestone-counts-container {
+      border: 0;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      flex-direction: row;
+      color: rgba(0, 0, 0, .4);
+      font-size: 0.8em;
+      flex: 0 0 270px;
+
+      .count {
+        padding: 0;
+        text-align: center;
+        font-weight: 300;
+        flex: 0 0 90px;
+        font-size: 1.1em;
+        line-height: 1.5em;
+        text-transform: uppercase;
+        color: #AAA;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+
+        :first-child {
+          font-size: 1.9em;
+          line-height: 1.1em;
+        }
+      }
+    }
+
+    .actions-container {
+      display: flex;
+      align-items: center;
+      flex-direction: row;
+    }
+  }
+
+  .milestone-issues {
+    padding: 0 15px 0 0;
+    margin: 10px 0;
+    box-sizing: border-box;
+    border: 2px dotted rgba(0, 0, 0, .4);
+    transition: border 0.3s ease;
+    border-radius: 4px;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+
+    .milestone-issue {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: stretch;
+
+      .issue-container {
+        flex: 1 1 auto;
+        padding: 0;
+        border: 1px solid rgba(225, 225, 225, 0.6);
+        background-color: #FFF;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: stretch;
+        position: relative;
+        transition: background-color 0.3s ease, border-color 0.3s ease;
+        margin: -1px 0 0;
+      }
+    }
+
+    .new_milestone_marker {
+      .draggable {
+        padding: 3px 5px;
+        border-top: 2px solid rgba(0, 140, 0, 0.2);
+        border-bottom: 2px solid rgba(0, 140, 0, 0.2);
+        background: #FFF;
+        cursor: row-resize;
+        text-align: left;
+        position: relative;
+        left: auto;
+        top: auto;
+        width: 100%;
+        height: auto;
+        z-index: 10;
+        transition: border 0.3s ease;
+        opacity: 1;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+    }
+
+    &:hover {
+      .new_milestone_marker {
+        .draggable {
+          border-top: 2px solid rgba(0, 140, 0, 0.8);
+          border-bottom: 2px solid rgba(0, 140, 0, 0.8);
+        }
+      }
+    }
+
+  }
+
+  &.backlog {
+    .milestone-issues {
+      border: none;
+    }
+  }
+}
+
+.milestone-issue {
+  .issue_link,
+  .issue_link:hover {
+    display: block;
+    float: none;
+    clear: both;
+    padding: 8px 2px 5px 40px;
+    margin: 0;
+
+    > a,
+    > a:hover {
+      border: none;
+      text-decoration: none;
+      line-height: 1.7em;
+
+      > img {
+        margin-bottom: -3px;
+        margin-right: 5px;
+      }
+    }
+
+    > img {
+      vertical-align: middle;
+      display: inline-block;
+      margin-right: 5px;
+    }
+  }
+
+  .issue_info {
+    display: block;
+    float: right;
+    height: 100%;
+    width: auto;
+    top: 0;
+    text-shadow: none;
+    vertical-align: middle;
+    line-height: 1em;
+    box-sizing: border-box;
+    transition: background-color 0.3s ease 0s;
+    margin-top: -4px;
+    padding: 2px 2px 2px 3px;
+  }
+
+  .issue_container.blocking .issue_link {
+    background: linear-gradient(to right, rgba(255, 100, 100, 0) 70%, rgba(255, 100, 100, 0.2) 100%);
+    background: -webkit-linear-gradient(left, rgba(255, 100, 100, 0) 70%, rgba(255, 100, 100, 0.2) 100%);
+  }
+
+  .issue_release,
+  .issue_component {
+    display: inline-block;
+    padding: 3px 6px;
+    background: #F5F5F5;
+    border-radius: 2px;
+    color: #777;
+    border: 1px solid rgba(100, 100, 100, 0.3);
+    vertical-align: middle;
+    margin: 1px 1px 0 1px;
+    line-height: 1em;
+    text-shadow: none;
+  }
+
+  .issue_estimates {
+    margin: 0;
+    vertical-align: middle;
+    display: inline-block;
+    line-height: 1em;
+
+    .issue_estimate {
+      display: inline-block;
+      padding: 3px 7px;
+      border-radius: 2px;
+      background: rgba(50, 50, 50, 0.8);
+      color: #FFF;
+      font-size: 0.85em;
+      border: 1px solid rgba(100, 100, 100, 0.3);
+      vertical-align: middle;
+      line-height: 1.25em;
+      text-shadow: none;
+      margin: 1px 1px 0;
+
+      &.points {
+        background: rgba(200, 200, 200, 0.8);
+        border-color: rgba(200, 200, 200, 0.8);
+        color: rgba(50, 50, 50, 1);
+      }
+    }
+  }
+
+  .avatar,
+  .status-badge,
+  .epic_badge {
+    opacity: 0.8;
+    transition: opacity 0.3s ease;
+  }
+
+  .issue_container:hover {
+    img.avatar,
+    .status-badge {
+      opacity: 1;
+    }
+  }
+
+  img.blocking {
+    display: none;
+  }
+
+  .status-badge,
+  .epic_badge,
+  &.blocking img.blocking {
+    display: inline-block;
+    vertical-align: middle;
+    margin: 1px 1px 0 0;
+    border-radius: 2px;
+    border: 1px solid rgba(0, 0, 0, 0.4);
+    opacity: 0.6;
+  }
+
+  &.blocking img.blocking {
+    opacity: 1;
   }
 }

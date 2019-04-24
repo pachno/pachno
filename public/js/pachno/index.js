@@ -2351,7 +2351,7 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
         };
 
         Pachno.Project.Planning.initializeMilestoneDragDropSorting = function (milestone) {
-            var milestone_issues = jQuery(milestone).find('.milestone_issues.jsortable');
+            var milestone_issues = jQuery(milestone).find('.milestone-issues.jsortable');
             if (milestone_issues.hasClass('ui-sortable')) {
                 milestone_issues.sortable('destroy');
             }
@@ -2371,42 +2371,42 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
         };
 
         Pachno.Project.Planning.initializeReleaseDroptargets = function () {
-            jQuery('#builds_list .release').not('ui-droppable').droppable({
+            jQuery('#builds-list .release').not('ui-droppable').droppable({
                 drop: Pachno.Project.Planning.assignRelease,
-                accept: '.milestone_issue',
+                accept: '.milestone-issue',
                 tolerance: 'pointer',
                 hoverClass: 'drop-hover'
             });
         };
 
         Pachno.Project.Planning.initializeEpicDroptargets = function () {
-            jQuery('#epics_list .epic').not('.ui-droppable').droppable({
+            jQuery('#epics-list .epic').not('.ui-droppable').droppable({
                 drop: Pachno.Project.Planning.assignEpic,
-                accept: '.milestone_issue',
+                accept: '.milestone-issue',
                 tolerance: 'pointer',
                 hoverClass: 'drop-hover'
             });
         };
 
         Pachno.Project.Planning.toggleReleaseFilter = function (release) {
-            if (release !== 'auto' && $('epics_list') && $('epics_list').hasClassName('filtered'))
+            if (release !== 'auto' && $('epics-list') && $('epics-list').hasClassName('filtered'))
                 Pachno.Project.Planning.toggleEpicFilter('auto');
-            if ($('builds_list').hasClassName('filtered') && (release == 'auto' || ($(release) && $(release).hasClassName('selected')))) {
-                $('builds_list').removeClassName('filtered');
-                $('builds_list').childElements().each(function (rel) {
+            if ($('builds-list').hasClassName('filtered') && (release == 'auto' || ($(release) && $(release).hasClassName('selected')))) {
+                $('builds-list').removeClassName('filtered');
+                $('builds-list').childElements().each(function (rel) {
                     rel.removeClassName('selected');
                 });
-                $$('.milestone_issue').each(function (issue) {
+                $$('.milestone-issue').each(function (issue) {
                     issue.removeClassName('filtered');
                 });
             } else if ($(release)) {
-                $('builds_list').addClassName('filtered');
-                $('builds_list').childElements().each(function (rel) {
+                $('builds-list').addClassName('filtered');
+                $('builds-list').childElements().each(function (rel) {
                     rel.removeClassName('selected');
                 });
                 $(release).addClassName('selected');
                 var release_id = $(release).dataset.releaseId;
-                $$('.milestone_issue').each(function (issue) {
+                $$('.milestone-issue').each(function (issue) {
                     (issue.dataset['release-' + release_id] === undefined) ? issue.addClassName('filtered') : issue.removeClassName('filtered');
                 });
             }
@@ -2415,24 +2415,24 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
         };
 
         Pachno.Project.Planning.toggleEpicFilter = function (epic) {
-            if (epic !== 'auto' && $('builds_list') && $('builds_list').hasClassName('filtered'))
+            if (epic !== 'auto' && $('builds-list') && $('builds-list').hasClassName('filtered'))
                 Pachno.Project.Planning.toggleReleaseFilter('auto');
-            if ($('epics_list').hasClassName('filtered') && (epic == 'auto' || ($(epic) && $(epic).hasClassName('selected')))) {
-                $('epics_list').removeClassName('filtered');
-                $('epics_list').childElements().each(function (ep) {
+            if ($('epics-list').hasClassName('filtered') && (epic == 'auto' || ($(epic) && $(epic).hasClassName('selected')))) {
+                $('epics-list').removeClassName('filtered');
+                $('epics-list').childElements().each(function (ep) {
                     ep.removeClassName('selected');
                 });
-                $$('.milestone_issue').each(function (issue) {
+                $$('.milestone-issue').each(function (issue) {
                     issue.removeClassName('filtered');
                 });
             } else if ($(epic)) {
-                $('epics_list').addClassName('filtered');
-                $('epics_list').childElements().each(function (ep) {
+                $('epics-list').addClassName('filtered');
+                $('epics-list').childElements().each(function (ep) {
                     ep.removeClassName('selected');
                 });
                 $(epic).addClassName('selected');
                 var epic_id = $(epic).dataset.issueId;
-                $$('.milestone_issue').each(function (issue) {
+                $$('.milestone-issue').each(function (issue) {
                     (issue.dataset['parent-' + epic_id] === undefined) ? issue.addClassName('filtered') : issue.removeClassName('filtered');
                 });
             }
@@ -2440,8 +2440,8 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
             Pachno.Project.Planning.calculateAllMilestonesVisibilityDetails();
         };
 
-        Pachno.Project.Planning.toggleClosedIssues = function (button) {
-            $('milestone_list').toggleClassName('show_closed');
+        Pachno.Project.Planning.toggleClosedIssues = function () {
+            $('milestones-list').toggleClassName('show_closed');
             Pachno.Project.Planning.calculateAllMilestonesVisibilityDetails();
             Pachno.Project.Planning.calculateNewBacklogMilestoneDetails();
             Pachno.Main.Profile.clearPopupsAndButtons();
@@ -2469,7 +2469,7 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
         };
 
         Pachno.Project.Planning.updateNewMilestoneIssues = function () {
-            var num_issues = jQuery('.milestone_issue.included').size();
+            var num_issues = jQuery('.milestone-issue.included').size();
             $('milestone_include_num_issues').update(num_issues);
             $('milestone_include_issues').show();
             $('include_selected_issues').setValue(1);
@@ -2515,61 +2515,76 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
 
         Pachno.Project.Planning.destroyMilestoneDropSorting = function (milestone) {
             if (milestone === undefined) {
-                jQuery('.milestone_issues.ui-sortable').sortable('destroy');
+                jQuery('.milestone-issues.ui-sortable').sortable('destroy');
             } else {
-                jQuery(milestone).select('.milestone_issues.ui-sortable').sortable('destroy');
+                jQuery(milestone).select('.milestone-issues.ui-sortable').sortable('destroy');
             }
         };
 
         Pachno.Project.Planning.getMilestoneIssues = function (milestone) {
-            if (!milestone.hasClassName('initialized')) {
-                var milestone_id = milestone.dataset.milestoneId;
-                Pachno.Main.Helpers.ajax(milestone.dataset.issuesUrl, {
-                    url_method: 'get',
-                    success: {
-                        update: 'milestone_' + milestone_id + '_issues',
-                        callback: function (json) {
-                            milestone.addClassName('initialized');
-
-                            var ti_button = milestone.down('.toggle-issues');
-                            if (ti_button) ti_button.enable();
-                            if (Pachno.Project.Planning.options.dragdrop) {
-                                Pachno.Project.Planning.initializeMilestoneDragDropSorting(milestone);
-                            }
-
-                            if (milestone.hasClassName('backlog_milestone')) {
-                                $('project_planning').removeClassName('left_toggled');
-                            }
-
-                            if (milestone.hasClassName('available')) {
-                                var completed_milestones = $$('.milestone_box.available.initialized');
-                                var multiplier = 100 / Pachno.Project.Planning.options.milestone_count;
-                                var pct = Math.floor(completed_milestones.size() * multiplier);
-                                $('planning_percentage_filler').setStyle({width: pct + '%'});
-
-                                if (completed_milestones.size() == (Pachno.Project.Planning.options.milestone_count - 1)) {
-                                    $('planning_loading_progress_indicator').hide();
-                                    if (!Pachno.Core.Pollers.planningpoller)
-                                        Pachno.Core.Pollers.planningpoller = new PeriodicalExecuter(Pachno.Core.Pollers.Callbacks.planningPoller, 6);
-
-                                    Pachno.Project.Planning.calculateAllMilestonesVisibilityDetails();
-
-                                    $('planning_indicator').hide();
-                                    $('planning_filter_title_input').enable();
-                                }
-                            }
-
-                            if (! milestone.down('.planning_indicator').hidden) milestone.down('.planning_indicator').hide();
-                        }
-                    },
-                    failure: {
-                        callback: function () {
-                            milestone.addClassName('initialized');
-                            milestone.down('.milestone_error_issues').show();
-                        }
-                    }
-                });
+            if (milestone.hasClassName('initialized')) {
+                return Promise.resolve();
             }
+
+            let updateMilestoneIssuesContent = function (response) {
+                $('milestone_' + milestone_id + '_issues').update(response.content);
+                return response;
+            };
+
+            let ti_button = milestone.down('.toggle-issues');
+
+            if (ti_button) {
+                ti_button.addClassName('disabled');
+                ti_button.addClassName('submitting');
+            }
+
+            var milestone_id = milestone.dataset.milestoneId;
+
+            return new Promise(function (resolve, reject) {
+                fetch(milestone.dataset.issuesUrl)
+                    .then((_) => _.json())
+                    .then(updateMilestoneIssuesContent)
+                    .then(function (response) {
+                        milestone.addClassName('initialized');
+
+                        if (Pachno.Project.Planning.options.dragdrop) {
+                            Pachno.Project.Planning.initializeMilestoneDragDropSorting(milestone);
+                        }
+
+                        if (milestone.hasClassName('available')) {
+                            var completed_milestones = $$('.milestone-box.available.initialized');
+                            var multiplier = 100 / Pachno.Project.Planning.options.milestone_count;
+                            var pct = Math.floor(completed_milestones.size() * multiplier);
+                            $('planning_percentage_filler').setStyle({width: pct + '%'});
+
+                            if (completed_milestones.size() == (Pachno.Project.Planning.options.milestone_count - 1)) {
+                                $('planning_loading_progress_indicator').hide();
+                                if (!Pachno.Core.Pollers.planningpoller)
+                                    Pachno.Core.Pollers.planningpoller = new PeriodicalExecuter(Pachno.Core.Pollers.Callbacks.planningPoller, 15);
+
+                                $('planning_indicator').hide();
+                                $('planning_filter_title_input').enable();
+                            }
+                        }
+
+                        if (! milestone.down('.planning_indicator').hidden) milestone.down('.planning_indicator').hide();
+                    })
+                    .then(Pachno.Project.Planning.calculateAllMilestonesVisibilityDetails)
+                    .then(function () {
+                        if (ti_button) {
+                            ti_button.removeClassName('disabled');
+                            ti_button.removeClassName('submitting');
+                        }
+
+                        resolve();
+                    })
+                    .catch(function (error) {
+                        milestone.addClassName('initialized');
+                        milestone.down('.milestone_error_issues').show();
+
+                        reject(error);
+                    });
+            });
         };
 
         Pachno.Project.Planning.Whiteboard.addColumn = function(button) {
@@ -2589,6 +2604,10 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
 
         Pachno.Project.Planning.Whiteboard.toggleEditMode = function() {
             $('project_planning').toggleClassName('edit-mode');
+            var $onboarding = $('onboarding-no-board-columns');
+            if ($onboarding) {
+                $onboarding.hide();
+            }
             Pachno.Main.Profile.clearPopupsAndButtons();
         };
 
@@ -2682,6 +2701,11 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
 
         Pachno.Project.Planning.Whiteboard.retrieveWhiteboard = function() {
             var wb = $('whiteboard');
+            if (!wb) {
+                $('whiteboard_indicator').hide();
+                return;
+            }
+
             wb.removeClassName('initialized');
             var mi = $('selected_milestone_input');
             var milestone_id = (mi.dataset.selectedValue) ? parseInt(mi.dataset.selectedValue) : 0;
@@ -2869,7 +2893,7 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
         Pachno.Project.Planning.Whiteboard.detectAvailableDropColumns = function(event, issue) {
             var issue = $(issue);
             var issue_statuses = issue.dataset.validStatusIds.split(',');
-            issue.up('.tr').childElements().each(function (column) {
+            issue.up('.row').childElements().each(function (column) {
                 var column_statuses = column.dataset.statusIds.split(',');
                 var has_status = false;
                 issue_statuses.each(function (status) {
@@ -2879,7 +2903,7 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
                 });
 
                 if (!has_status) {
-                    jQuery(column).removeClass("gs-droppable");
+                    jQuery(column).removeClass('gs-droppable');
                 } else {
                     column.addClassName('drop-valid');
                     column.addClassName('gs-droppable');
@@ -2889,7 +2913,7 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
 
         Pachno.Project.Planning.Whiteboard.initializeDragDrop = function () {
             if (jQuery('.whiteboard-issue').length > 0) {
-                var overlapThreshold = '50%';
+                var overlapThreshold = '30%';
                 var droppablesSelector = '.gs-droppable';
                 GSDraggable.create(jQuery('.whiteboard-issue'), {
                     type: 'x',
@@ -3100,7 +3124,7 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
 
             jQuery('#planning_whiteboard_columns_form_row').sortable({
                 handle: '.draggable',
-                tolerance: 'intersect',
+                axis: 'x',
                 update: Pachno.Project.Planning.Whiteboard.setSortOrder
             });
 
@@ -3142,17 +3166,17 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
         Pachno.Project.Planning.toggleMilestoneSorting = function() {
             if ($('project_planning').hasClassName('milestone-sort')) {
                 $('project_planning').removeClassName('milestone-sort left_toggled');
-                jQuery('#milestone_list').sortable("destroy");
-                jQuery('.milestone_issues.ui-sortable').sortable('enable');
+                jQuery('#milestones-list').sortable("destroy");
+                jQuery('.milestone-issues.ui-sortable').sortable('enable');
             } else {
                 $('project_planning').addClassName('milestone-sort left_toggled');
 
-                jQuery('.milestone_issues.ui-sortable').sortable('disable');
+                jQuery('.milestone-issues.ui-sortable').sortable('disable');
 
-                jQuery('#milestone_list').sortable({
+                jQuery('#milestones-list').sortable({
                     update: Pachno.Project.Planning.sortMilestones,
                     axis: 'y',
-                    items: '> .milestone_box',
+                    items: '> .milestone-box',
                     helper: 'original',
                     tolerance: 'intersect'
                 });
@@ -3162,20 +3186,20 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
         Pachno.Project.Planning.initialize = function (options) {
             Pachno.Project.Planning.options = options;
 
-            $$('.milestone_box.unavailable').each(Pachno.Project.Planning.initializeMilestoneDragDropSorting);
-            var milestone_boxes = $$('.milestone_box.available');
+            $$('.milestone-box.unavailable').each(Pachno.Project.Planning.initializeMilestoneDragDropSorting);
+            var milestone_boxes = $$('.milestone-box.available');
             Pachno.Project.Planning.options.milestone_count = milestone_boxes.size() + 1;
             milestone_boxes.each(Pachno.Project.Planning.getMilestoneIssues);
 
             Pachno.Project.Planning._initializeFilterSearch();
 
-            if ($('epics_list')) {
-                Pachno.Main.Helpers.ajax($('epics_list').dataset.epicsUrl, {
+            if ($('epics-list')) {
+                Pachno.Main.Helpers.ajax($('epics-list').dataset.epicsUrl, {
                     url_method: 'get',
                     success: {
-                        update: 'epics_list',
+                        update: 'epics-list',
                         callback: function (json) {
-                            var completed_milestones = $$('.milestone_box.available.initialized');
+                            var completed_milestones = $$('.milestone-box.available.initialized');
                             var multiplier = 100 / Pachno.Project.Planning.options.milestone_count;
                             var pct = Math.floor((completed_milestones.size() + 1) * multiplier);
                             $('planning_percentage_filler').setStyle({width: pct + '%'});
@@ -3190,11 +3214,11 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
                 });
             }
 
-            if ($('builds_list')) {
-                Pachno.Main.Helpers.ajax($('builds_list').dataset.releasesUrl, {
+            if ($('builds-list')) {
+                Pachno.Main.Helpers.ajax($('builds-list').dataset.releasesUrl, {
                     url_method: 'get',
                     success: {
-                        update: 'builds_list',
+                        update: 'builds-list',
                         callback: function (json) {
                             Pachno.Project.Planning.initializeReleaseDroptargets();
                             jQuery('body').on('click', '.release', function (e) {
@@ -3211,7 +3235,7 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
             if (title !== '') {
                 var matching = new RegExp(title, "i");
                 $('project_planning').addClassName('issue_title_filtered');
-                $$(whiteboard ? '.whiteboard-issue' : '.milestone_issue').each(function (issue) {
+                $$(whiteboard ? '.whiteboard-issue' : '.milestone-issue').each(function (issue) {
                     if (whiteboard) {
                         if (issue.down('.issue_header').innerHTML.search(matching) !== -1) {
                             issue.addClassName('title_unfiltered');
@@ -3229,7 +3253,7 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
                 });
             } else {
                 $('project_planning').removeClassName('issue_title_filtered');
-                $$(whiteboard ? '.whiteboard-issue' : '.milestone_issue').each(function (issue) {
+                $$(whiteboard ? '.whiteboard-issue' : '.milestone-issue').each(function (issue) {
                     issue.removeClassName('title_unfiltered');
                 });
             }
@@ -3264,14 +3288,14 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
                 success: {
                     callback: function (json) {
                         if (json.deleted == '1') {
-                            if ($(existing_element)) $(existing_element).up('.milestone_issue').remove();
+                            if ($(existing_element)) $(existing_element).up('.milestone-issue').remove();
                         }
                         else if (json.epic) {
                             if (!$(existing_element)) {
                                 $('add_epic_container').insert({before: json.component});
                                 setTimeout(Pachno.Project.Planning.initializeEpicDroptargets, 250);
                             } else {
-                                $(existing_element).up('.milestone_issue').replace(json.component);
+                                $(existing_element).up('.milestone-issue').replace(json.component);
                             }
                         } else {
                             if (!$(existing_element)) {
@@ -3284,12 +3308,12 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
                                 }
                             } else {
                                 var json_milestone_id = (json.issue_details.milestone && json.issue_details.milestone.id != undefined) ? parseInt(json.issue_details.milestone.id) : 0;
-                                if (parseInt($(existing_element).up('.milestone_box').dataset.milestoneId) == json_milestone_id) {
-                                    $(existing_element).up('.milestone_issue').replace(json.component);
+                                if (parseInt($(existing_element).up('.milestone-box').dataset.milestoneId) == json_milestone_id) {
+                                    $(existing_element).up('.milestone-issue').replace(json.component);
                                     Pachno.Project.Planning.calculateMilestoneIssueVisibilityDetails($('milestone_' + json_milestone_id + '_issues'));
                                     Pachno.Project.Planning.calculateNewBacklogMilestoneDetails();
                                 } else {
-                                    $(existing_element).up('.milestone_issue').remove();
+                                    $(existing_element).up('.milestone-issue').remove();
                                     Pachno.Project.Planning.insertIntoMilestone(json_milestone_id, json.component, 'all');
                                 }
                             }
@@ -3356,8 +3380,8 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
         };
 
         Pachno.Project.Planning.calculateMilestoneIssueVisibilityDetails = function (list) {
-            var list_issues = jQuery(list).find('.issue_container').not('.child_issue');
-            var closed_issues = jQuery(list).find('.issue_container.issue_closed').not('.child_issue');
+            var list_issues = jQuery(list).find('.issue-container').not('.child_issue');
+            var closed_issues = jQuery(list).find('.issue-container.issue_closed').not('.child_issue');
             var visible_issues = list_issues.filter(':visible');
             var sum_estimated_points = 0;
             var sum_estimated_hours = 0;
@@ -3383,7 +3407,7 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
                 }
             });
             var num_visible_issues = visible_issues.size();
-            var milestone_id = $(list).up('.milestone_box').dataset.milestoneId;
+            var milestone_id = $(list).up('.milestone-box').dataset.milestoneId;
 
             if (num_visible_issues === 0 && !$(list).hasClassName('collapsed')) {
                 if (list_issues.size() > 0) {
@@ -3419,11 +3443,11 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
         };
 
         Pachno.Project.Planning.calculateAllMilestonesVisibilityDetails = function () {
-            jQuery('.milestone_box.initialized').find('.milestone_issues').each(function (index) {
+            jQuery('.milestone-box.initialized').find('.milestone-issues').each(function (index) {
                 var was_collapsed = $(this).hasClassName('collapsed');
                 $(this).removeClassName('collapsed');
                 Pachno.Project.Planning.calculateMilestoneIssueVisibilityDetails(this);
-                if (was_collapsed && parseInt($(this).up('.milestone_box').dataset.milestoneId) !== 0) $(this).addClassName('collapsed');
+                if (was_collapsed && parseInt($(this).up('.milestone-box').dataset.milestoneId) !== 0) $(this).addClassName('collapsed');
             });
         };
 
@@ -3434,21 +3458,21 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
                 var sum_points = 0;
                 var sum_hours = 0;
                 var sum_minutes = 0;
-                var include_closed = $('milestone_list').hasClassName('show_closed');
-                jQuery('.milestone_issue').removeClass('included');
-                nbmm.up('.milestone_issues').childElements().each(function (elm) {
+                var include_closed = $('milestones-list').hasClassName('show_closed');
+                jQuery('.milestone-issue').removeClass('included');
+                nbmm.up('.milestone-issues').childElements().each(function (elm) {
                     elm.addClassName('included');
                     if (!(elm.hasClassName('new_milestone_marker') && !elm.hasClassName('ui-sortable-helper')) && !elm.hasClassName('ui-element-placeholder')) {
                         if (!elm.hasClassName('new_milestone_marker')) {
                             if (include_closed || !elm.hasClassName('issue_closed'))
                                 num_issues++;
                             if (!elm.hasClassName('child_issue')) {
-                                if (elm.down('.issue_container').dataset.estimatedPoints !== undefined)
-                                    sum_points += parseInt(elm.down('.issue_container').dataset.estimatedPoints);
-                                if (elm.down('.issue_container').dataset.estimatedHours !== undefined)
-                                    sum_hours += parseInt(elm.down('.issue_container').dataset.estimatedHours);
-                                if (elm.down('.issue_container').dataset.estimatedMinutes !== undefined)
-                                    sum_minutes += parseInt(elm.down('.issue_container').dataset.estimatedMinutes);
+                                if (elm.down('.issue-container').dataset.estimatedPoints !== undefined)
+                                    sum_points += parseInt(elm.down('.issue-container').dataset.estimatedPoints);
+                                if (elm.down('.issue-container').dataset.estimatedHours !== undefined)
+                                    sum_hours += parseInt(elm.down('.issue-container').dataset.estimatedHours);
+                                if (elm.down('.issue-container').dataset.estimatedMinutes !== undefined)
+                                    sum_minutes += parseInt(elm.down('.issue-container').dataset.estimatedMinutes);
                             }
                         }
                     } else {
@@ -3483,7 +3507,7 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
         };
 
         Pachno.Project.Planning.doSortMilestoneIssues = function (list) {
-            var url = list.up('.milestone_box').dataset.issuesUrl;
+            var url = list.up('.milestone-box').dataset.issuesUrl;
             var items = '';
             list.childElements().each(function (issue) {
                 if (issue.dataset.issueId !== undefined) {
@@ -3493,7 +3517,7 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
             Pachno.Main.Helpers.ajax(url, {
                 url_method: 'post',
                 additional_params: items,
-                loading: {indicator: list.up('.milestone_box').down('.planning_indicator')}
+                loading: {indicator: list.up('.milestone-box').down('.planning_indicator')}
             });
         };
 
@@ -3520,22 +3544,22 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
             } else {
                 if (issue.hasClassName('milestone_issue')) {
                     var list = $(event.target);
-                    var url = list.up('.milestone_box').dataset.assignIssueUrl;
+                    var url = list.up('.milestone-box').dataset.assignIssueUrl;
                     var original_list = $(ui.sender[0]);
                     Pachno.Main.Helpers.ajax(url, {
                         additional_params: 'issue_id=' + issue.dataset.issueId,
-                        loading: {indicator: list.up('.milestone_box').down('.planning_indicator')},
+                        loading: {indicator: list.up('.milestone-box').down('.planning_indicator')},
                         complete: {
                             callback: function (json) {
-                                if (list.up('.milestone_box').hasClassName('initialized')) {
-                                    issue.down('.issue_container').dataset.lastUpdated = get_current_timestamp();
+                                if (list.up('.milestone-box').hasClassName('initialized')) {
+                                    issue.down('.issue-container').dataset.lastUpdated = get_current_timestamp();
                                     Pachno.Project.Planning.doSortMilestoneIssues(list);
                                     Pachno.Core.Pollers.Callbacks.planningPoller();
                                     Pachno.Project.Planning.calculateMilestoneIssueVisibilityDetails(list);
                                     Pachno.Project.Planning.calculateMilestoneIssueVisibilityDetails(original_list);
                                 } else {
                                     issue.remove();
-                                    var milestone_id = list.up('.milestone_box').dataset.milestoneId;
+                                    var milestone_id = list.up('.milestone-box').dataset.milestoneId;
                                     $('milestone_' + milestone_id + '_issues_count').update(json.issues);
                                     $('milestone_' + milestone_id + '_points_count').update(json.points);
                                     $('milestone_' + milestone_id + '_hours_count').update(json.hours);
@@ -3548,14 +3572,13 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
         };
 
         Pachno.Project.Planning.toggleSwimlaneDetails = function (selected_item) {
-            $('swimlane_details_container').childElements().each(Element.hide);
-            $('swimlane_' + $(selected_item).dataset.swimlaneType + '_container').show();
-            $('swimlane_input').setValue($(selected_item).dataset.swimlaneType);
+            $('agileboard-swimlane-details-container').childElements().each(Element.hide);
+            $('agileboard_swimlane_' + jQuery(selected_item).val() + '_container').show();
         };
 
         Pachno.Project.Planning.toggleSwimlaneExpediteDetails = function(selected_item) {
-            $('swimlane_expedite_container_details').childElements().each(Element.hide);
-            $('swimlane_expedite_identifier_' + $(selected_item).dataset.value + '_values').show();
+            $('agileboard_swimlane_expedite_container_details').childElements().each(Element.hide);
+            $('swimlane_expedite_identifier_' + jQuery(selected_item).val() + '_values').show();
         };
 
         Pachno.Project.Planning.removeAgileBoard = function (url) {
@@ -3696,7 +3719,7 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
                     callback: function (json) {
                         Pachno.Main.Helpers.Backdrop.reset();
                         if (json.component) {
-                            $('milestone_list').insert(json.component);
+                            $('milestones-list').insert(json.component);
                             setTimeout(function () {
                                 Pachno.Project.Planning.getMilestoneIssues($('milestone_' + json.new_milestone_id), Pachno.Project.Planning.initializeDragDropSorting);
                             }, 250);
@@ -3719,7 +3742,7 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
             var include_selected_issues = $('include_selected_issues').getValue() == 1;
             var on_board = $('project_roadmap_page') == null;
             if (include_selected_issues) {
-                $$('.milestone_issue.included').each(function (issue) {
+                $$('.milestone-issue.included').each(function (issue) {
                     issues += '&issues[]=' + issue.dataset.issueId;
                 });
             }
@@ -3731,12 +3754,12 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
                     reset: 'edit_milestone_form',
                     hide: 'no_milestones',
                     callback: function (json) {
-                        $$('.milestone_issue.included').each(function (issue) { issue.remove(); });
+                        $$('.milestone-issue.included').each(function (issue) { issue.remove(); });
                         Pachno.Main.Helpers.Backdrop.reset();
                         if ($('milestone_' + json.milestone_id)) {
                             $('milestone_' + json.milestone_id).replace(json.component);
                         } else {
-                            $('milestone_list').insert(json.component);
+                            $('milestones-list').insert(json.component);
                         }
                         if (on_board) {
                             if (!include_selected_issues) {
@@ -3773,7 +3796,7 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
                         $('milestone_' + milestone_id).remove();
                         Pachno.Main.Helpers.Dialog.dismiss();
                         Pachno.Main.Helpers.Backdrop.reset();
-                        if ($('milestone_list').childElements().size() == 0)
+                        if ($('milestones-list').childElements().size() == 0)
                             $('no_milestones').show();
                         Pachno.Core.Pollers.Callbacks.planningPoller();
                     }
@@ -5889,8 +5912,8 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
                                 });
                             }
                         }
-                        if ($('milestone_list')) {
-                            Pachno.Project.Planning.calculateMilestoneIssueVisibilityDetails($('issue_' + issue_id).up('.milestone_issues'));
+                        if ($('milestones-list')) {
+                            Pachno.Project.Planning.calculateMilestoneIssueVisibilityDetails($('issue_' + issue_id).up('.milestone-issues'));
                             Pachno.Project.Planning.calculateNewBacklogMilestoneDetails();
                         }
                     },
@@ -6423,7 +6446,7 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
         Pachno.Search.bulkPostProcess = function (json) {
             if (json.last_updated) {
                 if (json.milestone_name != undefined && json.milestone_id) {
-                    if ($('milestone_list') != undefined) {
+                    if ($('milestones-list') != undefined) {
                         if ($('milestone_' + json.milestone_id) == undefined) {
                             Pachno.Project.Milestone.retrieve(json.milestone_url, json.milestone_id, json.issue_ids);
                         }

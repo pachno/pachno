@@ -30,7 +30,7 @@
                     }
                 },
                 4: {
-                    highlight: {element: 'project_backlog_sidebar', blocked: true},
+                    highlight: {element: 'board-backlog-container', blocked: true},
                     message: '<h3><?php echo __('The project backlog'); ?></h3><?php echo __('The backlog is a list of all issues matching the backlog search specified for this board, not assigned to a milestone or sprint.'); ?>',
                     messageSize: 'large',
                     messagePosition: 'right',

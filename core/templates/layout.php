@@ -18,6 +18,7 @@
         <meta name="author" content="pachno.com">
         <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0"/>
         <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+        <base href="<?= rtrim(\pachno\core\framework\Context::getWebroot(), '/'); ?>">
         <title><?= ($pachno_response->hasTitle()) ? strip_tags($header_name . ' ~ ' . $pachno_response->getTitle()) : strip_tags(\pachno\core\framework\Settings::getSiteHeaderName()); ?></title>
         <style>
             @font-face {

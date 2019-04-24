@@ -9,14 +9,14 @@ if (!$issue->hasAccess())
 $parent_prefix = isset($parent_issue) ? 'issue_'.$parent_issue->getID().'_child_' : '';
 
 ?>
-<li id="<?php echo $parent_prefix ?>issue_<?php echo $issue->getID(); ?>_top_container" class="milestone_issue <?php /* if ($issue->isChildIssue() && !$issue->hasParentIssuetype($board->getEpicIssuetypeID())) echo 'child_issue'; */ ?> <?php if ($issue->isClosed()) echo 'issue_closed'; ?> <?php //if ($issue->hasChildIssues()) echo 'has_child_issues'; ?>" data-issue-id="<?php echo $parent_prefix . $issue->getID(); ?>"<?php
+<div id="<?php echo $parent_prefix ?>issue_<?php echo $issue->getID(); ?>_top_container" class="milestone-issue <?php /* if ($issue->isChildIssue() && !$issue->hasParentIssuetype($board->getEpicIssuetypeID())) echo 'child_issue'; */ ?> <?php if ($issue->isClosed()) echo 'issue_closed'; ?> <?php //if ($issue->hasChildIssues()) echo 'has_child_issues'; ?>" data-issue-id="<?php echo $parent_prefix . $issue->getID(); ?>"<?php
 
     foreach ($issue->getBuilds() as $details) echo ' data-release-'.$details['build']->getID();
     // foreach ($issue->getParentIssues() as $parent) echo ' data-parent-'.$parent->getID();
 
 ?>>
     <div class="planning_indicator" id="<?php echo $parent_prefix; ?>issue_<?php echo $issue->getID(); ?>_indicator" style="display: none;"><?php echo image_tag('spinning_16.gif'); ?></div>
-    <div id="<?php echo $parent_prefix .'issue_'. $issue->getID(); ?>" class="issue_container <?php if ($issue->isClosed()) echo 'issue_closed'; ?> <?php if ($issue->isBlocking()) echo 'blocking'; ?> draggable" data-estimated-points="<?php echo $issue->getEstimatedPoints(); ?>" data-estimated-hours="<?php echo $issue->getEstimatedHours(); ?>" data-estimated-minutes="<?php echo $issue->getEstimatedMinutes(); ?>" data-spent-points="<?php echo $issue->getSpentPoints(); ?>" data-spent-hours="<?php echo $issue->getSpentHours(); ?>" data-spent-minutes="<?php echo $issue->getSpentMinutes(); ?>" data-last-updated="<?php echo $issue->getLastUpdatedTime(); ?>">
+    <div id="<?php echo $parent_prefix .'issue_'. $issue->getID(); ?>" class="issue-container <?php if ($issue->isClosed()) echo 'issue_closed'; ?> <?php if ($issue->isBlocking()) echo 'blocking'; ?> draggable" data-estimated-points="<?php echo $issue->getEstimatedPoints(); ?>" data-estimated-hours="<?php echo $issue->getEstimatedHours(); ?>" data-estimated-minutes="<?php echo $issue->getEstimatedMinutes(); ?>" data-spent-points="<?php echo $issue->getSpentPoints(); ?>" data-spent-hours="<?php echo $issue->getSpentHours(); ?>" data-spent-minutes="<?php echo $issue->getSpentMinutes(); ?>" data-last-updated="<?php echo $issue->getLastUpdatedTime(); ?>">
         <?php include_component('agile/colorpicker', array('issue' => $issue)); ?>
         <div class="priority priority_<?php echo ($issue->getPriority() instanceof \pachno\core\entities\Priority) ? $issue->getPriority()->getValue() : 0; ?>" title="<?php echo ($issue->getPriority() instanceof \pachno\core\entities\Priority) ? __($issue->getPriority()->getName()) : __('Priority not set'); ?>"><?php echo ($issue->getPriority() instanceof \pachno\core\entities\Priority) ? $issue->getPriority()->getAbbreviation() : '-'; ?></div>
         <div class="issue_link">
@@ -63,4 +63,4 @@ $parent_prefix = isset($parent_issue) ? 'issue_'.$parent_issue->getID().'_child_
             <?php include_component('agile/milestoneissue', array('issue' => $child_issue, 'parent_issue' => $issue, 'board' => $board)); ?>
         <?php endforeach; ?>
     </ul> */ ?>
-</li>
+</div>

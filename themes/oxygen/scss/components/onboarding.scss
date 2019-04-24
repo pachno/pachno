@@ -55,4 +55,13 @@
     display: flex;
     align-items: center;
   }
+
+  .button-container {
+    text-align: center;
+    display: flex;
+    align-items: center;
+    flex: 0 0 auto;
+    margin: 1rem 0;
+    justify-content: space-around;
+  }
 }

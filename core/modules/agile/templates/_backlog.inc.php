@@ -1,4 +1,4 @@
-<li class="new_milestone_marker" id="new_backlog_milestone_marker">
+<div class="new_milestone_marker" id="new_backlog_milestone_marker">
     <div class="draggable">
         <div class="milestone_counts_container">
             <table>
@@ -16,7 +16,7 @@
         </div>
         <?php echo javascript_link_tag(__('Create new sprint'), array('class' => 'button', 'onclick' => "Pachno.Main.Helpers.Backdrop.show('".make_url('get_partial_for_backdrop', array('key' => 'agilemilestone', 'project_id' => $board->getProject()->getId(), 'board_id' => $board->getID()))."', Pachno.Project.Planning.updateNewMilestoneIssues);")); ?>
     </div>
-</li>
+</div>
 <?php foreach ($board->getBacklogSearchObject()->getIssues() as $issue): ?>
     <?php if ($issue->getMilestone() instanceof pachno\core\entities\Milestone) continue; ?>
     <?php /*if ($issue->isChildIssue()): ?>

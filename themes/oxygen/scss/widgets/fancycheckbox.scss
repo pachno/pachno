@@ -33,12 +33,20 @@
       color: #88AB75;
     }
 
-    + .list-item {
+    + .list-item:not(.toggler) {
       background-color: #0C8990;
       color: #FFF;
 
       .icon {
         color: #FFF;
+      }
+    }
+
+    + .list-item.toggler {
+      color: #141823;
+
+      .icon {
+        color: #0C8990;
       }
     }
 
