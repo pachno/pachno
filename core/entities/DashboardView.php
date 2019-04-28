@@ -4,6 +4,7 @@
 
     use pachno\core\entities\common\IdentifiableScoped;
 
+    use pachno\core\entities\tables\SavedSearches;
     use pachno\core\framework as framework,
         \pachno\core\entities\Project,
         \pachno\core\entities\User,
@@ -124,19 +125,22 @@
                         \pachno\core\entities\SavedSearch::PREDEFINED_SEARCH_MY_ASSIGNED_OPEN_ISSUES => array('title' => $i18n->__('Open issues assigned to me'), 'description' => $i18n->__('Shows a list of all issues assigned to you')),
                         \pachno\core\entities\SavedSearch::PREDEFINED_SEARCH_MY_OWNED_OPEN_ISSUES => array('title' => $i18n->__('Open issues owned by me'), 'description' => $i18n->__('Shows a list of all issues owned by you')),
                         \pachno\core\entities\SavedSearch::PREDEFINED_SEARCH_TEAM_ASSIGNED_OPEN_ISSUES => array('title' => $i18n->__('Open issues assigned to my teams'), 'description' => $i18n->__('Shows all issues assigned to any of your teams')));
-                    $searches['info'][self::VIEW_PROJECTS] = array(0 => array('title' => $i18n->__("Your projects"), 'description' => $i18n->__('A widget that shows projects you are involved in')));
-                    $searches['info'][self::VIEW_MILESTONES] = array(0 => array('title' => $i18n->__("Upcoming milestones / sprints"), 'description' => $i18n->__('A widget that shows all upcoming milestones or sprints for any projects you are involved in')));
+                    $searches['info'][self::VIEW_PROJECTS] = [0 => ['title' => $i18n->__("Your projects"), 'description' => $i18n->__('A widget that shows projects you are involved in')]];
+                    $searches['info'][self::VIEW_MILESTONES] = [0 => ['title' => $i18n->__("Upcoming milestones / sprints"), 'description' => $i18n->__('A widget that shows all upcoming milestones or sprints for any projects you are involved in')]];
                     break;
                 case self::TYPE_PROJECT:
-                    $searches['statistics'] = array();
-
-                    $issuetype_icons = array();
+                    $searches['statistics'] = [];
+                    $issuetype_icons = [];
                     foreach (Issuetype::getAll() as $id => $issuetype)
                     {
-                        $issuetype_icons[$id] = array('title' => $i18n->__('Recent issues: %issuetype', array('%issuetype' => $issuetype->getName())), 'description' => $i18n->__('Show recent issues of type %issuetype', array('%issuetype' => $issuetype->getName())));
+                        $issuetype_icons[$id] = [
+                            'title' => $i18n->__('Recent issues: %issuetype', ['%issuetype' => $issuetype->getName()]),
+                            'header' => '<span>' . __('Recent issues %issuetype', ['%issuetype' => '']) . '</span><span>' . fa_image_tag($issuetype->getFontAwesomeIcon(), ['class' => 'issuetype-icon issuetype-' . $issuetype->getIcon()]).$issuetype->getName() . '</span>',
+                            'description' => $i18n->__('Show recent issues of type %issuetype', ['%issuetype' => $issuetype->getName()])
+                        ];
                     }
 
-                    $searches['info'][self::VIEW_PROJECT_INFO] = array(0 => array('title' => $i18n->__('About this project'), 'description' => $i18n->__('Basic project information widget, showing project name, important people and links')));
+                    $searches['info'][self::VIEW_PROJECT_INFO] = array(0 => array('title' => $i18n->__('About this project'), 'has_title' => false, 'description' => $i18n->__('Basic project information widget, showing project name, important people and links')));
                     $searches['info'][self::VIEW_PROJECT_TEAM] = array(0 => array('title' => $i18n->__('Project team'), 'description' => $i18n->__('A widget with information about project developers and the project team and their respective project roles')));
                     $searches['info'][self::VIEW_PROJECT_CLIENT] = array(0 => array('title' => $i18n->__('Project client'), 'description' => $i18n->__('Shows information about the associated project client (if any)')));
                     $searches['info'][self::VIEW_PROJECT_SUBPROJECTS] = array(0 => array('title' => $i18n->__('Subprojects'), 'description' => $i18n->__('Lists all subprojects of this project, with quick links to report an issue, open the project wiki and more')));
@@ -288,26 +292,88 @@
                         self::VIEW_PROJECT_UPCOMING));
         }
 
-        public function getTitle()
+        /**
+         * Return whether or not this dashboard view has a title header
+         *
+         * @return bool
+         */
+        public function hasTitle(): bool
         {
-            $all_titles = self::getAvailableViews($this->getTargetType());
-            foreach ($all_titles as $type => $titles)
+            foreach (self::getAvailableViews($this->getTargetType()) as $type => $views)
             {
-                if (array_key_exists($this->getType(), $titles) && array_key_exists($this->getDetail(), $titles[$this->getType()]))
+                if (array_key_exists($this->getType(), $views) && array_key_exists($this->getDetail(), $views[$this->getType()]))
                 {
-                    $title = $titles[$this->getType()][$this->getDetail()]['title'];
+                    return $views[$this->getType()][$this->getDetail()]['has_title'] ?? true;
                     break;
                 }
             }
 
-            if ($this->getType() == self::VIEW_SAVED_SEARCH)
+            return false;
+        }
+
+        /**
+         * Return whether or not this dashboard view has a title header
+         *
+         * @return bool
+         */
+        public function hasHeader(): bool
+        {
+            foreach (self::getAvailableViews($this->getTargetType()) as $type => $views)
             {
+                if (array_key_exists($this->getType(), $views) && array_key_exists($this->getDetail(), $views[$this->getType()]))
+                {
+                    $header = $views[$this->getType()][$this->getDetail()]['header'] ?? false;
+                    return (bool) $header;
+                    break;
+                }
+            }
+
+            return false;
+        }
+
+        public function getHeader()
+        {
+            $header = framework\Context::getI18n()->__('Unknown dashboard item');
+
+            if ($this->getType() == self::VIEW_SAVED_SEARCH) {
+                $search = tables\SavedSearches::getTable()->selectById($this->getDetail());
+                if ($search instanceof SavedSearch) {
+                    $header = $search->getName();
+                }
+            } else {
+                foreach (self::getAvailableViews($this->getTargetType()) as $type => $views)
+                {
+                    if (array_key_exists($this->getType(), $views) && array_key_exists($this->getDetail(), $views[$this->getType()]))
+                    {
+                        $header = $views[$this->getType()][$this->getDetail()]['header'] ?? $views[$this->getType()][$this->getDetail()]['title'];
+                        break;
+                    }
+                }
+            }
+
+            return $header;
+        }
+
+        public function getTitle()
+        {
+            $title = framework\Context::getI18n()->__('Unknown dashboard item');
+
+            if ($this->getType() == self::VIEW_SAVED_SEARCH) {
                 $search = tables\SavedSearches::getTable()->selectById($this->getDetail());
 
                 if ($search instanceof SavedSearch) $title = $search->getName();
+            } else {
+                foreach (self::getAvailableViews($this->getTargetType()) as $type => $views)
+                {
+                    if (array_key_exists($this->getType(), $views) && array_key_exists($this->getDetail(), $views[$this->getType()]))
+                    {
+                        $title = $views[$this->getType()][$this->getDetail()]['title'];
+                        break;
+                    }
+                }
             }
 
-            return (isset($title)) ? $title : framework\Context::getI18n()->__('Unknown dashboard item');
+            return $title;
         }
 
         public function setDashboard($dashboard)

@@ -113,7 +113,10 @@ define(['pachno/tools', 'pachno/index', 'domReady', 'jquery', 'mention'],
                     Pachno.Main.Profile.clearPopupsAndButtons();
                     if (e.target && jQuery(e.target).parents('#searchfor_autocomplete_choices').length > 0)
                         return;
-                    Pachno.autocompleter.options.forceHide();
+                    if (Pachno.autocompleter !== undefined) {
+                        Pachno.autocompleter.options.forceHide();
+                    }
+
                     e.stopPropagation();
                 });
                 jQuery("img[data-src]:not([data-src-processed])").each(function(){

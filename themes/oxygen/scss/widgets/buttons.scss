@@ -33,13 +33,13 @@ button, button:hover,
   /*color: rgba(0, 0, 0, .7);*/
   background: #44AF69;
   color: #FFF;
-  font-weight: 300;
+  font-weight: 400;
   outline: 0;
   box-shadow: 0 3px 1px -2px rgba(0,0,0,.2),0 2px 2px 0 rgba(0,0,0,.14),0 1px 5px 0 rgba(0,0,0,.12);
-  text-transform: uppercase;
+  text-transform: none;
   font-size: .9rem;
   padding: .42rem 1rem;
-  transition: background-color .2s ease-in-out, transition .25s ease-in-out;
+  transition: background-color .2s ease-in-out, color .2s ease-in-out, box-shadow .2s ease-in-out;
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -103,7 +103,7 @@ input.button.secondary,
 .fullpage_backdrop_content .button:not(.primary),
 .fullpage_backdrop_content input.button:not(.primary) {
   background: transparent;
-  color: #3c1642;
+  color: #0C8990;
   box-shadow: none;
   border-radius: 4px;
   text-align: center;
@@ -114,9 +114,8 @@ input.button.secondary,
 button.secondary.highlight,
 input.button.secondary.highlight,
 .button.secondary.highlight {
-  border: 1px solid #3c1642;
-  color: #3c1642;
-  text-transform: none;
+  border: 1px solid #0C8990;
+  color: #0C8990;
 }
 button.icon,
 .button.icon,
@@ -167,11 +166,6 @@ input.icon.secondary:disabled {
     background: transparent;
     color: rgba(200, 200, 200, .3);
   }
-}
-.button-group > button,
-.button-group > .button,
-.button-group > input.button {
-  margin: 0 3px;
 }
 .button-group {
   display: flex;

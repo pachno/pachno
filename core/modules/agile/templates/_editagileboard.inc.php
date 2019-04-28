@@ -93,8 +93,6 @@
                                                 <span class="name value"><?php echo $savedsearch->getName(); ?></span>
                                             </label>
                                         <?php endforeach; ?>
-                                    <?php else: ?>
-                                        <div class="list-item disabled"><?php echo __('There are no public saved searches for this project'); ?></div>
                                     <?php endif; ?>
                                     <div class="separator"></div>
                                     <?php if (count($savedsearches['user']) > 0): ?>
@@ -106,8 +104,6 @@
                                                 <span class="name value"><?php echo $savedsearch->getName(); ?></span>
                                             </label>
                                         <?php endforeach; ?>
-                                    <?php else: ?>
-                                        <div class="list-item disabled"><?php echo __('You have no saved searches for this project'); ?></div>
                                     <?php endif; ?>
                                 </div>
                             </div>

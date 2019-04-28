@@ -930,7 +930,7 @@ class Main extends framework\Action
     /**
      * Do login (AJAX call)
      *
-     * @Route(name="login", url="/do/login")
+     * @Route(name="login", url="/do/login", methods="POST")
      * @AnonymousRoute
      *
      * @param \pachno\core\framework\Request $request
@@ -939,81 +939,52 @@ class Main extends framework\Action
     {
         $authentication_backend = framework\Settings::getAuthenticationBackend();
 
-        if ($request->isPost())
+        try
         {
-            try
+            $username = trim($request->getParameter('username', ''));
+            $password = trim($request->getParameter('password', ''));
+            $persist  = (bool) $request->getParameter('rememberme', false);
+
+            if ($username && $password)
             {
-                $username = trim($request->getParameter('username', ''));
-                $password = trim($request->getParameter('password', ''));
-                $persist  = (bool) $request->getParameter('rememberme', false);
+                $user = entities\User::identify($request, $this);
 
-                if ($username && $password)
+                if (!$user instanceof entities\User || $user->isGuest())
                 {
-                    $user = entities\User::identify($request, $this);
-
-                    if (!$user instanceof entities\User || $user->isGuest())
-                    {
-                        throw new \Exception('No such login');
-                    }
-
-                    $user->setOnline();
-                    $user->save();
-
-                    framework\Context::setUser($user);
-                    $this->verifyScopeMembership($user);
-
-                    if (!$user->isGuest())
-                    {
-                        $this->_persistLogin($authentication_backend, $user, $persist);
-                    }
+                    throw new \Exception('No such login');
                 }
-                else
+
+                $user->setOnline();
+                $user->save();
+
+                framework\Context::setUser($user);
+                $this->verifyScopeMembership($user);
+
+                if (!$user->isGuest())
                 {
-                    throw new \Exception('Please enter a username and password');
+                    $this->_persistLogin($authentication_backend, $user, $persist);
                 }
-            }
-            catch (\Exception $e)
-            {
-                if ($request->isAjaxCall())
-                {
-                    $this->getResponse()->setHttpStatus(401);
-                    framework\Logging::log($e->getMessage(), 'auth', framework\Logging::LEVEL_WARNING_RISK);
-                    return $this->renderJSON(array("error" => $this->getI18n()->__("Invalid login details")));
-                }
-                else
-                {
-                    $this->forward403($e->getMessage());
-                }
-            }
-        }
-        else
-        {
-            if ($request->isAjaxCall())
-            {
-                $this->getResponse()->setHttpStatus(401);
-                return $this->renderJSON(array("error" => $this->getI18n()->__('Please enter a username and password')));
             }
             else
             {
-                $this->forward403($this->getI18n()->__('Please enter a username and password'));
+                throw new \Exception('Please enter a username and password');
             }
+        }
+        catch (\Exception $e)
+        {
+            $this->getResponse()->setHttpStatus(401);
+            framework\Logging::log($e->getMessage(), 'auth', framework\Logging::LEVEL_WARNING_RISK);
+            return $this->renderJSON(["error" => $this->getI18n()->__("Invalid login details")]);
         }
 
         if (!$user instanceof entities\User)
         {
-            $this->forward403($this->getI18n()->__("Invalid login details"));
+            $this->getResponse()->setHttpStatus(401);
+            return $this->renderJSON(["error" => $this->getI18n()->__("Invalid login details")]);
         }
 
         $forward_url = $this->_getLoginForwardUrl($request);
-
-        if ($request->isAjaxCall())
-        {
-            return $this->renderJSON(array('forward' => $forward_url));
-        }
-        else
-        {
-            $this->forward($this->getRouting()->generate('account'));
-        }
+        return $this->renderJSON(['forward' => $forward_url]);
     }
 
     /**
@@ -1029,7 +1000,7 @@ class Main extends framework\Action
         $username = mb_strtolower(trim($request['username']));
         $available = ($username != '') ? tables\Users::getTable()->isUsernameAvailable($username) : false;
 
-        return $this->renderJSON(array('available' => (bool) $available));
+        return $this->renderJSON(['available' => (bool) $available]);
     }
 
     /**
@@ -1056,7 +1027,6 @@ class Main extends framework\Action
             $realname = $request['realname'];
 
             $available = tables\Users::getTable()->isUsernameAvailable($username);
-
 
             if (!$available)
             {

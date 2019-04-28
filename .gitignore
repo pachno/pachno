@@ -4,3 +4,4 @@ cache/*
 core/config/b2db.yml
 public/.htaccess
 installed
+files/*

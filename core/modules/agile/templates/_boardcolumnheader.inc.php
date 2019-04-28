@@ -6,7 +6,7 @@
                 <span class="column-count primary">-</span>
                 <?php foreach ($column->getStatusIds() as $status_id): ?>
                     <?php if (isset($statuses[$status_id]) && $statuses[$status_id] instanceof \pachno\core\entities\Datatype): ?>
-                        <div class="status-badge status-<?php echo $status_id; ?>" style="background-color: <?php echo $statuses[$status_id]->getColor(); ?>;color: <?php echo $statuses[$status_id]->getTextColor(); ?>;" title="<?php echo $statuses[$status_id]->getName(); ?>" data-status-id="<?php echo $status_id; ?>">-</div>
+                        <div class="column-count status-badge status-<?php echo $status_id; ?>" style="background-color: <?php echo $statuses[$status_id]->getColor(); ?>;color: <?php echo $statuses[$status_id]->getTextColor(); ?>;" title="<?php echo $statuses[$status_id]->getName(); ?>" data-status-id="<?php echo $status_id; ?>">-</div>
                     <?php endif; ?>
                 <?php endforeach; ?>
             </div>

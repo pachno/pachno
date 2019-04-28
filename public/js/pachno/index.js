@@ -1883,29 +1883,25 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
 
         Pachno.Main.Login.checkUsernameAvailability = function (url)
         {
-            Pachno.Main.Helpers.ajax(url, {
-                form: 'register_form',
-                loading: {
-                    indicator: 'username_check_indicator',
-                    callback: function () {
-                        $('register_button').disable();
-                        $('username_check_indicator').show();
+            var $username_row = jQuery('#row-register-username'),
+                data = new FormData();
+
+            data.append('username', jQuery('#fieldusername').val());
+            $username_row.addClass('submitting');
+
+            fetch(url, {
+                method: 'POST',
+                body: data
+            })
+                .then((_) => _.json())
+                .then(function (json) {
+                    $username_row.removeClass('submitting');
+                    if (json.available) {
+                        $username_row.removeClass('invalid');
+                    } else {
+                        $username_row.addClass('invalid');
                     }
-                },
-                complete: {
-                    callback: function (json) {
-                        $('username_check_indicator').hide();
-                        if (json.available) {
-                            $('fieldusername').removeClassName('invalid');
-                            $('fieldusername').addClassName('valid');
-                            $('register_button').enable();
-                        } else {
-                            $('fieldusername').removeClassName('valid');
-                            $('fieldusername').addClassName('invalid');
-                        }
-                    }
-                }
-            });
+                });
         };
 
         Pachno.Main.Login.registerAutologin = function (url)
@@ -1928,24 +1924,61 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
             });
         };
 
-        Pachno.Main.Login.login = function (url)
+        Pachno.Main.Login.login = function ()
         {
-            Pachno.Main.Helpers.ajax(url, {
-                form: 'login_form',
-                loading: {
-                    indicator: 'login_indicator',
-                    callback: function () {
-                        $('login_button').disable();
-                        $('login_indicator').show();
-                    }
-                },
-                complete: {
-                    callback: function () {
-                        $('login_indicator').hide();
-                        $('login_button').enable();
-                    }
-                }
-            });
+            var $form = jQuery('#login_form'),
+                $login_button = jQuery('#login_button'),
+                url = $form.attr('action');
+
+            console.log(url);
+            jQuery('#login-error-container').removeClass('invalid');
+            $login_button.addClass('submitting');
+            $login_button.attr('disabled', true);
+
+            fetch(url, {
+                method: 'POST',
+                body: new FormData($form[0])
+            })
+                .then(function (response) {
+                    response.json().then(function (json) {
+                        $login_button.removeClass('submitting');
+                        $login_button.attr('disabled', false);
+
+                        if (response.ok) {
+                            if (json.forward) {
+                                window.location = json.forward;
+                            } else {
+                                window.location.reload();
+                            }
+                        } else {
+                            console.error(json);
+                            jQuery('#login-error-message').html(json.error);
+                            jQuery('#login-error-container').addClass('invalid');
+                        }
+                    });
+                })
+                .catch(function (error) {
+                    jQuery('#login-error-message').html(error);
+                    jQuery('#login-error-container').addClass('invalid');
+                    console.error(error);
+                });
+
+            // Pachno.Main.Helpers.ajax(url, {
+            //     form: 'login_form',
+            //     loading: {
+            //         indicator: 'login_indicator',
+            //         callback: function () {
+            //             $('login_button').disable();
+            //             $('login_indicator').show();
+            //         }
+            //     },
+            //     complete: {
+            //         callback: function () {
+            //             $('login_indicator').hide();
+            //             $('login_button').enable();
+            //         }
+            //     }
+            // });
         };
 
         Pachno.Main.Login.elevatedLogin = function (url)
@@ -3736,45 +3769,82 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
             });
         };
 
-        Pachno.Project.Milestone.save = function (form) {
+        Pachno.Project.Milestone.save = function (form, on_board) {
+            var submit_button = jQuery(form).find('.form-row.submit-container button[type=submit]');
+
+            if (submit_button.length) {
+                submit_button.prop('disabled', true);
+                submit_button.addClass('submitting');
+            }
+
             var url = form.action;
-            var issues = "";
             var include_selected_issues = $('include_selected_issues').getValue() == 1;
-            var on_board = $('project_roadmap_page') == null;
+
+            var data = new FormData(form);
             if (include_selected_issues) {
                 $$('.milestone-issue.included').each(function (issue) {
-                    issues += '&issues[]=' + issue.dataset.issueId;
+                    data.append( "issues[]", issue.dataset.issueId);
                 });
             }
-            Pachno.Main.Helpers.ajax(url, {
-                form: form,
-                additional_params: issues,
-                loading: {indicator: 'milestone_edit_indicator'},
-                success: {
-                    reset: 'edit_milestone_form',
-                    hide: 'no_milestones',
-                    callback: function (json) {
+
+            return new Promise(function (resolve, reject) {
+                fetch(url, {
+                        method: 'POST',
+                        body: data
+                    })
+                    .then((_) => _.json())
+                    .then(function (json) {
+                        if ($('no_milestones')) {
+                            $('no_milestones').hide();
+                        }
+
                         $$('.milestone-issue.included').each(function (issue) { issue.remove(); });
                         Pachno.Main.Helpers.Backdrop.reset();
-                        if ($('milestone_' + json.milestone_id)) {
-                            $('milestone_' + json.milestone_id).replace(json.component);
-                        } else {
-                            $('milestones-list').insert(json.component);
+                        if (jQuery('#milestones-list').length) {
+                            jQuery('#milestones-list').append(json.component);
                         }
+
                         if (on_board) {
                             if (!include_selected_issues) {
                                 setTimeout(function () {
-                                    Pachno.Project.Planning.getMilestoneIssues($('milestone_' + json.milestone_id), Pachno.Project.Planning.initializeDragDropSorting);
+                                    Pachno.Project.Planning.getMilestoneIssues($('milestone_' + json.milestone_id));
                                 }, 250);
                             } else {
                                 Pachno.Project.Planning.calculateMilestoneIssueVisibilityDetails($('milestone_0_issues'));
-                                Pachno.Project.Planning.initializeDragDropSorting();
+                                // Pachno.Project.Planning.initializeDragDropSorting();
                             }
                         }
-                        Pachno.Project.Milestone.selectFromHash();
-                    }
-                }
+                    });
             });
+            // Pachno.Main.Helpers.ajax(url, {
+            //     form: form,
+            //     additional_params: issues,
+            //     loading: {indicator: 'milestone_edit_indicator'},
+            //     success: {
+            //         reset: 'edit_milestone_form',
+            //         hide: 'no_milestones',
+            //         callback: function (json) {
+            //             $$('.milestone-issue.included').each(function (issue) { issue.remove(); });
+            //             Pachno.Main.Helpers.Backdrop.reset();
+            //             if ($('milestone_' + json.milestone_id)) {
+            //                 $('milestone_' + json.milestone_id).replace(json.component);
+            //             } else {
+            //                 $('milestones-list').insert(json.component);
+            //             }
+            //             if (on_board) {
+            //                 if (!include_selected_issues) {
+            //                     setTimeout(function () {
+            //                         Pachno.Project.Planning.getMilestoneIssues($('milestone_' + json.milestone_id), Pachno.Project.Planning.initializeDragDropSorting);
+            //                     }, 250);
+            //                 } else {
+            //                     Pachno.Project.Planning.calculateMilestoneIssueVisibilityDetails($('milestone_0_issues'));
+            //                     Pachno.Project.Planning.initializeDragDropSorting();
+            //                 }
+            //             }
+            //             Pachno.Project.Milestone.selectFromHash();
+            //         }
+            //     }
+            // });
         }
 
         Pachno.Project.Milestone.selectFromHash = function () {

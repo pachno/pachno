@@ -177,6 +177,10 @@
         .column-count {
           flex: 0 0 auto;
 
+          & + .column-count {
+            margin-left: .15rem;
+          }
+
           &.under,
           &.over {
             display: none;

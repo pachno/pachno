@@ -56,6 +56,12 @@
     align-items: center;
   }
 
+  &.unthemed {
+    .image-container {
+      background-color: transparent;
+    }
+  }
+
   .button-container {
     text-align: center;
     display: flex;

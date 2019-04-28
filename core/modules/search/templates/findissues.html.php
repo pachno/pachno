@@ -82,7 +82,7 @@
             <div id="search-results" class="search-results">
                 <div class="onboarding large">
                     <div class="image-container">
-                        <?= image_tag('/unthemed/onboarding_search_placeholder.png', [], true); ?>
+                        <?= image_tag('/unthemed/no-issues.png', [], true); ?>
                     </div>
                     <div class="helper-text">
                         <?= __("Maybe you have issues, maybe you don't"); ?><br>

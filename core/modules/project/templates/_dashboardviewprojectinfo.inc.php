@@ -1,7 +1,7 @@
 <?php
     $projectHasDescription = $view->getProject()->hasDescription();
 ?>
-<div id="project_description"<?php if (!$projectHasDescription) echo ' class="none"'; ?>>
+<div id="project_description" class="article <?php if (!$projectHasDescription) echo ' none'; ?>">
     <?php echo ($projectHasDescription) ? \pachno\core\helpers\TextParser::parseText($view->getProject()->getDescription()) : __('This project has no description'); ?>
 </div>
 <?php if ($view->getProject()->hasOwner()): ?>

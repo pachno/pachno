@@ -11,10 +11,6 @@
 ?>
 <style>
     #header_banner { background-image: url('<?= image_url('mobile_header_banner.png'); ?>'); }
-    #pachno_username, #fieldusername { background-image: url('<?php echo $webroot; ?>images/user_mono.png'); }
-    #fieldusername.invalid { background-image: url('<?php echo $webroot; ?>images/icon_error.png'); background-color: rgba(255, 220, 220, 0.5); }
-    #fieldusername.valid { background-image: url('<?php echo $webroot; ?>images/icon_ok.png'); background-color: rgba(220, 255, 220, 0.5); }
-    .login_popup input[type=password] { background-image: url('<?php echo $webroot; ?>images/password_mono.png'); }
     #openid-signin-button.persona-button span:after{ background-image: url('<?php echo $webroot; ?>images/openid_providers.small/openid.ico.png'); }
     #regular-signin-button.persona-button span:after{ background-image: url('<?php echo $webroot; ?>images/footer_logo.png'); }
     #forgot_password_username { background-image: url('<?php echo $webroot; ?>images/user_mono.png'); }

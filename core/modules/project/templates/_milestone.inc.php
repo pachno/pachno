@@ -2,6 +2,8 @@
 
     use pachno\core\entities\Milestone;
 
+    /** @var Milestone $milestone */
+
     $savebuttonlabel = (isset($savebuttonlabel)) ? $savebuttonlabel : __('Save milestone');
     $milestonenamelabel = (isset($milestonenamelabel)) ? $milestonenamelabel : __('Milestone name');
     $milestoneplaceholder = (isset($milestoneplaceholder)) ? $milestoneplaceholder : __('Enter a milestone name');
@@ -13,7 +15,7 @@
     $action_url = (isset($action_url)) ? $action_url : make_url('project_milestone', array('project_key' => $milestone->getProject()->getKey(), 'milestone_id' => (int) $milestone->getID()));
 
 ?>
-<div class="backdrop_box large sectioned" id="edit_milestone_container" style="<?php if (isset($starthidden) && $starthidden) echo 'display: none;'; ?>">
+<div class="backdrop_box large" id="edit_milestone_container" style="<?php if (isset($starthidden) && $starthidden) echo 'display: none;'; ?>">
     <div class="backdrop_detail_header">
         <span><?= $milestoneheader; ?></span>
         <a href="javascript:void(0);" class="closer" onclick="Pachno.Main.Helpers.Backdrop.reset();"><?= fa_image_tag('times'); ?></a>
@@ -21,79 +23,67 @@
     <div id="backdrop_detail_content" class="backdrop_detail_content edit_milestone">
         <div class="form-container">
             <?php if (!isset($includeform) || $includeform): ?>
-            <form accept-charset="<?= \pachno\core\framework\Context::getI18n()->getCharset(); ?>" action="<?= $action_url; ?>" method="post" id="edit_milestone_form" onsubmit="Pachno.Project.Milestone.save(this);return false;">
+            <form accept-charset="<?= \pachno\core\framework\Context::getI18n()->getCharset(); ?>" action="<?= $action_url; ?>" method="post" id="edit_milestone_form" onsubmit="Pachno.Project.Milestone.save(this, true);return false;">
             <?php endif; ?>
                 <div class="form-row">
                     <input type="text" class="name-input-enhance" value="<?= $milestone->getName(); ?>" name="name" id="milestone_name_<?= $milestone->getID(); ?>" placeholder="<?= $milestoneplaceholder; ?>">
                     <label for="milestone_name_<?= $milestone->getID(); ?>"><?= $milestonenamelabel; ?></label>
                 </div>
                 <?php if ($milestone->getId()): ?>
-                <div class="form-row">
-                    <input type="text" class="milestone_input_description secondary" value="<?= $milestone->getDescription(); ?>" name="description" id="milestone_description_<?= $milestone->getID(); ?>">
-                    <label for="milestone_description_<?= $milestone->getID(); ?>"><?= __('Description'); ?></label>
-                </div>
+                    <div class="form-row">
+                        <input type="text" class="milestone_input_description secondary" value="<?= $milestone->getDescription(); ?>" name="description" id="milestone_description_<?= $milestone->getID(); ?>">
+                        <label for="milestone_description_<?= $milestone->getID(); ?>"><?= __('Description'); ?></label>
+                    </div>
+                    <div class="form-row">
+                        <input type="checkbox" class="fancycheckbox" name="visibility_roadmap" value="1" id="milestone_visibility_roadmap_<?= $milestone->getID(); ?>" <?php if ($milestone->isVisibleRoadmap()) echo 'checked'; ?>>
+                        <label for="milestone_visibility_roadmap_<?= $milestone->getID(); ?>">
+                            <?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far'); ?>
+                            <span><?= __('Visible in project roadmap'); ?></span>
+                        </label>
+                    </div>
+                    <div class="form-row">
+                        <input type="checkbox" class="fancycheckbox" name="visibility_issues" value="1" id="milestone_visibility_issues_<?= $milestone->getID(); ?>" <?php if ($milestone->isVisibleIssues()) echo 'checked'; ?>>
+                        <label for="milestone_visibility_issues_<?= $milestone->getID(); ?>">
+                            <?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far'); ?>
+                            <span><?= __('Issues can be assigned to this milestone'); ?></span>
+                        </label>
+                    </div>
+                    <div class="form-row">
+                        <div class="fancydropdown-container">
+                            <div class="fancydropdown">
+                                <label><?= __('Percentage type'); ?></label>
+                                <span class="value"></span>
+                                <?= fa_image_tag('angle-down', ['class' => 'expander']); ?>
+                                <div class="dropdown-container list-mode">
+                                    <?php foreach(Milestone::getPercentageTypes() as $percentage_type_key => $percentage_type_text): ?>
+                                        <input type="radio" class="fancycheckbox" name="percentage_type" id="milestone_percentage_type_<?= $milestone->getID(); ?>_<?= $percentage_type_key; ?>" value="<?= $percentage_type_key; ?>" <?php if ($milestone->getPercentageType() == $percentage_type_key) echo 'checked'; ?>>
+                                        <label for="milestone_percentage_type_<?= $milestone->getID(); ?>_<?= $percentage_type_key; ?>" class="list-item">
+                                            <?= fa_image_tag('check-circle', ['class' => 'checked'], 'far') . fa_image_tag('circle', ['class' => 'unchecked'], 'far'); ?>
+                                            <span class="name value"><?= $percentage_type_text; ?></span>
+                                        </label>
+                                    <?php endforeach; ?>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 <?php endif; ?>
-                <div class="form-row">
-                    <label for="milestone_visibility_roadmap_<?= $milestone->getID(); ?>"><?= __('Project roadmap visibility'); ?></label>
-                    <select name="visibility_roadmap" id="milestone_visibility_roadmap_<?= $milestone->getID(); ?>">
-                        <option value="0"<?php if (!$milestone->isVisibleRoadmap()): ?> selected<?php endif; ?>><?= __('Not visible'); ?></option>
-                        <option value="1"<?php if ($milestone->isVisibleRoadmap()): ?> selected<?php endif; ?>><?= __('Visible'); ?></option>
-                    </select>
+                <div class="column">
+                    <div class="form-row">
+                        <input type="checkbox" class="fancycheckbox" value="1" name="is_starting" id="starting_date_<?= $milestone->getID(); ?>" onchange="if ($('starting_date_<?= $milestone->getID(); ?>').getValue() == '1') { $('starting_month_<?= $milestone->getID(); ?>').enable(); $('starting_day_<?= $milestone->getID(); ?>').enable(); $('starting_year_<?= $milestone->getID(); ?>').enable(); } else { $('starting_month_<?= $milestone->getID(); ?>').disable(); $('starting_day_<?= $milestone->getID(); ?>').disable(); $('starting_year_<?= $milestone->getID(); ?>').disable(); } " <?php if ($milestone->isStarting()) echo 'checked'; ?>>
+                        <label for="starting_date_<?= $milestone->getID(); ?>"><?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far') . __('Planned start date'); ?></label>
+                        <input type="hidden" id="edit_milestone_start_date" name="start_date" value="<?= $milestone->getStartingDate() ?? date('d-m-Y'); ?>">
+                        <div id="edit_milestone_start_date_container"></div>
+                    </div>
                 </div>
-                <div class="form-row">
-                    <label for="milestone_visibility_issues_<?= $milestone->getID(); ?>"><?= __('Issue availability'); ?></label>
-                    <select name="visibility_issues" id="milestone_visibility_issues_<?= $milestone->getID(); ?>">
-                        <option value="0"<?php if (!$milestone->isVisibleIssues()): ?> selected<?php endif; ?>><?= __('Not available'); ?></option>
-                        <option value="1"<?php if ($milestone->isVisibleIssues()): ?> selected<?php endif; ?>><?= __('Available'); ?></option>
-                    </select>
+                <div class="column">
+                    <div class="form-row">
+                        <input type="checkbox" class="fancycheckbox" value="1" name="is_scheduled" id="sch_date_<?= $milestone->getID(); ?>" onchange="if ($('sch_date_<?= $milestone->getID(); ?>').getValue() == '1') { $('sch_month_<?= $milestone->getID(); ?>').enable(); $('sch_day_<?= $milestone->getID(); ?>').enable(); $('sch_year_<?= $milestone->getID(); ?>').enable(); } else { $('sch_month_<?= $milestone->getID(); ?>').disable(); $('sch_day_<?= $milestone->getID(); ?>').disable(); $('sch_year_<?= $milestone->getID(); ?>').disable(); } " <?php if ($milestone->isScheduled()) echo 'checked'; ?>>
+                        <label for="sch_date_<?= $milestone->getID(); ?>"><?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far') . __('Planned end date'); ?></label>
+                        <input type="hidden" id="edit_milestone_end_date" name="end_date" value="<?= $milestone->getScheduledDate() ?? date('d-m-Y'); ?>">
+                        <div id="edit_milestone_end_date_container"></div>
+                    </div>
                 </div>
-                <div class="form-row">
-                    <label for="milestone_percentage_type_<?= $milestone->getID(); ?>"><?= __('Percentage type'); ?></label>
-                    <select name="percentage_type" id="milestone_percentage_type_<?= $milestone->getID(); ?>">
-                        <?php foreach(Milestone::getPercentageTypes() as $percentage_type_key => $percentage_type_text): ?>
-                            <option value="<?= $percentage_type_key; ?>"<?php if ($milestone->getPercentageType() == $percentage_type_key): ?> selected<?php endif; ?>><?= $percentage_type_text; ?></option>
-                        <?php endforeach; ?>
-                    </select>
-                </div>
-                <div class="form-row">
-                    <input type="checkbox" class="fancycheckbox" value="1" name="is_starting" id="starting_date_<?= $milestone->getID(); ?>" onchange="if ($('starting_date_<?= $milestone->getID(); ?>').getValue() == '1') { $('starting_month_<?= $milestone->getID(); ?>').enable(); $('starting_day_<?= $milestone->getID(); ?>').enable(); $('starting_year_<?= $milestone->getID(); ?>').enable(); } else { $('starting_month_<?= $milestone->getID(); ?>').disable(); $('starting_day_<?= $milestone->getID(); ?>').disable(); $('starting_year_<?= $milestone->getID(); ?>').disable(); } " <?php if ($milestone->isStarting()) echo 'checked'; ?>>
-                    <label for="starting_date_<?= $milestone->getID(); ?>"><?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far') . __('Planned start date'); ?></label>
-                    <select style="width: 90px;" name="starting_month" id="starting_month_<?= $milestone->getID(); ?>"<?php if (!$milestone->hasStartingDate()): ?> disabled<?php endif; ?>>
-                    <?php for ($cc = 1;$cc <= 12;$cc++): ?>
-                        <option value="<?= $cc; ?>" <?php if ($milestone->getStartingMonth() == $cc || (!$milestone->hasStartingDate() && $cc == date('m'))) echo " selected"; ?>><?= strftime('%B', mktime(0, 0, 0, $cc, 1)); ?></option>
-                    <?php endfor; ?>
-                    </select>
-                    <select style="width: 45px;" name="starting_day" id="starting_day_<?= $milestone->getID(); ?>"<?php if (!$milestone->hasStartingDate()): ?> disabled<?php endif; ?>>
-                    <?php for ($cc = 1;$cc <= 31;$cc++): ?>
-                        <option value="<?= $cc; ?>" <?php if ($milestone->getStartingDay() == $cc || (!$milestone->hasStartingDate() && $cc == date('d'))) echo " selected"; ?>><?= $cc; ?></option>
-                    <?php endfor; ?>
-                    </select>
-                    <select style="width: 60px;" name="starting_year" id="starting_year_<?= $milestone->getID(); ?>"<?php if (!$milestone->hasStartingDate()): ?> disabled<?php endif; ?>>
-                    <?php for ($cc = 1990;$cc <= (date("Y") + 10);$cc++): ?>
-                        <option value="<?= $cc; ?>" <?php if ($milestone->getStartingYear() == $cc || (!$milestone->hasStartingDate() && $cc == date('Y'))) echo " selected"; ?>><?= $cc; ?></option>
-                    <?php endfor; ?>
-                    </select>
-                </div>
-                <div class="form-row">
-                    <input type="checkbox" class="fancycheckbox" value="1" name="is_scheduled" id="sch_date_<?= $milestone->getID(); ?>" onchange="if ($('sch_date_<?= $milestone->getID(); ?>').getValue() == '1') { $('sch_month_<?= $milestone->getID(); ?>').enable(); $('sch_day_<?= $milestone->getID(); ?>').enable(); $('sch_year_<?= $milestone->getID(); ?>').enable(); } else { $('sch_month_<?= $milestone->getID(); ?>').disable(); $('sch_day_<?= $milestone->getID(); ?>').disable(); $('sch_year_<?= $milestone->getID(); ?>').disable(); } " <?php if ($milestone->isScheduled()) echo 'checked'; ?>>
-                    <label for="sch_date_<?= $milestone->getID(); ?>"><?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far') . __('Planned end date'); ?></label>
-                    <select style="width: 90px;" name="sch_month" id="sch_month_<?= $milestone->getID(); ?>" <?php print (!$milestone->hasScheduledDate()) ? "disabled" : ""; ?>>
-                    <?php for ($cc = 1;$cc <= 12;$cc++): ?>
-                        <option value="<?= $cc; ?>" <?php if ($milestone->getScheduledMonth() == $cc || (!$milestone->hasScheduledDate() && $cc == date('m'))) echo " selected"; ?>><?= strftime('%B', mktime(0, 0, 0, $cc, 1)); ?></option>
-                    <?php endfor; ?>
-                    </select>
-                    <select style="width: 45px;" name="sch_day" id="sch_day_<?= $milestone->getID(); ?>" <?php print (!$milestone->hasScheduledDate()) ? "disabled" : ""; ?>>
-                    <?php for ($cc = 1;$cc <= 31;$cc++): ?>
-                        <option value="<?= $cc; ?>" <?php if ($milestone->getScheduledDay() == $cc || (!$milestone->hasScheduledDate() && $cc == date('d'))) echo " selected"; ?>><?= $cc; ?></option>
-                    <?php endfor; ?>
-                    </select>
-                    <select style="width: 60px;" name="sch_year" id="sch_year_<?= $milestone->getID(); ?>" <?php print (!$milestone->hasScheduledDate()) ? "disabled" : ""; ?>>
-                    <?php for ($cc = 1990;$cc <= (date("Y") + 10);$cc++): ?>
-                        <option value="<?= $cc; ?>" <?php if ($milestone->getScheduledYear() == $cc || (!$milestone->hasScheduledDate() && $cc == date('Y'))) echo " selected"; ?>><?= $cc; ?></option>
-                    <?php endfor; ?>
-                    </select>
-                </div>
-                <div id="milestone_include_issues" class="milestone_include_issues" style="display: none;">
+                <div id="milestone_include_issues" class="form-row milestone_include_issues" style="display: none;">
                     <?= $milestoneincludeissues_text; ?>
                     <input id="include_selected_issues" value="0" name="include_selected_issues" type="hidden">
                 </div>
@@ -115,3 +105,17 @@
         </div>
     </div>
 </div>
+<script type="text/javascript">
+    require(['domReady', 'pachno/index', 'calendarview'], function (domReady, pachno_index_js, Calendar) {
+        domReady(function () {
+            Calendar.setup({
+                dateField: 'edit_milestone_start_date',
+                parentElement: 'edit_milestone_start_date_container'
+            });
+            Calendar.setup({
+                dateField: 'edit_milestone_end_date',
+                parentElement: 'edit_milestone_end_date_container'
+            });
+        });
+    });
+</script>

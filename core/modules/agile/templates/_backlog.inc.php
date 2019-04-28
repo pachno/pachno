@@ -1,3 +1,12 @@
+<?php
+
+use pachno\core\entities\AgileBoard;
+
+/** @var AgileBoard $board */
+
+$new_milestone_label = ($board->getType() == AgileBoard::TYPE_SCRUM) ? __('Create new sprint') : __('Create new milestone');
+
+?>
 <div class="new_milestone_marker" id="new_backlog_milestone_marker">
     <div class="draggable">
         <div class="milestone_counts_container">
@@ -14,7 +23,7 @@
                 </tr>
             </table>
         </div>
-        <?php echo javascript_link_tag(__('Create new sprint'), array('class' => 'button', 'onclick' => "Pachno.Main.Helpers.Backdrop.show('".make_url('get_partial_for_backdrop', array('key' => 'agilemilestone', 'project_id' => $board->getProject()->getId(), 'board_id' => $board->getID()))."', Pachno.Project.Planning.updateNewMilestoneIssues);")); ?>
+        <?php echo javascript_link_tag($new_milestone_label, array('class' => 'button', 'onclick' => "Pachno.Main.Helpers.Backdrop.show('".make_url('get_partial_for_backdrop', array('key' => 'agilemilestone', 'project_id' => $board->getProject()->getId(), 'board_id' => $board->getID()))."', Pachno.Project.Planning.updateNewMilestoneIssues);")); ?>
     </div>
 </div>
 <?php foreach ($board->getBacklogSearchObject()->getIssues() as $issue): ?>

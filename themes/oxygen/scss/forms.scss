@@ -59,6 +59,21 @@
       }
     }
 
+    .error {
+      display: none;
+    }
+
+    &.invalid {
+      .error {
+        display: flex;
+        flex-direction: row;
+        color: #D62246;
+        font-size: .9em;
+        font-weight: 600;
+        flex: 0 0 auto;
+      }
+    }
+
     .helper-text {
       flex: 1 1 100%;
       color: rgb(153, 153, 153);
@@ -79,6 +94,7 @@
       align-items: center;
       font-size: .8em;
       font-weight: 600;
+      transition: color .25s ease-in-out;
 
       .icon {
         flex: 0 0 24px;
@@ -86,7 +102,7 @@
       }
     }
 
-    > input[type=text] {
+    > input[type=text], input[type=password] {
       flex: 1 1 100%;
       padding: .2em;
       font-size: 1em;
@@ -94,6 +110,12 @@
       &.name-input-enhance {
         font-size: 1.25em;
         padding: .5em .2em;
+        border-bottom-width: 2px;
+      }
+
+      &:focus + label,
+      &:active + label {
+        color: #0C8990;
       }
     }
 

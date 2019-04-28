@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,300i,600,600i,700,700i|Fira+Mono:400,500,700&subset=cyrillic,cyrillic-ext,latin-ext");
+@import url("https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,300i,400,400i,600,600i|Fira+Mono:400,500,700&subset=cyrillic,cyrillic-ext,latin-ext");
 /* General styles */
 body, td, th {
   padding: 0;
@@ -38,7 +38,7 @@ h6 {
   font-size: 1.05em; }
 
 h1, h2, h3, h4, h5, h6 {
-  font-weight: 600;
+  font-weight: 400;
   padding: 3px 3px 3px 0;
   margin: 5px 0 5px 0; }
 
@@ -57,17 +57,19 @@ a {
     text-decoration: line-through; }
   a:active, a:focus {
     outline: none; }
-  a a:hover {
+  a:hover {
     border-bottom: 1px dotted #AAA; }
-    a a:hover.image {
+    a:hover.image {
       border: 0; }
+  a.image {
+    border: 0; }
 
 form, p {
   margin: 0;
   padding: 0; }
 
 b, strong {
-  font-weight: 600; }
+  font-weight: 400; }
 
 code {
   padding: 0 3px 0 3px;
@@ -149,13 +151,13 @@ select {
   margin: 0; }
 
 th {
-  font-weight: 600;
+  font-weight: 400;
   border-bottom: 1px solid #DDD;
   padding: 2px;
   background-color: #F5F5F5; }
 
 label {
-  font-weight: 600;
+  font-weight: 400;
   margin: 0;
   padding: 2px;
   cursor: pointer;
@@ -163,10 +165,10 @@ label {
   color: #888; }
 
 label .faded_out {
-  font-weight: 600; }
+  font-weight: 400; }
 
 label.optional {
-  font-weight: 600; }
+  font-weight: 400; }
 
 label > input[type="checkbox"] {
   margin: 0 3px;
@@ -218,7 +220,7 @@ div.image_container.thumb img.image {
 
 .generic_offline {
   text-align: center;
-  font-weight: 600;
+  font-weight: 400;
   font-size: larger; }
 
 .left {
@@ -257,21 +259,20 @@ header {
 
 .backdrop_detail_header {
   box-shadow: none;
-  border-bottom: 2px solid #0C8990;
+  border: none;
   color: #0C8990;
   font-weight: 600;
-  font-size: 1.3em;
+  font-size: 1.4em;
   margin: 0;
   text-transform: uppercase;
   display: flex;
   background-color: #FFF;
   border-top-left-radius: 3px;
   border-top-right-radius: 3px; }
-
-.backdrop_detail_header span {
-  flex: 1 1 auto;
-  padding: 10px;
-  text-align: left; }
+  .backdrop_detail_header span {
+    flex: 1 1 auto;
+    padding: 10px 15px;
+    text-align: left; }
 
 .backdrop_detail_header .closer,
 .backdrop_detail_header .back_link,
@@ -282,7 +283,9 @@ header {
   box-sizing: border-box;
   border-radius: 4px;
   vertical-align: middle;
-  transition: background-color .25s ease-in-out, color .25s ease-in-out; }
+  transition: background-color .25s ease-in-out, color .25s ease-in-out;
+  display: inline-block;
+  text-align: center; }
   .backdrop_detail_header .closer:hover,
   .backdrop_detail_header .back_link:hover,
   .backdrop_detail_header .add_link:hover {
@@ -376,7 +379,7 @@ header #user_notifications_count.unread {
 
 #user_notifications h1 {
   font-size: 1.1em;
-  font-weight: 600;
+  font-weight: 400;
   padding: 5px 0;
   margin: 3px 5px 5px 5px;
   color: #888; }
@@ -389,7 +392,7 @@ header #user_notifications_count.unread {
 
 #user_notifications_ist > li h1 {
   font-size: 1em;
-  font-weight: 600;
+  font-weight: 400;
   color: #555;
   border: 0;
   padding: 0;
@@ -528,10 +531,10 @@ header #header_userinfo li.temporarily_switched .user_menu_dropdown {
   padding: 2px 4px;
   margin: 0;
   color: #555;
-  font-weight: 600; }
+  font-weight: 400; }
 
 .userlink.inline:hover {
-  font-weight: 600; }
+  font-weight: 400; }
 
 .userlink:hover {
   text-decoration: none;
@@ -684,7 +687,7 @@ img.avatar {
   align-items: flex-start; }
 
 .header-user-info .header-user-name-name {
-  font-weight: 600;
+  font-weight: 400;
   color: white; }
 
 .header-user-info.active .header-user-name-name {
@@ -774,7 +777,7 @@ img.avatar {
 
 .submenu_strip .selected_project {
   font-size: 1em;
-  font-weight: 600;
+  font-weight: 400;
   color: #555;
   border-color: #D9D9BB; }
 
@@ -883,7 +886,7 @@ input[type=checkbox].semi-checked {
   margin: 0; }
 
 .popup_message .messagetitle {
-  font-weight: 600;
+  font-weight: 400;
   color: #555;
   display: block; }
 
@@ -975,7 +978,7 @@ footer {
 
 .login_popup .article h1 {
   font-size: 1.7em;
-  font-weight: 600;
+  font-weight: 400;
   border-bottom: none;
   margin: 5px 0;
   color: #555;
@@ -988,29 +991,9 @@ footer {
   margin: 0;
   border: none; }
 
-#pachno_username, #forgot_password_username, .login_popup input[type=password], #fieldusername {
-  background-repeat: no-repeat;
-  background-position: 7px 10px;
-  padding: 8px 8px 8px 28px;
-  font-size: 1.2em;
-  border-radius: 4px;
-  width: 383px; }
-
 .account_popupform input[type=text] {
   padding: 8px;
   font-size: 1.2em;
-  border-radius: 4px;
-  width: 383px; }
-
-#register input[type=text]#fieldusername {
-  padding: 8px 8px 8px 28px;
-  font-size: 1.1em;
-  width: 358px;
-  transition: background-image 0.3s ease, background-color 0.3s ease; }
-
-#register input[type=text], #register input[type=email] {
-  padding: 6px;
-  font-size: 1.1em;
   border-radius: 4px;
   width: 383px; }
 
@@ -1023,10 +1006,6 @@ footer {
 
 #register_message {
   margin-bottom: 0; }
-
-#login_indicator, #register_indicator, .login_button_container .indicator {
-  vertical-align: middle;
-  margin-right: 5px; }
 
 #tab_forgot_pane {
   width: 600px;
@@ -1049,41 +1028,21 @@ footer {
 .logindiv.openid_container form {
   width: 590px; }
 
+.logindiv.registration_button_container.active {
+  display: flex;
+  flex-direction: column;
+  align-items: center; }
+
+.logindiv.form-container:not(.active) {
+  display: none; }
+
 .login_popup h2.login_header {
   font-size: 1.2em;
-  font-weight: 600;
+  font-weight: 400;
   border-bottom: 1px dotted rgba(0, 0, 0, 0.2);
   padding: 5px 0;
   margin: 5px 0;
   color: #888; }
-
-.login_formlist, .account_popupform {
-  list-style: none;
-  margin: 0 0 15px 0;
-  padding: 0; }
-
-.login_formlist li, .account_popupform li {
-  padding: 0;
-  margin: 5px 0; }
-
-.login_formlist label, .account_popupform label {
-  font-weight: 600;
-  font-size: 1.1em;
-  padding: 5px 0;
-  clear: both;
-  float: none;
-  display: block; }
-
-.login_formlist label.login_fieldlabel {
-  clear: none;
-  display: inline-block;
-  font-weight: 600;
-  font-size: 1.1em;
-  vertical-align: middle;
-  padding: 2px 0; }
-
-.login_formlist li.security_check {
-  padding-top: 20px; }
 
 .login_page_div {
   width: 800px;
@@ -1118,7 +1077,7 @@ footer {
   padding: 5px 0;
   color: #888;
   border-bottom: none;
-  font-weight: 600; }
+  font-weight: 400; }
 
 .comment.commit {
   margin-bottom: 0; }
@@ -1161,7 +1120,7 @@ footer {
   font-size: 1.1em; }
 
 .commit_left table b {
-  font-weight: 600; }
+  font-weight: 400; }
 
 .commit_left table img {
   padding-top: 3px; }
@@ -1173,7 +1132,7 @@ footer {
 
 .commitbranch {
   display: inline-block;
-  font-weight: 600;
+  font-weight: 400;
   background-color: #EAF2FF;
   color: #99C;
   padding: 0 4px 2px 4px;
@@ -1228,7 +1187,7 @@ div.autocomplete ul {
 div.autocomplete li.header {
   padding-top: 15px;
   font-size: 0.85em;
-  font-weight: 600;
+  font-weight: 400;
   border-top: 0;
   color: #AAA;
   text-transform: uppercase; }
@@ -1266,7 +1225,7 @@ div.autocomplete ul li.issue_closed {
 
 div.autocomplete .extra {
   display: none;
-  font-weight: 600;
+  font-weight: 400;
   font-size: 1em; }
 
 div.autocomplete .extra.attached {
@@ -1405,7 +1364,7 @@ div.autocomplete ul li > img:first-child {
   border-bottom: none; }
 
 .tab_menu .selected {
-  font-weight: 600;
+  font-weight: 400;
   background-color: #FFF; }
 
 .tab_menu li:not(.selected):not(.active):hover {
@@ -1517,7 +1476,7 @@ ul.tab_menu_dropdown, .tab_menu_dropdown ul {
   padding: 15px 0 5px 0;
   margin: 5px;
   font-size: 1.1em;
-  font-weight: 600;
+  font-weight: 400;
   text-transform: uppercase;
   color: #444;
   border-bottom: 1px dotted #CCC; }
@@ -1529,7 +1488,7 @@ ul.tab_menu_dropdown, .tab_menu_dropdown ul {
 .tab_menu_dropdown li.header.userinfo {
   text-transform: none;
   font-size: 1.4em;
-  font-weight: 600;
+  font-weight: 400;
   padding: 10px 10px 20px 10px; }
 
 .tab_menu_dropdown li.header.userinfo span {
@@ -1725,7 +1684,7 @@ ul.tab_menu_dropdown, .tab_menu_dropdown ul {
 
 .project_stuff li.project_name {
   font-size: 1em;
-  font-weight: 700;
+  font-weight: 600;
   padding-top: 1px; }
 
 .project_stuff li.no_project_name {
@@ -1761,7 +1720,7 @@ ul.tab_menu_dropdown, .tab_menu_dropdown ul {
 /* end project frontpage menu */
 /* generic header formatting */
 .header {
-  font-weight: 600;
+  font-weight: 400;
   text-align: left; }
 
 /* shadowed boxes */
@@ -1787,7 +1746,7 @@ a.shadowed:active {
 
 .user_dropdown .user_realname {
   font-size: 1.2em;
-  font-weight: 600;
+  font-weight: 400;
   padding: 0;
   width: 240px;
   float: left; }
@@ -1800,7 +1759,7 @@ a.shadowed:active {
 
 #user_details_popup .user_realname {
   font-size: 1.5em;
-  font-weight: 600;
+  font-weight: 400;
   padding: 2px 0 0 0;
   line-height: 1.2; }
 
@@ -1827,7 +1786,7 @@ a.shadowed:active {
 
 .account_details .user_realname {
   font-size: 1.2em;
-  font-weight: 600;
+  font-weight: 400;
   line-height: 1.3;
   padding-bottom: 2px; }
 
@@ -1853,7 +1812,7 @@ a.shadowed:active {
 
 #account_user_info:first-line {
   font-size: 1.5em;
-  font-weight: 600;
+  font-weight: 400;
   color: #333; }
 
 #account_info_container {
@@ -1928,7 +1887,7 @@ a.shadowed:active {
   padding: 0; }
 
 #account_tabs_panes h3, .configuration_page h3, #project_config_menu_panes h3 {
-  font-weight: 600;
+  font-weight: 400;
   font-size: 1.4em;
   color: #888;
   border-bottom: 1px dotted #CCC;
@@ -1939,7 +1898,7 @@ a.shadowed:active {
   padding: 5px 0 15px; }
 
 label[for=profile_prefer_wiki_markdown] {
-  font-weight: 600; }
+  font-weight: 400; }
 
 #gravatar_change {
   font-weight: 300;
@@ -1949,7 +1908,7 @@ label[for=profile_prefer_wiki_markdown] {
 
 #account_tabs_panes h4 {
   font-size: 1em;
-  font-weight: 600;
+  font-weight: 400;
   padding: 0;
   margin: 0; }
 
@@ -1988,7 +1947,7 @@ label[for=profile_prefer_wiki_markdown] {
   margin: 0 0 0 8px; }
 
 .usercard .user_username {
-  font-weight: 600;
+  font-weight: 400;
   font-size: 0.9em;
   color: #AAA;
   font-style: italic;
@@ -2051,7 +2010,7 @@ label[for=profile_prefer_wiki_markdown] {
 
 .user_dropdown .user_details:first-line {
   font-size: 1.7em;
-  font-weight: 600; }
+  font-weight: 400; }
 
 .user_details ul.teamlist {
   list-style-type: none; }
@@ -2077,7 +2036,7 @@ label[for=profile_prefer_wiki_markdown] {
 .configuration_container h1 {
   margin: 15px 0 5px 0;
   background-color: transparent;
-  font-weight: 600;
+  font-weight: 400;
   border: 0;
   padding: 7px 0 3px 0;
   border-bottom: 1px dotted #CCC;
@@ -2096,7 +2055,7 @@ label[for=profile_prefer_wiki_markdown] {
 
 .config_explanation .important {
   display: block;
-  font-weight: 600; }
+  font-weight: 400; }
 
 .config_buttons, .config_badges {
   list-style: none;
@@ -2124,7 +2083,7 @@ label[for=profile_prefer_wiki_markdown] {
 
 .config_buttons li.config_selected {
   background-color: #FFF;
-  font-weight: 600; }
+  font-weight: 400; }
 
 .config_buttons li a {
   display: block;
@@ -2176,13 +2135,13 @@ label[for=profile_prefer_wiki_markdown] {
   font-size: 1.2em;
   display: block;
   margin-bottom: 5px;
-  font-weight: 600; }
+  font-weight: 400; }
 
 .config_badges b img {
   margin-top: 2px; }
 
 .config_plugins .header .plugin_shortname {
-  font-weight: 600;
+  font-weight: 400;
   font-size: 0.95em; }
 
 .config_plugins .content {
@@ -2331,7 +2290,7 @@ label[for=profile_prefer_wiki_markdown] {
   border: 0; }
 
 .issuetype_scheme_associate_link {
-  font-weight: 600;
+  font-weight: 400;
   font-size: 0.9em; }
 
 .issuetype_description {
@@ -2356,7 +2315,7 @@ label[for=profile_prefer_wiki_markdown] {
 
 .tab_header {
   padding-top: 10px;
-  font-weight: 600;
+  font-weight: 400;
   border-bottom: 1px solid #DDD; }
 
 /* permissions configuration styling */
@@ -2364,7 +2323,7 @@ label[for=profile_prefer_wiki_markdown] {
   background-color: transparent;
   color: #888;
   text-transform: uppercase;
-  font-weight: 600;
+  font-weight: 400;
   padding: 15px 2px 5px 2px; }
 
 .permissions_popup thead:first-child th {
@@ -2459,7 +2418,7 @@ label[for=profile_prefer_wiki_markdown] {
 
 .permissions_warning strong {
   display: block;
-  font-weight: 700;
+  font-weight: 600;
   text-transform: uppercase; }
 
 /* end permissions */
@@ -2471,7 +2430,7 @@ label[for=profile_prefer_wiki_markdown] {
   font-size: 0.9em; }
 
 .groupbox_header, .teambox_header, .clientbox_header {
-  font-weight: 600; }
+  font-weight: 400; }
 
 .groupbox_membercount, .teambox_membercount, .clientbox_membercount {
   font-weight: 300;
@@ -2485,7 +2444,7 @@ label[for=profile_prefer_wiki_markdown] {
   float: right; }
 
 #tab_users_pane > strong {
-  font-weight: 600;
+  font-weight: 400;
   display: block; }
 
 .project_list nav .more_actions_dropdown li.finduser_container {
@@ -2558,13 +2517,13 @@ label[for=profile_prefer_wiki_markdown] {
 
 .scheme_list td.workflow_inactive {
   color: #A88;
-  font-weight: 600;
+  font-weight: 400;
   width: 100px;
   text-align: center; }
 
 .scheme_list td.workflow_active {
   color: #390;
-  font-weight: 600;
+  font-weight: 400;
   width: 100px;
   text-align: center; }
 
@@ -2573,7 +2532,7 @@ label[for=profile_prefer_wiki_markdown] {
   text-align: left; }
 
 .scheme_list td.workflow_steps span {
-  font-weight: 600; }
+  font-weight: 400; }
 
 .scheme_list td.workflow_scheme_issuetypes {
   width: 250px;
@@ -2585,11 +2544,11 @@ label[for=profile_prefer_wiki_markdown] {
   font-size: 1em; }
 
 .scheme_list td.workflow_scheme_issuetypes span, .scheme_list td.workflow_scheme_projects span {
-  font-weight: 600; }
+  font-weight: 400; }
 
 .scheme_list td.workflow_actions {
   width: 170px;
-  font-weight: 600;
+  font-weight: 400;
   font-size: 0.9em;
   text-align: right; }
 
@@ -2600,7 +2559,7 @@ label[for=profile_prefer_wiki_markdown] {
   width: 400px; }
 
 .workflow_name {
-  font-weight: 600;
+  font-weight: 400;
   margin-bottom: 5px; }
 
 .workflow_description, .workflow_name span.builtin {
@@ -2670,7 +2629,7 @@ label[for=profile_prefer_wiki_markdown] {
   border-bottom: 1px dotted #AAA; }
 
 .workflow_step_transition_name {
-  font-weight: 600;
+  font-weight: 400;
   font-size: 0.9em;
   font-style: italic;
   margin: 5px 0; }
@@ -2733,7 +2692,7 @@ label[for=profile_prefer_wiki_markdown] {
 
 #add_post_action.more_actions_dropdown h1 {
   font-size: 0.9em;
-  font-weight: 600;
+  font-weight: 400;
   border-bottom: 1px dotted #CCC;
   color: #AAA;
   padding: 5px 0;
@@ -2781,7 +2740,7 @@ label[for=profile_prefer_wiki_markdown] {
   padding: 5px;
   font-size: 1.1em;
   font-style: italic;
-  font-weight: 600; }
+  font-weight: 400; }
 
 input[type=submit].workflow_transition_submit_button, input[type=submit].workflow_transition_submit_button:hover {
   padding: 4px 8px;
@@ -2793,7 +2752,7 @@ input[type=submit].workflow_transition_submit_button, input[type=submit].workflo
 .side_bar .header {
   margin: 2px 0 5px 0;
   padding: 3px 3px 3px 5px;
-  font-weight: 600;
+  font-weight: 400;
   border-bottom: 1px solid #CCC;
   background-color: transparent; }
 
@@ -2809,7 +2768,7 @@ ul.project_list {
 ul.project_list > li {
   margin: 0;
   font-size: 1.0em;
-  font-weight: 600;
+  font-weight: 400;
   padding: 10px 0 0 0;
   clear: both; }
 
@@ -2831,7 +2790,7 @@ ul.project_list > li {
   border-bottom: 1px dotted #DDD;
   font-size: 1.1em;
   text-transform: uppercase;
-  font-weight: 600; }
+  font-weight: 400; }
 
 .client_dashboard {
   padding: 10px; }
@@ -2851,7 +2810,7 @@ ul.project_list > li {
   width: 100%; }
 
 .dashboard_team_info .dashboard_team_header {
-  font-weight: 600;
+  font-weight: 400;
   font-size: 2.1em; }
 
 .dashboard_team_info .dashboard_team_viewusers {
@@ -2892,7 +2851,7 @@ ul.client_users li, ul.team_users li, ul.project_users li {
 
 .commits-list .commit .message-author-container .commit-message,
 .commits-list .commit .message-author-container .commit-message:hover {
-  font-weight: 600;
+  font-weight: 400;
   color: #555; }
 
 .commits-list .commit .message-author-container .commit-author {
@@ -2914,7 +2873,7 @@ ul.client_users li, ul.team_users li, ul.project_users li {
 .commit-details-list .commit-sha, .commit-details-list .commit-sha:hover {
   font-size: 1em;
   padding: 3px 7px;
-  font-weight: 600;
+  font-weight: 400;
   margin-left: 0;
   display: inline-block; }
 
@@ -2987,7 +2946,7 @@ ul.client_users li, ul.team_users li, ul.project_users li {
   font-weight: 300; }
 
 .simple-list.branch-list .selected .branch-name {
-  font-weight: 600; }
+  font-weight: 400; }
 
 .simple-list.branch-list .branch-last-updated {
   display: block;
@@ -3005,11 +2964,11 @@ ul.client_users li, ul.team_users li, ul.project_users li {
   margin-left: 7px; }
 
 .commit-files-summary .summary .num_changes {
-  font-weight: 600;
+  font-weight: 400;
   color: rgba(78, 129, 171, 0.7); }
 
 .commit-files-summary .summary .num_files {
-  font-weight: 600; }
+  font-weight: 400; }
 
 .commit-files-summary .fas {
   vertical-align: middle;
@@ -3053,7 +3012,7 @@ ul.client_users li, ul.team_users li, ul.project_users li {
 .diff-summary {
   display: inline-block;
   margin-left: 7px;
-  font-weight: 600;
+  font-weight: 400;
   padding: 3px 5px;
   background-color: rgba(225, 225, 225, 0.4);
   border-radius: 3px; }
@@ -3180,7 +3139,7 @@ a.friend {
 .issuetype_list .button, .issuetype_list .button:hover {
   margin: 10px;
   font-size: 1.5em;
-  font-weight: 600;
+  font-weight: 400;
   padding: 20px 15px 20px 75px;
   text-align: left;
   min-width: 275px; }
@@ -3198,7 +3157,7 @@ a.friend {
 .report_issue_header {
   margin: 10px auto 0 auto;
   font-size: 1.5em;
-  font-weight: 600;
+  font-weight: 400;
   padding: 2px 0 10px 0;
   width: 990px; }
 
@@ -3242,19 +3201,19 @@ a.friend {
 #report_form label {
   font-size: 1.1em;
   padding: 3px 0 3px 0;
-  font-weight: 600; }
+  font-weight: 400; }
 
 .backdrop_detail_content #report_form label {
   font-size: 1em;
   text-transform: uppercase;
   color: #888;
-  font-weight: 600; }
+  font-weight: 400; }
 
 #report_form label span {
   display: none; }
 
 #report_form label.required {
-  font-weight: 600; }
+  font-weight: 400; }
 
 #report_form label.required span {
   display: inline; }
@@ -3431,7 +3390,7 @@ input.padded {
   width: 180px;
   display: inline-block;
   font-size: 1.1em;
-  font-weight: 600; }
+  font-weight: 400; }
 
 #file_upload_list li label:first-of-type {
   float: left;
@@ -3513,7 +3472,7 @@ input.padded {
   font-size: 1em; }
 
 #reportissue_extrafields li {
-  font-weight: 600;
+  font-weight: 400;
   clear: none;
   margin: 5px;
   min-height: 26px;
@@ -3716,7 +3675,7 @@ input.padded {
   padding: 0 0 7px 0;
   color: #999;
   border-bottom: 1px dotted #b9b9b9;
-  font-weight: 600; }
+  font-weight: 400; }
 
 #dialog_content, #dialog_modal_content {
   padding: 0 7px;
@@ -3774,7 +3733,7 @@ input.padded {
 /* end left hand list */
 .error_message {
   color: #E44;
-  font-weight: 600;
+  font-weight: 400;
   margin: 10px 5px 5px 0; }
 
 .affected_item {
@@ -3805,7 +3764,7 @@ input.padded {
   vertical-align: middle; }
 
 .viewissue_description_header, .viewissue_affects_header, .viewissue_reproduction_steps_header, .viewissue_customfield_header {
-  font-weight: 600;
+  font-weight: 400;
   font-size: 1.1em;
   padding: 0 0 5px 0; }
 
@@ -3818,7 +3777,7 @@ input.padded {
   border-bottom: 1px solid #CCC;
   padding: 3px;
   margin-top: 5px;
-  font-weight: 600;
+  font-weight: 400;
   color: #888;
   font-size: 1.1em;
   text-transform: uppercase; }
@@ -4206,7 +4165,7 @@ h5.change-list {
   padding: 4px 0;
   vertical-align: top;
   color: #888;
-  font-weight: 600;
+  font-weight: 400;
   font-size: 1em;
   text-transform: uppercase; }
 
@@ -4363,12 +4322,31 @@ table.issue_affects td img {
 .dashboard.layout_standard ul.dashboard_column > li div.header, #dashboard_lefthand > div.header, #dashboard_righthand > div.header {
   margin: 2px 5px;
   padding: 3px 3px 5px 2px;
-  font-weight: 600;
+  font-weight: 400;
   font-size: 1em;
   border-bottom: 2px solid #0C8990;
   background-color: #FFF;
   border-radius: 4px 4px 0 0;
-  color: #0C8990; }
+  color: #0C8990;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between; }
+  .dashboard.layout_standard ul.dashboard_column > li div.header span, #dashboard_lefthand > div.header span, #dashboard_righthand > div.header span {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start; }
+  .dashboard.layout_standard ul.dashboard_column > li div.header .fas,
+  .dashboard.layout_standard ul.dashboard_column > li div.header .far, #dashboard_lefthand > div.header .fas,
+  #dashboard_lefthand > div.header .far, #dashboard_righthand > div.header .fas,
+  #dashboard_righthand > div.header .far {
+    margin: 0 .35rem; }
+    .dashboard.layout_standard ul.dashboard_column > li div.header .fas:first-child,
+    .dashboard.layout_standard ul.dashboard_column > li div.header .far:first-child, #dashboard_lefthand > div.header .fas:first-child,
+    #dashboard_lefthand > div.header .far:first-child, #dashboard_righthand > div.header .fas:first-child,
+    #dashboard_righthand > div.header .far:first-child {
+      margin-left: 0; }
 
 .dashboard.layout_standard ul.dashboard_column > li .milestone_box .header {
   margin: 10px 0 0 0;
@@ -4377,7 +4355,7 @@ table.issue_affects td img {
   text-transform: none; }
 
 .dashboard.layout_standard .dashboard_view_header {
-  font-weight: 600;
+  font-weight: 400;
   color: #666;
   font-size: 1em;
   padding: 4px; }
@@ -4390,9 +4368,13 @@ table.issue_affects td img {
   width: auto; }
 
 .dashboard.layout_standard .dashboard_view_content .button-container {
-  text-align: right;
-  display: block;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
   padding-bottom: 6px; }
+  .dashboard.layout_standard .dashboard_view_content .button-container .button:first-child:last-child {
+    margin-left: auto; }
 
 .dashboard.layout_standard .dashboard_view_content .project_list {
   font-size: 0.8em; }
@@ -4502,7 +4484,7 @@ table.issue_affects td img {
   padding: 0; }
 
 #add_dashboard_views h3, #add_dashboard_views h4 {
-  font-weight: 600;
+  font-weight: 400;
   color: #888;
   text-transform: uppercase;
   border-bottom: 1px dotted #CCC;
@@ -4583,7 +4565,7 @@ table.issue_affects td img {
   margin-bottom: 10px; }
 
 .backdrop_box.sectioned h2 {
-  font-weight: 600;
+  font-weight: 400;
   color: #888;
   padding: 5px 0;
   margin: 15px 5px 5px 5px;
@@ -4619,7 +4601,7 @@ table.issue_affects td img {
 .sectioned_table td label:first-child {
   margin-top: 0; }
 
-.edit_milestone .milestone_include_issues {
+.milestone_include_issues {
   border: 1px solid rgba(100, 100, 100, 0.3);
   background-color: #F7F4DF;
   padding: 6px;
@@ -4715,7 +4697,7 @@ table.issue_affects td img {
   text-align: left; }
 
 #epics-list li.add_epic_container label {
-  font-weight: 600;
+  font-weight: 400;
   font-size: 0.9em;
   padding: 5px 0 0 0;
   display: block;
@@ -4779,7 +4761,7 @@ table.issue_affects td img {
 
 #builds-list .release_name, #epics-list .epic_name {
   font-size: 1.1em;
-  font-weight: 600;
+  font-weight: 400;
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
@@ -4887,9 +4869,14 @@ table.issue_affects td img {
   margin-right: -5px; }
 
 #no_milestones {
-  color: #888;
-  padding: 5px 20px;
-  font-size: 1.1em; }
+  position: relative; }
+  #no_milestones #indicate-button {
+    position: absolute;
+    right: 6em;
+    top: .5em;
+    width: 5em;
+    height: 5em;
+    transform: rotate(90deg); }
 
 #milestone_list {
   margin: 0;
@@ -4974,7 +4961,7 @@ table.issue_affects td img {
   padding: 4px 0;
   border: none;
   font-size: 1.1em;
-  font-weight: 600; }
+  font-weight: 400; }
 
 .milestone_box .milestone_basic_container, .milestone_box .milestone_counts_container {
   display: inline-block;
@@ -4992,7 +4979,7 @@ table.issue_affects td img {
   margin-top: -10px; }
 
 .milestone_box .milestone_name {
-  font-weight: 600;
+  font-weight: 400;
   font-size: 1.2em;
   text-transform: uppercase;
   color: #777;
@@ -5254,7 +5241,7 @@ dl.info {
   text-align: center;
   padding: 0 2px;
   font-size: 1em;
-  font-weight: 600;
+  font-weight: 400;
   text-transform: uppercase;
   vertical-align: middle;
   line-height: 1em; }
@@ -5265,7 +5252,7 @@ dl.info {
   text-align: center;
   padding: 0;
   font-size: 1em;
-  font-weight: 600;
+  font-weight: 400;
   text-transform: uppercase;
   vertical-align: middle;
   line-height: 1em;
@@ -5276,11 +5263,11 @@ dl.info {
 .priority.priority_1 {
   color: #BF0303;
   font-style: normal;
-  font-weight: 600; }
+  font-weight: 400; }
 
 .priority.priority_2, .priority.priority_3 {
   color: #C39500;
-  font-weight: 600; }
+  font-weight: 400; }
 
 .priority.priority_4 {
   color: #00892C;
@@ -5487,7 +5474,7 @@ a.dynamic_menu_link.active, a.dynamic_menu_link.active:hover {
   color: #888;
   font-size: 0.85em;
   padding: 2px;
-  font-weight: 600;
+  font-weight: 400;
   text-transform: uppercase;
   border-bottom: 1px dotted #CCC; }
 
@@ -5529,7 +5516,7 @@ a.dynamic_menu_link.active, a.dynamic_menu_link.active:hover {
 #associated_projects li .project_name {
   text-align: left;
   padding: 5px;
-  font-weight: 600;
+  font-weight: 400;
   font-size: 0.9em;
   float: left; }
 
@@ -5575,7 +5562,7 @@ ul.milestone_issues_container li {
 
 ul.milestone_issues_container li .header, .infobox .header {
   font-size: 1.1em;
-  font-weight: 600; }
+  font-weight: 400; }
 
 ul.milestone_issues_container li .content {
   padding-top: 3px;
@@ -5585,7 +5572,7 @@ ul.milestone_issues_container li .content {
 
 ul.milestone_issues_container li .story_title {
   font-size: 0.9em;
-  font-weight: 600;
+  font-weight: 400;
   padding-top: 1px;
   height: 18px;
   overflow: hidden; }
@@ -5608,7 +5595,7 @@ ul.milestone_issues_container li:hover .story_color {
 .story_estimation_div .header {
   float: left;
   padding-top: 3px;
-  font-weight: 600; }
+  font-weight: 400; }
 
 .story_estimation_div a {
   font-weight: 300; }
@@ -5619,7 +5606,7 @@ ul.milestone_issues_container li:hover .story_color {
 ul.milestone_issues_container li .story_no {
   float: left;
   font-size: 1.1em;
-  font-weight: 600;
+  font-weight: 400;
   font-style: italic;
   background-color: transparent;
   color: #AAA;
@@ -5667,7 +5654,7 @@ ul.milestone_issues_container li:hover .actions {
 
 ul.milestone_issues_container li .actions label {
   float: left;
-  font-weight: 600;
+  font-weight: 400;
   margin: 0 5px 0 0;
   padding: 0;
   font-size: 0.9em; }
@@ -5679,7 +5666,7 @@ ul.milestone_issues_container li .actions label {
   padding: 5px; }
 
 #scrum #scrum_menu .header {
-  font-weight: 700;
+  font-weight: 600;
   margin-bottom: 5px; }
 
 #scrum #scrum_menu a {
@@ -5747,7 +5734,7 @@ h3 .dropdown_box a, h3 .dropdown_box a:hover {
   width: 300px; }
 
 #scrum_unassigned .add_story_header {
-  font-weight: 600;
+  font-weight: 400;
   float: left; }
 
 #milestone_details_overview .milestone_date {
@@ -5857,7 +5844,7 @@ h3 .dropdown_box a, h3 .dropdown_box a:hover {
 .whiteboard-columns thead h1,
 .whiteboard-columns .thead h1 {
   font-size: 1.1em;
-  font-weight: 600;
+  font-weight: 400;
   color: #777;
   margin: 0;
   border-bottom: 3px solid rgba(200, 200, 200, 0.3);
@@ -5972,7 +5959,7 @@ h3 .dropdown_box a, h3 .dropdown_box a:hover {
   font-size: 1.1em;
   margin: 5px 0 0 0;
   padding: 10px;
-  font-weight: 600;
+  font-weight: 400;
   border-bottom: 1px dotted rgba(100, 100, 100, 0.3); }
 
 .whiteboard-columns.swimlanes tbody tr:first-child td > .header .issue_header.closed,
@@ -6009,7 +5996,7 @@ h3 .dropdown_box a, h3 .dropdown_box a:hover {
   z-index: 2; }
 
 .transition-selector h2 {
-  font-weight: 600;
+  font-weight: 400;
   margin: 25px 5px 5px 5px;
   padding: 5px 0;
   color: #888;
@@ -6203,7 +6190,7 @@ h3 .dropdown_box a, h3 .dropdown_box a:hover {
 .menu_links .header {
   font-size: 1em;
   border-bottom: 0;
-  font-weight: 600;
+  font-weight: 400;
   margin-bottom: 5px; }
 
 .menu_links .dropper {
@@ -6223,7 +6210,7 @@ h3 .dropdown_box a, h3 .dropdown_box a:hover {
   padding: 0; }
 
 .menu_links .content a {
-  font-weight: 600;
+  font-weight: 400;
   display: block;
   padding: 3px 5px;
   color: #555;
@@ -6246,12 +6233,12 @@ h3 .dropdown_box a, h3 .dropdown_box a:hover {
   margin-right: 5px; }
 
 .menu_links .content a.selected {
-  font-weight: 600;
+  font-weight: 400;
   color: #333;
   background-color: rgba(200, 200, 200, 0.2); }
 
 .menu_links .content a.selected:hover {
-  font-weight: 600;
+  font-weight: 400;
   color: #00a400; }
 
 .menu_links .content .delete-icon {
@@ -6331,7 +6318,7 @@ div.quickaddtask .close_micro_popup_link {
 
 .dashboard_view_content a.more {
   float: right;
-  font-weight: 600;
+  font-weight: 400;
   padding-top: 5px; }
 
 #project_dashboard_menu_panes a.more:hover {
@@ -6347,7 +6334,7 @@ div.quickaddtask .close_micro_popup_link {
 
 #project_name {
   font-size: 1.7em;
-  font-weight: 600;
+  font-weight: 400;
   margin: 8px 5px 5px 0;
   line-height: 1.3;
   display: inline-block; }
@@ -6447,7 +6434,7 @@ ul.files-list li h1 .action-buttons {
 ul.property-list li .property {
   flex: 0 0 35%;
   padding: 5px;
-  font-weight: 600; }
+  font-weight: 400; }
 
 ul.property-list li .value {
   flex: 0 0 65%;
@@ -6575,12 +6562,12 @@ ul.files-list a:focus .fas {
   color: #FFF; }
 
 ul.files-list .action_D .filename {
-  font-weight: 600;
+  font-weight: 400;
   color: #C44;
   font-size: .95em; }
 
 /*ul.files-list .action_A .filename {*/
-/*font-weight: 600;*/
+/*font-weight: 400;*/
 /*font-size: .95em;*/
 /*}*/
 /*ul.files-list .action_A .filename::after {*/
@@ -6600,7 +6587,7 @@ ul.files-list .action_D .filename {
   font-size: 0.9em; }
 
 .project_role .label {
-  font-weight: 600;
+  font-weight: 400;
   display: inline-block;
   margin: 0 10px 0 0; }
 
@@ -6755,7 +6742,7 @@ ul.files-list .action_D .filename {
   border-top: 1px solid #ccc; }
 
 .project_client_info .project_client_header {
-  font-weight: 600;
+  font-weight: 400;
   font-size: 1.5em; }
 
 .project_client_info .project_client_viewusers {
@@ -6815,7 +6802,7 @@ ul.files-list .action_D .filename {
   padding: 5px 0 30px 15px; }
 
 #timeline .latest_action_dates {
-  font-weight: 600;
+  font-weight: 400;
   color: #888;
   text-transform: uppercase;
   border-bottom: 1px dotted #CCC;
@@ -6842,7 +6829,7 @@ ul.files-list .action_D .filename {
 
 .recent_activities td.latest_action_dates {
   font-size: 1.1em;
-  font-weight: 600;
+  font-weight: 400;
   padding: 15px 0 0 0; }
 
 .recent_activities .log-item {
@@ -6873,7 +6860,7 @@ ul.files-list .action_D .filename {
   display: inline-block; }
 
 .timeline_actions a {
-  font-weight: 600; }
+  font-weight: 400; }
 
 .timeline_actions .content {
   padding-top: 5px; }
@@ -6904,7 +6891,7 @@ ul.files-list .action_D .filename {
   margin-bottom: 10px;
   border-bottom: 1px solid #EAEAEA;
   border-top: 1px solid #EAEAEA;
-  font-weight: 600; }
+  font-weight: 400; }
 
 .dashboard_recent_comments .recent_activities .latest_action_dates_cell, .dashboard_logged_actions .recent_activities .latest_action_dates_cell {
   padding-top: 9px;
@@ -6933,7 +6920,7 @@ ul.files-list .action_D .filename {
 
 .milestone_points {
   color: #888;
-  font-weight: 600; }
+  font-weight: 400; }
 
 .roadmap_percentbar .percentcontainer {
   width: 490px;
@@ -6995,7 +6982,7 @@ ul.files-list .action_D .filename {
   text-decoration: line-through; }
 
 .roadmap_issue.blocking .issue_title {
-  font-weight: 600;
+  font-weight: 400;
   color: red; }
 
 /* end roadmap */
@@ -7060,7 +7047,7 @@ ul.files-list .action_D .filename {
   padding: 5px 0;
   border: none;
   border-bottom: 1px dotted #CCC;
-  font-weight: 600;
+  font-weight: 400;
   font-size: 1.1em;
   color: #888;
   box-sizing: border-box;
@@ -7265,7 +7252,7 @@ a.action_button:hover {
   right: 4px; }
 
 .openid_provider_name {
-  font-weight: 600; }
+  font-weight: 400; }
 
 /* sortable tables */
 .sortcol {
@@ -7312,7 +7299,7 @@ table.sortable tr th.nosort {
   display: inline-block;
   font-size: 14px;
   font-family: Helvetica, Arial, sans-serif;
-  font-weight: 600;
+  font-weight: 400;
   line-height: 1.1;
   overflow: hidden;
   position: relative;
@@ -7716,7 +7703,7 @@ table.sortable tr th.nosort {
   padding: 0 0 7px 0;
   color: #999;
   border-bottom: 1px dotted #b9b9b9;
-  font-weight: 600; }
+  font-weight: 400; }
 
 .tutorial.block_overlay {
   position: absolute;
@@ -7767,14 +7754,14 @@ div.calendar th {
   text-align: center; }
 
 div.calendar td.title {
-  font-weight: 600;
+  font-weight: 400;
   font-size: 1.4em; }
 
 div.calendar th {
   background: #ddd;
   border-bottom: 1px solid #ccc;
   border-top: 1px solid #ccc;
-  font-weight: 600;
+  font-weight: 400;
   color: #555; }
 
 div.calendar tr.days td {
@@ -7797,12 +7784,12 @@ div.calendar td.button:active {
   background-color: #cde; }
 
 div.calendar tr.days td.selected {
-  font-weight: 600;
+  font-weight: 400;
   background-color: #fff;
   color: #000; }
 
 div.calendar tr.days td.today {
-  font-weight: 600;
+  font-weight: 400;
   color: #D50000; }
 
 div.calendar tr.days td.otherDay {
@@ -8229,7 +8216,7 @@ input[type=checkbox][name=send_login_details] {
   margin: 0 -450px 200px -450px; }
 
 #user_details_popup .user_realname {
-  font-weight: 600;
+  font-weight: 400;
   margin-top: 5px;
   clear: both; }
 
@@ -8390,7 +8377,7 @@ li#tab_groups.selected {
 form > .config_header {
   padding: 3px 3px 3px 0;
   margin: 5px 0 10px 0;
-  font-weight: 600;
+  font-weight: 400;
   font-size: 1.4em;
   color: #888;
   border-bottom: 1px dotted #CCC;
@@ -8757,7 +8744,7 @@ form#vcs div.config_explanation {
   font-size: 12px; }
 
 .dashboard_team_header {
-  font-weight: 600; }
+  font-weight: 400; }
 
 /* Roadmap */
 .milestone_issue_actions .more_actions_dropdown.popup_box {
@@ -8880,7 +8867,7 @@ form#vcs div.config_explanation {
 
 .issue_access_policy_box #acl-users-teams-selector h4,
 .report-issue-custom-access-check #acl-users-teams-selector h4 {
-  font-weight: 600;
+  font-weight: 400;
   margin-left: 5px; }
 
 .issue_access_policy_box #acl-users-teams-selector h4 .button,
@@ -8979,7 +8966,7 @@ ul#subscribers_list > li {
 
 .dashboard_view_content div[id$='_recent_issues_pane'] table .issue_open > b,
 .dashboard_view_content div[id$='_recent_issues_pane'] table .issue_closed > b {
-  font-weight: 600;
+  font-weight: 400;
   font-size: 14px; }
 
 .dashboard_view_content div[id$='_recent_issues_pane'] .faded_out {
@@ -9004,7 +8991,7 @@ ul#subscribers_list > li {
   border: none;
   color: #1aaa55;
   padding: 9px;
-  font-weight: 600; }
+  font-weight: 400; }
 
 .project_strip .button-group .button-report-issue:hover {
   background-color: #1aaa55;
@@ -9320,7 +9307,7 @@ td.legendLabel {
   font-weight: 300; }
 
 #account_info_container #user_name_span::first-line {
-  font-weight: 600; }
+  font-weight: 400; }
 
 #account_info_container #account_user_info img {
   margin-right: 10px !important;
@@ -9835,11 +9822,11 @@ header .mobile_menuanchor {
 
 #issue_details fieldset dd.priority_1 {
   color: #C30000;
-  font-weight: 600; }
+  font-weight: 400; }
 
 #issue_details fieldset dd.priority_2 {
   color: #FA0;
-  font-weight: 600; }
+  font-weight: 400; }
 
 #issue_details fieldset dd.priority_4,
 #issue_details fieldset dd.priority_5 {
@@ -9879,13 +9866,13 @@ button, button:hover,
   /*color: rgba(0, 0, 0, .7);*/
   background: #44AF69;
   color: #FFF;
-  font-weight: 300;
+  font-weight: 400;
   outline: 0;
   box-shadow: 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12);
-  text-transform: uppercase;
+  text-transform: none;
   font-size: .9rem;
   padding: .42rem 1rem;
-  transition: background-color .2s ease-in-out, transition .25s ease-in-out;
+  transition: background-color .2s ease-in-out, color .2s ease-in-out, box-shadow .2s ease-in-out;
   display: flex;
   flex-direction: row;
   align-items: center; }
@@ -9958,7 +9945,7 @@ input.button.secondary,
 .fullpage_backdrop_content .button:not(.primary),
 .fullpage_backdrop_content input.button:not(.primary) {
   background: transparent;
-  color: #3c1642;
+  color: #0C8990;
   box-shadow: none;
   border-radius: 4px;
   text-align: center; }
@@ -9969,9 +9956,8 @@ input.button.secondary,
 button.secondary.highlight,
 input.button.secondary.highlight,
 .button.secondary.highlight {
-  border: 1px solid #3c1642;
-  color: #3c1642;
-  text-transform: none; }
+  border: 1px solid #0C8990;
+  color: #0C8990; }
 
 button.icon,
 .button.icon,
@@ -10025,11 +10011,6 @@ input.icon.secondary:disabled {
   input.icon.secondary:disabled:hover {
     background: transparent;
     color: rgba(200, 200, 200, 0.3); }
-
-.button-group > button,
-.button-group > .button,
-.button-group > input.button {
-  margin: 0 3px; }
 
 .button-group {
   display: flex;
@@ -10568,7 +10549,7 @@ input.icon.secondary:disabled {
   display: none; }
   .expandable + .submenu .list-item {
     padding: 0 5px;
-    margin: 5px 5px 0 18px; }
+    margin: 5px 18px 0 18px; }
 
 .expandable.expanded:not(button) .expander {
   transform: rotate(180deg);
@@ -10767,6 +10748,15 @@ input.icon.secondary:disabled {
       .form-container .form-row.submit-container button:first-child:last-child,
       .form-container .form-row.submit-container .button:first-child:last-child {
         margin-left: auto; }
+    .form-container .form-row .error {
+      display: none; }
+    .form-container .form-row.invalid .error {
+      display: flex;
+      flex-direction: row;
+      color: #D62246;
+      font-size: .9em;
+      font-weight: 600;
+      flex: 0 0 auto; }
     .form-container .form-row .helper-text {
       flex: 1 1 100%;
       color: #999999;
@@ -10782,17 +10772,23 @@ input.icon.secondary:disabled {
       flex-direction: row;
       align-items: center;
       font-size: .8em;
-      font-weight: 600; }
+      font-weight: 600;
+      transition: color .25s ease-in-out; }
       .form-container .form-row > label .icon {
         flex: 0 0 24px;
         margin-right: .5em; }
-    .form-container .form-row > input[type=text] {
+    .form-container .form-row > input[type=text], .form-container .form-row input[type=password] {
       flex: 1 1 100%;
       padding: .2em;
       font-size: 1em; }
-      .form-container .form-row > input[type=text].name-input-enhance {
+      .form-container .form-row > input[type=text].name-input-enhance, .form-container .form-row input[type=password].name-input-enhance {
         font-size: 1.25em;
-        padding: .5em .2em; }
+        padding: .5em .2em;
+        border-bottom-width: 2px; }
+      .form-container .form-row > input[type=text]:focus + label,
+      .form-container .form-row > input[type=text]:active + label, .form-container .form-row input[type=password]:focus + label,
+      .form-container .form-row input[type=password]:active + label {
+        color: #0C8990; }
     .form-container .form-row > textarea {
       flex: 0 0 400px;
       border: none;
@@ -11593,6 +11589,8 @@ textarea.markItUpEditor:focus {
     height: 250px;
     display: flex;
     align-items: center; }
+  .onboarding.unthemed .image-container {
+    background-color: transparent; }
   .onboarding .button-container {
     text-align: center;
     display: flex;
@@ -11853,6 +11851,8 @@ textarea.markItUpEditor:focus {
             flex-direction: row; }
         .whiteboard-columns-container .whiteboard-columns .column > .header .column-count {
           flex: 0 0 auto; }
+          .whiteboard-columns-container .whiteboard-columns .column > .header .column-count + .column-count {
+            margin-left: .15rem; }
           .whiteboard-columns-container .whiteboard-columns .column > .header .column-count.under, .whiteboard-columns-container .whiteboard-columns .column > .header .column-count.over {
             display: none; }
         .whiteboard-columns-container .whiteboard-columns .column > .header .over-workitems .column-count.over {

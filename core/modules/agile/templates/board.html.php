@@ -8,15 +8,17 @@
     switch ($board->getType())
     {
         case AgileBoard::TYPE_GENERIC:
+        case AgileBoard::TYPE_KANBAN:
             $newmilestonelabel = __('New milestone');
             $togglemilestoneslabel = __('Toggle hidden milestones');
-            $addmilestoneslabel = __('There are no milestones. Why not add one?');
+            $no_milestones_header = __('Organize what needs to be done with milestones');
+            $no_milestones_onboarding_text = __('Plan, prioritize and execute with confidence');
             break;
         case AgileBoard::TYPE_SCRUM:
-        case AgileBoard::TYPE_KANBAN:
             $newmilestonelabel = __('Add new sprint');
             $togglemilestoneslabel = __('Toggle hidden sprints');
-            $addmilestoneslabel = __('There are no active sprints. Why not add one?');
+            $no_milestones_header = __('Sprints are the cornerstones of agile deliveries');
+            $no_milestones_onboarding_text = __('Plan, prioritize and execute with confidence');
             break;
     }
 
@@ -104,8 +106,15 @@
                     <?php include_component('milestonebox', array('milestone' => $milestone, 'board' => $board, 'include_counts' => !$milestone->isVisibleRoadmap())); ?>
                 <?php endforeach; ?>
             </div>
-            <div id="no_milestones" style="<?php if (isset($milestone)) echo 'display: none;'; ?>">
-                <?php echo $addmilestoneslabel; ?>
+            <div id="no_milestones">
+                <?= image_tag('/unthemed/navigation/turn.png', ['id' => 'indicate-button'], true); ?>
+                <div style="<?php if (isset($milestone)) echo 'display: none;'; ?>" class="onboarding large">
+                    <div class="image-container"><?= image_tag('/unthemed/backlog-no-milestones.png', [], true); ?></div>
+                    <div class="helper-text">
+                        <?= $no_milestones_header; ?><br>
+                        <?= $no_milestones_onboarding_text; ?>
+                    </div>
+                </div>
             </div>
         </div>
         <div id="board-backlog-container">

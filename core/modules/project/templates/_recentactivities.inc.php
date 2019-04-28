@@ -4,6 +4,8 @@
  * @var \pachno\core\entities\Issue[] $issues
  */
 
+use pachno\core\framework\Context;
+
 ?>
 <div id="tab_<?php echo $id ?>_pane"<?php if ($default_displayed !== true): ?> style="display: none;"<?php endif;?>>
     <?php if (isset($link)): echo $link; endif; ?>
@@ -27,9 +29,19 @@
         <?php endforeach; ?>
         </table>
     <?php else: ?>
-        <div class="no-items">
-            <?= fa_image_tag('copy'); ?>
-            <span><?php echo __($empty); ?></span>
+        <div class="onboarding unthemed">
+            <div class="image-container">
+                <?= image_tag('/unthemed/no-issues.png', [], true); ?>
+            </div>
+            <div class="helper-text">
+                <?php echo __($empty); ?>
+            </div>
+        </div>
+        <div class="button-container">
+            <a href="<?= make_url('project_issues', ['project_key' => Context::getCurrentProject()->getKey()]); ?>" class="button secondary highlight">
+                <?= fa_image_tag('search', ['class' => 'icon']); ?>
+                <span class="name"><?= __('Find other issues'); ?></span>
+            </a>
         </div>
     <?php endif; ?>
 </div>
