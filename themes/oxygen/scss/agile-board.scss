@@ -560,6 +560,10 @@
       }
     }
 
+    &.empty {
+      border-color: transparent;
+    }
+
     &:hover {
       .new_milestone_marker {
         .draggable {

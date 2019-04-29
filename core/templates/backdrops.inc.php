@@ -7,10 +7,9 @@
 </div>
 <div class="tutorial-message" id="tutorial-message" style="display: none;" data-disable-url="<?php echo make_url('disable_tutorial'); ?>">
     <div id="tutorial-message-container"></div>
-    <br>
-    <div class="tutorial-buttons">
-        <button class="button button-standard button-next" id="tutorial-next-button"></button>
-        <a class="button-disable" id="disable-tutorial-button" href="javascript:void(0);"><?php echo __('Skip this tutorial'); ?></a>
+    <div class="tutorial-buttons dialog-query-buttons">
+        <a class="button secondary button-disable" id="disable-tutorial-button" href="javascript:void(0);"><?php echo __('Skip this tutorial'); ?></a>
+        <button class="button button-standard button-next primary" id="tutorial-next-button"></button>
     </div>
     <br style="clear: both;">
     <div class="tutorial-status"><span id="tutorial-current-step"></span> of <span id="tutorial-total-steps"></span></div>

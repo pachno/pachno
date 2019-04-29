@@ -12127,6 +12127,8 @@ textarea.markItUpEditor:focus {
       display: flex;
       align-items: center;
       justify-content: space-between; }
+    .milestone-box .milestone-issues.empty {
+      border-color: transparent; }
     .milestone-box .milestone-issues:hover .new_milestone_marker .draggable {
       border-top: 2px solid rgba(0, 140, 0, 0.8);
       border-bottom: 2px solid rgba(0, 140, 0, 0.8); }

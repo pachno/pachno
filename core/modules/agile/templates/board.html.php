@@ -103,7 +103,7 @@
             <?php endif; ?>
             <div id="milestones-list" class="milestones-list jsortable" data-sort-url="<?php echo make_url('project_sort_milestones', array('project_key' => $selected_project->getKey())); ?>">
                 <?php foreach ($board->getMilestones() as $milestone): ?>
-                    <?php include_component('milestonebox', array('milestone' => $milestone, 'board' => $board, 'include_counts' => !$milestone->isVisibleRoadmap())); ?>
+                    <?php include_component('agile/milestonebox', array('milestone' => $milestone, 'board' => $board, 'include_counts' => !$milestone->isVisibleRoadmap())); ?>
                 <?php endforeach; ?>
             </div>
             <div id="no_milestones">

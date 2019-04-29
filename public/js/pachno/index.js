@@ -1699,15 +1699,25 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
                     show: ['remove_friend_' + user_id + '_' + rnd_no, 'user_' + user_id + '_more_actions']
                 }
             });
-        }
+        };
 
         Pachno.Main.hideInfobox = function (url, boxkey) {
             if ($('close_me_' + boxkey).checked) {
-                Pachno.Main.Helpers.ajax(url, {
-                    loading: {indicator: 'infobox_' + boxkey + '_indicator'}
-                });
+                var $form = jQuery('#close_me_' + boxkey + '_form');
+                $form.addClass('submitting');
+                $form.find('.button.primary').attr('disabled', true);
+
+                fetch(url)
+                    .then(function (response) {
+                        setTimeout(function () {
+                            $form.removeClass('submitting');
+                            $form.find('.button.primary').attr('disabled', false);
+                        }, 300);
+                        $('infobox_' + boxkey).fade({duration: 0.25});
+                    });
+            } else {
+                $('infobox_' + boxkey).fade({duration: 0.3});
             }
-            $('infobox_' + boxkey).fade({duration: 0.3});
         };
 
         Pachno.Main.setToggleState = function (url, state) {

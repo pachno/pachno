@@ -24,7 +24,6 @@
             <div class="error" id="login-error-message"></div>
         </div>
         <div class="form-row submit-container" id="login-submit-container">
-            <div class="error" id="login-error-message"></div>
             <?php \pachno\core\framework\Event::createNew('core', 'login_button_container')->trigger(); ?>
             <button type="submit" id="login_button" class="button primary">
                 <span><?= __('Log in'); ?></span>
