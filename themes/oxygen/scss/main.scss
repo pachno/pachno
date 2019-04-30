@@ -253,14 +253,12 @@ img.smiley {
 header {
   background: #0C8990;
   color: white;
-  height: 55px;
+  flex: 0 0 55px;
   display: flex;
   flex-flow: row;
   flex-wrap: nowrap;
   font-size: .95rem;
-  position: fixed;
-  left: 0;
-  top: 0;
+  position: relative;
   width: 100%;
   z-index: 1000;
 }
@@ -1065,11 +1063,12 @@ input[type=checkbox].semi-checked {
 /* main page layout dimensions and details */
 #content_container {
   padding: 0;
-  margin: 55px 0 0 0;
+  margin: 0;
   flex: 1 1 auto;
   display: flex;
   flex-direction: column;
   flex-wrap: nowrap;
+  box-sizing: border-box;
 }
 
 /* end main page layout */
@@ -1078,7 +1077,7 @@ input[type=checkbox].semi-checked {
 footer {
   position: relative;
   vertical-align: middle;
-  flex: 0 0 20px;
+  flex: 0 0 35px;
   border: 0;
   text-align: center;
   font-size: 0.9em;

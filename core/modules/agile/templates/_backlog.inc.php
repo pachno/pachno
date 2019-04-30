@@ -9,19 +9,19 @@ $new_milestone_label = ($board->getType() == AgileBoard::TYPE_SCRUM) ? __('Creat
 ?>
 <div class="new_milestone_marker" id="new_backlog_milestone_marker">
     <div class="draggable">
-        <div class="milestone_counts_container">
-            <table>
-                <tr>
-                    <td id="new_backlog_milestone_issues_count">0</td>
-                    <td id="new_backlog_milestone_points_count" class="issue_estimates estimated_points">0</td>
-                    <td id="new_backlog_milestone_hours_count" class="issue_estimates estimated_hours">0</td>
-                </tr>
-                <tr>
-                    <td><?php echo __('Issues'); ?></td>
-                    <td class="issue_estimates estimated_points"><?php echo __('Points'); ?></td>
-                    <td class="issue_estimates estimated_hours"><?php echo __('Hours'); ?></td>
-                </tr>
-            </table>
+        <div class="milestone-counts-container">
+            <div class="count">
+                <span id="new_backlog_milestone_issues_count">0</span>
+                <span><?php echo __('Issues'); ?></span>
+            </div>
+            <div class="count">
+                <span id="new_backlog_milestone_points_count" class="issue_estimates estimated_points">0</span>
+                <span class="issue_estimates estimated_points"><?php echo __('Points'); ?></span>
+            </div>
+            <div class="count">
+                <span id="new_backlog_milestone_hours_count" class="issue_estimates estimated_hours">0</span>
+                <span class="issue_estimates estimated_hours"><?php echo __('Hours'); ?></span>
+            </div>
         </div>
         <?php echo javascript_link_tag($new_milestone_label, array('class' => 'button', 'onclick' => "Pachno.Main.Helpers.Backdrop.show('".make_url('get_partial_for_backdrop', array('key' => 'agilemilestone', 'project_id' => $board->getProject()->getId(), 'board_id' => $board->getID()))."', Pachno.Project.Planning.updateNewMilestoneIssues);")); ?>
     </div>

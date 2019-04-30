@@ -1,12 +1,15 @@
 .content-with-sidebar {
   display: flex;
   flex-direction: row;
-  flex: 1 1 auto;
-  height: calc(100vh - 85px);
-  max-height: calc(100vh - 85px);
+  flex: 1 1 100%;
+  height: 100%;
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
 
   > div:not(.sidebar) {
-    height: calc(100vh - 85px);
+    height: 100%;
+    box-sizing: border-box;
     overflow: hidden;
     flex: 1 1 auto;
     //box-shadow: 3px 3px 3px -3px rgba(0, 0, 0, 0.3) inset;

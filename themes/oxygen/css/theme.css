@@ -246,14 +246,12 @@ img.smiley {
 header {
   background: #0C8990;
   color: white;
-  height: 55px;
+  flex: 0 0 55px;
   display: flex;
   flex-flow: row;
   flex-wrap: nowrap;
   font-size: .95rem;
-  position: fixed;
-  left: 0;
-  top: 0;
+  position: relative;
   width: 100%;
   z-index: 1000; }
 
@@ -929,18 +927,19 @@ input[type=checkbox].semi-checked {
 /* main page layout dimensions and details */
 #content_container {
   padding: 0;
-  margin: 55px 0 0 0;
+  margin: 0;
   flex: 1 1 auto;
   display: flex;
   flex-direction: column;
-  flex-wrap: nowrap; }
+  flex-wrap: nowrap;
+  box-sizing: border-box; }
 
 /* end main page layout */
 /* footer section */
 footer {
   position: relative;
   vertical-align: middle;
-  flex: 0 0 20px;
+  flex: 0 0 35px;
   border: 0;
   text-align: center;
   font-size: 0.9em;
@@ -10046,12 +10045,12 @@ input.icon.secondary:disabled {
     flex-direction: column;
     position: absolute;
     margin: 0;
-    z-index: 10;
+    z-index: 1000;
     opacity: 0;
     transform: scaleY(0);
     transform-origin: top;
     transition: opacity 0.3s ease, transform 0.3s ease-in-out;
-    max-height: 450px;
+    max-height: 550px;
     overflow: hidden;
     box-sizing: border-box;
     padding: 5px 0;
@@ -10737,7 +10736,7 @@ input.icon.secondary:disabled {
     .form-container .form-row.header {
       justify-content: space-between;
       justify-items: flex-end;
-      padding: .5em; }
+      padding: .5em .5em 0 .5em; }
       .form-container .form-row.header button:first-child:last-child,
       .form-container .form-row.header .button:first-child:last-child {
         margin-left: auto; }
@@ -10805,11 +10804,14 @@ input.icon.secondary:disabled {
 .content-with-sidebar {
   display: flex;
   flex-direction: row;
-  flex: 1 1 auto;
-  height: calc(100vh - 85px);
-  max-height: calc(100vh - 85px); }
+  flex: 1 1 100%;
+  height: 100%;
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box; }
   .content-with-sidebar > div:not(.sidebar) {
-    height: calc(100vh - 85px);
+    height: 100%;
+    box-sizing: border-box;
     overflow: hidden;
     flex: 1 1 auto;
     box-shadow: 3px 3px 5px -3px rgba(27, 27, 36, 0.2) inset;
@@ -12051,32 +12053,6 @@ textarea.markItUpEditor:focus {
         .milestone-box .header .main-details .dates .far,
         .milestone-box .header .main-details .dates .fas {
           margin: 0 .35rem; }
-    .milestone-box .header .milestone-counts-container {
-      border: 0;
-      padding: 0;
-      margin: 0;
-      display: flex;
-      align-items: center;
-      flex-direction: row;
-      color: rgba(0, 0, 0, 0.4);
-      font-size: 0.8em;
-      flex: 0 0 270px; }
-      .milestone-box .header .milestone-counts-container .count {
-        padding: 0;
-        text-align: center;
-        font-weight: 300;
-        flex: 0 0 90px;
-        font-size: 1.1em;
-        line-height: 1.5em;
-        text-transform: uppercase;
-        color: #AAA;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: flex-start; }
-        .milestone-box .header .milestone-counts-container .count :first-child {
-          font-size: 1.9em;
-          line-height: 1.1em; }
     .milestone-box .header .actions-container {
       display: flex;
       align-items: center;
@@ -12132,6 +12108,32 @@ textarea.markItUpEditor:focus {
     .milestone-box .milestone-issues:hover .new_milestone_marker .draggable {
       border-top: 2px solid rgba(0, 140, 0, 0.8);
       border-bottom: 2px solid rgba(0, 140, 0, 0.8); }
+  .milestone-box .milestone-counts-container {
+    border: 0;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    color: rgba(0, 0, 0, 0.4);
+    font-size: 0.8em;
+    flex: 0 0 270px; }
+    .milestone-box .milestone-counts-container .count {
+      padding: 0;
+      text-align: center;
+      font-weight: 300;
+      flex: 0 0 90px;
+      font-size: 1.1em;
+      line-height: 1.5em;
+      text-transform: uppercase;
+      color: #AAA;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start; }
+      .milestone-box .milestone-counts-container .count :first-child {
+        font-size: 1.9em;
+        line-height: 1.1em; }
   .milestone-box.backlog .milestone-issues {
     border: none; }
 
@@ -12239,6 +12241,15 @@ textarea.markItUpEditor:focus {
 
 .milestone-issue.blocking img.blocking {
   opacity: 1; }
+
+.board-backlog-container {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column; }
+  .board-backlog-container .planning-container {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column; }
 
 .viewissue-container,
 .content-with-sidebar > div.viewissue-container {

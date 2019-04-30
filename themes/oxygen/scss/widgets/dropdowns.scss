@@ -16,12 +16,12 @@
     flex-direction: column;
     position: absolute;
     margin: 0;
-    z-index: 10;
+    z-index: 1000;
     opacity: 0;
     transform: scaleY(0);
     transform-origin: top;
     transition: opacity 0.3s ease, transform 0.3s ease-in-out;
-    max-height: 450px;
+    max-height: 550px;
     overflow: hidden;
     box-sizing: border-box;
     padding: 5px 0;

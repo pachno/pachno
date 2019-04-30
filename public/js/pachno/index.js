@@ -2404,8 +2404,10 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
                 update: Pachno.Project.Planning.sortMilestoneIssues,
                 receive: Pachno.Project.Planning.moveIssue,
                 sort: Pachno.Project.Planning.calculateNewBacklogMilestoneDetails,
+                over: function (event) { jQuery(this).addClass('drop-hover'); },
+                out: function (event) { jQuery(this).removeClass('drop-hover'); },
                 tolerance: 'pointer',
-                helper: function(event, ui){
+                helper: function(event, ui) {
                     var $clone =  $(ui).clone();
                     $clone .css('position','absolute');
                     return $clone.get(0);

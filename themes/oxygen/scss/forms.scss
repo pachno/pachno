@@ -40,7 +40,7 @@
     &.header {
       justify-content: space-between;
       justify-items: flex-end;
-      padding: .5em;
+      padding: .5em .5em 0 .5em;
 
       button:first-child:last-child,
       .button:first-child:last-child {
