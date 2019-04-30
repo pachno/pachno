@@ -1048,7 +1048,7 @@ input[type=checkbox].semi-checked {
 #main_container {
   position: relative;
   width: 100%;
-  min-height: 100vh;
+  height: 100vh;
   padding: 0;
   margin: 0;
   display: flex;
@@ -1069,6 +1069,8 @@ input[type=checkbox].semi-checked {
   flex-direction: column;
   flex-wrap: nowrap;
   box-sizing: border-box;
+  height: calc(100vh - 90px);
+  overflow: hidden;
 }
 
 /* end main page layout */
@@ -6145,7 +6147,7 @@ dl.info {
   width: auto;
 }
 
-.milestone_box .milestone_no_issues {
+.milestone_box .milestone-no-issues {
   color: #888;
   padding: 0 15px 15px 15px;
 }
@@ -6212,17 +6214,6 @@ dl.info {
 
 .milestone_box .milestone_issues li.milestone_issue.included .issue_container:hover {
   background-color: rgba(180, 220, 180, 0.4);
-}
-
-.story_color {
-  display: block;
-  position: absolute;
-  left: 0;
-  height: 100%;
-  width: 7px;
-  padding: 0;
-  border-right: 1px solid rgba(200, 200, 200, 0.2);
-  opacity: 0.6;
 }
 
 .epic .story_color {
@@ -6504,12 +6495,6 @@ a.dynamic_menu_link, a.dynamic_menu_link:hover {
 
 a.dynamic_menu_link.active, a.dynamic_menu_link.active:hover {
   box-shadow: 0 0 3px rgba(100, 100, 100, 0.4) inset;
-}
-
-.issue_more_actions_link_container {
-  position: absolute;
-  right: -21px;
-  top: 8px;
 }
 
 .whiteboard-issue .issue_more_actions_link_container {
@@ -9288,7 +9273,7 @@ div.calendar thead {
 
 div.calendar td,
 div.calendar th {
-  padding: 5px 10px;
+  padding: .42rem 10px;
   text-align: center;
 }
 

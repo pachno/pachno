@@ -6,11 +6,12 @@
   padding: 0;
   margin: 0;
   box-sizing: border-box;
+  overflow: hidden;
 
   > div:not(.sidebar) {
     height: 100%;
     box-sizing: border-box;
-    overflow: hidden;
+    overflow: auto;
     flex: 1 1 auto;
     //box-shadow: 3px 3px 3px -3px rgba(0, 0, 0, 0.3) inset;
     box-shadow: 3px 3px 5px -3px rgba(27, 27, 36, 0.2) inset;
@@ -24,8 +25,8 @@ nav.sidebar {
   flex-direction: column;
   background: #FFF;
   transition: flex .2s ease-in-out;
-  height: calc(100vh - 85px);
-  overflow: visible;
+  height: 100%;
+  overflow: auto;
 
   & > div {
     flex: 1 1 auto;
@@ -66,7 +67,8 @@ nav.sidebar {
   }
 
   &.collapsed {
-    flex: 0 0 55px;
+    flex: 0 0 75px;
+    overflow: visible;
 
     .header-banner {
       .header-name {

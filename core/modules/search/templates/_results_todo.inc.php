@@ -19,7 +19,7 @@
             </thead>
             <tbody>
     <?php endif; ?>
-                <tr class="<?php if ($issue->hasUnsavedChanges()): ?> changed<?php endif; ?><?php if ($issue->isBlocking()): ?> blocking<?php endif; ?>">
+                <tr class="<?php if ($issue->isBlocking()): ?> blocking<?php endif; ?>">
                     <td style="text-align: center; background-color: <?php
 
                         switch (true)

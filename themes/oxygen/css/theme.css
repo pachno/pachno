@@ -914,7 +914,7 @@ input[type=checkbox].semi-checked {
 #main_container {
   position: relative;
   width: 100%;
-  min-height: 100vh;
+  height: 100vh;
   padding: 0;
   margin: 0;
   display: flex;
@@ -932,7 +932,9 @@ input[type=checkbox].semi-checked {
   display: flex;
   flex-direction: column;
   flex-wrap: nowrap;
-  box-sizing: border-box; }
+  box-sizing: border-box;
+  height: calc(100vh - 90px);
+  overflow: hidden; }
 
 /* end main page layout */
 /* footer section */
@@ -5129,7 +5131,7 @@ dl.info {
   border: 1px dotted rgba(100, 100, 100, 0.2);
   width: auto; }
 
-.milestone_box .milestone_no_issues {
+.milestone_box .milestone-no-issues {
   color: #888;
   padding: 0 15px 15px 15px; }
 
@@ -5184,16 +5186,6 @@ dl.info {
 
 .milestone_box .milestone_issues li.milestone_issue.included .issue_container:hover {
   background-color: rgba(180, 220, 180, 0.4); }
-
-.story_color {
-  display: block;
-  position: absolute;
-  left: 0;
-  height: 100%;
-  width: 7px;
-  padding: 0;
-  border-right: 1px solid rgba(200, 200, 200, 0.2);
-  opacity: 0.6; }
 
 .epic .story_color {
   border-color: rgba(100, 100, 100, 0.2); }
@@ -5431,11 +5423,6 @@ a.dynamic_menu_link, a.dynamic_menu_link:hover {
 
 a.dynamic_menu_link.active, a.dynamic_menu_link.active:hover {
   box-shadow: 0 0 3px rgba(100, 100, 100, 0.4) inset; }
-
-.issue_more_actions_link_container {
-  position: absolute;
-  right: -21px;
-  top: 8px; }
 
 .whiteboard-issue .issue_more_actions_link_container {
   left: 13px;
@@ -7749,7 +7736,7 @@ div.calendar thead {
 
 div.calendar td,
 div.calendar th {
-  padding: 5px 10px;
+  padding: .42rem 10px;
   text-align: center; }
 
 div.calendar td.title {
@@ -10808,11 +10795,12 @@ input.icon.secondary:disabled {
   height: 100%;
   padding: 0;
   margin: 0;
-  box-sizing: border-box; }
+  box-sizing: border-box;
+  overflow: hidden; }
   .content-with-sidebar > div:not(.sidebar) {
     height: 100%;
     box-sizing: border-box;
-    overflow: hidden;
+    overflow: auto;
     flex: 1 1 auto;
     box-shadow: 3px 3px 5px -3px rgba(27, 27, 36, 0.2) inset;
     background-color: rgba(225, 225, 225, 0.15); }
@@ -10823,8 +10811,8 @@ nav.sidebar {
   flex-direction: column;
   background: #FFF;
   transition: flex .2s ease-in-out;
-  height: calc(100vh - 85px);
-  overflow: visible; }
+  height: 100%;
+  overflow: auto; }
   nav.sidebar > div {
     flex: 1 1 auto; }
   nav.sidebar .onboarding {
@@ -10850,7 +10838,8 @@ nav.sidebar {
   nav.sidebar .collapser {
     flex: 0 0 auto; }
   nav.sidebar.collapsed {
-    flex: 0 0 55px; }
+    flex: 0 0 75px;
+    overflow: visible; }
     nav.sidebar.collapsed .header-banner .header-name .image-container {
       flex: 0 0 auto;
       padding-bottom: 0;
@@ -12057,23 +12046,37 @@ textarea.markItUpEditor:focus {
       display: flex;
       align-items: center;
       flex-direction: row; }
-  .milestone-box .milestone-issues {
+  .milestone-box .milestone-issues-container {
     padding: 0 15px 0 0;
     margin: 10px 0;
     box-sizing: border-box;
-    border: 2px dotted rgba(0, 0, 0, 0.4);
+    border: 1px dashed transparent;
     transition: border 0.3s ease;
     border-radius: 4px;
     display: flex;
     flex-direction: column;
     align-items: stretch;
     justify-content: flex-start; }
-    .milestone-box .milestone-issues .milestone-issue {
+    .milestone-box .milestone-issues-container .milestone-no-issues {
+      padding: 1rem;
+      display: none; }
+    .milestone-box .milestone-issues-container .milestone-issues {
+      transition: background-color .2s ease-in-out; }
+    .milestone-box .milestone-issues-container.issue-drop-target .milestone-issues {
+      padding: 2rem;
+      background-color: rgba(12, 137, 144, 0.2); }
+      .milestone-box .milestone-issues-container.issue-drop-target .milestone-issues .milestone-issue {
+        opacity: .3; }
+    .milestone-box .milestone-issues-container.issue-drop-target .milestone-no-issues {
+      display: none; }
+    .milestone-box .milestone-issues-container .milestone-issue {
       display: flex;
       flex-direction: row;
       align-items: center;
-      justify-content: stretch; }
-      .milestone-box .milestone-issues .milestone-issue .issue-container {
+      justify-content: stretch;
+      opacity: 1;
+      transition: opacity .2s ease-in-out; }
+      .milestone-box .milestone-issues-container .milestone-issue .issue-container {
         flex: 1 1 auto;
         padding: 0;
         border: 1px solid rgba(225, 225, 225, 0.6);
@@ -12085,7 +12088,7 @@ textarea.markItUpEditor:focus {
         position: relative;
         transition: background-color 0.3s ease, border-color 0.3s ease;
         margin: -1px 0 0; }
-    .milestone-box .milestone-issues .new_milestone_marker .draggable {
+    .milestone-box .milestone-issues-container .new_milestone_marker .draggable {
       padding: 3px 5px;
       border-top: 2px solid rgba(0, 140, 0, 0.2);
       border-bottom: 2px solid rgba(0, 140, 0, 0.2);
@@ -12103,9 +12106,9 @@ textarea.markItUpEditor:focus {
       display: flex;
       align-items: center;
       justify-content: space-between; }
-    .milestone-box .milestone-issues.empty {
-      border-color: transparent; }
-    .milestone-box .milestone-issues:hover .new_milestone_marker .draggable {
+    .milestone-box .milestone-issues-container.empty {
+      border-color: rgba(0, 0, 0, 0.4); }
+    .milestone-box .milestone-issues-container:hover .new_milestone_marker .draggable {
       border-top: 2px solid rgba(0, 140, 0, 0.8);
       border-bottom: 2px solid rgba(0, 140, 0, 0.8); }
   .milestone-box .milestone-counts-container {
@@ -12134,34 +12137,84 @@ textarea.markItUpEditor:focus {
       .milestone-box .milestone-counts-container .count :first-child {
         font-size: 1.9em;
         line-height: 1.1em; }
-  .milestone-box.backlog .milestone-issues {
+  .milestone-box.backlog .milestone-issues-container {
     border: none; }
 
-.milestone-issue .issue_link,
-.milestone-issue .issue_link:hover {
-  display: block;
-  float: none;
-  clear: both;
-  padding: 8px 2px 5px 40px;
-  margin: 0; }
-  .milestone-issue .issue_link > a,
-  .milestone-issue .issue_link > a:hover,
-  .milestone-issue .issue_link:hover > a,
-  .milestone-issue .issue_link:hover > a:hover {
-    border: none;
-    text-decoration: none;
-    line-height: 1.7em; }
-    .milestone-issue .issue_link > a > img,
-    .milestone-issue .issue_link > a:hover > img,
-    .milestone-issue .issue_link:hover > a > img,
-    .milestone-issue .issue_link:hover > a:hover > img {
-      margin-bottom: -3px;
+.milestone-issue .story_color {
+  position: relative;
+  flex: 0 0 7px;
+  padding: 0;
+  border-right: 1px solid rgba(200, 200, 200, 0.2);
+  opacity: 0.6; }
+
+.milestone-issue .priority {
+  flex: 0 0 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: .35rem; }
+
+.milestone-issue .issue_more_actions_link_container {
+  flex: 0 0 24px;
+  margin-right: .35rem; }
+
+.milestone-issue .assignee-container {
+  flex: 0 0 36px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-right: .35rem; }
+
+.milestone-issue .status-container {
+  flex: 0 0 24px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-right: .35rem; }
+
+.milestone-issue .issue-link-container {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: stretch; }
+  .milestone-issue .issue-link-container .issue-link,
+  .milestone-issue .issue-link-container .issue-link:hover {
+    flex: 0 1 300px;
+    display: flex;
+    float: none;
+    clear: both;
+    padding: .15em;
+    margin: 0; }
+    .milestone-issue .issue-link-container .issue-link > a,
+    .milestone-issue .issue-link-container .issue-link > a:hover,
+    .milestone-issue .issue-link-container .issue-link:hover > a,
+    .milestone-issue .issue-link-container .issue-link:hover > a:hover {
+      font-size: 1.1em;
+      padding: .35rem;
+      flex: 1 1 auto;
+      display: flex;
+      align-items: center;
+      color: #141823;
+      border: none;
+      text-decoration: none;
+      line-height: 1.7em; }
+      .milestone-issue .issue-link-container .issue-link > a > img,
+      .milestone-issue .issue-link-container .issue-link > a:hover > img,
+      .milestone-issue .issue-link-container .issue-link:hover > a > img,
+      .milestone-issue .issue-link-container .issue-link:hover > a:hover > img {
+        margin-bottom: -3px;
+        margin-right: 5px; }
+    .milestone-issue .issue-link-container .issue-link > img,
+    .milestone-issue .issue-link-container .issue-link:hover > img {
+      vertical-align: middle;
+      display: inline-block;
       margin-right: 5px; }
-  .milestone-issue .issue_link > img,
-  .milestone-issue .issue_link:hover > img {
-    vertical-align: middle;
-    display: inline-block;
-    margin-right: 5px; }
+  .milestone-issue .issue-link-container .issue-info {
+    flex: 0 0 auto;
+    display: flex;
+    flex-direction: row;
+    align-items: center; }
 
 .milestone-issue .issue_info {
   display: block;

@@ -2404,6 +2404,16 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
                 update: Pachno.Project.Planning.sortMilestoneIssues,
                 receive: Pachno.Project.Planning.moveIssue,
                 sort: Pachno.Project.Planning.calculateNewBacklogMilestoneDetails,
+                start: function (event) {
+                    jQuery('.milestone-issues-container').each(function (index) {
+                        jQuery(this).addClass('issue-drop-target');
+                    })
+                },
+                stop: function (event) {
+                    jQuery('.milestone-issues-container').each(function (index) {
+                        jQuery(this).removeClass('issue-drop-target');
+                    })
+                },
                 over: function (event) { jQuery(this).addClass('drop-hover'); },
                 out: function (event) { jQuery(this).removeClass('drop-hover'); },
                 tolerance: 'pointer',
@@ -2495,7 +2505,7 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
         Pachno.Project.Planning.assignRelease = function (event, ui) {
             var issue = $(ui.draggable[0]);
             issue.dataset.sortCancel = true;
-            if (issue.hasClassName('milestone_issue')) {
+            if (issue.hasClassName('milestone-issue')) {
                 var release = $(event.target);
                 var release_id = $(event.target).dataset.releaseId;
                 var url = release.dataset.assignIssueUrl;
@@ -2538,7 +2548,7 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
         Pachno.Project.Planning.assignEpic = function (event, ui) {
             var issue = $(ui.draggable[0]);
             issue.dataset.sortCancel = true;
-            if (issue.hasClassName('milestone_issue')) {
+            if (issue.hasClassName('milestone-issue')) {
                 var epic = $(event.target);
                 var epic_id = $(event.target).dataset.issueId;
                 var url = epic.dataset.assignIssueUrl;
@@ -2625,7 +2635,7 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
                     })
                     .catch(function (error) {
                         milestone.addClassName('initialized');
-                        milestone.down('.milestone_error_issues').show();
+                        milestone.select('.milestone_error_issues').each(Element.show);
 
                         reject(error);
                     });
@@ -3307,7 +3317,8 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
 
         Pachno.Project.Planning.insertIntoMilestone = function (milestone_id, content, recalculate) {
             var milestone_list = $('milestone_' + milestone_id + '_issues');
-            milestone_list.removeClassName('empty');
+            var $milestone_list_container = milestone_list.up('.milestone-issues-container');
+            $milestone_list_container.removeClassName('empty');
             $('milestone_' + milestone_id + '_unassigned').hide();
             if (milestone_id == 0) {
                 milestone_list.insert({bottom: content});
@@ -3454,7 +3465,7 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
             var num_visible_issues = visible_issues.size();
             var milestone_id = $(list).up('.milestone-box').dataset.milestoneId;
 
-            if (num_visible_issues === 0 && !$(list).hasClassName('collapsed')) {
+            if (num_visible_issues === 0) {
                 if (list_issues.size() > 0) {
                     $('milestone_' + milestone_id + '_unassigned').hide();
                     $('milestone_' + milestone_id + '_unassigned_filtered').show();
@@ -3462,11 +3473,11 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
                     $('milestone_' + milestone_id + '_unassigned').show();
                     $('milestone_' + milestone_id + '_unassigned_filtered').hide();
                 }
-                $(list).addClassName('empty');
+                $(list).up('.milestone-issues-container').addClassName('empty');
             } else {
                 $('milestone_' + milestone_id + '_unassigned').hide();
                 $('milestone_' + milestone_id + '_unassigned_filtered').hide();
-                $(list).removeClassName('empty');
+                $(list).up('.milestone-issues-container').removeClassName('empty');
             }
             if (num_visible_issues !== list_issues.size() && milestone_id != '0') {
                 $('milestone_' + milestone_id + '_issues_count').update(num_visible_issues + ' (' + list_issues.size() + ')');
@@ -3587,7 +3598,7 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
                 issue.dataset.sortCancel = null;
                 jQuery(this).sortable("cancel");
             } else {
-                if (issue.hasClassName('milestone_issue')) {
+                if (issue.hasClassName('milestone-issue')) {
                     var list = $(event.target);
                     var url = list.up('.milestone-box').dataset.assignIssueUrl;
                     var original_list = $(ui.sender[0]);
@@ -3743,6 +3754,10 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
         };
 
         Pachno.Main.updateWidgets = function () {
+            jQuery("img[data-src]:not([data-src-processed])").each(function(){
+                var $img = jQuery(this);
+                $img.attr('src', $img.data('src')).data('src-processed', true);
+            });
             jQuery('.fancydropdown').each(function () {
                 Pachno.Main.updateFancyDropdownLabel(jQuery(this));
             });

@@ -14,7 +14,7 @@ use pachno\core\entities\Issuetype;
     <tbody>
     <?php $first = true; ?>
     <?php foreach ($search_object->getIssues() as $issue): ?>
-        <tr class="<?php if ($issue->hasUnsavedChanges()): ?> changed<?php endif; ?><?php if ($issue->isBlocking()): ?> blocking<?php endif; ?><?php if ($issue->getUserPain() <= $search_object->getTemplateParameter() && $first): $first = false; ?> userpain_below_threshold<?php endif; ?>">
+        <tr class="<?php if ($issue->isBlocking()): ?> blocking<?php endif; ?><?php if ($issue->getUserPain() <= $search_object->getTemplateParameter() && $first): $first = false; ?> userpain_below_threshold<?php endif; ?>">
             <td style="padding: 3px;">
                 <div class="rounded_box <?php if ($issue->getUserPain() > $search_object->getTemplateParameter()): ?>red<?php else: ?>yellow<?php endif; ?> borderless" style="margin: 0 5px 0 0;<?php if ($issue->getIssueType()->getType() != Issuetype::TYPE_BUG): ?>display: none;<?php endif; ?> vertical-align: middle; padding: 1px; text-align: center;">
                     <div class="user_pain"><?php echo $issue->getUserPain(); ?></div>

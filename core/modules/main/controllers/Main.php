@@ -220,33 +220,26 @@ class Main extends framework\Action
         {
             if ($request['issue_action'] == 'save')
             {
-                if (!$issue->hasMergeErrors())
+                try
                 {
-                    try
+                    $issue->getWorkflow()->moveIssueToMatchingWorkflowStep($issue);
+                    // Currently if category is changed we want to regenerate permissions since category is used for granting user access.
+                    if ($issue->isCategoryChanged())
                     {
-                        $issue->getWorkflow()->moveIssueToMatchingWorkflowStep($issue);
-                        // Currently if category is changed we want to regenerate permissions since category is used for granting user access.
-                        if ($issue->isCategoryChanged())
-                        {
-                            framework\Event::listen('core', 'pachno\core\entities\Issue::save_pre_notifications', array($this, 'listen_issueCreate'));
-                        }
-                        $issue->save();
-                        framework\Context::setMessage('issue_saved', true);
-                        $this->forward($this->getRouting()->generate('viewissue', array('project_key' => $issue->getProject()->getKey(), 'issue_no' => $issue->getFormattedIssueNo())));
+                        framework\Event::listen('core', 'pachno\core\entities\Issue::save_pre_notifications', array($this, 'listen_issueCreate'));
                     }
-                    catch (\pachno\core\exceptions\WorkflowException $e)
-                    {
-                        $this->error = $e->getMessage();
-                        $this->workflow_error = true;
-                    }
-                    catch (\Exception $e)
-                    {
-                        $this->error = $e->getMessage();
-                    }
+                    $issue->save();
+                    framework\Context::setMessage('issue_saved', true);
+                    $this->forward($this->getRouting()->generate('viewissue', array('project_key' => $issue->getProject()->getKey(), 'issue_no' => $issue->getFormattedIssueNo())));
                 }
-                else
+                catch (\pachno\core\exceptions\WorkflowException $e)
                 {
-                    $this->issue_unsaved = true;
+                    $this->error = $e->getMessage();
+                    $this->workflow_error = true;
+                }
+                catch (\Exception $e)
+                {
+                    $this->error = $e->getMessage();
                 }
             }
         }
@@ -2048,7 +2041,7 @@ class Main extends framework\Action
                 if ($spenttime instanceof entities\IssueSpentTime)
                 {
                     $spenttime->delete();
-                    $spenttime->getIssue()->saveSpentTime();
+                    $spenttime->getIssue()->save();
                 }
 
                 return $this->renderJSON(array('deleted' => 'ok', 'issue_id' => $issue_id, 'timesum' => array_sum($issue->getSpentTime()), 'spenttime' => entities\Issue::getFormattedTime($issue->getSpentTime(true, true)), 'percentbar' => $this->getComponentHTML('main/percentbar', array('percent' => $issue->getEstimatedPercentCompleted(), 'height' => 3))));

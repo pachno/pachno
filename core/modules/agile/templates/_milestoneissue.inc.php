@@ -19,16 +19,29 @@ $parent_prefix = isset($parent_issue) ? 'issue_'.$parent_issue->getID().'_child_
     <div id="<?php echo $parent_prefix .'issue_'. $issue->getID(); ?>" class="issue-container <?php if ($issue->isClosed()) echo 'issue_closed'; ?> <?php if ($issue->isBlocking()) echo 'blocking'; ?> draggable" data-estimated-points="<?php echo $issue->getEstimatedPoints(); ?>" data-estimated-hours="<?php echo $issue->getEstimatedHours(); ?>" data-estimated-minutes="<?php echo $issue->getEstimatedMinutes(); ?>" data-spent-points="<?php echo $issue->getSpentPoints(); ?>" data-spent-hours="<?php echo $issue->getSpentHours(); ?>" data-spent-minutes="<?php echo $issue->getSpentMinutes(); ?>" data-last-updated="<?php echo $issue->getLastUpdatedTime(); ?>">
         <?php include_component('agile/colorpicker', array('issue' => $issue)); ?>
         <div class="priority priority_<?php echo ($issue->getPriority() instanceof \pachno\core\entities\Priority) ? $issue->getPriority()->getValue() : 0; ?>" title="<?php echo ($issue->getPriority() instanceof \pachno\core\entities\Priority) ? __($issue->getPriority()->getName()) : __('Priority not set'); ?>"><?php echo ($issue->getPriority() instanceof \pachno\core\entities\Priority) ? $issue->getPriority()->getAbbreviation() : '-'; ?></div>
-        <div class="issue_link">
-            <div class="issue_info">
-                <?php echo image_tag('icon_block.png', array('class' => 'blocking', 'title' => __('This issue is marked as a blocker'))); ?>
-                <?php if ($issue->isAssigned()): ?>
-                    <?php if ($issue->getAssignee() instanceof \pachno\core\entities\User): ?>
-                        <a href="javascript:void(0);" onclick="Pachno.Main.Helpers.Backdrop.show('<?php echo make_url('get_partial_for_backdrop', array('key' => 'usercard', 'user_id' => $issue->getAssignee()->getID())); ?>');"><?php echo image_tag($issue->getAssignee()->getAvatarURL(21), array('alt' => ' ', 'class' => 'avatar'), true); ?></a>
-                    <?php else: ?>
-                        <?php echo include_component('main/teamdropdown', array('team' => $issue->getAssignee(), 'size' => 'large', 'displayname' => '')); ?>
-                    <?php endif; ?>
+        <div class="assignee-container">
+            <?php if ($issue->isAssigned()): ?>
+                <?php if ($issue->getAssignee() instanceof \pachno\core\entities\User): ?>
+                    <a href="javascript:void(0);" onclick="Pachno.Main.Helpers.Backdrop.show('<?php echo make_url('get_partial_for_backdrop', array('key' => 'usercard', 'user_id' => $issue->getAssignee()->getID())); ?>');"><?php echo image_tag($issue->getAssignee()->getAvatarURL(), array('alt' => ' ', 'class' => 'avatar small'), true); ?></a>
+                <?php else: ?>
+                    <?php echo include_component('main/teamdropdown', array('team' => $issue->getAssignee(), 'size' => 'large', 'displayname' => '')); ?>
                 <?php endif; ?>
+            <?php endif; ?>
+        </div>
+        <div class="status-container">
+            <?php if ($issue->getStatus() instanceof \pachno\core\entities\Datatype): ?>
+                <div class="status-badge" style="background-color: <?php echo ($issue->getStatus() instanceof \pachno\core\entities\Datatype) ? $issue->getStatus()->getColor() : '#FFF'; ?>;" title="<?php echo ($issue->getStatus() instanceof \pachno\core\entities\Datatype) ? $issue->getStatus()->getName() : __('Unknown'); ?>">&nbsp;&nbsp;&nbsp;</div>
+            <?php endif; ?>
+        </div>
+        <div class="issue-link-container">
+            <div class="issue-link">
+                <a href="<?= make_url('viewissue', array('issue_no' => $issue->getFormattedIssueNo(), 'project_key' => $issue->getProject()->getKey())); ?>" title="<?= $issue->getFormattedTitle(); ?>" target="_blank">
+                    <?= fa_image_tag(($issue->hasIssueType()) ? $issue->getIssueType()->getFontAwesomeIcon() : 'unknown', ['class' => (($issue->hasIssueType()) ? 'issuetype-icon issuetype-' . $issue->getIssueType()->getIcon() : 'issuetype-icon issuetype-unknown')]); ?>
+                    <span><?= $issue->getFormattedTitle(true, false); ?></span>
+                </a>
+            </div>
+            <div class="issue-info">
+                <?php echo image_tag('icon_block.png', array('class' => 'blocking', 'title' => __('This issue is marked as a blocker'))); ?>
                 <?php foreach ($issue->getBuilds() as $details): ?>
                     <div class="issue_release"><?php echo $details['build']->getVersion(); ?></div>
                 <?php endforeach; ?>
@@ -46,13 +59,9 @@ $parent_prefix = isset($parent_issue) ? 'issue_'.$parent_issue->getID().'_child_
                         <?php endif; ?>
                     <?php endforeach; ?>
                 <?php endif; */ ?>
-                <?php if ($issue->getStatus() instanceof \pachno\core\entities\Datatype): ?>
-                    <div class="status-badge" style="background-color: <?php echo ($issue->getStatus() instanceof \pachno\core\entities\Datatype) ? $issue->getStatus()->getColor() : '#FFF'; ?>;" title="<?php echo ($issue->getStatus() instanceof \pachno\core\entities\Datatype) ? $issue->getStatus()->getName() : __('Unknown'); ?>">&nbsp;&nbsp;&nbsp;</div>
-                <?php endif; ?>
             </div>
-            <?php echo link_tag(make_url('viewissue', array('issue_no' => $issue->getFormattedIssueNo(), 'project_key' => $issue->getProject()->getKey())), fa_image_tag(($issue->hasIssueType()) ? $issue->getIssueType()->getFontAwesomeIcon() : 'unknown', ['class' => (($issue->hasIssueType()) ? 'issuetype-icon issuetype-' . $issue->getIssueType()->getIcon() : 'issuetype-icon issuetype-unknown')]).$issue->getFormattedTitle(true, false), array('title' => $issue->getFormattedTitle(), 'target' => '_blank')); ?>
         </div>
-        <div class="issue_more_actions_link_container">
+        <div class="issue_more_actions_link_container dropper-container">
             <a title="<?php echo __('Show more actions'); ?>" class="dropper dynamic_menu_link" data-id="<?php echo $parent_prefix . $issue->getID(); ?>" id="<?php echo $parent_prefix; ?>more_actions_<?php echo $issue->getID(); ?>_button" href="javascript:void(0);"><?php echo fa_image_tag('ellipsis-v'); ?></a>
             <?php include_component('main/issuemoreactions', array('issue' => $issue, 'multi' => true, 'dynamic' => true, 'board' => $board)); ?>
         </div>

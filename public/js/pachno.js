@@ -119,10 +119,6 @@ define(['pachno/tools', 'pachno/index', 'domReady', 'jquery', 'mention'],
 
                     e.stopPropagation();
                 });
-                jQuery("img[data-src]:not([data-src-processed])").each(function(){
-                    var $img = jQuery(this);
-                    $img.attr('src', $img.data('src')).data('src-processed', true);
-                });
                 $$("textarea").each(function (ta) {
                     ta.on('focus', function (e) {
                         Pachno.Main.initializeMentionable(e.target);

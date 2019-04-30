@@ -1,21 +1,4 @@
 <div id="issue-messages-container">
-    <div class="issue_info error<?php if (isset($issue_unsaved)): ?> active<?php endif; ?>" id="viewissue_unsaved"<?php if (!isset($issue_unsaved)): ?> style="display: none;"<?php endif; ?>>
-        <div class="header"><?php echo __('Could not save your changes'); ?></div>
-    </div>
-    <div class="issue_info error<?php if ($issue->hasMergeErrors()): ?> active<?php endif; ?>" id="viewissue_merge_errors"<?php if (!$issue->hasMergeErrors()): ?> style="display: none;"<?php endif; ?>>
-        <div class="header"><?php echo __('This issue has been changed since you started editing it'); ?></div>
-        <div class="content"><?php echo __('Data that has been changed is highlighted in red below. Undo your changes to see the updated information'); ?></div>
-    </div>
-    <div class="issue_info important" id="viewissue_changed" <?php if (!$issue->hasUnsavedChanges()): ?>style="display: none;"<?php endif; ?>>
-        <form action="<?php echo make_url('viewissue', array('project_key' => $issue->getProject()->getKey(), 'issue_no' => $issue->getFormattedIssueNo())); ?>" method="post">
-            <div class="buttons">
-                <input class="button" type="submit" value="<?php echo __('Save changes'); ?>">
-                <button class="button" onclick="$('comment_add_button').hide(); $('comment_add').show();$('comment_save_changes').checked = true;$('comment_bodybox').focus();return false;"><?php echo __('Add comment and save changes'); ?></button>
-            </div>
-            <input type="hidden" name="issue_action" value="save">
-        </form>
-        <?php echo __("You have changed this issue, but haven't saved your changes yet. To save it, press the %save_changes button to the right", array('%save_changes' => '<b>' . __("Save changes") . '</b>')); ?>
-    </div>
     <?php if (isset($error) && $error): ?>
         <div class="issue_info error" id="viewissue_error">
             <?php if ($error == 'transition_error'): ?>

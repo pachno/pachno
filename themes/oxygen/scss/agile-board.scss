@@ -473,11 +473,11 @@
     }
   }
 
-  .milestone-issues {
+  .milestone-issues-container {
     padding: 0 15px 0 0;
     margin: 10px 0;
     box-sizing: border-box;
-    border: 2px dotted rgba(0, 0, 0, .4);
+    border: 1px dashed transparent;
     transition: border 0.3s ease;
     border-radius: 4px;
     display: flex;
@@ -485,11 +485,41 @@
     align-items: stretch;
     justify-content: flex-start;
 
+    .milestone-no-issues {
+      padding: 1rem;
+      display: none;
+    }
+
+    .milestone-issues {
+      transition: background-color .2s ease-in-out;
+      //
+      //&.empty + .milestone-empty {
+      //  display: flex;
+      //}
+    }
+
+    &.issue-drop-target {
+      .milestone-issues {
+        padding: 2rem;
+        background-color: rgba(12, 137, 144, .2);
+
+        .milestone-issue {
+          opacity: .3;
+        }
+      }
+
+      .milestone-no-issues {
+        display: none;
+      }
+    }
+
     .milestone-issue {
       display: flex;
       flex-direction: row;
       align-items: center;
       justify-content: stretch;
+      opacity: 1;
+      transition: opacity .2s ease-in-out;
 
       .issue-container {
         flex: 1 1 auto;
@@ -529,7 +559,7 @@
     }
 
     &.empty {
-      border-color: transparent;
+      border-color: rgba(0, 0, 0, .4);
     }
 
     &:hover {
@@ -576,39 +606,99 @@
   }
 
   &.backlog {
-    .milestone-issues {
+    .milestone-issues-container {
       border: none;
     }
   }
 }
 
 .milestone-issue {
-  .issue_link,
-  .issue_link:hover {
-    display: block;
-    float: none;
-    clear: both;
-    padding: 8px 2px 5px 40px;
-    margin: 0;
+  .story_color {
+    position: relative;
+    flex: 0 0 7px;
+    padding: 0;
+    border-right: 1px solid rgba(200, 200, 200, 0.2);
+    opacity: 0.6;
+  }
 
-    > a,
-    > a:hover {
-      border: none;
-      text-decoration: none;
-      line-height: 1.7em;
+  .priority {
+    flex: 0 0 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: .35rem;
+  }
+
+  .issue_more_actions_link_container {
+    flex: 0 0 24px;
+    margin-right: .35rem;
+  }
+
+  .assignee-container {
+    flex: 0 0 36px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-right: .35rem;
+  }
+
+  .status-container {
+    flex: 0 0 24px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-right: .35rem;
+  }
+
+  .issue-link-container {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: stretch;
+
+    .issue-link,
+    .issue-link:hover {
+      flex: 0 1 300px;
+      display: flex;
+      float: none;
+      clear: both;
+      padding: .15em;
+      margin: 0;
+
+      > a,
+      > a:hover {
+        font-size: 1.1em;
+        padding: .35rem;
+        flex: 1 1 auto;
+        display: flex;
+        align-items: center;
+        color: #141823;
+        border: none;
+        text-decoration: none;
+        line-height: 1.7em;
+
+        > img {
+          margin-bottom: -3px;
+          margin-right: 5px;
+        }
+      }
 
       > img {
-        margin-bottom: -3px;
+        vertical-align: middle;
+        display: inline-block;
         margin-right: 5px;
       }
     }
 
-    > img {
-      vertical-align: middle;
-      display: inline-block;
-      margin-right: 5px;
+    .issue-info {
+      flex: 0 0 auto;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
     }
   }
+
 
   .issue_info {
     display: block;

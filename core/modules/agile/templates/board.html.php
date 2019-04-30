@@ -141,10 +141,12 @@
                         </div>
                         <?php echo image_tag('spinning_20.gif', array('id' => 'milestone_0_issues_indicator', 'class' => 'milestone_issues_indicator', 'style' => 'display: none;')); ?>
                     </div>
-                    <div id="milestone_0_issues" class="milestone-issues jsortable intersortable empty collapsed"></div>
-                    <div class="milestone_no_issues" style="display: none;" id="milestone_0_unassigned"><?php echo __('There are no issues in the backlog'); ?></div>
-                    <div class="milestone_no_issues" style="display: none;" id="milestone_0_unassigned_filtered"><?php echo __('No issues in the backlog matches selected filters'); ?></div>
-                    <div class="milestone_error_issues" style="display: none;" id="milestone_0_initialize_error"><?php echo __('The issue list could not be loaded'); ?></div>
+                    <div class="milestone-issues-container collapsed empty">
+                        <div id="milestone_0_issues" class="milestone-issues jsortable intersortable"></div>
+                        <div class="milestone-no-issues milestone-empty" style="display: none;" id="milestone_0_unassigned"><?php echo __('There are no issues in the backlog'); ?></div>
+                        <div class="milestone-no-issues" style="display: none;" id="milestone_0_unassigned_filtered"><?php echo __('No issues in the backlog matches selected filters'); ?></div>
+                        <div class="milestone_error_issues" style="display: none;" id="milestone_0_initialize_error"><?php echo __('The issue list could not be loaded'); ?></div>
+                    </div>
                 </div>
             </div>
         </div>

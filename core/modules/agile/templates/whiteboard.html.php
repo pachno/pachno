@@ -182,8 +182,8 @@
                         <?php echo image_tag('spinning_20.gif', array('id' => 'milestone_0_issues_indicator', 'class' => 'milestone_issues_indicator', 'style' => 'display: none;')); ?>
                     </div>
                     <ul id="milestone_0_issues" class="milestone_issues jsortable intersortable <?php //if ($board->getBacklogSearchObject()->getTotalNumberOfIssues() == 0) echo 'empty'; ?>"></ul>
-                    <div class="milestone_no_issues" style="display: none;" id="milestone_0_unassigned"><?php echo __('No issues are assigned to this milestone'); ?></div>
-                    <div class="milestone_no_issues" style="display: none;" id="milestone_0_unassigned_filtered"><?php echo __('No issues assigned to this milestone matches selected filters'); ?></div>
+                    <div class="milestone-no-issues" style="display: none;" id="milestone_0_unassigned"><?php echo __('No issues are assigned to this milestone'); ?></div>
+                    <div class="milestone-no-issues" style="display: none;" id="milestone_0_unassigned_filtered"><?php echo __('No issues assigned to this milestone matches selected filters'); ?></div>
                     <div class="milestone_error_issues" style="display: none;" id="milestone_0_initialize_error"><?php echo __('The issue list could not be loaded'); ?></div>
                 </div>
             </div>

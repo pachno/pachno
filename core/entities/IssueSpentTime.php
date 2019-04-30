@@ -388,7 +388,7 @@
             $this->setComment($data['timespent_comment']);
             $this->save();
 
-            $this->getIssue()->saveSpentTime();
+            $this->getIssue()->save();
         }
 
     }

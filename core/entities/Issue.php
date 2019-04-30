@@ -27,10 +27,6 @@
      * @subpackage main
      *
      * @method static tables\Issues getB2DBTable()
-     * @method boolean isTitleChanged() Whether the title is changed or not
-     * @method boolean isSpentTimeChanged() Whether the spent_time is changed or not
-     * @method boolean isIssuetypeChanged() Whether the issue_type is changed or not
-     * @method boolean isIssuetypeMerged() Whether the issue_type is merged or not
      *
      * @Table(name="\pachno\core\entities\tables\Issues")
      */
@@ -586,6 +582,13 @@
         protected $_new_subscribers = array();
 
         /**
+         * List of changed properties
+         *
+         * @var array
+         */
+        protected $_changed_items = array();
+
+        /**
          * List of todos for this issue
          *
          * @var array
@@ -1024,13 +1027,77 @@
         public function _construct(\b2db\Row $row, $foreign_key = null)
         {
             $this->_initializeCustomfields();
-            $this->_mergeChangedProperties();
             $this->_num_user_comments = tables\Comments::getTable()->getPreloadedCommentCount(Comment::TYPE_ISSUE, $this->_id);
             $this->_num_files = tables\IssueFiles::getTable()->getPreloadedIssueFileCount($this->_id);
 //            if ($this->isDeleted())
 //            {
 //                throw new \Exception(framework\Context::geti18n()->__('This issue has been deleted'));
 //            }
+        }
+
+
+        /**
+         * Adds a property to list of changed properties
+         *
+         * @param string $property The property key that was changed
+         * @param mixed $value The new value
+         */
+        protected function _addChangedProperty($property, $value)
+        {
+            if ($this->_id && !defined('bin/pachno'))
+            {
+                if (property_exists($this, $property))
+                {
+                    if ($this->$property instanceof \pachno\core\entities\common\Identifiable) $this->$property = $this->$property->getID();
+                }
+                else
+                {
+                    $this->$property = null;
+                }
+                if ($value instanceof \pachno\core\entities\common\Identifiable) $value = $value->getID();
+                if ($this->$property != $value)
+                {
+                    if (array_key_exists($property, $this->_changed_items))
+                    {
+                        if ($this->_changed_items[$property]['original_value'] == $value)
+                        {
+                            $this->_revertPropertyChange($property);
+                        }
+                        else
+                        {
+                            $this->_changed_items[$property]['current_value'] = $value;
+                            if ($this->_merged)
+                            {
+                                $_SESSION['changeableitems'][get_class($this)][$this->getID()][$property]['current_value'] = $value;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        $this->_changed_items[$property] = array('original_value' => $this->$property, 'current_value' => $value);
+                        if ($this->_merged)
+                        {
+                            $_SESSION['changeableitems'][get_class($this)][$this->getID()][$property] = array('original_value' => $this->$property, 'current_value' => $value);
+                        }
+                    }
+                    $this->$property = $value;
+                }
+            }
+            else
+            {
+                $this->$property = $value;
+            }
+        }
+
+        /**
+         * Returns a list of changed properties:
+         *         array('property_name' => 'old_value')
+         *
+         * @return array
+         */
+        protected function _getChangedProperties()
+        {
+            return $this->_changed_items;
         }
 
         /**
@@ -2748,10 +2815,6 @@
          */
         public function setStatus($status_id)
         {
-            if ($this->_isPropertyChanged('_issuetype'))
-            {
-                throw new \Exception(\pachno\core\framework\Context::getI18n()->__("You can't change the status after changing the issue type. Please save your changes first."));
-            }
             $this->_addChangedProperty('_status', $status_id);
         }
 
@@ -3231,14 +3294,6 @@
         }
 
         /**
-         * @return bool
-         */
-        public function isPostedByChanged()
-        {
-            return $this->_isPropertyChanged('_posted_by');
-        }
-
-        /**
          * Returns the percentage completed
          *
          * @return integer
@@ -3604,213 +3659,14 @@
             $this->_addChangedProperty('_estimated_points', $points);
         }
 
-        /**
-         * Check to see whether the estimated time is changed
-         *
-         * @return boolean
-         */
-        public function isEstimatedTimeChanged()
-        {
-            return (bool) ($this->isEstimated_MonthsChanged() || $this->isEstimated_WeeksChanged() || $this->isEstimated_DaysChanged() || $this->isEstimated_HoursChanged() || $this->isEstimated_MinutesChanged() || $this->isEstimated_PointsChanged());
-        }
-
-        /**
-         * Check to see whether the estimated time is merged
-         *
-         * @return boolean
-         */
-        public function isEstimatedTimeMerged()
-        {
-            return (bool) ($this->isEstimated_MonthsMerged() || $this->isEstimated_WeeksMerged() || $this->isEstimated_DaysMerged() || $this->isEstimated_HoursMerged() || $this->isEstimated_MinutesMerged() || $this->isEstimated_PointsMerged());
-        }
-
-        /**
-         * Reverts estimated time
-         */
-        public function revertEstimatedTime()
-        {
-            $this->revertEstimated_Months();
-            $this->revertEstimated_Weeks();
-            $this->revertEstimated_Days();
-            $this->revertEstimated_Hours();
-            $this->revertEstimated_Minutes();
-            $this->revertEstimated_Points();
-        }
-
-        /**
-         * Check to see whether the percent completed is changed
-         *
-         * @return boolean
-         */
-        public function isPercentCompletedChanged()
-        {
-            return $this->_isPropertyChanged('_percent_complete');
-        }
-
-        /**
-         * Check to see whether the percent completed is merged
-         *
-         * @return boolean
-         */
-        public function isPercentCompletedMerged()
-        {
-            return $this->_isPropertyMerged('_percent_complete');
-        }
-
-        /**
-         * Reverts percent completed
-         */
-        public function revertPercentCompleted()
-        {
-            $this->_revertPropertyChange('_percent_complete');
-        }
-
-        /**
-         * Check to see whether the owner is changed
-         *
-         * @return boolean
-         */
-        public function isOwnerUserChanged()
-        {
-            return $this->_isPropertyChanged('_owner_user');
-        }
-
-        /**
-         * Check to see whether the owner is merged
-         *
-         * @return boolean
-         */
-        public function isOwnerUserMerged()
-        {
-            return $this->_isPropertyMerged('_owner_user');
-        }
-
-        /**
-         * Reverts estimated time
-         */
-        public function revertOwnerUser()
-        {
-            $this->_revertPropertyChange('_owner_user');
-        }
-
-        /**
-         * Check to see whether the owner is changed
-         *
-         * @return boolean
-         */
-        public function isOwnerTeamChanged()
-        {
-            return $this->_isPropertyChanged('_owner_team');
-        }
-
-        /**
-         * Check to see whether the owner is merged
-         *
-         * @return boolean
-         */
-        public function isOwnerTeamMerged()
-        {
-            return $this->_isPropertyMerged('_owner_team');
-        }
-
-        /**
-         * Reverts estimated time
-         */
-        public function revertOwnerTeam()
-        {
-            $this->_revertPropertyChange('_owner_team');
-        }
-
-        public function isOwnerChanged()
-        {
-            return (bool) $this->isOwnerTeamChanged() || $this->isOwnerUserChanged();
-        }
-
         public function isOwned()
         {
             return (bool) ($this->getOwner() instanceof common\Identifiable);
         }
 
-        public function revertOwner()
-        {
-            if ($this->isOwnerTeamChanged())
-                $this->revertOwnerTeam();
-            else
-                $this->revertOwnerUser();
-        }
-
-        /**
-         * Check to see whether the assignee is changed
-         *
-         * @return boolean
-         */
-        public function isAssigneeUserChanged()
-        {
-            return $this->_isPropertyChanged('_assignee_user');
-        }
-
-        /**
-         * Check to see whether the owner is merged
-         *
-         * @return boolean
-         */
-        public function isAssigneeUserMerged()
-        {
-            return $this->_isPropertyMerged('_assignee_user');
-        }
-
-        /**
-         * Reverts estimated time
-         */
-        public function revertAssigneeUser()
-        {
-            $this->_revertPropertyChange('_assignee_user');
-        }
-
-        /**
-         * Check to see whether the assignee is changed
-         *
-         * @return boolean
-         */
-        public function isAssigneeTeamChanged()
-        {
-            return $this->_isPropertyChanged('_assignee_team');
-        }
-
-        /**
-         * Check to see whether the owner is merged
-         *
-         * @return boolean
-         */
-        public function isAssigneeTeamMerged()
-        {
-            return $this->_isPropertyMerged('_assignee_team');
-        }
-
-        public function isAssigneeChanged()
-        {
-            return (bool) $this->isAssigneeTeamChanged() || $this->isAssigneeUserChanged();
-        }
-
         public function isAssigned()
         {
             return (bool) ($this->getAssignee() instanceof common\Identifiable);
-        }
-
-        /**
-         * Reverts estimated time
-         */
-        public function revertAssigneeTeam()
-        {
-            $this->_revertPropertyChange('_assignee_team');
-        }
-
-        public function revertAssignee()
-        {
-            if ($this->isAssigneeTeamChanged())
-                $this->revertAssigneeTeam();
-            else
-                $this->revertAssigneeUser();
         }
 
         /**
@@ -4657,21 +4513,6 @@
             }
 
             return (int) $this->_num_user_comments;
-        }
-
-        public function isReproductionStepsChanged()
-        {
-            return $this->isReproduction_StepsChanged() || $this->isReproduction_Steps_SyntaxChanged();
-        }
-
-        public function isDescriptionChanged()
-        {
-            return $this->_isPropertyChanged('_description') || $this->isDescription_SyntaxChanged();
-        }
-
-        public function isShortnameChanged()
-        {
-            return $this->_isPropertyChanged('_shortname');
         }
 
         /**
@@ -5683,7 +5524,6 @@
                 $this->addSubscriber(framework\Context::getUser()->getID());
             }
 
-            $this->_clearChangedProperties();
             $this->_log_items_added = array();
             $this->getProject()->clearRecentActivities();
 
@@ -5703,35 +5543,6 @@
             }
 
             return true;
-        }
-
-        public function saveSpentTime()
-        {
-            $spent_times = common\Timeable::getUnitsWithPoints();
-            $spent_times_changed_items = array();
-            $changed_properties = $this->_getChangedProperties();
-
-            foreach ($spent_times as $spent_time_unit)
-            {
-                $property = '_spent_'.$spent_time_unit;
-
-                if (! $this->_isPropertyChanged($property)) continue;
-
-                $spent_times_changed_items[$property] = $changed_properties[$property];
-                unset($changed_properties[$property]);
-            }
-
-            foreach ($changed_properties as $property => $property_values)
-            {
-                $this->_revertPropertyChange($property);
-            }
-
-            $this->save();
-
-            foreach ($changed_properties as $property => $property_values)
-            {
-                $this->_addChangedProperty($property, $property_values['current_value']);
-            }
         }
 
         public function checkTaskStates()
@@ -5941,62 +5752,14 @@
             return (bool) ($this->_pain_bug_type > 0);
         }
 
-        public function isPainBugTypeChanged()
-        {
-            return $this->_isPropertyChanged('_pain_bug_type');
-        }
-
-        public function isPainBugTypeMerged()
-        {
-            return $this->_isPropertyMerged('_pain_bug_type');
-        }
-
-        public function revertPainBugType()
-        {
-            $this->_revertPropertyChange('_pain_bug_type');
-            $this->_calculateUserPain();
-        }
-
         public function hasPainLikelihood()
         {
             return (bool) ($this->_pain_likelihood > 0);
         }
 
-        public function isPainLikelihoodChanged()
-        {
-            return $this->_isPropertyChanged('_pain_likelihood');
-        }
-
-        public function isPainLikelihoodMerged()
-        {
-            return $this->_isPropertyMerged('_pain_likelihood');
-        }
-
-        public function revertPainLikelihood()
-        {
-            $this->_revertPropertyChange('_pain_likelihood');
-            $this->_calculateUserPain();
-        }
-
         public function hasPainEffect()
         {
             return (bool) ($this->_pain_effect > 0);
-        }
-
-        public function isPainEffectChanged()
-        {
-            return $this->_isPropertyChanged('_pain_effect');
-        }
-
-        public function isPainEffectMerged()
-        {
-            return $this->_isPropertyMerged('_pain_effect');
-        }
-
-        public function revertPainEffect()
-        {
-            $this->_revertPropertyChange('_pain_effect');
-            $this->_calculateUserPain();
         }
 
         public function toJSON($detailed = true)
@@ -6319,16 +6082,6 @@
         }
 
         /**
-         * Check to see whether the category is changed
-         *
-         * @return boolean
-         */
-        public function isCategoryChanged()
-        {
-            return $this->_isPropertyChanged('_category');
-        }
-
-        /**
          * Get spent time units with points and their description.
          *
          * @return array
@@ -6594,31 +6347,10 @@
          */
         public function saveTodos()
         {
-            $todos_changed_items = array();
-            $changed_properties = $this->_getChangedProperties();
-
-            foreach (array('_description') as $property)
-            {
-                if (! $this->_isPropertyChanged($property)) continue;
-
-                $todos_changed_items[$property] = $changed_properties[$property];
-                unset($changed_properties[$property]);
-            }
-
-            foreach ($changed_properties as $property => $property_values)
-            {
-                $this->_revertPropertyChange($property);
-            }
-
             // Since todos are saved in description don't log entry of that field changing.
             $this->should_log_entry = false;
             $this->save();
             $this->should_log_entry = true;
-
-            foreach ($changed_properties as $property => $property_values)
-            {
-                $this->_addChangedProperty($property, $property_values['current_value']);
-            }
         }
 
         /**

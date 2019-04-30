@@ -2444,16 +2444,6 @@
             return $this->_associated_projects;
         }
 
-        /**
-         * Return an array of issues that has changes pending
-         *
-         * @return array
-         */
-        public function getIssuesPendingChanges()
-        {
-            return \pachno\core\entities\common\Changeable::getChangedItems('\pachno\core\entities\Issue');
-        }
-
         public function setLanguage($language)
         {
             $this->_language = $language;
