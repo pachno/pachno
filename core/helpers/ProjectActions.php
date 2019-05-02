@@ -89,34 +89,7 @@
             $message = framework\Context::getMessageAndClear('issue_saved');
             $uploaded = framework\Context::getMessageAndClear('issue_file_uploaded');
 
-            if ($request->isPost() && $issue instanceof entities\Issue && $request->hasParameter('issue_action'))
-            {
-                if ($request['issue_action'] == 'save')
-                {
-                    try
-                    {
-                        $issue->getWorkflow()->moveIssueToMatchingWorkflowStep($issue);
-                        // Currently if category is changed we want to regenerate permissions since category is used for granting user access.
-                        if ($issue->isCategoryChanged())
-                        {
-                            framework\Event::listen('core', 'pachno\core\entities\Issue::save_pre_notifications', array($this, 'listen_issueCreate'));
-                        }
-                        $issue->save();
-                        framework\Context::setMessage('issue_saved', true);
-                        $this->forward(framework\Context::getRouting()->generate('viewissue', array('project_key' => $issue->getProject()->getKey(), 'issue_no' => $issue->getFormattedIssueNo())));
-                    }
-                    catch (\pachno\core\exceptions\WorkflowException $e)
-                    {
-                        $this->error = $e->getMessage();
-                        $this->workflow_error = true;
-                    }
-                    catch (\Exception $e)
-                    {
-                        $this->error = $e->getMessage();
-                    }
-                }
-            }
-            elseif (framework\Context::hasMessage('issue_deleted_shown') && (is_null($issue) || ($issue instanceof entities\Issue && $issue->isDeleted())))
+            if (framework\Context::hasMessage('issue_deleted_shown') && (is_null($issue) || ($issue instanceof entities\Issue && $issue->isDeleted())))
             {
                 $request_referer = ($request['referer'] ?: isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : null);
 

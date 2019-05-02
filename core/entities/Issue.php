@@ -2,12 +2,13 @@
 
     namespace pachno\core\entities;
 
+    use pachno\core\entities\common\Identifiable;
+    use pachno\core\entities\common\Ownable;
     use pachno\core\entities\traits\Commentable;
     use pachno\core\entities\traits\TextParserTodo;
-    use pachno\core\framework,
-        pachno\core\entities\common\Changeable,
-        pachno\core\helpers\Attachable,
-        pachno\core\helpers\MentionableProvider;
+    use pachno\core\framework;
+    use pachno\core\helpers\Attachable;
+    use pachno\core\helpers\MentionableProvider;
     use pachno\core\helpers\TextParser;
 
     /**
@@ -30,7 +31,7 @@
      *
      * @Table(name="\pachno\core\entities\tables\Issues")
      */
-    class Issue extends Changeable implements MentionableProvider, Attachable
+    class Issue extends Ownable implements MentionableProvider, Attachable
     {
 
         use Commentable;
@@ -1046,39 +1047,30 @@
         {
             if ($this->_id && !defined('bin/pachno'))
             {
-                if (property_exists($this, $property))
-                {
-                    if ($this->$property instanceof \pachno\core\entities\common\Identifiable) $this->$property = $this->$property->getID();
+                if ($value instanceof Identifiable) {
+                    $value = $value->getID();
                 }
-                else
-                {
+
+                if (!property_exists($this, $property)) {
                     $this->$property = null;
+                } elseif ($this->$property instanceof Identifiable) {
+                    $this->$property = $this->$property->getID();
                 }
-                if ($value instanceof \pachno\core\entities\common\Identifiable) $value = $value->getID();
+
                 if ($this->$property != $value)
                 {
                     if (array_key_exists($property, $this->_changed_items))
                     {
-                        if ($this->_changed_items[$property]['original_value'] == $value)
-                        {
-                            $this->_revertPropertyChange($property);
-                        }
-                        else
-                        {
+                        if ($this->_changed_items[$property]['original_value'] == $value) {
+                            unset($this->_changed_items[$property]);
+                        } else {
                             $this->_changed_items[$property]['current_value'] = $value;
-                            if ($this->_merged)
-                            {
-                                $_SESSION['changeableitems'][get_class($this)][$this->getID()][$property]['current_value'] = $value;
-                            }
                         }
-                    }
-                    else
-                    {
-                        $this->_changed_items[$property] = array('original_value' => $this->$property, 'current_value' => $value);
-                        if ($this->_merged)
-                        {
-                            $_SESSION['changeableitems'][get_class($this)][$this->getID()][$property] = array('original_value' => $this->$property, 'current_value' => $value);
-                        }
+                    } else {
+                        $this->_changed_items[$property] = [
+                            'original_value' => $this->$property,
+                            'current_value' => $value
+                        ];
                     }
                     $this->$property = $value;
                 }
@@ -1098,6 +1090,34 @@
         protected function _getChangedProperties()
         {
             return $this->_changed_items;
+        }
+
+        /**
+         * Returns a single changed propertys original value
+         *
+         * @param $property
+         * @return mixed
+         */
+        protected function getChangedPropertyOriginal($property)
+        {
+            if ($this->isPropertyChanged($property))
+            {
+                return $this->_changed_items[$property]['original_value'];
+            }
+            return null;
+        }
+
+        /**
+         * Checks to see whether a property has unsaved changes
+         *
+         * @param string $property The field key
+         *
+         * @return boolean
+         */
+        public function isPropertyChanged($property)
+        {
+            if (empty($this->_changed_items)) return false;
+            return array_key_exists($property, $this->_changed_items);
         }
 
         /**
@@ -2909,6 +2929,11 @@
         public function setCustomField($key, $value)
         {
             $this->_addChangedProperty('_customfield'.$key, $value);
+        }
+
+        public function clearCustomField($key)
+        {
+            $this->_addChangedProperty('_customfield'.$key, '');
         }
 
         /**
@@ -5078,7 +5103,7 @@
                                     $old_time = array_fill_keys($time_units, 0);
                                     foreach ($time_units as $time_unit)
                                     {
-                                        if ($this->_isPropertyChanged('_estimated_' . $time_unit))
+                                        if ($this->isPropertyChanged('_estimated_' . $time_unit))
                                         {
                                             $old_time[$time_unit] = $this->getChangedPropertyOriginal('_estimated_' . $time_unit);
                                         }
@@ -5105,7 +5130,7 @@
                                     $old_time = array_fill_keys($time_units, 0);
                                     foreach ($time_units as $time_unit)
                                     {
-                                        if ($this->_isPropertyChanged('_spent_' . $time_unit))
+                                        if ($this->isPropertyChanged('_spent_' . $time_unit))
                                         {
                                             $old_time[$time_unit] = $this->getChangedPropertyOriginal('_spent_' . $time_unit);
                                         }

@@ -298,42 +298,38 @@
 
         public function moveIssueToMatchingWorkflowStep(\pachno\core\entities\Issue $issue)
         {
-            $change_step = false;
-            
-            if ($issue->isStatusChanged() || $issue->isResolutionChanged())
-            {
-                $change_step = true;
+            if (!$issue->isPropertyChanged('status') && !$issue->isPropertyChanged('resolution')) {
+                return false;
             }
             
-            if ($change_step)
+            foreach ($this->getSteps() as $step)
             {
-                foreach ($this->getSteps() as $step)
+                if ($step->hasLinkedStatus() && $issue->getStatus() instanceof \pachno\core\entities\Status && $step->getLinkedStatusID() == $issue->getStatus()->getID())
                 {
-                    if ($step->hasLinkedStatus() && $issue->getStatus() instanceof \pachno\core\entities\Status && $step->getLinkedStatusID() == $issue->getStatus()->getID())
-                    {
-                        $step->applyToIssue($issue);
-                        return true;
-                    }
+                    $step->applyToIssue($issue);
+                    return true;
                 }
-                foreach ($this->getSteps() as $step)
+            }
+            foreach ($this->getSteps() as $step)
+            {
+                if (!$step->hasLinkedStatus())
                 {
-                    if (!$step->hasLinkedStatus())
+                    foreach ($step->getIncomingTransitions() as $transition)
                     {
-                        foreach ($step->getIncomingTransitions() as $transition)
+                        if ($transition->hasPostValidationRule(WorkflowTransitionValidationRule::RULE_STATUS_VALID))
                         {
-                            if ($transition->hasPostValidationRule(WorkflowTransitionValidationRule::RULE_STATUS_VALID))
+                            $rule = $transition->getPostValidationRule(WorkflowTransitionValidationRule::RULE_STATUS_VALID);
+                            if ($rule->isValid($issue))
                             {
-                                $rule = $transition->getPostValidationRule(WorkflowTransitionValidationRule::RULE_STATUS_VALID);
-                                if ($rule->isValid($issue))
-                                {
-                                    $step->applyToIssue($issue);
-                                    return true;
-                                }
+                                $step->applyToIssue($issue);
+                                return true;
                             }
                         }
                     }
                 }
             }
+
+            return false;
         }
         
         /**

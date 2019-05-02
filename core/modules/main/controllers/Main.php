@@ -216,34 +216,7 @@ class Main extends framework\Action
         $message = framework\Context::getMessageAndClear('issue_saved');
         $uploaded = framework\Context::getMessageAndClear('issue_file_uploaded');
 
-        if ($request->isPost() && $issue instanceof entities\Issue && $request->hasParameter('issue_action'))
-        {
-            if ($request['issue_action'] == 'save')
-            {
-                try
-                {
-                    $issue->getWorkflow()->moveIssueToMatchingWorkflowStep($issue);
-                    // Currently if category is changed we want to regenerate permissions since category is used for granting user access.
-                    if ($issue->isCategoryChanged())
-                    {
-                        framework\Event::listen('core', 'pachno\core\entities\Issue::save_pre_notifications', array($this, 'listen_issueCreate'));
-                    }
-                    $issue->save();
-                    framework\Context::setMessage('issue_saved', true);
-                    $this->forward($this->getRouting()->generate('viewissue', array('project_key' => $issue->getProject()->getKey(), 'issue_no' => $issue->getFormattedIssueNo())));
-                }
-                catch (\pachno\core\exceptions\WorkflowException $e)
-                {
-                    $this->error = $e->getMessage();
-                    $this->workflow_error = true;
-                }
-                catch (\Exception $e)
-                {
-                    $this->error = $e->getMessage();
-                }
-            }
-        }
-        elseif (framework\Context::hasMessage('issue_deleted_shown') && (is_null($issue) || ($issue instanceof entities\Issue && $issue->isDeleted())))
+        if (framework\Context::hasMessage('issue_deleted_shown') && (is_null($issue) || ($issue instanceof entities\Issue && $issue->isDeleted())))
         {
             $request_referer = ($request['referer'] ?: isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : null);
 
@@ -2088,6 +2061,58 @@ class Main extends framework\Action
         return $this->renderJSON(array('edited' => 'ok', 'issue_id' => $issue_id, 'timesum' => array_sum($spenttime->getIssue()->getSpentTime()), 'spenttime' => entities\Issue::getFormattedTime($spenttime->getIssue()->getSpentTime(true, true)), 'percentbar' => $this->getComponentHTML('main/percentbar', array('percent' => $issue->getEstimatedPercentCompleted(), 'height' => 3)), 'timeentries' => $this->getComponentHTML('main/issuespenttimes', array('issue' => $spenttime->getIssue()))));
     }
 
+    protected function verifyCanEditField(entities\Issue $issue, $field)
+    {
+        switch ($field)
+        {
+            case 'description':
+                return $issue->canEditDescription();
+            case 'shortname':
+                return $issue->canEditShortname();
+            case 'reproduction_steps':
+                return $issue->canEditReproductionSteps();
+            case 'title':
+                return $issue->canEditTitle();
+            case 'percent_complete':
+                return $issue->canEditPercentage();
+            case 'estimated_time':
+                return $issue->canEditEstimatedTime();
+            case 'posted_by':
+                return $issue->canEditPostedBy();
+            case 'owned_by':
+                return $issue->canEditOwner();
+            case 'assigned_to':
+                return $issue->canEditAssignee();
+            case 'category':
+                return $issue->canEditCategory();
+            case 'resolution':
+                return $issue->canEditResolution();
+            case 'severity':
+                return $issue->canEditSeverity();
+            case 'reproducability':
+                return $issue->canEditReproducability();
+            case 'priority':
+                return $issue->canEditPriority();
+            case 'milestone':
+                return $issue->canEditMilestone();
+            case 'issuetype':
+                return $issue->canEditIssuetype();
+            case 'status':
+                return $issue->canEditStatus();
+            case 'pain_bug_type':
+            case 'pain_likelihood':
+            case 'pain_effect':
+                return $issue->canEditUserPain();
+            default:
+                if ($customdatatype = entities\CustomDatatype::getByKey($request['field'])) {
+                    $key = $customdatatype->getKey();
+                    return $issue->canEditCustomFields($key);
+                } else {
+                    return false;
+                }
+        }
+    }
+
     /**
      * Sets an issue field to a specified value
      *
@@ -2095,85 +2120,73 @@ class Main extends framework\Action
      */
     public function runIssueSetField(framework\Request $request)
     {
-        if ($issue_id = $request['issue_id'])
-        {
-            try
-            {
-                $issue = tables\Issues::getTable()->selectById($issue_id);
-            }
-            catch (\Exception $e)
-            {
-                $this->getResponse()->setHttpStatus(400);
-                return $this->renderText('fail');
-            }
-        }
-        else
-        {
-            $this->getResponse()->setHttpStatus(400);
-            return $this->renderText('no issue');
-        }
+        $issue_id = $request['issue_id'];
+        try {
+            $issue = tables\Issues::getTable()->selectById($issue_id);
+        } catch (\Exception $e) { }
 
         framework\Context::loadLibrary('common');
 
-        if (!$issue instanceof entities\Issue)
-            return false;
+        if (!isset($issue) || !$issue instanceof entities\Issue) {
+            $this->getResponse()->setHttpStatus(404);
+            return $this->renderText('Issue not found');
+        }
+
+        $return_details = [
+            'issue_id' => $issue->getId(),
+            'changed' => []
+        ];
+
+        if (!$this->verifyCanEditField($issue, $request['field'])) {
+            $this->getResponse()->setHttpStatus(403);
+            return $this->renderJSON(['error' => 'You are not allowed to edit this field']);
+        }
 
         switch ($request['field'])
         {
             case 'description':
-                if (!$issue->canEditDescription())
-                    return $this->renderJSON(array('issue_id' => $issue->getID(), 'changed' => false, 'error' => framework\Context::getI18n()->__('You do not have permission to perform this action')));
-
                 $issue->setDescription($request->getRawParameter('value'));
                 $issue->setDescriptionSyntax($request->getParameter('value_syntax'));
-                return $this->renderJSON(array('issue_id' => $issue->getID(), 'changed' => $issue->isDescriptionChanged(), 'field' => array('id' => (int) ($issue->getDescription() != ''), 'name' => $issue->getParsedDescription(array('issue' => $issue))), 'description' => $issue->getParsedDescription(array('issue' => $issue))));
+                $return_details['changed']['description'] = [
+                    'value' => $issue->getParsedDescription(compact('issue'))
+                ];
+                break;
             case 'shortname':
-                if (!$issue->canEditShortname())
-                    return $this->renderJSON(array('issue_id' => $issue->getID(), 'changed' => false, 'error' => framework\Context::getI18n()->__('You do not have permission to perform this action')));
-
                 $issue->setShortname($request->getRawParameter('shortname_value'));
-                return $this->renderJSON(array('issue_id' => $issue->getID(), 'changed' => $issue->isShortnameChanged(), 'field' => array('id' => (int) ($issue->getShortname() != ''), 'name' => $issue->getShortname()), 'shortname' => $issue->getShortname()));
+                $return_details['changed']['shortname'] = [
+                    'value' => $issue->getShortname()
+                ];
+                break;
             case 'reproduction_steps':
-                if (!$issue->canEditReproductionSteps())
-                    return $this->renderJSON(array('issue_id' => $issue->getID(), 'changed' => false, 'error' => framework\Context::getI18n()->__('You do not have permission to perform this action')));
-
                 $issue->setReproductionSteps($request->getRawParameter('value'));
                 $issue->setReproductionStepsSyntax($request->getParameter('value_syntax'));
-                return $this->renderJSON(array('issue_id' => $issue->getID(), 'changed' => $issue->isReproductionStepsChanged(), 'field' => array('id' => (int) ($issue->getReproductionSteps() != ''), 'name' => $issue->getParsedReproductionSteps(array('issue' => $issue))), 'reproduction_steps' => $issue->getParsedReproductionSteps(array('issue' => $issue))));
+                $return_details['changed']['reproduction_steps'] = [
+                    'value' => $issue->getParsedReproductionSteps(compact('issue'))
+                ];
+                break;
             case 'title':
-                if (!$issue->canEditTitle())
-                    return $this->renderJSON(array('issue_id' => $issue->getID(), 'changed' => false, 'error' => framework\Context::getI18n()->__('You do not have permission to perform this action')));
-
-                if ($request['value'] == '')
-                {
+                if (!trim($request['value'])) {
                     $this->getResponse()->setHttpStatus(400);
-                    return $this->renderJSON(array('issue_id' => $issue->getID(), 'changed' => false, 'error' => framework\Context::getI18n()->__('You have to provide a title')));
+                    return $this->renderJSON(['error' => framework\Context::getI18n()->__('You have to provide a title')]);
                 }
 
                 $issue->setTitle($request->getRawParameter('value'));
-                return $this->renderJSON(array('issue_id' => $issue->getID(), 'changed' => $issue->isTitleChanged(), 'field' => array('id' => 1, 'name' => strip_tags($issue->getTitle()))));
+                $return_details['changed']['title'] = [
+                    'value' => strip_tags($issue->getTitle())
+                ];
+                break;
             case 'percent_complete':
-                if (!$issue->canEditPercentage())
-                    return $this->renderJSON(array('issue_id' => $issue->getID(), 'changed' => false, 'error' => framework\Context::getI18n()->__('You do not have permission to perform this action')));
-
                 $issue->setPercentCompleted($request['percent']);
-                return $this->renderJSON(array('issue_id' => $issue->getID(), 'field' => 'percent_complete', 'changed' => $issue->isPercentCompletedChanged(), 'percent' => $issue->getPercentCompleted()));
+                $return_details['changed']['percent_complete'] = [
+                    'value' => $issue->getPercentCompleted()
+                ];
+                break;
             case 'estimated_time':
-                if (!$issue->canEditEstimatedTime())
-                    return $this->renderJSON(array('issue_id' => $issue->getID(), 'changed' => false, 'error' => framework\Context::getI18n()->__('You do not have permission to perform this action')));
-                if (!$issue->isUpdateable())
-                    return $this->renderJSON(array('issue_id' => $issue->getID(), 'changed' => false, 'error' => framework\Context::getI18n()->__('This issue cannot be updated')));
-
-                if ($request['estimated_time'])
-                {
+                if ($request['estimated_time']) {
                     $issue->setEstimatedTime($request['estimated_time']);
-                }
-                elseif ($request->hasParameter('value'))
-                {
+                } elseif ($request->hasParameter('value')) {
                     $issue->setEstimatedTime($request['value']);
-                }
-                else
-                {
+                } else {
                     if ($request->hasParameter('months')) $issue->setEstimatedMonths($request['months']);
                     if ($request->hasParameter('weeks')) $issue->setEstimatedWeeks($request['weeks']);
                     if ($request->hasParameter('days')) $issue->setEstimatedDays($request['days']);
@@ -2181,76 +2194,64 @@ class Main extends framework\Action
                     if ($request->hasParameter('minutes')) $issue->setEstimatedMinutes($request['minutes']);
                     if ($request->hasParameter('points')) $issue->setEstimatedPoints($request['points']);
                 }
-                if ($request['do_save'])
-                {
-                    $issue->save();
-                }
-                return $this->renderJSON(array('issue_id' => $issue->getID(), 'changed' => $issue->isEstimatedTimeChanged(), 'field' => (($issue->hasEstimatedTime()) ? array('id' => 1, 'name' => entities\Issue::getFormattedTime($issue->getEstimatedTime(true, true))) : array('id' => 0)), 'values' => $issue->getEstimatedTime(true, true), 'percentbar' => $this->getComponentHTML('main/percentbar', array('percent' => $issue->getEstimatedPercentCompleted(), 'height' => 3))));
+                $return_details['changed']['estimated_time'] = [
+                    'value' => entities\Issue::getFormattedTime($issue->getEstimatedTime(true, true)),
+                    'values' => $issue->getEstimatedTime(true, true)
+                ];
+                break;
             case 'posted_by':
             case 'owned_by':
             case 'assigned_to':
-                if ($request['field'] == 'posted_by' && !$issue->canEditPostedBy())
-                    return $this->renderJSON(array('issue_id' => $issue->getID(), 'changed' => false, 'error' => framework\Context::getI18n()->__('You do not have permission to perform this action')));
-                elseif ($request['field'] == 'owned_by' && !$issue->canEditOwner())
-                    return $this->renderJSON(array('issue_id' => $issue->getID(), 'changed' => false, 'error' => framework\Context::getI18n()->__('You do not have permission to perform this action')));
-                elseif ($request['field'] == 'assigned_to' && !$issue->canEditAssignee())
-                    return $this->renderJSON(array('issue_id' => $issue->getID(), 'changed' => false, 'error' => framework\Context::getI18n()->__('You do not have permission to perform this action')));
+                $identifiable_type = ($request->hasParameter('identifiable_type')) ? $request['identifiable_type'] : 'user';
+                if ($request['value'] && in_array($identifiable_type, ['team', 'user'])) {
+                    switch ($identifiable_type)
+                    {
+                        case 'user':
+                            $identified = tables\Users::getTable()->selectById($request['value']);
+                            break;
+                        case 'team':
+                            $identified = tables\Teams::getTable()->selectById($request['value']);
+                            break;
+                    }
+                    if ($identified instanceof entities\common\Identifiable)
+                    {
+                        if ($identified instanceof entities\User && (bool) $request->getParameter('teamup', false)) {
+                            $team = new entities\Team();
+                            $team->setName($identified->getBuddyname() . ' & ' . $this->getUser()->getBuddyname());
+                            $team->setOndemand();
+                            $team->save();
+                            $team->addMember($identified);
+                            $team->addMember($this->getUser());
+                            $identified = $team;
+                        }
 
-                if ($request->hasParameter('value'))
-                {
-                    if ($request->hasParameter('identifiable_type'))
-                    {
-                        if (in_array($request['identifiable_type'], array('team', 'user')) && $request['value'] != 0)
-                        {
-                            switch ($request['identifiable_type'])
-                            {
-                                case 'user':
-                                    $identified = tables\Users::getTable()->selectById($request['value']);
-                                    break;
-                                case 'team':
-                                    $identified = tables\Teams::getTable()->selectById($request['value']);
-                                    break;
-                            }
-                            if ($identified instanceof entities\User || $identified instanceof entities\Team)
-                            {
-                                if ($identified instanceof entities\User && (bool) $request->getParameter('teamup', false))
-                                {
-                                    $team = new entities\Team();
-                                    $team->setName($identified->getBuddyname() . ' & ' . $this->getUser()->getBuddyname());
-                                    $team->setOndemand(true);
-                                    $team->save();
-                                    $team->addMember($identified);
-                                    $team->addMember($this->getUser());
-                                    $identified = $team;
-                                }
-                                if ($request['field'] == 'owned_by')
-                                    $issue->setOwner($identified);
-                                elseif ($request['field'] == 'assigned_to')
-                                    $issue->setAssignee($identified);
-                            }
-                        }
-                        else
-                        {
-                            if ($request['field'] == 'owned_by')
-                                $issue->clearOwner();
-                            elseif ($request['field'] == 'assigned_to')
-                                $issue->clearAssignee();
-                        }
-                    }
-                    elseif ($request['field'] == 'posted_by')
-                    {
-                        $identified = tables\Users::getTable()->selectById($request['value']);
-                        if ($identified instanceof entities\User)
-                        {
+                        if ($request['field'] == 'owned_by') {
+                            $issue->setOwner($identified);
+                            $return_details['changed']['owned_by'] = [
+                                'value' => $issue->getOwner()->getID()
+                            ];
+                        } elseif ($request['field'] == 'assigned_to') {
+                            $issue->setAssignee($identified);
+                            $return_details['changed']['assigned_to'] = [
+                                'value' => $issue->getAssignee()->getID()
+                            ];
+                        } elseif ($request['field'] == 'posted_by') {
                             $issue->setPostedBy($identified);
+                            $return_details['changed']['posted_by'] = [
+                                'value' => $issue->getPostedBy()->getID()
+                            ];
                         }
                     }
-                    if ($request['field'] == 'posted_by')
-                        return $this->renderJSON(array('issue_id' => $issue->getID(), 'changed' => $issue->isPostedByChanged(), 'field' => array('id' => $issue->getPostedByID(), 'name' => $this->getComponentHTML('main/userdropdown', array('user' => $issue->getPostedBy())))));
-                    if ($request['field'] == 'owned_by')
-                        return $this->renderJSON(array('issue_id' => $issue->getID(), 'changed' => $issue->isOwnerChanged(), 'field' => (($issue->isOwned()) ? array('id' => $issue->getOwner()->getID(), 'name' => (($issue->getOwner() instanceof entities\User) ? $this->getComponentHTML('main/userdropdown', array('user' => $issue->getOwner())) : $this->getComponentHTML('main/teamdropdown', array('team' => $issue->getOwner())))) : array('id' => 0))));
-                    if ($request['field'] == 'assigned_to')
-                        return $this->renderJSON(array('issue_id' => $issue->getID(), 'changed' => $issue->isAssigneeChanged(), 'field' => (($issue->isAssigned()) ? array('id' => $issue->getAssignee()->getID(), 'name' => (($issue->getAssignee() instanceof entities\User) ? $this->getComponentHTML('main/userdropdown', array('user' => $issue->getAssignee())) : $this->getComponentHTML('main/teamdropdown', array('team' => $issue->getAssignee())))) : array('id' => 0))));
+                } elseif (!$request['value'] && $request['field'] != 'posted_by') {
+                    if ($request['field'] == 'owned_by') {
+                        $issue->clearOwner();
+                    }
+                    elseif ($request['field'] == 'assigned_to') {
+                        $issue->clearAssignee();
+                    }
+                    $return_details['changed'][$request['field']] = [
+                        'value' => 0
+                    ];
                 }
                 break;
             case 'category':
@@ -2264,431 +2265,77 @@ class Main extends framework\Action
             case 'pain_bug_type':
             case 'pain_likelihood':
             case 'pain_effect':
-                if (($request['field'] == 'category' && !$issue->canEditCategory())
-                    || ($request['field'] == 'resolution' && !$issue->canEditResolution())
-                    || ($request['field'] == 'severity' && !$issue->canEditSeverity())
-                    || ($request['field'] == 'reproducability' && !$issue->canEditReproducability())
-                    || ($request['field'] == 'priority' && !$issue->canEditPriority())
-                    || ($request['field'] == 'milestone' && !$issue->canEditMilestone())
-                    || ($request['field'] == 'issuetype' && !$issue->canEditIssuetype())
-                    || ($request['field'] == 'status' && !$issue->canEditStatus())
-                    || (in_array($request['field'], array('pain_bug_type', 'pain_likelihood', 'pain_effect')) && !$issue->canEditUserPain()))
-                {
-                    return $this->renderJSON(array('issue_id' => $issue->getID(), 'changed' => false, 'error' => framework\Context::getI18n()->__('You do not have permission to perform this action')));
-                }
-
-                try
-                {
+                try {
                     $classname = null;
                     $parameter_name = mb_strtolower($request['field']);
                     $parameter_id_name = "{$parameter_name}_id";
                     $is_pain = in_array($parameter_name, array('pain_bug_type', 'pain_likelihood', 'pain_effect'));
-                    if ($is_pain)
-                    {
-                        switch ($parameter_name)
-                        {
+                    if ($is_pain) {
+                        switch ($parameter_name) {
                             case 'pain_bug_type':
                                 $set_function_name = 'setPainBugType';
-                                $is_changed_function_name = 'isPainBugTypeChanged';
-                                $get_pain_type_label_function = 'getPainBugTypeLabel';
                                 break;
                             case 'pain_likelihood':
                                 $set_function_name = 'setPainLikelihood';
-                                $is_changed_function_name = 'isPainLikelihoodChanged';
-                                $get_pain_type_label_function = 'getPainLikelihoodLabel';
                                 break;
                             case 'pain_effect':
                                 $set_function_name = 'setPainEffect';
-                                $is_changed_function_name = 'isPainEffectChanged';
-                                $get_pain_type_label_function = 'getPainEffectLabel';
                                 break;
                         }
-                    }
-                    else
-                    {
+                    } else {
                         $classname = "\\pachno\\core\\entities\\" . ucfirst($parameter_name);
                         $lab_function_name = $classname;
                         $set_function_name = 'set' . ucfirst($parameter_name);
-                        $is_changed_function_name = 'is' . ucfirst($parameter_name) . 'Changed';
                     }
-                    if ($request->hasParameter($parameter_id_name)) //$request['field'] == 'pain_bug_type')
-                    {
+
+                    if ($request->hasParameter($parameter_id_name)) {
                         $parameter_id = $request->getParameter($parameter_id_name);
-                        if ($parameter_id !== 0)
-                        {
+                        if ($parameter_id !== 0) {
                             $is_valid = ($is_pain) ? in_array($parameter_id, array_keys(entities\Issue::getPainTypesOrLabel($parameter_name))) : ($parameter_id == 0 || (($parameter = $lab_function_name::getB2DBTable()->selectByID($parameter_id)) instanceof $classname));
                         }
-                        if ($parameter_id == 0 || ($parameter_id !== 0 && $is_valid))
-                        {
-                            if ($classname == '\\pachno\\core\\entities\\Issuetype')
-                            {
-                                $visible_fields = ($issue->getIssuetype() instanceof entities\Issuetype) ? $issue->getProject()->getVisibleFieldsArray($issue->getIssuetype()->getID()) : array();
-                            }
-                            else
-                            {
-                                $visible_fields = null;
-                            }
+                        if ($parameter_id == 0 || $is_valid) {
                             $issue->$set_function_name($parameter_id);
-                            if ($is_pain)
-                            {
-                                if (!$issue->$is_changed_function_name())
-                                    return $this->renderJSON(array('issue_id' => $issue->getID(), 'changed' => false, 'field' => array('id' => 0), 'user_pain' => $issue->getUserPain(), 'user_pain_diff_text' => $issue->getUserPainDiffText()));
 
-                                return ($parameter_id == 0) ? $this->renderJSON(array('issue_id' => $issue->getID(), 'changed' => true, 'field' => array('id' => 0), 'user_pain' => $issue->getUserPain(), 'user_pain_diff_text' => $issue->getUserPainDiffText())) : $this->renderJSON(array('issue_id' => $issue->getID(), 'changed' => true, 'field' => array('id' => $parameter_id, 'name' => $issue->$get_pain_type_label_function()), 'user_pain' => $issue->getUserPain(), 'user_pain_diff_text' => $issue->getUserPainDiffText()));
-                            }
-                            else
-                            {
-                                if (isset($parameter))
-                                {
-                                    if ($parameter instanceof entities\Priority) {
-                                        framework\Context::loadLibrary('ui');
-                                        $name = fa_image_tag($parameter->getFontAwesomeIcon(), [], $parameter->getFontAwesomeIconStyle()) . $parameter->getName();
-                                    } else {
-                                        $name = $parameter->getName();
-                                    }
-                                }
-                                else
-                                {
-                                    $name = null;
-                                }
-
-                                $field = array('id' => $parameter_id, 'name' => $name);
-
-                                if ($classname == '\\pachno\\core\\entities\\Issuetype')
-                                {
-                                    framework\Context::loadLibrary('ui');
-                                    $field['src'] = htmlspecialchars(framework\Context::getWebroot() . 'images/' . $issue->getIssuetype()->getIcon() . '_small.png');
-                                    $field['fa_icon'] = $issue->getIssueType()->getFontAwesomeIcon();
-                                }
-
-                                if (!$issue->$is_changed_function_name())
-                                    return $this->renderJSON(array('issue_id' => $issue->getID(), 'changed' => false, 'field' => $field));
-
-                                if ($parameter_id == 0)
-                                {
-                                    return $this->renderJSON(array('issue_id' => $issue->getID(), 'changed' => true, 'field' => array('id' => 0)));
-                                }
-                                else
-                                {
-                                    $options = array('issue_id' => $issue->getID(), 'changed' => true, 'visible_fields' => $visible_fields, 'field' => $field);
-                                    if ($request['field'] == 'milestone')
-                                        $options['field']['url'] = $this->getRouting()->generate('project_milestone_details', array('project_key' => $issue->getProject()->getKey(), 'milestone_id' => $issue->getMilestone()->getID()));
-                                    if ($request['field'] == 'status')
-                                        $options['field']['color'] = $issue->getStatus()->getItemdata();
-
-                                    return $this->renderJSON($options);
-                                }
-                            }
+                            $return_details['changed'][$request['field']] = [
+                                'value' => $parameter_id
+                            ];
                         }
                     }
-                }
-                catch (\Exception $e)
-                {
+                } catch (\Exception $e) {
                     $this->getResponse()->setHttpStatus(400);
-                    return $this->renderJSON(array('error' => $e->getMessage()));
+                    return $this->renderJSON(['error' => $e->getMessage()]);
                 }
-                $this->getResponse()->setHttpStatus(400);
-                return $this->renderJSON(array('error' => framework\Context::getI18n()->__('No valid field value specified')));
-            default:
-                if ($customdatatype = entities\CustomDatatype::getByKey($request['field']))
-                {
-                    $key = $customdatatype->getKey();
-
-                    $customdatatypeoption_value = $request->getParameter("{$key}_value");
-                    if (!$customdatatype->hasCustomOptions())
-                    {
-                        switch ($customdatatype->getType())
-                        {
-                            case entities\CustomDatatype::EDITIONS_CHOICE:
-                            case entities\CustomDatatype::COMPONENTS_CHOICE:
-                            case entities\CustomDatatype::RELEASES_CHOICE:
-                            case entities\CustomDatatype::STATUS_CHOICE:
-                            case entities\CustomDatatype::MILESTONE_CHOICE:
-                            case entities\CustomDatatype::USER_CHOICE:
-                            case entities\CustomDatatype::TEAM_CHOICE:
-                            case entities\CustomDatatype::CLIENT_CHOICE:
-                                if ($customdatatypeoption_value == '')
-                                {
-                                    $issue->setCustomField($key, "");
-                                    $finalvalue = "";
-                                }
-                                else
-                                {
-                                    switch ($customdatatype->getType())
-                                    {
-                                        case entities\CustomDatatype::EDITIONS_CHOICE:
-                                            $temp = tables\Editions::getTable()->selectById($request->getRawParameter("{$key}_value"));
-                                            break;
-                                        case entities\CustomDatatype::COMPONENTS_CHOICE:
-                                            $temp = tables\Components::getTable()->selectById($request->getRawParameter("{$key}_value"));
-                                            break;
-                                        case entities\CustomDatatype::RELEASES_CHOICE:
-                                            $temp = tables\Builds::getTable()->selectById($request->getRawParameter("{$key}_value"));
-                                            break;
-                                        case entities\CustomDatatype::MILESTONE_CHOICE:
-                                            $temp = tables\Milestones::getTable()->selectById($request->getRawParameter("{$key}_value"));
-                                            break;
-                                        case entities\CustomDatatype::STATUS_CHOICE:
-                                            $temp = tables\ListTypes::getTable()->selectById($request->getRawParameter("{$key}_value"));
-                                            break;
-                                        case entities\CustomDatatype::USER_CHOICE:
-                                            $temp = tables\Users::getTable()->selectById($request->getRawParameter("{$key}_value"));
-                                            break;
-                                        case entities\CustomDatatype::TEAM_CHOICE:
-                                            $temp = tables\Teams::getTable()->selectById($request->getRawParameter("{$key}_value"));
-                                            break;
-                                        case entities\CustomDatatype::CLIENT_CHOICE:
-                                            $temp = tables\Clients::getTable()->selectById($request->getRawParameter("{$key}_value"));
-                                            break;
-                                    }
-                                        $issue->setCustomField($key, $customdatatypeoption_value);
-
-                                if ($customdatatype->getType() == entities\CustomDatatype::STATUS_CHOICE && isset($temp) && is_object($temp))
-                                {
-                                    $finalvalue = '<div class="status-badge" style="background-color: ' . $temp->getColor() . ';"><span>' . $temp->getName() . '</span></div>';
-                                }
-                                elseif ($customdatatype->getType() == entities\CustomDatatype::USER_CHOICE && isset($temp) && is_object($temp))
-                                {
-                                    $finalvalue = $this->getComponentHTML('main/userdropdown', array('user' => $temp));
-                                }
-                                elseif ($customdatatype->getType() == entities\CustomDatatype::TEAM_CHOICE && isset($temp) && is_object($temp))
-                                {
-                                    $finalvalue = $this->getComponentHTML('main/teamdropdown', array('team' => $temp));
-                                }
-                                else
-                                {
-                                    $finalvalue = (is_object($temp)) ? $temp->getName() : $this->getI18n()->__('Unknown');
-                                }
-                                    }
-
-                                $changed_methodname = "isCustomfield{$key}Changed";
-                                if (!$issue->$changed_methodname())
-                                    return $this->renderJSON(array('issue_id' => $issue->getID(), 'changed' => false));
-
-                                return ($customdatatypeoption_value == '') ? $this->renderJSON(array('issue_id' => $issue->getID(), 'changed' => true, 'field' => array('id' => 0))) : $this->renderJSON(array('issue_id' => $issue->getID(), 'changed' => true, 'field' => array('value' => $key, 'name' => $finalvalue)));
-                            case entities\CustomDatatype::INPUT_TEXTAREA_MAIN:
-                            case entities\CustomDatatype::INPUT_TEXTAREA_SMALL:
-                                if ($customdatatypeoption_value == '')
-                                {
-                                    $issue->setCustomField($key, "");
-                                }
-                                else
-                                {
-                                    $issue->setCustomField($key, $request->getRawParameter("{$key}_value"));
-                                }
-                                $changed_methodname = "isCustomfield{$key}Changed";
-                                if (!$issue->$changed_methodname())
-                                    return $this->renderJSON(array('issue_id' => $issue->getID(), 'changed' => false));
-
-                                return ($customdatatypeoption_value == '') ? $this->renderJSON(array('issue_id' => $issue->getID(), 'changed' => true, 'field' => array('id' => 0))) : $this->renderJSON(array('issue_id' => $issue->getID(), 'changed' => true, 'field' => array('value' => $key, 'name' => \pachno\core\helpers\TextParser::parseText($request->getRawParameter("{$key}_value")))));
-                            case entities\CustomDatatype::DATE_PICKER:
-                            case entities\CustomDatatype::DATETIME_PICKER:
-                                if ($customdatatypeoption_value == '')
-                                {
-                                    $issue->setCustomField($key, "");
-                                }
-                                else
-                                {
-                                    $issue->setCustomField($key, $request->getParameter("{$key}_value"));
-                                }
-                                $changed_methodname = "isCustomfield{$key}Changed";
-                                if (!$issue->$changed_methodname())
-                                    return $this->renderJSON(array('issue_id' => $issue->getID(), 'changed' => false));
-
-                                return ($customdatatypeoption_value == '') ? $this->renderJSON(array('issue_id' => $issue->getID(), 'changed' => true, 'field' => array('id' => 0))) : $this->renderJSON(array('issue_id' => $issue->getID(), 'changed' => true, 'field' => array('value' => $key, 'name' => date('Y-m-d' . ($customdatatype->getType() == entities\CustomDatatype::DATETIME_PICKER ? ' H:i' : ''), (int) $request->getRawParameter("{$key}_value")))));
-                            default:
-                                if ($customdatatypeoption_value == '')
-                                {
-                                    $issue->setCustomField($key, "");
-                                }
-                                else
-                                {
-                                    $issue->setCustomField($key, $request->getParameter("{$key}_value"));
-                                }
-                                $changed_methodname = "isCustomfield{$key}Changed";
-                                if (!$issue->$changed_methodname())
-                                    return $this->renderJSON(array('issue_id' => $issue->getID(), 'changed' => false));
-
-                                return ($customdatatypeoption_value == '') ? $this->renderJSON(array('issue_id' => $issue->getID(), 'changed' => true, 'field' => array('id' => 0))) : $this->renderJSON(array('issue_id' => $issue->getID(), 'changed' => true, 'field' => array('value' => $key, 'name' => (filter_var($customdatatypeoption_value, FILTER_VALIDATE_URL) !== false) ? "<a href=\"{$customdatatypeoption_value}\">{$customdatatypeoption_value}</a>" : $customdatatypeoption_value)));
-                        }
-                    }
-                    $customdatatypeoption = ($customdatatypeoption_value) ? tables\CustomFieldOptions::getTable()->selectById($customdatatypeoption_value) : null;
-                    if ($customdatatypeoption instanceof entities\CustomDatatypeOption)
-                    {
-                        $issue->setCustomField($key, $customdatatypeoption->getID());
-                    }
-                    else
-                    {
-                        $issue->setCustomField($key, null);
-                    }
-                    $changed_methodname = "isCustomfield{$key}Changed";
-                    if (!$issue->$changed_methodname())
-                        return $this->renderJSON(array('issue_id' => $issue->getID(), 'changed' => false));
-
-                    return (!$customdatatypeoption instanceof entities\CustomDatatypeOption) ? $this->renderJSON(array('issue_id' => $issue->getID(), 'changed' => true, 'field' => array('id' => 0))) : $this->renderJSON(array('issue_id' => $issue->getID(), 'changed' => true, 'field' => array('value' => $customdatatypeoption->getID(), 'name' => $customdatatypeoption->getName())));
-                }
-                break;
-        }
-
-        $this->getResponse()->setHttpStatus(400);
-        return $this->renderJSON(array('error' => framework\Context::getI18n()->__('No valid field specified (%field)', array('%field' => $request['field']))));
-    }
-
-    /**
-     * Reverts an issue field back to the original value
-     *
-     * @param \pachno\core\framework\Request $request
-     */
-    public function runIssueRevertField(framework\Request $request)
-    {
-        if ($issue_id = $request['issue_id'])
-        {
-            try
-            {
-                $issue = tables\Issues::getTable()->selectById($issue_id);
-            }
-            catch (\Exception $e)
-            {
-                $this->getResponse()->setHttpStatus(400);
-                return $this->renderText('fail');
-            }
-        }
-        else
-        {
-            $this->getResponse()->setHttpStatus(400);
-            return $this->renderText('no issue');
-        }
-
-        $field = null;
-        framework\Context::loadLibrary('common');
-        switch ($request['field'])
-        {
-            case 'description':
-                $issue->revertDescription();
-                $issue->revertDescription_Syntax();
-                $field = array('id' => (int) ($issue->getDescription() != ''), 'name' => $issue->getParsedDescription(array('issue' => $issue)), 'form_value' => $issue->getDescription());
-                break;
-            case 'reproduction_steps':
-                $issue->revertReproduction_Steps();
-                $issue->revertReproduction_Steps_Syntax();
-                $field = array('id' => (int) ($issue->getReproductionSteps() != ''), 'name' => $issue->getParsedReproductionSteps(array('issue' => $issue)), 'form_value' => $issue->getReproductionSteps());
-                break;
-            case 'title':
-                $issue->revertTitle();
-                $field = array('id' => 1, 'name' => strip_tags($issue->getTitle()));
-                break;
-            case 'shortname':
-                $issue->revertShortname();
-                $field = array('id' => 1, 'name' => strip_tags($issue->getShortname()));
-                break;
-            case 'category':
-                $issue->revertCategory();
-                $field = ($issue->getCategory() instanceof entities\Category) ? array('id' => $issue->getCategory()->getID(), 'name' => $issue->getCategory()->getName()) : array('id' => 0);
-                break;
-            case 'resolution':
-                $issue->revertResolution();
-                $field = ($issue->getResolution() instanceof entities\Resolution) ? array('id' => $issue->getResolution()->getID(), 'name' => $issue->getResolution()->getName()) : array('id' => 0);
-                break;
-            case 'severity':
-                $issue->revertSeverity();
-                $field = ($issue->getSeverity() instanceof entities\Severity) ? array('id' => $issue->getSeverity()->getID(), 'name' => $issue->getSeverity()->getName()) : array('id' => 0);
-                break;
-            case 'reproducability':
-                $issue->revertReproducability();
-                $field = ($issue->getReproducability() instanceof entities\Reproducability) ? array('id' => $issue->getReproducability()->getID(), 'name' => $issue->getReproducability()->getName()) : array('id' => 0);
-                break;
-            case 'priority':
-                framework\Context::loadLibrary('ui');
-                $issue->revertPriority();
-                $field = ($issue->getPriority() instanceof entities\Priority) ? array('id' => $issue->getPriority()->getID(), 'name' => fa_image_tag($this->issue->getPriority()->getFontAwesomeIcon(), [], $this->issue->getPriority()->getFontAwesomeIconStyle()) . $issue->getPriority()->getName()) : array('id' => 0);
-                break;
-            case 'percent_complete':
-                $issue->revertPercentCompleted();
-                $field = $issue->getPercentCompleted();
-                break;
-            case 'status':
-                $issue->revertStatus();
-                $field = ($issue->getStatus() instanceof entities\Status) ? array('id' => $issue->getStatus()->getID(), 'name' => $issue->getStatus()->getName(), 'color' => $issue->getStatus()->getColor()) : array('id' => 0);
-                break;
-            case 'pain_bug_type':
-                $issue->revertPainBugType();
-                $field = ($issue->hasPainBugType()) ? array('id' => $issue->getPainBugType(), 'name' => $issue->getPainBugTypeLabel(), 'user_pain' => $issue->getUserPain()) : array('id' => 0, 'user_pain' => $issue->getUserPain());
-                break;
-            case 'pain_likelihood':
-                $issue->revertPainLikelihood();
-                $field = ($issue->hasPainLikelihood()) ? array('id' => $issue->getPainLikelihood(), 'name' => $issue->getPainLikelihoodLabel(), 'user_pain' => $issue->getUserPain()) : array('id' => 0, 'user_pain' => $issue->getUserPain());
-                break;
-            case 'pain_effect':
-                $issue->revertPainEffect();
-                $field = ($issue->hasPainEffect()) ? array('id' => $issue->getPainEffect(), 'name' => $issue->getPainEffectLabel(), 'user_pain' => $issue->getUserPain()) : array('id' => 0, 'user_pain' => $issue->getUserPain());
-                break;
-            case 'issuetype':
-                $issue->revertIssuetype();
-                $field = ($issue->getIssuetype() instanceof entities\Issuetype) ? ['id' => $issue->getIssuetype()->getID(), 'name' => $issue->getIssuetype()->getName(), 'src' => htmlspecialchars(framework\Context::getWebroot() . 'images/' . $issue->getIssuetype()->getIcon() . '_small.png'), 'fa_icon' => $issue->getIssueType()->getFontAwesomeIcon()] : array('id' => 0);
-                $visible_fields = ($issue->getIssuetype() instanceof entities\Issuetype) ? $issue->getProject()->getVisibleFieldsArray($issue->getIssuetype()->getID()) : array();
-                return $this->renderJSON(['ok' => true, 'issue_id' => $issue->getID(), 'field' => $field, 'visible_fields' => $visible_fields]);
-                break;
-            case 'milestone':
-                $issue->revertMilestone();
-                $field = ($issue->getMilestone() instanceof entities\Milestone) ? array('id' => $issue->getMilestone()->getID(), 'name' => $issue->getMilestone()->getName()) : array('id' => 0);
-                break;
-            case 'estimated_time':
-                $issue->revertEstimatedTime();
-                return $this->renderJSON(array('ok' => true, 'issue_id' => $issue->getID(), 'field' => (($issue->hasEstimatedTime()) ? array('id' => 1, 'name' => entities\Issue::getFormattedTime($issue->getEstimatedTime(true, true))) : array('id' => 0)), 'values' => $issue->getEstimatedTime(true, true), 'percentbar' => $this->getComponentHTML('main/percentbar', array('percent' => $issue->getEstimatedPercentCompleted(), 'height' => 3))));
-                break;
-            case 'spent_time':
-                $issue->revertSpentTime();
-                return $this->renderJSON(array('ok' => true, 'issue_id' => $issue->getID(), 'field' => (($issue->hasSpentTime()) ? array('id' => 1, 'name' => entities\Issue::getFormattedTime($issue->getSpentTime(true, true))) : array('id' => 0)), 'values' => $issue->getSpentTime(true, true)));
-                break;
-            case 'owned_by':
-                $issue->revertOwner();
-                return $this->renderJSON(array('changed' => $issue->isOwnerChanged(), 'field' => (($issue->isOwned()) ? array('id' => $issue->getOwner()->getID(), 'name' => (($issue->getOwner() instanceof entities\User) ? $this->getComponentHTML('main/userdropdown', array('user' => $issue->getOwner())) : $this->getComponentHTML('main/teamdropdown', array('team' => $issue->getOwner())))) : array('id' => 0))));
-                break;
-            case 'assigned_to':
-                $issue->revertAssignee();
-                return $this->renderJSON(array('changed' => $issue->isAssigneeChanged(), 'field' => (($issue->isAssigned()) ? array('id' => $issue->getAssignee()->getID(), 'name' => (($issue->getAssignee() instanceof entities\User) ? $this->getComponentHTML('main/userdropdown', array('user' => $issue->getAssignee())) : $this->getComponentHTML('main/teamdropdown', array('team' => $issue->getAssignee())))) : array('id' => 0))));
-                break;
-            case 'posted_by':
-                $issue->revertPostedBy();
-                return $this->renderJSON(array('changed' => $issue->isPostedByChanged(), 'field' => array('id' => $issue->getPostedByID(), 'name' => $this->getComponentHTML('main/userdropdown', array('user' => $issue->getPostedBy())))));
                 break;
             default:
-                if ($customdatatype = entities\CustomDatatype::getByKey($request['field']))
-                {
-                    $key = $customdatatype->getKey();
-                    $revert_methodname = "revertCustomfield{$key}";
-                    $issue->$revert_methodname();
-
-                    if ($customdatatype->hasCustomOptions())
-                    {
-                        $field = ($issue->getCustomField($key) instanceof entities\CustomDatatypeOption) ? array('value' => $issue->getCustomField($key)->getID(), 'name' => $issue->getCustomField($key)->getName()) : array('id' => 0);
-                    }
-                    else
-                    {
-                        switch ($customdatatype->getType())
-                        {
-                            case entities\CustomDatatype::INPUT_TEXTAREA_MAIN:
-                            case entities\CustomDatatype::INPUT_TEXTAREA_SMALL:
-                                $field = ($issue->getCustomField($key) != '') ? array('value' => $key, 'name' => \pachno\core\helpers\TextParser::parseText($issue->getCustomField($key))) : array('id' => 0);
-                                break;
-                            default:
-                                $field = ($issue->getCustomField($key) != '') ? array('value' => $key, 'name' => $issue->getCustomField($key)) : array('id' => 0);
-                                break;
-                        }
-                    }
+                $custom_field = entities\CustomDatatype::getByKey($request['field']);
+                if (!$custom_field instanceof entities\CustomDatatype) {
+                    $this->getResponse()->setHttpStatus(400);
+                    return $this->renderJSON(['error' => 'Invalid custom field']);
                 }
+
+                $key = $custom_field->getKey();
+                $custom_field_value = $request->getRawParameter("{$key}_value");
+                if (!$custom_field_value) {
+                    $issue->clearCustomField($key);
+                } else {
+                    $issue->setCustomField($key, $custom_field_value);
+                }
+
+                $return_details['changed'][$request['field']] = [
+                    'value' => $issue->getCustomField($key)
+                ];
                 break;
         }
 
-        if ($field !== null)
+        $issue->getWorkflow()->moveIssueToMatchingWorkflowStep($issue);
+        // Currently if category is changed we want to regenerate permissions since category is used for granting user access.
+        if ($issue->isPropertyChanged('category'))
         {
-            return $this->renderJSON(array('ok' => true, 'issue_id' => $issue->getID(), 'field' => $field));
+            framework\Event::listen('core', 'pachno\core\entities\Issue::save_pre_notifications', array($this, 'listen_issueCreate'));
         }
-        else
-        {
-            $this->getResponse()->setHttpStatus(400);
-            return $this->renderJSON(array('error' => framework\Context::getI18n()->__('No valid field specified (%field)', array('%field' => $request['field']))));
-        }
+        $issue->save();
+
+        return $this->renderJSON($return_details);
     }
 
     /**

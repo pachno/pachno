@@ -3699,19 +3699,6 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
             });
         };
 
-        // Pachno.Main.setFancyDropdownValue = function (item) {
-        //     var dropdown = $(item).up('.fancydropdown-container');
-        //     if (dropdown.select('.fancydropdown-input-target').length > 0) $(dropdown.select('.fancydropdown-input-target')[0]).setValue($(item).dataset.inputValue);
-        //     dropdown.dataset.selectedValue = $(item).dataset.inputValue;
-        //     dropdown.childElements().each(function (elm) {
-        //         elm.removeClassName('selected');
-        //     });
-        //     $(item).addClassName('selected');
-        //     var dropdownfancylabel = $(item).up('.fancydropdown').previous();
-        //     dropdownfancylabel.removeClassName('selected');
-        //     if (!dropdownfancylabel.hasClassName('self-updateable')) dropdownfancylabel.update($(item).dataset.displayName);
-        // };
-
         Pachno.Main.updateFancyDropdownLabel = function ($dropdown) {
             var $label = $dropdown.find('> .value');
             if ($label.length > 0) {
@@ -3733,8 +3720,10 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
                 });
 
                 if (values.length > 0) {
+                    $dropdown.removeClass('no-value');
                     $label.html(values.join(', '));
                 } else {
+                    $dropdown.addClass('no-value');
                     $label.html($dropdown.data('default-label'));
                 }
 

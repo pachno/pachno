@@ -10156,7 +10156,10 @@ input.icon.secondary:disabled {
       border-color: #0C8990; }
     .fancydropdown-container .fancydropdown.active {
       background-color: rgba(200, 200, 200, 0.3); }
-    .fancydropdown-container .fancydropdown .expander {
+    .fancydropdown-container .fancydropdown .expander,
+    .fancydropdown-container .fancydropdown .fas.expander {
+      flex: 0 0 40px;
+      box-sizing: border-box;
       transform: rotate(0);
       cursor: pointer;
       padding: 0 10px; }
@@ -10167,6 +10170,7 @@ input.icon.secondary:disabled {
       text-transform: uppercase;
       margin-right: .5em; }
     .fancydropdown-container .fancydropdown > .value {
+      flex: 1 1 auto;
       white-space: nowrap;
       text-overflow: ellipsis;
       overflow: hidden;
@@ -12640,6 +12644,15 @@ textarea.markItUpEditor:focus {
       display: flex;
       align-items: center;
       position: relative; }
+      .viewissue-container .issue-card .fields-list > li .fancydropdown-container .fancydropdown {
+        background-color: transparent; }
+        .viewissue-container .issue-card .fields-list > li .fancydropdown-container .fancydropdown:hover {
+          background-color: rgba(200, 200, 200, 0.1); }
+        .viewissue-container .issue-card .fields-list > li .fancydropdown-container .fancydropdown > label {
+          font-weight: 600;
+          flex: 0 1 140px;
+          text-transform: none;
+          color: #141823; }
       .viewissue-container .issue-card .fields-list > li > .label {
         font-weight: 600;
         flex: 0 1 140px; }

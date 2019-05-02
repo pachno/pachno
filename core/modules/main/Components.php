@@ -141,85 +141,69 @@
                 $this->project = $this->issue->getProject();
                 $this->statuses = ($this->project->isFreelancingAllowed()) ? $this->project->getAvailableStatuses() : $this->issue->getAvailableStatuses();
                 $this->issuetypes = $this->project->getIssuetypeScheme()->getIssuetypes();
-                $fields_list = array();
-                $fields_list['category'] = array('title' => $i18n->__('Category'), 'fa_icon' => 'chart-pie', 'fa_icon_style' => 'fas', 'choices' => array(), 'visible' => $this->issue->isCategoryVisible(), 'name' => (($this->issue->getCategory() instanceof entities\Category) ? $this->issue->getCategory()->getName() : ''), 'name_visible' => (bool) ($this->issue->getCategory() instanceof entities\Category), 'noname_visible' => (bool) (!$this->issue->getCategory() instanceof entities\Category), 'icon' => false, 'change_tip' => $i18n->__('Click to change category'), 'change_header' => $i18n->__('Change category'), 'clear' => $i18n->__('Clear the category'), 'select' => $i18n->__('%clear_the_category or click to select a new category', array('%clear_the_category' => '')));
+                $fields_list = [];
+                $fields_list['category'] = ['title' => $i18n->__('Category'), 'fa_icon' => 'chart-pie', 'fa_icon_style' => 'fas', 'choices' => [], 'visible' => $this->issue->isCategoryVisible(), 'value' => (($this->issue->getCategory() instanceof entities\Category) ? $this->issue->getCategory()->getId() : 0), 'icon' => false, 'change_tip' => $i18n->__('Click to change category'), 'change_header' => $i18n->__('Change category'), 'clear' => $i18n->__('Clear the category'), 'select' => $i18n->__('%clear_the_category or click to select a new category', ['%clear_the_category' => ''])];
 
                 if ($this->issue->isUpdateable() && $this->issue->canEditCategory()) {
                     $fields_list['category']['choices'] = entities\Category::getAll();
                 }
 
-                $fields_list['resolution'] = array('title' => $i18n->__('Resolution'), 'choices' => array(), 'visible' => $this->issue->isResolutionVisible(), 'name' => (($this->issue->getResolution() instanceof entities\Resolution) ? $this->issue->getResolution()->getName() : ''), 'name_visible' => (bool) ($this->issue->getResolution() instanceof entities\Resolution), 'noname_visible' => (bool) (!$this->issue->getResolution() instanceof entities\Resolution), 'icon' => false, 'change_tip' => $i18n->__('Click to change resolution'), 'change_header' => $i18n->__('Change resolution'), 'clear' => $i18n->__('Clear the resolution'), 'select' => $i18n->__('%clear_the_resolution or click to select a new resolution', array('%clear_the_resolution' => '')));
+                $fields_list['resolution'] = ['title' => $i18n->__('Resolution'), 'choices' => [], 'visible' => $this->issue->isResolutionVisible(), 'value' => (($this->issue->getResolution() instanceof entities\Resolution) ? $this->issue->getResolution()->getId() : 0), 'icon' => false, 'change_tip' => $i18n->__('Click to change resolution'), 'change_header' => $i18n->__('Change resolution'), 'clear' => $i18n->__('Clear the resolution'), 'select' => $i18n->__('%clear_the_resolution or click to select a new resolution', ['%clear_the_resolution' => ''])];
 
                 if ($this->issue->isUpdateable() && $this->issue->canEditResolution()) {
                     $fields_list['resolution']['choices'] = entities\Resolution::getAll();
                 }
 
                 $has_priority = $this->issue->getPriority() instanceof entities\Priority;
-                $fields_list['priority'] = array('title' => $i18n->__('Priority'), 'choices' => array(), 'visible' => $this->issue->isPriorityVisible(), 'extra_classes' => (($has_priority) ? 'priority_' . $this->issue->getPriority()->getItemdata() : ''), 'name' => (($has_priority) ? $this->issue->getPriority()->getName() : ''), 'fa_icon' => (($has_priority) ? $this->issue->getPriority()->getFontAwesomeIcon() : ''), 'fa_icon_style' => (($has_priority) ? $this->issue->getPriority()->getFontAwesomeIconStyle() : ''), 'name_visible' => (bool) ($has_priority), 'noname_visible' => (bool) (!$has_priority), 'icon' => false, 'change_tip' => $i18n->__('Click to change priority'), 'change_header' => $i18n->__('Change priority'), 'clear' => $i18n->__('Clear the priority'), 'select' => $i18n->__('%clear_the_priority or click to select a new priority', array('%clear_the_priority' => '')));
+                $fields_list['priority'] = ['title' => $i18n->__('Priority'), 'choices' => [], 'visible' => $this->issue->isPriorityVisible(), 'extra_classes' => (($has_priority) ? 'priority_' . $this->issue->getPriority()->getItemdata() : ''), 'value' => (($has_priority) ? $this->issue->getPriority()->getId() : 0), 'fa_icon' => (($has_priority) ? $this->issue->getPriority()->getFontAwesomeIcon() : ''), 'fa_icon_style' => (($has_priority) ? $this->issue->getPriority()->getFontAwesomeIconStyle() : ''), 'icon' => false, 'change_tip' => $i18n->__('Click to change priority'), 'change_header' => $i18n->__('Change priority'), 'clear' => $i18n->__('Clear the priority'), 'select' => $i18n->__('%clear_the_priority or click to select a new priority', ['%clear_the_priority' => ''])];
 
                 if ($this->issue->isUpdateable() && $this->issue->canEditPriority()) {
                     $fields_list['priority']['choices'] = entities\Priority::getAll();
                 }
 
-                $fields_list['reproducability'] = array('title' => $i18n->__('Reproducability'), 'choices' => array(), 'visible' => $this->issue->isReproducabilityVisible(), 'name' => (($this->issue->getReproducability() instanceof entities\Reproducability) ? $this->issue->getReproducability()->getName() : ''), 'name_visible' => (bool) ($this->issue->getReproducability() instanceof entities\Reproducability), 'noname_visible' => (bool) (!$this->issue->getReproducability() instanceof entities\Reproducability), 'icon' => false, 'change_tip' => $i18n->__('Click to change reproducability'), 'change_header' => $i18n->__('Change reproducability'), 'clear' => $i18n->__('Clear the reproducability'), 'select' => $i18n->__('%clear_the_reproducability or click to select a new reproducability', array('%clear_the_reproducability' => '')));
+                $fields_list['reproducability'] = ['title' => $i18n->__('Reproducability'), 'choices' => [], 'visible' => $this->issue->isReproducabilityVisible(), 'value' => (($this->issue->getReproducability() instanceof entities\Reproducability) ? $this->issue->getReproducability()->getId() : 0), 'icon' => false, 'change_tip' => $i18n->__('Click to change reproducability'), 'change_header' => $i18n->__('Change reproducability'), 'clear' => $i18n->__('Clear the reproducability'), 'select' => $i18n->__('%clear_the_reproducability or click to select a new reproducability', ['%clear_the_reproducability' => ''])];
 
                 if ($this->issue->isUpdateable() && $this->issue->canEditReproducability()) {
                     $fields_list['reproducability']['choices'] = entities\Reproducability::getAll();
                 }
 
-                $fields_list['severity'] = array('title' => $i18n->__('Severity'), 'choices' => array(), 'visible' => $this->issue->isSeverityVisible(), 'name' => (($this->issue->getSeverity() instanceof entities\Severity) ? $this->issue->getSeverity()->getName() : ''), 'name_visible' => (bool) ($this->issue->getSeverity() instanceof entities\Severity), 'noname_visible' => (bool) (!$this->issue->getSeverity() instanceof entities\Severity), 'icon' => false, 'change_tip' => $i18n->__('Click to change severity'), 'change_header' => $i18n->__('Change severity'), 'clear' => $i18n->__('Clear the severity'), 'select' => $i18n->__('%clear_the_severity or click to select a new severity', array('%clear_the_severity' => '')));
+                $fields_list['severity'] = ['title' => $i18n->__('Severity'), 'choices' => [], 'visible' => $this->issue->isSeverityVisible(), 'value' => (($this->issue->getSeverity() instanceof entities\Severity) ? $this->issue->getSeverity()->getId() : 0), 'icon' => false, 'change_tip' => $i18n->__('Click to change severity'), 'change_header' => $i18n->__('Change severity'), 'clear' => $i18n->__('Clear the severity'), 'select' => $i18n->__('%clear_the_severity or click to select a new severity', ['%clear_the_severity' => ''])];
 
                 if ($this->issue->isUpdateable() && $this->issue->canEditSeverity()) {
                     $fields_list['severity']['choices'] = entities\Severity::getAll();
                 }
 
-                $fields_list['milestone'] = array('title' => $i18n->__('Targetted for'), 'fa_icon' => 'list-alt', 'fa_style' => 'far', 'choices' => array(), 'visible' => $this->issue->isMilestoneVisible(), 'name' => (($this->issue->getMilestone() instanceof entities\Milestone) ? $this->issue->getMilestone()->getName() : ''), 'name_visible' => (bool) ($this->issue->getMilestone() instanceof entities\Milestone), 'noname_visible' => (bool) (!$this->issue->getMilestone() instanceof entities\Milestone), 'icon' => true, 'icon_name' => 'icon_milestones.png', 'change_tip' => $i18n->__('Click to change which milestone this issue is targetted for'), 'change_header' => $i18n->__('Set issue target / milestone'), 'clear' => $i18n->__('Set as not targetted'), 'select' => $i18n->__('%set_as_not_targetted or click to set a new target milestone', array('%set_as_not_targetted' => '')), 'url' => true, 'current_url' => (($this->issue->getMilestone() instanceof entities\Milestone) ? $this->getRouting()->generate('project_roadmap', array('project_key' => $this->issue->getProject()->getKey())).'#roadmap_milestone_'.$this->issue->getMilestone()->getID() : ''));
+                $fields_list['milestone'] = ['title' => $i18n->__('Targetted for'), 'fa_icon' => 'list-alt', 'fa_style' => 'far', 'choices' => [], 'visible' => $this->issue->isMilestoneVisible(), 'value' => (($this->issue->getMilestone() instanceof entities\Milestone) ? $this->issue->getMilestone()->getId() : 0), 'icon' => true, 'icon_name' => 'icon_milestones.png', 'change_tip' => $i18n->__('Click to change which milestone this issue is targetted for'), 'change_header' => $i18n->__('Set issue target / milestone'), 'clear' => $i18n->__('Set as not targetted'), 'select' => $i18n->__('%set_as_not_targetted or click to set a new target milestone', ['%set_as_not_targetted' => '']), 'url' => true, 'current_url' => (($this->issue->getMilestone() instanceof entities\Milestone) ? $this->getRouting()->generate('project_roadmap', ['project_key' => $this->issue->getProject()->getKey()]).'#roadmap_milestone_'.$this->issue->getMilestone()->getID() : '')];
 
                 if ($this->issue->isUpdateable() && $this->issue->canEditMilestone()) {
                     $fields_list['milestone']['choices'] = $this->project->getMilestonesForIssues();
                 }
 
-                $customfields_list = array();
+                $customfields_list = [];
                 foreach (entities\CustomDatatype::getAll() as $key => $customdatatype)
                 {
                     $customvalue = $this->issue->getCustomField($key);
-                    $customfields_list[$key] = array('type' => $customdatatype->getType(),
+                    $customfields_list[$key] = ['type' => $customdatatype->getType(),
                         'title' => $i18n->__($customdatatype->getDescription()),
                         'visible' => $this->issue->isFieldVisible($key),
                         'editable' => $customdatatype->isEditable(),
                         'change_tip' => $i18n->__($customdatatype->getInstructions()),
                         'change_header' => $i18n->__($customdatatype->getDescription()),
                         'clear' => $i18n->__('Clear this field'),
-                        'select' => $i18n->__('%clear_this_field or click to set a new value', array('%clear_this_field' => '')));
+                        'select' => $i18n->__('%clear_this_field or click to set a new value', ['%clear_this_field' => ''])];
 
-                    if ($customdatatype->getType() == entities\CustomDatatype::CALCULATED_FIELD)
-                    {
+                    if ($customdatatype->getType() == entities\CustomDatatype::CALCULATED_FIELD) {
                         $result = $this->issue->getCustomField($key);
-                        $customfields_list[$key]['name'] = $result;
-                        $customfields_list[$key]['name_visible'] = !is_null($result);
-                        $customfields_list[$key]['noname_visible'] = is_null($result);
-                    }
-                    elseif ($customdatatype->hasCustomOptions())
-                    {
-                        $customfields_list[$key]['name'] = ($customvalue instanceof entities\CustomDatatypeOption) ? $customvalue->getName() : '';
-                        $customfields_list[$key]['name_visible'] = (bool) ($customvalue instanceof entities\CustomDatatypeOption);
-                        $customfields_list[$key]['noname_visible'] = (bool) (!$customvalue instanceof entities\CustomDatatypeOption);
+                        $customfields_list[$key]['value'] = $result;
+                    } elseif ($customdatatype->hasCustomOptions()) {
+                        $customfields_list[$key]['value'] = ($customvalue instanceof entities\CustomDatatypeOption) ? $customvalue->getId() : 0;
                         $customfields_list[$key]['choices'] = $customdatatype->getOptions();
-                    }
-                    elseif ($customdatatype->hasPredefinedOptions())
-                    {
-                        $customfields_list[$key]['name'] = ($customvalue instanceof entities\common\Identifiable) ? $customvalue->getName() : '';
+                    } elseif ($customdatatype->hasPredefinedOptions()) {
                         $customfields_list[$key]['value'] = ($customvalue instanceof entities\common\Identifiable) ? $customvalue->getId() : '';
                         $customfields_list[$key]['identifiable'] = ($customvalue instanceof entities\common\Identifiable) ? $customvalue : null;
-                        $customfields_list[$key]['name_visible'] = (bool) ($customvalue instanceof entities\common\Identifiable);
-                        $customfields_list[$key]['noname_visible'] = (bool) (!$customvalue instanceof entities\common\Identifiable);
                         $customfields_list[$key]['choices'] = $customdatatype->getOptions();
-                    }
-                    else
-                    {
-                        $customfields_list[$key]['name'] = $customvalue;
-                        $customfields_list[$key]['name_visible'] = (bool) ($customvalue != '');
-                        $customfields_list[$key]['noname_visible'] = (bool) ($customvalue == '');
+                    } else {
+                        $customfields_list[$key]['value'] = $customvalue;
                     }
                 }
                 $this->customfields_list = $customfields_list;
@@ -230,19 +214,13 @@
             }
             else
             {
-                $fields_list = array();
-                $fields_list['category'] = array();
-                $fields_list['category']['choices'] = entities\Category::getAll();
-                $fields_list['resolution'] = array();
-                $fields_list['resolution']['choices'] = entities\Resolution::getAll();
-                $fields_list['priority'] = array();
-                $fields_list['priority']['choices'] = entities\Priority::getAll();
-                $fields_list['reproducability'] = array();
-                $fields_list['reproducability']['choices'] = entities\Reproducability::getAll();
-                $fields_list['severity'] = array();
-                $fields_list['severity']['choices'] = entities\Severity::getAll();
-                $fields_list['milestone'] = array();
-                $fields_list['milestone']['choices'] = $this->project->getMilestonesForIssues();
+                $fields_list = [];
+                $fields_list['category'] = ['choices' => entities\Category::getAll()];
+                $fields_list['resolution'] = ['choices' => entities\Resolution::getAll()];
+                $fields_list['priority'] = ['choices' => entities\Priority::getAll()];
+                $fields_list['reproducability'] = ['choices' => entities\Reproducability::getAll()];
+                $fields_list['severity'] = ['choices' => entities\Severity::getAll()];
+                $fields_list['milestone'] = ['choices' => $this->project->getMilestonesForIssues()];
 
                 if (isset($this->issues)) {
                     $all_statuses = [];

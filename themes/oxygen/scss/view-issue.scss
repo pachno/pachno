@@ -458,6 +458,23 @@
         align-items: center;
         position: relative;
 
+        .fancydropdown-container {
+          .fancydropdown {
+            background-color: transparent;
+
+            &:hover {
+              background-color: rgba(200, 200, 200, .1);
+            }
+
+            > label {
+              font-weight: 600;
+              flex: 0 1 140px;
+              text-transform: none;
+              color: #141823;
+            }
+          }
+        }
+
         > .label {
           font-weight: 600;
           flex: 0 1 140px;
