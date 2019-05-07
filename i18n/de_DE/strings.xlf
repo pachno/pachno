@@ -6054,7 +6054,7 @@ Folgender Kommentar wurde hinzugefügt: %comment</target>
                 <target>Kommentar-ID ungültig</target>
             </trans-unit>
             <trans-unit id="601651cf75d7d9a88833e7337cd76efb">
-                <source>The comment must have some content</source>
+                <source>You cannot post an empty comment</source>
                 <target>Der Kommentar muss Inhalt haben</target>
             </trans-unit>
             <trans-unit id="f8ffb06aa3f592bd0bc49d33e0e2c436">

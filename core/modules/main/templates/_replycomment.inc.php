@@ -1,16 +1,29 @@
-<div id="comment_reply_<?= $comment->getID(); ?>" class="comment-reply comment-editor editor_container">
-    <form id="comment_reply_form_<?= $comment->getID(); ?>" accept-charset="<?= mb_strtoupper(\pachno\core\framework\Context::getI18n()->getCharset()); ?>" action="<?= make_url('comment_add', array('comment_applies_id' => $comment->getTargetID(), 'comment_applies_type' => $comment->getTargetType(), 'comment_module' => $comment->getModuleName())); ?>" method="post" onsubmit="Pachno.Main.Comment.reply('<?= make_url('comment_add', array('comment_applies_id' => $comment->getTargetID(), 'comment_applies_type' => $comment->getTargetType(), 'comment_module' => $comment->getModuleName())); ?>', <?= $comment->getID(); ?>);return false;">
+<div id="comment_reply_<?= $comment->getID(); ?>" class="comment-reply comment-editor editor_container form-container">
+    <form id="comment_reply_form_<?= $comment->getID(); ?>" accept-charset="<?= mb_strtoupper(\pachno\core\framework\Context::getI18n()->getCharset()); ?>" action="<?= make_url('comment_add', ['comment_applies_id' => $comment->getTargetID(), 'comment_applies_type' => $comment->getTargetType(), 'comment_module' => $comment->getModuleName()]); ?>" method="post" onsubmit="Pachno.Main.Comment.reply(<?= $comment->getID(); ?>);return false;">
         <input type="hidden" name="reply_to_comment_id" value="<?= $comment->getID(); ?>" />
-        <label for="comment_reply_visibility_<?= $comment->getID(); ?>"><?= __('Comment visibility'); ?> <span class="faded_out">(<?= __('whether to hide this comment for "regular users"'); ?>)</span></label><br />
-        <select class="comment_visibilitybox" id="comment_reply_visibility_<?= $comment->getID(); ?>" name="comment_visibility">
-            <option value="1"<?php if ($comment->isPublic()): ?> selected="selected" <?php endif; ?>><?= __('Visible for all users'); ?></option>
-            <option value="0"<?php if (!$comment->isPublic()): ?> selected="selected" <?php endif; ?>><?= __('Visible for me, developers and administrators only'); ?></option>
-        </select>
-        <br />
-        <?php include_component('main/textarea', array('area_name' => 'comment_body', 'placeholder' => __('Enter your reply here...'), 'target_type' => isset($mentionable_target_type) ? $mentionable_target_type : $comment->getTargetType(), 'target_id' => $comment->getTargetId(), 'area_id' => 'comment_reply_'.$comment->getID().'_bodybox', 'height' => '200px', 'width' => '100%', 'syntax' => \pachno\core\framework\Settings::getSyntaxClass($comment->getSyntax()), 'value' => '')); ?>
-        <div id="comment_reply_controls_<?= $comment->getID(); ?>" class="backdrop_details_submit">
-            <?= javascript_link_tag(__('Cancel'), ['onclick' => "$('comment_reply_{$comment->getID()}').removeClassName('active');$('comment_view_{$comment->getID()}').show();$('comment_add_button').show();", 'class' => 'closer']); ?>
-            <div class="submit_container"><button type="submit" class="button"><?= image_tag('spinning_16.gif', ['id' => 'comment_reply_indicator_' . $comment->getID(), 'style' => 'display: none;']) . __('Post reply'); ?></button></div>
+        <div class="form-row">
+            <?php include_component('main/textarea', array('area_name' => 'comment_body', 'placeholder' => __('Enter your reply here...'), 'target_type' => isset($mentionable_target_type) ? $mentionable_target_type : $comment->getTargetType(), 'target_id' => $comment->getTargetId(), 'area_id' => 'comment_reply_'.$comment->getID().'_bodybox', 'height' => '200px', 'width' => '100%', 'syntax' => \pachno\core\framework\Settings::getSyntaxClass($comment->getSyntax()), 'value' => '')); ?>
+        </div>
+        <?php if ($comment->isPublic()): ?>
+            <div class="form-row">
+                <input type="checkbox" name="comment_visibility" id="comment_<?= $comment->getId(); ?>_reply_visibility" class="fancycheckbox" value="1" checked>
+                <label for="comment_<?= $comment->getId(); ?>_reply_visibility">
+                    <?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far'); ?>
+                    <span><?= __('Visible for all users'); ?></span>
+                </label>
+            </div>
+        <?php else: ?>
+            <input type="hidden" name="comment_visibility" value="0">
+        <?php endif; ?>
+        <div class="form-row error-container" id="comment-error-container">
+            <div class="error"></div>
+        </div>
+        <div id="comment_reply_controls_<?= $comment->getID(); ?>" class="form-row submit-container">
+            <?= javascript_link_tag(__('Cancel'), ['onclick' => "$('comment_reply_{$comment->getID()}').removeClassName('active');$('comment_view_{$comment->getID()}').show();$('comment_add_button').show();", 'class' => 'closer button secondary']); ?>
+            <button type="submit" class="button primary">
+                <?= fa_image_tag('spinner', ['class' => 'indicator fa-spin']);?>
+                <span><?= __('Post reply'); ?></span>
+            </button>
         </div>
     </form>
 </div>

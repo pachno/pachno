@@ -63,6 +63,7 @@
 
       &.two-columns .column {
         flex: 1 1 50%;
+        min-width: 260px;
       }
     }
 
@@ -70,8 +71,8 @@
       max-height: 450px;
       overflow-y: auto;
       overflow-x: hidden;
-      min-width: 200px;
-      max-width: 300px;
+      min-width: 260px;
+      max-width: 350px;
 
       .header-banner {
         .header-name {

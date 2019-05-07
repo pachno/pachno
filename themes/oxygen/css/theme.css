@@ -9329,13 +9329,14 @@ input.icon.secondary:disabled {
       .dropper-container .dropdown-container.columns.three-columns .column {
         flex: 1 1 33%; }
       .dropper-container .dropdown-container.columns.two-columns .column {
-        flex: 1 1 50%; }
+        flex: 1 1 50%;
+        min-width: 260px; }
     .dropper-container .dropdown-container .list-mode {
       max-height: 450px;
       overflow-y: auto;
       overflow-x: hidden;
-      min-width: 200px;
-      max-width: 300px; }
+      min-width: 260px;
+      max-width: 350px; }
       .dropper-container .dropdown-container .list-mode .header-banner .header-name {
         padding: .3em; }
         .dropper-container .dropdown-container .list-mode .header-banner .header-name .image-container {
@@ -9425,7 +9426,9 @@ input.icon.secondary:disabled {
       box-sizing: border-box;
       transform: rotate(0);
       cursor: pointer;
-      padding: 0 10px; }
+      padding: 0 10px;
+      text-align: center;
+      transition: transform .25s ease-in-out; }
     .fancydropdown-container .fancydropdown > label {
       flex: 0 0 auto;
       font-weight: 300;
@@ -9606,7 +9609,7 @@ input.icon.secondary:disabled {
     align-items: center;
     justify-content: flex-start;
     justify-items: flex-start;
-    font-size: .9em;
+    font-size: .85rem;
     text-transform: none;
     transition: color .25s ease-in-out, background-color .25s ease-in-out; }
     .list-mode .list-item.disabled,
@@ -9662,10 +9665,8 @@ input.icon.secondary:disabled {
       .list-mode .list-item:hover.multiline span.name .title {
         font-size: 1.2em;
         font-weight: 600;
-        white-space: nowrap;
-        width: 100%;
-        overflow: hidden;
-        text-overflow: ellipsis; }
+        white-space: normal;
+        width: 100%; }
     .list-mode .list-item.with-pop-out,
     .list-mode .list-item:hover.with-pop-out {
       padding-right: 0; }
@@ -9690,8 +9691,7 @@ input.icon.secondary:disabled {
       padding: 7px 0;
       font-weight: 300;
       font-size: 1em;
-      white-space: nowrap;
-      text-overflow: ellipsis;
+      white-space: normal;
       overflow: hidden; }
     .list-mode .list-item .indicator,
     .list-mode .list-item:hover .indicator {

@@ -420,14 +420,16 @@ comment_delete:
 comment_update:
     route: /comments/:comment_module/:comment_applies_type/:comment_applies_id/:comment_id
     module: main
-    action: updateComment
+    action: editComment
+    methods: ['POST']
     parameters: [ ]
     csrf_enabled: false
 
 comment_add:
     route: /comments/:comment_module/:comment_applies_type/:comment_applies_id
     module: main
-    action: addComment
+    action: editComment
+    methods: ['POST']
     parameters: [ ]
     csrf_enabled: false
 

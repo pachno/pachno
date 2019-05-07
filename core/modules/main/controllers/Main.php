@@ -2994,48 +2994,6 @@ class Main extends framework\Action
         }
     }
 
-    public function runUpdateComment(framework\Request $request)
-    {
-        framework\Context::loadLibrary('ui');
-        $comment = tables\Comments::getTable()->selectById($request['comment_id']);
-        if ($comment instanceof entities\Comment)
-        {
-            if (!$comment->canUserEdit(framework\Context::getUser()))
-            {
-                $this->getResponse()->setHttpStatus(400);
-                return $this->renderJSON(array('error' => framework\Context::getI18n()->__('You are not allowed to do this')));
-            }
-            else
-            {
-                if ($request['comment_body'] == '')
-                {
-                    $this->getResponse()->setHttpStatus(400);
-                    return $this->renderJSON(array('error' => framework\Context::getI18n()->__('The comment must have some content')));
-                }
-
-                if ($comment->getTarget() instanceof entities\Issue) {
-                    framework\Context::setCurrentProject($comment->getTarget()->getProject());
-                }
-
-                $comment->setContent($request->getRawParameter('comment_body'));
-                $comment->setIsPublic($request['comment_visibility']);
-                $comment->setSyntax($request['comment_body_syntax']);
-                $comment->setUpdatedBy($this->getUser()->getID());
-                $comment->save();
-
-                framework\Context::loadLibrary('common');
-                $body = $comment->getParsedContent();
-
-                return $this->renderJSON(array('title' => framework\Context::getI18n()->__('Comment edited!'), 'comment_body' => $body));
-            }
-        }
-        else
-        {
-            $this->getResponse()->setHttpStatus(400);
-            return $this->renderJSON(array('error' => framework\Context::getI18n()->__('Comment ID is invalid')));
-        }
-    }
-
     public function listenIssueSaveAddComment(framework\Event $event)
     {
         $this->comment_lines = $event->getParameter('comment_lines');
@@ -3052,61 +3010,68 @@ class Main extends framework\Action
         }
     }
 
-    public function runAddComment(framework\Request $request)
+    public function runEditComment(framework\Request $request)
     {
         $i18n = framework\Context::getI18n();
         $comment_applies_type = $request['comment_applies_type'];
-        try
-        {
-            if (!$this->getUser()->canPostComments())
-            {
-                throw new \Exception($i18n->__('You are not allowed to do this'));
-            }
-            if (!trim($request['comment_body']))
-            {
-                throw new \Exception($i18n->__('The comment must have some content'));
+        $is_new = !$request->hasParameter('comment_id');
+
+        try {
+            if (!$is_new) {
+                $comment = tables\Comments::getTable()->selectById($request['comment_id']);
+            } else {
+                if (!$this->getUser()->canPostComments()) {
+                    throw new \Exception($i18n->__('You are not allowed to do this'));
+                }
+
+                $comment = new entities\Comment();
+                $comment->setPostedBy($this->getUser()->getID());
+                $comment->setTargetID($request['comment_applies_id']);
+                $comment->setTargetType($request['comment_applies_type']);
+                $comment->setReplyToComment($request['reply_to_comment_id']);
+                $comment->setModuleName($request['comment_module']);
             }
 
-            $comment = new entities\Comment();
+            if (!trim($request['comment_body'])) {
+                throw new \Exception($i18n->__('You cannot post an empty comment'));
+            }
+
             $comment->setContent($request->getParameter('comment_body', null, false));
-            $comment->setPostedBy($this->getUser()->getID());
-            $comment->setTargetID($request['comment_applies_id']);
-            $comment->setTargetType($request['comment_applies_type']);
-            $comment->setReplyToComment($request['reply_to_comment_id']);
-            $comment->setModuleName($request['comment_module']);
             $comment->setIsPublic((bool) $request['comment_visibility']);
             $comment->setSyntax($request['comment_body_syntax']);
             $comment->save();
 
-            if ($comment_applies_type == entities\Comment::TYPE_ISSUE)
-            {
+            if ($comment_applies_type == entities\Comment::TYPE_ISSUE) {
                 $issue = tables\Issues::getTable()->selectById((int) $request['comment_applies_id']);
                 framework\Event::createNew('core', 'pachno\core\entities\Comment::createNew', $comment, compact('issue'))->trigger();
-            }
-            elseif ($comment_applies_type == entities\Comment::TYPE_ARTICLE)
-            {
+            } elseif ($comment_applies_type == entities\Comment::TYPE_ARTICLE) {
                 $article = tables\Articles::getTable()->selectById((int) $request['comment_applies_id']);
                 framework\Event::createNew('core', 'pachno\core\entities\Comment::createNew', $comment, compact('article'))->trigger();
             }
 
             $component_name = ($comment->isReply()) ? 'main/comment' : 'main/commentwrapper';
-            switch ($comment_applies_type)
-            {
+            switch ($comment_applies_type) {
                 case entities\Comment::TYPE_ISSUE:
                     $issue = tables\Issues::getTable()->selectById($request['comment_applies_id']);
 
                     framework\Context::setCurrentProject($issue->getProject());
-                    $comment_html = $this->getComponentHTML($component_name, array('comment' => $comment, 'issue' => $issue, 'options' => ['issue' => $issue], 'mentionable_target_type' => 'issue', 'comment_count_div' => 'viewissue_comment_count'));
+                    if ($is_new) {
+                        $comment_html = $this->getComponentHTML($component_name, array('comment' => $comment, 'issue' => $issue, 'options' => ['issue' => $issue], 'mentionable_target_type' => 'issue', 'comment_count_div' => 'viewissue_comment_count'));
+                    } else {
+                        $comment_html = $comment->getParsedContent();
+                    }
                     break;
                 case entities\Comment::TYPE_ARTICLE:
-                    $comment_html = $this->getComponentHTML($component_name, array('comment' => $comment, 'mentionable_target_type' => 'article', 'options' => [], 'comment_count_div' => 'article_comment_count'));
+                    if ($is_new) {
+                        $comment_html = $this->getComponentHTML($component_name, array('comment' => $comment, 'mentionable_target_type' => 'article', 'options' => [], 'comment_count_div' => 'article_comment_count'));
+                    } else {
+                        $comment_html = $comment->getParsedContent();
+                    }
                     break;
                 default:
                     $comment_html = 'OH NO!';
             }
-        }
-        catch (\Exception $e)
-        {
+        } catch (\Exception $e) {
             $this->getResponse()->setHttpStatus(400);
             return $this->renderJSON(array('error' => $e->getMessage()));
         }

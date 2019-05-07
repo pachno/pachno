@@ -32,6 +32,8 @@
       transform: rotate(0);
       cursor: pointer;
       padding: 0 10px;
+      text-align: center;
+      transition: transform .25s ease-in-out;
     }
 
     > label {

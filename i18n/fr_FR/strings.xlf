@@ -6053,7 +6053,7 @@
                 <target>L'identifiant du commentaire est invalide</target>
             </trans-unit>
             <trans-unit id="601651cf75d7d9a88833e7337cd76efb">
-                <source>The comment must have some content</source>
+                <source>You cannot post an empty comment</source>
                 <target>Le commentaire doit avoir un contenu</target>
             </trans-unit>
             <trans-unit id="f8ffb06aa3f592bd0bc49d33e0e2c436">

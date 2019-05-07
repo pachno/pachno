@@ -25,7 +25,7 @@
                             <a class="action-button" href="javascript:void(0)" onclick="$$('.comment-editor').each(function (elm) { elm.removeClassName('active'); });$('comment_edit_<?= $comment->getID(); ?>').addClassName('active');"><?= fa_image_tag('edit'); ?></a>
                         <?php endif; ?>
                         <?php if ($comment->canUserDelete($pachno_user)): ?>
-                            <?= javascript_link_tag(fa_image_tag('trash-alt'), ['class' => 'action-button', 'onclick' => "Pachno.Main.Helpers.Dialog.show('".__('Do you really want to delete this comment?')."', '".__('Please confirm that you want to delete this comment.')."', {yes: {click: function() {Pachno.Main.Comment.remove('".make_url('comment_delete', ['comment_id' => $comment->getID()])."', ".$comment->getID().", '".$comment_count_div."'); }}, no: { click: Pachno.Main.Helpers.Dialog.dismiss }});"]); ?>
+                            <?= javascript_link_tag(fa_image_tag('trash-alt'), ['class' => 'action-button', 'onclick' => "Pachno.Main.Helpers.Dialog.show('".__('Do you really want to delete this comment?')."', '".__('Please confirm that you want to delete this comment.')."', {yes: {click: function() {Pachno.Main.Comment.remove('".make_url('comment_delete', ['comment_applies_id' => $comment->getTargetID(), 'comment_applies_type' => $comment->getTargetType(), 'comment_module' => $comment->getModuleName(), 'comment_id' => $comment->getID()])."', ".$comment->getID().", '".$comment_count_div."'); }}, no: { click: Pachno.Main.Helpers.Dialog.dismiss }});"]); ?>
                         <?php endif; ?>
                     </div>
                 <?php endif; ?>

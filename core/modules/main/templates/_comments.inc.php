@@ -42,12 +42,12 @@
                 </div>
                 <div class="form-row error-container" id="comment-error-container">
                     <div class="error"></div>
-                    <input type="hidden" name="forward_url" value="<?= $forward_url; ?>">
                 </div>
                 <div class="form-row submit-container">
                     <button type="submit" class="button primary">
                         <?= fa_image_tag('spinner', ['class' => 'indicator fa-spin']);?>
-                        <?= __('Post comment'); ?></button>
+                        <span><?= __('Post comment'); ?></span>
+                    </button>
                 </div>
             </form>
         </div>

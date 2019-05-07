@@ -46,9 +46,12 @@
             <span class="icon"><?php echo image_tag($pachno_user->getAvatarURL(), ['class' => 'avatar small'], true); ?></span>
             <span class="name"><?php echo __('Select yourself'); ?> (<?php echo $pachno_user->getUsername(); ?>)</span>
         </a>
-        <div class="separator"></div>
+        <div class="list-item separator"></div>
         <?php if (count($pachno_user->getFriends()) == 0): ?>
-            <div class="list-item disabled"><?php echo __("Your friends will appear here"); ?></div>
+            <div class="list-item disabled">
+                <?= fa_image_tag('info-circle', ['class' => 'icon']); ?>
+                <span><?php echo __("Your friends will appear here"); ?></span>
+            </div>
         <?php else: ?>
             <?php include_component('main/identifiableselectorresults', array('header' => false, 'users' => $pachno_user->getFriends(), 'callback' => $callback, 'team_callback' => ((isset($team_callback)) ? $team_callback : null))); ?>
         <?php endif; ?>
