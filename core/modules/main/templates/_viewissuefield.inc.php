@@ -8,7 +8,7 @@
 ?>
 <li id="<?php echo $field; ?>_field" <?php if (!$info['visible']): ?> style="display: none;"<?php endif; ?>>
     <div id="<?php echo $field; ?>_content" class="<?php if (isset($info['extra_classes'])) echo $info['extra_classes']; ?> value fancydropdown-container">
-        <div class="fancydropdown <?php if (count($info['choices']) && $issue->$canEditField()): ?>dropper<?php endif; ?>" data-default-label="<?= __('Not determined'); ?>">
+        <div class="fancydropdown" data-default-label="<?= __('Not determined'); ?>">
             <label><?php echo $info['title']; ?></label>
             <span class="value"></span>
             <?php if (array_key_exists('choices', $info) && count($info['choices']) && $issue->$canEditField()): ?>

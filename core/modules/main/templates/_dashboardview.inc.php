@@ -6,7 +6,7 @@
 ?>
 <li id="dashboard_container_<?php echo $view->getID(); ?>" data-view-id="<?php echo $view->getID(); ?>" data-preloaded="<?php echo (int) $view->shouldBePreloaded(); ?>" class="dashboard_view_container">
     <div class="dashboard_indicator" style="display: none;"><?php echo image_tag('spinning_16.gif'); ?></div>
-    <div class="container_div">
+    <div class="container_div <?php if ($view->isTransparent()) echo 'transparent'; ?>">
         <?php if ($view->hasTitle()): ?>
             <div class="header">
                 <?php echo image_tag('icon_delete.png', array('class' => 'remover', 'onclick' => "Pachno.Main.Dashboard.removeView('click', this);")); ?>

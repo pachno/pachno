@@ -51,6 +51,10 @@
       min-width: 100px;
     }
 
+    &.no-value > .value {
+      color: #C8C8C8;
+    }
+
     .fas {
       flex: 0 0 auto;
       font-size: 1em;

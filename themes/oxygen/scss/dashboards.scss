@@ -1,0 +1,855 @@
+#customize_dashboard_icon {
+  img,
+  span {
+    float: right;
+    margin-right: 10px;
+  }
+
+  span {
+    display: none;
+    color: #AAA;
+    font-size: 1.1em;
+  }
+
+  &:hover span {
+    display: inherit;
+  }
+}
+
+.dashboard {
+  &.layout_standard {
+    box-sizing: border-box;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    text-align: left;
+    float: none;
+    padding: 0;
+    margin: 0;
+    align-items: flex-start;
+
+    .dashboard_column {
+      box-sizing: border-box;
+      flex: 1 1 50%;
+      float: none;
+      padding: 0 10px;
+      margin: 0;
+      list-style: none;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+
+      & + .dashboard_column {
+        padding-left: 0;
+      }
+
+      > li {
+        font-size: .9rem;
+        font-weight: 300;
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        justify-content: flex-start;
+        flex: 0 0 auto;
+        box-sizing: border-box;
+        margin: 0;
+        padding: 10px 0 0 0;
+        float: none;
+        width: 100%;
+        list-style: none;
+        position: relative;
+
+        &.dashboard_add_view_container {
+          display: none;
+        }
+
+        @at-root .dashboard.layout_standard.editable &.dashboard_add_view_container {
+          display: block;
+        }
+
+        &.dashboard_add_view_container > div {
+          cursor: pointer;
+          font-size: 1.7em;
+          font-weight: 300;
+          border: 1px dashed #DDD;
+          padding: 50px 0;
+          text-align: center;
+          background-color: #FAFAFA;
+          color: rgba(100, 100, 100, 0.4);
+          margin: 0 5px 10px 5px;
+        }
+
+        .container_div {
+          border: none;
+          //box-shadow: 0 0 3px rgba(0, 0, 0, 0.15), 0 3px 3px rgba(0, 0, 0, 0.12);
+          margin: 0;
+          border-radius: 4px;
+          clear: both;
+          font-size: 1.1em;
+          display: flex;
+          flex-direction: column;
+          align-items: stretch;
+          justify-content: flex-start;
+          flex: 0 0 auto;
+          padding: 0;
+          position: relative;
+
+          background-color: #FFF;
+          box-shadow: 0 1px 3px 0 rgba(27, 27, 36, .2);
+
+          &.transparent {
+            background-color: transparent;
+            box-shadow: none;
+          }
+
+          .header {
+            margin: 0;
+            padding: 10px;
+            border: none;
+            border-bottom: 1px dotted #CCC;
+            font-weight: 600;
+            font-size: 1.1em;
+            box-sizing: border-box;
+            text-transform: uppercase;
+            border-bottom: 2px solid #0C8990;
+            background-color: transparent;
+            border-radius: 4px 4px 0 0;
+            color: #0C8990;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: space-between;
+
+            span {
+              display: flex;
+              flex-direction: row;
+              align-items: center;
+              justify-content: flex-start;
+            }
+
+            .fas,
+            .far {
+              margin: 0 .35rem;
+
+              &:first-child {
+                margin-left: 0;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+.dashboard.layout_standard ul.dashboard_column > li img.mover, .dashboard.layout_standard ul.dashboard_column > li img.remover {
+  float: right;
+  margin: 3px 5px 0 5px;
+  display: none;
+}
+
+.dashboard.layout_standard.editable ul.dashboard_column.jsortable > li:hover img.mover {
+  display: inline-block;
+  cursor: move;
+}
+
+.dashboard.layout_standard.editable ul.dashboard_column.jsortable > li:hover img.remover {
+  display: inline-block;
+  cursor: pointer;
+}
+
+.dashboard.layout_standard ul.dashboard_column > li .faded_out {
+  font-size: 0.9em;
+  font-weight: 300;
+}
+
+.dashboard.layout_standard ul.dashboard_column > li div.faded_out {
+  margin: 5px 10px;
+}
+
+.dashboard.layout_standard ul.dashboard_column > li table tr td {
+  font-size: 1em;
+  font-weight: 300;
+  vertical-align: top;
+}
+
+.dashboard.layout_standard ul.dashboard_column > li table tr.issue_closed td {
+  text-decoration: line-through;
+  color: #AAA;
+}
+
+.dashboard.layout_standard ul.dashboard_column > li table tr.issue_closed td a {
+  color: #88C688;
+}
+
+.dashboard.layout_standard ul.dashboard_column > li table tr td .issue_closed {
+  text-decoration: line-through;
+}
+
+.dashboard.layout_standard ul.dashboard_column > li .imgtd img, #timeline .recent_activities .imgtd img {
+  padding: 4px 0 0 0 !important;
+}
+
+.dashboard.layout_standard ul.dashboard_column > li .milestone_box .header {
+  margin: 10px 0 0 0;
+  padding: 0;
+  border: none;
+  text-transform: none;
+}
+
+.dashboard.layout_standard .dashboard_view_header {
+  font-weight: 400;
+  color: #666;
+  font-size: 1em;
+  padding: 4px;
+}
+
+.dashboard.layout_standard .dashboard_view_content {
+  padding: 5px 10px;
+}
+
+.dashboard.layout_standard .dashboard_view_content ul li {
+  float: none;
+  width: auto;
+}
+
+.dashboard.layout_standard .dashboard_view_content .button-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 6px;
+
+  .button:first-child:last-child {
+    margin-left: auto;
+  }
+}
+
+.dashboard.layout_standard .dashboard_view_content .project_list {
+  font-size: 0.8em;
+}
+
+.dashboard.layout_standard .dashboard_view_header img {
+  margin-right: 2px;
+}
+
+.dashboard.layout_standard .latest_action_dates {
+  padding: 10px 0 0 7px;
+}
+
+.dashboard.layout_standard .faded_out.smaller {
+  font-size: 0.8em;
+  padding-right: 5px;
+}
+
+.dashboard.layout_standard .project_key {
+  background-color: #E8F7DC;
+  padding: 2px 4px;
+  border-radius: 3px;
+  margin-right: 3px;
+}
+
+.dashboard.layout_standard .issue_link {
+  display: block;
+  font-size: 1em;
+}
+
+.dashboard.layout_standard .issue_link img {
+  float: left;
+  display: block;
+  margin: 7px;
+  vertical-align: middle;
+}
+
+.dashboard.layout_standard .issue_link + .status-badge {
+  font-size: 0.8em;
+}
+
+.jsortable .sortable-placeholder {
+  display: block;
+  margin: 5px;
+  width: auto;
+  box-shadow: none;
+  border: 1px dotted rgba(100, 100, 100, 0.3);
+  height: 70px;
+  box-sizing: content-box;
+  background-color: rgba(240, 240, 240, 0.2);
+}
+
+#add_dashboard_views .available_views_list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+#add_dashboard_views h3, #add_dashboard_views h4 {
+  font-weight: 400;
+  color: #888;
+  text-transform: uppercase;
+  border-bottom: 1px dotted #CCC;
+  padding: 0 0 5px 0;
+  margin: 0 0 5px 0;
+}
+
+#add_dashboard_views h3 {
+  font-size: 1.1em;
+}
+
+#add_dashboard_views h4 {
+  font-size: 1em;
+}
+
+#add_dashboard_views .project_left {
+  width: 200px;
+  display: inline-block;
+  vertical-align: top;
+}
+
+#add_dashboard_views .available_views_container {
+  width: 570px;
+  margin-left: 10px;
+  display: inline-block;
+  vertical-align: top;
+  height: 500px;
+  overflow-x: auto;
+}
+
+#add_dashboard_views .available_views_list li {
+  display: block;
+  float: none;
+  padding: 10px;
+  vertical-align: top;
+  border: 1px solid rgba(100, 100, 100, 0.3);
+  box-sizing: content-box;
+  box-shadow: 0 0 3px rgba(100, 100, 100, 0.4);
+  margin: 0 10px 7px 0;
+}
+
+#add_dashboard_views .available_views_list li .icon_container {
+  padding: 5px 0;
+  width: 7%;
+  display: inline-block;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#add_dashboard_views .available_views_list li .description {
+  color: #666;
+  font-size: 1em;
+  padding: 5px 0;
+  width: 92%;
+  display: inline-block;
+  vertical-align: top;
+}
+
+#add_dashboard_views .available_views_list li .add_button_container {
+  padding: 10px 0;
+  display: block;
+  text-align: right;
+}
+
+#add_dashboard_views .available_views_list li .add_button_container img {
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 5px;
+}
+
+#add_dashboard_views .backdrop_detail_footer {
+  padding: 15px 10px;
+}
+
+.dashboard_milestones {
+  padding: 0;
+}
+
+.page-project_dashboard .dashboard_milestones {
+  margin: -5px -10px;
+}
+
+.dashboard_milestones > div:last-child {
+  border-bottom: none !important;
+}
+
+.dashboard_view_content a.more {
+  float: right;
+  font-weight: 400;
+  padding-top: 5px;
+}
+
+.dashboard_view_content .project_role {
+  font-weight: 300;
+  margin: 5px 0;
+  font-size: 0.9em;
+}
+
+.dashboard_view_issues {
+  table-layout: fixed;
+  width: 100%;
+  box-sizing: border-box;
+  margin: 0;
+}
+
+.dashboard_view_issues .issue_user_avatar_cell .user_dropdown {
+  left: -14px;
+}
+
+.dashboard_view_issues .tr .td {
+  border-bottom: 1px dashed #EAEAEA;
+  padding: 10px 5px 15px;
+}
+
+.dashboard_view_issues .tr:last-child .td {
+  border-bottom: 0;
+}
+
+.dashboard_view_issues .tr .td.issue_type_cell {
+  width: 30px;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.dashboard_view_issues .issue_comments_count_cell, .dashboard_view_issues .issue_files_count_cell {
+  width: 50px;
+  vertical-align: middle;
+}
+
+.dashboard_view_issues .issue_comments_count_cell img, .dashboard_view_issues .issue_files_count_cell img {
+  vertical-align: middle;
+}
+
+.dashboard_view_issues .td {
+  padding: 5px;
+}
+
+.dashboard_view_issues .td .issue_link {
+  margin-bottom: 5px;
+}
+
+.dashboard_view_issues .td:first-child {
+  width: auto;
+}
+
+.dashboard_view_issues .td:last-child {
+  width: 40px;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.dashboard_view_issues .secondary {
+  color: #AAA;
+  font-size: 0.9em;
+}
+
+.dashboard_view_issues .secondary img {
+  vertical-align: middle;
+  display: inline-block;
+  margin: 0 5px 0 10px;
+}
+
+.dashboard_view_issues .secondary img:first-of-type {
+  margin-left: 20px;
+}
+
+.dashboard_view_issues .issue_blocking .issue_avatar_cell {
+  background: linear-gradient(to right, rgba(255, 100, 100, 0) 0%, rgba(255, 100, 100, 0.2) 50px);
+  background: -webkit-linear-gradient(left, rgba(255, 100, 100, 0) 0%, rgba(255, 100, 100, 0.2) 50px);
+}
+
+.dashboard_view_issues .issue_team_avatar_cell .avatar {
+  border: 1px solid rgba(39, 124, 186, 0.4);
+  height: 16px;
+  width: 16px;
+  background-color: rgba(39, 124, 186, 0.05);
+  padding: 5px;
+}
+
+.dashboard_view_content .dashboard_project_recent_activities, .dashboard_view_content .dashboard_recent_comments, .dashboard_view_content .dashboard_logged_actions {
+  margin-right: -10px;
+  margin-left: -10px;
+}
+
+.dashboard_project_recent_activities .recent_activities, .dashboard_recent_comments .recent_activities, .dashboard_logged_actions .recent_activities {
+  width: 100%;
+  border-spacing: 0;
+  margin-top: -10px;
+}
+
+.dashboard_project_recent_activities .recent_activities .latest_action_dates, .dashboard_recent_comments .recent_activities .latest_action_dates, .dashboard_logged_actions .recent_activities .latest_action_dates {
+  background-color: #F7F7F7;
+  padding-top: 7px;
+  padding-bottom: 7px;
+  margin-bottom: 10px;
+  border-bottom: 1px solid #EAEAEA;
+  border-top: 1px solid #EAEAEA;
+  font-weight: 400;
+}
+
+.dashboard_recent_comments .recent_activities .latest_action_dates_cell, .dashboard_logged_actions .recent_activities .latest_action_dates_cell {
+  padding-top: 9px;
+  padding-bottom: 2px;
+}
+
+.dashboard_project_recent_activities .recent_activities .latest_action_dates_cell {
+  padding-top: 4px;
+  padding-bottom: 2px;
+}
+
+.dashboard_project_recent_activities .user {
+  display: inline-block;
+  margin-bottom: 5px;
+  color: #AAA;
+}
+
+.dashboard_recent_comments .recent_activities .imgtd > img {
+  margin-top: 0 !important;
+}
+
+.dashboard_logged_actions .recent_activities .imgtd > img {
+  margin-top: -3px !important;
+}
+
+.dashboard_view_content #project_description {
+  margin-bottom: 10px;
+  font-size: 0.9em;
+  line-height: 1.5;
+}
+
+.dashboard_view_content .project_strip > div:first-child {
+  margin-top: 12px;
+}
+
+.dashboard_view_content .dashboard_subprojects .project_strip {
+  box-shadow: none;
+  border: none;
+  font-size: 1.1em;
+}
+
+.dashboard_view_content .dashboard_subprojects .project_list > li {
+  border-top: 1px solid rgba(200, 200, 200, 0.3);
+  transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
+  background-color: rgba(200, 200, 200, 0);
+  border-radius: 3px;
+}
+
+.dashboard_view_content .dashboard_subprojects .project_list > li:first-child {
+  border-top: none;
+}
+
+.dashboard_view_content .dashboard_subprojects .project_list > li:hover {
+  background-color: rgba(200, 200, 200, .1);
+  border-color: transparent;
+}
+
+.dashboard_view_content .release_item {
+  font-size: 0.8em;
+}
+
+.dashboard_view_content .release_item .release_date {
+  font-size: 1.1em;
+}
+
+.dashboard_view_content .statistics_percentage .percent_unfilled {
+  margin-top: 3px;
+}
+
+.dashboard_view_content div[id$='_recent_issues_pane'] table {
+  border-spacing: 5px 15px;
+  margin-top: -10px !important;
+  margin-bottom: -10px;
+}
+
+.dashboard_view_content div[id$='_recent_issues_pane'] .faded_out {
+  font-size: 13px !important;
+}
+
+.dashboard_view_content .project_client_header {
+  font-size: 1em;
+}
+
+.dashboard_view_content .project_client_viewusers {
+  font-size: 0.9em;
+}
+
+.dashboard_view_content .project_client_info table {
+  margin-top: 5px;
+}
+
+.dashboard_view_content .recent_activities tr td:last-child > b {
+  font-size: 1.1em;
+  line-height: 1.5;
+  margin-left: 5px;
+}
+
+#dashboard_lefthand .collapser_link {
+  left: 237px;
+  z-index: 1;
+  padding: 4px;
+  margin-top: 3px;
+}
+
+#dashboard_lefthand .collapser_link:before {
+  height: 16px;
+}
+
+#dashboard_lefthand .collapser_link:after {
+  height: 23px;
+}
+
+.dashboard_view_content .statistics_percentage {
+  border-spacing: 0 8px;
+}
+
+.dashboard_view_container .no-items {
+  font-size: 1.5em;
+  text-align: center;
+  padding: 25px;
+  color: #AAA;
+}
+
+.dashboard_view_container .no-items span {
+  display: block;
+  padding-bottom: 15px;
+}
+
+.dashboard_view_container .no-items .fas,
+.dashboard_view_container .no-items .far {
+  font-size: 2.5em;
+  display: block;
+  padding: 0 0 25px 0;
+  color: #CCC;
+}
+
+.dashboard_view_container .no-items.no-projects .fas,
+.dashboard_view_container .no-items.no-projects .far {
+  color: orange;
+}
+
+.dashboard_view_container .button-group {
+  justify-content: flex-end;
+  padding: 10px 0;
+}
+
+.milestone_box {
+  margin: 0;
+  font-size: 1em;
+  position: relative;
+  border: none;
+  padding: 0 10px 12px 10px;
+  box-shadow: none;
+  border-radius: 0;
+}
+
+.dashboard_milestones .milestone_box,
+.team_dashboard_projects .milestone_box,
+.client_dashboard_projects .milestone_box {
+  border-bottom: 1px dashed #EAEAEA !important;
+  table-layout: fixed;
+  width: 100%;
+  box-sizing: border-box;
+  background-color: transparent !important;
+}
+
+.team_dashboard_projects .milestone_box,
+.client_dashboard_projects .milestone_box {
+  padding: 0 0 12px 0;
+  font-size: 1.1em;
+}
+
+.team_dashboard .milestone_box .header,
+.client_dashboard .milestone_box .header {
+  text-transform: none;
+  border-bottom: none;
+  font-size: 1em;
+}
+
+.milestone_box.unavailable:hover {
+  opacity: 1;
+}
+
+.milestone_box .status {
+  margin-top: 10px;
+  font-size: 0.8em;
+  display: inline-block;
+  padding: 2px 5px;
+  border-radius: 3px;
+}
+
+.milestone_box.red .status {
+  background-color: #FAEFEF;
+  color: #D88383;
+}
+
+.milestone_box.green .status {
+  background-color: #DCEFDC;
+  color: #00a400;
+}
+
+.milestone_box .date {
+  margin-top: 4px;
+  color: #AAA;
+  font-size: 0.9em;
+}
+
+.milestone_box .percentage {
+  vertical-align: middle;
+  padding-left: 10px;
+}
+
+.milestone_box .percentage .numbers {
+  text-align: center;
+  font-size: 0.8em;
+  margin-bottom: 8px;
+  color: #555;
+}
+
+.milestone_box .header {
+  padding: 4px 0;
+  border: none;
+  font-size: 1.1em;
+  font-weight: 400;
+}
+
+.milestone_box .milestone_basic_container, .milestone_box .milestone_counts_container {
+  display: inline-block;
+  vertical-align: middle;
+  width: auto;
+  margin-right: 5px;
+}
+
+.milestone_box .milestone_counts_container {
+  margin-top: -20px;
+}
+
+#new_backlog_milestone_marker .milestone_counts_container {
+  margin-top: 0;
+}
+
+.header.backlog .milestone_counts_container {
+  margin-top: -10px;
+}
+
+.milestone_box .milestone_name {
+  font-weight: 400;
+  font-size: 1.2em;
+  text-transform: uppercase;
+  color: #777;
+  display: inline-block;
+  vertical-align: middle;
+  margin-bottom: 5px;
+}
+
+.milestone_box .milestone_name.milestone_virtual_status {
+  height: 30px;
+  width: 390px;
+  padding-bottom: 2px;
+  background-color: #FFF;
+  position: relative;
+  border: 1px solid transparent;
+}
+
+.milestone_box .header .settings_container, .milestone_box .header .draggable {
+  position: relative;
+  float: right;
+  margin: 0 5px;
+  line-height: 1em;
+}
+
+.page-project_roadmap #content_container .milestone_box .header .settings_container, .page-project_milestone_details #content_container .milestone_box .header .settings_container {
+  margin-right: -10px;
+}
+
+.milestone_box .header .settings_container {
+  opacity: 0.4;
+  transition: opacity 0.3s ease;
+  -webkit-transition: opacity 0.3s ease;
+  z-index: 1;
+}
+
+.milestone_box .header .settings_container:hover {
+  opacity: 1;
+  transition: opacity 0.3s ease;
+  -webkit-transition: opacity 0.3s ease;
+}
+
+.milestone_box .header .settings_container img, .milestone_box .header .draggable img {
+  padding: 3px 5px;
+  cursor: pointer;
+}
+
+.milestone_box .header .draggable {
+  display: none;
+}
+
+#project_planning.milestone-sort .milestone_box {
+  cursor: move;
+  background-color: white;
+}
+
+#project_planning.milestone-sort .milestone_box .header .draggable {
+  display: block;
+}
+
+#project_planning.milestone-sort .milestone_box .header .settings_container, #project_planning.milestone-sort .milestone_box .header .button-group, #project_planning.milestone-sort .milestone_box .milestone_issues {
+  display: none;
+}
+
+dl.info {
+  display: block;
+  white-space: normal;
+}
+
+.milestone_box .backlog dl.info {
+  display: inline-block;
+  margin-left: 25px;
+}
+
+.milestone_box dl.info dt.milestone_issues_count {
+  margin-right: 0;
+  line-height: 1em;
+}
+
+.milestone_box dl.info dt.milestone_issues_count.collapsable, .milestone_box dl.info dt.milestone_issues_count.collapsable + dd {
+  cursor: pointer;
+}
+
+.milestone_box dl.info dt.milestone_issues_count img {
+  vertical-align: middle;
+}
+
+.milestone_box dl.info dt.milestone_issues_count + dd {
+  margin-left: -5px;
+  min-width: 25px;
+}
+
+.milestone_box dl.info dd {
+  margin: 0 20px 0 0;
+  min-width: 90px;
+}
+
+.milestone_percentage, .issue_percentage {
+  display: block;
+  height: 3px;
+  background-color: #E7E7E7;
+  padding: 0;
+  width: 100%;
+  margin: 5px 0;
+  position: relative;
+}
+
+.issue_percentage {
+  margin: 0 0 2px 0;
+  bottom: -2px;
+}
+
+.milestone_percentage .filler, .issue_percentage .filler {
+  display: block;
+  height: 3px;
+  position: absolute;
+  left: 0;
+  top: 0;
+  background-color: rgba(119, 183, 83, 0.5);
+  transition: width 0.3s ease;
+}
+
+
+@import 'dashboards/user-projects';

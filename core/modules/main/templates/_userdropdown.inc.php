@@ -52,15 +52,18 @@
                 <?php endif; ?>
                 <?php if (!$pachno_request->hasCookie('original_username')): ?>
                     <a class="list-item" href="<?= make_url('switch_to_user', array('user_id' => $user->getID())); ?>">
+                        <?= fa_image_tag('random', ['class' => 'icon']); ?>
                         <span class="name"><?= __('Switch to this user'); ?></span>
                     </a>
                 <?php else: ?>
                     <a class="list-item" href="<?= make_url('switch_back_user'); ?>">
+                        <?= fa_image_tag('random', ['class' => 'icon']); ?>
                         <span class="name"><?= __('Switch back to original user'); ?></span>
                     </a>
                 <?php endif; ?>
             <?php endif; ?>
             <a class="list-item" href="javascript:void(0);" onclick="Pachno.Main.Helpers.Backdrop.show('<?php echo make_url('get_partial_for_backdrop', array('key' => 'usercard', 'user_id' => $user->getID())); ?>');$('bud_<?php echo $user->getUsername() . "_" . $rnd_no; ?>').hide();">
+                <?= fa_image_tag('info-circle', ['class' => 'icon']); ?>
                 <span class="name"><?php echo __('Show user details'); ?></span>
             </a>
             <?php \pachno\core\framework\Event::createNew('core', 'useractions_bottom', $user)->trigger(); ?>

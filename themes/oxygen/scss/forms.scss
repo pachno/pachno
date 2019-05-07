@@ -33,6 +33,10 @@
     align-content: flex-start;
     padding: .5em;
 
+    .textarea_container {
+      flex: 1 1 100%;
+    }
+
     &.container {
       padding: 0;
     }

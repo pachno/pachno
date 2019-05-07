@@ -2939,8 +2939,8 @@ class Main extends framework\Action
 
     public function runAttachLink(framework\Request $request)
     {
-        $link_id = tables\Links::getTable()->addLink($request['target_type'], $request['target_id'], $request['link_url'], $request->getRawParameter('description'));
-        return $this->renderJSON(array('message' => framework\Context::getI18n()->__('Link added!'), 'content' => $this->getComponentHTML('main/menulink', array('link_id' => $link_id, 'link' => array('target_type' => $request['target_type'], 'target_id' => $request['target_id'], 'description' => $request->getRawParameter('description'), 'url' => $request['link_url'])))));
+        $link = tables\Links::getTable()->addLink($request['target_type'], $request['target_id'], $request['link_url'], $request->getRawParameter('description'));
+        return $this->renderJSON(array('message' => framework\Context::getI18n()->__('Link added!'), 'content' => $this->getComponentHTML('main/menulink', array('link_id' => $link->getID(), 'link' => array('target_type' => $request['target_type'], 'target_id' => $request['target_id'], 'description' => $request->getRawParameter('description'), 'url' => $request['link_url'])))));
     }
 
     public function runRemoveLink(framework\Request $request)
@@ -3081,15 +3081,7 @@ class Main extends framework\Action
             if ($comment_applies_type == entities\Comment::TYPE_ISSUE)
             {
                 $issue = tables\Issues::getTable()->selectById((int) $request['comment_applies_id']);
-                if (!$request->isAjaxCall() || $request['comment_save_changes'])
-                {
-                    $issue->setSaveComment($comment);
-                    $issue->save();
-                }
-                else
-                {
-                    framework\Event::createNew('core', 'pachno\core\entities\Comment::createNew', $comment, compact('issue'))->trigger();
-                }
+                framework\Event::createNew('core', 'pachno\core\entities\Comment::createNew', $comment, compact('issue'))->trigger();
             }
             elseif ($comment_applies_type == entities\Comment::TYPE_ARTICLE)
             {
@@ -3115,24 +3107,11 @@ class Main extends framework\Action
         }
         catch (\Exception $e)
         {
-            if ($request->isAjaxCall())
-            {
-                $this->getResponse()->setHttpStatus(400);
-                return $this->renderJSON(array('error' => $e->getMessage()));
-            }
-            else
-            {
-                framework\Context::setMessage('comment_error', $e->getMessage());
-                framework\Context::setMessage('comment_error_body', $request['comment_body']);
-                framework\Context::setMessage('comment_error_visibility', $request['comment_visibility']);
-            }
+            $this->getResponse()->setHttpStatus(400);
+            return $this->renderJSON(array('error' => $e->getMessage()));
         }
-        if ($request->isAjaxCall())
-            return $this->renderJSON(array('title' => $i18n->__('Comment added!'), 'comment_data' => $comment_html, 'comment_id' => $comment->getID(), 'continue_url' => $request['forward_url'], 'commentcount' => entities\Comment::countComments($request['comment_applies_id'], $request['comment_applies_type']/* , $request['comment_module'] */)));
-        if (isset($comment) && $comment instanceof entities\Comment)
-            $this->forward($request['forward_url'] . "#comment_{$request['comment_applies_type']}_{$request['comment_applies_id']}_{$comment->getID()}");
-        else
-            $this->forward($request['forward_url']);
+
+        return $this->renderJSON(array('title' => $i18n->__('Comment added!'), 'comment_data' => $comment_html, 'comment_id' => $comment->getID(), 'continue_url' => $request['forward_url'], 'commentcount' => entities\Comment::countComments($request['comment_applies_id'], $request['comment_applies_type']/* , $request['comment_module'] */)));
     }
 
     public function runListProjects(framework\Request $request)

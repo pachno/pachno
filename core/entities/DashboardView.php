@@ -131,11 +131,12 @@
                 case self::TYPE_PROJECT:
                     $searches['statistics'] = [];
                     $issuetype_icons = [];
+                    framework\Context::loadLibrary('ui');
                     foreach (Issuetype::getAll() as $id => $issuetype)
                     {
                         $issuetype_icons[$id] = [
                             'title' => $i18n->__('Recent issues: %issuetype', ['%issuetype' => $issuetype->getName()]),
-                            'header' => '<span>' . __('Recent issues %issuetype', ['%issuetype' => '']) . '</span><span>' . fa_image_tag($issuetype->getFontAwesomeIcon(), ['class' => 'issuetype-icon issuetype-' . $issuetype->getIcon()]).$issuetype->getName() . '</span>',
+                            'header' => '<span>' . $i18n->__('Recent issues %issuetype', ['%issuetype' => '']) . '</span><span>' . fa_image_tag($issuetype->getFontAwesomeIcon(), ['class' => 'issuetype-icon issuetype-' . $issuetype->getIcon()]).$issuetype->getName() . '</span>',
                             'description' => $i18n->__('Show recent issues of type %issuetype', ['%issuetype' => $issuetype->getName()])
                         ];
                     }
@@ -286,10 +287,15 @@
 
         public function shouldBePreloaded()
         {
-            return (boolean) in_array($this->getType(), array(self::VIEW_FRIENDS,
+            return in_array($this->getType(), [self::VIEW_FRIENDS,
                         self::VIEW_PROJECT_DOWNLOADS,
                         self::VIEW_PROJECT_INFO,
-                        self::VIEW_PROJECT_UPCOMING));
+                        self::VIEW_PROJECT_UPCOMING]);
+        }
+
+        public function isTransparent()
+        {
+            return in_array($this->getType(), [self::VIEW_PROJECTS]);
         }
 
         /**

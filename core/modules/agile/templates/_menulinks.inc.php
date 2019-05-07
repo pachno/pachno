@@ -4,19 +4,17 @@
 
 ?>
 <div class="list-mode" id="menu_links_<?php echo $target_type; ?>_<?php echo $target_id; ?>_container">
-    <div class="header not-selectable">
-        <span class="name"><?php echo $title; ?></span>
+    <div class="header">
         <?php if ($pachno_user->canEditMainMenu($target_type) && ((\pachno\core\framework\Context::isProjectContext() && !\pachno\core\framework\Context::getCurrentProject()->isArchived()) || !\pachno\core\framework\Context::isProjectContext())): ?>
-            <div class="dropper-container">
-                <span class="dropper"><?php echo fa_image_tag('cog'); ?></span>
-                <div class="dropdown-container">
-                    <div class="list-mode">
-                        <?php echo javascript_link_tag('<span class="name">'.__('Toggle menu edit mode').'</span>', ['onclick' => "Pachno.Main.Profile.clearPopupsAndButtons();Pachno.Main.Menu.toggleEditMode('{$target_type}', '{$target_id}', '".make_url('save_menu_order', ['target_type' => $target_type, 'target_id' => $target_id])."');", 'class' => 'list-item']); ?>
-                        <?php echo javascript_link_tag('<span class="name">'.__('Add menu item').'</span>', ['onclick' => "Pachno.Main.Profile.clearPopupsAndButtons();$('attach_link_{$target_type}_{$target_id}').toggle();", 'class' => 'list-item']); ?>
-                    </div>
-                </div>
-            </div>
+            <a href="javascript:void(0);" class="dropper dynamic_menu_link">
+                <?php echo fa_image_tag('cog'); ?>
+            </a>
+            <ul class="more_actions_dropdown popup_box">
+                <li><?php echo javascript_link_tag(__('Toggle menu edit mode'), array('onclick' => "Pachno.Main.Profile.clearPopupsAndButtons();Pachno.Main.Menu.toggleEditMode('{$target_type}', '{$target_id}', '".make_url('save_menu_order', array('target_type' => $target_type, 'target_id' => $target_id))."');", 'id' => 'toggle_'.$target_type.'_'.$target_id.'_edit_mode')); ?></li>
+                <li><?php echo javascript_link_tag(__('Add menu item'), array('onclick' => "Pachno.Main.Profile.clearPopupsAndButtons();$('attach_link_{$target_type}_{$target_id}').toggle();")); ?></li>
+            </ul>
         <?php endif; ?>
+        <?php echo $title; ?>
     </div>
     <?php if ($pachno_user->canEditMainMenu($target_type) && ((\pachno\core\framework\Context::isProjectContext() && !\pachno\core\framework\Context::getCurrentProject()->isArchived()) || !\pachno\core\framework\Context::isProjectContext())): ?>
         <div class="rounded_box white shadowed" id="attach_link_<?php echo $target_type; ?>_<?php echo $target_id; ?>" style="position: absolute; width: 300px; z-index: 10001; margin: -1px 0 5px 5px; display: none; top: 0; left: 305px;">
@@ -44,11 +42,13 @@
             </form>
         </div>
     <?php endif; ?>
-    <div class="simple-list" id="<?php echo $target_type; ?>_<?php echo $target_id; ?>_links">
-        <?php foreach ($links as $link): ?>
-            <?php include_component('main/menulink', compact('link')); ?>
-        <?php endforeach; ?>
+    <div class="content">
+        <ul class="simple-list" id="<?php echo $target_type; ?>_<?php echo $target_id; ?>_links">
+            <?php foreach ($links as $link): ?>
+                <?php include_component('main/menulink', compact('link')); ?>
+            <?php endforeach; ?>
+        </ul>
+        <div style="padding-left: 5px;<?php if (count($links) > 0): ?> display: none;<?php endif; ?>" id="<?php echo $target_type; ?>_<?php echo $target_id; ?>_no_links"><?php echo __('There are no links in this menu'); ?></div>
+        <div style="padding-left: 5px; text-align: center; display: none;" id="<?php echo $target_type; ?>_<?php echo $target_id; ?>_indicator"><?php echo image_tag('spinning_16.gif'); ?></div>
     </div>
-    <div style="padding-left: 5px;<?php if (count($links) > 0): ?> display: none;<?php endif; ?>" id="<?php echo $target_type; ?>_<?php echo $target_id; ?>_no_links"><?php echo __('There are no links in this menu'); ?></div>
-    <div style="padding-left: 5px; text-align: center; display: none;" id="<?php echo $target_type; ?>_<?php echo $target_id; ?>_indicator"><?php echo image_tag('spinning_16.gif'); ?></div>
 </div>

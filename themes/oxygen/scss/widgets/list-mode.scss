@@ -63,12 +63,12 @@
     color: #141823;
     border-radius: 5px;
     border: 1px solid transparent;
-    margin: 0 10px 5px 10px;
+    margin: 0 .35em 5px .35em;
     align-content: flex-start;
     align-items: center;
     justify-content: flex-start;
     justify-items: flex-start;
-    font-size: .9rem;
+    font-size: .9em;
     text-transform: none;
     transition: color .25s ease-in-out, background-color .25s ease-in-out;
 
@@ -96,7 +96,7 @@
       }
     }
 
-    &:not(.disabled):hover {
+    &:not(.disabled):not(.not-selectable):not(.separator):not(.header):hover {
       background-color: rgba(100, 100, 100, .1);
     }
     &.selected {
@@ -170,7 +170,7 @@
       flex: 1 1 auto;
       align-self: center;
       padding: 7px 0;
-      font-weight: 400;
+      font-weight: 300;
       font-size: 1em;
       white-space: nowrap;
       text-overflow: ellipsis;
@@ -222,7 +222,7 @@
 
     .icon {
       flex: 0 0 25px;
-      padding: 10px 0;
+      padding: .35em 0;
       color: rgb(100, 100, 100);
       align-self: center;
       text-align: center;
@@ -378,10 +378,35 @@
 }
 
 .list-mode, .submenu {
-  .header {
+  .header,
+  .header:hover {
     text-transform: none;
     color: rgb(150, 150, 150);
     font-size: .75rem;
     padding: 15px 0 5px 15px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: stretch;
+
+    span {
+      flex: 1 1 auto;
+    }
+
+    .dropper-container {
+      flex: 0 0 auto;
+      margin-right: 1rem;
+
+      .dropper {
+        flex: 0 0 25px;
+        padding: .35rem;
+        box-sizing: border-box;
+
+        &.active {
+          border-radius: 4px;
+          background-color: rgba(100, 100, 100, .1);
+        }
+      }
+    }
   }
 }

@@ -1,0 +1,27 @@
+#associated_projects li {
+  padding: 0 5px 5px 0;
+  border: 0;
+  position: relative;
+  margin: 0;
+}
+
+#associated_projects li .project_name {
+  text-align: left;
+  padding: 5px;
+  font-weight: 400;
+  font-size: 0.9em;
+  float: left;
+}
+
+#associated_projects {
+  font-size: 0.9em;
+}
+
+#associated_projects li {
+  margin-bottom: 5px;
+}
+
+#associated_projects li:last-child {
+  margin-bottom: 0;
+}
+

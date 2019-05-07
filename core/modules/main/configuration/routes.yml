@@ -410,21 +410,22 @@ toggle_friend:
     csrf_enabled: false
 
 comment_delete:
-    route: /comment/delete/:comment_id
+    route: /comment/:comment_module/:comment_applies_type/:comment_applies_id/:comment_id
     module: main
+    methods: ['DELETE']
     action: deleteComment
     parameters: [ ]
     csrf_enabled: false
 
 comment_update:
-    route: /comment/update/:comment_id
+    route: /comments/:comment_module/:comment_applies_type/:comment_applies_id/:comment_id
     module: main
     action: updateComment
     parameters: [ ]
     csrf_enabled: false
 
 comment_add:
-    route: /comment/add/for/module/:comment_module/item/type/:comment_applies_type/id/:comment_applies_id
+    route: /comments/:comment_module/:comment_applies_type/:comment_applies_id
     module: main
     action: addComment
     parameters: [ ]

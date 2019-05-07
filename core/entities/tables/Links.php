@@ -3,27 +3,22 @@
     namespace pachno\core\entities\tables;
 
     use b2db\Insertion;
+    use b2db\Query;
+    use b2db\QueryColumnSort;
     use b2db\Update;
+    use pachno\core\entities\Link;
     use pachno\core\framework,
         b2db\Criteria;
 
     /**
      * Links table
-     *
-     * @author Daniel Andre Eikeland <zegenie@zegeniestudios.net>
-     * @version 3.1
-     * @license http://opensource.org/licenses/MPL-2.0 Mozilla Public License 2.0 (MPL 2.0)
-     * @package pachno
-     * @subpackage tables
-     */
-
-    /**
-     * Links table
+     * @method Link[] select(Query $query)
      *
      * @package pachno
      * @subpackage tables
      *
      * @Table(name="links")
+     * @Entity(class="\pachno\core\entities\Link")
      */
     class Links extends ScopedTable
     {
@@ -39,63 +34,63 @@
         const TARGET_ID = 'links.target_id';
         const SCOPE = 'links.scope';
 
-        protected function initialize()
-        {
-            parent::setup(self::B2DBNAME, self::ID);
-            parent::addVarchar(self::URL, 300);
-            parent::addInteger(self::LINK_ORDER, 3);
-            parent::addVarchar(self::TARGET_TYPE, 30);
-            parent::addInteger(self::TARGET_ID, 10);
-            parent::addVarchar(self::DESCRIPTION, 100, '');
-            parent::addForeignKeyColumn(self::UID, Users::getTable(), Users::ID);
-        }
-        
-        public function addLink($target_type, $target_id = 0, $url = null, $description = null, $link_order = null, $scope = null)
+        public function getNextOrder($target_type, $target_id, $scope = null)
         {
             $scope = ($scope === null) ? framework\Context::getScope()->getID() : $scope;
-            if ($link_order === null)
-            {
-                $query = $this->getQuery();
-                $query->addSelectionColumn(self::LINK_ORDER, 'max_order', \b2db\Query::DB_MAX, '', '+1');
-                $query->where(self::TARGET_TYPE, $target_type);
-                $query->where(self::TARGET_ID, $target_id);
-                $query->where(self::SCOPE, $scope);
-    
-                $row = $this->rawSelectOne($query);
-                $link_order = ($row->get('max_order')) ? $row->get('max_order') : 1;
-            }
+            $query = $this->getQuery();
+            $query->addSelectionColumn(self::LINK_ORDER, 'max_order', \b2db\Query::DB_MAX, '', '+1');
+            $query->where(self::TARGET_TYPE, $target_type);
+            $query->where(self::TARGET_ID, $target_id);
+            $query->where(self::SCOPE, $scope);
 
-            $insertion = new Insertion();
-            $insertion->add(self::TARGET_TYPE, $target_type);
-            $insertion->add(self::TARGET_ID, $target_id);
-            $insertion->add(self::URL, $url);
-            $insertion->add(self::DESCRIPTION, $description);
-            $insertion->add(self::LINK_ORDER, $link_order);
-            $insertion->add(self::UID, (framework\Context::getUser() instanceof \pachno\core\entities\User) ? framework\Context::getUser()->getID() : 0);
-            $insertion->add(self::SCOPE, $scope);
-            $res = $this->rawInsert($insertion);
+            $row = $this->rawSelectOne($query);
+            $link_order = ($row->get('max_order')) ? $row->get('max_order') : 1;
+
+            return $link_order;
+        }
+
+        /**
+         * @param $target_type
+         * @param int $target_id
+         * @param null $url
+         * @param null $description
+         * @param null $link_order
+         * @param null $scope
+         *
+         * @return Link
+         */
+        public function addLink($target_type, $target_id = 0, $url = null, $description = null, $link_order = null, $scope = null)
+        {
+            $link = new Link();
+            $link->setTargetType($target_type);
+            $link->setTargetId($target_id);
+            $link->setUrl($url);
+            $link->setDescription($description);
+            $link->setLinkOrder($link_order);
+            if ($scope !== null) {
+                $link->setScope($scope);
+            }
+            $link->save();
 
             framework\Context::getCache()->clearCacheKeys(array(framework\Cache::KEY_MAIN_MENU_LINKS));
 
-            return $res->getInsertID();
+            return $link;
         }
-        
+
+        /**
+         * @param $target_type
+         * @param int $target_id
+         * @return Link[]
+         */
         public function getLinks($target_type, $target_id = 0)
         {
-            $links = array();
             $query = $this->getQuery();
             $query->where(self::TARGET_TYPE, $target_type);
             $query->where(self::TARGET_ID, $target_id);
             $query->where(self::SCOPE, framework\Context::getScope()->getID());
-            $query->addOrderBy(self::LINK_ORDER, \b2db\QueryColumnSort::SORT_ASC);
-            if ($res = $this->rawSelect($query, 'none'))
-            {
-                while ($row = $res->getNextRow())
-                {
-                    $links[] = array('id' => $row->get(self::ID), 'target_type' => $row->get(self::TARGET_TYPE), 'target_id' => $row->get(self::TARGET_ID), 'url' => $row->get(self::URL), 'description' => $row->get(self::DESCRIPTION));
-                }
-            }
-            return $links;
+            $query->addOrderBy(self::LINK_ORDER, QueryColumnSort::SORT_ASC);
+
+            return $this->select($query);
         }
         
         public function addLinkToIssue($issue_id, $url, $description = null)
@@ -158,7 +153,6 @@
             $this->addMainMenuLink('https://pachno.com', 'Pachno homepage', 1, $scope_id);
             $this->addMainMenuLink(null, null, 2, $scope_id);
             $this->addMainMenuLink('https://projects.pachno.com', 'Online issue tracker', 4, $scope_id);
-            $this->addMainMenuLink('', "''This is the issue tracker for Pachno''", 5, $scope_id);
         }
 
         protected function setupIndexes()

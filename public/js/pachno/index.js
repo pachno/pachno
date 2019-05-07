@@ -1772,7 +1772,7 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
                     callback: function () {
                         Pachno.Main.Helpers.Dialog.dismiss();
                         if ($('comments_box').childElements().size() == 0) {
-                            $('comments_none').show();
+                            $('comments-list-none').show();
                             $$('.initial-placeholder').each(Element.hide);
                         }
                         $(commentcount_span).update($('comments_box').childElements().size());
@@ -1804,31 +1804,35 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
         };
 
         Pachno.Main.Comment.add = function (url, commentcount_span) {
-            Pachno.Main.Helpers.ajax(url, {
-                form: 'comment_form',
-                loading: {
-                    indicator: 'comment_add_indicator',
-                    disable: 'comment_add_button'
-                },
-                success: {
-                    hide: ['comment_add_indicator', 'comment_add'],
-                    clear: 'comment_bodybox',
-                    callback: function (json) {
-                        $('comments_box').insert({bottom: json.comment_data});
-                        $$('.initial-placeholder').each(Element.show);
-                        if ($('comment_form').serialize(true).comment_save_changes == '1') {
-                            window.location = json.continue_url;
-                        } else {
+            var $form = jQuery('#add-comment-form'),
+                data = new FormData($form[0]),
+                $count_span = jQuery('#' + commentcount_span),
+                $comments_container = jQuery('#comments_box');
+
+            $form.find('.error-container').removeClass('invalid');
+            $form.find('.error-container > .error').html('');
+            $form.addClass('submitting');
+            $form.find('.button.primary').attr('disabled', true);
+
+            fetch($form.attr('action'), {
+                method: 'POST',
+                body: data
+            })
+                .then(function (response) {
+                    response.json().then(function (json) {
+                        if (response.ok) {
+                            $comments_container.append(json.comment_data);
+                            jQuery('#comments-list-none').remove();
                             window.location.hash = "#comment_" + json.comment_id;
-                            if ($('comments_box').childElements().size() != 0) {
-                                $('comments_none').hide();
-                            }
+                            $count_span.html(json.commentcount);
+                        } else {
+                            $form.find('.error-container > .error').html(json.error);
+                            $form.find('.error-container').addClass('invalid');
+                            $form.removeClass('submitting');
+                            $form.find('.button.primary').attr('disabled', false);
                         }
-                        $('comment_visibility').setValue(1);
-                        $(commentcount_span).update(json.commentcount);
-                    }
-                }
-            });
+                    });
+                })
         };
 
         Pachno.Main.Comment.reply = function (url, reply_comment_id) {
@@ -3715,10 +3719,13 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
                         var $label = jQuery($input.next('label')),
                             $value = jQuery($label.find('.value')[0]);
 
-                        values.push($value.text());
+                        if ($value.text() != '') {
+                            values.push($value.text());
+                        }
                     }
                 });
 
+                console.log('VALUES', values);
                 if (values.length > 0) {
                     $dropdown.removeClass('no-value');
                     $label.html(values.join(', '));

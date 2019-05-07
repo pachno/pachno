@@ -726,4 +726,9 @@
             $this->show_project_config_link = $this->getUser()->canAccessConfigurationPage(framework\Settings::CONFIGURATION_SECTION_PROJECTS) && framework\Context::getScope()->hasProjectsAvailable();
         }
 
+        public function componentMenuLink()
+        {
+            $this->link_id = $this->link->getId();
+        }
+
     }
