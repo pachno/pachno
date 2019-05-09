@@ -4,7 +4,7 @@
 /** @var \pachno\core\entities\Issue $issue */
 /** @var \pachno\core\framework\Response $pachno_response */
 
-?>
+use pachno\core\framework\Context; ?>
 <div class="header-container">
     <div class="toggle-favourite">
         <?php if ($pachno_user->isGuest()): ?>
@@ -72,6 +72,16 @@
             <span class="tooltip from-above"><?= __('This issue is marked as done / closed'); ?></span>
         </div>
     <?php endif; ?>
+    <div class="created-times">
+        <div id="posted_at_field">
+            <label><?= __('Posted at'); ?></label>
+            <time datetime="<?= Context::getI18n()->formatTime($issue->getPosted(), 24); ?>" title="<?= Context::getI18n()->formatTime($issue->getPosted(), 21); ?>" class="value-container"><?= Context::getI18n()->formatTime($issue->getPosted(), 20); ?></time>
+        </div>
+        <div id="updated_at_field">
+            <label><?= __('Last updated'); ?></label>
+            <time datetime="<?= Context::getI18n()->formatTime($issue->getLastUpdatedTime(), 24); ?>" title="<?= Context::getI18n()->formatTime($issue->getLastUpdatedTime(), 21); ?>" class="value-container"><?= Context::getI18n()->formatTime($issue->getLastUpdatedTime(), 20); ?></time>
+        </div>
+    </div>
     <div id="status-field" class="dropper-container status-field">
         <div class="status-badge dropper" style="
             background-color: <?php echo ($issue->getStatus() instanceof \pachno\core\entities\Datatype) ? $issue->getStatus()->getColor() : '#FFF'; ?>;

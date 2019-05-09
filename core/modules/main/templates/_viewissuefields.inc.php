@@ -261,22 +261,6 @@
         <span class="name"><?= __('Times and dates'); ?></span>
     </div>
     <ul class="issue_details fields-list" id="issue_details_fieldslist_time">
-        <li id="posted_at_field">
-            <div class="label" id="posted_at_header">
-                <?= __('Posted at'); ?>
-            </div>
-            <div class="value">
-                <time datetime="<?= Context::getI18n()->formatTime($issue->getPosted(), 24); ?>" title="<?= Context::getI18n()->formatTime($issue->getPosted(), 21); ?>" class="value-container"><?= Context::getI18n()->formatTime($issue->getPosted(), 20); ?></time>
-            </div>
-        </li>
-        <li id="updated_at_field">
-            <div class="label" id="updated_at_header">
-                <?= __('Last updated'); ?>
-            </div>
-            <div class="value">
-                <time datetime="<?= Context::getI18n()->formatTime($issue->getLastUpdatedTime(), 24); ?>" title="<?= Context::getI18n()->formatTime($issue->getLastUpdatedTime(), 21); ?>" class="value-container"><?= Context::getI18n()->formatTime($issue->getLastUpdatedTime(), 20); ?></time>
-            </div>
-        </li>
         <li id="estimated_time_field"<?php if (!$issue->isEstimatedTimeVisible()): ?> style="display: none;"<?php endif; ?>>
             <div class="label" id="estimated_time_header"><?= __('Estimated time'); ?></div>
             <div class="value <?php if ($issue->isUpdateable() && $issue->canEditEstimatedTime()): ?>dropper-container<?php endif; ?>" id="estimated_time_content">

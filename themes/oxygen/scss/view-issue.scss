@@ -90,6 +90,24 @@
       }
     }
 
+    .created-times {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      flex: 0 0 auto;
+      margin-right: 1rem;
+      font-size: .8rem;
+
+      color: rgba(0, 0, 0, .4);
+
+      label {
+        text-transform: none;
+        color: rgba(0, 0, 0, .4);
+        font-weight: 400;
+        cursor: default;
+      }
+    }
+
     .is-closed {
       color: rgb(150, 150, 150);
       margin: 0 1em 0 0;
