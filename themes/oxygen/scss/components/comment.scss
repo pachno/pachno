@@ -48,26 +48,26 @@
       }
     }
 
+    &::before {
+      content: '';
+      display: block;
+      height: 25px;
+      width: 1px;
+      border-left: 3px solid rgba(225, 225, 225, .5);
+      position: absolute;
+      top: -26px;
+      left: 40px;
+    }
+
+    &:first-child::before {
+      top: -56px;
+      height: 55px;
+    }
+
     &:not(.system-comment) {
       background: #FFF;
       box-shadow: 0 1px 3px 0 rgba(27, 27, 36, .2);
       border-radius: 4px;
-
-      &::before {
-        content: '';
-        display: block;
-        height: 25px;
-        width: 1px;
-        border-left: 3px solid rgba(225, 225, 225, .5);
-        position: absolute;
-        top: -26px;
-        left: 40px;
-      }
-
-      &:first-child::before {
-        top: -56px;
-        height: 55px;
-      }
 
       & + .comment-container.private-comment:not(.reply)::before {
         border-left-color: rgb(232, 246, 232);

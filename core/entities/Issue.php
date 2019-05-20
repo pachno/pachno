@@ -4534,7 +4534,7 @@
         {
             if ($this->_num_user_comments === null)
             {
-                $this->_num_user_comments = Comment::countComments($this->getID(), Comment::TYPE_ISSUE, false);
+                $this->_num_user_comments = Comment::countComments($this->getID(), Comment::TYPE_ISSUE);
             }
 
             return (int) $this->_num_user_comments;

@@ -316,30 +316,30 @@
                                 {
                                     case CustomDatatype::INPUT_TEXTAREA_SMALL:
                                         ?>
-                                        <span id="<?= $field; ?>_name"<?php if (!$info['name_visible']): ?> style="display: none;"<?php endif; ?>>
+                                        <span id="<?= $field; ?>_name"<?php if (!$info['value']): ?> style="display: none;"<?php endif; ?>>
                                             <?= TextParser::parseText($info['name'], false, null, array('headers' => false)); ?>
                                         </span>
-                                        <span class="no-value" id="no_<?= $field; ?>"<?php if (!$info['noname_visible']): ?> style="display: none;"<?php endif; ?>>
+                                        <span class="no-value" id="no_<?= $field; ?>"<?php if ($info['value']): ?> style="display: none;"<?php endif; ?>>
                                             <?= __('Not determined'); ?>
                                         </span>
                                         <?php
                                         break;
                                     case CustomDatatype::USER_CHOICE:
                                         ?>
-                                        <span id="<?= $field; ?>_name"<?php if (!$info['name_visible']): ?> style="display: none;"<?php endif; ?>>
+                                        <span id="<?= $field; ?>_name"<?php if (!$info['value']): ?> style="display: none;"<?php endif; ?>>
                                             <?= include_component('main/userdropdown', array('user' => $info['name'])); ?>
                                         </span>
-                                        <span class="no-value" id="no_<?= $field; ?>"<?php if (!$info['noname_visible']): ?> style="display: none;"<?php endif; ?>>
+                                        <span class="no-value" id="no_<?= $field; ?>"<?php if ($info['value']): ?> style="display: none;"<?php endif; ?>>
                                             <?= __('Not determined'); ?>
                                         </span>
                                         <?php
                                         break;
                                     case CustomDatatype::TEAM_CHOICE:
                                         ?>
-                                        <span id="<?= $field; ?>_name"<?php if (!$info['name_visible']): ?> style="display: none;"<?php endif; ?>>
+                                        <span id="<?= $field; ?>_name"<?php if (!$info['value']): ?> style="display: none;"<?php endif; ?>>
                                             <?= include_component('main/teamdropdown', array('team' => $info['identifiable'])); ?>
                                         </span>
-                                        <span class="no-value" id="no_<?= $field; ?>"<?php if (!$info['noname_visible']): ?> style="display: none;"<?php endif; ?>>
+                                        <span class="no-value" id="no_<?= $field; ?>"<?php if ($info['value']): ?> style="display: none;"<?php endif; ?>>
                                             <?= __('Not determined'); ?>
                                         </span>
                                         <?php
@@ -350,10 +350,10 @@
                                     case CustomDatatype::MILESTONE_CHOICE:
                                     case CustomDatatype::CLIENT_CHOICE:
                                          ?>
-                                        <span id="<?= $field; ?>_name"<?php if (!$info['name_visible']): ?> style="display: none;"<?php endif; ?>>
+                                        <span id="<?= $field; ?>_name"<?php if (!$info['value']): ?> style="display: none;"<?php endif; ?>>
                                             <?= (isset($info['name'])) ? $info['name'] : __('Unknown'); ?>
                                         </span>
-                                        <span class="no-value" id="no_<?= $field; ?>"<?php if (!$info['noname_visible']): ?> style="display: none;"<?php endif; ?>>
+                                        <span class="no-value" id="no_<?= $field; ?>"<?php if ($info['value']): ?> style="display: none;"<?php endif; ?>>
                                             <?= __('Not determined'); ?>
                                         </span><?php
                                         break;
@@ -368,7 +368,7 @@
                                             $color = $status->getColor();
                                         }
                                         catch (\Exception $e) { }
-                                        ?><span id="<?= $field; ?>_name"<?php if (!$info['name_visible']): ?> style="display: none;"<?php endif; ?>><div class="status-badge" style="background-color: <?= $color; ?>;"><span><?= __($value); ?></span></div></span><span class="no-value" id="no_<?= $field; ?>"<?php if (!$info['noname_visible']): ?> style="display: none;"<?php endif; ?>><?= __('Not determined'); ?></span><?php
+                                        ?><span id="<?= $field; ?>_name"<?php if (!$info['value']): ?> style="display: none;"<?php endif; ?>><div class="status-badge" style="background-color: <?= $color; ?>;"><span><?= __($value); ?></span></div></span><span class="no-value" id="no_<?= $field; ?>"<?php if ($info['value']): ?> style="display: none;"<?php endif; ?>><?= __('Not determined'); ?></span><?php
                                         break;
                                     case CustomDatatype::DATE_PICKER:
                                     case CustomDatatype::DATETIME_PICKER:
@@ -378,10 +378,10 @@
                                         } else {
                                             $value = $info['name'];
                                         }
-                                        ?><span id="<?= $field; ?>_name"<?php if (!$info['name_visible']): ?> style="display: none;"<?php endif; ?>><?= $value; ?></span><span id="<?= $field; ?>_new_name" style="display: none;"><?= (int) $value; ?></span><span class="no-value" id="no_<?= $field; ?>"<?php if (!$info['noname_visible']): ?> style="display: none;"<?php endif; ?>><?= __('Not set'); ?></span><?php
+                                        ?><span id="<?= $field; ?>_name"<?php if (!$info['value']): ?> style="display: none;"<?php endif; ?>><?= $value; ?></span><span id="<?= $field; ?>_new_name" style="display: none;"><?= (int) $value; ?></span><span class="no-value" id="no_<?= $field; ?>"<?php if ($info['value']): ?> style="display: none;"<?php endif; ?>><?= __('Not set'); ?></span><?php
                                         break;
                                     default:
-                                        ?><span id="<?= $field; ?>_name"<?php if (!$info['name_visible']): ?> style="display: none;"<?php endif; ?>><?= (filter_var($info['name'], FILTER_VALIDATE_URL) !== false) ? link_tag($info['name'], $info['name']) : $info['name']; ?></span><span class="no-value" id="no_<?= $field; ?>"<?php if (!$info['noname_visible']): ?> style="display: none;"<?php endif; ?>><?= __('Not determined'); ?></span><?php
+                                        ?><span id="<?= $field; ?>_name"<?php if (!$info['value']): ?> style="display: none;"<?php endif; ?>><?= (filter_var($info['name'], FILTER_VALIDATE_URL) !== false) ? link_tag($info['name'], $info['name']) : $info['name']; ?></span><span class="no-value" id="no_<?= $field; ?>"<?php if ($info['value']): ?> style="display: none;"<?php endif; ?>><?= __('Not determined'); ?></span><?php
                                         break;
                                 }
                             ?>

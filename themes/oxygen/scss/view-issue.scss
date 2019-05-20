@@ -176,6 +176,41 @@
     }
   }
 
+  .issue-messages-container {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: center;
+    z-index: 100;
+
+    .message {
+      flex: 0 0 auto;
+      display: flex;
+      margin: .35rem 1.35rem 0 1.35rem;
+      padding: .45rem .75rem;
+      align-items: center;
+      justify-content: stretch;
+      font-size: .95rem;
+      background-color: rgba(200, 200, 200, .2);
+      border-radius: 4px 4px 0 0;
+
+      .content {
+        flex: 1 1 auto;
+      }
+
+      &.error {
+        flex-direction: column;
+        align-items: stretch;
+        justify-content: center;
+        color: #D62246;
+
+        .header {
+          font-weight: 600;
+        }
+      }
+    }
+  }
+
   .issue-card {
     display: flex;
     flex: 0 0 auto;
@@ -189,6 +224,7 @@
     box-shadow: 0 1px 3px 0 rgba(27, 27, 36, .2);
     border-radius: 4px;
     padding: 10px;
+    z-index: 200;
 
     .fields-list-container {
       border: none;
@@ -314,6 +350,7 @@
             width: auto;
             padding: .5em 1.6em .5em 1em;
             border-radius: 1.5em;
+            border: 1px solid rgba(0, 0, 0, .15);
           }
         }
 
@@ -496,6 +533,7 @@
         > .label {
           font-weight: 600;
           flex: 0 1 140px;
+          padding: 7px 12px;
         }
 
         > .value {

@@ -9121,7 +9121,7 @@ button, button:hover,
   text-transform: none;
   font-size: .9rem;
   padding: .42rem 1rem;
-  transition: background-color .2s ease-in-out, color .2s ease-in-out, box-shadow .2s ease-in-out;
+  transition: background-color .2s ease-in-out, color .2s ease-in-out, box-shadow .2s ease-in-out, opacity .2s ease-in-out;
   display: flex;
   flex-direction: row;
   align-items: center; }
@@ -9630,8 +9630,8 @@ input.icon.secondary:disabled {
     .list-mode .list-item:hover.active .dropper-container {
       border-radius: 4px;
       background-color: rgba(100, 100, 100, 0.1); }
-    .list-mode .list-item:not(.disabled):not(.not-selectable):not(.separator):not(.header):hover,
-    .list-mode .list-item:hover:not(.disabled):not(.not-selectable):not(.separator):not(.header):hover {
+    .list-mode .list-item:not(.disabled):not(.not-selectable):not(.separator):not(.header):not(.filter-container):hover,
+    .list-mode .list-item:hover:not(.disabled):not(.not-selectable):not(.separator):not(.header):not(.filter-container):hover {
       background-color: rgba(100, 100, 100, 0.1); }
     .list-mode .list-item.selected,
     .list-mode .list-item:hover.selected {
@@ -10518,22 +10518,22 @@ nav.sidebar {
         position: absolute;
         top: -1px;
         left: 40px; }
+    .comment-container:not(.reply)::before {
+      content: '';
+      display: block;
+      height: 25px;
+      width: 1px;
+      border-left: 3px solid rgba(225, 225, 225, 0.5);
+      position: absolute;
+      top: -26px;
+      left: 40px; }
+    .comment-container:not(.reply):first-child::before {
+      top: -56px;
+      height: 55px; }
     .comment-container:not(.reply):not(.system-comment) {
       background: #FFF;
       box-shadow: 0 1px 3px 0 rgba(27, 27, 36, 0.2);
       border-radius: 4px; }
-      .comment-container:not(.reply):not(.system-comment)::before {
-        content: '';
-        display: block;
-        height: 25px;
-        width: 1px;
-        border-left: 3px solid rgba(225, 225, 225, 0.5);
-        position: absolute;
-        top: -26px;
-        left: 40px; }
-      .comment-container:not(.reply):not(.system-comment):first-child::before {
-        top: -56px;
-        height: 55px; }
       .comment-container:not(.reply):not(.system-comment) + .comment-container.private-comment:not(.reply)::before {
         border-left-color: #e8f6e8; }
     .comment-container:not(.reply) .header {
@@ -10877,6 +10877,10 @@ textarea.markItUpEditor:focus {
     height: 250px;
     display: flex;
     align-items: center; }
+  .onboarding.medium .image-container {
+    padding: 35px;
+    width: 150px;
+    height: 150px; }
   .onboarding.unthemed .image-container {
     background-color: transparent; }
   .onboarding .button-container {
@@ -11730,6 +11734,32 @@ textarea.markItUpEditor:focus {
       font-weight: 600;
       color: #969696; }
 
+.viewissue-container .issue-messages-container {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: center;
+  z-index: 100; }
+  .viewissue-container .issue-messages-container .message {
+    flex: 0 0 auto;
+    display: flex;
+    margin: .35rem 1.35rem 0 1.35rem;
+    padding: .45rem .75rem;
+    align-items: center;
+    justify-content: stretch;
+    font-size: .95rem;
+    background-color: rgba(200, 200, 200, 0.2);
+    border-radius: 4px 4px 0 0; }
+    .viewissue-container .issue-messages-container .message .content {
+      flex: 1 1 auto; }
+    .viewissue-container .issue-messages-container .message.error {
+      flex-direction: column;
+      align-items: stretch;
+      justify-content: center;
+      color: #D62246; }
+      .viewissue-container .issue-messages-container .message.error .header {
+        font-weight: 600; }
+
 .viewissue-container .issue-card {
   display: flex;
   flex: 0 0 auto;
@@ -11741,7 +11771,8 @@ textarea.markItUpEditor:focus {
   background: #FFF;
   box-shadow: 0 1px 3px 0 rgba(27, 27, 36, 0.2);
   border-radius: 4px;
-  padding: 10px; }
+  padding: 10px;
+  z-index: 200; }
   .viewissue-container .issue-card .fields-list-container {
     border: none;
     padding: 0;
@@ -11838,7 +11869,8 @@ textarea.markItUpEditor:focus {
           display: inline-block;
           width: auto;
           padding: .5em 1.6em .5em 1em;
-          border-radius: 1.5em; }
+          border-radius: 1.5em;
+          border: 1px solid rgba(0, 0, 0, 0.15); }
       .viewissue-container .issue-card .issue-card-main .card-header .workflow-actions-container {
         flex: 1 1 auto;
         display: flex;
@@ -11961,7 +11993,8 @@ textarea.markItUpEditor:focus {
           color: #141823; }
       .viewissue-container .issue-card .fields-list > li > .label {
         font-weight: 600;
-        flex: 0 1 140px; }
+        flex: 0 1 140px;
+        padding: 7px 12px; }
       .viewissue-container .issue-card .fields-list > li > .value {
         flex: 1 1 auto;
         font-weight: 300; }

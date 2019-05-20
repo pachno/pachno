@@ -99,7 +99,8 @@
                 $query->where(self::TARGET_ID, $target_id);
             }
             $query->where(self::TARGET_TYPE, $target_type);
-            $query->where(self::DELETED, 0);
+            $query->where(self::DELETED, false);
+            $query->where(self::SYSTEM_COMMENT, false);
             $query->addOrderBy(self::COMMENT_NUMBER, $sort_order);
             $res = $this->select($query, false);
 
@@ -114,6 +115,7 @@
                 $query->where(self::TARGET_ID, $target_id);
             }
             $query->where(self::TARGET_TYPE, $target_type);
+            $query->where(self::SYSTEM_COMMENT, false);
             $query->addSelectionColumn(self::ID);
             $query->addOrderBy(self::POSTED, $sort_order);
             $res = $this->rawSelect($query, false);
@@ -129,7 +131,7 @@
             return $ids;
         }
 
-        public function countComments($target_id, $target_type, $include_system_comments = true)
+        public function countComments($target_id, $target_type)
         {
             $query = $this->getQuery();
             if($target_id != 0)
@@ -138,8 +140,7 @@
             }
             $query->where(self::TARGET_TYPE, $target_type);
             $query->where(self::DELETED, 0);
-            if (!$include_system_comments)
-                $query->where(self::SYSTEM_COMMENT, false);
+            $query->where(self::SYSTEM_COMMENT, false);
 
             return $this->count($query);
         }

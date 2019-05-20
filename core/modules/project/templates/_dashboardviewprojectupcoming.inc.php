@@ -14,13 +14,19 @@
 <?php endforeach; ?>
 </div>
 <?php if ($milestone_cc == 0): ?>
-    <div class="no-items">
-        <?= fa_image_tag('calendar-plus'); ?>
-        <span><?php echo __('Upcoming milestones appear here'); ?></span>
-        <?php if ($pachno_user->hasProjectPageAccess('project_roadmap', $project)): ?>
-            <div class="button-group">
-                <?php echo link_tag(make_url('project_roadmap', array('project_key' => $project->getKey())), __('Open project roadmap'), ['class' => 'button']); ?>
-            </div>
-        <?php endif; ?>
+    <div class="onboarding medium">
+        <div class="image-container">
+            <?= image_tag('/unthemed/project-no-milestones.png', [], true); ?>
+        </div>
+        <div class="helper-text">
+            <?= __("There are no milestones scheduled yet"); ?><br>
+            <?= __('A great roadmap starts with a great plany'); ?>
+        </div>
     </div>
 <?php endif; ?>
+<div class="button-container">
+    <a href="<?= make_url('project_roadmap', ['project_key' => $project->getKey()]); ?>" class="button secondary project-quick-edit">
+        <?= fa_image_tag('tasks', ['class' => 'icon']); ?>
+        <span><?= __('Open project roadmap'); ?></span>
+    </a>
+</div>

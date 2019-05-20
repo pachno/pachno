@@ -413,16 +413,10 @@
 
         public function componentCommentitem()
         {
-            if ($this->comment->getTargetType() == 1)
-            {
-                try
-                {
+            if ($this->comment->getTargetType() == Comment::TYPE_ISSUE) {
+                try {
                     $this->issue = entities\Issue::getB2DBTable()->selectById($this->comment->getTargetID());
-                }
-                catch (\Exception $e)
-                {
-
-                }
+                } catch (\Exception $e) { }
             }
         }
 

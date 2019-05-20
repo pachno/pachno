@@ -1,16 +1,19 @@
 <?php
 
-    include_component('publish/wikibreadcrumbs', array('article_name' => $article_name));
-    \pachno\core\framework\Context::loadLibrary('publish/publish');
+    use pachno\core\entities\Comment;
+    use pachno\core\framework\Context;
+
+    include_component('publish/wikibreadcrumbs', ['article_name' => $article_name]);
+    Context::loadLibrary('publish/publish');
     $pachno_response->setTitle($article_name);
 
 ?>
 <?php if ($article instanceof \pachno\core\entities\Article): ?>
     <div class="side_bar <?php if ($article->getArticleType() == \pachno\core\entities\Article::TYPE_MANUAL) echo 'manual'; ?>">
         <?php if ($article->getArticleType() == \pachno\core\entities\Article::TYPE_MANUAL): ?>
-            <?php include_component('manualsidebar', array('article' => $article)); ?>
+            <?php include_component('manualsidebar', ['article' => $article]); ?>
         <?php else: ?>
-            <?php include_component('leftmenu', array('article' => $article)); ?>
+            <?php include_component('leftmenu', ['article' => $article]); ?>
         <?php endif; ?>
     </div>
     <div class="main_area article">
@@ -27,26 +30,26 @@
         <?php endif; ?>
         <?php if (isset($revision) && !$error): ?>
             <div class="lightyellowbox" style="margin: 0 0 5px 5px; font-size: 14px;">
-                <?php echo __('You are now viewing a previous revision of this article - revision %revision_number %date, by %author', array('%revision_number' => '<b>'.$revision.'</b>', '%date' => '<span class="faded_out">[ '.\pachno\core\framework\Context::getI18n()->formatTime($article->getPostedDate(), 20).' ]</span>', '%author' => (($article->getAuthor() instanceof \pachno\core\entities\User) ? $article->getAuthor()->getName() : __('System')))); ?><br>
-                <b><?php echo link_tag(make_url('publish_article', array('article_name' => $article->getName())), __('Show current version')); ?></b>
+                <?php echo __('You are now viewing a previous revision of this article - revision %revision_number %date, by %author', ['%revision_number' => '<b>'.$revision.'</b>', '%date' => '<span class="faded_out">[ '. Context::getI18n()->formatTime($article->getPostedDate(), 20).' ]</span>', '%author' => (($article->getAuthor() instanceof \pachno\core\entities\User) ? $article->getAuthor()->getName() : __('System'))]); ?><br>
+                <b><?php echo link_tag(make_url('publish_article', ['article_name' => $article->getName()]), __('Show current version')); ?></b>
             </div>
         <?php endif; ?>
         <?php if ($article->getID()): ?>
-            <?php include_component('articledisplay', array('article' => $article, 'show_article' => true, 'redirected_from' => $redirected_from)); ?>
+            <?php include_component('articledisplay', ['article' => $article, 'show_article' => true, 'redirected_from' => $redirected_from]); ?>
             <?php $article_name = $article->getName(); ?>
         <?php else: ?>
             <div class="article">
-                <?php include_component('publish/header', array('article' => $article, 'show_actions' => true, 'mode' => 'view')); ?>
-                <?php if (\pachno\core\framework\Context::isProjectContext() && \pachno\core\framework\Context::getCurrentProject()->isArchived()): ?>
-                    <?php include_component('publish/placeholder', array('article_name' => $article_name, 'nocreate' => true)); ?>
+                <?php include_component('publish/header', ['article' => $article, 'show_actions' => true, 'mode' => 'view']); ?>
+                <?php if (Context::isProjectContext() && Context::getCurrentProject()->isArchived()): ?>
+                    <?php include_component('publish/placeholder', ['article_name' => $article_name, 'nocreate' => true]); ?>
                 <?php else: ?>
-                    <?php include_component('publish/placeholder', array('article_name' => $article_name)); ?>
+                    <?php include_component('publish/placeholder', ['article_name' => $article_name]); ?>
                 <?php endif; ?>
             </div>
         <?php endif; ?>
-        <?php if (!$article->getID() && ((\pachno\core\framework\Context::isProjectContext() && !\pachno\core\framework\Context::getCurrentProject()->isArchived()) || (!\pachno\core\framework\Context::isProjectContext() && \pachno\core\framework\Context::getModule('publish')->canUserEditArticle($article_name)))): ?>
+        <?php if (!$article->getID() && ((Context::isProjectContext() && !Context::getCurrentProject()->isArchived()) || (!Context::isProjectContext() && Context::getModule('publish')->canUserEditArticle($article_name)))): ?>
             <div class="publish_article_actions">
-                <form action="<?php echo make_url('publish_article_edit', array('article_name' => $article_name)); ?>" method="get" style="float: left; margin-right: 10px;">
+                <form action="<?php echo make_url('publish_article_edit', ['article_name' => $article_name]); ?>" method="get" style="float: left; margin-right: 10px;">
                     <input class="button button-green" type="submit" value="<?php echo __('Create this article'); ?>">
                 </form>
             </div>
@@ -60,32 +63,32 @@
                 <h4>
                     <span class="header-text"><?php echo __('Article attachments'); ?></span>
                     <?php if (\pachno\core\framework\Settings::isUploadsEnabled() && $article->canEdit()): ?>
-                        <button class="button" onclick="Pachno.Main.showUploader('<?php echo make_url('get_partial_for_backdrop', array('key' => 'uploader', 'mode' => 'article', 'article_name' => $article_name)); ?>');"><?php echo __('Attach a file'); ?></button>
+                        <button class="button" onclick="Pachno.Main.showUploader('<?php echo make_url('get_partial_for_backdrop', ['key' => 'uploader', 'mode' => 'article', 'article_name' => $article_name]); ?>');"><?php echo __('Attach a file'); ?></button>
                     <?php else: ?>
                         <button class="button disabled" onclick="Pachno.Main.Helpers.Message.error('<?php echo __('File uploads are not enabled'); ?>');"><?php echo __('Attach a file'); ?></button>
                     <?php endif; ?>
                 </h4>
-                <?php include_component('publish/attachments', array('article' => $article, 'attachments' => $attachments)); ?>
+                <?php include_component('publish/attachments', ['article' => $article, 'attachments' => $attachments]); ?>
             </div>
             <div id="article_comments">
                 <h4>
                     <span class="header-text">
-                        <?php echo __('Article comments (%count)', array('%count' => \pachno\core\entities\Comment::countComments($article->getID(), \pachno\core\entities\Comment::TYPE_ARTICLE))); ?>
+                        <?php echo __('Article comments (%count)', ['%count' => Comment::countComments($article->getID(), Comment::TYPE_ARTICLE)]); ?>
                     </span>
                     <div class="action-buttons">
                         <div class="dropper_container">
                             <?php echo fa_image_tag('spinner', ['class' => 'fa-spin', 'style' => 'display: none;', 'id' => 'comments_loading_indicator']); ?>
                             <span class="dropper"><?= fa_image_tag('cog') . __('Options'); ?></span>
                             <ul class="more_actions_dropdown dropdown_box popup_box leftie" id="comment_dropdown_options">
-                                <li><a href="javascript:void(0);" onclick="Pachno.Main.Comment.toggleOrder('<?= \pachno\core\entities\Comment::TYPE_ARTICLE; ?>', '<?= $article->getID(); ?>');"><?php echo __('Sort comments in opposite direction'); ?></a></li>
+                                <li><a href="javascript:void(0);" onclick="Pachno.Main.Comment.toggleOrder('<?= Comment::TYPE_ARTICLE; ?>', '<?= $article->getID(); ?>');"><?php echo __('Sort comments in opposite direction'); ?></a></li>
                             </ul>
                         </div>
                     </div>
-                    <?php if ($pachno_user->canPostComments() && ((\pachno\core\framework\Context::isProjectContext() && !\pachno\core\framework\Context::getCurrentProject()->isArchived()) || !\pachno\core\framework\Context::isProjectContext())): ?>
+                    <?php if ($pachno_user->canPostComments() && ((Context::isProjectContext() && !Context::getCurrentProject()->isArchived()) || !Context::isProjectContext())): ?>
                         <button id="comment_add_button" class="button" onclick="Pachno.Main.Comment.showPost();"><?php echo __('Post comment'); ?></button>
                     <?php endif; ?>
                 </h4>
-                <?php include_component('main/comments', array('target_id' => $article->getID(), 'mentionable_target_type' => 'article', 'target_type' => \pachno\core\entities\Comment::TYPE_ARTICLE, 'show_button' => false, 'comment_count_div' => 'article_comment_count', 'forward_url' => make_url('publish_article', array('article_name' => $article->getName())))); ?>
+                <?php include_component('main/comments', ['target_id' => $article->getID(), 'mentionable_target_type' => 'article', 'target_type' => Comment::TYPE_ARTICLE, 'show_button' => false, 'comment_count_div' => 'article_comment_count', 'forward_url' => make_url('publish_article', ['article_name' => $article->getName()])]); ?>
             </div>
         <?php endif; ?>
     </div>

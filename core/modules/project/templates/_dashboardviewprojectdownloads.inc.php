@@ -14,18 +14,24 @@
             echo '<ul class="simple-list">'.get_component_html('project/release', array('build' => $releases[0])).'</ul>';
         }
     }
-    
-    if ($found == false)
-    {
-        ?><div class="content no-items">
-            <?= fa_image_tag('download'); ?>
-            <span><?php echo __('There are no downloadable releases at the moment'); ?></span>
-            <?php if ($pachno_user->canEditProjectDetails($project) && $project->isBuildsEnabled()): ?>
-                <div class="button-group">
-                    <?php echo link_tag(make_url('project_release_center', array('project_key' => $project->getKey())), __('Manage project releases'), ['class' => 'button']); ?>
-                </div>
-            <?php endif; ?>
-        </div><?php
-    }
-    
+
 ?>
+<?php if (!$found): ?>
+    <div class="onboarding medium">
+        <div class="image-container">
+            <?= image_tag('/unthemed/project-no-releases.png', [], true); ?>
+        </div>
+        <div class="helper-text">
+            <?= __("There are no downloadable releases"); ?><br>
+            <?= __('But check back later.'); ?>
+        </div>
+    </div>
+    <?php if ($pachno_user->canEditProjectDetails($project) && $project->isBuildsEnabled()): ?>
+        <div class="button-container">
+            <a href="<?= make_url('project_release_center', ['project_key' => $project->getKey()]); ?>" class="button secondary project-quick-edit">
+                <?= fa_image_tag('cloud-download-alt', ['class' => 'icon']); ?>
+                <span><?= __('Manage project releases'); ?></span>
+            </a>
+        </div>
+    <?php endif; ?>
+<?php endif; ?>

@@ -15,11 +15,21 @@
         </div>
     <?php endforeach; ?>
 <?php else: ?>
-    <p class="no-items">
-        <?= fa_image_tag('users'); ?>
-        <span><?php echo __('No users or teams assigned to this project'); ?></span>
-        <?php if ($pachno_user->canEditProjectDetails($project)): ?>
-            <a href="<?= make_url('project_settings', ['project_key' => $project->getKey()]); ?>" class="button project-quick-edit"><?= __('Set up project team'); ?></a>
-        <?php endif; ?>
-    </p>
+    <div class="onboarding medium">
+        <div class="image-container">
+            <?= image_tag('/unthemed/project-no-users-or-teams.png', [], true); ?>
+        </div>
+        <div class="helper-text">
+            <?= __("This project has no users or teams"); ?><br>
+            <?= __('Like a boat with no captain and no crew'); ?>
+        </div>
+    </div>
+<?php endif; ?>
+<?php if ($pachno_user->canEditProjectDetails($project)): ?>
+    <div class="button-container">
+        <a href="<?= make_url('project_settings', ['project_key' => $project->getKey()]); ?>" class="button secondary project-quick-edit">
+            <?= fa_image_tag('users', ['class' => 'icon']); ?>
+            <span><?= __('Set up project team'); ?></span>
+        </a>
+    </div>
 <?php endif; ?>

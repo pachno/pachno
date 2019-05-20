@@ -96,7 +96,7 @@
       }
     }
 
-    &:not(.disabled):not(.not-selectable):not(.separator):not(.header):hover {
+    &:not(.disabled):not(.not-selectable):not(.separator):not(.header):not(.filter-container):hover {
       background-color: rgba(100, 100, 100, .1);
     }
     &.selected {

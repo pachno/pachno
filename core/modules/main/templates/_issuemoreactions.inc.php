@@ -106,13 +106,13 @@
                                 <?php echo javascript_link_tag(fa_image_tag('list-alt', ['class' => 'icon']).'<span class="name">'.__('Add a new task').'</span>', array('class' => 'list-item', 'onclick' => "Pachno.Main.Helpers.Backdrop.show('".make_url('get_partial_for_backdrop', array('key' => 'reportissue', 'project_id' => $issue->getProject()->getId(), 'parent_issue_id' => $issue->getID(), 'issuetype_id' => $board->getTaskIssuetypeID(), 'lock_issuetype' => 1))."');", 'title' => __('Add a new task'))); ?>
                             <?php endif; ?>
                         <?php else: ?>
-                            <?php echo javascript_link_tag(fa_image_tag('list-alt', ['class' => 'icon']).'<span class="name">'.__('Create a new related issue').'</span>', array('class' => 'list-item', 'onclick' => "Pachno.Main.Profile.clearPopupsAndButtons();Pachno.Main.Helpers.Backdrop.show('".make_url('get_partial_for_backdrop', array('key' => 'reportissue', 'project_id' => $issue->getProject()->getId(), 'parent_issue_id' => $issue->getID()))."');", 'title' => __('Create a new child issue'))); ?>
+                            <?php echo javascript_link_tag(fa_image_tag('plus', ['class' => 'icon']).'<span class="name">'.__('Create a related issue / subtask').'</span>', array('class' => 'list-item', 'onclick' => "Pachno.Main.Profile.clearPopupsAndButtons();Pachno.Main.Helpers.Backdrop.show('".make_url('get_partial_for_backdrop', array('key' => 'reportissue', 'project_id' => $issue->getProject()->getId(), 'parent_issue_id' => $issue->getID()))."');", 'title' => __('Create a new child issue'))); ?>
                         <?php endif; ?>
                     <?php endif; ?>
                     <?php if ($issue->canAddRelatedIssues()): ?>
                         <a href="javascript:void(0)" class="list-item" id="relate_to_existing_issue_button" onclick="Pachno.Main.Profile.clearPopupsAndButtons();Pachno.Main.Helpers.Backdrop.show('<?php echo make_url('get_partial_for_backdrop', array('key' => 'relate_issue', 'issue_id' => $issue->getID())); ?>');">
                             <?php echo fa_image_tag('share-alt', ['class' => 'icon']); ?>
-                            <span class="name"><?= __('Add a relation for this issue'); ?></span>
+                            <span class="name"><?= __('Relate to an existing issue'); ?></span>
                         </a>
                     <?php endif; ?>
                 <?php else: ?>
@@ -125,8 +125,8 @@
                         <div class="list-item disabled"><a href="javascript:void(0);"><?php echo fa_image_tag('sign-in-alt').__("Relate to an existing issue"); ?></a><div class="tooltip rightie"><?php echo __('This action is not available at this stage in the workflow'); ?></div></div>
                     <?php endif; ?>
                 <?php endif; ?>
+                <div class="list-item separator"></div>
                 <?php if (!isset($times) || $times): ?>
-                    <div class="list-item separator"></div>
                     <?php if ($issue->canEditEstimatedTime()): ?>
                         <?php if ($issue->isUpdateable()): ?>
                             <a href="javascript:void(0);" class="list-item" onclick="Pachno.Main.Profile.clearPopupsAndButtons();$('estimated_time_<?php echo $issue->getID(); ?>_change').toggle('block');" title="<?php echo ($issue->hasEstimatedTime()) ? __('Change estimate') : __('Estimate this issue'); ?>"><?php echo fa_image_tag('clock', ['class' => 'icon']); ?><span class="name"><?= (($issue->hasEstimatedTime()) ? __('Change estimate') : __('Estimate this issue')); ?></span></a>

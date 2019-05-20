@@ -200,18 +200,15 @@
             return $comments;
         }
 
-        public static function countComments($target_id, $target_type, $include_system_comments = true)
+        public static function countComments($target_id, $target_type)
         {
             if (!array_key_exists($target_type, self::$_comment_count))
                 self::$_comment_count[$target_type] = array();
 
             if (!array_key_exists($target_id, self::$_comment_count[$target_type]))
-                self::$_comment_count[$target_type][$target_id] = array();
+                self::$_comment_count[$target_type][$target_id] = (int) tables\Comments::getTable()->countComments($target_id, $target_type);
 
-            if (!array_key_exists((int) $include_system_comments, self::$_comment_count[$target_type][$target_id]))
-                self::$_comment_count[$target_type][$target_id][(int) $include_system_comments] = (int) tables\Comments::getTable()->countComments($target_id, $target_type, $include_system_comments);
-
-            return (int) self::$_comment_count[$target_type][$target_id][(int) $include_system_comments];
+            return (int) self::$_comment_count[$target_type][$target_id];
         }
 
         public function setPublic($var)
