@@ -238,6 +238,11 @@
     }
 
   }
+
+  .fancycheckbox:checked + .list-item:not(.disabled):not(.not-selectable):not(.separator):not(.header):not(.filter-container):hover {
+    background-color: #0C8990;
+    color: #FFF;
+  }
 }
 .submenu {
   &.columns {

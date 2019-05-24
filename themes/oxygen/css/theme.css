@@ -8370,10 +8370,12 @@ input.icon.secondary:disabled {
     color: #DDD; }
   .fancycheckbox:checked + label {
     color: #88AB75; }
-  .fancycheckbox:checked + .list-item:not(.toggler) {
+  .fancycheckbox:checked + .list-item:not(.toggler),
+  .fancycheckbox:checked + .list-item:not(.toggler):hover {
     background-color: #0C8990;
     color: #FFF; }
-    .fancycheckbox:checked + .list-item:not(.toggler) .icon {
+    .fancycheckbox:checked + .list-item:not(.toggler) .icon,
+    .fancycheckbox:checked + .list-item:not(.toggler):hover .icon {
       color: #FFF; }
   .fancycheckbox:checked + .list-item.toggler {
     color: #141823; }
@@ -8756,6 +8758,9 @@ input.icon.secondary:disabled {
       .list-mode .list-item:hover > a:not(.icon),
       .list-mode .list-item:hover > a:hover:not(.icon) {
         flex: 1 1 auto; }
+  .list-mode .fancycheckbox:checked + .list-item:not(.disabled):not(.not-selectable):not(.separator):not(.header):not(.filter-container):hover {
+    background-color: #0C8990;
+    color: #FFF; }
 
 .submenu.columns {
   flex-direction: row; }
@@ -8996,7 +9001,9 @@ input.icon.secondary:disabled {
   width: 350px;
   height: auto;
   padding: 10px;
-  z-index: 200000; }
+  z-index: 200000;
+  text-transform: none;
+  font-weight: 100; }
   .tooltip.from-above {
     bottom: auto;
     top: 35px; }
@@ -9099,6 +9106,12 @@ input.icon.secondary:disabled {
       font-size: .8em;
       font-weight: 600;
       transition: color .25s ease-in-out; }
+      .form-container .form-row > label > span {
+        flex: 0 0 auto;
+        display: flex;
+        align-items: center; }
+        .form-container .form-row > label > span + span {
+          margin-left: .35rem; }
       .form-container .form-row > label .icon {
         flex: 0 0 24px;
         margin-right: .5em; }
@@ -11809,17 +11822,33 @@ dl.info {
   .configuration-container .helper-text {
     font-size: 1rem;
     color: #141823; }
+  .configuration-container > .form-container {
+    max-width: 750px; }
+    .configuration-container > .form-container .fancydropdown-container .fancydropdown {
+      background: white;
+      border-color: rgba(200, 200, 200, 0.3); }
+      .configuration-container > .form-container .fancydropdown-container .fancydropdown:hover {
+        border-color: #0C8990;
+        cursor: pointer; }
+      .configuration-container > .form-container .fancydropdown-container .fancydropdown.active {
+        border-color: #0C8990; }
+    .configuration-container > .form-container input[type=search],
+    .configuration-container > .form-container input[type=text] {
+      background: white;
+      border: 1px solid rgba(200, 200, 200, 0.3);
+      padding: .5em 1em;
+      font-size: 1.1em;
+      border-radius: 4px;
+      color: #141823;
+      margin: 0 .35rem 0 0;
+      flex: 1 1 65%; }
+      .configuration-container > .form-container input[type=search]:hover,
+      .configuration-container > .form-container input[type=text]:hover {
+        border-color: #0C8990; }
 
 .config-explanation {
   position: relative;
-  color: #999;
-  padding: 5px 0 10px 5px; }
-  .config-explanation a {
-    color: #549D54;
-    font-weight: 300; }
-  .config-explanation .important {
-    display: block;
-    font-weight: 400; }
+  color: #888; }
 
 .button.destroy-link .fas, .button.destroy-link .far {
   color: #cb1a00; }

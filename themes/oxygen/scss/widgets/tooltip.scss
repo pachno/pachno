@@ -18,6 +18,8 @@
   height: auto;
   padding: 10px;
   z-index: 200000;
+  text-transform: none;
+  font-weight: 100;
 
   &.from-above {
     bottom: auto;

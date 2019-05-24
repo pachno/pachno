@@ -33,7 +33,8 @@
       color: #88AB75;
     }
 
-    + .list-item:not(.toggler) {
+    + .list-item:not(.toggler),
+    + .list-item:not(.toggler):hover {
       background-color: #0C8990;
       color: #FFF;
 

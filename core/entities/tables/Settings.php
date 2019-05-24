@@ -161,9 +161,6 @@
             $settings[\pachno\core\framework\Settings::SETTING_UPLOAD_ALLOW_IMAGE_CACHING] = false;
             $settings[\pachno\core\framework\Settings::SETTING_UPLOAD_DELIVERY_USE_XSEND] = false;
             $settings[\pachno\core\framework\Settings::SETTING_SITE_NAME] = 'Pachno';
-            $settings[\pachno\core\framework\Settings::SETTING_SYNTAX_HIGHLIGHT_DEFAULT_LANGUAGE] = 'html';
-            $settings[\pachno\core\framework\Settings::SETTING_SYNTAX_HIGHLIGHT_DEFAULT_NUMBERING] = '3';
-            $settings[\pachno\core\framework\Settings::SETTING_SYNTAX_HIGHLIGHT_DEFAULT_INTERVAL] = '10';
             $settings[\pachno\core\framework\Settings::SETTING_ICONSET] = 'oxygen';
             $settings[\pachno\core\framework\Settings::SETTING_SERVER_TIMEZONE] = date_default_timezone_get();
             $settings[\pachno\core\framework\Settings::SETTING_ELEVATED_LOGIN_DISABLED] = true;

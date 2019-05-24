@@ -86,14 +86,12 @@
         const SETTING_HEADER_ICON_TYPE = 'icon_header';
         const SETTING_HEADER_ICON_ID = 'icon_header_id';
         const SETTING_HEADER_LINK = 'header_link';
-        const SETTING_IS_PERMISSIVE_MODE = 'permissive';
         const SETTING_IS_SINGLE_PROJECT_TRACKER = 'singleprojecttracker';
         const SETTING_KEEP_COMMENT_TRAIL_CLEAN = 'cleancomments';
         const SETTING_LICENSE_ID = 'license_identifier';
         const SETTING_NOTIFICATION_POLL_INTERVAL = 'notificationpollinterval';
         const SETTING_OFFLINESTATE = 'offlinestate';
         const SETTING_ONLINESTATE = 'onlinestate';
-        const SETTING_PREVIEW_COMMENT_IMAGES = 'previewcommentimages';
         const SETTING_REGISTRATION_DOMAIN_WHITELIST = 'limit_registration';
         const SETTING_REQUIRE_LOGIN = 'requirelogin';
         const SETTING_ELEVATED_LOGIN_DISABLED = 'elevatedlogindisabled';
@@ -102,9 +100,6 @@
         const SETTING_SALT = 'salt';
         const SETTING_SERVER_TIMEZONE = 'server_timezone';
         const SETTING_SHOW_PROJECTS_OVERVIEW = 'showprojectsoverview';
-        const SETTING_SYNTAX_HIGHLIGHT_DEFAULT_LANGUAGE = 'highlight_default_lang';
-        const SETTING_SYNTAX_HIGHLIGHT_DEFAULT_NUMBERING = 'highlight_default_numbering';
-        const SETTING_SYNTAX_HIGHLIGHT_DEFAULT_INTERVAL = 'highlight_default_interval';
         const SETTING_SITE_NAME = 'b2_name';
         const SETTING_SITE_NAME_HTML = 'pachno_header_name_html';
         const SETTING_THEME_NAME = 'theme_name';
@@ -582,11 +577,6 @@
             return false;
         }
 
-        public static function isCommentImagePreviewEnabled()
-        {
-            return (self::get(self::SETTING_PREVIEW_COMMENT_IMAGES) !== null) ? (bool) self::get(self::SETTING_PREVIEW_COMMENT_IMAGES) : true;
-        }
-
         public static function isLoginRequired()
         {
             return (bool) self::get(self::SETTING_REQUIRE_LOGIN);
@@ -862,7 +852,7 @@
 
         public static function isPermissive()
         {
-            return (bool) self::get(self::SETTING_IS_PERMISSIVE_MODE);
+            return false;
         }
 
         public static function getAll()
@@ -872,17 +862,7 @@
 
         public static function getDefaultSyntaxHighlightingLanguage()
         {
-            return self::get(self::SETTING_SYNTAX_HIGHLIGHT_DEFAULT_LANGUAGE);
-        }
-
-        public static function getDefaultSyntaxHighlightingNumbering()
-        {
-            return self::get(self::SETTING_SYNTAX_HIGHLIGHT_DEFAULT_NUMBERING);
-        }
-
-        public static function getDefaultSyntaxHighlightingInterval()
-        {
-            return self::get(self::SETTING_SYNTAX_HIGHLIGHT_DEFAULT_INTERVAL);
+            return 'html';
         }
 
         /**
@@ -982,8 +962,9 @@
          */
         public static function getNotificationPollInterval()
         {
-            $seconds = self::get(self::SETTING_NOTIFICATION_POLL_INTERVAL);
-            return $seconds == null ? 180 : $seconds;
+            return 0;
+//            $seconds = self::get(self::SETTING_NOTIFICATION_POLL_INTERVAL);
+//            return $seconds == null ? 180 : $seconds;
         }
 
         public static function getSubscriptionsSettings()

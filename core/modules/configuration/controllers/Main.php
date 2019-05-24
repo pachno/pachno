@@ -111,11 +111,10 @@
                 $this->forward403unless($this->access_level == framework\Settings::ACCESS_FULL);
                 $settings = array(framework\Settings::SETTING_USER_DISPLAYNAME_FORMAT, framework\Settings::SETTING_ENABLE_GRAVATARS, framework\Settings::SETTING_IS_SINGLE_PROJECT_TRACKER,
                     framework\Settings::SETTING_REQUIRE_LOGIN, framework\Settings::SETTING_ALLOW_REGISTRATION, framework\Settings::SETTING_USER_GROUP,
-                    framework\Settings::SETTING_RETURN_FROM_LOGIN, framework\Settings::SETTING_RETURN_FROM_LOGOUT, framework\Settings::SETTING_IS_PERMISSIVE_MODE,
+                    framework\Settings::SETTING_RETURN_FROM_LOGIN, framework\Settings::SETTING_RETURN_FROM_LOGOUT,
                     framework\Settings::SETTING_REGISTRATION_DOMAIN_WHITELIST, framework\Settings::SETTING_SHOW_PROJECTS_OVERVIEW, framework\Settings::SETTING_KEEP_COMMENT_TRAIL_CLEAN,
                     framework\Settings::SETTING_SITE_NAME, framework\Settings::SETTING_SITE_NAME_HTML, framework\Settings::SETTING_DEFAULT_CHARSET, framework\Settings::SETTING_DEFAULT_LANGUAGE,
-                    framework\Settings::SETTING_SERVER_TIMEZONE, framework\Settings::SETTING_SYNTAX_HIGHLIGHT_DEFAULT_LANGUAGE, framework\Settings::SETTING_SYNTAX_HIGHLIGHT_DEFAULT_INTERVAL,
-                    framework\Settings::SETTING_SYNTAX_HIGHLIGHT_DEFAULT_NUMBERING, framework\Settings::SETTING_PREVIEW_COMMENT_IMAGES, framework\Settings::SETTING_HEADER_LINK,
+                    framework\Settings::SETTING_SERVER_TIMEZONE, framework\Settings::SETTING_HEADER_LINK,
                     framework\Settings::SETTING_MAINTENANCE_MESSAGE, framework\Settings::SETTING_MAINTENANCE_MODE, framework\Settings::SETTING_ELEVATED_LOGIN_DISABLED,
                     framework\Settings::SETTING_NOTIFICATION_POLL_INTERVAL);
 
@@ -128,13 +127,6 @@
                         {
                             case framework\Settings::SETTING_SITE_NAME:
                                 $value = framework\Context::getRequest()->getParameter($setting, null, false);
-                                break;
-                            case framework\Settings::SETTING_SYNTAX_HIGHLIGHT_DEFAULT_INTERVAL:
-                                if (!is_numeric($value) || $value < 1)
-                                {
-                                    $this->getResponse()->setHttpStatus(400);
-                                    return $this->renderJSON(array('error' => framework\Context::getI18n()->__('Please provide a valid setting for highlighting interval')));
-                                }
                                 break;
                             case framework\Settings::SETTING_DEFAULT_CHARSET:
                                 framework\Context::loadLibrary('common');

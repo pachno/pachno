@@ -93,15 +93,13 @@
         public static function getIssueRegex()
         {
             // Try getting the regexes from cache first.
-            if (!$regex = framework\Context::getCache()->get(framework\Cache::KEY_TEXTPARSER_ISSUE_REGEX))
-            {
+            if (!$regex = framework\Context::getCache()->get(framework\Cache::KEY_TEXTPARSER_ISSUE_REGEX)) {
                 // List of keywords that are expected to prefix the issue number in a
                 // commit message (these are _not_ project prefixes).
                 $issue_strings = array('bug', 'issue', 'ticket', 'fix', 'fixes', 'fixed', 'fixing', 'applies to', 'closes', 'references', 'ref', 'addresses', 're', 'see', 'according to', 'also see', 'story');
 
                 // Add the issue types as prefixes as well.
-                foreach (\pachno\core\entities\Issuetype::getAll() as $issuetype)
-                {
+                foreach (\pachno\core\entities\Issuetype::getAll() as $issuetype) {
                     $issue_strings[] = $issuetype->getName();
                 }
 
@@ -117,7 +115,7 @@
                 // (#)ISSUE_NUMBER (TRANSITIONS)" (parenthesis means optional). For
                 // example:
                 // "Resolves issue #2 (Resolve issue)"
-                $regex[] = '#( |\(|^)(?<!\!)(('.$issue_string.')\s\#?(?P<issues>([A-Z0-9]+\-)?\d+))( \((?P<transitions>.*?)\))?#i';
+                $regex[] = '#( |\(|^)(?<!\!)((' . $issue_string . ')\s\#?(?P<issues>([A-Z0-9]+\-)?\d+))( \((?P<transitions>.*?)\))?#i';
                 // This regex will match messages that contain template at the beginning
                 // of message in format "ISSUE_NUMBER: (TRANSITIONS)".
                 $regex[] = '#^(?<!\!)((?P<issues>([A-Z0-9]+\-)?\d+)):( \((?P<transitions>.*?)\))?#i';
@@ -148,12 +146,10 @@
             $this->use_toc = $use_toc;
             $this->toc_base_id = $toc_base_id;
 
-            if (framework\Context::isProjectContext())
-            {
+            if (framework\Context::isProjectContext()) {
                 $this->namespace = framework\Context::getCurrentProject()->getKey();
             }
-            if (!framework\Context::isCLI())
-            {
+            if (!framework\Context::isCLI()) {
                 framework\Context::loadLibrary('ui');
             }
         }
@@ -170,8 +166,7 @@
 
         protected function _parse_headers($matches)
         {
-            if (array_key_exists('headers', $this->options) && !$this->options['headers'])
-            {
+            if (array_key_exists('headers', $this->options) && !$this->options['headers']) {
                 return $matches[0] . "\n";
             }
 
@@ -183,16 +178,14 @@
             $retval = $this->_emphasize_off() . "\n";
 
             $retval .= "<h{$level}";
-            if ($this->use_toc)
-            {
+            if ($this->use_toc) {
                 $id = $this->toc_base_id . '_toc_' . (count($this->toc) + 1);
                 $this->toc[] = array('level' => $level, 'content' => $content, 'id' => $id);
                 $retval .= " id=\"{$id}\"";
             }
             $retval .= ">" . $content;
-            if (!isset($this->options['embedded']) || $this->options['embedded'] == false)
-            {
-                $retval .= "&nbsp;<a href=\"#top\">&uArr;&nbsp;".framework\Context::getI18n()->__('top')."</a>";
+            if (!isset($this->options['embedded']) || $this->options['embedded'] == false) {
+                $retval .= "&nbsp;<a href=\"#top\">&uArr;&nbsp;" . framework\Context::getI18n()->__('top') . "</a>";
             }
             $retval .= "</h{$level}>\n";
 
@@ -216,37 +209,27 @@
             $matches[1] = trim($matches[1]);
             $newlevel = ($close) ? 0 : mb_strlen($matches[1]);
 
-            while ($this->list_level != $newlevel)
-            {
+            while ($this->list_level != $newlevel) {
                 $listchar = mb_substr($matches[1], -1);
-                if ((is_string($listchar) || is_numeric($listchar)) && array_key_exists($listchar, $listtypes))
-                {
+                if ((is_string($listchar) || is_numeric($listchar)) && array_key_exists($listchar, $listtypes)) {
                     $listtype = $listtypes[$listchar];
-                }
-                else
-                {
+                } else {
                     $listtype = 'ul';
                 }
 
-                if ($this->list_level >= $newlevel)
-                {
-                    $listtype = '/'.array_pop($this->list_level_types);
+                if ($this->list_level >= $newlevel) {
+                    $listtype = '/' . array_pop($this->list_level_types);
                     if ($this->list_level > $newlevel) $this->list_level--;
-                }
-                else
-                {
+                } else {
                     $this->list_level++;
                     array_push($this->list_level_types, $listtype);
                 }
                 $output .= "\n<{$listtype}>\n";
             }
 
-            if ($close)
-            {
+            if ($close) {
                 return $output;
-            }
-            else
-            {
+            } else {
                 $output .= "<li>{$matches[2]}</li>\n";
                 return $output;
             }
@@ -254,8 +237,7 @@
 
         protected function _parse_definitionlist($matches, $close = false)
         {
-            if ($close)
-            {
+            if ($close) {
                 $this->deflist = false;
                 return "</dl>\n";
             }
@@ -264,18 +246,14 @@
             if (!$this->deflist) $output .= "<dl>\n";
             $this->deflist = true;
 
-            switch ($matches[1])
-            {
+            switch ($matches[1]) {
                 case ';':
                     $term = $matches[2];
                     $p = mb_strpos($term, ' :');
-                    if ($p !== false)
-                    {
+                    if ($p !== false) {
                         list($term, $definition) = explode(':', $term);
                         $output .= "<dt>{$term}</dt><dd>{$definition}</dd>";
-                    }
-                    else
-                    {
+                    } else {
                         $output .= "<dt>{$term}</dt>";
                     }
                     break;
@@ -290,8 +268,7 @@
 
         protected function _parse_preformat($matches, $close = false)
         {
-            if ($close)
-            {
+            if ($close) {
                 $this->preformat = false;
                 return "</pre>\n";
             }
@@ -304,13 +281,12 @@
 
             $output .= $matches[0]; //htmlentities($matches[0]);
 
-            return $output."\n";
+            return $output . "\n";
         }
 
         protected function _parse_quote($matches, $close = false)
         {
-            if ($close)
-            {
+            if ($close) {
                 $this->quote = false;
                 return "</blockquote>\n";
             }
@@ -322,7 +298,7 @@
             $this->quote = true;
 
             if ($matches[2])
-                $output .= $matches[2]."<br>";
+                $output .= $matches[2] . "<br>";
 
             return $output;
         }
@@ -337,7 +313,7 @@
             return $topic;
         }
 
-        protected function _parse_image($href,$title,$options)
+        protected function _parse_image($href, $title, $options)
         {
             // if ($this->ignore_images) return "";
             // if (!$this->image_uri) return $title;
@@ -345,10 +321,8 @@
             // $href = $this->image_uri . $href;
 
             $imagetag = sprintf('<img src="%s" alt="%s" />', $href, $title);
-            foreach ($options as $k=>$option)
-            {
-                switch($option)
-                {
+            foreach ($options as $k => $option) {
+                switch ($option) {
                     case 'frame':
                         $imagetag = sprintf('<div style="float: right; background-color: #F5F5F5; border: 1px solid #D0D0D0; padding: 2px">%s<div>s</div></div>', $imagetag, $title);
                         break;
@@ -369,37 +343,30 @@
             // class etc).
             $href_options = [];
 
-            if (isset($matches[6]) && $matches[6])
-            {
+            if (isset($matches[6]) && $matches[6]) {
                 $title = $matches[6];
-            }
-            else
-            {
+            } else {
                 $title = $href;
-                if (isset($matches[7]) && $matches[7])
-                {
+                if (isset($matches[7]) && $matches[7]) {
                     $title .= $matches[7];
                 }
             }
             $namespace = $matches[3];
 
-            if (mb_strtolower($namespace) == 'category')
-            {
-                if (mb_substr($matches[2], 0, 1) != ':')
-                {
+            if (mb_strtolower($namespace) == 'category') {
+                if (mb_substr($matches[2], 0, 1) != ':') {
                     $this->addCategorizer($href);
                     return '';
                 }
             }
 
-            if (mb_strtolower($namespace) == 'wikipedia')
-            {
+            if (mb_strtolower($namespace) == 'wikipedia') {
                 if (framework\Context::isCLI()) return $href;
 
                 $options = explode('|', $title);
-                $title = (array_key_exists(5, $matches) && (mb_strpos($matches[5], '|') !== false) ? '' : $namespace.':') . array_pop($options);
+                $title = (array_key_exists(5, $matches) && (mb_strpos($matches[5], '|') !== false) ? '' : $namespace . ':') . array_pop($options);
 
-                return link_tag('http://en.wikipedia.org/wiki/'.$href, $title);
+                return link_tag('http://en.wikipedia.org/wiki/' . $href, $title);
             }
 
             if (preg_match("/embed(\s+url\=)?/", mb_strtolower($namespace)) ||
@@ -410,7 +377,7 @@
                 // if the name space is null more than likely the user is
                 // using embed url= format without the http:// in front of the URL
                 // and the href tag will contain "embed url=" and it must be removed
-                if ($namespace == null) $href = preg_replace("/embed(\s+)url=/","", $href);
+                if ($namespace == null) $href = preg_replace("/embed(\s+)url=/", "", $href);
 
                 // if the href is empty or set to 'embed' then stop processing
                 // an empty embed tag was entered '[[embed]]'
@@ -424,37 +391,29 @@
                 $type = 'iframe';
 
                 // if the link is a youtube link prepare it for embedding
-                if (pachno_youtube_link($href))
-                {
+                if (pachno_youtube_link($href)) {
                     $href = pachno_youtube_prepare_link($href);
                 }
 
                 // check to see if any size options exist
-                if (array_key_exists(0, $options))
-                {
+                if (array_key_exists(0, $options)) {
                     $settings = $options[0];
 
                     // if width exists override default setting
-                    if (preg_match_all("/width=(\d+)/", $settings, $width_matches))
-                    {
-                        if (!empty($width_matches))
-                        {
+                    if (preg_match_all("/width=(\d+)/", $settings, $width_matches)) {
+                        if (!empty($width_matches)) {
                             $width = $width_matches[1][0];
                         }
                     }
                     // if height exists override default setting
-                    if (preg_match_all("/height=(\d+)/", $settings, $height_matches))
-                    {
-                        if (!empty($height_matches))
-                        {
+                    if (preg_match_all("/height=(\d+)/", $settings, $height_matches)) {
+                        if (!empty($height_matches)) {
                             $height = $height_matches[1][0];
                         }
                     }
                     // if type exists override default setting
-                    if (preg_match_all("/type=(iframe|object)/", $settings, $type_matches))
-                    {
-                        if (!empty($type_matches))
-                        {
+                    if (preg_match_all("/type=(iframe|object)/", $settings, $type_matches)) {
+                        if (!empty($type_matches)) {
                             $type = $type_matches[1][0];
                         }
                     }
@@ -468,98 +427,75 @@
                 return $code;
             }
 
-            if (in_array(mb_strtolower($namespace), array('image', 'file')))
-            {
+            if (in_array(mb_strtolower($namespace), array('image', 'file'))) {
                 framework\Context::loadLibrary('ui');
                 $retval = $namespace . ':' . $href;
-                if (!framework\Context::isCLI())
-                {
+                if (!framework\Context::isCLI()) {
                     $options = explode('|', $title);
                     $filename = $href;
-                    $issuemode = (bool) (isset($this->options['issue']) && $this->options['issue'] instanceof \pachno\core\entities\Issue);
-                    $articlemode = (bool) (isset($this->options['article']) && $this->options['article'] instanceof Article);
+                    $issuemode = (bool)(isset($this->options['issue']) && $this->options['issue'] instanceof \pachno\core\entities\Issue);
+                    $articlemode = (bool)(isset($this->options['article']) && $this->options['article'] instanceof Article);
 
                     $file = null;
                     $file_link = $filename;
                     $caption = $filename;
                     $in_email = isset($this->options['in_email']) ? $this->options['in_email'] : false;
 
-                    if ($issuemode)
-                    {
+                    if ($issuemode) {
                         $file = $this->options['issue']->getFileByFilename($filename);
-                    }
-                    elseif ($articlemode)
-                    {
+                    } elseif ($articlemode) {
                         $file = $this->options['article']->getFileByFilename($filename);
                     }
-                    if ($file instanceof \pachno\core\entities\File)
-                    {
+                    if ($file instanceof \pachno\core\entities\File) {
                         $caption = (!empty($options)) ? array_pop($options) : htmlentities($file->getDescription(), ENT_COMPAT, framework\Context::getI18n()->getCharset());
                         $caption = ($caption != '') ? $caption : htmlentities($file->getOriginalFilename(), ENT_COMPAT, framework\Context::getI18n()->getCharset());
                         $file_link = make_url('showfile', array('id' => $file->getID()), !$in_email);
-                    }
-                    else
-                    {
+                    } else {
                         $caption = (!empty($options)) ? array_pop($options) : false;
                     }
 
-                    if ((($file instanceof \pachno\core\entities\File && $file->isImage()) || $articlemode) && (mb_strtolower($namespace) == 'image' || $issuemode) && framework\Settings::isCommentImagePreviewEnabled())
-                    {
+                    if ((($file instanceof \pachno\core\entities\File && $file->isImage()) || $articlemode) && (mb_strtolower($namespace) == 'image' || $issuemode)) {
                         $divclasses = array('image_container');
                         $style_dimensions = '';
-                        foreach ($options as $option)
-                        {
+                        foreach ($options as $option) {
                             $optionlen = mb_strlen($option);
-                            if (mb_substr($option, $optionlen - 2) == 'px')
-                            {
-                                if (is_numeric($option[0]))
-                                {
-                                    $style_dimensions = ' width: '.$option.';';
+                            if (mb_substr($option, $optionlen - 2) == 'px') {
+                                if (is_numeric($option[0])) {
+                                    $style_dimensions = ' width: ' . $option . ';';
                                     break;
-                                }
-                                else
-                                {
-                                    $style_dimensions = ' height: '.mb_substr($option, 1).';';
+                                } else {
+                                    $style_dimensions = ' height: ' . mb_substr($option, 1) . ';';
                                     break;
                                 }
                             }
                         }
-                        if (in_array('thumb', $options))
-                        {
+                        if (in_array('thumb', $options)) {
                             $divclasses[] = 'thumb';
                         }
-                        if (in_array('left', $options))
-                        {
+                        if (in_array('left', $options)) {
                             $divclasses[] = 'icleft';
                         }
-                        if (in_array('center', $options))
-                        {
+                        if (in_array('center', $options)) {
                             $divclasses[] = 'iccenter';
                         }
-                        if (in_array('right', $options))
-                        {
+                        if (in_array('right', $options)) {
                             $divclasses[] = 'icright';
                         }
-                        $retval = '<div class="'.join(' ', $divclasses).'"';
+                        $retval = '<div class="' . join(' ', $divclasses) . '"';
                         $retval .= '>';
                         $retval .= image_tag($file_link, array('alt' => $caption, 'title' => $caption, 'style' => $style_dimensions, 'class' => 'image'), true);
-                        if ($caption != '')
-                        {
-                            $retval .= '<br>'.$caption;
+                        if ($caption != '') {
+                            $retval .= '<br>' . $caption;
                         }
-                        $retval .= link_tag($file_link, fa_image_tag('external-link-alt'), array('target' => 'new_window_'.rand(0, 10000), 'title' => framework\Context::getI18n()->__('Open image in new window')));
+                        $retval .= link_tag($file_link, fa_image_tag('external-link-alt'), array('target' => 'new_window_' . rand(0, 10000), 'title' => framework\Context::getI18n()->__('Open image in new window')));
                         $retval .= '</div>';
-                    }
-                    else
-                    {
+                    } else {
                         if (strpos($file_link, 'http') === 0) {
                             $retval = $this->_parse_image($file_link, $caption, $options);
-                        }
-                        else if ($file_link == $filename) {
+                        } else if ($file_link == $filename) {
                             $retval = $caption . fa_image_tag('calendar-times', ['title' => framework\Context::getI18n()->__('File no longer exists.')], 'far');
-                        }
-                        else {
-                            $retval = link_tag($file_link, $caption . fa_image_tag('external-link-alt'), array('target' => 'new_window_'.rand(0, 10000), 'title' => framework\Context::getI18n()->__('Open file in new window')));
+                        } else {
+                            $retval = link_tag($file_link, $caption . fa_image_tag('external-link-alt'), array('target' => 'new_window_' . rand(0, 10000), 'title' => framework\Context::getI18n()->__('Open file in new window')));
                         }
                     }
                 }
@@ -567,26 +503,21 @@
                 //$file_id = \pachno\core\entities\tables\Files::get
             }
 
-            if ($namespace == 'Pachno')
-            {
+            if ($namespace == 'Pachno') {
                 if (framework\Context::isCLI()) return $href;
                 if (!framework\Context::getRouting()->hasRoute($href)) return $href;
 
-                $options = explode('|',$title);
+                $options = explode('|', $title);
                 $title = array_pop($options);
 
-                try
-                {
+                try {
                     return link_tag(make_url($href), $title); // $this->parse_image($href,$title,$options);
-                }
-                catch (\Exception $e)
-                {
+                } catch (\Exception $e) {
                     return $href;
                 }
             }
 
-            if (mb_substr($href, 0, 1) == '/')
-            {
+            if (mb_substr($href, 0, 1) == '/') {
                 if (framework\Context::isCLI()) return $href;
 
                 $options = explode('|', $title);
@@ -598,8 +529,7 @@
             $title = preg_replace('/\(.*?\)/', '', $title);
             $title = preg_replace('/^.*?\:/', '', $title);
 
-            if (!$namespace || !array_key_exists($namespace, array('ftp', 'http', 'https', 'gopher', 'mailto', 'news', 'nntp', 'telnet', 'wais', 'file', 'prospero', 'aim', 'webcal')))
-            {
+            if (!$namespace || !array_key_exists($namespace, array('ftp', 'http', 'https', 'gopher', 'mailto', 'news', 'nntp', 'telnet', 'wais', 'file', 'prospero', 'aim', 'webcal'))) {
                 if ($namespace) $href = $namespace . ':' . $href;
                 $href = $this->_wiki_link($href);
                 $title = (isset($title)) ? $title : $href;
@@ -607,16 +537,13 @@
 
                 if (framework\Context::isCLI()) return $href;
 
-                if (!Article::doesArticleExist($href))
-                {
+                if (!Article::doesArticleExist($href)) {
                     $href_options['class'] = 'missing_wiki_page';
                 }
 
                 $href = framework\Context::getRouting()->generate('publish_article', array('article_name' => $href));
-            }
-            else
-            {
-                $href = $namespace.':'.$this->_wiki_link($href);
+            } else {
+                $href = $namespace . ':' . $this->_wiki_link($href);
             }
 
             if (framework\Context::isCLI()) return $href;
@@ -626,27 +553,23 @@
 
         protected function _parse_externallink($matches)
         {
-            if (!is_array($matches))
-            {
+            if (!is_array($matches)) {
                 if (is_null($matches)) return '';
 
                 $this->linknumber++;
                 $href = $title = html_entity_decode($matches, ENT_QUOTES, 'UTF-8');
-            }
-            else
-            {
+            } else {
                 $href = html_entity_decode($matches[2], ENT_QUOTES, 'UTF-8');
                 $title = null;
                 $title = (array_key_exists(3, $matches)) ? $matches[3] : $matches[2];
-                if (!$title)
-                {
+                if (!$title) {
                     $this->linknumber++;
                     $title = "[{$this->linknumber}]";
                 }
 
                 if (framework\Context::isCLI()) return $href;
             }
-            return link_tag(str_replace(array('[',']'), array('&#91;', '&#93;'), $href), str_replace(array('[',']'), array('&#91;', '&#93;'), $title), array('target' => '_new'));
+            return link_tag(str_replace(array('[', ']'), array('&#91;', '&#93;'), $href), str_replace(array('[', ']'), array('&#91;', '&#93;'), $title), array('target' => '_new'));
         }
 
         protected function _parse_autosensedlink($matches)
@@ -656,19 +579,18 @@
 
         protected function _emphasize($level)
         {
-            $levels = array(2 => array('<i>','</i>'), 3 => array('<b>','</b>'), 4 => array('<b>','</b>'), 5 => array('<i><b>','</b></i>'));
+            $levels = array(2 => array('<i>', '</i>'), 3 => array('<b>', '</b>'), 4 => array('<b>', '</b>'), 5 => array('<i><b>', '</b></i>'));
 
             $output = "";
 
             // handle cases where bold/italic words ends with an apostrophe, eg: ''somethin'''
             // should read <em>somethin'</em> instead of <em>somethin<strong>
-            if ((!isset($this->openblocks[$level]) || (isset($this->openblocks[$level]) && !$this->openblocks[$level])) && (isset($this->openblocks[$level - 1]) && $this->openblocks[$level - 1]))
-            {
+            if ((!isset($this->openblocks[$level]) || (isset($this->openblocks[$level]) && !$this->openblocks[$level])) && (isset($this->openblocks[$level - 1]) && $this->openblocks[$level - 1])) {
                 $level--;
                 $output = "'";
             }
 
-            $offset = (isset($this->openblocks[$level])) ? (int) $this->openblocks[$level] : 0;
+            $offset = (isset($this->openblocks[$level])) ? (int)$this->openblocks[$level] : 0;
             $output .= $levels[$level][$offset];
 
             $this->openblocks[$level] = !$offset;
@@ -685,9 +607,8 @@
         protected function _emphasize_off()
         {
             $output = "";
-            if (count($this->openblocks))
-            {
-                foreach ($this->openblocks as $amount =>$state) {
+            if (count($this->openblocks)) {
+                foreach ($this->openblocks as $amount => $state) {
                     if ($state) $output .= $this->_emphasize($amount);
                 }
             }
@@ -703,16 +624,14 @@
         public static function parseIssuelink($matches, $markdown_format = false)
         {
             framework\Context::loadLibrary('ui');
-            
+
             $theIssue = \pachno\core\entities\Issue::getIssueFromLink($matches[2]);
             $output = '';
             $classname = '';
-            if ($theIssue instanceof \pachno\core\entities\Issue && ($theIssue->isClosed() || $theIssue->isDeleted()))
-            {
+            if ($theIssue instanceof \pachno\core\entities\Issue && ($theIssue->isClosed() || $theIssue->isDeleted())) {
                 $classname = 'closed';
             }
-            if ($theIssue instanceof \pachno\core\entities\Issue)
-            {
+            if ($theIssue instanceof \pachno\core\entities\Issue) {
                 $theIssueUrl = make_url('viewissue', array('issue_no' => $theIssue->getFormattedIssueNo(false), 'project_key' => $theIssue->getProject()->getKey()));
                 $urlPrefix = framework\Event::createNew('core', 'pachno\core\framework\helpers\TextParser::_parseIssuelink::urlPrefix')->triggerUntilProcessed()->getReturnValue();
 
@@ -724,13 +643,10 @@
                     if ($classname == 'closed') $classname = ' (' . framework\Context::getI18n()->__('Closed') . ')';
 
                     $output = "{$matches[1]}[{$matches[2]}]($theIssueUrl \"{$theIssue->getFormattedTitle()}\")$classname";
-                }
-                else {
+                } else {
                     $output = $matches[1] . link_tag($theIssueUrl, $matches[2], array('class' => $classname, 'title' => $theIssue->getFormattedTitle()));
                 }
-            }
-            else
-            {
+            } else {
                 $output = $matches[1] . $matches[2];
             }
             return $output;
@@ -741,24 +657,20 @@
             $matched_user = $matches[1];
             $use_dot = false;
 
-            if (mb_substr($matched_user, -1) === '.')
-            {
+            if (mb_substr($matched_user, -1) === '.') {
                 $matched_user = mb_substr($matched_user, 0, -1);
                 $use_dot = true;
             }
 
             $user = \pachno\core\entities\tables\Users::getTable()->getByUsername($matched_user);
 
-            if ($user instanceof \pachno\core\entities\User)
-            {
+            if ($user instanceof \pachno\core\entities\User) {
                 $output = framework\Action::returnComponentHTML('main/userdropdown_inline', array('user' => $matched_user, 'in_email' => isset($this->options['in_email']) ? $this->options['in_email'] : false));
 
                 if ($use_dot) $output .= '.';
 
                 $this->mentions[$user->getID()] = $user;
-            }
-            else
-            {
+            } else {
                 $output = $matches[0];
             }
 
@@ -772,7 +684,7 @@
 
         public function hasMentions()
         {
-            return (bool) count($this->mentions);
+            return (bool)count($this->mentions);
         }
 
         public function isMentioned($user)
@@ -793,12 +705,9 @@
             $param_name = array_shift($param_detail);
             $param_default = (!empty($param_detail)) ? array_shift($param_detail) : null;
 
-            if (isset($this->options['parameters']) && isset($this->options['parameters'][$param_name]))
-            {
+            if (isset($this->options['parameters']) && isset($this->options['parameters'][$param_name])) {
                 $val = trim($this->options['parameters'][$param_name]);
-            }
-            else
-            {
+            } else {
                 $val = ($param_default !== null) ? trim($param_default) : trim($param_name);
             }
 
@@ -807,8 +716,7 @@
 
         protected function _parse_insert_template($matches)
         {
-            switch($matches[1])
-            {
+            switch ($matches[1]) {
                 case 'CURRENTMONTH':
                     return date('m');
                 case 'CURRENTMONTHNAMEGEN':
@@ -837,13 +745,11 @@
                     $details = explode('|', $matches[1]);
                     $template_name = array_shift($details);
                     if (substr($template_name, 0, 1) == ':') $template_name = substr($template_name, 1);
-                    $template_name = (Article::doesArticleExist($template_name)) ? $template_name : 'Template:'.$template_name;
+                    $template_name = (Article::doesArticleExist($template_name)) ? $template_name : 'Template:' . $template_name;
                     $template_article = Articles::getTable()->getArticleByName($template_name);
                     $parameters = array();
-                    if (count($details))
-                    {
-                        foreach ($details as $parameter)
-                        {
+                    if (count($details)) {
+                        foreach ($details as $parameter) {
                             $param = explode('=', $parameter);
                             if (count($param) == 2)
                                 $parameters[$param[0]] = $param[1];
@@ -851,12 +757,9 @@
                                 $parameters[] = $parameter;
                         }
                     }
-                    if ($template_article instanceof Article)
-                    {
+                    if ($template_article instanceof Article) {
                         return \pachno\core\helpers\TextParser::parseText($template_article->getContent(), false, null, array('included' => true, 'parameters' => $parameters));
-                    }
-                    else
-                    {
+                    } else {
                         return $matches[0];
                     }
             }
@@ -864,13 +767,13 @@
 
         protected function _parse_tableopener($matches)
         {
-            $element = simplexml_load_string("<table ".trim($matches[1])."></table>");
+            $element = simplexml_load_string("<table " . trim($matches[1]) . "></table>");
             $output = $this->_parse_tablecloser(false);
             $output = "<table class=\"";
             $output .= ($element['class']) ? $element['class'] : 'sortable resizable';
             $output .= '"';
-            if ($element['style']) $output .= ' style="'.$element['style'].'"';
-            if ($element['align']) $output .= ' align="'.$element['align'].'"';
+            if ($element['style']) $output .= ' style="' . $element['style'] . '"';
+            if ($element['align']) $output .= ' align="' . $element['align'] . '"';
             $output .= ">";
             $this->tablemode = true;
             $this->opentablecol = false;
@@ -885,8 +788,7 @@
             $this->tablemode = false;
             $this->stop_all = true;
             $output = '';
-            if ($this->opentablecol == true)
-            {
+            if ($this->opentablecol == true) {
                 $output .= '</td></tr>';
                 $this->opentablecol = false;
             }
@@ -899,16 +801,15 @@
         {
             $this->stop_all = true;
             $output = '';
-            if ($this->opentablecol == true)
-            {
+            if ($this->opentablecol == true) {
                 $output .= '</td></tr>';
                 $this->opentablecol = false;
             }
-            $element = simplexml_load_string("<tr ".trim($matches[1])."></tr>");
+            $element = simplexml_load_string("<tr " . trim($matches[1]) . "></tr>");
             $output .= "<tr";
-            if ($element['class']) $output .= ' class="'.$element['class'].'"';
-            if ($element['style']) $output .= ' style="'.$element['style'].'"';
-            if ($element['align']) $output .= ' align="'.$element['align'].'"';
+            if ($element['class']) $output .= ' class="' . $element['class'] . '"';
+            if ($element['style']) $output .= ' style="' . $element['style'] . '"';
+            if ($element['align']) $output .= ' align="' . $element['align'] . '"';
             $output .= ">";
 
             return $output;
@@ -918,12 +819,10 @@
         {
             $this->opentablecol = false;
             $output = '<thead>';
-            if (array_key_exists(1, $matches))
-            {
+            if (array_key_exists(1, $matches)) {
                 $cols = explode(' !! ', $matches[1]);
-                foreach ($cols as $col)
-                {
-                    $output .= $this->_parse_tablecellcontent($col, 'h')."</th>";
+                foreach ($cols as $col) {
+                    $output .= $this->_parse_tablecellcontent($col, 'h') . "</th>";
                 }
             }
             $output .= "</thead>";
@@ -935,32 +834,25 @@
         {
             $matches = explode('|', $content);
             $output = "<t{$mode}";
-            if (count($matches) > 1)
-            {
+            if (count($matches) > 1) {
                 libxml_use_internal_errors(true);
-                $element = simplexml_load_string("<t{$mode} ".trim($matches[0])."></t{$mode}>");
+                $element = simplexml_load_string("<t{$mode} " . trim($matches[0]) . "></t{$mode}>");
 
-                if ($element instanceof \SimpleXMLElement)
-                {
-                    if ($element['class']) $output .= ' class="'.$element['class'].'"';
-                    if ($element['style']) $output .= ' style="'.$element['style'].'"';
-                    if ($element['align']) $output .= ' align="'.$element['align'].'"';
-                    if ($element['scope']) $output .= ' scope="'.$element['scope'].'"';
-                    if ($element['colspan']) $output .= ' colspan="'.$element['colspan'].'"';
-                    if ($mode == 'd')
-                    {
-                        if ($element['rowspan']) $output .= ' rowspan="'.$element['rowspan'].'"';
+                if ($element instanceof \SimpleXMLElement) {
+                    if ($element['class']) $output .= ' class="' . $element['class'] . '"';
+                    if ($element['style']) $output .= ' style="' . $element['style'] . '"';
+                    if ($element['align']) $output .= ' align="' . $element['align'] . '"';
+                    if ($element['scope']) $output .= ' scope="' . $element['scope'] . '"';
+                    if ($element['colspan']) $output .= ' colspan="' . $element['colspan'] . '"';
+                    if ($mode == 'd') {
+                        if ($element['rowspan']) $output .= ' rowspan="' . $element['rowspan'] . '"';
                     }
                     $output .= ">{$matches[1]}";
-                }
-                else
-                {
+                } else {
                     $output .= ">{$matches[0]}";
                 }
                 libxml_use_internal_errors(false);
-            }
-            else
-            {
+            } else {
                 $output .= ">{$matches[0]}";
             }
 
@@ -972,11 +864,9 @@
             $this->opentablecol = true;
             $first = true;
             $output = '';
-            if (array_key_exists(1, $matches))
-            {
+            if (array_key_exists(1, $matches)) {
                 $cols = explode(' || ', $matches[1]);
-                foreach ($cols as $col)
-                {
+                foreach ($cols as $col) {
                     if (!$first) $output .= "</td>";
                     $output .= $this->_parse_tablecellcontent($col, 'd');
                     $first = false;
@@ -991,15 +881,12 @@
             libxml_use_internal_errors(true);
             $element = simplexml_load_string("<{$matches[1]}{$matches[2]}>{$matches[3]}</{$matches[1]}>");
 
-            if ($element instanceof \SimpleXMLElement)
-            {
+            if ($element instanceof \SimpleXMLElement) {
                 $html = "<{$element->getName()}";
-                if (isset($element['style'])) $html .= ' style="'.$element['style'].'"';
-                if (isset($element['class'])) $html .= ' class="'.$element['class'].'"';
-                $html .= ">".$element."</{$element->getName()}>";
-            }
-            else
-            {
+                if (isset($element['style'])) $html .= ' style="' . $element['style'] . '"';
+                if (isset($element['class'])) $html .= ' class="' . $element['class'] . '"';
+                $html .= ">" . $element . "</{$element->getName()}>";
+            } else {
                 $html = $matches[0];
             }
             libxml_use_internal_errors(false);
@@ -1009,13 +896,12 @@
 
         protected function _parse_specialchar($matches)
         {
-            return '<span title="&amp;'.$matches[1].';">&'.$matches[1].';</span>';
+            return '<span title="&amp;' . $matches[1] . ';">&' . $matches[1] . ';</span>';
         }
 
         protected function _getsmiley($smiley_code)
         {
-            switch ($smiley_code[1])
-            {
+            switch ($smiley_code[1]) {
                 case ":(":
                 case ":-(":
                     return image_tag('smileys/4.png', array('class' => 'smiley'));
@@ -1084,34 +970,31 @@
 
             $called = array();
 
-            foreach ($line_regexes as $func => $regex)
-            {
-                if (preg_match('/^' . $regex . '$/i', $line, $matches))
-                {
+            foreach ($line_regexes as $func => $regex) {
+                if (preg_match('/^' . $regex . '$/i', $line, $matches)) {
                     $called[$func] = true;
-                    $func = "_parse_".$func;
+                    $func = "_parse_" . $func;
                     $line = $this->$func($matches);
                     if ($this->stop || $this->stop_all) break;
                 }
             }
 
-            if (!$this->stop_all)
-            {
+            if (!$this->stop_all) {
                 $this->stop = false;
-                foreach ($char_regexes as $regex)
-                {
+                foreach ($char_regexes as $regex) {
                     $line = preg_replace_callback($regex[0], $regex[1], $line);
                     if ($this->stop) break;
                 }
-                foreach (self::getRegexes() as $regex)
-                {
+                foreach (self::getRegexes() as $regex) {
                     $parser = $this;
-                    $line = preg_replace_callback($regex[0], function($matches) use ($regex, $parser) { return call_user_func($regex[1], $matches, $parser); }, $line);
+                    $line = preg_replace_callback($regex[0], function ($matches) use ($regex, $parser) {
+                        return call_user_func($regex[1], $matches, $parser);
+                    }, $line);
                     if ($this->stop) break;
                 }
             }
 
-            $isline = (bool) (mb_strlen(trim($line)) > 0);
+            $isline = (bool)(mb_strlen(trim($line)) > 0);
 
             // if this wasn't a list item, and we are in a list, close the list tag(s)
             if (($this->list_level > 0) && !array_key_exists('list', $called)) $line = $this->_parse_list(false, true) . $line;
@@ -1123,8 +1006,7 @@
             // suppress linebreaks for the next line if we just displayed one; otherwise re-enable them
             if ($isline) $this->ignore_newline = (array_key_exists('newline', $called) || array_key_exists('headers', $called));
 
-            if (mb_substr($line, -1) != "\n")
-            {
+            if (mb_substr($line, -1) != "\n") {
                 $line .= (isset($this->options['included'])) ? "\n" : " \n";
             }
 
@@ -1139,8 +1021,7 @@
             $output = "";
             $text = $this->text;
 
-            if (!isset($this->options['plain']))
-            {
+            if (!isset($this->options['plain'])) {
                 $this->list_level_types = array();
                 $this->list_level = 0;
                 $this->deflist = false;
@@ -1150,15 +1031,13 @@
                 $text = preg_replace_callback('/<(nowiki|pre)>(.*)<\/(\\1)>(?!<\/(\\1)>)/ismU', array($this, "_parse_save_nowiki"), $text);
                 $text = preg_replace_callback('/[\{]{3,3}([\d|\w|\|]*)[\}]{3,3}/ismU', array($this, "_parse_insert_variables"), $text);
                 $text = preg_replace_callback('/(?<!\{)[\{]{2,2}([^{^}.]*)[\}]{2,2}(?!\})/ismU', array($this, "_parse_insert_template"), $text);
-                if (isset($this->options['included']))
-                {
+                if (isset($this->options['included'])) {
                     $text = preg_replace_callback('/<noinclude>(.+?)<\/noinclude>(?!<\/noinclude>)/ism', array($this, "_parse_remove_noinclude"), $text);
                     $text = preg_replace_callback('/<includeonly>(.+?)<\/includeonly>(?!<\/includeonly>)/ism', array($this, "_parse_preserve_includeonly"), $text);
                     return $text;
                 }
 
-                if (!isset($this->options['included']))
-                {
+                if (!isset($this->options['included'])) {
                     $text = preg_replace_callback('/<includeonly>(.+?)<\/includeonly>(?!<\/includeonly>)/ism', array($this, "_parse_remove_includeonly"), $text);
                     $text = preg_replace_callback('/<noinclude>(.+?)<\/noinclude>(?!<\/noinclude>)/ism', array($this, "_parse_preserve_noinclude"), $text);
                 }
@@ -1166,14 +1045,12 @@
 
                 $text = \pachno\core\framework\Context::getI18n()->decodeUTF8($text, true);
 
-                $text = preg_replace_callback('/&lt;(strike|u|pre|tt|s|del|ins|u|blockquote|div|span|font|sub|sup)(\s.*)?&gt;(.*)&lt;\/(\\1)&gt;/ismU', array($this, '_parse_allowed_tags') ,$text);
-                $text = str_replace('&lt;br&gt;', '<br>' ,$text);
+                $text = preg_replace_callback('/&lt;(strike|u|pre|tt|s|del|ins|u|blockquote|div|span|font|sub|sup)(\s.*)?&gt;(.*)&lt;\/(\\1)&gt;/ismU', array($this, '_parse_allowed_tags'), $text);
+                $text = str_replace('&lt;br&gt;', '<br>', $text);
 
                 $lines = explode("\n", $text);
-                foreach ($lines as $line)
-                {
-                    if (mb_substr($line, -1) == "\r")
-                    {
+                foreach ($lines as $line) {
+                    if (mb_substr($line, -1) == "\r") {
                         $line = mb_substr($line, 0, -1);
                     }
                     $output .= $this->_parse_line($line, $options);
@@ -1190,25 +1067,19 @@
                 $this->codeblocks = array_reverse($this->codeblocks);
                 $this->elinks = array_reverse($this->elinks);
 
-                if (!array_key_exists('ignore_toc', $options))
-                {
+                if (!array_key_exists('ignore_toc', $options)) {
                     $output = preg_replace_callback('/\{\{TOC\}\}/', array($this, "_parse_add_toc"), $output);
-                }
-                else
-                {
+                } else {
                     $output = str_replace('{{TOC}}', '', $output);
                 }
                 $output = preg_replace_callback('/~~~NOWIKI~~~/i', array($this, "_parse_restore_nowiki"), $output);
-                if (!isset($options['no_code_highlighting']))
-                {
+                if (!isset($options['no_code_highlighting'])) {
                     $output = preg_replace_callback('/~~~CODE~~~/Ui', array($this, "_parse_restore_code"), $output);
                 }
 
                 $output = preg_replace_callback('/~~~ILINK~~~/i', array($this, "_parse_restore_ilink"), $output);
                 $output = preg_replace_callback('/~~~ELINK~~~/i', array($this, "_parse_restore_elink"), $output);
-            }
-            else
-            {
+            } else {
                 $text = nl2br(\pachno\core\framework\Context::getI18n()->decodeUTF8($text, true));
                 $text = preg_replace_callback(self::getIssueRegex(), array($this, '_parse_issuelink'), $text);
                 $text = preg_replace_callback(self::getMentionsRegex(), array($this, '_parse_mention'), $text);
@@ -1221,8 +1092,7 @@
 
         public function getParsedText()
         {
-            if ($this->parsed_text === null)
-            {
+            if ($this->parsed_text === null) {
                 $this->parsed_text = $this->_parseText();
             }
             return $this->parsed_text;
@@ -1230,8 +1100,7 @@
 
         public function doParse($options = array())
         {
-            if ($this->parsed_text === null)
-            {
+            if ($this->parsed_text === null) {
                 $this->parsed_text = $this->_parseText($options);
             }
         }
@@ -1304,24 +1173,19 @@
 
         protected function _highlightCode($matches)
         {
-            if (!(is_array($matches) && count($matches) > 1))
-            {
+            if (!(is_array($matches) && count($matches) > 1)) {
                 return '';
             }
             $codeblock = $matches[2];
-            if (strlen(trim($codeblock)))
-            {
+            if (strlen(trim($codeblock))) {
                 $params = $matches[1];
 
                 $language = preg_match('/(?<=lang=")(.+?)(?=")/', $params, $matches);
 
-                if ($language !== 0)
-                {
+                if ($language !== 0) {
                     $language = $matches[0];
-                }
-                else
-                {
-                    $language = framework\Settings::get(framework\Settings::SETTING_SYNTAX_HIGHLIGHT_DEFAULT_LANGUAGE);
+                } else {
+                    $language = 'html';
                 }
 
                 $highlighter = new Highlighter();
@@ -1360,11 +1224,12 @@
             $this->options[$option] = $value;
         }
 
-        public static function replaceNth($search, $replace, $subject, $nth) {
+        public static function replaceNth($search, $replace, $subject, $nth)
+        {
             $found = preg_match_all('/' . preg_quote($search) . '/', $subject, $matches, PREG_OFFSET_CAPTURE);
 
             if (false !== $found && $found > $nth) {
-                return substr_replace($subject, $replace, $matches[0][ $nth ][1], strlen($search));
+                return substr_replace($subject, $replace, $matches[0][$nth][1], strlen($search));
             }
 
             return $subject;
@@ -1383,23 +1248,20 @@
          */
         public static function parseText($text, $toc = false, $article_id = null, $options = array(), $syntax = \pachno\core\framework\Settings::SYNTAX_MW)
         {
-            switch ($syntax)
-            {
+            switch ($syntax) {
                 default:
                 case \pachno\core\framework\Settings::SYNTAX_PT:
                     $options = array('plain' => true);
                 case \pachno\core\framework\Settings::SYNTAX_MW:
                     $wiki_parser = new \pachno\core\helpers\TextParser($text, $toc, 'article_' . $article_id);
-                    foreach ($options as $option => $value)
-                    {
+                    foreach ($options as $option => $value) {
                         $wiki_parser->setOption($option, $value);
                     }
                     $text = $wiki_parser->getParsedText();
                     break;
                 case \pachno\core\framework\Settings::SYNTAX_MD:
                     $parser = new \pachno\core\helpers\TextParserMarkdown();
-                    foreach ($options as $option => $value)
-                    {
+                    foreach ($options as $option => $value) {
                         $parser->setOption($option, $value);
                     }
                     $text = $parser->transform($text);

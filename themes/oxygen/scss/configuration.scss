@@ -6,22 +6,44 @@
     font-size: 1rem;
     color: #141823;
   }
+
+  > .form-container {
+    max-width: 750px;
+
+    .fancydropdown-container {
+      .fancydropdown {
+        background: rgb(255, 255, 255);
+        border-color: rgba(200, 200, 200, .3);
+        &:hover {
+          border-color: #0C8990;
+          cursor: pointer;
+        }
+        &.active {
+          border-color: #0C8990;
+        }
+      }
+    }
+
+    input[type=search],
+    input[type=text] {
+      background: rgb(255, 255, 255);
+      border: 1px solid rgba(200, 200, 200, .3);
+      padding: .5em 1em;
+      font-size: 1.1em;
+      border-radius: 4px;
+      color: #141823;
+      margin: 0 .35rem 0 0;
+      flex: 1 1 65%;
+      &:hover {
+        border-color: #0C8990;
+      }
+    }
+  }
 }
 
 .config-explanation {
   position: relative;
-  color: #999;
-  padding: 5px 0 10px 5px;
-
-  a {
-    color: #549D54;
-    font-weight: 300;
-  }
-
-  .important {
-    display: block;
-    font-weight: 400;
-  }
+  color: #888;
 }
 
 .button.destroy-link .fas, .button.destroy-link .far {

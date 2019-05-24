@@ -1,12 +1,13 @@
 <div class="backdrop_box large">
     <div class="backdrop_detail_header">
         <span><?php echo __('Update header icon and favicon'); ?></span>
+        <a href="javascript:void(0);" class="closer" onclick="Pachno.Main.Helpers.Backdrop.reset();"><?= fa_image_tag('times'); ?></a>
     </div>
-    <form accept-charset="<?php echo \pachno\core\framework\Context::getI18n()->getCharset(); ?>" action="<?php echo make_url('configure_site_icons'); ?>" method="post" id="build_form" onsubmit="$('update_icons_indicator').show();return true;" enctype="multipart/form-data">
-        <div id="backdrop_detail_content" class="backdrop_detail_content">
-            <table cellpadding="0" cellspacing="0">
-                <tr>
-                    <td style="width: 460px; padding-right: 10px;">
+    <div class="backdrop_detail_content">
+        <div class="form-container">
+            <form accept-charset="<?php echo \pachno\core\framework\Context::getI18n()->getCharset(); ?>" action="<?php echo make_url('configure_site_icons'); ?>" method="post" id="build_form" onsubmit="$('update_icons_indicator').show();return true;" enctype="multipart/form-data">
+                <div class="column">
+                    <div class="form-row">
                         <h4><?php echo __('Favicon'); ?></h4>
                         <div style="text-align: center; padding: 30px; height: 60px;">
                             <?php echo image_tag(\pachno\core\framework\Settings::getFaviconUrl(), array('style' => 'width: 16px; height: 16px;'), \pachno\core\framework\Settings::isUsingCustomFavicon()); ?>
@@ -24,8 +25,10 @@
                                 <?php endif; ?>
                             </ul>
                         </div>
-                    </td>
-                    <td style="width: 460px;">
+                    </div>
+                </div>
+                <div class="column">
+                    <div class="form-row">
                         <h4><?php echo __('Header icon'); ?></h4>
                         <div style="text-align: center; padding: 30px; height: 60px;">
                             <?php echo image_tag(\pachno\core\framework\Settings::getHeaderIconUrl(), array('style' => 'width: 24px; height: 24px;'), \pachno\core\framework\Settings::isUsingCustomHeaderIcon()); ?>
@@ -43,17 +46,15 @@
                                 <?php endif; ?>
                             </ul>
                         </div>
-                    </td>
-                </tr>
-            </table>
+                    </div>
+                </div>
+                <div class="form-row submit-container">
+                    <button class="button primary" type="submit">
+                        <?php echo fa_image_tag('spinner', ['class' => 'fa-spin', 'id' => 'update_icons_indicator', 'style' => 'display: none']); ?>
+                        <span><?= __('Update icons'); ?></span>
+                    </button>
+                </div>
+            </form>
         </div>
-        <div class="backdrop_details_submit">
-            <span class="explanation">
-                <?php echo __('When you are done, click "%update_icons" to upload the new icons', array('%update_icons' => __('Update icons'))); ?>
-            </span>
-            <div class="submit_container">
-                <button class="button" type="submit"><?php echo image_tag('spinning_20.gif', ['id' => 'update_icons_indicator', 'style' => 'display: none']) . __('Update icons'); ?></button>
-            </div>
-        </div>
-    </form>
+    </div>
 </div>

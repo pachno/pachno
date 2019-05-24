@@ -8,28 +8,6 @@
     class Components extends framework\ActionComponent
     {
 
-        public function componentGeneral()
-        {
-            $files = scandir(PACHNO_PATH . 'vendor' . DS . 'easybook' . DS . 'geshi' . DS . 'geshi' . DS);
-            $geshi_languages = array();
-            foreach ($files as $file)
-            {
-                if (mb_strstr($file, '.php') === false)
-                    continue;
-                $lang = str_replace('.php', '', $file);
-                $geshi_languages[$lang] = $lang;
-            }
-            $this->geshi_languages = $geshi_languages;
-        }
-
-        public function componentUser()
-        {
-            $this->userstates = entities\Userstate::getAll();
-            $this->onlinestate = framework\Settings::getOnlineState();
-            $this->awaystate = framework\Settings::getAwayState();
-            $this->offlinestate = framework\Settings::getOfflineState();
-        }
-
         public function componentModulebox()
         {
             $this->is_default_scope = (isset($this->is_default_scope)) ? $this->is_default_scope : framework\Context::getScope()->isDefault();
@@ -84,7 +62,7 @@
             $this->is_default_scope = framework\Context::getScope()->isDefault();
         }
 
-        public function componentReglang()
+        public function componentLanguageSettings()
         {
             $this->languages = framework\I18n::getLanguages();
             $this->timezones = \pachno\core\framework\I18n::getTimezones();
