@@ -1,0 +1,803 @@
+/* configuration section styling */
+.configuration-container {
+  padding: 0 15px;
+
+  .helper-text {
+    font-size: 1rem;
+    color: #141823;
+  }
+}
+
+.config-explanation {
+  position: relative;
+  color: #999;
+  padding: 5px 0 10px 5px;
+
+  a {
+    color: #549D54;
+    font-weight: 300;
+  }
+
+  .important {
+    display: block;
+    font-weight: 400;
+  }
+}
+
+.button.destroy-link .fas, .button.destroy-link .far {
+  color: #cb1a00;
+}
+
+.config-plugins {
+  .header {
+    .plugin_shortname {
+      font-weight: 400;
+      font-size: 0.95em;
+    }
+  }
+
+  .plugins-list {
+    list-style: none;
+    display: block;
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+
+    .plugin {
+      vertical-align: top;
+      position: relative;
+      display: inline-block;
+      float: left;
+      padding: 10px;
+      margin: 10px 10px 10px 0;
+      width: calc(50% - 5px);
+      box-sizing: border-box;
+      border: 1px solid rgba(50, 50, 50, 0.2);
+      box-shadow: 0 0 3px rgba(100, 100, 100, 0.2);
+      opacity: 1;
+      transition: opacity 0.3s ease;
+
+      &:first-child {
+        width: 100%;
+        margin-top: 0;
+      }
+
+      .plugin_status {
+        &.core {
+          background-color: rgba(150, 150, 150, 0.2);
+          color: #888;
+        }
+
+        &.enabled {
+          background-color: rgba(177, 210, 143, 0.6);
+        }
+
+        &.disabled {
+          background-color: rgba(150, 150, 150, 0.1);
+        }
+
+        &.outofdate {
+          background-color: rgba(177, 143, 210, 0.1);
+          display: none;
+        }
+
+        img {
+          float: left;
+          margin: 2px 5px -2px 0;
+        }
+      }
+
+      &.out-of-date {
+        .plugin_status.outofdate {
+          display: inline-block;
+        }
+      }
+    }
+
+    &.installed {
+      .plugin {
+        width: 100%;
+        margin-top: 0;
+      }
+    }
+  }
+}
+
+.available_plugins_container .plugin.installed {
+  opacity: 0.5;
+}
+
+.plugin .plugin-actions form {
+  display: inline-block;
+}
+
+.plugin .button img {
+  display: none;
+}
+
+.plugin .button.installing img {
+  display: inline;
+}
+
+.plugins-list .plugin:nth-child(odd) {
+  margin-right: 0;
+}
+
+.plugins-list .plugin-actions .button.update-button {
+  display: none;
+}
+
+.plugin.theme .enable-button, .plugin.theme.enabled .button-more-actions {
+  display: none;
+}
+
+.plugin.theme.disabled .enable-button {
+  display: inline-block;
+}
+
+.plugins-list .plugin.can-update .plugin-actions .button.update-button {
+  display: inline-block;
+}
+
+.plugins-list .plugin-actions {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+}
+
+.plugins-list .plugin > h1 {
+  margin: 0;
+  padding: 0;
+  font-size: 1.3em;
+  color: #888;
+  text-transform: uppercase;
+}
+
+.plugins-list .plugin .description {
+  padding: 5px 0;
+  margin-top: 10px;
+  font-size: 1.1em;
+}
+
+.plugin-website-link {
+  display: block;
+  margin: 15px 0 0 0;
+  text-align: right;
+  clear: both;
+}
+
+.available_plugins_container .plugin .status-badge {
+  display: none;
+}
+
+.available_plugins_container .plugin.installed .status-badge {
+  display: block;
+}
+
+.available_plugins_container .plugin.installed .plugin-actions .button {
+  display: none;
+}
+
+.rating {
+  background: repeat-x top left;
+  display: block;
+  width: 80px;
+  height: 16px;
+  padding: 0;
+  margin: 5px 0 0 0;
+  position: relative;
+}
+
+.rating .score {
+  display: block;
+  height: 16px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding: 0;
+  margin: 0;
+}
+
+.projectbox .permission_list ul {
+  width: 670px;
+}
+
+#tab_permissions_pane .permission_list ul {
+  width: 780px;
+}
+
+.projectbox td {
+  font-size: 0.9em;
+}
+
+.child_project_container {
+  margin-left: 25px;
+}
+
+#issuetypes_menu_panes .content {
+  padding: 0 0 10px 0
+}
+
+.issuetype_box a.image, .issuetype_box a.image:hover {
+  border: 0;
+}
+
+.issuetype_scheme_associate_link {
+  font-weight: 400;
+  font-size: 0.9em;
+}
+
+.issuetype_description {
+  width: 550px;
+}
+
+#config_issuefields .issuefield_item_option {
+  cursor: move;
+  height: 30px;
+  padding-top: 6px;
+}
+
+#config_issuefields .issuefield_item_option .button-group {
+  margin-top: -6px;
+}
+
+#config_issuefields .issuefield_item_option:hover {
+  background-color: rgba(100, 100, 100, 0.1);
+}
+
+.more_than_one_project_warning {
+  color: #C55;
+}
+
+.tab_content {
+  padding-top: 5px;
+}
+
+.tab_header {
+  padding-top: 10px;
+  font-weight: 400;
+  border-bottom: 1px solid #DDD;
+}
+
+/* permissions configuration styling */
+.permissions_popup th {
+  background-color: transparent;
+  color: #888;
+  text-transform: uppercase;
+  font-weight: 400;
+  padding: 15px 2px 5px 2px;
+}
+
+.permissions_popup thead:first-child th {
+  padding-top: 5px;
+}
+
+.config_permissions {
+  font-size: 0.9em;
+}
+
+.config_permissions .faded_out.smaller {
+  font-size: 0.7em;
+  padding-left: 10px;
+}
+
+.config_permissions .permission_list .tab_pane {
+  border: 1px solid #AAA;
+  border-top: 0;
+  padding: 10px;
+}
+
+.config_permissions .permission_list .tab_pane p {
+  margin-bottom: 15px;
+}
+
+.permission_list ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  width: 715px;
+}
+
+.permission_list ul li {
+  margin: 0;
+  padding: 0;
+  font-weight: 300;
+  clear: both;
+  background-color: transparent;
+}
+
+.permission_list ul li:hover {
+  background-color: #FaFaFa;
+}
+
+.permission_list ul li a {
+  display: block;
+  padding: 2px 0 2px 0;
+}
+
+.permission_list ul li a.permission_description {
+  display: block;
+  width: 670px;
+}
+
+.permission_list ul li a:hover {
+  border: 0;
+}
+
+.permission_list ul li .content a {
+  display: inline;
+}
+
+.permission_list ul li ul {
+  margin: 5px 10px 20px 10px;
+  width: 665px;
+}
+
+.permission_list ul li ul li {
+  font-size: 0.95em;
+}
+
+.permission_list ul li ul li:hover {
+  background-color: #F1F1F1;
+}
+
+.permission_list ul li ul li a.permission_description {
+  display: block;
+  width: 580px;
+}
+
+.permission_list ul li ul li ul {
+  margin: 10px 10px 15px 10px;
+  width: 635px;
+}
+
+.permission_list ul li ul li ul li {
+  font-size: 0.9em;
+}
+
+.permission_list ul li ul li ul li:hover {
+  background-color: #E8E8E8;
+}
+
+.permission_list ul li ul li ul li ul li:hover {
+  background-color: #dfdfdf;
+}
+
+.permission_list ul li ul li ul li a.permission_description {
+  display: block;
+  width: 540px;
+}
+
+.permissions_warning {
+  background-color: rgba(255, 111, 85, 0.3);
+  border: 1px solid rgba(121, 35, 35, 0.4);
+  padding: 10px;
+  font-size: 1em;
+  font-weight: 300;
+  display: block;
+  margin: 10px 0 10px 0;
+  color: rgb(183, 24, 24);
+  border-radius: 3px;
+}
+
+.permissions_warning strong {
+  display: block;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+/* end permissions */
+
+/* configure users / teams / groups styling */
+#create_group_form label, #create_team_form label, #create_client_form label {
+}
+
+#create_group_form input[type="text"], #create_team_form input[type="text"], #create_client_form input[type="text"] {
+  width: 200px;
+}
+
+#create_group_form input[type="submit"], #create_team_form input[type="submit"], #create_client_form input[type="submit"] {
+  font-size: 0.9em;
+}
+
+.groupbox_header, .teambox_header, .clientbox_header {
+  font-weight: 400;
+}
+
+.groupbox_membercount, .teambox_membercount, .clientbox_membercount {
+  font-weight: 300;
+  font-size: 0.8em;
+  color: #888;
+}
+
+#users_results {
+  position: relative;
+}
+
+#users_more_actions_container {
+  float: right;
+}
+
+#tab_users_pane > strong {
+  font-weight: 400;
+  display: block;
+}
+
+.project_list nav .more_actions_dropdown li.finduser_container {
+  padding: 5px;
+  height: auto;
+  width: auto;
+  white-space: nowrap;
+}
+
+.project_list nav .more_actions_dropdown li.finduser_container:hover {
+  background-color: #FFF;
+}
+
+#users_more_actions_container .more_actions_dropdown li.separator {
+  height: 1px;
+}
+
+.finduser_container #findusers {
+  width: 300px;
+}
+
+.finduser_container input[type=submit], .finduser_container input[type=submit]:hover {
+  font-size: 1em;
+}
+
+.finduser_container label {
+  padding: 0 0 0 3px;
+  margin: 0 0 5px 0;
+}
+
+.teamlist_container {
+  display: inline-block;
+  width: 200px;
+}
+
+.teamlist_container input {
+  float: left;
+  margin-right: 2px;
+}
+
+.teamlist_container label {
+  font-weight: 300;
+  font-size: 0.9em;
+}
+
+#adduser_div .createuser_submit_container {
+  padding: 10px;
+  text-align: right;
+}
+
+#adduser_div .createuser_submit_container input {
+  padding: 3px 6px !important;
+  font-size: 1.1em;
+}
+
+.collection_user_list li {
+  padding: 3px;
+}
+
+.collection_user_list li:hover {
+  background-color: rgba(255, 255, 255, 0.7);
+}
+
+/* end users / teams / groups */
+
+#project_table .config_header {
+  font-size: 0.9em;
+}
+
+/* workflow styling */
+.scheme_list li {
+  padding: 3px;
+  font-size: 14px;
+}
+
+.scheme_list li table td {
+  font-size: 14px;
+  padding: 0;
+  margin: 0;
+}
+
+.scheme_list td.workflow_info {
+  width: 400px;
+}
+
+.scheme_list td.workflow_info.workflow_scheme {
+  width: 350px;
+}
+
+.scheme_list td.workflow_inactive {
+  color: #A88;
+  font-weight: 400;
+  width: 100px;
+  text-align: center;
+}
+
+.scheme_list td.workflow_active {
+  color: #390;
+  font-weight: 400;
+  width: 100px;
+  text-align: center;
+}
+
+.scheme_list td.workflow_steps {
+  width: 100px;
+  text-align: left;
+}
+
+.scheme_list td.workflow_steps span {
+  font-weight: 400;
+}
+
+.scheme_list td.workflow_scheme_issuetypes {
+  width: 250px;
+  text-align: center;
+}
+
+.scheme_list td.workflow_scheme_projects {
+  width: 200px;
+  text-align: center;
+  font-size: 1em;
+}
+
+.scheme_list td.workflow_scheme_issuetypes span, .scheme_list td.workflow_scheme_projects span {
+  font-weight: 400;
+}
+
+.scheme_list td.workflow_actions {
+  width: 170px;
+  font-weight: 400;
+  font-size: 0.9em;
+  text-align: right;
+}
+
+.scheme_list td.workflow_actions .button-group {
+  float: right;
+}
+
+.scheme_list.issuetype_scheme_list td.workflow_info {
+  width: 400px;
+}
+
+.workflow_name {
+  font-weight: 400;
+  margin-bottom: 5px;
+}
+
+.workflow_description, .workflow_name span.builtin {
+  font-weight: 300;
+  font-style: italic;
+  font-size: 0.9em;
+}
+
+.workflow_name span.builtin {
+  color: #AAA;
+}
+
+.workflow_description {
+  color: #777;
+}
+
+.workflow_change_div {
+  height: 400px;
+  overflow: auto;
+  margin-top: 10px;
+}
+
+#no_such_workflow_error {
+  margin-top: 10px;
+}
+
+#workflow_steps_container {
+}
+
+#workflow_steps_container .workflow_steps_intro, #workflow_step_container .workflow_step_intro {
+  margin: 0 0 5px 0;
+  font-size: 1em;
+}
+
+#workflow_steps_container .workflow_steps_intro {
+  margin-bottom: 15px;
+}
+
+#workflow_step_container .workflow_step_intro {
+  float: left;
+  width: 400px;
+}
+
+.workflow_step_intro .header {
+  font-size: 1.3em;
+}
+
+#workflow_steps_list {
+  width: 100%;
+}
+
+#workflow_steps_list td, #workflow_steps_list th {
+  font-size: 0.9em;
+}
+
+#workflow_steps_list_tbody tr.step td {
+  border-bottom: 1px dotted #AAA;
+}
+
+#workflow_steps_list_tbody tr.step a.step_name {
+  color: #555;
+}
+
+#workflow_steps_list_tbody tr.step a.step_name:hover {
+  color: #777;
+}
+
+#workflow_steps_list_tbody tr.step a.step_name.faded_out {
+  color: #AAA;
+}
+
+#workflow_steps_list_tbody tr.step a.step_name.faded_out:hover {
+  color: #CCC;
+}
+
+#workflow_steps_list_tbody tr.step td.workflow_step_actions a {
+  font-size: 0.9em;
+}
+
+#workflow_steps_list_tbody tr.status td {
+  border-bottom: 0;
+}
+
+#workflow_steps_list_tbody .add_transition_separation {
+  font-size: 1px;
+  line-height: 0;
+  margin: 10px 20px;
+  border-bottom: 1px dotted #AAA;
+}
+
+.workflow_step_transition_name {
+  font-weight: 400;
+  font-size: 0.9em;
+  font-style: italic;
+  margin: 5px 0;
+}
+
+.workflow_step_transition_outgoing_step {
+  margin-left: 5px;
+  font-size: 0.95em;
+  color: #AAA;
+  font-weight: 300;
+  font-style: italic;
+}
+
+#workflow_transition_actions_validations {
+  margin-bottom: 100px;
+}
+
+#workflow_transition_actions_validations h3 {
+  margin-top: 25px;
+  position: relative;
+}
+
+#workflow_transition_actions_validations h3 ul {
+  margin: 25px 3px 0 0;
+  font-size: 0.8em;
+}
+
+#workflow_transition_actions_validations h3 ul#add_post_action {
+  top: auto;
+  bottom: 0;
+  margin-bottom: 30px;
+}
+
+#workflow_details_transition, #workflow_details_step {
+  margin-top: 0;
+  float: left;
+  width: 400px;
+}
+
+#workflow_details_transition label, #workflow_details_step label {
+  font-size: 0.9em;
+}
+
+#workflow_details_transition li, #workflow_details_step li {
+  margin-bottom: 5px;
+}
+
+#workflow_details_step dd div.workflow_step_status {
+  line-height: 0;
+  height: 14px;
+  width: 14px;
+  font-size: 1px;
+  float: left;
+  margin-right: 5px;
+  border: 1px solid #AAA;
+}
+
+#add_post_action.more_actions_dropdown {
+  width: 710px;
+  padding: 0 5px;
+  bottom: 0;
+  margin-bottom: 30px;
+}
+
+#add_post_action.more_actions_dropdown .column {
+  width: 230px;
+  margin: 0;
+  padding: 0;
+  display: inline-block;
+  vertical-align: top;
+}
+
+#add_post_action.more_actions_dropdown h1 {
+  font-size: 0.9em;
+  font-weight: 400;
+  border-bottom: 1px dotted #CCC;
+  color: #AAA;
+  padding: 5px 0;
+  margin: 0;
+}
+
+#workflow_browser_step {
+  float: right;
+  width: 300px;
+  padding: 5px;
+  text-align: center;
+  margin-left: 0;
+}
+
+#workflow_browser_step .header {
+  font-size: 1.1em;
+  text-align: center;
+  margin-bottom: 5px;
+}
+
+#workflow_browser_step .content {
+  font-size: 0.9em;
+  text-align: center;
+}
+
+.workflow_browser_step_image {
+  line-height: 0;
+  clear: both;
+}
+
+.workflow_browser_step_transition {
+  padding: 2px;
+  border: 1px dotted #AAA;
+  background-color: #F8F8F8;
+}
+
+.workflow_browser_step_transition span {
+  font-style: italic;
+}
+
+.workflow_browser_step_transition .image {
+  float: right;
+  margin: 1px 2px 0 -5px;
+}
+
+.workflow_browser_step_transition.outgoing .image {
+  margin: 10px 5px 0 -5px;
+}
+
+.workflow_browser_step_transition.transition {
+  padding-left: 0;
+}
+
+.workflow_browser_step_name {
+  padding: 5px;
+  font-size: 1.1em;
+  font-style: italic;
+  font-weight: 400;
+}
+
+input[type=submit].workflow_transition_submit_button, input[type=submit].workflow_transition_submit_button:hover {
+  padding: 4px 8px;
+  font-size: 1.1em;
+}
+
+/* end workflow styling */
+
+/* end config styling */

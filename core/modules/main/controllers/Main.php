@@ -3331,6 +3331,15 @@ class Main extends framework\Action
                 case 'site_icons':
                     $template_name = 'configuration/siteicons';
                     break;
+                case 'scope_config':
+                    $template_name = 'configuration/editscope';
+                    if ($request['scope_id']) {
+                        $scope = tables\Scopes::getTable()->selectById($request['scope_id']);
+                    } else {
+                        $scope = new entities\Scope();
+                    }
+                    $options['scope'] = $scope;
+                    break;
                 case 'project_config':
                     $template_name = 'project/editproject';
                     if ($request['project_id']) {

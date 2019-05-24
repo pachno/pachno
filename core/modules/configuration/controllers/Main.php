@@ -520,7 +520,6 @@
          */
         public function runConfigureModules(framework\Request $request)
         {
-            $this->license_ok = framework\Settings::hasLicenseIdentifier();
             $this->module_message = framework\Context::getMessageAndClear('module_message');
             $this->module_error = framework\Context::getMessageAndClear('module_error');
             $this->modules = framework\Context::getModules();
@@ -736,39 +735,6 @@
         }
 
         /**
-         * Configure the license
-         *
-         * @param framework\Request $request
-         * @Route(name="configure_license", url="/configure/license")
-         * @Parameters(config_module="core", section=19)
-         */
-        public function runConfigureLicense(framework\Request $request)
-        {
-            if ($request->isPost()) {
-                $license_key = $request['license_key'];
-
-                $client = new GuzzleClient(['base_uri' => 'https://pachno.com']);
-                $response = $client->get('/license/verify/' . $license_key);
-
-                $status = ($response->getStatusCode() == 200) ? json_decode($response->getBody(), true) : ['verified' => false];
-
-                if ($status['verified']) {
-
-                    framework\Settings::setLicenseIdentifier($license_key);
-                    return $this->renderJSON(['message' => $this->getI18n()->__('License key saved')]);
-
-                } else {
-
-                    framework\Settings::clearLicenseIdentifier();
-                    $this->getResponse()->setHttpStatus(400);
-                    return $this->renderJSON(['error' => $this->getI18n()->__('Could not verify license key')]);
-
-                }
-
-            }
-        }
-
-        /**
          * Configure the selected theme
          *
          * @param framework\Request $request
@@ -888,9 +854,6 @@
                         break;
                     case framework\exceptions\ModuleDownloadException::FILE_NOT_FOUND:
                         framework\Context::setMessage('module_error', $this->getI18n()->__('The module could not be downloaded'));
-                        break;
-                    case framework\exceptions\ModuleDownloadException::MISSING_LICENSE:
-                        framework\Context::setMessage('module_error', $this->getI18n()->__('License key for automatic updates are missing'));
                         break;
                 }
             }
@@ -1101,10 +1064,20 @@
 
         public function runConfigureUsers(framework\Request $request)
         {
+            $this->finduser = $request['finduser'];
             $this->groups = entities\Group::getAll();
             $this->teams = entities\Team::getAll();
+            $this->number_of_users = tables\UserScopes::getTable()->countUsers();
+        }
+
+        public function runConfigureTeams(framework\Request $request)
+        {
+            $this->teams = entities\Team::getAll();
+        }
+
+        public function runConfigureClients(framework\Request $request)
+        {
             $this->clients = entities\Client::getAll();
-            $this->finduser = $request['finduser'];
         }
 
         public function runDeleteGroup(framework\Request $request)
@@ -2395,7 +2368,7 @@
             }
         }
 
-        public function runScopes(framework\Request $request)
+        public function runConfigureScopes(framework\Request $request)
         {
             if ($request->isPost())
             {

@@ -16,7 +16,7 @@
         <td><label for="charset"><?php echo __('Charset'); ?></label></td>
         <td>
             <input type="text" name="<?php echo \pachno\core\framework\Settings::SETTING_DEFAULT_CHARSET; ?>" id="charset" value="<?php echo \pachno\core\framework\Settings::getCharset(); ?>" style="width: 150px;"<?php if ($access_level != \pachno\core\framework\Settings::ACCESS_FULL): ?> disabled<?php endif; ?>>
-            <span class="config_explanation"><?php echo __('Current character set is %charset', array('%charset' => '<b>' . \pachno\core\framework\Context::getI18n()->getLangCharset() . '</b>')); ?></span>
+            <span class="config-explanation"><?php echo __('Current character set is %charset', array('%charset' => '<b>' . \pachno\core\framework\Context::getI18n()->getLangCharset() . '</b>')); ?></span>
             <?php echo config_explanation(
                 __('What charset to use for the selected language - leave blank to use the charset specified in the language file')
             ); ?>

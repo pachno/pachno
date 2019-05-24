@@ -206,7 +206,7 @@
                                 </td>
                             </tr>
                             <tr>
-                                <td class="config_explanation" colspan="2"><?= __('This name is what other people will see you as.'); ?></td>
+                                <td class="config-explanation" colspan="2"><?= __('This name is what other people will see you as.'); ?></td>
                             </tr>
                             <tr>
                                 <td ><label for="profile_email">* <?= __('Email address'); ?></label></td>
@@ -222,7 +222,7 @@
                                 </td>
                             </tr>
                             <tr>
-                                <td class="config_explanation" colspan="2"><?= __('Whether your email address is visible to other users in your profile information card. The email address is always visible to admins.'); ?></td>
+                                <td class="config-explanation" colspan="2"><?= __('Whether your email address is visible to other users in your profile information card. The email address is always visible to admins.'); ?></td>
                             </tr>
                             <tr>
                                 <td ><label for="profile_use_gravatar_yes"><?= __('Use Gravatar avatar'); ?></label></td>
@@ -232,7 +232,7 @@
                                 </td>
                             </tr>
                             <tr>
-                                <td class="config_explanation" colspan="2">
+                                <td class="config-explanation" colspan="2">
                                     <?= __("Pachno can use your %link_to_gravatar profile picture, if you have one. If you don't have one but still want to use Gravatar for profile pictures, Pachno will use a Gravatar %auto_generated_image_unique_for_your_email_address. Don't have a Gravatar yet? %link_to_get_one_now",
                                                     array('%link_to_gravatar' => link_tag('http://www.gravatar.com', 'Gravatar', ['target' => '_blank']),
                                                         '%auto_generated_image_unique_for_your_email_address' => link_tag('http://blog.gravatar.com/2008/04/22/identicons-monsterids-and-wavatars-oh-my', __('auto-generated image unique for your email address'), ['target' => '_blank']),
@@ -260,7 +260,7 @@
                                 </td>
                             </tr>
                             <tr>
-                                <td class="config_explanation" colspan="2">
+                                <td class="config-explanation" colspan="2">
                                     <?= __('Based on this information, the time at your location should be: %time', array('%time' => \pachno\core\framework\Context::getI18n()->formatTime(time(), 1))); ?>
                                 </td>
                             </tr>
@@ -313,7 +313,7 @@
                             </td>
                         </tr>
                         <tr>
-                            <td class="config_explanation" colspan="2">
+                            <td class="config-explanation" colspan="2">
                                 <?= __('Lets you use arrow up / down in issue lists to navigate'); ?><br>
                             </td>
                         </tr>
@@ -539,7 +539,7 @@
                             </td>
                         </tr>
                         <tr>
-                            <td class="config_explanation" colspan="2">
+                            <td class="config-explanation" colspan="2">
                                 <?= __('If your web browser supports desktop notification, Pachno can show a desktop notification whenever a new notification is received. To allow this, please click the "%grant_permission" button', ['%grant_permission' => __('Grant permission')]); ?>
                             </td>
                         </tr>
@@ -552,7 +552,7 @@
                             </td>
                         </tr>
                         <tr>
-                            <td class="config_explanation" colspan="2">
+                            <td class="config-explanation" colspan="2">
                                 <?= __('Whether clicking on notification will open target url in new or current tab. Notifications which target is backdrop will not be affected and will open in current tab. By default browsers will block opening of new tab programmatically, unless you enable pop-ups.'); ?>
                             </td>
                         </tr>

@@ -2009,7 +2009,6 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
                 $login_button = jQuery('#login_button'),
                 url = $form.attr('action');
 
-            console.log(url);
             jQuery('#login-error-container').removeClass('invalid');
             $login_button.addClass('submitting');
             $login_button.attr('disabled', true);

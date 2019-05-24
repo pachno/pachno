@@ -1,4 +1,4 @@
-<div style="width: 730px;" id="config_workflows">
+<div id="config_workflows">
     <h3><?php echo __('Configure workflows'); ?></h3>
     <div class="content faded_out">
         <p>

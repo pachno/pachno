@@ -22,105 +22,105 @@
                     <td><input type="text" name="hostname" id="hostname" value="<?= $module->getSetting('hostname'); ?>" style="width: 100%;"></td>
                 </tr>
                 <tr>
-                    <td class="config_explanation" colspan="2"><?= __('URI used for connecting to the LDAP server. Format is <schema://[name[:port]]/>, where schema is one of: ldap (plain-text), ldaps (TLS connection), or ldapi (UNIX domain socket). For example: ldap://hostname/, ldap://hostname:1389/, ldaps://hostname:636/, ldaps://hostname:1636/, ldapi:///.'); ?></td>
+                    <td class="config-explanation" colspan="2"><?= __('URI used for connecting to the LDAP server. Format is <schema://[name[:port]]/>, where schema is one of: ldap (plain-text), ldaps (TLS connection), or ldapi (UNIX domain socket). For example: ldap://hostname/, ldap://hostname:1389/, ldaps://hostname:636/, ldaps://hostname:1636/, ldapi:///.'); ?></td>
                 </tr>
                 <tr>
                     <td style="padding: 5px;"><label for="b_dn"><strong><?= __('Base DN'); ?></strong></label></td>
                     <td><input type="text" name="b_dn" id="b_dn" value="<?= $module->getSetting('b_dn'); ?>" style="width: 100%;"></td>
                 </tr>
                 <tr>
-                    <td class="config_explanation" colspan="2"><?= __('Base DN under which all user and group entires can be found. For example: dc=ldap,c=example,dc=com.'); ?></td>
+                    <td class="config-explanation" colspan="2"><?= __('Base DN under which all user and group entires can be found. For example: dc=ldap,c=example,dc=com.'); ?></td>
                 </tr>
                 <tr>
                     <td style="padding: 5px;"><label for="control_user"><?= __('Control user DN'); ?></label></td>
                     <td><input type="text" name="control_user" id="control_user" value="<?= $module->getSetting('control_user'); ?>" style="width: 100%;"></td>
                 </tr>
                 <tr>
-                    <td class="config_explanation" colspan="2"><?= __('LDAP distinguished name (DN) for control user. Control user needs to be able to access all relevant user and allowed group entries in the LDAP directory. Read-only access is sufficient. The user does not need to be able to read any credentials (passwords). To use anonymous bind for control user, leave the setting blank. For example: cn=pachno,ou=services,c=example,dc=com.'); ?></td>
+                    <td class="config-explanation" colspan="2"><?= __('LDAP distinguished name (DN) for control user. Control user needs to be able to access all relevant user and allowed group entries in the LDAP directory. Read-only access is sufficient. The user does not need to be able to read any credentials (passwords). To use anonymous bind for control user, leave the setting blank. For example: cn=pachno,ou=services,c=example,dc=com.'); ?></td>
                 </tr>
                 <tr>
                     <td style="padding: 5px;"><label for="control_pass"><?= __('Control user password'); ?></label></td>
                     <td><input type="password" name="control_pass" id="control_pass" value="<?= $module->getSetting('control_pass'); ?>" style="width: 100%;"></td>
                 </tr>
                 <tr>
-                    <td class="config_explanation" colspan="2"><?= __('Password for logging in into LDAP directory using the control user DN. To use anonymous bind for control user, leave the setting blank.'); ?></td>
+                    <td class="config-explanation" colspan="2"><?= __('Password for logging in into LDAP directory using the control user DN. To use anonymous bind for control user, leave the setting blank.'); ?></td>
                 </tr>
                 <tr>
                     <td style="padding: 5px;"><label for="integrated_auth"><?= __('Use HTTP Integrated Authentication'); ?></label></td>
                     <td><input type="checkbox" name="integrated_auth" id="integrated_auth" value="1" value="1" <?php if ($module->getSetting('integrated_auth')): ?>checked<?php endif; ?> style="width: 100%;"></td>
                 </tr>
                 <tr>
-                    <td class="config_explanation" colspan="2"><?= __('Enable automated login by using username passed-in into application via HTTP header. This requires that the web server performs authentication on behalf of Pachno (e.g. HTTP Basic Authentication, Kerberos etc).'); ?></td>
+                    <td class="config-explanation" colspan="2"><?= __('Enable automated login by using username passed-in into application via HTTP header. This requires that the web server performs authentication on behalf of Pachno (e.g. HTTP Basic Authentication, Kerberos etc).'); ?></td>
                 </tr>
                 <tr>
                     <td style="padding: 5px;"><label for="integrated_auth_header"><?= __('HTTP header field'); ?></label></td>
                     <td><input type="text" name="integrated_auth_header" id="integrated_auth_header" value="<?= $module->getSetting('integrated_auth_header'); ?>" style="width: 100%;"></td>
                 </tr>
                 <tr>
-                    <td class="config_explanation" colspan="2"><?= __('HTTP header field containing the username if HTTP Integrated Authentication is enabled. For example: REMOTE_USER.'); ?></td>
+                    <td class="config-explanation" colspan="2"><?= __('HTTP header field containing the username if HTTP Integrated Authentication is enabled. For example: REMOTE_USER.'); ?></td>
                 </tr>
                 <tr>
                     <td style="padding: 5px;"><label for="dn_attr"><strong><?= __('Object DN attribute'); ?></strong></label></td>
                     <td><input type="text" name="dn_attr" id="dn_attr" value="<?= $module->getSetting('dn_attr'); ?>" style="width: 100%;"></td>
                 </tr>
                 <tr>
-                    <td class="config_explanation" colspan="2"><?= __('LDAP attribute that contains the distinguished name of an object. On most LDAP servers this shouild be set to entrydn. If using Active Directory, set the value to distinguishedName.'); ?></td>
+                    <td class="config-explanation" colspan="2"><?= __('LDAP attribute that contains the distinguished name of an object. On most LDAP servers this shouild be set to entrydn. If using Active Directory, set the value to distinguishedName.'); ?></td>
                 </tr>
                 <tr>
                     <td style="padding: 5px;"><label for="u_type"><strong><?= __('User object class'); ?></strong></label></td>
                     <td><input type="text" name="u_type" id="u_type" value="<?= $module->getSetting('u_type'); ?>" style="width: 100%;"></td>
                 </tr>
                 <tr>
-                    <td class="config_explanation" colspan="2"><?= __('Object class used for locating valid user entries. For example: person, inetOrgPerson.'); ?></td>
+                    <td class="config-explanation" colspan="2"><?= __('Object class used for locating valid user entries. For example: person, inetOrgPerson.'); ?></td>
                 </tr>
                 <tr>
                     <td style="padding: 5px;"><label for="u_attr"><strong><?= __('User username attribute'); ?></strong></label></td>
                     <td><input type="text" name="u_attr" id="u_attr" value="<?= $module->getSetting('u_attr'); ?>" style="width: 100%;"></td>
                 </tr>
                 <tr>
-                    <td class="config_explanation" colspan="2"><?= __('LDAP attribute where the username is stored. For example: uid.'); ?></td>
+                    <td class="config-explanation" colspan="2"><?= __('LDAP attribute where the username is stored. For example: uid.'); ?></td>
                 </tr>
                 <tr>
                     <td style="padding: 5px;"><label for="f_attr"><?= __('User full name attribute'); ?></label></td>
                     <td><input type="text" name="f_attr" id="f_attr" value="<?= $module->getSetting('f_attr'); ?>" style="width: 100%;"></td>
                 </tr>
                 <tr>
-                    <td class="config_explanation" colspan="2"><?= __('LDAP attribute where the full name of the user is stored. If not specified, cn will be used if available. For example: displayName.'); ?></td>
+                    <td class="config-explanation" colspan="2"><?= __('LDAP attribute where the full name of the user is stored. If not specified, cn will be used if available. For example: displayName.'); ?></td>
                 </tr>
                 <tr>
                     <td style="padding: 5px;"><label for="b_attr"><?= __('User buddy name attribute'); ?></label></td>
                     <td><input type="text" name="b_attr" id="b_attr" value="<?= $module->getSetting('b_attr'); ?>" style="width: 100%;"></td>
                 </tr>
                 <tr>
-                    <td class="config_explanation" colspan="2"><?= __('LDAP attribute where the buddy name is stored. For example: gn.'); ?></td>
+                    <td class="config-explanation" colspan="2"><?= __('LDAP attribute where the buddy name is stored. For example: gn.'); ?></td>
                 </tr>
                 <tr>
                     <td style="padding: 5px;"><label for="e_attr"><?= __('User e-mail address attribute'); ?></label></td>
                     <td><input type="text" name="e_attr" id="e_attr" value="<?= $module->getSetting('e_attr'); ?>" style="width: 100%;"></td>
                 </tr>
                 <tr>
-                    <td class="config_explanation" colspan="2"><?= __('LDAP attribute where the e-mail is stored. For example: mail.'); ?></td>
+                    <td class="config-explanation" colspan="2"><?= __('LDAP attribute where the e-mail is stored. For example: mail.'); ?></td>
                 </tr>
                 <tr>
                     <td style="padding: 5px;"><label for="groups"><?= __('Allowed groups'); ?></label></td>
                     <td><input type="text" name="groups" id="groups" value="<?= $module->getSetting('groups'); ?>" style="width: 100%;"></td>
                 </tr>
                 <tr>
-                    <td class="config_explanation" colspan="2"><?= __('Comma-separated list of allowed groups. Each group should be specified by its common name (cn) attribute. If specified, only users that are members of these groups will be able to access Pachno. Leave this option blank to disable group membership checks and allow any valid LDAP user to access Pachno. For example: pachno,mygroup1,mygroup2.'); ?></td>
+                    <td class="config-explanation" colspan="2"><?= __('Comma-separated list of allowed groups. Each group should be specified by its common name (cn) attribute. If specified, only users that are members of these groups will be able to access Pachno. Leave this option blank to disable group membership checks and allow any valid LDAP user to access Pachno. For example: pachno,mygroup1,mygroup2.'); ?></td>
                 </tr>
                 <tr>
                     <td style="padding: 5px;"><label for="g_type"><?= __('Group object class'); ?></label></td>
                     <td><input type="text" name="g_type" id="g_type" value="<?= $module->getSetting('g_type'); ?>" style="width: 100%;"></td>
                 </tr>
                 <tr>
-                    <td class="config_explanation" colspan="2"><?= __('Object class used for locating valid allowed group entries. For example: groupOfNames, groupOfUniqueNames.'); ?></td>
+                    <td class="config-explanation" colspan="2"><?= __('Object class used for locating valid allowed group entries. For example: groupOfNames, groupOfUniqueNames.'); ?></td>
                 </tr>
                 <tr>
                     <td style="padding: 5px;"><label for="g_attr"><?= __('Group member attribute'); ?></label></td>
                     <td><input type="text" name="g_attr" id="g_attr" value="<?= $module->getSetting('g_attr'); ?>" style="width: 100%;"></td>
                 </tr>
                 <tr>
-                    <td class="config_explanation" colspan="2"><?= __('LDAP attribute in allowed group entries where member users are stored. For example: member, uniqueMember.'); ?></td>
+                    <td class="config-explanation" colspan="2"><?= __('LDAP attribute in allowed group entries where member users are stored. For example: member, uniqueMember.'); ?></td>
                 </tr>
             </table>
         </div>

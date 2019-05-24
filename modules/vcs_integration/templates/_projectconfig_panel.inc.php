@@ -29,7 +29,7 @@
                     </td>
                 </tr>
                 <tr>
-                    <td class="config_explanation" colspan="2"><?php echo __('This will allow specially-crafted commit messages to cause a workflow transition, in the same way as incoming emails. See the documentation for details.'); ?></td>
+                    <td class="config-explanation" colspan="2"><?php echo __('This will allow specially-crafted commit messages to cause a workflow transition, in the same way as incoming emails. See the documentation for details.'); ?></td>
                 </tr>
                 <tr>
                     <td style="width: 200px;"><label for="access_method"><?php echo __('Access method'); ?></label></td>
@@ -53,7 +53,7 @@
                     </td>
                 </tr>
                 <tr>
-                    <td class="config_explanation" colspan="2"><?php echo __('If the repository name is part of the URL (e.g. http://www.example.com/viewvc/myrepo), please include it as part of this field.'); ?></td>
+                    <td class="config-explanation" colspan="2"><?php echo __('If the repository name is part of the URL (e.g. http://www.example.com/viewvc/myrepo), please include it as part of this field.'); ?></td>
                 </tr>
                 <tr>
                     <td style="width: 200px;"><label for="browser_type"><?php echo __('Repository browser type'); ?></label></td>
@@ -99,7 +99,7 @@
                     </td>
                 </tr>
                 <tr>
-                    <td class="config_explanation" colspan="2"><?php echo __('If you are setting up for the first time, it is recommended you set a browser type, which will automatically set the URLs for you.'); ?></td>
+                    <td class="config-explanation" colspan="2"><?php echo __('If you are setting up for the first time, it is recommended you set a browser type, which will automatically set the URLs for you.'); ?></td>
                 </tr>
                 <tr id="repository_box" style="display: none">
                     <td style="width: 200px;"><label for="repository"><?php echo __('Repository name'); ?></label></td>

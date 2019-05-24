@@ -88,7 +88,7 @@ configure_settings:
 configure_scopes:
     route: /configure/scopes
     module: configuration
-    action: scopes
+    action: configurescopes
     parameters:
       config_module: core
       section: 14
@@ -851,6 +851,24 @@ configure_users:
     parameters:
       config_module: core
       section: 2
+    csrf_enabled: false
+
+configure_teams:
+    route: '/configure/teams/*'
+    module: configuration
+    action: configureTeams
+    parameters:
+      config_module: core
+      section: 22
+    csrf_enabled: false
+
+configure_clients:
+    route: '/configure/clients/*'
+    module: configuration
+    action: configureClients
+    parameters:
+      config_module: core
+      section: 23
     csrf_enabled: false
 
 configure_modules:

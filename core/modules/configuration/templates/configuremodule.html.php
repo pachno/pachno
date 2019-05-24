@@ -3,9 +3,9 @@
     $pachno_response->setTitle(__('Configure modules'));
 
 ?>
-<?php include_component('leftmenu', array('selected_section' => \pachno\core\framework\Settings::CONFIGURATION_SECTION_MODULES)); ?>
-<div valign="top" class="main_area main_configuration_content">
-    <div style="width: 730px;" id="config_modules">
+<div class="content-with-sidebar">
+    <?php include_component('leftmenu', ['selected_section' => \pachno\core\framework\Settings::CONFIGURATION_SECTION_MODULES]); ?>
+    <div class="configuration-container" id="config_modules">
         <h3><?php echo __('Configure module "%module_name"', array('%module_name' => $module->getLongName())); ?></h3>
         <?php if ($module_error !== null): ?>
             <div class="redbox" style="margin: 5px 0px 5px 0px;" id="module_error">

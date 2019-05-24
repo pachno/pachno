@@ -1,12 +1,7 @@
-<?php
-
-    $pachno_response->setTitle(__('Configure authentication'));
-    
-?>
-
-<?php include_component('leftmenu', array('selected_section' => \pachno\core\framework\Settings::CONFIGURATION_SECTION_AUTHENTICATION)); ?>
-<div valign="top" class="main_area main_configuration_content">
-    <div style="width: 730px;" id="config_authentication">
+<?php $pachno_response->setTitle(__('Configure authentication')); ?>
+<div class="content-with-sidebar">
+    <?php include_component('leftmenu', ['selected_section' => \pachno\core\framework\Settings::CONFIGURATION_SECTION_AUTHENTICATION]); ?>
+    <div class="configuration-container">
         <h3><?php echo __('Configure authentication'); ?></h3>
         <div class="message-box type-warning">
             <?= fa_image_tag('exclamation-circle') . '<span>'.__('Please remember to install and configure your chosen authentication backend before setting it here. Changing settings on this page will result in you being logged out. If you find yourself unable to log in, use the %bin/pachno command line client to revert these settings.', ['%bin/pachno' => '<span class="command_box">bin/pachno</span>']).'</span>'; ?>
@@ -34,7 +29,7 @@
                 </td>
             </tr>
             <tr>
-                <td class="config_explanation" colspan="2"><?php echo __('All modules which provide authentication are shown here. Please ensure your chosen backend is configured first, and please read the warnings included with your chosen backend to ensure that you do not lose administrator access.'); ?></td>
+                <td class="config-explanation" colspan="2"><?php echo __('All modules which provide authentication are shown here. Please ensure your chosen backend is configured first, and please read the warnings included with your chosen backend to ensure that you do not lose administrator access.'); ?></td>
             </tr>
             <tr>
                 <td colspan="2" style="vertical-align: top">
@@ -43,7 +38,7 @@
                 </td>
             </tr>
             <tr>
-                <td class="config_explanation" colspan="2"><?php echo __('Pachno\'s registration page is unavailable when using a different backend. Write a message here to be shown to users instead. WikiFormatting can be used in this box and similar ones on this page.'); ?></td>
+                <td class="config-explanation" colspan="2"><?php echo __('Pachno\'s registration page is unavailable when using a different backend. Write a message here to be shown to users instead. WikiFormatting can be used in this box and similar ones on this page.'); ?></td>
             </tr>
             <tr>
                 <td colspan="2" style="vertical-align: top">
@@ -64,12 +59,12 @@
                 </td>
             </tr>
         </table>
-<?php if ($access_level == \pachno\core\framework\Settings::ACCESS_FULL): ?>
-        <div class="save-button-container">
-            <div class="message"><?php echo __('Click "%save" to save your changes in all categories', array('%save' => __('Save'))); ?></div>
-            <input type="submit" id="config_auth_button" value="<?php echo __('Save'); ?>">
-        </div>
-    </form>
-<?php endif; ?>
-</div>
+        <?php if ($access_level == \pachno\core\framework\Settings::ACCESS_FULL): ?>
+                <div class="save-button-container">
+                    <div class="message"><?php echo __('Click "%save" to save your changes in all categories', array('%save' => __('Save'))); ?></div>
+                    <input type="submit" id="config_auth_button" value="<?php echo __('Save'); ?>">
+                </div>
+            </form>
+        <?php endif; ?>
+    </div>
 </div>

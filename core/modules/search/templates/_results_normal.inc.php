@@ -27,7 +27,7 @@ $current_count = 0;
 $current_estimated_time = Timeable::getZeroedUnitsWithPoints();
 $current_spent_time = $current_estimated_time;
 ?>
-<div class="results_container results_normal">
+<div class="results_container results_normal flexible-table">
 <?php foreach ($search_object->getIssues() as $issue):
     // shows only issues with permissions, useful when if we're including subprojects
     if (!$issue->hasAccess())
@@ -57,7 +57,7 @@ $current_spent_time = $current_estimated_time;
         </h5>
     <?php endif; ?>
     <?php if ($showtablestart): ?>
-        <div class="results_body">
+        <div class="results_body row-container">
             <div class="row header">
                 <div class="column header invisible info-icons"></div>
                 <?php if (!$pachno_user->isGuest() && $actionable): ?>

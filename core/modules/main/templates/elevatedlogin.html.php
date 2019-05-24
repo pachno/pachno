@@ -6,33 +6,43 @@
 <div id="elevated_login_container">
     <div class="backdrop_box login_page login_popup" id="login_popup">
         <div id="backdrop_detail_content" class="backdrop_detail_content rounded_top login_content">
-            <div class="logindiv regular active" id="regular_login_container">
-                <form accept-charset="<?php echo \pachno\core\framework\Context::getI18n()->getCharset(); ?>" action="<?php echo make_url('elevated_login'); ?>" method="post" id="login_form" onsubmit="Pachno.Main.Login.elevatedLogin('<?php echo make_url('elevated_login'); ?>'); return false;">
-                    <h2 class="login_header"><?php echo __('Authentication required'); ?></h2>
-                    <div class="article">
-                        <?php echo __('This page requires an extra authentication step. Please re-enter your password to continue'); ?>
+            <div class="logindiv form-container active" id="regular_login_container">
+                <form accept-charset="<?php echo \pachno\core\framework\Context::getI18n()->getCharset(); ?>" action="<?php echo make_url('elevated_login'); ?>" method="post" id="login_form" onsubmit="Pachno.Main.Login.login();return false;">
+                    <div class="form-row">
+                        <h3><?php echo __('Authentication required'); ?></h3>
                     </div>
-                    <ul class="login_formlist">
-                        <li>
-                            <label for="pachno_username"><?php echo __('Username'); ?></label>
-                            <input type="text" id="pachno_username" name="dummy_username" disabled value="<?php echo $pachno_user->getUsername(); ?>">
-                        </li>
-                        <li>
-                            <label for="pachno_password"><?php echo __('Password'); ?></label>
-                            <input type="password" id="pachno_password" name="elevated_password"><br>
-                        </li>
-                        <li>
-                            <label for="pachno_elevation_duration"><?php echo __('Re-authentication duration'); ?></label>
-                            <select name="elevation_duration" id="pachno_elevation_duration">
-                                <?php foreach (array(5, 10, 15, 30, 60) as $minute): ?>
-                                    <option value="<?php echo $minute; ?>" <?php if ($minute == 30) echo 'selected'; ?>><?php echo __('Remember for %minutes minutes', array('%minutes' => $minute)); ?></option>
-                                <?php endforeach; ?>
-                            </select>
-                        </li>
-                    </ul>
-                    <div class="login_button_container">
-                        <?php echo image_tag('spinning_20.gif', array('id' => 'elevated_login_indicator', 'style' => 'display: none;')); ?>
-                        <input type="submit" id="login_button" class="button" value="<?php echo __('Authenticate'); ?>">
+                    <div class="form-row">
+                        <div class="helper-text">
+                            <?php echo __('This page requires an extra authentication step. Please re-enter your password to continue'); ?>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <input type="hidden" id="pachno_username" name="dummy_username" disabled value="<?php echo $pachno_user->getUsername(); ?>">
+                        <input type="password" id="pachno_password" name="elevated_password">
+                        <label for="pachno_password"><?php echo __('Password'); ?></label>
+                    </div>
+                    <div class="form-row">
+                        <div class="fancydropdown-container">
+                            <div class="fancydropdown">
+                                <label><?php echo __('Keep elevated privileges'); ?></label>
+                                <span class="value"></span>
+                                <?= fa_image_tag('angle-down', ['class' => 'expander']); ?>
+                                <div class="dropdown-container list-mode">
+                                    <?php foreach ([5, 10, 15, 30, 60] as $minute): ?>
+                                        <input class="fancycheckbox" type="radio" name="elevation_duration" value="<?= $minute; ?>" id="elevation_duration_<?= $minute; ?>" <?php if ($minute == 30) echo 'checked'; ?>>
+                                        <label for="elevation_duration_<?= $minute; ?>" class="list-item">
+                                            <span class="value name"><?= __('Remember for %minutes minutes', ['%minutes' => $minute]); ?></span>
+                                        </label>
+                                    <?php endforeach; ?>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-row" id="login-error-container">
+                        <div class="error" id="login-error-message"></div>
+                    </div>
+                    <div class="form-row submit-container">
+                        <button type="submit" id="login_button" class="button primary"><span><?php echo __('Authenticate'); ?></span><?= fa_image_tag('spinner', ['class' => 'fa-spin icon indicator']); ?></button>
                     </div>
                 </form>
         </div>

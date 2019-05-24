@@ -29,6 +29,8 @@
 
         const CONFIGURATION_SECTION_WORKFLOW = 1;
         const CONFIGURATION_SECTION_USERS = 2;
+        const CONFIGURATION_SECTION_TEAMS = 22;
+        const CONFIGURATION_SECTION_CLIENTS = 23;
         const CONFIGURATION_SECTION_UPLOADS = 3;
         const CONFIGURATION_SECTION_ISSUEFIELDS = 4;
         const CONFIGURATION_SECTION_PERMISSIONS = 5;
@@ -41,7 +43,6 @@
         const CONFIGURATION_SECTION_IMPORT = 16;
         const CONFIGURATION_SECTION_AUTHENTICATION = 17;
         const CONFIGURATION_SECTION_THEMES = 18;
-        const CONFIGURATION_SECTION_LICENSE = 19;
 
         const APPEARANCE_HEADER_THEME = 0;
         const APPEARANCE_HEADER_CUSTOM = 1;
@@ -1044,6 +1045,18 @@
             }
         }
 
+        public static function getConfigSectionHeader(I18n $i18n, $section)
+        {
+            switch ($section) {
+                case 'general':
+                    return $i18n->__('General settings');
+                case self::CONFIGURATION_SECTION_MODULES:
+                    return $i18n->__('Module settings');
+            }
+
+            return $i18n->__('Settings');
+        }
+
         /**
          * Return associated configuration sections
          *
@@ -1058,9 +1071,6 @@
             if (Context::getScope()->getID() == 1)
                 $config_sections['general'][self::CONFIGURATION_SECTION_SCOPES] = array('route' => 'configure_scopes', 'description' => $i18n->__('Scopes'), 'fa_style' => 'fas', 'fa_icon' => 'clone', 'details' => $i18n->__('Scopes are self-contained Pachno environments. Configure them here.'));
 
-            if (Context::getScope()->isDefault()) {
-                $config_sections['general'][self::CONFIGURATION_SECTION_LICENSE] = array('route' => 'configure_license', 'description' => $i18n->__('License'), 'fa_style' => 'fas', 'fa_icon' => 'file-contract', 'details' => $i18n->__('Configure the license in this section'));
-            }
             $config_sections['general'][self::CONFIGURATION_SECTION_SETTINGS] = array('route' => 'configure_settings', 'description' => $i18n->__('Settings'), 'fa_style' => 'fas', 'fa_icon' => 'cog', 'details' => $i18n->__('Every setting in Pachno can be adjusted in this section.'));
             $config_sections['general'][self::CONFIGURATION_SECTION_THEMES] = array('route' => 'configuration_themes', 'description' => $i18n->__('Theme'), 'fa_style' => 'fas', 'fa_icon' => 'paint-brush', 'details' => $i18n->__('Configure the selected theme from this section'));
             $config_sections['general'][self::CONFIGURATION_SECTION_ROLES] = array('route' => 'configure_roles', 'description' => $i18n->__('Roles'), 'fa_style' => 'fas', 'fa_icon' => 'user-md', 'details' => $i18n->__('Configure roles in this section'));
@@ -1074,7 +1084,9 @@
             $config_sections['general'][self::CONFIGURATION_SECTION_ISSUETYPES] = array('route' => 'configure_issuetypes', 'fa_style' => 'fas', 'fa_icon' => 'copy', 'description' => $i18n->__('Issue types'), 'details' => $i18n->__('Manage issue types and configure issue fields for each issue type here'));
             $config_sections['general'][self::CONFIGURATION_SECTION_ISSUEFIELDS] = array('route' => 'configure_issuefields', 'fa_style' => 'fas', 'fa_icon' => 'list', 'description' => $i18n->__('Issue fields'), 'details' => $i18n->__('Status types, resolution types, categories, custom fields, etc. are configurable from this section.'));
             $config_sections['general'][self::CONFIGURATION_SECTION_WORKFLOW] = array('route' => 'configure_workflow', 'fa_style' => 'fas', 'fa_icon' => 'share-alt', 'description' => $i18n->__('Workflow'), 'details' => $i18n->__('Set up and edit workflow configuration from this section'));
-            $config_sections['general'][self::CONFIGURATION_SECTION_USERS] = array('route' => 'configure_users', 'description' => $i18n->__('Users, teams and clients'), 'fa_style' => 'fas', 'fa_icon' => 'users', 'details' => $i18n->__('Manage users, user teams and clients from this section.'));
+            $config_sections['general'][self::CONFIGURATION_SECTION_USERS] = array('route' => 'configure_users', 'description' => $i18n->__('Manage users and groups'), 'fa_style' => 'fas', 'fa_icon' => 'users', 'details' => $i18n->__('Create, edit and manage users from this section'));
+            $config_sections['general'][self::CONFIGURATION_SECTION_TEAMS] = array('route' => 'configure_teams', 'description' => $i18n->__('Manage teams'), 'fa_style' => 'fas', 'fa_icon' => 'users', 'details' => $i18n->__('Create and manage teams from this section.'));
+            $config_sections['general'][self::CONFIGURATION_SECTION_CLIENTS] = array('route' => 'configure_clients', 'description' => $i18n->__('Manage clients'), 'fa_style' => 'fas', 'fa_icon' => 'users', 'details' => $i18n->__('Create and manage clients from this section.'));
             $config_sections['general'][self::CONFIGURATION_SECTION_MODULES] = array('route' => 'configure_modules', 'description' => $i18n->__('Manage modules'), 'fa_style' => 'fas', 'fa_icon' => 'puzzle-piece', 'details' => $i18n->__('Manage Pachno extensions from this section. New modules are installed from here.'), 'module' => 'core');
             foreach (Context::getModules() as $module)
             {
@@ -1095,26 +1107,6 @@
         public static function getAccessLevel($section, $module = 'core')
         {
             return (Context::getUser()->canSaveConfiguration($section, $module)) ? self::ACCESS_FULL : self::ACCESS_READ;
-        }
-
-        public static function hasLicenseIdentifier()
-        {
-            return (self::getLicenseIdentifier() !== '');
-        }
-
-        public static function getLicenseIdentifier()
-        {
-            return self::get(self::SETTING_LICENSE_ID);
-        }
-
-        public static function setLicenseIdentifier($license_id)
-        {
-            self::saveSetting(self::SETTING_LICENSE_ID, $license_id);
-        }
-
-        public static function clearLicenseIdentifier()
-        {
-            self::deleteSetting(self::SETTING_LICENSE_ID);
         }
 
         public static function isStable(): bool

@@ -58,6 +58,8 @@
         {
             $query = $this->getQuery();
             $query->where(self::SCOPE, framework\Context::getScope()->getID());
+            $query->join(Users::getTable(), Users::ID, self::USER_ID);
+            $query->where(Users::DELETED, false);
 
             return $this->count($query);
         }
@@ -209,6 +211,12 @@
             }
 
             return $scope_details;
+        }
+
+        public function getNumberOfUsersInCurrentScope()
+        {
+            $query = $this->getQuery();
+            $query->where(self::SCOPE, framework\Context::getScope()->getID());
         }
 
         public function getUsersByGroupID($group_id)

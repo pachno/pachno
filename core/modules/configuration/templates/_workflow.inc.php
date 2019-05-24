@@ -16,9 +16,9 @@
                         <a href="javascript:void(0);" onclick="$('copy_workflow_<?php echo $workflow->getID(); ?>_popup').toggle();" class="button copy_workflow_link"><?php echo fa_image_tag('clone', array('title' => __('Create a copy of this workflow'))); ?></a>
                     <?php endif; ?>
                     <?php if ($workflow->isInUse()): ?>
-                        <a href="javascript:void(0);" onclick="Pachno.Main.Helpers.Message.error('<?php echo __('Cannot delete workflow'); ?>', '<?php echo __('This workflow can not be deleted as it is being used by %number_of_schemes workflow scheme(s)', array('%number_of_schemes' => $workflow->getNumberOfSchemes())); ?>');" class="button destroy-link button-silver"><?php echo fa_image_tag('times', array('title' => __('Delete this workflow'))); ?></a>
+                        <a href="javascript:void(0);" onclick="Pachno.Main.Helpers.Message.error('<?php echo __('Cannot delete workflow'); ?>', '<?php echo __('This workflow can not be deleted as it is being used by %number_of_schemes workflow scheme(s)', array('%number_of_schemes' => $workflow->getNumberOfSchemes())); ?>');" class="button destroy-link"><?php echo fa_image_tag('times', array('title' => __('Delete this workflow'))); ?></a>
                     <?php else: ?>
-                        <a href="javascript:void(0);" onclick="$('delete_workflow_<?php echo $workflow->getID(); ?>_popup').toggle();" class="button destroy-link button-silver"><?php echo fa_image_tag('times', array('title' => __('Delete this workflow'))); ?></a>
+                        <a href="javascript:void(0);" onclick="$('delete_workflow_<?php echo $workflow->getID(); ?>_popup').toggle();" class="button destroy-link"><?php echo fa_image_tag('times', array('title' => __('Delete this workflow'))); ?></a>
                     <?php endif; ?>
                 </div>
             </td>

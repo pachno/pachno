@@ -355,6 +355,9 @@
       }
 
       .dropper-container {
+        border-bottom: none;
+        text-decoration: none;
+
         .list-item {
           justify-content: flex-start;
           padding: 0 7px;
@@ -390,11 +393,15 @@
       flex: 1 1 auto;
     }
 
-    .dropper-container {
+    .dropper-container,
+    .link-container,
+    &.hover {
       flex: 0 0 auto;
       margin-right: 1rem;
+      border: none;
 
-      .dropper {
+      .dropper,
+      .link {
         flex: 0 0 25px;
         padding: .35rem;
         box-sizing: border-box;

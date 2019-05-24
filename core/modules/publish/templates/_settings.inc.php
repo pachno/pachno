@@ -16,7 +16,7 @@
                     </td>
                 </tr>
                 <tr>
-                    <td class="config_explanation" colspan="2"><?= __('Setting this to "%no" will hide all "Wiki" tabs and links', array('%no' => __('No'))); ?></td>
+                    <td class="config-explanation" colspan="2"><?= __('Setting this to "%no" will hide all "Wiki" tabs and links', array('%no' => __('No'))); ?></td>
                 </tr>
                 <tr>
                     <td style="width: 200px; padding: 5px;"><label for="publish_menu_title"><?= __('Menu title'); ?></label></td>
@@ -31,7 +31,7 @@
                     </td>
                 </tr>
                 <tr>
-                    <td class="config_explanation" colspan="2"><?= __('Specify here if you want to show a different menu title than "Wiki" in the header menu'); ?></td>
+                    <td class="config-explanation" colspan="2"><?= __('Specify here if you want to show a different menu title than "Wiki" in the header menu'); ?></td>
                 </tr>
                 <tr>
                     <td style="padding: 5px;"><label for="allow_camelcase_links_yes"><?= __('Allow "CamelCased" links'); ?></label></td>
@@ -41,7 +41,7 @@
                     </td>
                 </tr>
                 <tr>
-                    <td class="config_explanation" colspan="2"><?= __('Traditionally, %CamelCasing has been used to specify links between documents in Wikis. If you want to keep this turned on, specify so here. Make sure you read the %wikiformatting wiki article if you are unsure how to use this feature.', array('%CamelCasing' => link_tag('http://wikipedia.org/wiki/CamelCase', __('CamelCasing'), array('target' => '_blank')), '%wikiformatting' => link_tag(make_url('publish_article', array('article_name' => 'WikiFormatting')), 'WikiFormatting', array('target' => '_blank')))); ?></td>
+                    <td class="config-explanation" colspan="2"><?= __('Traditionally, %CamelCasing has been used to specify links between documents in Wikis. If you want to keep this turned on, specify so here. Make sure you read the %wikiformatting wiki article if you are unsure how to use this feature.', array('%CamelCasing' => link_tag('http://wikipedia.org/wiki/CamelCase', __('CamelCasing'), array('target' => '_blank')), '%wikiformatting' => link_tag(make_url('publish_article', array('article_name' => 'WikiFormatting')), 'WikiFormatting', array('target' => '_blank')))); ?></td>
                 </tr>
                 <tr>
                     <td style="padding: 5px;"><label for="require_change_reason_yes"><?= __('Require change reason'); ?></label></td>
@@ -51,7 +51,7 @@
                     </td>
                 </tr>
                 <tr>
-                    <td class="config_explanation" colspan="2"><?= __('Setting this to "%no" will not require users to enter a reason when saving Wiki changes', array('%no' => __('No'))); ?></td>
+                    <td class="config-explanation" colspan="2"><?= __('Setting this to "%no" will not require users to enter a reason when saving Wiki changes', array('%no' => __('No'))); ?></td>
                 </tr>
                 <tr>
                     <td style="padding: 5px;"><label for="wiki_free_edit"><?= __('Wiki permissions'); ?></label></td>
@@ -64,7 +64,7 @@
                     </td>
                 </tr>
                 <tr>
-                    <td class="config_explanation" colspan="2"><?= __('Specify how you want to control access to wiki editing functionality'); ?></td>
+                    <td class="config-explanation" colspan="2"><?= __('Specify how you want to control access to wiki editing functionality'); ?></td>
                 </tr>
                 <tr>
                     <td colspan="2" style="padding: 5px; text-align: right;">&nbsp;</td>

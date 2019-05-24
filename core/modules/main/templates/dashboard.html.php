@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * @var \pachno\core\entities\Dashboard $dashboard
+ */
+
     $pachno_response->setTitle(__('Dashboard'));
     $pachno_response->addBreadcrumb(__('Personal dashboard'), make_url('dashboard'));
     $pachno_response->addFeed(make_url('my_reported_issues', ['format' => 'rss']), __('Issues reported by me'));

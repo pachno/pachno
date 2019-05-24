@@ -27,7 +27,7 @@
                 </td>
             </tr>
             <tr>
-                <td class="config_explanation" colspan="2"><?php echo __("If this option is ticked, new accounts will require activation by clicking a link in the email. If this is ticked, the user's password will also be provided in the email, instead of in the registration screen"); ?></td>
+                <td class="config-explanation" colspan="2"><?php echo __("If this option is ticked, new accounts will require activation by clicking a link in the email. If this is ticked, the user's password will also be provided in the email, instead of in the registration screen"); ?></td>
             </tr>
             <tr>
                 <td style="padding: 5px;"><label for="from_name"><?php echo __('Email "from"-name'); ?></label></td>
@@ -38,14 +38,14 @@
                 <td><input type="text" name="from_addr" id="from_address" value="<?php echo $module->getSetting('from_addr'); ?>" style="width: 100%;"<?php echo ($access_level != \pachno\core\framework\Settings::ACCESS_FULL || !$module->isOutgoingNotificationsEnabled()) ? ' disabled' : ''; ?>></td>
             </tr>
             <tr>
-                <td class="config_explanation" colspan="2"><?php echo __('This is the name and email address email notifications from Pachno will be sent from'); ?></td>
+                <td class="config-explanation" colspan="2"><?php echo __('This is the name and email address email notifications from Pachno will be sent from'); ?></td>
             </tr>
             <tr>
                 <td style="padding: 5px;"><label for="from_address"><?php echo __('Issue tracker URL'); ?></label></td>
                 <td><input type="text" name="cli_mailing_url" id="cli_mailing_url" value="<?php echo $module->getMailingUrl(); ?>" placeholder="<?php echo __('e.g.: %example', ['%example' => \pachno\core\framework\Context::getScope()->getCurrentHostname()]); ?>" style="width: 100%;"<?php echo ($access_level != \pachno\core\framework\Settings::ACCESS_FULL || !$module->isOutgoingNotificationsEnabled()) ? ' disabled' : ''; ?>></td>
             </tr>
             <tr>
-                <td class="config_explanation" colspan="2">
+                <td class="config-explanation" colspan="2">
                     <?php echo __("This is the full URL to the issue tracker, used when sending outgoing emails. If this isn't configured, you will not be able to use the outgoing email feature."); ?>
                 </td>
             </tr>
@@ -54,7 +54,7 @@
                 <td><input type="text" name="headcharset" id="headcharset" value="<?php echo $module->getSetting('headcharset'); ?>" style="width: 100px;"<?php echo ($access_level != \pachno\core\framework\Settings::ACCESS_FULL || !$module->isOutgoingNotificationsEnabled()) ? ' disabled' : ''; ?>></td>
             </tr>
             <tr>
-                <td class="config_explanation" colspan="2"><?php echo __('The character encoding used in outgoing emails'); ?></td>
+                <td class="config-explanation" colspan="2"><?php echo __('The character encoding used in outgoing emails'); ?></td>
             </tr>
             <tr>
                 <td style="padding: 5px;"><label for="use_queue"><?php echo __('Queue emails for batch processing'); ?></label></td>
@@ -64,7 +64,7 @@
                 </td>
             </tr>
             <tr>
-                <td class="config_explanation" colspan="2"><?php echo __("If you're using a queue, outgoing emails will not slow down the system. Read more about how to set up email queueing in %email_queueing", array('%email_queueing' => link_tag(make_url('@publish_article?article_name=EmailQueueing'), 'EmailQueueing'))); ?></td>
+                <td class="config-explanation" colspan="2"><?php echo __("If you're using a queue, outgoing emails will not slow down the system. Read more about how to set up email queueing in %email_queueing", array('%email_queueing' => link_tag(make_url('@publish_article?article_name=EmailQueueing'), 'EmailQueueing'))); ?></td>
             </tr>
             <tr>
                 <td style="padding: 5px;"><label for="mailing_mail_type"><?php echo __('Email backend selection'); ?></label></td>
@@ -77,7 +77,7 @@
                 </td>
             </tr>
             <tr>
-                <td class="config_explanation" colspan="2"><?php echo __('For outgoing emails Pachno uses the %swiftmailer library, which supports several different mail transports. Please see the %swiftmailer_configuration for more information.', array('%swiftmailer_configuration' => '<a href="http://swiftmailer.org/docs/sending.html#transport-types" target="_blank">'.__('Swiftmailer configuration').'</a>', '%swiftmailer' => '<a href="http://swiftmailer.org/docs/sending.html#transport-types" target="_blank">Swiftmailer</a>')); ?></td>
+                <td class="config-explanation" colspan="2"><?php echo __('For outgoing emails Pachno uses the %swiftmailer library, which supports several different mail transports. Please see the %swiftmailer_configuration for more information.', array('%swiftmailer_configuration' => '<a href="http://swiftmailer.org/docs/sending.html#transport-types" target="_blank">'.__('Swiftmailer configuration').'</a>', '%swiftmailer' => '<a href="http://swiftmailer.org/docs/sending.html#transport-types" target="_blank">Swiftmailer</a>')); ?></td>
             </tr>
         </table>
         <table style="width: 680px; margin-top: 10px;" class="padded_table" cellpadding=0 cellspacing=0 id="mail_type_sendmail_info">
@@ -86,7 +86,7 @@
                 <td style="width: auto;"><input type="text" placeholder="<?php echo __("Leave blank for default ('/usr/sbin/sendmail -bs')"); ?>" name="sendmail_command" id="mailing_sendmail_command" value="<?php echo $module->getSendmailCommand(); ?>" style="width: 100%;"<?php echo ($access_level != \pachno\core\framework\Settings::ACCESS_FULL || !$module->isOutgoingNotificationsEnabled()) ? ' disabled' : ''; ?>></td>
             </tr>
             <tr>
-                <td class="config_explanation" colspan="2"><?php echo __('Please see the %swiftmailer_configuration for more information about the sendmail transport.', array('%swiftmailer_configuration' => '<a href="http://swiftmailer.org/docs/sending.html#the-sendmail-transport" target="_blank">'.__('Swiftmailer configuration').'</a>', '%swiftmailer' => '<a href="http://swiftmailer.org/docs/sending.html#transport-types" target="_blank">Swiftmailer</a>')); ?></td>
+                <td class="config-explanation" colspan="2"><?php echo __('Please see the %swiftmailer_configuration for more information about the sendmail transport.', array('%swiftmailer_configuration' => '<a href="http://swiftmailer.org/docs/sending.html#the-sendmail-transport" target="_blank">'.__('Swiftmailer configuration').'</a>', '%swiftmailer' => '<a href="http://swiftmailer.org/docs/sending.html#transport-types" target="_blank">Swiftmailer</a>')); ?></td>
             </tr>
         </table>
         <table style="width: 680px; margin-top: 10px;" class="padded_table" cellpadding=0 cellspacing=0 id="mail_type_smtp_info">
@@ -103,21 +103,21 @@
                 <td><input type="text" name="timeout" id="timeout" value="<?php echo $module->getSmtpTimeout(); ?>" style="width: 40px;"<?php echo ($access_level != \pachno\core\framework\Settings::ACCESS_FULL || !$module->isOutgoingNotificationsEnabled()) ? ' disabled' : ''; ?>><?php echo __('%number_of seconds', array('%number_of' => '')); ?></td>
             </tr>
             <tr>
-                <td class="config_explanation" colspan="2"><?php echo __('Connection information for the outgoing email server'); ?></td>
+                <td class="config-explanation" colspan="2"><?php echo __('Connection information for the outgoing email server'); ?></td>
             </tr>
             <tr>
                 <td style="padding: 5px;"><label for="smtp_user"><?php echo __('SMTP username'); ?></label></td>
                 <td><input type="text" name="smtp_user" id="smtp_user" value="<?php echo $module->getSmtpUsername(); ?>" style="width: 300px;"<?php echo ($access_level != \pachno\core\framework\Settings::ACCESS_FULL || !$module->isOutgoingNotificationsEnabled()) ? ' disabled' : ''; ?>></td>
             </tr>
             <tr>
-                <td class="config_explanation" colspan="2"><?php echo __('The username used for sending emails'); ?></td>
+                <td class="config-explanation" colspan="2"><?php echo __('The username used for sending emails'); ?></td>
             </tr>
             <tr>
                 <td style="padding: 5px;"><label for="mailing_smtp_password"><?php echo __('SMTP password'); ?></label></td>
                 <td><input type="password" name="smtp_pwd" id="mailing_smtp_password" value="<?php echo $module->getSmtpPassword(); ?>" style="width: 150px;"<?php echo ($access_level != \pachno\core\framework\Settings::ACCESS_FULL || !$module->isOutgoingNotificationsEnabled()) ? ' disabled' : ''; ?>></td>
             </tr>
             <tr>
-                <td class="config_explanation" colspan="2"><?php echo __('The password used for sending emails'); ?></td>
+                <td class="config-explanation" colspan="2"><?php echo __('The password used for sending emails'); ?></td>
             </tr>
             <tr>
                 <td style="padding: 5px;"><label for="mailing_encryption"><?php echo __('Connection encryption'); ?></label></td>
@@ -162,7 +162,7 @@
                     <td style="width: auto;"><input type="text" name="test_email_to" id="test_email_to" value="" style="width: 300px;"<?php echo ($access_level != \pachno\core\framework\Settings::ACCESS_FULL || !$module->isOutgoingNotificationsEnabled()) ? ' disabled' : ''; ?>></td>
                 </tr>
                 <tr>
-                    <td class="config_explanation" colspan="2" style="font-size: 13px;">
+                    <td class="config-explanation" colspan="2" style="font-size: 13px;">
                         <span class="faded_out">
                             <?php echo __('Enter an email address, and click "%send_test_email" to check if the email module is configured correctly', array('%send_test_email' => __('Send test email'))); ?>
                         </span>

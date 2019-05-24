@@ -487,12 +487,8 @@
         {
             try
             {
-                if (!framework\Settings::hasLicenseIdentifier()) {
-                    throw new framework\exceptions\ModuleDownloadException("", framework\exceptions\ModuleDownloadException::MISSING_LICENSE);
-                }
-
                 $client = new GuzzleClient(['base_uri' => 'https://pachno.com']);
-                $response = $client->get('/' . $plugin_type . 's/' . $plugin_key . '.json?license_key=' . framework\Settings::getLicenseIdentifier());
+                $response = $client->get('/' . $plugin_type . 's/' . $plugin_key . '.json');
 
                 if ($response->getStatusCode() === 200) {
                     $plugin_json = json_decode($response->getBody());

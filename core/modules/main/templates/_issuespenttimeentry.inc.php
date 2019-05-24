@@ -2,7 +2,7 @@
     <li style="position: relative;">
         <label for="issue_<?php echo $issue->getID(); ?>_timeentry"><?php echo __('Add time spent'); ?></label>
         <input type="text" id="issue_<?php echo $issue->getID(); ?>_timeentry" name="timespent_manual" placeholder="<?php echo __("'1 hour', '1 day, 3 hours' or similar"); ?>." style="width: 250px;">
-        <span class="config_explanation" style="position: relative;">
+        <span class="config-explanation" style="position: relative;">
             <?= image_tag('icon_info.png', ['style' => 'margin: 0 5px 0 0; vertical-align: middle; cursor: pointer;']); ?>
             <span class="tooltip from-above leftie" style="width: 400px; font-size: 1em; margin: 5px 0 0 -10px;">
                 <?= __('Entering time spent is easy. Pachno will make a best effort at understanding what you type, as long as you follow some basic rules:'); ?>

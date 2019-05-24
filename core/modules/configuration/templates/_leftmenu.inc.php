@@ -1,6 +1,12 @@
 <nav class="sidebar">
     <div class="list-mode">
-    <?php foreach ($config_sections as $config_info): ?>
+    <?php foreach ($config_sections as $category => $config_info): ?>
+        <div class="header">
+            <span class="name"><?= \pachno\core\framework\Settings::getConfigSectionHeader(pachno\core\framework\Context::getI18n(), $category); ?></span>
+            <?php if ($category == \pachno\core\framework\Settings::CONFIGURATION_SECTION_MODULES): ?>
+                <a href="<?= make_url('configure_modules'); ?>" class="link-container"><span class="link"><?= fa_image_tag('cog'); ?></span></a>
+            <?php endif; ?>
+        </div>
         <?php foreach ($config_info as $section => $info): ?>
             <?php $is_selected = (bool) (($selected_section == \pachno\core\framework\Settings::CONFIGURATION_SECTION_MODULES && isset($selected_subsection) && array_key_exists('module', $info) && $selected_subsection == $info['module']) || ($selected_section != \pachno\core\framework\Settings::CONFIGURATION_SECTION_MODULES && !isset($selected_subsection) && !array_key_exists('module', $info) && $selected_section == $section)); ?>
             <?php if (is_array($info['route'])): ?>

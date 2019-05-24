@@ -5,7 +5,7 @@
 ?>
 <div class="content-with-sidebar">
     <?php include_component('leftmenu', array('selected_section' => \pachno\core\framework\Settings::CONFIGURATION_SECTION_SETTINGS)); ?>
-    <div class="main_configuration_content">
+    <div class="configuration-container">
         <h3>
             <?= __('Configure settings'); ?>
         </h3>

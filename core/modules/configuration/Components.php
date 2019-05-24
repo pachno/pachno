@@ -32,13 +32,7 @@
 
         public function componentModulebox()
         {
-            $this->license_ok = framework\Settings::hasLicenseIdentifier();
             $this->is_default_scope = (isset($this->is_default_scope)) ? $this->is_default_scope : framework\Context::getScope()->isDefault();
-        }
-
-        public function componentOnlineModule()
-        {
-            $this->license_ok = framework\Settings::hasLicenseIdentifier();
         }
 
         public function componentOnlineModules()
@@ -46,7 +40,7 @@
             try
             {
                 $client = new \Net_Http_Client();
-                $client->get('https://pachno.com/addons.json?license_key=' . framework\Settings::getLicenseIdentifier());
+                $client->get('https://pachno.com/addons.json');
                 $json_modules = json_decode($client->getBody());
             }
             catch (\Exception $e) {}
@@ -67,7 +61,7 @@
             try
             {
                 $client = new \Net_Http_Client();
-                $client->get('https://pachno.com/themes.json?license_key=' . framework\Settings::getLicenseIdentifier());
+                $client->get('https://pachno.com/themes.json');
                 $json_themes = json_decode($client->getBody());
             }
             catch (\Exception $e) {}
@@ -105,17 +99,12 @@
         {
             $config_sections = framework\Settings::getConfigSections(framework\Context::getI18n());
             $breadcrumblinks = array();
-            foreach ($config_sections as $key => $sections)
-            {
-                foreach ($sections as $section)
-                {
-                    if ($key == framework\Settings::CONFIGURATION_SECTION_MODULES)
-                    {
+            foreach ($config_sections as $key => $sections) {
+                foreach ($sections as $section) {
+                    if ($key == framework\Settings::CONFIGURATION_SECTION_MODULES) {
                         $url = (is_array($section['route'])) ? make_url($section['route'][0], $section['route'][1]) : make_url($section['route']);
                         $breadcrumblinks[] = array('url' => $url, 'title' => $section['description']);
-                    }
-                    else
-                    {
+                    } else {
                         $breadcrumblinks[] = array('url' => make_url($section['route']), 'title' => $section['description']);
                     }
                 }
@@ -123,16 +112,20 @@
             $this->breadcrumblinks = $breadcrumblinks;
 
             $this->config_sections = $config_sections;
-            if ($this->selected_section == framework\Settings::CONFIGURATION_SECTION_MODULES)
-            {
-                if (framework\Context::getRouting()->getCurrentRouteName() == 'configure_modules')
-                {
+            if ($this->selected_section == framework\Settings::CONFIGURATION_SECTION_MODULES) {
+                if (framework\Context::getRouting()->getCurrentRouteName() == 'configure_modules') {
                     $this->selected_subsection = 'core';
-                }
-                else
-                {
+                } else {
                     $this->selected_subsection = framework\Context::getRequest()->getParameter('config_module');
                 }
+            }
+        }
+
+        public function componentEditScope()
+        {
+            if ($this->scope->getId()) {
+                $modules = entities\tables\Modules::getTable()->getModulesForScope($this->scope->getID());
+                $this->modules = $modules;
             }
         }
 

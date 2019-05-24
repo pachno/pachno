@@ -73,7 +73,7 @@
             </td>
         </tr>
         <tr>
-            <td class="config_explanation" colspan="2"><?php echo __('If this project has regular new main- or test-releases, you should enable releases'); ?></td>
+            <td class="config-explanation" colspan="2"><?php echo __('If this project has regular new main- or test-releases, you should enable releases'); ?></td>
         </tr>
         <tr>
             <td><label for="enable_editions_yes"><?php echo __('Use editions'); ?></label></td>
@@ -87,7 +87,7 @@
             </td>
         </tr>
         <tr>
-            <td class="config_explanation" colspan="2"><?php echo __('If the project has more than one edition which differ in features or capabilities, you should enable editions'); ?></td>
+            <td class="config-explanation" colspan="2"><?php echo __('If the project has more than one edition which differ in features or capabilities, you should enable editions'); ?></td>
         </tr>
         <tr>
             <td><label for="enable_components_yes"><?php echo __('Use components'); ?></label></td>
@@ -101,7 +101,7 @@
             </td>
         </tr>
         <tr>
-            <td class="config_explanation" colspan="2" style="padding-bottom: 10px;"><?php echo __('If the project consists of several easily identifiable sub-parts, you should enable components'); ?></td>
+            <td class="config-explanation" colspan="2" style="padding-bottom: 10px;"><?php echo __('If the project consists of several easily identifiable sub-parts, you should enable components'); ?></td>
         </tr>
     </table>
     <h4><?php echo __('Settings related to issues and issue reporting'); ?></h4>
@@ -175,7 +175,7 @@
             </td>
         </tr>
         <tr>
-            <td class="config_explanation" colspan="2"><?php echo __('Whether or not developers can change issue status without following the workflow'); ?></td>
+            <td class="config-explanation" colspan="2"><?php echo __('Whether or not developers can change issue status without following the workflow'); ?></td>
         </tr>
         <tr>
             <td><label for="allow_autoassignment_yes"><?php echo __('Enable autoassignment'); ?></label></td>
@@ -188,7 +188,7 @@
             </td>
         </tr>
         <tr>
-            <td class="config_explanation" colspan="2"><?php echo __('You can set issues to be automatically assigned to users depending on the leader set for editions, components and projects. If you wish to use this feature you can turn it on here.'); ?></td>
+            <td class="config-explanation" colspan="2"><?php echo __('You can set issues to be automatically assigned to users depending on the leader set for editions, components and projects. If you wish to use this feature you can turn it on here.'); ?></td>
         </tr>
         <tr>
             <td><label for="allow_autoassignment"><?php echo __('Reportable time units'); ?></label></td>
@@ -204,7 +204,7 @@
             </td>
         </tr>
         <tr>
-            <td class="config_explanation" colspan="2"><?php echo __('With this option you can now limit what time units can be reported for issues.'); ?></td>
+            <td class="config-explanation" colspan="2"><?php echo __('With this option you can now limit what time units can be reported for issues.'); ?></td>
         </tr>
     </table>
 <?php if ($access_level == \pachno\core\framework\Settings::ACCESS_FULL): ?>

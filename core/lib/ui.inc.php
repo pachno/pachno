@@ -62,7 +62,7 @@
      */
     function config_explanation($tooltipText, $image = 'question-circle', $image_style = 'far')
     {
-        return sprintf('<span class="config_explanation" style="position: relative;">
+        return sprintf('<span class="config-explanation">
                 %s
                 <span class="tooltip from-above rightie">%s</span>
             </span>',

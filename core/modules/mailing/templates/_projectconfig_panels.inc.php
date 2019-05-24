@@ -55,7 +55,7 @@
                 </td>
             </tr>
             <tr>
-                <td class="config_explanation" colspan="2"><?php echo __('By specifying an email address here, users can hit the "Reply" button on email notifications, and replies will be sent to the specified address instead of the usual generic no-reply address.'); ?></td>
+                <td class="config-explanation" colspan="2"><?php echo __('By specifying an email address here, users can hit the "Reply" button on email notifications, and replies will be sent to the specified address instead of the usual generic no-reply address.'); ?></td>
             </tr>
         </table>
     </form>
