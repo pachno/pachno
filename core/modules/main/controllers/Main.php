@@ -3345,7 +3345,7 @@ class Main extends framework\Action
                 case 'edit_issuetype':
                     $template_name = 'configuration/editissuetype';
                     if ($request['issuetype_id']) {
-                        $issuetype = entities\Issuetype::getB2DBTable()->selectById($request['id']);
+                        $issuetype = entities\Issuetype::getB2DBTable()->selectById($request['issuetype_id']);
                     } else {
                         $issuetype = new entities\Issuetype();
                     }

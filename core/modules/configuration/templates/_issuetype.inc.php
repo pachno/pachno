@@ -16,7 +16,7 @@
             </button>
             <div class="dropdown-container">
                 <div class="list-mode">
-                    <a class="list-item" title="<?php echo __('Show / edit issue type settings'); ?>" href="javascript:void(0);" onclick="$('edit_issuetype_<?php echo $type->getID(); ?>_form').toggle();$('issuetype_<?php echo $type->getID(); ?>_info').toggle();">
+                    <a class="list-item" title="<?php echo __('Show / edit issue type settings'); ?>" href="javascript:void(0);" onclick="Pachno.Main.Helpers.Backdrop.show('<?= make_url('get_partial_for_backdrop', ['key' => 'edit_issuetype', 'issuetype_id' => $type->getID()]); ?>');">
                         <?php echo fa_image_tag('edit', ['class' => 'icon']); ?>
                         <span class="name"><?= __('Edit'); ?></span>
                     </a>

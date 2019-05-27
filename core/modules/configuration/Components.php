@@ -8,6 +8,11 @@
     class Components extends framework\ActionComponent
     {
 
+        public function componentEditIssueType()
+        {
+            $this->icons = entities\Issuetype::getIcons();
+        }
+
         public function componentModulebox()
         {
             $this->is_default_scope = (isset($this->is_default_scope)) ? $this->is_default_scope : framework\Context::getScope()->isDefault();

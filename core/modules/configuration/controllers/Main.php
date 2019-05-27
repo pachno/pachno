@@ -190,7 +190,6 @@
         public function runConfigureIssuetypes(framework\Request $request)
         {
             $this->issue_types = entities\Issuetype::getAll();
-            $this->icons = entities\Issuetype::getIcons();
         }
 
         /**

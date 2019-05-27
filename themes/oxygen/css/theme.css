@@ -9061,7 +9061,12 @@ input.icon.secondary:disabled {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
-    align-items: center; }
+    align-items: flex-start;
+    justify-content: flex-start; }
+    .form-container .column.small {
+      flex: 0 1 35%; }
+      .form-container .column.small + .column:not(.small) {
+        max-width: none; }
   .form-container .form-row {
     flex: 1 1 100%;
     display: flex;

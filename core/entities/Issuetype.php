@@ -211,9 +211,9 @@
             $this->setType($icon);
         }
 
-        public function getFontAwesomeIcon()
+        public static function getFontAwesomeIconFromIcon($icon)
         {
-            switch ($this->getType()) {
+            switch ($icon) {
                 case self::TYPE_BUG:
                     return 'bug';
                 case self::TYPE_DOCUMENTATION:
@@ -235,6 +235,11 @@
                 default:
                     return 'question';
             }
+        }
+
+        public function getFontAwesomeIcon()
+        {
+            return self::getFontAwesomeIconFromIcon($this->getType());
         }
 
         public function getDescription()

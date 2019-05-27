@@ -20,7 +20,16 @@
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
-    align-items: center;
+    align-items: flex-start;
+    justify-content: flex-start;
+
+    &.small {
+      flex: 0 1 35%;
+
+      + .column:not(.small) {
+        max-width: none;
+      }
+    }
   }
 
   .form-row {
