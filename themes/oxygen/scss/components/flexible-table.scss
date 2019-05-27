@@ -1,0 +1,166 @@
+.flexible-table {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  flex: 1 1 auto;
+  overflow: visible;
+  width: 100%;
+
+  .row {
+    display: flex;
+    flex: 0 0 auto;
+
+    &:hover {
+      .column {
+        &:not(.invisible):not(.header) {
+          background-color: #F1F1F1;
+
+          .button.secondary {
+            background-color: rgba(255, 255, 255, .65);
+          }
+
+          .button.secondary.active {
+            background-color: rgba(225, 225, 225, .65);
+          }
+        }
+      }
+    }
+
+    &.selected {
+      .column:not(.invisible) {
+        background-color: #F1F1CA;
+      }
+    }
+
+    &.closed {
+      .column.result_issue {
+        color: #888;
+        text-decoration: line-through;
+      }
+    }
+
+    &.blocking {
+      .column:not(.invisible) {
+        background-color: #FCC;
+      }
+
+      &:hover {
+        .column:not(.invisible) {
+          background-color: #E0aC9C;
+        }
+      }
+    }
+  }
+
+  .body.children {
+    margin-left: 25px;
+  }
+
+  .column {
+    flex: 0 0 170px;
+    display: flex;
+    align-items: center;
+    padding: .35rem;
+    box-sizing: border-box;
+    border-bottom: 1px dashed rgba(12, 137, 144, .4);
+
+    a,
+    a:hover {
+      display: flex;
+      align-items: center;
+      border: none;
+      font-weight: 400;
+      padding: .2em;
+    }
+
+    .count-badge {
+      font-size: 1em;
+    }
+
+    &.header {
+      font-size: 0.8em;
+      background: transparent;
+      font-weight: 700;
+      text-transform: uppercase;
+      border: none;
+      border-bottom: 2px solid #0C8990;
+      color: #0C8990;
+
+      &.invisible {
+        border-bottom-color: transparent;
+      }
+    }
+
+    &.invisible {
+      border-bottom-color: transparent;
+    }
+
+    &.info-icons {
+      flex: 0 0 40px;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+
+      .fas,
+      .far {
+        + .fas,
+        + .far {
+          margin-left: -.2em;
+        }
+      }
+    }
+
+    .button.secondary {
+      color: #141823;
+    }
+
+    &.sca_action_selector,
+    &.sca_actions {
+      flex: 0 0 50px;
+      display: flex;
+      justify-content: center;
+    }
+
+    &.actions {
+      flex: 0 0 100px;
+      display: flex;
+      justify-content: center;
+    }
+
+    &.numeric {
+      flex: 0 0 75px;
+      display: flex;
+      justify-content: center;
+    }
+
+    &.sc_title_container,
+    &.result_issue,
+    &.name-container {
+      flex: 1 1 auto;
+      min-width: 300px;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+
+    &.sc_actions {
+      flex: 0 0 50px;
+      display: flex;
+      justify-content: flex-end;
+      position: relative;
+    }
+
+    &.smaller {
+      font-size: 0.8em;
+    }
+
+    .fas,
+    .far {
+      margin-right: .35rem;
+
+      &:last-child {
+        margin-right: 0;
+      }
+    }
+  }
+}

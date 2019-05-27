@@ -4757,28 +4757,6 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
             }
         }
 
-        Pachno.Config.Roles.getPermissions = function (url, field) {
-            $(field).toggle();
-            if ($(field).childElements().size() == 0) {
-                Pachno.Main.Helpers.ajax(url, {
-                    url_method: 'get',
-                    loading: {indicator: field + '_indicator'},
-                    success: {update: field}
-                });
-            }
-        }
-
-        Pachno.Config.Roles.getPermissionsEdit = function (url, field) {
-            $(field).toggle();
-            if ($(field).childElements().size() == 0) {
-                Pachno.Main.Helpers.ajax(url, {
-                    url_method: 'get',
-                    loading: {indicator: field + '_indicator'},
-                    success: {update: field}
-                });
-            }
-        }
-
         Pachno.Config.Roles.update = function (url, role_id) {
             Pachno.Main.Helpers.ajax(url, {
                 form: 'role_' + role_id + '_form',

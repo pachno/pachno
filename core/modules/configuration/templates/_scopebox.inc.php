@@ -23,7 +23,10 @@
     <div class="column actions" style="float: right;">
         <?php if (!$scope->isDefault()): ?>
             <div class="dropper-container">
-                <a href="javascript:void(0);" class="button icon secondary dropper"><?= fa_image_tag('ellipsis-v'); ?></a>
+                <button class="dropper button secondary">
+                    <span><?= __('Actions'); ?></span>
+                    <?= fa_image_tag('angle-down', ['class' => 'icon']); ?>
+                </button>
                 <div class="dropdown-container">
                     <div class="list-mode">
                         <a href="javascript:void(0);" class="list-item" onclick="Pachno.Main.Helpers.Backdrop.show('<?= make_url('get_partial_for_backdrop', ['key' => 'scope_config', 'scope_id' => $scope->getId()]); ?>');">

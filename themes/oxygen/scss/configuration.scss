@@ -1,13 +1,34 @@
 /* configuration section styling */
 .configuration-container {
   padding: 0 15px;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  height: 100%;
+  justify-content: flex-start;
+
+  .configuration-content {
+    flex: 1 1 auto;
+
+    &.centered {
+      //margin: 15px 0;
+      max-width: 750px;
+      //box-shadow: 0 1px 1px rgba(9, 30, 66, 0.25), 0 0 1px rgba(9, 30, 66, 0.31);
+      //background-color: #FFF;
+      //border-radius: 3px;
+      //padding: 15px;
+      //overflow-x: auto;
+      //max-height: calc(100% - 30px);
+    }
+  }
 
   .helper-text {
     font-size: 1rem;
     color: #141823;
   }
 
-  > .form-container {
+  > .form-container,
+  > .configuration-content > .form-container {
     max-width: 750px;
 
     .fancydropdown-container {
@@ -218,6 +239,51 @@
   left: 0;
   padding: 0;
   margin: 0;
+}
+
+.configurable-components-list {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: center;
+}
+
+.configurable-component {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  box-shadow: rgba(9, 30, 66, 0.25) 0 1px 1px, rgba(9, 30, 66, 0.31) 0 0 1px;
+  background-color: #FFF;
+  padding: 10px;
+  border-radius: 3px;
+  font-size: 1rem;
+  margin-bottom: .5rem;
+
+  .icon {
+    flex: 0 0 24px;
+  }
+
+  .name {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+
+    .title {
+      font-weight: 400;
+    }
+
+    .description {
+      color: rgba(0, 0, 0, .4);
+    }
+  }
+
+  .actions {
+    flex: 0 0 auto;
+    min-width: 50px;
+  }
 }
 
 .projectbox .permission_list ul {
@@ -513,17 +579,6 @@
 }
 
 /* workflow styling */
-.scheme_list li {
-  padding: 3px;
-  font-size: 14px;
-}
-
-.scheme_list li table td {
-  font-size: 14px;
-  padding: 0;
-  margin: 0;
-}
-
 .scheme_list td.workflow_info {
   width: 400px;
 }

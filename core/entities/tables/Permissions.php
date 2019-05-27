@@ -141,6 +141,17 @@
             $this->rawDelete($query);
         }
 
+        public function countRolePermissionUsers($role_id, $scope = null)
+        {
+            $scope = ($scope === null) ? framework\Context::getScope()->getID() : $scope;
+            $query = $this->getQuery();
+            $query->where(self::ROLE_ID, $role_id);
+            $query->where(self::SCOPE, $scope);
+            $query->addGroupBy(self::UID);
+
+            return (int) $this->count($query);
+        }
+
         /**
          * Removes the specified permission associated with the role.
          *

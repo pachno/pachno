@@ -7300,8 +7300,8 @@ table.sortable tr th.nosort {
 }
 
 .greybox {
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.07);
-  background-color: rgba(200, 200, 200, 0.1);
+  box-shadow: rgba(9, 30, 66, 0.25) 0px 1px 1px, rgba(9, 30, 66, 0.31) 0px 0px 1px;
+  background-color: #FFF;
   padding: 10px;
   border-radius: 3px;
 }
@@ -7383,8 +7383,8 @@ table.sortable tr th.nosort {
 .redbox, .greybox, .lightyellowbox, .yellowbox, .greenbox, .bluebox {
   padding: 10px;
   border-radius: 3px;
-  border: 1px solid rgba(50, 50, 50, 0.15);
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.07);
+  border: none;
+  box-shadow: rgba(9, 30, 66, 0.25) 0px 1px 1px, rgba(9, 30, 66, 0.31) 0px 0px 1px;
 }
 
 .save-button-container {
@@ -7654,27 +7654,7 @@ div.calendar tr.days td.otherDay {
   z-index: 100001;
 }
 
-/* Import data */
-
-#tab_csv_pane,
-#tab_sample_pane {
-  margin-top: -10px;
-}
-
-.csv_data_box {
-  width: 230px;
-}
-
-.csv_import_go input[type=submit] {
-  padding: 2px 10px;
-  margin-top: -2px;
-}
-
 /* Configure issue types */
-
-#config_issuetypes, #tab_schemes_pane, #tab_scheme_pane {
-  width: 730px !important;
-}
 
 #add_issuetype_form > label {
   margin-top: 2px;
@@ -9388,10 +9368,6 @@ td.legendLabel {
 
 #article-editor-main-container .article.syntax_mw .header.view {
   margin: 10px 0 5px 0;
-}
-
-#article-editor-main-container .greybox.categories {
-  margin: 30px 5px 20px 10px;
 }
 
 #article-editor-main-container .rounded_box.yellow.borderless {

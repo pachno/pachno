@@ -2,6 +2,7 @@
 
     namespace pachno\core\entities;
 
+    use pachno\core\entities\tables\Permissions;
     use pachno\core\framework;
 
     /**
@@ -20,6 +21,8 @@
          * @Relates(class="\pachno\core\entities\RolePermission", collection=true, foreign_column="role_id")
          */
         protected $_permissions = null;
+
+        protected $_number_of_users = null;
 
         public static function loadFixtures(Scope $scope)
         {
@@ -222,6 +225,16 @@
             }
 
             return false;
+        }
+
+        public function getNumberOfRoleUsers()
+        {
+            if ($this->_number_of_users === null)
+            {
+                $this->_number_of_users = Permissions::getTable()->countRolePermissionUsers($this->getID());
+            }
+
+            return $this->_number_of_users;
         }
 
     }

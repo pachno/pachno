@@ -497,7 +497,8 @@ class Main extends framework\Action
                 switch ($request['say'])
                 {
                     case 'get_module_updates':
-                        $addons_param = array('license_key' => framework\Settings::getLicenseIdentifier());
+                        $addons_param = [];
+                        $addons_json = [];
                         foreach ($request['addons'] as $addon) {
                             $addons_param[] = 'addons[]='.$addon;
                         }
@@ -526,7 +527,8 @@ class Main extends framework\Action
                         return $this->renderJSON($counts_json);
                         break;
                     case 'get_theme_updates':
-                        $addons_param = array('license_key' => framework\Settings::getLicenseIdentifier());
+                        $addons_param = [];
+                        $addons_json = [];
                         foreach ($request['addons'] as $addon) {
                             $addons_param[] = 'themes[]='.$addon;
                         }
@@ -3330,6 +3332,24 @@ class Main extends framework\Action
                     break;
                 case 'site_icons':
                     $template_name = 'configuration/siteicons';
+                    break;
+                case 'edit_role':
+                    $template_name = 'configuration/editrole';
+                    if ($request['role_id']) {
+                        $role = new entities\Role($request['role_id']);
+                    } else {
+                        $role = new entities\Role();
+                    }
+                    $options['role'] = $role;
+                    break;
+                case 'edit_issuetype':
+                    $template_name = 'configuration/editissuetype';
+                    if ($request['issuetype_id']) {
+                        $issuetype = entities\Issuetype::getB2DBTable()->selectById($request['id']);
+                    } else {
+                        $issuetype = new entities\Issuetype();
+                    }
+                    $options['type'] = $issuetype;
                     break;
                 case 'scope_config':
                     $template_name = 'configuration/editscope';

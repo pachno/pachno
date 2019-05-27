@@ -43,6 +43,11 @@ button, button:hover,
   display: flex;
   flex-direction: row;
   align-items: center;
+
+  span + .fas,
+  span + .far {
+    margin-left: .35rem;
+  }
 }
 
 button + button, button + button:hover,

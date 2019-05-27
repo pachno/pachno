@@ -478,9 +478,10 @@ configure_issuetypes_enable_issuetype_for_scheme:
     csrf_enabled: false
 
 configure_issuetypes_update_issuetype:
-    route: /configure/issuefields/update/issuetype/:id
+    route: /configure/issuefields/:id
     module: configuration
     action: configureIssuetypesAction
+    methods: 'POST'
     parameters:
       config_module: core
       section: 6
@@ -500,37 +501,36 @@ configure_issuetypes_update_issuetype_for_scheme:
 configure_issuetypes_schemes:
     route: /configure/issuetypes/schemes
     module: configuration
-    action: configureIssuetypes
+    action: configureIssuetypeSchemes
     parameters:
       config_module: core
-      section: 6
-      mode: schemes
+      section: 9
     csrf_enabled: false
 
 configure_issuetypes_scheme:
     route: /configure/issuetypes/scheme/:scheme_id
     module: configuration
-    action: configureIssuetypes
+    action: configureIssuetypeScheme
     parameters:
       config_module: core
-      section: 6
+      section: 9
       mode: scheme
     csrf_enabled: false
 
 configure_issuetypes_copy_scheme:
     route: /configure/issuetypes/copy/scheme/:scheme_id
     module: configuration
-    action: configureIssuetypes
+    action: configureIssuetypeScheme
     parameters:
       config_module: core
-      section: 6
+      section: 9
       mode: copy_scheme
     csrf_enabled: false
 
 configure_issuetypes_delete_scheme:
     route: /configure/issuetypes/delete/scheme/:scheme_id
     module: configuration
-    action: configureIssuetypes
+    action: configureIssuetypeScheme
     parameters:
       config_module: core
       section: 6

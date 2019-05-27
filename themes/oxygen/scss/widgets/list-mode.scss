@@ -70,6 +70,7 @@
     justify-items: flex-start;
     font-size: .85rem;
     text-transform: none;
+    white-space: nowrap;
     transition: color .25s ease-in-out, background-color .25s ease-in-out;
 
     &.disabled {
@@ -77,6 +78,23 @@
 
       .icon {
         color: rgba(0, 0, 0, .4);
+      }
+    }
+
+    &.danger {
+      color: #cb1a00;
+
+      .icon {
+        color: #cb1a00;
+      }
+
+      &:hover {
+        background-color: #cb1a00;
+        color: #FFF;
+
+        .icon {
+          color: #FFF;
+        }
       }
     }
 
@@ -96,7 +114,7 @@
       }
     }
 
-    &:not(.disabled):not(.not-selectable):not(.separator):not(.header):not(.filter-container):hover {
+    &:not(.disabled):not(.not-selectable):not(.separator):not(.header):not(.danger):not(.filter-container):hover {
       background-color: rgba(100, 100, 100, .1);
     }
     &.selected {

@@ -12,7 +12,7 @@
         <?php if ($project->isArchived()): ?>
             <span class="status-badge"><span class="name"><?= __('ARCHIVED'); ?> </span></span>
         <?php endif; ?>
-            <?= link_tag(make_url('project_dashboard', array('project_key' => $project->getKey())), $project->getName()); ?>&nbsp;<span class="project_key" style="position: relative;">(<div class="tooltip leftie"><?= __('This is the project key, used in most places when accessing the project'); ?></div><?= $project->getKey(); ?>)</span>
+        <?= link_tag(make_url('project_dashboard', array('project_key' => $project->getKey())), $project->getName()); ?>&nbsp;<span class="project_key" style="position: relative;">(<div class="tooltip leftie"><?= __('This is the project key, used in most places when accessing the project'); ?></div><?= $project->getKey(); ?>)</span>
     </div>
     <div class="column">
         <?php if ($project->getOwner() != null): ?>
@@ -28,7 +28,10 @@
     <?php if ($access_level == \pachno\core\framework\Settings::ACCESS_FULL): ?>
         <div class="column actions">
             <div class="dropper-container">
-                <button class="button secondary icon dropper"><?= fa_image_tag('ellipsis-v'); ?></button>
+                <button class="dropper button secondary">
+                    <span><?= __('Actions'); ?></span>
+                    <?= fa_image_tag('angle-down', ['class' => 'icon']); ?>
+                </button>
                 <div class="dropdown-container">
                     <div class="list-mode">
                         <?php if (!$project->isArchived()): ?>

@@ -44,7 +44,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <input type="search" name="findusers" id="findusers" value="<?= $finduser; ?>" placeholder="<?= __('Enter something to search for'); ?>" class="filter_searchfield">
+                            <input type="search" name="findusers" id="findusers" value="<?= $finduser; ?>" placeholder="<?= __('Type user details to find users'); ?>" class="filter_searchfield">
                             <button type="submit" class="button secondary">
                                 <?= fa_image_tag('find', ['class' => 'icon']); ?>
                                 <span class="name"><?= __('Find'); ?></span>

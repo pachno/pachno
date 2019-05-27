@@ -189,6 +189,17 @@
          */
         public function runConfigureIssuetypes(framework\Request $request)
         {
+            $this->issue_types = entities\Issuetype::getAll();
+            $this->icons = entities\Issuetype::getIcons();
+        }
+
+        /**
+         * Configure issue fields
+         *
+         * @param framework\Request $request The request object
+         */
+        public function runConfigureIssuetypeSchemes(framework\Request $request)
+        {
             $this->mode = $request->getParameter('mode', 'issuetypes');
             if ($this->mode == 'issuetypes' || $this->mode == 'scheme')
             {
@@ -242,20 +253,52 @@
         }
 
         /**
+         * @Route(name="configure_add_issuetype", url="/configure/issuetypes", methods="POST")
+         *
+         * @param framework\Request $request
+         */
+        public function runAddIssuetype(framework\Request $request)
+        {
+            $this->redirect('editissuetype');
+        }
+
+        /**
+         * @Route(name="configure_edit_issuetype", url="/configure/issuetypes/:issuetype_id")
+         *
+         * @param framework\Request $request
+         */
+        public function runEditIssuetype(framework\Request $request)
+        {
+            $is_new = $request->hasParameter('issuetype_id');
+
+            if ($is_new) {
+                $issuetype = new entities\Issuetype();
+            } else {
+                $issuetype = entities\Issuetype::getB2DBTable()->selectById($request['id']);
+            }
+            $issuetype->setIcon($request['icon']);
+            $issuetype->setName($request['name']);
+            $issuetype->setDescription($request['description']);
+            $issuetype->save();
+
+            return $this->renderJSON([
+                'message' => $this->getI18n()->__('Issue type saved'),
+                'component' => $this->getComponentHTML('issuetype', ['type' => $issuetype]),
+                'id' => $issuetype->getID()
+            ]);
+        }
+
+        /**
          * Perform an action on an issue type
          *
          * @param framework\Request $request
          */
-        public function runConfigureIssuetypesAction(framework\Request $request)
+        public function runConfigureIssuetype(framework\Request $request)
         {
-            if ($request->hasParameter('scheme_id'))
-            {
-                $this->scheme = entities\IssuetypeScheme::getB2DBTable()->selectById((int) $request['scheme_id']);
-            }
             $this->forward403unless($this->access_level == framework\Settings::ACCESS_FULL);
             switch ($request['mode'])
             {
-                case 'add':
+                case 'edit':
                     if ($request['name'])
                     {
                         $issuetype = new entities\Issuetype();
@@ -2484,9 +2527,6 @@
 
             switch ($request['mode'])
             {
-                case 'list_permissions':
-                    return $this->renderComponent('configuration/rolepermissionslist', array('role' => $role));
-                    break;
                 case 'edit':
                     if (!$access_level == framework\Settings::ACCESS_FULL)
                     {
