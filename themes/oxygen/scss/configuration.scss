@@ -252,37 +252,73 @@
 .configurable-component {
   flex: 0 0 auto;
   display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: flex-start;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: center;
   box-shadow: rgba(9, 30, 66, 0.25) 0 1px 1px, rgba(9, 30, 66, 0.31) 0 0 1px;
   background-color: #FFF;
-  padding: 10px;
+  padding: .35rem;
   border-radius: 3px;
   font-size: 1rem;
   margin-bottom: .5rem;
 
-  .icon {
-    flex: 0 0 24px;
-  }
-
-  .name {
-    flex: 1 1 auto;
-    display: flex;
-    flex-direction: column;
-
-    .title {
-      font-weight: 400;
-    }
-
-    .description {
-      color: rgba(0, 0, 0, .4);
-    }
-  }
-
-  .actions {
+  > .row {
     flex: 0 0 auto;
-    min-width: 50px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+
+    > .icon {
+      flex: 0 0 24px;
+      box-sizing: border-box;
+      padding: 0 .35rem;
+    }
+
+    > .name {
+      flex: 1 1 auto;
+      display: flex;
+      font-size: .9em;
+      flex-direction: column;
+
+      .title {
+        font-weight: 400;
+      }
+
+      .description {
+        color: rgba(0, 0, 0, .4);
+      }
+    }
+
+    > .actions {
+      flex: 0 0 auto;
+      min-width: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+    }
+  }
+}
+
+.configurable-component-container {
+  margin-bottom: .5rem;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+
+  > .configurable-component {
+    margin-bottom: 0;
+    z-index: 100;
+  }
+
+  .configurable-component-options {
+    flex: 0 0 auto;
+    box-sizing: border-box;
+    border-radius: 0 0 5px 5px;
+    padding: .35rem;
+    margin: 0 .35rem;
+    background: rgba(200, 200, 200, .1);
+    z-index: 50;
   }
 }
 

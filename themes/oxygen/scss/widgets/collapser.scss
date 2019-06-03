@@ -1,0 +1,22 @@
+.collapser {
+  .fas,
+  .far {
+    transition: transform .25s ease-in-out;
+    transform: rotate(0deg);
+  }
+
+  &.active {
+    transform: rotate(180deg);
+  }
+}
+
+.collapse-target {
+  max-height: 0;
+  position: relative;
+  overflow: hidden;
+
+  &.active {
+    overflow: initial;
+    max-height: none;
+  }
+}

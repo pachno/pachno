@@ -511,20 +511,12 @@ configure_issuetypes_scheme:
     route: /configure/issuetypes/scheme/:scheme_id
     module: configuration
     action: configureIssuetypeScheme
+    methods:
+      - GET
     parameters:
       config_module: core
       section: 9
       mode: scheme
-    csrf_enabled: false
-
-configure_issuetypes_copy_scheme:
-    route: /configure/issuetypes/copy/scheme/:scheme_id
-    module: configuration
-    action: configureIssuetypeScheme
-    parameters:
-      config_module: core
-      section: 9
-      mode: copy_scheme
     csrf_enabled: false
 
 configure_issuetypes_delete_scheme:

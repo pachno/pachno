@@ -27,6 +27,39 @@ define(['pachno/tools', 'pachno/index', 'domReady', 'jquery', 'mention'],
                     e.stopPropagation();
                     e.preventDefault();
                 });
+                jQuery("body").on("click", ".collapser", function (e) {
+                    let collapser_item = jQuery(this),
+
+                        is_visible = collapser_item.hasClass('active'),
+                        collapseItem = function (item) {
+                            let target = item.data('target');
+                            if (target) {
+                                jQuery(target).removeClass('active');
+                            }
+                            item.removeClass('active');
+                        },
+
+                        expandItem = function (item) {
+                            let target = item.data('target');
+                            if (target) {
+                                jQuery(target).addClass('active');
+                            }
+                            item.addClass('active');
+                        };
+
+                    if (collapser_item.data('exclusive')) {
+                        jQuery('.collapser.active').each(function () {
+                            collapseItem(collapser_item);
+                        });
+                    }
+                    if (!is_visible) {
+                        expandItem(collapser_item);
+                    } else {
+                        collapseItem(collapser_item);
+                    }
+                    e.stopPropagation();
+                    e.preventDefault();
+                });
                 jQuery("body").on("click", ".filter-container input[type=search]", function (event) {
                     event.stopPropagation();
                     event.stopImmediatePropagation();

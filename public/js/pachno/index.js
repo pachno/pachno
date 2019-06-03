@@ -4574,6 +4574,39 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
             });
         }
 
+        Pachno.Config.IssuetypeScheme.save = function (form) {
+            var $form = jQuery(this),
+                data = new FormData($form[0]),
+                $comment_container = jQuery('#comment_' + comment_id + '_content');
+
+            $form.find('.error-container').removeClass('invalid');
+            $form.find('.error-container > .error').html('');
+            $form.addClass('submitting');
+            $form.find('.button.primary').attr('disabled', true);
+
+            fetch($form.attr('action'), {
+                method: 'POST',
+                body: data
+            })
+                .then(function (response) {
+                    response.json().then(function (json) {
+                        if (response.ok) {
+                            $comment_container.html(json.comment_data);
+                            jQuery('#comment_edit_' + comment_id).removeClass('active');
+                            jQuery('#comment_' + comment_id + '_body').show();
+                            jQuery('#comment_view_' + comment_id).show();
+                        } else {
+                            $form.find('.error-container > .error').html(json.error);
+                            $form.find('.error-container').addClass('invalid');
+                        }
+
+                        $form.removeClass('submitting');
+                        $form.find('.button.primary').attr('disabled', false);
+                    });
+                });
+
+        }
+
         Pachno.Config.IssuetypeScheme.copy = function (url, scheme_id) {
             Pachno.Main.Helpers.ajax(url, {
                 form: 'copy_issuetype_scheme_' + scheme_id + '_form',

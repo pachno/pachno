@@ -1,26 +1,42 @@
-<div id="issuetype_scheme_<?php echo $scheme->getID(); ?>" class="configurable-component">
-    <div class="name">
+<?php
+
+    /** @var \pachno\core\entities\IssuetypeScheme $scheme */
+
+?>
+<div class="row" id="issuetype_scheme_<?php echo $scheme->getID(); ?>">
+    <div class="column name-container multiline">
         <div class="title"><?php echo $scheme->getName(); ?></div>
         <?php if ($scheme->getDescription()): ?>
             <div class="description"><?php echo $scheme->getDescription(); ?></div>
         <?php endif; ?>
     </div>
-    <div class="workflow_scheme_projects<?php if (!$scheme->isInUse()): ?> faded_out dark<?php endif; ?>">
-        <?php if ($scheme->isInUse()): ?>
-            <?php echo __('In use by %number_of_associated_projects project(s)', array('%number_of_associated_projects' => '<span>'.$scheme->getNumberOfProjects().'</span>')); ?>
-        <?php else: ?>
-            <?php echo __('Not used by any projects'); ?>
-        <?php endif; ?>
+    <div class="column">
+        <span class="count-badge">
+            <?php echo __('%number_of_projects project(s)', array('%number_of_projects' => $scheme->getNumberOfProjects())); ?>
+        </span>
     </div>
-    <div class="workflow_actions">
-        <div class="button-group" style="float: right;">
-            <?php echo link_tag(make_url('configure_issuetypes_scheme', array('scheme_id' => $scheme->getID())), fa_image_tag('list-alt', array('title' => __('Show / edit issue type associations'))), array('class' => 'button')); ?>
-            <a href="javascript:void(0);" onclick="$('copy_scheme_<?php echo $scheme->getID(); ?>_popup').toggle();" class="button"><?php echo fa_image_tag('clone', array('title' => __('Create a copy of this issue type scheme'))); ?></a>
-            <?php if ($scheme->isInUse()): ?>
-                <a href="javascript:void(0);" onclick="Pachno.Main.Helpers.Message.error('<?php echo __('Cannot delete issuetype scheme'); ?>', '<?php echo __('This issuetype scheme can not be deleted as it is being used by %number_of_projects project(s)', array('%number_of_projects' => $scheme->getNumberOfProjects())); ?>');" class="button destroy-link"><?php echo fa_image_tag('times', array('title' => __('Delete this issue type scheme'))); ?></a>
-            <?php else: ?>
-                <a href="javascript:void(0);" onclick="$('delete_scheme_<?php echo $scheme->getID(); ?>_popup').toggle();" class="button destroy-link"><?php echo fa_image_tag('times', array('title' => __('Delete this issue type scheme'))); ?></a>
-            <?php endif; ?>
+    <div class="column actions">
+        <div class="dropper-container">
+            <button class="dropper button secondary">
+                <span><?= __('Actions'); ?></span>
+                <?= fa_image_tag('angle-down', ['class' => 'icon']); ?>
+            </button>
+            <div class="dropdown-container">
+                <div class="list-mode">
+                    <a class="list-item" title="<?php echo __('Edit issue type scheme'); ?>" href="<?= make_url('configure_issuetypes_scheme', ['scheme_id' => $scheme->getID()]); ?>">
+                        <?php echo fa_image_tag('edit', ['class' => 'icon']); ?>
+                        <span class="name"><?= __('Edit'); ?></span>
+                    </a>
+                    <a class="list-item" href="javascript:void(0);" onclick="$('copy_scheme_<?php echo $scheme->getID(); ?>_popup').toggle();" class="button">
+                        <?php echo fa_image_tag('clone', ['class' => 'icon']); ?>
+                        <span class="name"><?= __('Make a copy'); ?></span>
+                    </a>
+                    <a class="list-item danger" title="<?php echo __('Remove issuetype'); ?>" onclick="<?php if (!$scheme->isInUse()): ?>Pachno.Main.Helpers.Dialog.show('<?php echo __('Delete this issue type?'); ?>', '<?php echo __('Do you really want to delete this issue type? Issues with this issue type will be unavailable.').'<br><b>'.__('This action cannot be reverted').'</b>'; ?>', {yes: {click: function() {Pachno.Config.Issuetype.remove('<?php echo make_url('configure_issuetypes_delete', array('id' => $scheme->getID())); ?>', <?php echo $scheme->getID(); ?>);}}, no: {click: Pachno.Main.Helpers.Dialog.dismiss}});<?php else: ?>Pachno.Main.Helpers.Message.error('<?php echo __('Cannot delete issuetype scheme'); ?>', '<?php echo __('This issuetype scheme can not be deleted as it is being used by %number_of_projects project(s)', array('%number_of_projects' => $scheme->getNumberOfProjects())); ?>');<?php endif; ?>">
+                        <?php echo fa_image_tag('times', ['class' => 'icon']); ?>
+                        <span class="name"><?= __('Delete'); ?></span>
+                    </a>
+                </div>
+            </div>
         </div>
     </div>
 </div>

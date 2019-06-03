@@ -57,6 +57,10 @@ h1, h2, h3, h4, h5, h6 {
   span {
     flex: 1 1 auto;
   }
+
+  .dropper-container {
+    flex: 0 0 auto;
+  }
 }
 
 table, img, a img {

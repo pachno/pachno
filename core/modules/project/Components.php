@@ -57,6 +57,7 @@
 
         public function componentMilestoneBox()
         {
+            $this->board = $this->board ?? null;
             $this->include_counts = (isset($this->include_counts)) ? $this->include_counts : false;
             $this->include_buttons = (isset($this->include_buttons)) ? $this->include_buttons : true;
         }

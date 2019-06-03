@@ -199,46 +199,47 @@
          */
         public function runConfigureIssuetypeSchemes(framework\Request $request)
         {
-            $this->mode = $request->getParameter('mode', 'issuetypes');
-            if ($this->mode == 'issuetypes' || $this->mode == 'scheme')
-            {
-                $this->issue_types = entities\Issuetype::getAll();
-                $this->icons = entities\Issuetype::getIcons();
-            }
-            elseif ($this->mode == 'schemes')
-            {
-                $this->issue_type_schemes = entities\IssuetypeScheme::getAll();
-            }
-            if ($request->hasParameter('scheme_id'))
-            {
-                $this->scheme = entities\IssuetypeScheme::getB2DBTable()->selectById((int) $request['scheme_id']);
-                if ($this->mode == 'copy_scheme')
-                {
-                    if ($new_name = $request['new_name'])
-                    {
-                        $new_scheme = new entities\IssuetypeScheme();
-                        $new_scheme->setName($new_name);
-                        $new_scheme->save();
-                        foreach ($this->scheme->getIssuetypes() as $issuetype)
-                        {
-                            $new_scheme->setIssuetypeEnabled($issuetype);
-                            $new_scheme->setIssuetypeRedirectedAfterReporting($issuetype, $this->scheme->isIssuetypeRedirectedAfterReporting($issuetype));
-                            $new_scheme->setIssuetypeReportable($issuetype, $this->scheme->isIssuetypeReportable($issuetype));
-                        }
-                        tables\IssueFields::getTable()->copyBySchemeIDs($this->scheme->getID(), $new_scheme->getID());
-                        return $this->renderJSON(array('content' => $this->getComponentHTML('configuration/issuetypescheme', array('scheme' => $new_scheme))));
-                    }
-                    else
-                    {
-                        $this->error = framework\Context::getI18n()->__('Please enter a valid name');
-                    }
-                }
-                elseif ($this->mode == 'delete_scheme')
-                {
-                    $this->scheme->delete();
-                    return $this->renderJSON(array('success' => true, 'message' => framework\Context::getI18n()->__('The issuetype scheme was deleted')));
-                }
-            }
+            $this->issue_type_schemes = entities\IssuetypeScheme::getAll();
+        }
+
+        /**
+         * Configure issue fields
+         *
+         * @param framework\Request $request The request object
+         */
+        public function runConfigureIssuetypeScheme(framework\Request $request)
+        {
+            $this->issue_types = entities\Issuetype::getAll();
+            $this->icons = entities\Issuetype::getIcons();
+            $this->scheme = entities\IssuetypeScheme::getB2DBTable()->selectById((int) $request['scheme_id']);
+            $this->builtin_fields = entities\Datatype::getAvailableFields(true);
+            $this->custom_fields = entities\CustomDatatype::getAll();
+
+//                if ($this->mode == 'copy_scheme')
+//                {
+//                    if ($new_name = $request['new_name'])
+//                    {
+//                        $new_scheme = new entities\IssuetypeScheme();
+//                        $new_scheme->setName($new_name);
+//                        $new_scheme->save();
+//                        foreach ($this->scheme->getIssuetypes() as $issuetype)
+//                        {
+//                            $new_scheme->setIssuetypeEnabled($issuetype);
+//                            $new_scheme->setIssuetypeRedirectedAfterReporting($issuetype, $this->scheme->isIssuetypeRedirectedAfterReporting($issuetype));
+//                            $new_scheme->setIssuetypeReportable($issuetype, $this->scheme->isIssuetypeReportable($issuetype));
+//                        }
+//                        tables\IssueFields::getTable()->copyBySchemeIDs($this->scheme->getID(), $new_scheme->getID());
+//                        return $this->renderJSON(array('content' => $this->getComponentHTML('configuration/issuetypescheme', array('scheme' => $new_scheme))));
+//                    }
+//                    else
+//                    {
+//                        $this->error = framework\Context::getI18n()->__('Please enter a valid name');
+//                    }
+//                }
+//                elseif ($this->mode == 'delete_scheme')
+//                {
+//                    $this->scheme->delete();
+//                    return $this->renderJSON(array('success' => true, 'message' => framework\Context::getI18n()->__('The issuetype scheme was deleted')));
         }
 
         /**

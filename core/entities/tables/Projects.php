@@ -181,7 +181,7 @@
             $query->where(self::DELETED, false);
             $query->where(self::ARCHIVED, false);
 
-            return $this->count($query);
+            return (int) $this->count($query);
         }
 
         public function countByWorkflowSchemeID($scheme_id)

@@ -146,13 +146,9 @@
 
         }
 
-        public function componentIssueTypeSchemeOptions()
+        public function componentSchemeIssueType()
         {
-            $this->issuetype = entities\Issuetype::getB2DBTable()->selectById($this->id);
-            $this->scheme = entities\IssuetypeScheme::getB2DBTable()->selectById($this->scheme_id);
-            $this->builtinfields = entities\Datatype::getAvailableFields(true);
-            $this->customtypes = entities\CustomDatatype::getAll();
-            $this->visiblefields = $this->scheme->getVisibleFieldsForIssuetype($this->issuetype);
+            $this->visiblefields = $this->scheme->getVisibleFieldsForIssuetype($this->type);
         }
 
         public function componentIssueType()

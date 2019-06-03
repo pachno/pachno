@@ -143,6 +143,23 @@
       white-space: nowrap;
     }
 
+    &.multiline {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: center;
+
+      .title {
+        font-weight: 400;
+        flex: 0 0 auto;
+      }
+
+      .description {
+        font-weight: 300;
+        flex: 0 0 auto;
+      }
+    }
+
     &.sc_actions {
       flex: 0 0 50px;
       display: flex;

@@ -1,86 +1,74 @@
-<?php if (!isset($scheme)): ?>
-<div class="configurable-component" style="margin: 5px 0 0 0;" id="issuetype_<?php echo $type->getID(); ?>_box">
-<?php else: ?>
-<div class="<?php if ($scheme->isSchemeAssociatedWithIssuetype($type)): ?>greenbox<?php else: ?>greybox<?php endif; ?>" style="margin: 5px 0 0 0;" id="issuetype_<?php echo $type->getID(); ?>_box">
-<?php endif; ?>
-    <?php echo image_tag('spinning_32.gif', array('style' => 'float: right; margin-left: 5px; display: none;', 'id' => 'issuetype_' . $type->getID() . '_indicator')); ?>
-    <div class="header" style="font-size: 1.1em;">
-        <span id="issuetype_<?php echo $type->getID(); ?>_name_span"><?php echo $type->getName(); ?></span>&nbsp;
-        <?php if (isset($scheme)): ?>
+<?php
+
+    /**
+     * @var \pachno\core\entities\IssuetypeScheme $scheme
+     * @var \pachno\core\entities\Issuetype $type
+     */
+
+?>
+<div class="configurable-component-container" id="issuetype_<?php echo $type->getID(); ?>_box">
+    <div class="configurable-component">
+        <div class="row">
+            <div class="icon">
+                <?= fa_image_tag($type->getFontAwesomeIcon(), ['class' => 'issuetype-icon issuetype-' . $type->getType()]); ?>
+            </div>
+            <div class="name">
+                <span class="title"><?php echo $type->getName(); ?></span>
+                <span class="description"><?= $type->getDescription(); ?></span>
+            </div>
+            <div class="icon">
+                <input class="fancycheckbox" type="checkbox" name="enabled" value="1" id="edit_issuetype_scheme_<?= $type->getId(); ?>_enabled" <?php if ($scheme->isSchemeAssociatedWithIssuetype($type)) echo 'checked'; ?>>
+                <label for="edit_issuetype_scheme_<?= $type->getId(); ?>_enabled">
+                    <?= fa_image_tag('toggle-on', ['class' => 'checked']) . fa_image_tag('toggle-off', ['class' => 'unchecked']); ?>
+                </label>
+            </div>
+            <div class="icon">
+                <button class="button secondary icon collapser" data-target="#issuetype_<?= $type->getId(); ?>_options"><?= fa_image_tag('angle-down'); ?></button>
+            </div>
+            <?php /*
             <a href="#" onclick="Pachno.Config.Issuetype.toggleForScheme('<?php echo make_url('configure_issuetypes_enable_issuetype_for_scheme', array('id' => $type->getID(), 'scheme_id' => $scheme->getID())); ?>', <?php echo $type->getID(); ?>, <?php echo $scheme->getID(); ?>, 'enable');return false;"<?php if ($scheme->isSchemeAssociatedWithIssuetype($type)): ?> style="display: none;"<?php endif; ?> class="issuetype_scheme_associate_link" id="type_toggle_<?php echo $type->getID(); ?>_enable"><?php echo __('Enable issue type for this scheme'); ?></a>
             <a href="#" onclick="Pachno.Config.Issuetype.toggleForScheme('<?php echo make_url('configure_issuetypes_disable_issuetype_for_scheme', array('id' => $type->getID(), 'scheme_id' => $scheme->getID())); ?>', <?php echo $type->getID(); ?>, <?php echo $scheme->getID(); ?>, 'disable');return false;"<?php if (!$scheme->isSchemeAssociatedWithIssuetype($type)): ?> style="display: none;"<?php endif; ?> class="issuetype_scheme_associate_link" id="type_toggle_<?php echo $type->getID(); ?>_disable"><?php echo __('Disable issue type for this scheme'); ?></a>
-        <?php endif; ?>
-        <?php echo image_tag('spinning_16.gif', array('style' => 'margin-right: 5px; float: right; display: none;', 'id' => 'delete_issuetype_'.$type->getID().'_indicator')); ?>
-        <div class="button-group" style="margin-top: -3px; float: right;">
-            <a class="button" title="<?php echo __('Show / edit issue type settings'); ?>" href="javascript:void(0);" onclick="$('edit_issuetype_<?php echo $type->getID(); ?>_form').toggle();$('issuetype_<?php echo $type->getID(); ?>_info').toggle();"><?php echo fa_image_tag('edit'); ?></a>
-            <?php if (isset($scheme)): ?>
-                <a class="button button-icon" title="<?php echo __('Show / edit available choices'); ?>" href="javascript:void(0);" onclick="Pachno.Config.Issuetype.showOptions('<?php echo make_url('configure_issuetypes_getoptions_for_scheme', array('id' => $type->getID(), 'scheme_id' => $scheme->getID())); ?>', <?php echo $type->getID(); ?>);" class="image"><?php echo fa_image_tag('square', [], 'far'); ?></a>
-            <?php endif; ?>
-            <button class="button destroy-link" title="<?php echo __('Remove issuetype'); ?>" onclick="<?php if (!$type->isAssociatedWithAnySchemes()): ?>Pachno.Main.Helpers.Dialog.show('<?php echo __('Delete this issue type?'); ?>', '<?php echo __('Do you really want to delete this issue type? Issues with this issue type will be unavailable.').'<br><b>'.__('This action cannot be reverted').'</b>'; ?>', {yes: {click: function() {Pachno.Config.Issuetype.remove('<?php echo make_url('configure_issuetypes_delete', array('id' => $type->getID())); ?>', <?php echo $type->getID(); ?>);}}, no: {click: Pachno.Main.Helpers.Dialog.dismiss}});<?php else: ?>Pachno.Main.Helpers.Message.error('<?php echo __('Cannot remove this issue type'); ?>', '<?php echo __('Issue types associated with an issue type scheme cannot be removed'); ?>');<?php endif; ?>"><?php echo fa_image_tag('times'); ?></button>
+            */ ?>
         </div>
     </div>
-    <?php if (!isset($scheme)): ?>
-        <div id="issuetype_<?php echo $type->getID(); ?>_info" class="issuetype_description">
-            <b><?php echo __('Description'); ?>:</b>&nbsp;<span id="issuetype_<?php echo $type->getID(); ?>_description_span"><?php echo $type->getDescription(); ?></span><br>
-        </div>
-    <?php endif; ?>
-    <?php if (!isset($scheme)): ?>
-        <form accept-charset="<?php echo \pachno\core\framework\Context::getI18n()->getCharset(); ?>" action="<?php echo make_url('configure_issuetypes_update_issuetype', array('id' => $type->getID())); ?>" onsubmit="Pachno.Config.Issuetype.update('<?php echo make_url('configure_issuetypes_update_issuetype', array('id' => $type->getID())); ?>', <?php echo $type->getID(); ?>);return false;" id="edit_issuetype_<?php echo $type->getID(); ?>_form" style="display: none;">
-    <?php else: ?>
-        <form accept-charset="<?php echo \pachno\core\framework\Context::getI18n()->getCharset(); ?>" action="<?php echo make_url('configure_issuetypes_update_issuetype_for_scheme', array('id' => $type->getID(), 'scheme_id' => $scheme->getID())); ?>" onsubmit="Pachno.Config.Issuetype.update('<?php echo make_url('configure_issuetypes_update_issuetype_for_scheme', array('id' => $type->getID(), 'scheme_id' => $scheme->getID())); ?>', <?php echo $type->getID(); ?>);return false;" id="edit_issuetype_<?php echo $type->getID(); ?>_form" style="display: none;">
-    <?php endif; ?>
-            <div class="rounded_box white borderless" style="clear: both; margin: 5px; font-size: 12px;">
-            <table cellpadding="0" cellspacing="0">
-                <?php if (!isset($scheme)): ?>
-                    <tr>
-                        <td style="vertical-align: top; padding-top: 5px;"><label for="issuetype_<?php echo $type->getID(); ?>_name"><?php echo __('Name'); ?></label></td>
-                        <td><input type="text" name="name" id="issuetype_<?php echo $type->getID(); ?>_name" value="<?php echo $type->getName(); ?>" style="width: 300px;"><br></td>
-                    </tr>
-                    <tr>
-                        <td style="vertical-align: top; padding-top: 5px;"><label for="issuetype_<?php echo $type->getID(); ?>_description"><?php echo __('Description'); ?></label></td>
-                        <td>
-                            <input type="text" name="description" id="issuetype_<?php echo $type->getID(); ?>_description" value="<?php echo $type->getDescription(); ?>" style="width: 600px;">
-                            <div class="faded_out" style="margin-bottom: 10px; padding: 2px; font-size: 12px;"><?php echo __('Users see this description when choosing an issue type to report'); ?>.</div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td style="vertical-align: top; padding-top: 5px;"><label for="issuetype_<?php echo $type->getID(); ?>_icon"><?php echo __('Issue type'); ?></label></td>
-                        <td>
-                            <select name="icon" id="issuetype_<?php echo $type->getID(); ?>_icon">
-                                <?php foreach ($icons as $icon => $description): ?>
-                                    <option value="<?php echo $icon; ?>"<?php if ($type->getIcon() == $icon): ?> selected<?php endif; ?>><?php echo $description; ?></option>
-                                <?php endforeach; ?>
-                            </select>
-                            <div class="faded_out" style="margin-bottom: 10px; padding: 2px; font-size: 12px;"><?php echo __('Select what kind of issue type this is'); ?></div>
-                        </td>
-                    </tr>
-                <?php else: ?>
-                    <tr>
-                        <td style="vertical-align: top; padding-top: 5px;"><label for="issuetype_<?php echo $type->getID(); ?>_reportable"><?php echo __('Reportable'); ?></label></td>
-                        <td style="padding-left: 2px;">
-                            <select name="reportable" id="issuetype_<?php echo $type->getID(); ?>_reportable" style="width:100%">
-                                <option value="1"<?php if ($scheme->isIssuetypeReportable($type)): ?> selected<?php endif; ?>><?php echo __('Users can report new issues with this issue type'); ?></option>
-                                <option value="0"<?php if (!$scheme->isIssuetypeReportable($type)): ?> selected<?php endif; ?>><?php echo __('Users cannot report new issues with this issue type, but may choose it when editing an issue'); ?></option>
-                            </select>
-                            <div class="faded_out" style="margin-bottom: 10px; padding: 2px; font-size: 12px;"><?php echo __('Whether this issue type is enabled for reporting or not'); ?>.</div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td style="vertical-align: top; padding-top: 5px;"><label for="issuetype_<?php echo $type->getID(); ?>_redirect"><?php echo __('Redirect'); ?></label></td>
-                        <td style="padding-left: 2px;">
-                            <select name="redirect_after_reporting" id="issuetype_<?php echo $type->getID(); ?>_redirect" style="width:100%">
-                                <option value="1"<?php if ($scheme->isIssuetypeRedirectedAfterReporting($type)): ?> selected<?php endif; ?>><?php echo __('The user is redirected to the reported issue after it has been reported'); ?></option>
-                                <option value="0"<?php if (!$scheme->isIssuetypeRedirectedAfterReporting($type)): ?> selected<?php endif; ?>><?php echo __('A blank "%report_issue" page with a link to the reported issue at the top will be shown after the issue is reported', array('%report_issue' => __('Report issue'))); ?></option>
-                            </select>
-                            <div class="faded_out" style="margin-bottom: 10px; padding: 2px; font-size: 12px;"><?php echo __('Whether to forward the user to the reported issue after it has been reported'); ?>.</div>
-                        </td>
-                    </tr>
+    <div class="configurable-component-options">
+        <div id="issuetype_<?php echo $type->getID(); ?>_options" class="collapse-target">
+            <h5>
+                <span class="name"><?= __('Existing fields'); ?></span>
+                <span class="dropper-container">
+                    <button class="button primary dropper"><?= __('Add field'); ?></button>
+                    <span class="dropdown-container list-mode columns two-columns">
+                        <span class="column">
+                            <span class="header"><?= __('Built-in fields'); ?></span>
+                            <?php foreach ($builtin_fields as $item): ?>
+                                <a href="javascript:void(0);" class="list-item">
+                                    <span class="name"><?= $item; ?></span>
+                                </a>
+                            <?php endforeach; ?>
+                        </span>
+                        <span class="column">
+                            <span class="header"><?= __('Custom fields'); ?></span>
+                            <?php foreach ($custom_fields as $key => $item): ?>
+                                <a href="javascript:void(0);" class="list-item">
+                                    <span class="name"><?= $key; ?></span>
+                                </a>
+                            <?php endforeach; ?>
+                        </span>
+                    </span>
+                </span>
+            </h5>
+            <div class="configurable-components-list" id="<?php echo $type->getID(); ?>_list">
+                <?php foreach ($builtin_fields as $item): ?>
+                    <?php if (!array_key_exists($item, $visiblefields)) continue; ?>
+                    <?php include_component('issuetypeschemeoption', array('issuetype' => $type, 'scheme' => $scheme, 'key' => $item, 'item' => $item, 'visiblefields' => $visiblefields)); ?>
+                <?php endforeach; ?>
+                <?php if (count($custom_fields)): ?>
+                    <?php foreach ($custom_fields as $key => $item): ?>
+                        <?php if (!array_key_exists($key, $visiblefields)) continue; ?>
+                        <?php include_component('issuetypeschemeoption', array('issuetype' => $type, 'scheme' => $scheme, 'key' => $key, 'item' => $item, 'visiblefields' => $visiblefields)); ?>
+                    <?php endforeach; ?>
                 <?php endif; ?>
-            </table>
-            <input type="submit" value="<?php echo __('Update details'); ?>" style="font-weight: bold; font-size: 13px;">
-            <?php echo __('%update_details or %cancel', array('%update_details' => '', '%cancel' => '<a href="javascript:void(0);" onclick="$(\'edit_issuetype_' . $type->getID() . '_form\').toggle();$(\'issuetype_' . $type->getID() . '_info\').toggle();"><b>' . __('cancel') . '</b></a>')); ?>
+            </div>
         </div>
-    </form>
-    <?php echo image_tag('spinning_20.gif', array('style' => 'margin-left: 5px; display: none;', 'id' => 'edit_issuetype_' . $type->getID() . '_indicator')); ?>
-    <div class="content" id="issuetype_<?php echo $type->getID(); ?>_content" style="display: none;"> </div>
+    </div>
 </div>

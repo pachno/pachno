@@ -587,8 +587,7 @@
                         }
                         return $this->renderJSON(array('sorted' => 'ok'));
                     default:
-                        if ($request->getParameter('milestone_id'))
-                            $milestone = \pachno\core\entities\tables\Milestones::getTable()->selectById($request['milestone_id']);
+                        $milestone = \pachno\core\entities\tables\Milestones::getTable()->selectById($request['milestone_id']);
 
                         $board = ($request['board_id']) ? \pachno\core\entities\tables\AgileBoards::getTable()->selectById($request['board_id']) : new \pachno\core\entities\AgileBoard();
                         $component = (isset($milestone) && $milestone instanceof \pachno\core\entities\Milestone) ? 'milestoneissues' : 'backlog';

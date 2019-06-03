@@ -29,7 +29,9 @@
         }
     }
 
+    $starthidden = $starthidden ?? false;
+    $includeform = $includeform ?? true;
+
     $action_url = make_url('project_milestone', array('project_key' => $milestone->getProject() instanceof Project ? $milestone->getProject()->getKey() : 0, 'board_id' => isset($board) ? $board->getID() : '0', 'milestone_id' => (int) $milestone->getID()));
     
     include_component('project/milestone', compact('starthidden', 'includeform', 'milestone', 'action_url', 'savebuttonlabel', 'milestoneplaceholder', 'milestoneheader', 'milestonenamelabel', 'milestone_type'));
-    

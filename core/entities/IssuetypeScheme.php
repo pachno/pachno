@@ -313,7 +313,7 @@
         
         public function getNumberOfProjects()
         {
-            return $this->_number_of_projects;
+            return (int) $this->_number_of_projects;
         }
         
         /**

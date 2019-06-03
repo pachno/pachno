@@ -45,6 +45,8 @@ h1, h2, h3, h4, h5, h6 {
   align-items: center; }
   h1 span, h2 span, h3 span, h4 span, h5 span, h6 span {
     flex: 1 1 auto; }
+  h1 .dropper-container, h2 .dropper-container, h3 .dropper-container, h4 .dropper-container, h5 .dropper-container, h6 .dropper-container {
+    flex: 0 0 auto; }
 
 table, img, a img {
   border: 0; }
@@ -8271,6 +8273,22 @@ input.icon.secondary:disabled {
   justify-self: flex-end;
   flex: 1 1 auto; }
 
+.collapser .fas,
+.collapser .far {
+  transition: transform .25s ease-in-out;
+  transform: rotate(0deg); }
+
+.collapser.active {
+  transform: rotate(180deg); }
+
+.collapse-target {
+  max-height: 0;
+  position: relative;
+  overflow: hidden; }
+  .collapse-target.active {
+    overflow: initial;
+    max-height: none; }
+
 .dropper-container {
   position: relative;
   display: inline-flex;
@@ -9778,6 +9796,17 @@ nav.sidebar {
       text-overflow: ellipsis;
       overflow: hidden;
       white-space: nowrap; }
+    .flexible-table .column.multiline {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: center; }
+      .flexible-table .column.multiline .title {
+        font-weight: 400;
+        flex: 0 0 auto; }
+      .flexible-table .column.multiline .description {
+        font-weight: 300;
+        flex: 0 0 auto; }
     .flexible-table .column.sc_actions {
       flex: 0 0 50px;
       display: flex;
@@ -12030,28 +12059,57 @@ dl.info {
 .configurable-component {
   flex: 0 0 auto;
   display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: flex-start;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: center;
   box-shadow: rgba(9, 30, 66, 0.25) 0 1px 1px, rgba(9, 30, 66, 0.31) 0 0 1px;
   background-color: #FFF;
-  padding: 10px;
+  padding: .35rem;
   border-radius: 3px;
   font-size: 1rem;
   margin-bottom: .5rem; }
-  .configurable-component .icon {
-    flex: 0 0 24px; }
-  .configurable-component .name {
-    flex: 1 1 auto;
-    display: flex;
-    flex-direction: column; }
-    .configurable-component .name .title {
-      font-weight: 400; }
-    .configurable-component .name .description {
-      color: rgba(0, 0, 0, 0.4); }
-  .configurable-component .actions {
+  .configurable-component > .row {
     flex: 0 0 auto;
-    min-width: 50px; }
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start; }
+    .configurable-component > .row > .icon {
+      flex: 0 0 24px;
+      box-sizing: border-box;
+      padding: 0 .35rem; }
+    .configurable-component > .row > .name {
+      flex: 1 1 auto;
+      display: flex;
+      font-size: .9em;
+      flex-direction: column; }
+      .configurable-component > .row > .name .title {
+        font-weight: 400; }
+      .configurable-component > .row > .name .description {
+        color: rgba(0, 0, 0, 0.4); }
+    .configurable-component > .row > .actions {
+      flex: 0 0 auto;
+      min-width: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end; }
+
+.configurable-component-container {
+  margin-bottom: .5rem;
+  position: relative;
+  display: flex;
+  flex-direction: column; }
+  .configurable-component-container > .configurable-component {
+    margin-bottom: 0;
+    z-index: 100; }
+  .configurable-component-container .configurable-component-options {
+    flex: 0 0 auto;
+    box-sizing: border-box;
+    border-radius: 0 0 5px 5px;
+    padding: .35rem;
+    margin: 0 .35rem;
+    background: rgba(200, 200, 200, 0.1);
+    z-index: 50; }
 
 .projectbox .permission_list ul {
   width: 670px; }
