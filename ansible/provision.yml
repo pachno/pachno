@@ -33,35 +33,34 @@
 
     - name: Install MariaDB, Apache httpd with PHP support, and OpenLDAP server
       apt:
-        name: "{{ item }}"
+        name:
+          # Database server.
+          - mariadb-server
+          - mariadb-client
+          - python-mysqldb
+          # Apache + PHP base requirements.
+          - apache2
+          - libapache2-mod-php7.2
+          - libapache2-mod-ruid2
+          - php-apcu-bc
+          - php7.2-gd
+          - php7.2-curl
+          - php7.2-mysql
+          - php7.2-mbstring
+          - php7.2-xml
+          - php7.2-zip
+          # Composer dependencies.
+          - unzip
+          # HTTPS/TLS.
+          - gnutls-bin
+          # Developer tools.
+          - php-xdebug
+          # LDAP server.
+          - slapd
+          - ldap-utils
+          - python-ldap
+          - php-ldap
         state: present
-      with_items:
-        # Database server.
-        - mariadb-server
-        - mariadb-client
-        - python-mysqldb
-        # Apache + PHP base requirements.
-        - apache2
-        - libapache2-mod-php7.2
-        - libapache2-mod-ruid2
-        - php-apcu-bc
-        - php7.2-gd
-        - php7.2-curl
-        - php7.2-mysql
-        - php7.2-mbstring
-        - php7.2-xml
-        - php7.2-zip
-        # Composer dependencies.
-        - unzip
-        # HTTPS/TLS.
-        - gnutls-bin
-        # Developer tools.
-        - php-xdebug
-        # LDAP server.
-        - slapd
-        - ldap-utils
-        - python-ldap
-        - php-ldap
       notify:
         - Restart apache2
 
