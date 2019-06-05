@@ -4,7 +4,7 @@
 Vagrant.configure("2") do |config|
 
   # Configure a single virtual machine.
-  config.vm.box = "bento/debian-9.4"
+  config.vm.box = "bento/debian-9.6"
   config.vm.hostname = "pachno-dev"
 
   # Forward ports for accessing the web server.

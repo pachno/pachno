@@ -4,6 +4,21 @@
   become: yes
   tasks:
 
+    - name: Enable use of HTTPS with apt repositories
+      apt:
+        name: apt-transport-https
+        state: present
+
+    - name: Import signing key for Ondřej Surý repository for PHP
+      apt_key:
+        file: /vagrant/ansible/files/sury_repo_signing_key.gpg
+        state: present
+
+    - name: Set-up the use of Ondřej Surý repository for PHP
+      apt_repository:
+        repo: deb https://packages.sury.org/php stretch main
+        state: present
+
     - name: Set configuration options for Debian packages
       debconf:
         name: "{{ item.package }}"
@@ -27,13 +42,15 @@
         - python-mysqldb
         # Apache + PHP base requirements.
         - apache2
-        - libapache2-mod-php7.0
+        - libapache2-mod-php7.2
         - libapache2-mod-ruid2
-        - php-gd
-        - php-curl
-        - php-mysql
-        - php-mbstring
-        - php-xml
+        - php-apcu-bc
+        - php7.2-gd
+        - php7.2-curl
+        - php7.2-mysql
+        - php7.2-mbstring
+        - php7.2-xml
+        - php7.2-zip
         # Composer dependencies.
         - unzip
         # HTTPS/TLS.
@@ -423,8 +440,8 @@
         group: root
         mode: 0644
       with_items:
-        - /etc/php/7.0/apache2/conf.d/99-local.ini
-        - /etc/php/7.0/cli/conf.d/99-local.ini
+        - /etc/php/7.2/apache2/conf.d/99-local.ini
+        - /etc/php/7.2/cli/conf.d/99-local.ini
       notify:
         - Restart apache2
 

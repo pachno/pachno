@@ -5,3 +5,11 @@ core/config/b2db.yml
 public/.htaccess
 installed
 files/*
+
+# Development environment artefacts.
+.vagrant/
+ansible/*.retry
+apache-access.log
+apache-error.log
+artefacts/
+pachno.log
