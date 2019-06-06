@@ -1,91 +1,51 @@
-<div class="configurable-component" id="item_<?php echo $key; ?>_<?php echo $issuetype->getID(); ?>">
-    <div class="row">
-        <div class="name" id="<?php echo $key; ?>_<?php echo $issuetype->getID(); ?>_name">
-            <?php
-                if (is_object($item))
-                {
-                    echo $item->getDescription();
-                }
-                else
-                {
-                    switch ($item)
-                    {
-                        case 'description':
-                            echo __('Issue description');
-                            break;
-                        case 'reproduction_steps':
-                            echo __('Steps to reproduce the issue');
-                            break;
-                        case 'user_pain':
-                            echo __('Triaging: User pain');
-                            break;
-                        case 'percent_complete':
-                            echo __('Percent completed');
-                            break;
-                        case 'build':
-                            echo __('Affected release(s)');
-                            break;
-                        case 'component':
-                            echo __('Affected component(s)');
-                            break;
-                        case 'edition':
-                            echo __('Affected edition(s)');
-                            break;
-                        case 'estimated_time':
-                            echo __('Estimated time to complete');
-                            break;
-                        case 'spent_time':
-                            echo __('Time spent working on the issue');
-                            break;
-                        case 'milestone':
-                            echo __('Targetted for milestone');
-                            break;
-                        case 'votes':
-                            echo __('Votes');
-                            break;
-                        case 'owned_by':
-                            echo __('Owner');
-                            break;
-                        default:
-                            echo __(ucfirst($item));
-                            break;
-                    }
+<?php
 
-                }
+    use pachno\core\entities\tables\IssueFields;
 
-            ?>
+?>
+<input type="hidden" name="field[<?= $key; ?>][visible]" value="1">
+<?php if (is_object($item) || !in_array($item, ['description', 'status'])): ?>
+    <div class="configurable-component" id="item_<?= $key; ?>_<?= $issue_type->getID(); ?>">
+        <div class="row">
+            <div class="icon">
+                <?= (is_object($item)) ? fa_image_tag('tag') : fa_image_tag(IssueFields::getFieldFontAwesomeImage($item), [], IssueFields::getFieldFontAwesomeImageStyle($item)); ?>
+            </div>
+            <div class="name">
+                <?= (is_object($item)) ? $item->getDescription() : IssueFields::getFieldDescription($item); ?>
+            </div>
+            <div class="icon">
+                <button class="button icon secondary collapser" data-target="#f_<?= $issue_type->getID(); ?>_<?= $key; ?>_options" data-exclusive><?= fa_image_tag('angle-down'); ?></button>
+            </div>
         </div>
-        <div class="icon">
-            <?php if (in_array($key, array('status'))): ?>
-                <input type="hidden" name="field[<?php echo $key; ?>][visible]" value="1"><?php echo fa_image_tag('check'); ?>
-            <?php else: ?>
-                <input type="checkbox" class="fancycheckbox" id="f_<?= $issuetype->getID(); ?>_<?= $key; ?>_visible" onclick="if (this.checked) { $('f_<?php echo $issuetype->getID(); ?>_<?php echo $key; ?>_reportable').enable(); } else { $('f_<?php echo $issuetype->getID(); ?>_<?php echo $key; ?>_reportable').disable(); }" name="field[<?php echo $key; ?>][visible]" value="1"<?php if (array_key_exists($key, $visiblefields)): ?> checked<?php endif; ?>>
-                <label for="f_<?= $issuetype->getID(); ?>_<?= $key; ?>_visible"><?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far'); ?></label>
-            <?php endif; ?>
-        </div>
-        <div class="icon">
-            <?php if (in_array($key, array('votes', 'owner', 'assignee'))): ?>
-                <input type="hidden" id="f_<?php echo $issuetype->getID(); ?>_<?php echo $key; ?>_reportable"> -
-            <?php else: ?>
-                <input type="checkbox" class="fancycheckbox" id="f_<?= $issuetype->getID(); ?>_<?= $key; ?>_reportable" onclick="if (this.checked) { $('f_<?php echo $issuetype->getID(); ?>_<?php echo $key; ?>_additional').enable();$('f_<?php echo $issuetype->getID(); ?>_<?php echo $key; ?>_required').enable(); } else { $('f_<?php echo $issuetype->getID(); ?>_<?php echo $key; ?>_additional').disable();$('f_<?php echo $issuetype->getID(); ?>_<?php echo $key; ?>_required').disable(); }" id="f_<?php echo $issuetype->getID(); ?>_<?php echo $key; ?>_reportable" name="field[<?php echo $key; ?>][reportable]" value="1"<?php if (array_key_exists($key, $visiblefields) && $visiblefields[$key]['reportable']): ?> checked<?php endif; ?><?php if (!array_key_exists($key, $visiblefields) && !in_array($key, array('status'))): ?> disabled<?php endif; ?>>
-                <label for="f_<?= $issuetype->getID(); ?>_<?= $key; ?>_reportable"><?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far'); ?></label>
-            <?php endif; ?>
-        </div>
-        <div class="icon">
-            <?php if (in_array($key, array('description', 'reproduction_steps', 'user_pain', 'votes', 'owner', 'assignee')) || (is_object($item) && $item instanceof \pachno\core\entities\CustomDatatype && $item->getType() == \pachno\core\entities\CustomDatatype::DATE_PICKER) || (is_object($item) && $item instanceof \pachno\core\entities\CustomDatatype && $item->getType() == \pachno\core\entities\CustomDatatype::DATETIME_PICKER)): ?>
-                <input type="hidden" id="f_<?php echo $issuetype->getID(); ?>_<?php echo $key; ?>_additional"> -
-            <?php else: ?>
-                <input type="checkbox" class="fancycheckbox" id="f_<?= $issuetype->getID(); ?>_<?= $key; ?>_additional" id="f_<?php echo $issuetype->getID(); ?>_<?php echo $key; ?>_additional" name="field[<?php echo $key; ?>][additional]" value="1"<?php if (array_key_exists($key, $visiblefields) && $visiblefields[$key]['additional']): ?> checked<?php endif; ?><?php if ((!array_key_exists($key, $visiblefields) || !$visiblefields[$key]['reportable']) && !in_array($key, array('status'))): ?> disabled<?php endif; ?>>
-                <label for="f_<?= $issuetype->getID(); ?>_<?= $key; ?>_additional"><?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far'); ?></label>
-            <?php endif; ?>
-        </div>
-        <div class="icon">
-            <?php if (in_array($key, array('votes', 'owner', 'assignee'))): ?>
-                <input type="hidden" id="f_<?php echo $issuetype->getID(); ?>_<?php echo $key; ?>_required"> -
-            <?php else: ?>
-                <input type="checkbox" class="fancycheckbox" id="f_<?= $issuetype->getID(); ?>_<?= $key; ?>_required" id="f_<?php echo $issuetype->getID(); ?>_<?php echo $key; ?>_required" name="field[<?php echo $key; ?>][required]" value="1"<?php if (array_key_exists($key, $visiblefields) && $visiblefields[$key]['required']): ?> checked<?php endif; ?><?php if ((!array_key_exists($key, $visiblefields) || !$visiblefields[$key]['reportable']) && !in_array($key, array('status'))): ?> disabled<?php endif; ?>>
-                <label for="f_<?= $issuetype->getID(); ?>_<?= $key; ?>_required"><?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far'); ?></label>
-            <?php endif; ?>
+        <div class="row collapse-target" id="f_<?= $issue_type->getID(); ?>_<?= $key; ?>_options">
+            <div class="form-row">
+                <?php if (in_array($key, array('votes', 'owner', 'assignee'))): ?>
+                    <input type="hidden" id="f_<?= $issue_type->getID(); ?>_<?= $key; ?>_reportable"> -
+                <?php else: ?>
+                    <input type="checkbox" class="fancycheckbox" id="f_<?= $issue_type->getID(); ?>_<?= $key; ?>_reportable" onclick="if (this.checked) { $('f_<?= $issue_type->getID(); ?>_<?= $key; ?>_required').enable();$('f_<?= $issue_type->getID(); ?>_<?= $key; ?>_required').enable(); } else { $('f_<?= $issue_type->getID(); ?>_<?= $key; ?>_required').disable();$('f_<?= $issue_type->getID(); ?>_<?= $key; ?>_required').disable(); }" name="field[<?= $key; ?>][reportable]" value="1"<?php if (array_key_exists($key, $visible_fields) && $visible_fields[$key]['reportable']): ?> checked<?php endif; ?><?php if (!array_key_exists($key, $visible_fields) && !in_array($key, array('status'))): ?> disabled<?php endif; ?>>
+                    <label for="f_<?= $issue_type->getID(); ?>_<?= $key; ?>_reportable">
+                        <?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far'); ?>
+                        <span class="name"><?= __('Show field when creating a new issue'); ?></span>
+                    </label>
+                <?php endif; ?>
+            </div>
+            <div class="form-row">
+                <input type="checkbox" class="fancycheckbox" id="f_<?= $issue_type->getID(); ?>_<?= $key; ?>_required" name="field[<?= $key; ?>][required]" value="1" <?php if (array_key_exists($key, $visible_fields) && $visible_fields[$key]['required']) echo 'checked'; ?><?php if ((!array_key_exists($key, $visible_fields) || !$visible_fields[$key]['reportable']) || in_array($key, array('votes', 'owner', 'assignee'))) echo 'disabled'; ?>>
+                <label for="f_<?= $issue_type->getID(); ?>_<?= $key; ?>_required">
+                    <?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far'); ?>
+                    <span class="name"><?= __('Make field required when creating a new issue'); ?></span>
+                </label>
+            </div>
+            <div class="form-row submit-container">
+                <button class="button secondary">
+                    <?= fa_image_tag('times', ['class' => 'icon']); ?>
+                    <span><?= __('Remove field'); ?></span>
+                </button>
+                <button class="button secondary">
+                    <?= fa_image_tag('edit', ['class' => 'icon'], 'far'); ?>
+                    <span><?= __('Edit field options'); ?></span>
+                </button>
+            </div>
         </div>
     </div>
-</div>
+<?php endif; ?>

@@ -6,7 +6,7 @@
 
 ?>
 <div class="content-with-sidebar">
-    <?php include_component('leftmenu', ['selected_section' => \pachno\core\framework\Settings::CONFIGURATION_SECTION_USERS]); ?>
+    <?php include_component('configuration/sidebar', ['selected_section' => \pachno\core\framework\Settings::CONFIGURATION_SECTION_USERS]); ?>
     <div>
         <div class="configuration-container">
             <h1>

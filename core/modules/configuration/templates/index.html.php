@@ -4,7 +4,7 @@
     
 ?>
 <div class="content-with-sidebar">
-    <?php include_component('leftmenu', ['selected_section' => '']); ?>
+    <?php include_component('configuration/sidebar', ['selected_section' => '']); ?>
     <div class="dashboard layout_standard">
         <ul class="dashboard_column">
             <li class="dashboard_view_container">

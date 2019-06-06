@@ -1,6 +1,6 @@
 <?php $pachno_response->setTitle(__('Configure roles')); ?>
 <div class="content-with-sidebar">
-    <?php include_component('leftmenu', ['selected_section' => \pachno\core\framework\Settings::CONFIGURATION_SECTION_ROLES]); ?>
+    <?php include_component('configuration/sidebar', ['selected_section' => \pachno\core\framework\Settings::CONFIGURATION_SECTION_ROLES]); ?>
     <div class="configuration-container">
         <div class="configuration-content">
             <h1>

@@ -1,6 +1,6 @@
 <?php $pachno_response->setTitle(__('Configure issue types')); ?>
 <div class="content-with-sidebar">
-    <?php include_component('leftmenu', ['selected_section' => \pachno\core\framework\Settings::CONFIGURATION_SECTION_ISSUETYPE_SCHEMES]); ?>
+    <?php include_component('configuration/sidebar', ['selected_section' => \pachno\core\framework\Settings::CONFIGURATION_SECTION_ISSUETYPE_SCHEMES]); ?>
     <div class="configuration-container">
         <div class="configuration-content">
             <h1><?php echo __('Configure issue type schemes'); ?></h1>

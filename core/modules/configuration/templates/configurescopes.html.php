@@ -1,6 +1,6 @@
 <?php $pachno_response->setTitle(__('Configure scopes')); ?>
 <div class="content-with-sidebar">
-    <?php include_component('leftmenu', array('selected_section' => \pachno\core\framework\Settings::CONFIGURATION_SECTION_SCOPES)); ?>
+    <?php include_component('configuration/sidebar', ['selected_section' => \pachno\core\framework\Settings::CONFIGURATION_SECTION_SCOPES]); ?>
     <div class="configuration-container" id="configure-scopes-container">
         <div class="configuration-content">
             <h1><?php echo __('Configure scopes'); ?></h1>

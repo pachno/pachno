@@ -1,6 +1,6 @@
 <?php $pachno_response->setTitle(__('Configure modules')); ?>
 <div class="content-with-sidebar">
-    <?php include_component('leftmenu', ['selected_section' => \pachno\core\framework\Settings::CONFIGURATION_SECTION_MODULES]); ?>
+    <?php include_component('configuration/sidebar', ['selected_section' => \pachno\core\framework\Settings::CONFIGURATION_SECTION_MODULES]); ?>
     <div class="configuration-container config-plugins" id="config_modules">
         <h3><?= __('Configure modules'); ?></h3>
         <div class="content faded_out">

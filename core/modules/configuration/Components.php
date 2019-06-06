@@ -78,7 +78,7 @@
 
         }
 
-        public function componentLeftmenu()
+        public function componentSidebar()
         {
             $config_sections = framework\Settings::getConfigSections(framework\Context::getI18n());
             $breadcrumblinks = array();
@@ -146,9 +146,11 @@
 
         }
 
-        public function componentSchemeIssueType()
+        public function componentIssueTypeSchemeOptions()
         {
-            $this->visiblefields = $this->scheme->getVisibleFieldsForIssuetype($this->type);
+            $this->builtin_fields = entities\Datatype::getAvailableFields(true);
+            $this->custom_fields = entities\CustomDatatype::getAll();
+            $this->visible_fields = $this->scheme->getVisibleFieldsForIssuetype($this->issue_type);
         }
 
         public function componentIssueType()

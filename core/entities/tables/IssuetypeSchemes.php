@@ -43,11 +43,25 @@
             return $this->select($query);
         }
 
-        public function getFirstIdByScope($scope_id)
+        public function getNumberOfSchemesInCurrentScope()
+        {
+            $query = $this->getQuery();
+            $query->where(self::SCOPE, framework\Context::getScope()->getID());
+
+            return 1;
+            return (int) $this->count($query);
+        }
+
+        public function getFirstIdByScope($scope_id = null)
         {
             $query = $this->getQuery();
             $query->addSelectionColumn(self::ID, 'id');
-            $query->where(self::SCOPE, $scope_id);
+
+            if ($scope_id === null) {
+                $query->where(self::SCOPE, framework\Context::getScope()->getID());
+            } else {
+                $query->where(self::SCOPE, $scope_id);
+            }
             $query->addOrderBy(self::ID);
             $row = $this->rawSelectOne($query);
             return ($row) ? $row->get('id') : 0;

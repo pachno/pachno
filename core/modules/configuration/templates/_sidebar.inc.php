@@ -1,4 +1,4 @@
-<nav class="sidebar">
+<nav class="sidebar <?php if (isset($collapsed) && $collapsed) echo 'collapsed'; ?>">
     <div class="list-mode">
     <?php foreach ($config_sections as $category => $config_info): ?>
         <div class="header">
@@ -28,5 +28,11 @@
             </a>
         <?php endforeach;?>
     <?php endforeach;?>
+    </div>
+    <div class="collapser list-mode">
+        <a class="list-item" href="javascript:void(0);">
+            <span class="icon"><?= fa_image_tag('angle-double-left'); ?></span>
+            <span class="name"><?= __('Toggle sidebar'); ?></span>
+        </a>
     </div>
 </nav>

@@ -436,47 +436,6 @@ configure_issuetypes_delete:
       mode: delete
     csrf_enabled: false
 
-configure_issuetypes_getoptions_for_scheme:
-    route: /configure/issuetypes/get/options/for/:id/and/scheme/:scheme_id
-    module: configuration
-    action: configureIssuetypesGetOptionsForScheme
-    parameters:
-      config_module: core
-      section: 6
-    csrf_enabled: false
-
-configure_issuetypes_update_choices_for_scheme:
-    route: /configure/issuetypes/update/choices/for/:id/and/scheme/:scheme_id
-    module: configuration
-    action: configureIssuetypesAction
-    parameters:
-      config_module: core
-      section: 6
-      mode: updatechoices
-    csrf_enabled: false
-
-configure_issuetypes_disable_issuetype_for_scheme:
-    route: /configure/issuetypes/disable/:id/for/scheme/:scheme_id
-    module: configuration
-    action: configureIssuetypesAction
-    parameters:
-      config_module: core
-      section: 6
-      mode: toggletype
-      state: disable
-    csrf_enabled: false
-
-configure_issuetypes_enable_issuetype_for_scheme:
-    route: /configure/issuetypes/enable/:id/for/scheme/:scheme_id
-    module: configuration
-    action: configureIssuetypesAction
-    parameters:
-      config_module: core
-      section: 6
-      mode: toggletype
-      state: enable
-    csrf_enabled: false
-
 configure_issuetypes_update_issuetype:
     route: /configure/issuefields/:id
     module: configuration
@@ -499,7 +458,7 @@ configure_issuetypes_update_issuetype_for_scheme:
     csrf_enabled: false
 
 configure_issuetypes_schemes:
-    route: /configure/issuetypes/schemes
+    route: /configure/issuetypeschemes
     module: configuration
     action: configureIssuetypeSchemes
     parameters:
@@ -508,7 +467,7 @@ configure_issuetypes_schemes:
     csrf_enabled: false
 
 configure_issuetypes_scheme:
-    route: /configure/issuetypes/scheme/:scheme_id
+    route: /configure/issuetypeschemes/:scheme_id
     module: configuration
     action: configureIssuetypeScheme
     methods:
@@ -518,6 +477,63 @@ configure_issuetypes_scheme:
       section: 9
       mode: scheme
     csrf_enabled: false
+
+configure_issuetypes_scheme_post:
+    route: /configure/issuetypeschemes/:scheme_id
+    module: configuration
+    action: configureIssuetypeSchemePost
+    methods:
+      - POST
+    parameters:
+      config_module: core
+      section: 9
+      mode: scheme
+    csrf_enabled: false
+
+configure_issuetypes_scheme_options:
+  route: /configure/issuetypeschemes/:scheme_id/options/:issue_type_id
+  module: configuration
+  action: configureIssuetypesGetOptionsForScheme
+  methods:
+    - GET
+  parameters:
+    config_module: core
+    section: 6
+  csrf_enabled: false
+
+configure_issuetypes_scheme_options_post:
+  route: /configure/issuetypeschemes/:scheme_id/options/:issue_type_id
+  module: configuration
+  action: configureIssuetypesSaveOptionsForScheme
+  methods:
+    - POST
+  parameters:
+    config_module: core
+    section: 6
+    mode: updatechoices
+  csrf_enabled: false
+
+configure_issuetypes_disable_issuetype_for_scheme:
+  route: /configure/issuetypes/disable/:id/for/scheme/:scheme_id
+  module: configuration
+  action: configureIssuetypesAction
+  parameters:
+    config_module: core
+    section: 6
+    mode: toggletype
+    state: disable
+  csrf_enabled: false
+
+configure_issuetypes_enable_issuetype_for_scheme:
+  route: /configure/issuetypes/enable/:id/for/scheme/:scheme_id
+  module: configuration
+  action: configureIssuetypesAction
+  parameters:
+    config_module: core
+    section: 6
+    mode: toggletype
+    state: enable
+  csrf_enabled: false
 
 configure_issuetypes_delete_scheme:
     route: /configure/issuetypes/delete/scheme/:scheme_id

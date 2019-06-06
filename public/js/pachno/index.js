@@ -4483,16 +4483,6 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
             });
         }
 
-        Pachno.Config.Issuetype.showOptions = function (url, id) {
-            $('issuetype_' + id + '_content').toggle();
-            if ($('issuetype_' + id + '_content').childElements().size() == 0) {
-                Pachno.Main.Helpers.ajax(url, {
-                    loading: {indicator: 'issuetype_' + id + '_indicator'},
-                    success: {update: 'issuetype_' + id + '_content'}
-                });
-            }
-        }
-
         Pachno.Config.Issuetype.update = function (url, id) {
             Pachno.Main.Helpers.ajax(url, {
                 form: 'edit_issuetype_' + id + '_form',
@@ -4523,14 +4513,6 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
                     remove: 'issuetype_' + id + '_box',
                     callback: Pachno.Main.Helpers.Dialog.dismiss
                 }
-            });
-        }
-
-        Pachno.Config.Issuetype.Choices.update = function (url, id) {
-            Pachno.Main.Helpers.ajax(url, {
-                form: 'update_' + id + '_choices_form',
-                loading: {indicator: 'update_' + id + '_choices_indicator'},
-                success: {hide: 'issuetype_' + id + '_content'}
             });
         }
 
@@ -4575,9 +4557,55 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
         }
 
         Pachno.Config.IssuetypeScheme.save = function (form) {
-            var $form = jQuery(this),
+            const $form = jQuery(form),
+                data = new FormData($form[0]);
+
+            $form.find('.error-container').removeClass('invalid');
+            $form.find('.error-container > .error').html('');
+            $form.addClass('submitting');
+
+            fetch($form.attr('action'), {
+                method: 'POST',
+                body: data
+            })
+                .then(function (response) {
+                    response.json().then(function (json) {
+                        if (!response.ok) {
+                            $form.find('.error-container > .error').html(json.error);
+                            $form.find('.error-container').addClass('invalid');
+                        }
+                        $form.removeClass('submitting');
+                    });
+                });
+        };
+
+        Pachno.Config.IssuetypeScheme.showOptions = function ($item) {
+            const $container = jQuery('#issue-type-configuration-container'),
+                $options = jQuery('#selected-issue-type-options'),
+                url = $item.data('options-url');
+
+            $options.html('<div><i class="fas fa-spin fa-spinner"></i></div>');
+            $container.addClass('active');
+            $container.find('.issue-type-scheme-issue-type').removeClass('active');
+            $item.addClass('active');
+
+            fetch(url, {
+                method: 'GET'
+            })
+                .then(function (response) {
+                    response.json().then(function (json) {
+                        if (response.ok) {
+                            $options.html(json.content);
+                        }
+                    });
+                });
+        };
+
+        Pachno.Config.IssuetypeScheme.saveOptions = function (form) {
+            const $container = jQuery('#issue-type-configuration-container'),
+                $form = jQuery(form),
                 data = new FormData($form[0]),
-                $comment_container = jQuery('#comment_' + comment_id + '_content');
+                $options = jQuery('#selected-issue-type-options');
 
             $form.find('.error-container').removeClass('invalid');
             $form.find('.error-container > .error').html('');
@@ -4591,21 +4619,16 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
                 .then(function (response) {
                     response.json().then(function (json) {
                         if (response.ok) {
-                            $comment_container.html(json.comment_data);
-                            jQuery('#comment_edit_' + comment_id).removeClass('active');
-                            jQuery('#comment_' + comment_id + '_body').show();
-                            jQuery('#comment_view_' + comment_id).show();
+                            $container.removeClass('active');
+                            $container.find('.issue-type-scheme-issue-type').removeClass('active');
+                            $options.html('');
                         } else {
                             $form.find('.error-container > .error').html(json.error);
                             $form.find('.error-container').addClass('invalid');
                         }
-
-                        $form.removeClass('submitting');
-                        $form.find('.button.primary').attr('disabled', false);
                     });
                 });
-
-        }
+        };
 
         Pachno.Config.IssuetypeScheme.copy = function (url, scheme_id) {
             Pachno.Main.Helpers.ajax(url, {

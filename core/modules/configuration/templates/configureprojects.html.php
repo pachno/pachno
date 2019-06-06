@@ -5,7 +5,7 @@
     
 ?>
 <div class="content-with-sidebar">
-    <?php include_component('leftmenu', array('selected_section' => framework\Settings::CONFIGURATION_SECTION_PROJECTS)); ?>
+    <?php include_component('configuration/sidebar', ['selected_section' => framework\Settings::CONFIGURATION_SECTION_PROJECTS]); ?>
     <div class="configuration-container">
         <div class="configuration-content">
             <h1><?php echo __('Configure projects'); ?></h1>

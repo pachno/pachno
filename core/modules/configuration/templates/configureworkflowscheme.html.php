@@ -8,7 +8,7 @@
     
 ?>
 <div class="content-with-sidebar">
-    <?php include_component('leftmenu', ['selected_section' => \pachno\core\framework\Settings::CONFIGURATION_SECTION_WORKFLOW]); ?>
+    <?php include_component('configuration/sidebar', ['selected_section' => \pachno\core\framework\Settings::CONFIGURATION_SECTION_WORKFLOW]); ?>
     <div class="configuration-container">
         <?php include_component('configuration/workflowmenu', array('selected_tab' => 'scheme', 'scheme' => $workflow_scheme)); ?>
         <div class="content" id="workflow_steps_container">

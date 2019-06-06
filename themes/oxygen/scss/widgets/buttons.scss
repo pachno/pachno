@@ -122,6 +122,15 @@ input.button.secondary.highlight,
   border: 1px solid #0C8990;
   color: #0C8990;
 }
+button.secondary.enabled,
+input.button.secondary.enabled,
+.button.secondary.enabled {
+  color: #0E9A00;
+
+  &:hover {
+    color: #0E9A00;
+  }
+}
 button.icon,
 .button.icon,
 input.button.icon,

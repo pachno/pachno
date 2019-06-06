@@ -1,3 +1,5 @@
+@import 'variables';
+
 /* configuration section styling */
 .configuration-container {
   padding: 0 15px;
@@ -36,27 +38,31 @@
         background: rgb(255, 255, 255);
         border-color: rgba(200, 200, 200, .3);
         &:hover {
-          border-color: #0C8990;
+          border-color: $theme-primary;
           cursor: pointer;
         }
         &.active {
-          border-color: #0C8990;
+          border-color: $theme-primary;
         }
       }
     }
 
     input[type=search],
     input[type=text] {
-      background: rgb(255, 255, 255);
-      border: 1px solid rgba(200, 200, 200, .3);
-      padding: .5em 1em;
       font-size: 1.1em;
       border-radius: 4px;
       color: #141823;
-      margin: 0 .35rem 0 0;
-      flex: 1 1 65%;
-      &:hover {
-        border-color: #0C8990;
+
+      &:not(.invisible) {
+        background: rgb(255, 255, 255);
+        border: 1px solid rgba(200, 200, 200, .3);
+        padding: .5em 1em;
+        margin: 0 .35rem 0 0;
+        flex: 1 1 65%;
+
+        &:hover {
+          border-color: $theme-primary;
+        }
       }
     }
   }
@@ -247,6 +253,12 @@
   flex-direction: column;
   align-items: stretch;
   justify-content: center;
+
+  & + .configurable-components-list {
+    margin-top: .75rem;
+    border-top: 1px solid rgba(200, 200, 200, .8);
+    padding-top: 1rem;
+  }
 }
 
 .configurable-component {
@@ -257,29 +269,89 @@
   justify-content: center;
   box-shadow: rgba(9, 30, 66, 0.25) 0 1px 1px, rgba(9, 30, 66, 0.31) 0 0 1px;
   background-color: #FFF;
-  padding: .35rem;
+  padding: 0;
   border-radius: 3px;
   font-size: 1rem;
   margin-bottom: .5rem;
+  transition: border .25s ease-in-out;
+
+  border: none;
+
+  &:hover {
+    border: none;
+  }
+
+  &.active {
+    border: 2px solid $theme-primary;
+    background-color: $theme-primary;
+
+    > .row {
+      > .icon:not(.open),
+      > .name {
+        background-color: #FFF;
+      }
+
+      > *:first-child {
+        border-radius: 3px 0 0 3px;
+      }
+
+      > div:last-of-type {
+        border-radius: 0 3px 3px 0;
+      }
+
+      > .icon.open,
+      > .icon.open:hover {
+        background-color: transparent;
+        color: #FFF;
+      }
+    }
+  }
 
   > .row {
     flex: 0 0 auto;
     display: flex;
     flex-direction: row;
-    align-items: center;
+    flex-wrap: wrap;
+    align-items: stretch;
     justify-content: flex-start;
 
     > .icon {
-      flex: 0 0 24px;
+      flex: 0 0 42px;
       box-sizing: border-box;
-      padding: 0 .35rem;
+      padding: .35rem;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      border: none;
+      border-radius: 0;
+      text-align: center;
+      color: #141823;
+
+      &.open:hover {
+        background: rgba(220, 220, 220, .15);
+        color: #3c1642;
+      }
+
+      .fas:not(.checked):not(.unchecked),
+      .far:not(.checked):not(.unchecked) {
+        flex: 0 0 auto;
+        margin-left: auto;
+        margin-right: auto;
+      }
     }
 
     > .name {
+      padding: .35rem;
       flex: 1 1 auto;
       display: flex;
       font-size: .9em;
       flex-direction: column;
+      align-items: flex-start;
+      justify-content: center;
+      border: none;
+      color: #141823;
 
       .title {
         font-weight: 400;
@@ -310,15 +382,35 @@
     margin-bottom: 0;
     z-index: 100;
   }
+}
+
+.issue-type-configuration-container {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: stretch;
+
+  .issue-type-list {
+    flex: 1 1 auto;
+  }
 
   .configurable-component-options {
-    flex: 0 0 auto;
+    flex: 0 0 0;
     box-sizing: border-box;
-    border-radius: 0 0 5px 5px;
-    padding: .35rem;
-    margin: 0 .35rem;
-    background: rgba(200, 200, 200, .1);
-    z-index: 50;
+    display: flex;
+    flex-direction: column;
+    margin: 0 0 0 .35rem;
+    padding: 0 .35rem;
+  }
+
+  &.active {
+    .issue-type-list {
+      flex: 0 0 250px;
+    }
+
+    .configurable-component-options {
+      flex: 1 1 auto;
+    }
   }
 }
 

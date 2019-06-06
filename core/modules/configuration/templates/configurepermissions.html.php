@@ -4,7 +4,7 @@
 
 ?>
 <div class="content-with-sidebar">
-    <?php include_component('leftmenu', ['selected_section' => \pachno\core\framework\Settings::CONFIGURATION_SECTION_PERMISSIONS]); ?>
+    <?php include_component('configuration/sidebar', ['selected_section' => \pachno\core\framework\Settings::CONFIGURATION_SECTION_PERMISSIONS]); ?>
     <div class="configuration-container" id="configure_permissions_advanced">
         <h3>
             <?php echo link_tag(make_url('configure_roles'), '&lt;&lt;'.__('Back to roles'), array('class' => 'button button-green')); ?>

@@ -3,7 +3,7 @@
     $pachno_response->addStylesheet(make_url('asset_css_unthemed', array('css' => 'spectrum.css')));
 ?>
 <div class="content-with-sidebar">
-    <?php include_component('leftmenu', ['selected_section' => \pachno\core\framework\Settings::CONFIGURATION_SECTION_ISSUEFIELDS]); ?>
+    <?php include_component('configuration/sidebar', ['selected_section' => \pachno\core\framework\Settings::CONFIGURATION_SECTION_ISSUEFIELDS]); ?>
     <div class="configuration-container" id="config_issuefields">
         <h3><?php echo __('Configure issue fields'); ?></h3>
         <div class="content faded_out">

@@ -1,6 +1,6 @@
 <?php $pachno_response->setTitle(__('Configure theme(s)')); ?>
 <div class="content-with-sidebar">
-    <?php include_component('leftmenu', ['selected_section' => \pachno\core\framework\Settings::CONFIGURATION_SECTION_THEMES]); ?>
+    <?php include_component('configuration/sidebar', ['selected_section' => \pachno\core\framework\Settings::CONFIGURATION_SECTION_THEMES]); ?>
     <div class="configuration-container config-plugins" id="config_themes">
         <h3><?= __('Configure theme(s)'); ?></h3>
         <div class="content faded_out">

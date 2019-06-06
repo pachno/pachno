@@ -199,7 +199,36 @@
          */
         public function runConfigureIssuetypeSchemes(framework\Request $request)
         {
-            $this->issue_type_schemes = entities\IssuetypeScheme::getAll();
+            if (tables\IssuetypeSchemes::getTable()->getNumberOfSchemesInCurrentScope() == 1) {
+                $scheme_id = tables\IssuetypeSchemes::getTable()->getNumberOfSchemesInCurrentScope();
+                $this->forward($this->getRouting()->generate('configure_issuetypes_scheme', ['scheme_id' => $scheme_id]));
+            } else {
+                $this->issue_type_schemes = entities\IssuetypeScheme::getAll();
+            }
+        }
+
+        /**
+         * Configure issue fields
+         *
+         * @param framework\Request $request The request object
+         */
+        public function runConfigureIssuetypeSchemePost(framework\Request $request)
+        {
+            $scheme_id = $request['scheme_id'];
+            $scheme = ($scheme_id) ? tables\IssuetypeSchemes::getTable()->selectById($scheme_id) : new entities\IssuetypeScheme();
+
+            if (!$scheme instanceof entities\IssuetypeScheme) {
+                $this->getResponse()->setHttpStatus(400);
+                return $this->renderJSON(['error' => framework\Context::getI18n()->__('Please provide a valid name for the issue type')]);
+            }
+
+            if ($request['name']) {
+                $scheme->setName($request['name']);
+            }
+
+            $scheme->save();
+
+            return $this->renderJSON(['message' => framework\Context::getI18n()->__('Issue type scheme saved')]);
         }
 
         /**
@@ -209,11 +238,10 @@
          */
         public function runConfigureIssuetypeScheme(framework\Request $request)
         {
+            $this->number_of_schemes = tables\IssuetypeSchemes::getTable()->getNumberOfSchemesInCurrentScope();
             $this->issue_types = entities\Issuetype::getAll();
             $this->icons = entities\Issuetype::getIcons();
             $this->scheme = entities\IssuetypeScheme::getB2DBTable()->selectById((int) $request['scheme_id']);
-            $this->builtin_fields = entities\Datatype::getAvailableFields(true);
-            $this->custom_fields = entities\CustomDatatype::getAll();
 
 //                if ($this->mode == 'copy_scheme')
 //                {
@@ -249,7 +277,34 @@
          */
         public function runConfigureIssuetypesGetOptionsForScheme(framework\Request $request)
         {
-            return $this->renderComponent('issuetypeschemeoptions', array('id' => $request['id'], 'scheme_id' => $request['scheme_id']));
+            $issue_type = tables\IssueTypes::getTable()->selectById($request['issue_type_id']);
+            $scheme = tables\IssuetypeSchemes::getTable()->selectById($request['scheme_id']);
+
+            return $this->renderJSON(['content' => $this->getComponentHTML('configuration/issuetypeschemeoptions', ['issue_type' => $issue_type, 'scheme' => $scheme])]);
+        }
+
+        /**
+         * Get issue type options for a specific issue type
+         *
+         * @param framework\Request $request
+         */
+        public function runConfigureIssuetypesSaveOptionsForScheme(framework\Request $request)
+        {
+            $issue_type = tables\IssueTypes::getTable()->selectById($request['issue_type_id']);
+            $scheme = tables\IssuetypeSchemes::getTable()->selectById($request['scheme_id']);
+
+            if (!$issue_type instanceof entities\Issuetype || !$scheme instanceof entities\IssuetypeScheme)
+            {
+                $this->getResponse()->setHttpStatus(400);
+                return $this->renderJSON(['error' => framework\Context::getI18n()->__('Please provide a valid issue type and scheme')]);
+            }
+
+            $scheme->clearAvailableFieldsForIssuetype($issue_type);
+            foreach ($request->getParameter('field', []) as $key => $details)
+            {
+                $scheme->setFieldAvailableForIssuetype($issue_type, $key, $details);
+            }
+            return $this->renderJSON(['message' => framework\Context::getI18n()->__('Available choices updated')]);
         }
 
         /**

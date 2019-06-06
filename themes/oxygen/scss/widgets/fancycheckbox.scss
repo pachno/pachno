@@ -28,7 +28,7 @@
     }
   }
 
-  &:checked {
+  &:checked:not(:disabled) {
     + label {
       color: #88AB75;
     }

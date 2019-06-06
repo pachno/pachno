@@ -30,7 +30,7 @@
 
 </script>
 <div class="content-with-sidebar">
-    <?php include_component('leftmenu', ['selected_section' => \pachno\core\framework\Settings::CONFIGURATION_SECTION_UPLOADS]); ?>
+    <?php include_component('configuration/sidebar', ['selected_section' => \pachno\core\framework\Settings::CONFIGURATION_SECTION_UPLOADS]); ?>
     <div class="configuration-container">
         <h3><?php echo __('Configure uploads & attachments'); ?></h3>
         <?php if (\pachno\core\framework\Context::getScope()->getMaxUploadLimit()): ?>

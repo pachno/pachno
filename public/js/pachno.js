@@ -18,6 +18,12 @@ define(['pachno/tools', 'pachno/index', 'domReady', 'jquery', 'mention'],
                     jQuery(this).closest('.sidebar').toggleClass('collapsed');
                 });
 
+                jQuery('form[data-interactive-form]').on('blur', 'input', function () {
+                    const $form = jQuery(this).parents('form');
+
+                    $form.submit();
+                });
+
                 jQuery("body").on("click", ".dropper", function (e) {
                     var is_visible = jQuery(this).hasClass('active');
                     Pachno.Main.Profile.clearPopupsAndButtons();

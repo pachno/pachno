@@ -4,7 +4,7 @@
 
 ?>
 <div class="content-with-sidebar">
-    <?php include_component('leftmenu', ['selected_section' => \pachno\core\framework\Settings::CONFIGURATION_SECTION_MODULES]); ?>
+    <?php include_component('configuration/sidebar', ['selected_section' => \pachno\core\framework\Settings::CONFIGURATION_SECTION_MODULES]); ?>
     <div class="configuration-container" id="config_modules">
         <h3><?php echo __('Configure module "%module_name"', array('%module_name' => $module->getLongName())); ?></h3>
         <?php if ($module_error !== null): ?>

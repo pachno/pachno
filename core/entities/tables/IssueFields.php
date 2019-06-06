@@ -55,6 +55,94 @@
             $this->addIndex('scope_issuetypescheme_issuetype', array(self::SCOPE, self::ISSUETYPE_SCHEME_ID, self::ISSUETYPE_ID));
         }
 
+        public static function getFieldDescription($key)
+        {
+            switch ($key)
+            {
+                case 'description':
+                    return framework\Context::getI18n()->__('Issue description');
+                    break;
+                case 'reproduction_steps':
+                    return framework\Context::getI18n()->__('Steps to reproduce the issue');
+                    break;
+                case 'user_pain':
+                    return framework\Context::getI18n()->__('Triaging: User pain');
+                    break;
+                case 'percent_complete':
+                    return framework\Context::getI18n()->__('Percent completed');
+                    break;
+                case 'build':
+                    return framework\Context::getI18n()->__('Affected release(s)');
+                    break;
+                case 'component':
+                    return framework\Context::getI18n()->__('Affected component(s)');
+                    break;
+                case 'edition':
+                    return framework\Context::getI18n()->__('Affected edition(s)');
+                    break;
+                case 'estimated_time':
+                    return framework\Context::getI18n()->__('Estimated time to complete');
+                    break;
+                case 'spent_time':
+                    return framework\Context::getI18n()->__('Time spent working on the issue');
+                    break;
+                case 'milestone':
+                    return framework\Context::getI18n()->__('Targetted for milestone');
+                    break;
+                case 'votes':
+                    return framework\Context::getI18n()->__('Votes');
+                    break;
+                case 'owned_by':
+                    return framework\Context::getI18n()->__('Owner');
+                    break;
+                default:
+                    return framework\Context::getI18n()->__(ucfirst($key));
+                    break;
+            }
+        }
+
+        public static function getFieldFontAwesomeImageStyle($key)
+        {
+            switch ($key)
+            {
+                default:
+                    return 'fas';
+                    break;
+            }
+        }
+
+        public static function getFieldFontAwesomeImage($key)
+        {
+            switch ($key)
+            {
+                case 'description':
+                case 'reproduction_steps':
+                    return 'align-left';
+                case 'user_pain':
+                    return 'chart-line';
+                case 'percent_complete':
+                    return 'percentage';
+                case 'build':
+                    return 'compact-disc';
+                case 'component':
+                    return 'boxes';
+                case 'edition':
+                    return 'box';
+                case 'estimated_time':
+                case 'spent_time':
+                    return 'clock';
+                case 'milestone':
+                    return 'list-alt';
+                case 'votes':
+                    return 'vote-yea';
+                case 'owned_by':
+                    return 'user';
+                default:
+                    return 'tag';
+                    break;
+            }
+        }
+
         public function getSchemeVisibleFieldsArrayByIssuetypeID($scheme_id, $issuetype_id)
         {
             $res = $this->getBySchemeIDandIssuetypeID($scheme_id, $issuetype_id);
@@ -115,10 +203,6 @@
             if (array_key_exists('reportable', $details))
             {
                 $insertion->add(self::REPORTABLE, true);
-            }
-            if (array_key_exists('additional', $details))
-            {
-                $insertion->add(self::ADDITIONAL, true);
             }
             if (array_key_exists('required', $details))
             {

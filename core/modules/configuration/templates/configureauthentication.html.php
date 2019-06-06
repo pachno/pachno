@@ -1,6 +1,6 @@
 <?php $pachno_response->setTitle(__('Configure authentication')); ?>
 <div class="content-with-sidebar">
-    <?php include_component('leftmenu', ['selected_section' => \pachno\core\framework\Settings::CONFIGURATION_SECTION_AUTHENTICATION]); ?>
+    <?php include_component('configuration/sidebar', ['selected_section' => \pachno\core\framework\Settings::CONFIGURATION_SECTION_AUTHENTICATION]); ?>
     <div class="configuration-container">
         <h3><?php echo __('Configure authentication'); ?></h3>
         <div class="message-box type-warning">
