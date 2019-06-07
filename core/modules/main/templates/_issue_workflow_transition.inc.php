@@ -2,7 +2,7 @@
     <?php if ($issue->isWorkflowTransitionsAvailable()): ?>
         <?php foreach ($issue->getAvailableWorkflowTransitions() as $transition): ?>
             <?php if ($transition instanceof \pachno\core\entities\WorkflowTransition && $transition->hasTemplate()): ?>
-                <?php include_component($transition->getTemplate(), compact('issue', 'transition', 'ajax')); ?>
+                <?php include_component($transition->getTemplate(), compact('issue', 'transition')); ?>
             <?php endif; ?>
         <?php endforeach; ?>
     <?php endif; ?>

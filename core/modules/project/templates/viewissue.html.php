@@ -19,7 +19,7 @@
         <?php include_component('project/sidebar', ['collapsed' => true]); ?>
         <div id="issue_<?php echo $issue->getID(); ?>" class="viewissue-container <?php if ($issue->isBlocking()) echo ' blocking'; ?>">
             <?php include_component('project/viewissueheader', ['issue' => $issue]); ?>
-            <?php include_component('project/viewissuemessages', compact('issue', 'error', 'issue_unsaved', 'workflow_message', 'issue_message', 'issue_file_uploaded')); ?>
+            <?php include_component('project/viewissuemessages', compact('issue')); ?>
             <div id="issue-container" class="issue-card">
                 <div id="issue-main-container" class="issue-card-main">
                     <div class="card-header">
