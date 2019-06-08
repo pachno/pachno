@@ -6,14 +6,20 @@
      * @var \pachno\core\entities\CustomDatatype[] $custom_fields
      */
 
-?>
-<div class="configurable-component issue-type-scheme-issue-type" data-id="<?= $type->getID(); ?>" id="issuetype_<?php echo $type->getID(); ?>_box" data-options-url="<?= make_url('configure_issuetypes_scheme_options', ['scheme_id' => $scheme->getID(), 'issue_type_id' => $type->getId()]); ?>">
+use pachno\core\framework\Context; ?>
+<div class="configurable-component issue-type-scheme-issue-type" data-issue-type data-id="<?= $type->getID(); ?>" id="issuetype_<?php echo $type->getID(); ?>_box" data-options-url="<?= make_url('configure_issuetypes_scheme_options', ['scheme_id' => $scheme->getID(), 'issue_type_id' => $type->getId()]); ?>">
     <div class="row">
         <div class="icon">
             <?= fa_image_tag($type->getFontAwesomeIcon(), ['class' => 'issuetype-icon issuetype-' . $type->getType()]); ?>
         </div>
         <div class="name">
-            <span class="title"><?php echo $type->getName(); ?></span>
+            <div class="title form-container">
+                <form accept-charset="<?= Context::getI18n()->getCharset(); ?>" action="<?= make_url('configure_edit_issuetype', ['issuetype_id' => $type->getID()]); ?>" onsubmit="Pachno.Config.Issuetype.save(this);return false;" data-interactive-form>
+                    <div class="form-row">
+                        <input type="text" class="invisible" value="<?php echo $type->getName(); ?>">
+                    </div>
+                </form>
+            </div>
         </div>
         <div class="icon"<?php if ($scheme->isSchemeAssociatedWithIssuetype($type)): ?> style="display: none;"<?php endif; ?> id="type_toggle_<?php echo $type->getID(); ?>_enable">
             <a href="javascript:void(0);" onclick="Pachno.Config.Issuetype.toggleForScheme('<?php echo make_url('configure_issuetypes_enable_issuetype_for_scheme', array('id' => $type->getID(), 'scheme_id' => $scheme->getID())); ?>', <?php echo $type->getID(); ?>, <?php echo $scheme->getID(); ?>, 'enable');return false;" class="button secondary icon"><?= fa_image_tag('toggle-off'); ?></a>

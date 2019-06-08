@@ -30,7 +30,7 @@
             <div class="issue-type-configuration-container" id="issue-type-configuration-container">
                 <div class="issue-type-list">
                     <h3><?php echo __('Issue types'); ?></h3>
-                    <div class="configurable-components-list">
+                    <div class="configurable-components-list" id="issue-types-list">
                         <?php foreach ($issue_types as $type): ?>
                             <?php include_component('schemeissuetype', ['type' => $type, 'scheme' => $scheme]); ?>
                         <?php endforeach; ?>

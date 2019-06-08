@@ -3345,9 +3345,13 @@ class Main extends framework\Action
                 case 'edit_issuetype':
                     $template_name = 'configuration/editissuetype';
                     if ($request['issuetype_id']) {
-                        $issuetype = entities\Issuetype::getB2DBTable()->selectById($request['issuetype_id']);
+                        $issuetype = tables\IssueTypes::getTable()->selectById($request['issuetype_id']);
                     } else {
                         $issuetype = new entities\Issuetype();
+                    }
+                    if ($request['scheme_id']) {
+                        $scheme = tables\IssuetypeSchemes::getTable()->selectById($request['scheme_id']);
+                        $options['scheme'] = $scheme;
                     }
                     $options['type'] = $issuetype;
                     break;

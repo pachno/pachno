@@ -2,24 +2,17 @@
 
     namespace pachno\core\entities\tables;
 
+    use pachno\core\entities\IssuetypeScheme;
     use pachno\core\framework,
         b2db\Criteria;
 
     /**
      * Issuetype schemes table
      *
-     * @author Daniel Andre Eikeland <zegenie@zegeniestudios.net>
-     * @version 3.1
-     * @license http://opensource.org/licenses/MPL-2.0 Mozilla Public License 2.0 (MPL 2.0)
      * @package pachno
      * @subpackage tables
-     */
-
-    /**
-     * Issuetype schemes table
      *
-     * @package pachno
-     * @subpackage tables
+     * @method IssuetypeScheme selectById(integer $id, Criteria $query = null, $join = 'all') Retrieves an issue
      *
      * @Table(name="issuetype_schemes")
      * @Entity(class="\pachno\core\entities\IssuetypeScheme")

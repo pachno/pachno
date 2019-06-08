@@ -411,6 +411,8 @@ configure_issuetypes:
     route: /configure/issuetypes
     module: configuration
     action: configureIssuetypes
+    methods:
+      - GET
     parameters:
       config_module: core
       section: 6

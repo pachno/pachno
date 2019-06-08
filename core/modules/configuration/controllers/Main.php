@@ -314,7 +314,7 @@
          */
         public function runAddIssuetype(framework\Request $request)
         {
-            $this->redirect('editissuetype');
+            return $this->redirect('editissuetype');
         }
 
         /**
@@ -324,22 +324,44 @@
          */
         public function runEditIssuetype(framework\Request $request)
         {
-            $is_new = $request->hasParameter('issuetype_id');
+            $is_new = !$request->getParameter('issuetype_id');
 
             if ($is_new) {
                 $issuetype = new entities\Issuetype();
             } else {
-                $issuetype = entities\Issuetype::getB2DBTable()->selectById($request['id']);
+                $issuetype = entities\Issuetype::getB2DBTable()->selectById($request['issuetype_id']);
             }
+
+            if ($request->hasParameter('icon') && !$request['icon']) {
+                $this->getResponse()->setHttpStatus(400);
+                return $this->renderJSON(['error' => framework\Context::getI18n()->__('Please choose an icon')]);
+            }
+
+            if ($request->hasParameter('name') && !trim($request['name'])) {
+                $this->getResponse()->setHttpStatus(400);
+                return $this->renderJSON(['error' => framework\Context::getI18n()->__('Please pick a name')]);
+            }
+
             $issuetype->setIcon($request['icon']);
-            $issuetype->setName($request['name']);
-            $issuetype->setDescription($request['description']);
+            $issuetype->setName(trim($request['name']));
+            $issuetype->setDescription(trim($request['description']));
             $issuetype->save();
 
+            if ($request['scheme_id']) {
+                $scheme = tables\IssuetypeSchemes::getTable()->selectById($request['scheme_id']);
+                tables\IssuetypeSchemeLink::getTable()->associateIssuetypeWithScheme($issuetype->getID(), $scheme->getID());
+                $scheme->setIssuetypeEnabled($issuetype);
+
+                return $this->renderJSON([
+                    'component' => $this->getComponentHTML('schemeissuetype', ['type' => $issuetype, 'scheme' => $scheme]),
+                    'scheme' => $scheme->toJSON(),
+                    'issue_type' => $issuetype->toJSON(),
+                ]);
+            }
+
             return $this->renderJSON([
-                'message' => $this->getI18n()->__('Issue type saved'),
                 'component' => $this->getComponentHTML('issuetype', ['type' => $issuetype]),
-                'id' => $issuetype->getID()
+                'issue_type' => $issuetype->toJSON(),
             ]);
         }
 
