@@ -115,7 +115,6 @@
             .scope_upgrade li select { width: 250px; }
 
             .progress_buttons { padding: 30px 15px 15px 15px; text-align: right; display: block; height: 30px; }
-            .progress_buttons .button, .installation_box input[type="submit"] { font-size: 1.2em; padding: 4px 10px !important; }
             .progress_buttons .button-next { float: right; }
             .progress_buttons .button-previous { float: left; }
 
