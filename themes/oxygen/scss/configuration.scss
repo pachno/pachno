@@ -352,6 +352,20 @@
       justify-content: center;
       border: none;
       color: #141823;
+      box-sizing: border-box;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+
+      .form-container {
+        font-size: .95em;
+        flex: 0 0 auto;
+        width: 100%;
+
+        .form-row {
+          padding: 0;
+        }
+      }
 
       .title {
         font-weight: 400;
@@ -405,7 +419,7 @@
 
   &.active {
     .issue-type-list {
-      flex: 0 0 300px;
+      flex: 0 0 335px;
     }
 
     .configurable-component-options {

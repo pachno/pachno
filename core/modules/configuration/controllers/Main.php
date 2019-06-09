@@ -342,9 +342,18 @@
                 return $this->renderJSON(['error' => framework\Context::getI18n()->__('Please pick a name')]);
             }
 
-            $issuetype->setIcon($request['icon']);
-            $issuetype->setName(trim($request['name']));
-            $issuetype->setDescription(trim($request['description']));
+            if ($request['icon']) {
+                $issuetype->setIcon($request['icon']);
+            }
+
+            if ($request['name']) {
+                $issuetype->setName(trim($request['name']));
+            }
+
+            if ($request['description']) {
+                $issuetype->setDescription(trim($request['description']));
+            }
+
             $issuetype->save();
 
             if ($request['scheme_id']) {

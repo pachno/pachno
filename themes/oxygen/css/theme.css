@@ -9106,13 +9106,14 @@ input.icon.secondary:disabled {
       .form-container > .row > .column.small + .column:not(.small) {
         max-width: none; }
   .form-container .form-row {
-    flex: 1 1 100%;
+    flex: 1 0 100%;
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
     align-items: center;
     justify-content: stretch;
     align-content: flex-start;
+    box-sizing: border-box;
     padding: .5em; }
     .form-container .form-row h1, .form-container .form-row h2, .form-container .form-row h3, .form-container .form-row h4, .form-container .form-row h5, .form-container .form-row h6 {
       flex: 1 1 100%; }
@@ -9178,6 +9179,7 @@ input.icon.secondary:disabled {
       .form-container .form-row > input[type=text].invisible, .form-container .form-row > input[type=password].invisible {
         background-color: transparent;
         border: 1px solid transparent;
+        border-radius: 4px;
         padding: .35rem; }
         .form-container .form-row > input[type=text].invisible.inline, .form-container .form-row > input[type=password].invisible.inline {
           flex: 0 0 auto; }
@@ -12173,7 +12175,17 @@ dl.info {
       align-items: flex-start;
       justify-content: center;
       border: none;
-      color: #141823; }
+      color: #141823;
+      box-sizing: border-box;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap; }
+      .configurable-component > .row > .name .form-container {
+        font-size: .95em;
+        flex: 0 0 auto;
+        width: 100%; }
+        .configurable-component > .row > .name .form-container .form-row {
+          padding: 0; }
       .configurable-component > .row > .name .title {
         font-weight: 400; }
       .configurable-component > .row > .name .description {
@@ -12209,7 +12221,7 @@ dl.info {
     margin: 0 0 0 .35rem;
     padding: 0 .35rem; }
   .issue-type-configuration-container.active .issue-type-list {
-    flex: 0 0 300px; }
+    flex: 0 0 335px; }
   .issue-type-configuration-container.active .configurable-component-options {
     flex: 1 1 auto; }
 

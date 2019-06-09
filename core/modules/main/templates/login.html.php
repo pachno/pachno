@@ -6,7 +6,7 @@
 <div id="login_backdrop">
     <div class="backdrop_box login_page login_popup" id="login_popup">
         <div id="backdrop_detail_content" class="backdrop_detail_content rounded_top login_content">
-            <?php include_component('main/login', compact('section', 'error')); ?>
+            <?php include_component('main/login', compact('section')); ?>
         </div>
     </div>
 </div>

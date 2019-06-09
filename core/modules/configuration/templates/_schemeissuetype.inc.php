@@ -16,7 +16,7 @@ use pachno\core\framework\Context; ?>
             <div class="title form-container">
                 <form accept-charset="<?= Context::getI18n()->getCharset(); ?>" action="<?= make_url('configure_edit_issuetype', ['issuetype_id' => $type->getID()]); ?>" onsubmit="Pachno.Config.Issuetype.save(this);return false;" data-interactive-form>
                     <div class="form-row">
-                        <input type="text" class="invisible" value="<?php echo $type->getName(); ?>">
+                        <input type="text" class="invisible" value="<?php echo $type->getName(); ?>" name="name">
                     </div>
                 </form>
             </div>
