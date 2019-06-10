@@ -19,16 +19,15 @@
                 <form action="<?= make_url('configure_issuetypes_scheme', ['scheme_id' => $scheme->getId()]); ?>" onsubmit="Pachno.Config.IssuetypeScheme.save(this);return false;" data-interactive-form data-interactive-form-method="Pachno.Config.IssuetypeScheme.save">
                     <div class="form-row">
                         <input type="text" name="name" value="<?= $scheme->getName(); ?>" class="invisible" id="scheme_<?= $scheme->getID(); ?>_name_input">
-                        <label for="scheme_<?= $scheme->getID(); ?>_name_input"><?= __('Scheme name'); ?></label>
-                        <?= fa_image_tag('spinner', ['class' => 'fa-spin submit-indicator icon']); ?>
+                        <label for="scheme_<?= $scheme->getID(); ?>_name_input"><?= __('Scheme name'); ?><?= fa_image_tag('spinner', ['class' => 'fa-spin submit-indicator icon']); ?></label>
                     </div>
                     <div class="form-row error-container">
                         <div class="error"></div>
                     </div>
                 </form>
             </div>
-            <div class="issue-type-configuration-container" id="issue-type-configuration-container">
-                <div class="issue-type-list">
+            <div class="configurable-components-container" id="issue-type-configuration-container">
+                <div class="configurable-components-list-container">
                     <h3><?php echo __('Issue types'); ?></h3>
                     <div class="configurable-components-list" id="issue-types-list">
                         <?php foreach ($issue_types as $type): ?>

@@ -13,6 +13,7 @@
                 <?php foreach ($builtin_fields as $item): ?>
                     <?php if (array_key_exists($item, $visible_fields)) continue; ?>
                     <a href="javascript:void(0);" class="list-item">
+                        <span class="icon"><?= (is_object($item)) ? fa_image_tag('tag') : fa_image_tag(IssueFields::getFieldFontAwesomeImage($item), [], IssueFields::getFieldFontAwesomeImageStyle($item)); ?></span>
                         <span class="name"><?= IssueFields::getFieldDescription($item); ?></span>
                     </a>
                 <?php endforeach; ?>
@@ -22,6 +23,7 @@
                 <?php foreach ($custom_fields as $item): ?>
                     <?php if (array_key_exists($key, $visible_fields)) continue; ?>
                     <a href="javascript:void(0);" class="list-item">
+                        <span class="icon"><?= (is_object($item)) ? fa_image_tag('tag') : fa_image_tag(IssueFields::getFieldFontAwesomeImage($item), [], IssueFields::getFieldFontAwesomeImageStyle($item)); ?></span>
                         <span class="name"><?= $item->getDescription(); ?></span>
                     </a>
                 <?php endforeach; ?>

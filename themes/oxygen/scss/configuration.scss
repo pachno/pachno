@@ -346,7 +346,7 @@
       padding: .35rem;
       flex: 1 1 auto;
       display: flex;
-      font-size: .9em;
+      font-size: .85em;
       flex-direction: column;
       align-items: flex-start;
       justify-content: center;
@@ -358,7 +358,7 @@
       white-space: nowrap;
 
       .form-container {
-        font-size: .95em;
+        font-size: 1em;
         flex: 0 0 auto;
         width: 100%;
 
@@ -386,25 +386,13 @@
   }
 }
 
-.configurable-component-container {
-  margin-bottom: .5rem;
-  position: relative;
-  display: flex;
-  flex-direction: column;
-
-  > .configurable-component {
-    margin-bottom: 0;
-    z-index: 100;
-  }
-}
-
-.issue-type-configuration-container {
+.configurable-components-container {
   display: flex;
   flex-direction: row;
   align-items: flex-start;
   justify-content: stretch;
 
-  .issue-type-list {
+  .configurable-components-list-container {
     flex: 1 1 auto;
   }
 
@@ -413,17 +401,19 @@
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
-    margin: 0 0 0 .35rem;
-    padding: 0 .35rem;
+    margin: 0;
+    padding: 0;
   }
 
   &.active {
-    .issue-type-list {
+    .configurable-components-list-container {
       flex: 0 0 335px;
     }
 
     .configurable-component-options {
       flex: 1 1 auto;
+      margin: 0 0 0 .35rem;
+      padding: 0 .35rem;
     }
   }
 }

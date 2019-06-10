@@ -18,24 +18,22 @@
             </div>
         </div>
         <div class="row collapse-target" id="f_<?= $issue_type->getID(); ?>_<?= $key; ?>_options">
-            <div class="form-row">
-                <?php if (in_array($key, array('votes', 'owner', 'assignee'))): ?>
-                    <input type="hidden" id="f_<?= $issue_type->getID(); ?>_<?= $key; ?>_reportable"> -
-                <?php else: ?>
+            <?php if (!in_array($key, array('votes', 'owner', 'assignee'))): ?>
+                <div class="form-row">
                     <input type="checkbox" class="fancycheckbox" id="f_<?= $issue_type->getID(); ?>_<?= $key; ?>_reportable" onclick="if (this.checked) { $('f_<?= $issue_type->getID(); ?>_<?= $key; ?>_required').enable();$('f_<?= $issue_type->getID(); ?>_<?= $key; ?>_required').enable(); } else { $('f_<?= $issue_type->getID(); ?>_<?= $key; ?>_required').disable();$('f_<?= $issue_type->getID(); ?>_<?= $key; ?>_required').disable(); }" name="field[<?= $key; ?>][reportable]" value="1"<?php if (array_key_exists($key, $visible_fields) && $visible_fields[$key]['reportable']): ?> checked<?php endif; ?><?php if (!array_key_exists($key, $visible_fields) && !in_array($key, array('status'))): ?> disabled<?php endif; ?>>
                     <label for="f_<?= $issue_type->getID(); ?>_<?= $key; ?>_reportable">
                         <?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far'); ?>
                         <span class="name"><?= __('Show field when creating a new issue'); ?></span>
                     </label>
-                <?php endif; ?>
-            </div>
-            <div class="form-row">
-                <input type="checkbox" class="fancycheckbox" id="f_<?= $issue_type->getID(); ?>_<?= $key; ?>_required" name="field[<?= $key; ?>][required]" value="1" <?php if (array_key_exists($key, $visible_fields) && $visible_fields[$key]['required']) echo 'checked'; ?><?php if ((!array_key_exists($key, $visible_fields) || !$visible_fields[$key]['reportable']) || in_array($key, array('votes', 'owner', 'assignee'))) echo 'disabled'; ?>>
-                <label for="f_<?= $issue_type->getID(); ?>_<?= $key; ?>_required">
-                    <?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far'); ?>
-                    <span class="name"><?= __('Make field required when creating a new issue'); ?></span>
-                </label>
-            </div>
+                </div>
+                <div class="form-row">
+                    <input type="checkbox" class="fancycheckbox" id="f_<?= $issue_type->getID(); ?>_<?= $key; ?>_required" name="field[<?= $key; ?>][required]" value="1" <?php if (array_key_exists($key, $visible_fields) && $visible_fields[$key]['required']) echo 'checked'; ?><?php if ((!array_key_exists($key, $visible_fields) || !$visible_fields[$key]['reportable']) || in_array($key, array('votes', 'owner', 'assignee'))) echo 'disabled'; ?>>
+                    <label for="f_<?= $issue_type->getID(); ?>_<?= $key; ?>_required">
+                        <?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far'); ?>
+                        <span class="name"><?= __('Make field required when creating a new issue'); ?></span>
+                    </label>
+                </div>
+            <?php endif; ?>
             <div class="form-row submit-container">
                 <button class="button secondary">
                     <?= fa_image_tag('times', ['class' => 'icon']); ?>

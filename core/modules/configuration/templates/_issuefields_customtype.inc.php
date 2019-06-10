@@ -43,19 +43,4 @@
         </span>
         <span id="custom_type_<?php echo $type_key; ?>_no_instructions_div" class="faded_out dark"<?php if ($type->hasInstructions()): ?> style="display: none;"<?php endif; ?>><?php echo __("This custom type doesn't have any instructions"); ?></span>
     </div>
-    <form accept-charset="<?php echo \pachno\core\framework\Context::getI18n()->getCharset(); ?>" action="<?php echo make_url('configure_issuefields_update_customtype', array('type' => $type_key)); ?>" onsubmit="Pachno.Config.Issuefields.Custom.update('<?php echo make_url('configure_issuefields_update_customtype', array('type' => $type_key)); ?>', '<?php echo $type_key; ?>');return false;" id="edit_custom_type_<?php echo $type_key; ?>_form" style="display: none;">
-        <div class="rounded_box white" style="margin: 5px 0 0 0; padding: 3px; font-size: 12px;">
-            <label for="custom_type_<?php echo $type_key; ?>_name"><?php echo __('Name'); ?></label>
-            <input type="text" name="name" id="custom_type_<?php echo $type_key; ?>_name" value="<?php echo $type->getName(); ?>" style="width: 250px;">
-            <label for="custom_type_<?php echo $type_key; ?>_description"><?php echo __('Label'); ?></label>
-            <input type="text" name="description" id="custom_type_<?php echo $type_key; ?>_description" value="<?php echo $type->getDescription(); ?>" style="width: 250px;"><br>
-            <div class="faded_out" style="margin-bottom: 10px; padding: 2px;"><?php echo __('Users see the label, not the name'); ?></div>
-            <label for="custom_type_<?php echo $type_key; ?>_instructions"><?php echo __('Instructions'); ?></label>&nbsp;<span class="faded_out"><?php echo __('Optional instruction that will be displayed to users'); ?></span><br>
-            <textarea name="instructions" id="custom_type_<?php echo $type_key; ?>_instructions" style="width: 500px; height: 70px;" cols="70" rows="5"><?php echo $type->getInstructions(); ?></textarea><br>
-            <input type="submit" value="<?php echo __('Update details'); ?>" style="font-weight: bold; font-size: 13px;">
-            <?php echo __('%update_details or %cancel', array('%update_details' => '', '%cancel' => '<a href="javascript:void(0);" onclick="$(\'edit_custom_type_' . $type_key . '_form\').toggle();$(\'custom_type_' . $type_key . '_info\').toggle();"><b>' . __('cancel') . '</b></a>')); ?>
-            <?php echo image_tag('spinning_20.gif', array('style' => 'margin-left: 5px; display: none;', 'id' => 'edit_custom_type_' . $type_key . '_indicator')); ?>
-        </div>
-    </form>
-    <div class="content" id="<?php echo $type_key; ?>_content" style="display: none;"> </div>
 </div>

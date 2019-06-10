@@ -24,6 +24,11 @@
         > input[type=text].invisible,
         > input[type=password].invisible {
           border: 1px dashed $theme-primary;
+
+          + label {
+            opacity: 1;
+            transform: translateY(0);
+          }
         }
       }
 
@@ -155,7 +160,9 @@
       }
     }
 
-    > input[type=text], > input[type=password] {
+    > textarea,
+    > input[type=text],
+    > input[type=password] {
       flex: 1 1 100%;
       padding: .2em;
       font-size: 1em;
@@ -166,6 +173,10 @@
         border-radius: 4px;
         padding: .35rem;
 
+        &.title {
+          font-weight: 400;
+        }
+
         &.inline {
           flex: 0 0 auto;
         }
@@ -173,22 +184,27 @@
         + label {
           opacity: 0;
           transform: translateY(-100%);
-          margin-bottom: -1em;
+          margin-bottom: -1.8em;
         }
 
         &:hover {
           border: 1px solid transparent;
           background-color: rgba(200, 200, 200, .15);
+          cursor: pointer;
         }
 
         &:focus {
           background: #FFF;
           border-color: $theme-primary;
 
+          &:hover {
+            cursor: text;
+          }
+
           + label {
             opacity: 1;
             transform: translateY(0);
-            margin-bottom: 0;
+            //margin-bottom: 0;
           }
         }
       }

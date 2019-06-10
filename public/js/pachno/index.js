@@ -4688,17 +4688,26 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
             });
         };
 
-        Pachno.Config.Issuefields.Options.show = function (url, field) {
-            $(field + '_content').toggle();
-            if ($(field + '_content').childElements().size() == 0) {
-                Pachno.Main.Helpers.ajax(url, {
-                    loading: {indicator: field + '_indicator'},
-                    success: {
-                        update: field + '_content',
-                        callback: Pachno.Main.Helpers.initializeColorPicker
-                    }
+        Pachno.Config.Issuefields.showOptions = function ($item) {
+            const $container = jQuery('#issue-fields-configuration-container'),
+                $options = jQuery('#selected-issue-field-options'),
+                url = $item.data('options-url');
+
+            $options.html('<div><i class="fas fa-spin fa-spinner"></i></div>');
+            $container.addClass('active');
+            $container.find('.issue-field').removeClass('active');
+            $item.addClass('active');
+
+            fetch(url, {
+                method: 'GET'
+            })
+                .then(function (response) {
+                    response.json().then(function (json) {
+                        if (response.ok) {
+                            $options.html(json.content);
+                        }
+                    });
                 });
-            }
         }
 
         Pachno.Config.Issuefields.Options.add = function (url, type) {

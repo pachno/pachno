@@ -112,7 +112,7 @@
             }
         }
 
-        public function componentIssueFields()
+        public function componentEditIssueField()
         {
             $this->items = array();
             $this->showitems = true;

@@ -470,7 +470,9 @@
          */
         public function runConfigureIssuefieldsGetOptions(framework\Request $request)
         {
-            return $this->renderComponent('issuefields', array('type' => $request['type'], 'access_level' => $this->access_level));
+            return $this->renderJSON([
+                'content' => $this->getComponentHTML('editissuefield', ['type' => $request['type'], 'access_level' => $this->access_level])
+            ]);
         }
 
         /**
