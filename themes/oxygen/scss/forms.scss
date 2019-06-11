@@ -221,6 +221,19 @@
       }
     }
 
+    &.add-placeholder {
+      > .icon {
+        color: rgba(0, 0, 0, 0.4);
+
+        & + textarea,
+        & + input[type=text],
+        & + input[type=password] {
+          flex: 1 1 calc(100% - 55px);
+          margin-left: 1em;
+        }
+      }
+    }
+
     > textarea {
       flex: 0 0 400px;
       border: none;

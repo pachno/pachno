@@ -9236,6 +9236,13 @@ input.icon.secondary:disabled {
       .form-container .form-row > input[type=password]:focus + label,
       .form-container .form-row > input[type=password]:active + label {
         color: #0C8990; }
+    .form-container .form-row.add-placeholder > .icon {
+      color: rgba(0, 0, 0, 0.4); }
+      .form-container .form-row.add-placeholder > .icon + textarea,
+      .form-container .form-row.add-placeholder > .icon + input[type=text],
+      .form-container .form-row.add-placeholder > .icon + input[type=password] {
+        flex: 1 1 calc(100% - 55px);
+        margin-left: 1em; }
     .form-container .form-row > textarea {
       flex: 0 0 400px;
       border: none;

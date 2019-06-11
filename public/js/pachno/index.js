@@ -4710,23 +4710,45 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
                 });
         }
 
-        Pachno.Config.Issuefields.Options.add = function (url, type) {
-            Pachno.Main.Helpers.ajax(url, {
-                form: 'add_' + type + '_form',
-                loading: {indicator: 'add_' + type + '_indicator'},
-                success: {
-                    reset: 'add_' + type + '_form',
-                    hide: 'no_' + type + '_items',
-                    update: {element: type + '_list', insertion: true},
-                    callback: function () {
-                        if (sortable_options != undefined) {
-                            Sortable.destroy(type + '_list');
-                            Sortable.create(type + '_list', sortable_options);
+        Pachno.Config.Issuefields.Options.save = function (form) {
+            var $form = jQuery(form),
+                data = new FormData($form[0]);
+
+            $form.find('.error-container').removeClass('invalid');
+            $form.find('.error-container > .error').html('');
+            $form.addClass('submitting');
+
+            fetch($form.attr('action'), {
+                method: 'POST',
+                body: data
+            })
+                .then(function (response) {
+                    response.json().then(function (json) {
+                        if (response.ok) {
+                            const $issue_option_container = jQuery('[data-issue-field-option][data-id='+json.option.id+']');
+                            if ($issue_option_container.length > 0) {
+                                $issue_option_container.find('[data-name]').html(json.issue_type.name);
+                            } else {
+                                const $issue_options_container = jQuery('#field-options-list');
+                                console.log($issue_options_container);
+                                if ($issue_options_container.length > 0) {
+                                    $issue_options_container.append(json.component);
+                                }
+                                if (sortable_options != undefined) {
+                                    Sortable.destroy('field-options-list');
+                                    Sortable.create('field-options-list', sortable_options);
+                                }
+                                Pachno.Main.Helpers.initializeColorPicker();
+                            }
+                        } else {
+                            $form.find('.error-container > .error').html(json.error);
+                            $form.find('.error-container').addClass('invalid');
                         }
-                        Pachno.Main.Helpers.initializeColorPicker();
-                    }
-                }
-            });
+
+                        $form.removeClass('submitting');
+                        $form.find('.button.primary').attr('disabled', false);
+                    });
+                });
         }
 
         Pachno.Config.Issuefields.Options.update = function (url, type, id) {
