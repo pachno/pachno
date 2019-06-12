@@ -517,42 +517,45 @@
                             $type = entities\CustomDatatype::getByKey($request['type']);
                             $item = $type->createNewOption($request['name'], $request['value'], $request['itemdata']);
                         }
-                        return $this->renderJSON(['title' => framework\Context::getI18n()->__('The option was added'), 'item' => $item->toJSON(), 'component' => $this->getComponentHTML('editissuefieldoption', ['item' => $item, 'type' => $type, 'access_level' => $this->access_level])]);
+                        return $this->renderJSON([
+                            'title' => framework\Context::getI18n()->__('The option was added'),
+                            'item' => $item->toJSON(),
+                            'component' => $this->getComponentHTML('editissuefieldoption', ['item' => $item, 'type' => $type, 'access_level' => $this->access_level])
+                        ]);
                     }
                     $this->getResponse()->setHttpStatus(400);
                     return $this->renderJSON(array('error' => framework\Context::getI18n()->__('Please provide a valid name')));
                 case 'edit':
                     if ($request['name'])
                     {
-                        if (array_key_exists($request['type'], $types))
-                        {
-                            $classname = $types[$request['type']];
+                        $type = $request['type'];
+                        if (array_key_exists($type, $types)) {
+                            $classname = $types[$type];
                             $item = $classname::getB2DBTable()->selectByID($request['id']);
-                        }
-                        else
-                        {
-                            $customtype = entities\CustomDatatype::getByKey($request['type']);
+                        } else {
+                            $customtype = entities\CustomDatatype::getByKey($type);
                             $item = entities\CustomDatatypeOption::getB2DBTable()->selectById($request['id']);
                         }
-                        if ($item instanceof entities\DatatypeBase)
-                        {
+
+                        if ($item instanceof entities\DatatypeBase) {
                             $item->setName($request['name']);
                             $item->setItemdata($request['itemdata']);
-                            if ($item instanceof entities\CustomDatatypeOption)
-                            {
+                            if ($item instanceof entities\CustomDatatypeOption) {
                                 $item->setValue($request['value']);
                             }
                             $item->save();
-                            return $this->renderJSON(array('title' => framework\Context::getI18n()->__('The option was updated')));
-                        }
-                        else
-                        {
+                            return $this->renderJSON([
+                                'title' => framework\Context::getI18n()->__('The option was updated'),
+                                'item' => $item->toJSON(),
+                                'component' => $this->getComponentHTML('editissuefieldoption', ['item' => $item, 'type' => $type, 'access_level' => $this->access_level])
+                            ]);
+                        } else {
                             $this->getResponse()->setHttpStatus(400);
-                            return $this->renderJSON(array('error' => framework\Context::getI18n()->__('Please provide a valid id')));
+                            return $this->renderJSON(['error' => framework\Context::getI18n()->__('Please provide a valid id')]);
                         }
                     }
                     $this->getResponse()->setHttpStatus(400);
-                    return $this->renderJSON(array('error' => framework\Context::getI18n()->__('Please provide a valid name')));
+                    return $this->renderJSON(['error' => framework\Context::getI18n()->__('Please provide a valid name')]);
                 case 'delete':
                     if ($request->hasParameter('id'))
                     {

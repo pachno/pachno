@@ -12160,6 +12160,10 @@ dl.info {
   margin-bottom: .5rem;
   transition: border .25s ease-in-out;
   border: none; }
+  .configurable-component.form-container {
+    flex: 0 0 auto;
+    width: 100%;
+    flex-wrap: nowrap; }
   .configurable-component:hover {
     border: none; }
   .configurable-component.active {
@@ -12176,13 +12180,23 @@ dl.info {
     .configurable-component.active > .row > .icon.open:hover {
       background-color: transparent;
       color: #FFF; }
+  .configurable-component > form > .row,
   .configurable-component > .row {
     flex: 0 0 auto;
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
     align-items: stretch;
+    box-sizing: border-box;
     justify-content: flex-start; }
+    .configurable-component > form > .row .form-row,
+    .configurable-component > .row .form-row {
+      padding: 0;
+      width: 100%; }
+    .configurable-component > form > .row.options-container .form-row,
+    .configurable-component > .row.options-container .form-row {
+      padding: .35rem; }
+    .configurable-component > form > .row > .icon,
     .configurable-component > .row > .icon {
       flex: 0 0 42px;
       box-sizing: border-box;
@@ -12196,22 +12210,28 @@ dl.info {
       border-radius: 0;
       text-align: center;
       color: #141823; }
+      .configurable-component > form > .row > .icon.handle,
       .configurable-component > .row > .icon.handle {
         flex: 0 0 30px;
         font-size: .7em;
         color: rgba(200, 200, 200, 0.6); }
+        .configurable-component > form > .row > .icon.handle:hover,
         .configurable-component > .row > .icon.handle:hover {
           color: rgba(200, 200, 200, 0.8);
           cursor: move;
           cursor: grab; }
+      .configurable-component > form > .row > .icon.open:hover,
       .configurable-component > .row > .icon.open:hover {
         background: rgba(220, 220, 220, 0.15);
         color: #3c1642; }
+      .configurable-component > form > .row > .icon .fas:not(.checked):not(.unchecked),
+      .configurable-component > form > .row > .icon .far:not(.checked):not(.unchecked),
       .configurable-component > .row > .icon .fas:not(.checked):not(.unchecked),
       .configurable-component > .row > .icon .far:not(.checked):not(.unchecked) {
         flex: 0 0 auto;
         margin-left: auto;
         margin-right: auto; }
+    .configurable-component > form > .row > .name,
     .configurable-component > .row > .name {
       padding: .35rem;
       flex: 1 1 auto;
@@ -12226,16 +12246,13 @@ dl.info {
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap; }
-      .configurable-component > .row > .name .form-container {
-        font-size: 1em;
-        flex: 0 0 auto;
-        width: 100%; }
-        .configurable-component > .row > .name .form-container .form-row {
-          padding: 0; }
+      .configurable-component > form > .row > .name .title,
       .configurable-component > .row > .name .title {
         font-weight: 400; }
+      .configurable-component > form > .row > .name .description,
       .configurable-component > .row > .name .description {
         color: rgba(0, 0, 0, 0.4); }
+    .configurable-component > form > .row > .actions,
     .configurable-component > .row > .actions {
       flex: 0 0 auto;
       min-width: 50px;

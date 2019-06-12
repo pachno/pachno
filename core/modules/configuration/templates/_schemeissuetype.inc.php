@@ -7,18 +7,14 @@
      */
 
 use pachno\core\framework\Context; ?>
-<div class="configurable-component issue-type-scheme-issue-type" data-issue-type data-id="<?= $type->getID(); ?>" id="issuetype_<?php echo $type->getID(); ?>_box" data-options-url="<?= make_url('configure_issuetypes_scheme_options', ['scheme_id' => $scheme->getID(), 'issue_type_id' => $type->getId()]); ?>">
-    <div class="row">
+<div class="configurable-component issue-type-scheme-issue-type form-container" data-issue-type data-id="<?= $type->getID(); ?>" id="issuetype_<?php echo $type->getID(); ?>_box" data-options-url="<?= make_url('configure_issuetypes_scheme_options', ['scheme_id' => $scheme->getID(), 'issue_type_id' => $type->getId()]); ?>">
+    <form class="row" accept-charset="<?= Context::getI18n()->getCharset(); ?>" action="<?= make_url('configure_edit_issuetype', ['issuetype_id' => $type->getID()]); ?>" onsubmit="Pachno.Config.Issuetype.save(this);return false;" data-interactive-form>
         <div class="icon">
             <?= fa_image_tag($type->getFontAwesomeIcon(), ['class' => 'issuetype-icon issuetype-' . $type->getType()]); ?>
         </div>
         <div class="name">
-            <div class="title form-container">
-                <form accept-charset="<?= Context::getI18n()->getCharset(); ?>" action="<?= make_url('configure_edit_issuetype', ['issuetype_id' => $type->getID()]); ?>" onsubmit="Pachno.Config.Issuetype.save(this);return false;" data-interactive-form>
-                    <div class="form-row">
-                        <input type="text" class="invisible" value="<?php echo $type->getName(); ?>" name="name">
-                    </div>
-                </form>
+            <div class="form-row">
+                <input type="text" class="invisible" value="<?php echo $type->getName(); ?>" name="name">
             </div>
         </div>
         <div class="icon"<?php if ($scheme->isSchemeAssociatedWithIssuetype($type)): ?> style="display: none;"<?php endif; ?> id="type_toggle_<?php echo $type->getID(); ?>_enable">
@@ -30,7 +26,7 @@ use pachno\core\framework\Context; ?>
         <button class="icon open">
             <?= fa_image_tag('angle-right'); ?>
         </button>
-    </div>
+    </form>
     <?php /*
     <div class="configurable-component-options">
         <div id="issuetype_<?php echo $type->getID(); ?>_options" class="collapse-target">

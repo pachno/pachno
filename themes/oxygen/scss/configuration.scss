@@ -262,6 +262,12 @@
 }
 
 .configurable-component {
+  &.form-container {
+    flex: 0 0 auto;
+    width: 100%;
+    flex-wrap: nowrap;
+  }
+
   flex: 0 0 auto;
   display: flex;
   flex-direction: column;
@@ -307,13 +313,26 @@
     }
   }
 
+  > form > .row,
   > .row {
     flex: 0 0 auto;
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
     align-items: stretch;
+    box-sizing: border-box;
     justify-content: flex-start;
+
+    .form-row {
+      padding: 0;
+      width: 100%;
+    }
+
+    &.options-container {
+      .form-row {
+        padding: .35rem;
+      }
+    }
 
     > .icon {
       flex: 0 0 42px;
@@ -372,16 +391,6 @@
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
-
-      .form-container {
-        font-size: 1em;
-        flex: 0 0 auto;
-        width: 100%;
-
-        .form-row {
-          padding: 0;
-        }
-      }
 
       .title {
         font-weight: 400;

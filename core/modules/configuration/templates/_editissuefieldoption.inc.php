@@ -1,14 +1,10 @@
-<div data-issue-field-option data-id="<?php echo $item->getID(); ?>" class="configurable-component">
-    <div class="row">
+<div data-issue-field-option data-id="<?php echo $item->getID(); ?>" class="configurable-component form-container">
+    <form class="row" accept-charset="<?php echo \pachno\core\framework\Context::getI18n()->getCharset(); ?>" action="<?php echo make_url('configure_issuefields_edit', ['type' => $type, 'id' => $item->getID()]); ?>" onsubmit="Pachno.Config.Issuefields.Options.save(this);return false;" data-interactive-form>
         <?= fa_image_tag('grip-vertical', ['class' => 'icon handle']); ?>
         <div class="name">
-            <div class="title form-container">
-                <form accept-charset="<?php echo \pachno\core\framework\Context::getI18n()->getCharset(); ?>" action="<?php echo make_url('configure_issuefields_edit', array('type' => $type, 'id' => $item->getID())); ?>" onsubmit="Pachno.Config.Issuefields.Options.update('<?php echo make_url('configure_issuefields_edit', array('type' => $type, 'id' => $item->getID())); ?>', '<?php echo $type; ?>', <?php echo $item->getID(); ?>);return false;" id="edit_<?php echo $type; ?>_<?php echo $item->getID(); ?>_form">
-                    <div class="form-row">
-                        <input type="text" name="name" id="<?php echo $type; ?>_<?php echo $item->getID(); ?>_name_input" value="<?php echo $item->getName(); ?>" class="invisible">
-                        <label for="<?php echo $type; ?>_<?php echo $item->getID(); ?>_name_input"><?= __('Field value'); ?></label>
-                    </div>
-                </form>
+            <div class="form-row">
+                <input type="text" name="name" id="<?php echo $type; ?>_<?php echo $item->getID(); ?>_name_input" value="<?php echo $item->getName(); ?>" class="invisible">
+                <label for="<?php echo $type; ?>_<?php echo $item->getID(); ?>_name_input"><?= __('Field value'); ?></label>
             </div>
         </div>
         <div class="icon">
@@ -71,5 +67,5 @@
                 </table>
             </form>
         </div> */ ?>
-    </div>
+    </form>
 </div>

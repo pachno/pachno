@@ -17,7 +17,7 @@
                 <button class="button icon secondary collapser" data-target="#f_<?= $issue_type->getID(); ?>_<?= $key; ?>_options" data-exclusive><?= fa_image_tag('angle-down'); ?></button>
             </div>
         </div>
-        <div class="row collapse-target" id="f_<?= $issue_type->getID(); ?>_<?= $key; ?>_options">
+        <div class="row options-container collapse-target" id="f_<?= $issue_type->getID(); ?>_<?= $key; ?>_options">
             <?php if (!in_array($key, array('votes', 'owner', 'assignee'))): ?>
                 <div class="form-row">
                     <input type="checkbox" class="fancycheckbox" id="f_<?= $issue_type->getID(); ?>_<?= $key; ?>_reportable" onclick="if (this.checked) { $('f_<?= $issue_type->getID(); ?>_<?= $key; ?>_required').enable();$('f_<?= $issue_type->getID(); ?>_<?= $key; ?>_required').enable(); } else { $('f_<?= $issue_type->getID(); ?>_<?= $key; ?>_required').disable();$('f_<?= $issue_type->getID(); ?>_<?= $key; ?>_required').disable(); }" name="field[<?= $key; ?>][reportable]" value="1"<?php if (array_key_exists($key, $visible_fields) && $visible_fields[$key]['reportable']): ?> checked<?php endif; ?><?php if (!array_key_exists($key, $visible_fields) && !in_array($key, array('status'))): ?> disabled<?php endif; ?>>
