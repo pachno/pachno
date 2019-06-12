@@ -14,7 +14,8 @@
     "node-sass": "^4.11.0"
   },
   "scripts": {
-    "sass:compile": "node-sass --include-path themes/oxygen/scss theme.scss themes/oxygen/css/theme.css"
+    "sass:compile": "node-sass --include-path themes/oxygen/scss themes/oxygen/scss/main.scss themes/oxygen/css/theme.css",
+    "sass:watch": "node-sass --watch --include-path themes/oxygen/scss themes/oxygen/scss/main.scss themes/oxygen/css/theme.css"
   },
   "repository": {
     "type": "git",

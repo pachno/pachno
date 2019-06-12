@@ -329,6 +329,22 @@
       text-align: center;
       color: #141823;
 
+      &.handle {
+        flex: 0 0 30px;
+        font-size: .7em;
+        color: rgba(200, 200, 200, .6);
+
+        &:hover {
+          color: rgba(200, 200, 200, .8);
+          cursor: move;
+          cursor: grab;
+        }
+      }
+
+      &.disabled {
+
+      }
+
       &.open:hover {
         background: rgba(220, 220, 220, .15);
         color: #3c1642;

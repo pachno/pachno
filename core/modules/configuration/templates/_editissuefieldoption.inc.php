@@ -1,5 +1,6 @@
 <div data-issue-field-option data-id="<?php echo $item->getID(); ?>" class="configurable-component">
     <div class="row">
+        <?= fa_image_tag('grip-vertical', ['class' => 'icon handle']); ?>
         <div class="name">
             <div class="title form-container">
                 <form accept-charset="<?php echo \pachno\core\framework\Context::getI18n()->getCharset(); ?>" action="<?php echo make_url('configure_issuefields_edit', array('type' => $type, 'id' => $item->getID())); ?>" onsubmit="Pachno.Config.Issuefields.Options.update('<?php echo make_url('configure_issuefields_edit', array('type' => $type, 'id' => $item->getID())); ?>', '<?php echo $type; ?>', <?php echo $item->getID(); ?>);return false;" id="edit_<?php echo $type; ?>_<?php echo $item->getID(); ?>_form">
@@ -9,6 +10,13 @@
                     </div>
                 </form>
             </div>
+        </div>
+        <div class="icon">
+            <?php if ($item->canBeDeleted()): ?>
+                <a href="javascript:void(0);" class="button secondary icon" onclick="Pachno.Main.Helpers.Dialog.show('<?php echo __('Really delete %itemname?', array('%itemname' => $item->getName())); ?>', '<?php echo __('Are you really sure you want to delete this item?'); ?>', {yes: {click: function() {Pachno.Config.Issuefields.Options.remove('<?php echo make_url('configure_issuefields_delete', array('type' => $type, 'id' => $item->getID())); ?>', <?php echo $item->getID(); ?>); Pachno.Main.Helpers.Dialog.dismiss(); }}, no: {click: Pachno.Main.Helpers.Dialog.dismiss}});"><?php echo fa_image_tag('trash-alt', [], 'far'); ?></a>
+            <?php else: ?>
+                <a href="javascript:void(0);" class="button secondary icon disabled" onclick="Pachno.Main.Helpers.Message.error('<?php echo __('This item cannot be deleted'); ?>', '<?php echo __('Other items - such as workflow steps - may depend on this item to exist. Remove the dependant item or unlink it from this item to continue.'); ?>');" id="delete_<?php echo $item->getID(); ?>_link"><?php echo fa_image_tag('trash-alt', [], 'far'); ?></a>
+            <?php endif; ?>
         </div>
             <?php /*
         <div id="item_option_<?php echo $type; ?>_<?php echo $item->getID(); ?>_content">

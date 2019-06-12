@@ -6,8 +6,8 @@
     <?php include_component('configuration/sidebar', ['selected_section' => \pachno\core\framework\Settings::CONFIGURATION_SECTION_ISSUEFIELDS]); ?>
     <div class="configuration-container" id="config_issuefields">
         <div class="configuration-content centered">
-            <h3><?php echo __('Configure issue fields'); ?></h3>
-            <div class="content faded_out">
+            <h1><?php echo __('Configure issue fields'); ?></h1>
+            <div class="helper-text">
                 <p><?php echo __('Edit built-in and custom issue fields and values here. Remember that the issue fields visibility (in the issue view or during reporting) is decided by the %issuetype_scheme in use by the project.', array('%issuetype_scheme' => link_tag(make_url('configure_issuetypes_schemes'), __('Issuetype scheme')))); ?></p>
             </div>
             <div style="display: none;">
@@ -30,7 +30,7 @@
             </div>
             <div class="configurable-components-container" id="issue-fields-configuration-container">
                 <div class="configurable-components-list-container">
-                    <h5><?php echo __('Issue fields'); ?></h5>
+                    <h3><?php echo __('Issue fields'); ?></h3>
                     <div id="custom_types_list" class="configurable-components-list">
                         <?php foreach ($builtin_types as $type_key => $type): ?>
                             <?php if ($type_key == 'activitytype') continue; ?>

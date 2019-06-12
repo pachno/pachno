@@ -506,18 +506,18 @@
                     {
                         if (array_key_exists($request['type'], $types))
                         {
-                            $type_name = $types[$request['type']];
-                            $item = new $type_name();
+                            $type = $types[$request['type']];
+                            $item = new $type();
                             $item->setName($request['name']);
                             $item->setItemdata($request['itemdata']);
                             $item->save();
                         }
                         else
                         {
-                            $customtype = entities\CustomDatatype::getByKey($request['type']);
-                            $item = $customtype->createNewOption($request['name'], $request['value'], $request['itemdata']);
+                            $type = entities\CustomDatatype::getByKey($request['type']);
+                            $item = $type->createNewOption($request['name'], $request['value'], $request['itemdata']);
                         }
-                        return $this->renderJSON(array('title' => framework\Context::getI18n()->__('The option was added'), 'content' => $this->getComponentHTML('issuefield', array('item' => $item, 'access_level' => $this->access_level, 'type' => $request['type']))));
+                        return $this->renderJSON(['title' => framework\Context::getI18n()->__('The option was added'), 'item' => $item->toJSON(), 'component' => $this->getComponentHTML('editissuefieldoption', ['item' => $item, 'type' => $type, 'access_level' => $this->access_level])]);
                     }
                     $this->getResponse()->setHttpStatus(400);
                     return $this->renderJSON(array('error' => framework\Context::getI18n()->__('Please provide a valid name')));

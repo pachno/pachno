@@ -28,7 +28,7 @@
         {
             if (!\pachno\core\framework\Context::isCLI())
             {
-                \pachno\core\framework\Context::loadLibrary('ui');
+                \pachno\core\framework\Context::loadLibrary('common');
             }
 
             $rgb = pachno_hex_to_rgb($this->_itemdata);

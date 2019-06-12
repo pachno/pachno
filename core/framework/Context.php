@@ -889,7 +889,7 @@ class Context
      *
      * @return \pachno\core\framework\I18n
      */
-    public static function getI18n()
+    public static function getI18n(): I18n
     {
         if (!self::isI18nInitialized())
         {
@@ -899,7 +899,7 @@ class Context
         return self::$_i18n;
     }
 
-    public static function isI18nInitialized()
+    public static function isI18nInitialized(): bool
     {
         return (self::$_i18n instanceof I18n);
     }

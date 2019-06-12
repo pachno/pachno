@@ -18,13 +18,13 @@ define(['pachno/tools', 'pachno/index', 'domReady', 'jquery', 'mention'],
                     jQuery(this).closest('.sidebar').toggleClass('collapsed');
                 });
 
-                jQuery('form[data-interactive-form]').on('blur', 'input', function () {
+                jQuery('body').on('blur', 'form[data-interactive-form] input', function () {
                     const $form = jQuery(this).parents('form');
 
                     $form.submit();
                 });
 
-                jQuery('form[data-interactive-form]').on('change', 'input[type=text]|input[type=radio]', function () {
+                jQuery('body').on('change', 'form[data-interactive-form] input[type=checkbox],form[data-interactive-form] input[type=radio]', function () {
                     const $form = jQuery(this).parents('form');
 
                     $form.submit();

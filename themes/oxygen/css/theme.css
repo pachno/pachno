@@ -12196,6 +12196,14 @@ dl.info {
       border-radius: 0;
       text-align: center;
       color: #141823; }
+      .configurable-component > .row > .icon.handle {
+        flex: 0 0 30px;
+        font-size: .7em;
+        color: rgba(200, 200, 200, 0.6); }
+        .configurable-component > .row > .icon.handle:hover {
+          color: rgba(200, 200, 200, 0.8);
+          cursor: move;
+          cursor: grab; }
       .configurable-component > .row > .icon.open:hover {
         background: rgba(220, 220, 220, 0.15);
         color: #3c1642; }
@@ -12724,5 +12732,3 @@ input[type=submit].workflow_transition_submit_button, input[type=submit].workflo
 
 /* end workflow styling */
 /* end config styling */
-
-/*# sourceMappingURL=theme.css.map */
