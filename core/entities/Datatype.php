@@ -106,7 +106,7 @@
             $types[self::ACTIVITYTYPE] = '\pachno\core\entities\ActivityType';
 
             $types = \pachno\core\framework\Event::createNew('core', 'Datatype::getTypes', null, array(), $types)->trigger()->getReturnList();
-            
+
             return $types;
         }
 

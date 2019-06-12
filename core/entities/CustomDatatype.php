@@ -103,23 +103,23 @@
         public static function getFieldTypes()
         {
             $i18n = framework\Context::getI18n();
-            $types = array();
-            $types[self::DROPDOWN_CHOICE_TEXT] = $i18n->__('Dropdown list with custom text choices');
-            $types[self::INPUT_TEXT] = $i18n->__('Single line text input');
-            $types[self::INPUT_TEXTAREA_MAIN] = $i18n->__('Textarea in issue main area');
-            $types[self::INPUT_TEXTAREA_SMALL] = $i18n->__('Textarea (small) in issue details list');
-            $types[self::RADIO_CHOICE] = $i18n->__('Radio choices');
-            $types[self::RELEASES_CHOICE] = $i18n->__('Dropdown list of available releases');
-            $types[self::COMPONENTS_CHOICE] = $i18n->__('Dropdown list of available components');
-            $types[self::EDITIONS_CHOICE] = $i18n->__('Dropdown list of available editions');
-            $types[self::MILESTONE_CHOICE] = $i18n->__('Dropdown list of available milestones');
-            $types[self::STATUS_CHOICE] = $i18n->__('Dropdown list of all statuses');
-            $types[self::CALCULATED_FIELD] = $i18n->__('Calculated field');
-            $types[self::DATE_PICKER] = $i18n->__('Date picker');
-            $types[self::USER_CHOICE] = $i18n->__('Find and pick a user');
-            $types[self::TEAM_CHOICE] = $i18n->__('Find and pick a team');
-            $types[self::CLIENT_CHOICE] = $i18n->__('Find and pick a client');
-            $types[self::DATETIME_PICKER] = $i18n->__('Datetime picker');
+            $types = [];
+            $types[self::DROPDOWN_CHOICE_TEXT] = ['title' => __('Dropdown list of choices (multi-select)'), 'description' => $i18n->__('A dropdown list where the user can select one or more choices'), 'icon' => 'check-square'];
+            $types[self::RADIO_CHOICE] = ['title' => __('Dropdown list of choices'), 'description' => $i18n->__('A dropdown list where the user can select one of the available choices'), 'icon' => 'check-circle'];
+            $types[self::INPUT_TEXT] = ['title' => __('Simple text input'), 'description' => $i18n->__('A text input where the user can input a single line of text'), 'icon' => 'align-left'];
+            $types[self::INPUT_TEXTAREA_MAIN] = ['title' => __('Block of text input (main)'), 'description' => $i18n->__('A text input in the issue main view where the user can input a block of text'), 'icon' => 'align-left'];
+            $types[self::INPUT_TEXTAREA_SMALL] = ['title' => __('Block of text input (details)'), 'description' => $i18n->__('A text input in the issue details list sidebar where the user can input a block of text'), 'icon' => 'align-left'];
+            $types[self::RELEASES_CHOICE] = ['title' => __('List of releases'), 'description' => $i18n->__('A list of the available releases'), 'icon' => 'compact-disc'];
+            $types[self::COMPONENTS_CHOICE] = ['title' => __('List of components'), 'description' => $i18n->__('A list of the available components'), 'icon' => 'boxes'];
+            $types[self::EDITIONS_CHOICE] = ['title' => __('List of editions'), 'description' => $i18n->__('A list of the available editions'), 'icon' => 'box'];
+            $types[self::MILESTONE_CHOICE] = ['title' => __('List of milestones'), 'description' => $i18n->__('A list of the available milestones'), 'icon' => 'list-alt'];
+            $types[self::STATUS_CHOICE] = ['title' => __('Status selector'), 'description' => $i18n->__('Let the user choose from a list of the available statuses'), 'icon' => 'chart-pie'];
+            $types[self::DATE_PICKER] = ['title' => __('Date picker'), 'description' => $i18n->__('A date picker'), 'icon' => 'calendar-check'];
+            $types[self::DATETIME_PICKER] = ['title' => __('Date and time picker'), 'description' => $i18n->__('A date and time picker'), 'icon' => 'clock'];
+            $types[self::USER_CHOICE] = ['title' => __('User selector'), 'description' => $i18n->__('Find and pick a user'), 'icon' => 'user'];
+            $types[self::TEAM_CHOICE] = ['title' => __('Team selector'), 'description' => $i18n->__('Find and pick a team'), 'icon' => 'users'];
+            $types[self::CLIENT_CHOICE] = ['title' => __('Client selector'), 'description' => $i18n->__('Find and pick a client'), 'icon' => 'users'];
+            $types[self::CALCULATED_FIELD] = ['title' => __('Formula'), 'description' => $i18n->__('A field calculated from different values'), 'icon' => 'square-root-alt'];
 
             return $types;
 
@@ -284,7 +284,7 @@
         public function getTypeDescription()
         {
             $types = self::getFieldTypes();
-            return $types[$this->_itemtype];
+            return $types[$this->_itemtype]['description'];
         }
 
         public function hasCustomOptions()

@@ -21,8 +21,8 @@
                     <br style="clear: both;">
                     <label for="new_custom_field_name" style="width: 150px; display: inline-block;"><?php echo __('Field type'); ?></label>
                     <select id="new_custom_field_type" name="field_type" style="width: 400px;">
-                        <?php foreach (\pachno\core\entities\CustomDatatype::getFieldTypes() as $type => $description): ?>
-                            <option value="<?php echo $type; ?>"><?php echo $description; ?></option>
+                        <?php foreach (\pachno\core\entities\CustomDatatype::getFieldTypes() as $type => $details): ?>
+                            <option value="<?php echo $type; ?>"><?php echo $details['description']; ?></option>
                         <?php endforeach; ?>
                     </select>
                     <br style="clear: both;">

@@ -3355,6 +3355,28 @@ class Main extends framework\Action
                     }
                     $options['type'] = $issuetype;
                     break;
+                case 'edit_issuefield':
+                    $template_name = 'configuration/editissuefieldpopup';
+                    if ($request['issue_type_id']) {
+                        $issue_type = tables\IssueTypes::getTable()->selectById($request['issue_type_id']);
+                        $options['issue_type'] = $issue_type;
+                    }
+                    if ($request['scheme_id']) {
+                        $scheme = tables\IssuetypeSchemes::getTable()->selectById($request['scheme_id']);
+                        $options['scheme'] = $scheme;
+                    }
+                    if ($request['type']) {
+                        $type = $request['type'];
+                        if (in_array($type, entities\DatatypeBase::getAvailableFields(true))) {
+                            $item = $type;
+                        } else {
+                            $item = entities\CustomDatatype::getByKey($type);
+                        }
+                        $options['item'] = $item;
+                    } else {
+                        $options['item'] = new entities\CustomDatatype();
+                    }
+                    break;
                 case 'scope_config':
                     $template_name = 'configuration/editscope';
                     if ($request['scope_id']) {

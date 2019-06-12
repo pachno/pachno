@@ -114,17 +114,15 @@
 
         public function componentEditIssueField()
         {
-            $this->items = array();
-            $this->showitems = true;
+            $this->showitems = false;
             $this->iscustom = false;
             $types = entities\Datatype::getTypes();
+            $this->access_level = framework\Settings::getAccessLevel(framework\Settings::CONFIGURATION_SECTION_ISSUEFIELDS);
 
-            if (array_key_exists($this->type, $types))
-            {
+            if (array_key_exists($this->type, $types)) {
                 $this->items = call_user_func(array($types[$this->type], 'getAll'));
-            }
-            else
-            {
+                $this->showitems = true;
+            } elseif (!in_array($this->type, entities\DatatypeBase::getAvailableFields(true))) {
                 $customtype = entities\CustomDatatype::getByKey($this->type);
                 $this->showitems = $customtype->hasCustomOptions();
                 $this->iscustom = true;

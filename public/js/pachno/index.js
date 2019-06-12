@@ -4812,17 +4812,55 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
             });
         }
 
-        Pachno.Config.Issuefields.Custom.add = function (url) {
-            Pachno.Main.Helpers.ajax(url, {
-                form: 'add_custom_type_form',
-                loading: {
-                    indicator: 'add_custom_type_indicator',
-                    reset: 'add_custom_type_form'
-                },
-                success: {
-                    update: {element: 'custom_types_list', insertion: true}
-                }
-            });
+        Pachno.Config.Issuefields.Custom.save = function (form) {
+            var $form = jQuery(form),
+                data = new FormData($form[0]);
+
+            if ($form.hasClass('submitting')) return;
+
+            $form.find('.error-container').removeClass('invalid');
+            $form.find('.error-container > .error').html('');
+            $form.addClass('submitting');
+            $form.find('.button.primary').attr('disabled', true);
+
+            fetch($form.attr('action'), {
+                method: 'POST',
+                body: data
+            })
+                .then(function (response) {
+                    response.json().then(function (json) {
+                        if (response.ok) {
+                            const $issue_option_container = jQuery('[data-issue-field][data-id='+json.item.id+']');
+                            if ($issue_option_container.length > 0) {
+                                $issue_option_container.find('[data-name]').html(json.issue_type.name);
+                            } else {
+                                const $issue_options_container = jQuery('#field-options-list');
+                                if ($issue_options_container.length > 0) {
+                                    $issue_options_container.append(json.component);
+                                }
+                                if (sortable_options != undefined) {
+                                    Sortable.destroy('field-options-list');
+                                    Sortable.create('field-options-list', sortable_options);
+                                }
+                                Pachno.Main.Helpers.initializeColorPicker();
+                            }
+                            $form[0].reset();
+                        } else {
+                            $form.find('.error-container > .error').html(json.error);
+                            $form.find('.error-container').addClass('invalid');
+                        }
+
+                        $form.removeClass('submitting');
+                        $form.find('.button.primary').attr('disabled', false);
+                    })
+                        .catch(function (error) {
+                            $form.find('.error-container > .error').html(error);
+                            $form.find('.error-container').addClass('invalid');
+
+                            $form.removeClass('submitting');
+                            $form.find('.button.primary').attr('disabled', false);
+                        });
+                });
         }
 
         Pachno.Config.Issuefields.Custom.update = function (url, type) {

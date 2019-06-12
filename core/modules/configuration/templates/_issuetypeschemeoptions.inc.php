@@ -27,6 +27,11 @@
                         <span class="name"><?= $item->getDescription(); ?></span>
                     </a>
                 <?php endforeach; ?>
+                <span class="list-item separator"></span>
+                <a href="javascript:void(0);" onclick="Pachno.Main.Helpers.Backdrop.show('<?= make_url('get_partial_for_backdrop', ['key' => 'edit_issuefield', 'scheme_id' => $scheme->getId(), 'issue_type_id' => $issue_type->getId()]); ?>');">
+                    <span class="icon"><?= fa_image_tag('plus'); ?></span>
+                    <span class="name"><?= __('Create new field'); ?></span>
+                </a>
             </span>
         </span>
     </span>

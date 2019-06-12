@@ -44,7 +44,7 @@
         </h5>
         <div class="configurable-components-list" id="field-options-list">
             <?php foreach ($items as $item): ?>
-                <?php include_component('editissuefieldoption', array('item' => $item, 'type' => $type, 'access_level' => $access_level)); ?>
+                <?php include_component('configuration/editissuefieldoption', array('item' => $item, 'type' => $type, 'access_level' => $access_level)); ?>
             <?php endforeach; ?>
         </div>
         <div class="form-container">

@@ -10,6 +10,11 @@
             <div class="icon">
                 <?= (is_object($item)) ? fa_image_tag('tag') : fa_image_tag(IssueFields::getFieldFontAwesomeImage($item), [], IssueFields::getFieldFontAwesomeImageStyle($item)); ?>
             </div>
+            <?php if (!$item instanceof \pachno\core\entities\CustomDatatype): ?>
+                <div class="information">
+                    <span class="count-badge"><?= __('Built-in'); ?></span>
+                </div>
+            <?php endif; ?>
             <div class="name">
                 <?= (is_object($item)) ? $item->getDescription() : IssueFields::getFieldDescription($item); ?>
             </div>
@@ -39,10 +44,12 @@
                     <?= fa_image_tag('times', ['class' => 'icon']); ?>
                     <span><?= __('Remove field'); ?></span>
                 </button>
-                <button class="button secondary">
-                    <?= fa_image_tag('edit', ['class' => 'icon'], 'far'); ?>
-                    <span><?= __('Edit field options'); ?></span>
-                </button>
+                <?php if (!in_array($key, ['votes', 'owner', 'description', 'reproduction_steps'])): ?>
+                    <button class="button secondary" onclick="Pachno.Main.Helpers.Backdrop.show('<?= make_url('get_partial_for_backdrop', ['key' => 'edit_issuefield', 'type' => $key]); ?>');">
+                        <?= fa_image_tag('edit', ['class' => 'icon'], 'far'); ?>
+                        <span><?= __('Edit field options'); ?></span>
+                    </button>
+                <?php endif; ?>
             </div>
         </div>
     </div>

@@ -15,8 +15,19 @@
         <div class="icon">
             <?= fa_image_tag(IssueFields::getFieldFontAwesomeImage($type_key), [], IssueFields::getFieldFontAwesomeImageStyle($type_key)); ?>
         </div>
+        <?php if (!$type instanceof \pachno\core\entities\CustomDatatype): ?>
+            <div class="information">
+                <span class="count-badge"><?= __('Built-in'); ?></span>
+            </div>
+        <?php endif; ?>
         <div class="name">
-            <div class="title"><?= ($type instanceof \pachno\core\entities\CustomDatatype) ? $type->getName() : IssueFields::getFieldDescription($type_key); ?></div>
+            <div class="title">
+                <?php if ($type instanceof \pachno\core\entities\CustomDatatype): ?>
+                    <?= $type->getName(); ?>
+                <?php else: ?>
+                    <span><?= IssueFields::getFieldDescription($type_key); ?></span>
+                <?php endif; ?>
+            </div>
             <?php if ($type instanceof \pachno\core\entities\CustomDatatype): ?>
                 <div class="description"><?= $type->getTypeDescription(); ?></div>
             <?php endif; ?>

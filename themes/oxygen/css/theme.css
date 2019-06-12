@@ -12170,6 +12170,7 @@ dl.info {
     border: 2px solid #0C8990;
     background-color: #0C8990; }
     .configurable-component.active > .row > .icon:not(.open),
+    .configurable-component.active > .row > .information,
     .configurable-component.active > .row > .name {
       background-color: #FFF; }
     .configurable-component.active > .row > *:first-child {
@@ -12198,7 +12199,7 @@ dl.info {
       padding: .35rem; }
     .configurable-component > form > .row > .icon,
     .configurable-component > .row > .icon {
-      flex: 0 0 42px;
+      flex: 0 0 36px;
       box-sizing: border-box;
       padding: .35rem;
       display: flex;
@@ -12231,6 +12232,9 @@ dl.info {
         flex: 0 0 auto;
         margin-left: auto;
         margin-right: auto; }
+      .configurable-component > form > .row > .icon + .name,
+      .configurable-component > .row > .icon + .name {
+        padding-left: 0; }
     .configurable-component > form > .row > .name,
     .configurable-component > .row > .name {
       padding: .35rem;
@@ -12253,7 +12257,9 @@ dl.info {
       .configurable-component > .row > .name .description {
         color: rgba(0, 0, 0, 0.4); }
     .configurable-component > form > .row > .actions,
-    .configurable-component > .row > .actions {
+    .configurable-component > form > .row > .information,
+    .configurable-component > .row > .actions,
+    .configurable-component > .row > .information {
       flex: 0 0 auto;
       min-width: 50px;
       display: flex;
