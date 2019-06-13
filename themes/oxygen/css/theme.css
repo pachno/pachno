@@ -8348,7 +8348,8 @@ input.icon.secondary:disabled {
         flex: 1 1 33%; }
       .dropper-container .dropdown-container.columns.two-columns .column {
         flex: 1 1 50%;
-        min-width: 260px; }
+        min-width: 260px;
+        overflow: auto; }
     .dropper-container .dropdown-container .list-mode {
       max-height: 450px;
       overflow-y: auto;
@@ -8581,6 +8582,15 @@ input.icon.secondary:disabled {
   margin: 0;
   display: flex;
   flex-direction: column; }
+  .list-mode.grid-mode {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-start; }
+    .list-mode.grid-mode .list-item,
+    .list-mode.grid-mode .list-item:hover {
+      justify-content: center;
+      margin: .35rem; }
   .list-mode.updating {
     opacity: 0.2; }
   .list-mode .header-banner {
@@ -8635,10 +8645,10 @@ input.icon.secondary:disabled {
     transition: color .25s ease-in-out, background-color .25s ease-in-out; }
     .list-mode .list-item.disabled,
     .list-mode .list-item:hover.disabled {
-      color: rgba(0, 0, 0, 0.4); }
+      color: rgba(100, 100, 100, 0.4); }
       .list-mode .list-item.disabled .icon,
       .list-mode .list-item:hover.disabled .icon {
-        color: rgba(0, 0, 0, 0.4); }
+        color: rgba(100, 100, 100, 0.4); }
     .list-mode .list-item.danger,
     .list-mode .list-item:hover.danger {
       color: #cb1a00; }
@@ -9181,14 +9191,16 @@ input.icon.secondary:disabled {
     .form-container .form-row > input[type=password] {
       flex: 1 1 100%;
       padding: .2em;
-      font-size: 1em; }
+      font-size: 1em;
+      box-sizing: border-box; }
       .form-container .form-row > textarea.invisible,
       .form-container .form-row > input[type=text].invisible,
       .form-container .form-row > input[type=password].invisible {
         background-color: transparent;
         border: 1px solid transparent;
         border-radius: 4px;
-        padding: .35rem; }
+        padding: .35rem;
+        flex: 1 1 auto; }
         .form-container .form-row > textarea.invisible.title,
         .form-container .form-row > input[type=text].invisible.title,
         .form-container .form-row > input[type=password].invisible.title {
@@ -9214,6 +9226,10 @@ input.icon.secondary:disabled {
         .form-container .form-row > input[type=password].invisible:focus {
           background: #FFF;
           border-color: #0C8990; }
+          .form-container .form-row > textarea.invisible:focus.with-label,
+          .form-container .form-row > input[type=text].invisible:focus.with-label,
+          .form-container .form-row > input[type=password].invisible:focus.with-label {
+            padding-bottom: 2rem; }
           .form-container .form-row > textarea.invisible:focus:hover,
           .form-container .form-row > input[type=text].invisible:focus:hover,
           .form-container .form-row > input[type=password].invisible:focus:hover {
@@ -9222,7 +9238,10 @@ input.icon.secondary:disabled {
           .form-container .form-row > input[type=text].invisible:focus + label,
           .form-container .form-row > input[type=password].invisible:focus + label {
             opacity: 1;
-            transform: translateY(0); }
+            transform: translateY(calc(-100% - 2px));
+            background: transparent;
+            border: 0;
+            padding: .35rem; }
       .form-container .form-row > textarea.name-input-enhance,
       .form-container .form-row > input[type=text].name-input-enhance,
       .form-container .form-row > input[type=password].name-input-enhance {
@@ -12181,6 +12200,8 @@ dl.info {
     .configurable-component.active > .row > .icon.open:hover {
       background-color: transparent;
       color: #FFF; }
+  .configurable-component.issue-field .row {
+    flex-wrap: nowrap; }
   .configurable-component > form > .row,
   .configurable-component > .row {
     flex: 0 0 auto;
@@ -12286,6 +12307,12 @@ dl.info {
     flex: 1 1 auto;
     margin: 0 0 0 .35rem;
     padding: 0 .35rem; }
+    .configurable-components-container.active .configurable-component-options > .form-container {
+      padding-top: .35rem; }
+      .configurable-components-container.active .configurable-component-options > .form-container.issue-field-option .form-row {
+        padding: 0; }
+    .configurable-components-container.active .configurable-component-options > .configurable-components-list + .form-container {
+      padding-top: 0; }
 
 .projectbox .permission_list ul {
   width: 670px; }
@@ -12755,3 +12782,5 @@ input[type=submit].workflow_transition_submit_button, input[type=submit].workflo
 
 /* end workflow styling */
 /* end config styling */
+
+/*# sourceMappingURL=theme.css.map */

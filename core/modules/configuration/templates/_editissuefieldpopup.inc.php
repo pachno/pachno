@@ -39,7 +39,6 @@
                     </div>
                     <div class="form-row error-container">
                         <div class="error"></div>
-                        <input type="hidden" name="type" value="<?= $item->getKey(); ?>">
                         <?php if (isset($issue_type)): ?>
                             <input type="hidden" name="issue_type_id" value="<?= $issue_type->getId(); ?>">
                         <?php endif; ?>

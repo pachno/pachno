@@ -161,15 +161,10 @@
             $this->archived_projects = entities\Project::getAllRootProjects(true);
         }
 
-        /**
-         * Configure issue fields
-         *
-         * @param framework\Request $request The request object
-         */
-        public function runConfigureIssuefields(framework\Request $request)
+        protected function getBuiltInIssueFields()
         {
             $i18n = framework\Context::getI18n();
-            $builtin_types = array();
+            $builtin_types = [];
             $builtin_types[entities\Datatype::STATUS] = array('description' => $i18n->__('Status types'), 'key' => entities\Datatype::STATUS);
             $builtin_types[entities\Datatype::RESOLUTION] = array('description' => $i18n->__('Resolution types'), 'key' => entities\Datatype::RESOLUTION);
             $builtin_types[entities\Datatype::PRIORITY] = array('description' => $i18n->__('Priority levels'), 'key' => entities\Datatype::PRIORITY);
@@ -178,7 +173,17 @@
             $builtin_types[entities\Datatype::REPRODUCABILITY] = array('description' => $i18n->__('Reproducability'), 'key' => entities\Datatype::REPRODUCABILITY);
             $builtin_types[entities\Datatype::ACTIVITYTYPE] = array('description' => $i18n->__('Activity types'), 'key' => entities\Datatype::ACTIVITYTYPE);
 
-            $this->builtin_types = $builtin_types;
+            return $builtin_types;
+        }
+
+        /**
+         * Configure issue fields
+         *
+         * @param framework\Request $request The request object
+         */
+        public function runConfigureIssuefields(framework\Request $request)
+        {
+            $this->builtin_types = $this->getBuiltInIssueFields();
             $this->custom_types = entities\CustomDatatype::getAll();
         }
 
@@ -281,6 +286,30 @@
             $scheme = tables\IssuetypeSchemes::getTable()->selectById($request['scheme_id']);
 
             return $this->renderJSON(['content' => $this->getComponentHTML('configuration/issuetypeschemeoptions', ['issue_type' => $issue_type, 'scheme' => $scheme])]);
+        }
+
+        /**
+         * Get issue type field for a specific issue type
+         *
+         * @param framework\Request $request
+         */
+        public function runConfigureIssuetypesGetFieldForScheme(framework\Request $request)
+        {
+            $issue_type = tables\IssueTypes::getTable()->selectById($request['issue_type_id']);
+            $scheme = tables\IssuetypeSchemes::getTable()->selectById($request['scheme_id']);
+
+            $builtin_types = entities\DatatypeBase::getAvailableFields(true);
+            $custom_types = entities\CustomDatatype::getAll();
+            $visible_fields = $scheme->getVisibleFieldsForIssuetype($issue_type);
+            $key = $request['key'];
+            $item = (in_array($key, $builtin_types)) ? $key : $custom_types[$key];
+
+            $visible_fields[$key] = [
+                'required' => false,
+                'reportable' => false
+            ];
+
+            return $this->renderJSON(['content' => $this->getComponentHTML('configuration/issuetypeschemeoption', ['key' => $key, 'item' => $item, 'issue_type' => $issue_type, 'scheme' => $scheme, 'visible_fields' => $visible_fields, 'expanded' => true])]);
         }
 
         /**
@@ -591,13 +620,20 @@
                     {
                         try
                         {
+                            if (!$request['name']) {
+                                throw new \Exception($this->getI18n()->__('Please provide a name'));
+                            }
+
+                            if (!$request['type']) {
+                                throw new \Exception($this->getI18n()->__('You have to pick the type of field you are adding'));
+                            }
+
                             $customtype = new entities\CustomDatatype();
                             $customtype->setName($request['name']);
-                            $customtype->setItemdata($request['name']);
-                            $customtype->setDescription($request['name']);
-                            $customtype->setType($request['field_type']);
+                            $customtype->setType($request['type']);
                             $customtype->save();
-                            return $this->renderJSON(array('title' => framework\Context::getI18n()->__('The issue field was added'), 'content' => $this->getComponentHTML('issuefields_customtype', array('type_key' => $customtype->getKey(), 'type' => $customtype))));
+
+                            return $this->renderJSON(array('item' => $customtype->toJSON(), 'component' => $this->getComponentHTML('configuration/issuefield', ['type_key' => $customtype->getKey(), 'type' => $customtype])));
                         }
                         catch (\Exception $e)
                         {
@@ -614,7 +650,7 @@
                         $customtype = entities\CustomDatatype::getByKey($request['type']);
                         if ($customtype instanceof entities\CustomDatatype)
                         {
-                            $customtype->setDescription($request['description']);
+                            // $customtype->setDescription($request['description']);
                             $customtype->setInstructions($request['instructions']);
                             $customtype->setName($request['name']);
                             $customtype->save();

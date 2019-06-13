@@ -130,7 +130,17 @@
             parent::_preSave($is_new);
             if ($is_new)
             {
+                if (!$this->_description) {
+                    $this->_description = $this->_name;
+                }
+                if (!$this->_itemdata) {
+                    $this->_itemdata = $this->_name;
+                }
                 $this->_generateKey();
+                if (!$this->_key) {
+                    throw new \Exception(framework\Context::getI18n()->__('This field is not valid'));
+                }
+
                 if (array_key_exists($this->_key, self::getAll()))
                 {
                     throw new \Exception(framework\Context::getI18n()->__('This field key already exists'));
@@ -284,7 +294,7 @@
         public function getTypeDescription()
         {
             $types = self::getFieldTypes();
-            return $types[$this->_itemtype]['description'];
+            return $types[$this->_itemtype]['title'];
         }
 
         public function hasCustomOptions()

@@ -31,7 +31,7 @@
             <div class="configurable-components-container" id="issue-fields-configuration-container">
                 <div class="configurable-components-list-container">
                     <h3><?php echo __('Issue fields'); ?></h3>
-                    <div id="custom_types_list" class="configurable-components-list">
+                    <div id="custom-types-list" class="configurable-components-list">
                         <?php foreach ($builtin_types as $type_key => $type): ?>
                             <?php if ($type_key == 'activitytype') continue; ?>
                             <?php include_component('configuration/issuefield', compact('type_key', 'type')); ?>

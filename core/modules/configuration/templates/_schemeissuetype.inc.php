@@ -17,11 +17,9 @@ use pachno\core\framework\Context; ?>
                 <input type="text" class="invisible" value="<?php echo $type->getName(); ?>" name="name">
             </div>
         </div>
-        <div class="icon"<?php if ($scheme->isSchemeAssociatedWithIssuetype($type)): ?> style="display: none;"<?php endif; ?> id="type_toggle_<?php echo $type->getID(); ?>_enable">
-            <a href="javascript:void(0);" onclick="Pachno.Config.Issuetype.toggleForScheme('<?php echo make_url('configure_issuetypes_enable_issuetype_for_scheme', array('id' => $type->getID(), 'scheme_id' => $scheme->getID())); ?>', <?php echo $type->getID(); ?>, <?php echo $scheme->getID(); ?>, 'enable');return false;" class="button secondary icon"><?= fa_image_tag('toggle-off'); ?></a>
-        </div>
-        <div class="icon" <?php if (!$scheme->isSchemeAssociatedWithIssuetype($type)): ?> style="display: none;"<?php endif; ?> id="type_toggle_<?php echo $type->getID(); ?>_disable">
-            <a href="javascript:void(0);" onclick="Pachno.Config.Issuetype.toggleForScheme('<?php echo make_url('configure_issuetypes_disable_issuetype_for_scheme', array('id' => $type->getID(), 'scheme_id' => $scheme->getID())); ?>', <?php echo $type->getID(); ?>, <?php echo $scheme->getID(); ?>, 'disable');return false;" class="button secondary icon enabled"><?= fa_image_tag('toggle-on'); ?></a>
+        <div class="icon">
+            <a href="javascript:void(0);" <?php if ($scheme->isSchemeAssociatedWithIssuetype($type)): ?> style="display: none;"<?php endif; ?> id="type_toggle_<?php echo $type->getID(); ?>_enable" onclick="Pachno.Config.Issuetype.toggleForScheme('<?php echo make_url('configure_issuetypes_enable_issuetype_for_scheme', array('id' => $type->getID(), 'scheme_id' => $scheme->getID())); ?>', <?php echo $type->getID(); ?>, <?php echo $scheme->getID(); ?>, 'enable');return false;" class="button secondary icon"><?= fa_image_tag('toggle-off'); ?></a>
+            <a href="javascript:void(0);" <?php if (!$scheme->isSchemeAssociatedWithIssuetype($type)): ?> style="display: none;"<?php endif; ?> id="type_toggle_<?php echo $type->getID(); ?>_disable" onclick="Pachno.Config.Issuetype.toggleForScheme('<?php echo make_url('configure_issuetypes_disable_issuetype_for_scheme', array('id' => $type->getID(), 'scheme_id' => $scheme->getID())); ?>', <?php echo $type->getID(); ?>, <?php echo $scheme->getID(); ?>, 'disable');return false;" class="button secondary icon enabled"><?= fa_image_tag('toggle-on'); ?></a>
         </div>
         <button class="icon open">
             <?= fa_image_tag('angle-right'); ?>

@@ -13,7 +13,7 @@
                 }
             ?>
             <li>
-                <?php echo javascript_link_tag(__('Delete'), array('onclick' => "Pachno.Main.Helpers.Dialog.show('".__('Do you really want to delete this issue field?')."', '".__('This will also remove the value of this issue field from all issues, along with any possible options this field can have.')."', {yes: {click: function() {Pachno.Config.Issuefields.Custom.remove('".make_url('configure_issuefields_delete_customtype', array('type' => $type_key))."', '".$type_key."', '".$type->getID()."'); }}, no: { click: Pachno.Main.Helpers.Dialog.dismiss }});")); ?>
+
             </li>
         </ul>
     </div>

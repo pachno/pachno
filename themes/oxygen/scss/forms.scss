@@ -166,12 +166,14 @@
       flex: 1 1 100%;
       padding: .2em;
       font-size: 1em;
+      box-sizing: border-box;
 
       &.invisible {
         background-color: transparent;
         border: 1px solid transparent;
         border-radius: 4px;
         padding: .35rem;
+        flex: 1 1 auto;
 
         &.title {
           font-weight: 400;
@@ -197,14 +199,20 @@
           background: #FFF;
           border-color: $theme-primary;
 
+          &.with-label {
+            padding-bottom: 2rem;
+          }
+
           &:hover {
             cursor: text;
           }
 
           + label {
             opacity: 1;
-            transform: translateY(0);
-            //margin-bottom: 0;
+            transform: translateY(calc(-100% - 2px));
+            background: transparent;
+            border: 0;
+            padding: .35rem;
           }
         }
       }

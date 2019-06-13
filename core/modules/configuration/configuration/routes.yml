@@ -515,6 +515,17 @@ configure_issuetypes_scheme_options_post:
     mode: updatechoices
   csrf_enabled: false
 
+configure_issuetypes_scheme_field:
+  route: /configure/issuetypeschemes/:scheme_id/options/:issue_type_id/fields/:key
+  module: configuration
+  action: configureIssuetypesGetFieldForScheme
+  methods:
+    - GET
+  parameters:
+    config_module: core
+    section: 6
+  csrf_enabled: false
+
 configure_issuetypes_disable_issuetype_for_scheme:
   route: /configure/issuetypes/disable/:id/for/scheme/:scheme_id
   module: configuration

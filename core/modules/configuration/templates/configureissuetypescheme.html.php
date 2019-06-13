@@ -61,6 +61,20 @@
                 pachno_index_js.Config.IssuetypeScheme.showOptions($item);
             });
 
+            jQuery('body').on('click', '.list-item[data-issue-field]:not(.disabled)', function(event) {
+                const key = jQuery(this).data('id'),
+                    url = jQuery(this).data('url');
+
+                pachno_index_js.Config.IssuetypeScheme.addField(url, key);
+            });
+
+            jQuery('body').on('click', '.configurable-component[data-issue-field] .remove-item', function(event) {
+                const $item = jQuery(this).parents('.configurable-component'),
+                    key = $item.data('id');
+
+                $item.remove();
+                jQuery('.list-item[data-issue-field][data-id=' + key + ']').removeClass('disabled');
+            });
         });
     });
 </script>

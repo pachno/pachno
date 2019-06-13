@@ -1,6 +1,28 @@
-<div data-issue-field-option data-id="<?php echo $item->getID(); ?>" class="configurable-component form-container">
+<?php
+
+    /** @var \pachno\core\entities\DatatypeBase $item */
+
+?>
+<div data-issue-field-option data-id="<?php echo $item->getID(); ?>" class="configurable-component issue-field-option form-container">
     <form class="row" accept-charset="<?php echo \pachno\core\framework\Context::getI18n()->getCharset(); ?>" action="<?php echo make_url('configure_issuefields_edit', ['type' => $type, 'id' => $item->getID()]); ?>" onsubmit="Pachno.Config.Issuefields.Options.save(this);return false;" data-interactive-form>
         <?= fa_image_tag('grip-vertical', ['class' => 'icon handle']); ?>
+        <?php if ($item->getItemtype() == \pachno\core\entities\Datatype::PRIORITY): ?>
+            <div class="icon">
+                <div class="dropper-container">
+                    <button class="button icon secondary dropper"><?= fa_image_tag($item->getFontAwesomeIcon(), [], $item->getFontAwesomeIconStyle()); ?></button>
+                    <div class="dropdown-container">
+                        <div class="list-mode grid-mode">
+                            <?php foreach (\pachno\core\entities\Priority::getAvailableValues() as $value => $icon): ?>
+                                <input type="radio" name="itemdata" value="<?= $value; ?>" id="<?= $type; ?>_<?= $item->getID(); ?>_itemdata_input_<?= $value; ?>" class="fancycheckbox" <?php if ($item->getItemdata() == $value) echo 'checked'; ?>>
+                                <label class="list-item" for="<?= $type; ?>_<?= $item->getID(); ?>_itemdata_input_<?= $value; ?>">
+                                    <span class="icon"><?= fa_image_tag($icon); ?></span>
+                                </label>
+                            <?php endforeach; ?>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        <?php endif; ?>
         <div class="name">
             <div class="form-row">
                 <input type="text" name="name" id="<?php echo $type; ?>_<?php echo $item->getID(); ?>_name_input" value="<?php echo $item->getName(); ?>" class="invisible">
@@ -9,7 +31,7 @@
         </div>
         <div class="icon">
             <?php if ($item->canBeDeleted()): ?>
-                <a href="javascript:void(0);" class="button secondary icon" onclick="Pachno.Main.Helpers.Dialog.show('<?php echo __('Really delete %itemname?', array('%itemname' => $item->getName())); ?>', '<?php echo __('Are you really sure you want to delete this item?'); ?>', {yes: {click: function() {Pachno.Config.Issuefields.Options.remove('<?php echo make_url('configure_issuefields_delete', array('type' => $type, 'id' => $item->getID())); ?>', <?php echo $item->getID(); ?>); Pachno.Main.Helpers.Dialog.dismiss(); }}, no: {click: Pachno.Main.Helpers.Dialog.dismiss}});"><?php echo fa_image_tag('trash-alt', [], 'far'); ?></a>
+                <a href="javascript:void(0);" class="button secondary icon" onclick="Pachno.Main.Helpers.Dialog.show('<?php echo __('Really delete this item?'); ?>', '<?php echo __('Are you really sure you want to delete this item?'); ?>', {yes: {click: function() {Pachno.Config.Issuefields.Options.remove('<?php echo make_url('configure_issuefields_delete', array('type' => $type, 'id' => $item->getID())); ?>', <?php echo $item->getID(); ?>); Pachno.Main.Helpers.Dialog.dismiss(); }}, no: {click: Pachno.Main.Helpers.Dialog.dismiss}});"><?php echo fa_image_tag('trash-alt', [], 'far'); ?></a>
             <?php else: ?>
                 <a href="javascript:void(0);" class="button secondary icon disabled" onclick="Pachno.Main.Helpers.Message.error('<?php echo __('This item cannot be deleted'); ?>', '<?php echo __('Other items - such as workflow steps - may depend on this item to exist. Remove the dependant item or unlink it from this item to continue.'); ?>');" id="delete_<?php echo $item->getID(); ?>_link"><?php echo fa_image_tag('trash-alt', [], 'far'); ?></a>
             <?php endif; ?>

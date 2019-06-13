@@ -4,6 +4,19 @@
   display: flex;
   flex-direction: column;
 
+  &.grid-mode {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-start;
+
+    .list-item,
+    .list-item:hover {
+      justify-content: center;
+      margin: .35rem;
+    }
+  }
+
   &.updating {
     opacity: 0.2;
   }
@@ -74,10 +87,10 @@
     transition: color .25s ease-in-out, background-color .25s ease-in-out;
 
     &.disabled {
-      color: rgba(0, 0, 0, .4);
+      color: rgba(100, 100, 100, .4);
 
       .icon {
-        color: rgba(0, 0, 0, .4);
+        color: rgba(100, 100, 100, .4);
       }
     }
 

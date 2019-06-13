@@ -25,6 +25,7 @@ define(['pachno/tools', 'pachno/index', 'domReady', 'jquery', 'mention'],
                 });
 
                 jQuery('body').on('change', 'form[data-interactive-form] input[type=checkbox],form[data-interactive-form] input[type=radio]', function () {
+                    console.log('CHAINGING');
                     const $form = jQuery(this).parents('form');
 
                     $form.submit();

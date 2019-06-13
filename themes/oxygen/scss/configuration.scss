@@ -314,6 +314,12 @@
     }
   }
 
+  &.issue-field {
+    .row {
+      flex-wrap: nowrap;
+    }
+  }
+
   > form > .row,
   > .row {
     flex: 0 0 auto;
@@ -441,6 +447,20 @@
       flex: 1 1 auto;
       margin: 0 0 0 .35rem;
       padding: 0 .35rem;
+
+      > .form-container {
+        padding-top: .35rem;
+
+        &.issue-field-option {
+          .form-row {
+            padding: 0;
+          }
+        }
+      }
+
+      > .configurable-components-list + .form-container {
+        padding-top: 0;
+      }
     }
   }
 }
