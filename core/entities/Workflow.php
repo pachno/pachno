@@ -101,7 +101,7 @@
         /**
          * Return all workflows in the system
          *
-         * @return array An array of \pachno\core\entities\Workflow objects
+         * @return \pachno\core\entities\Workflow[]]
          */
         public static function getAll()
         {

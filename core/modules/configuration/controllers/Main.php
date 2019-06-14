@@ -208,7 +208,7 @@
                 $scheme_id = tables\IssuetypeSchemes::getTable()->getNumberOfSchemesInCurrentScope();
                 $this->forward($this->getRouting()->generate('configure_issuetypes_scheme', ['scheme_id' => $scheme_id]));
             } else {
-                $this->issue_type_schemes = entities\IssuetypeScheme::getAll();
+                $this->schemes = entities\IssuetypeScheme::getAll();
             }
         }
 
@@ -1907,70 +1907,84 @@
             }
         }
 
+        public function runConfigureWorkflowSchemeDelete(framework\Request $request)
+        {
+            try {
+                $workflow_scheme = entities\tables\WorkflowSchemes::getTable()->selectById($request['scheme_id']);
+                $workflow_scheme->delete();
+
+                return $this->renderJSON(['message' => $this->getI18n()->__('The workflow scheme was deleted'), 'item' => $workflow_scheme->toJSON()]);
+            } catch (\Exception $e) {
+
+                $this->getResponse()->setHttpStatus(400);
+                return $this->renderJSON(['error' => $e->getMessage()]);
+            }
+        }
+
         public function runConfigureWorkflowScheme(framework\Request $request)
         {
-            $this->workflow_scheme = null;
-            $this->mode = $request->getParameter('mode', 'list');
-            try
-            {
-                $this->workflow_scheme = entities\WorkflowScheme::getB2DBTable()->selectById($request['scheme_id']);
-                $this->issuetypes = entities\Issuetype::getAll();
-                if (framework\Context::getScope()->isCustomWorkflowsEnabled() && $this->mode == 'copy_scheme')
-                {
-                    if ($new_name = $request['new_name'])
-                    {
-                        $new_scheme = new entities\WorkflowScheme();
-                        $new_scheme->setName($new_name);
-                        $new_scheme->save();
-                        foreach ($this->issuetypes as $issuetype)
-                        {
-                            if ($this->workflow_scheme->hasWorkflowAssociatedWithIssuetype($issuetype))
-                            {
-                                $new_scheme->associateIssuetypeWithWorkflow($issuetype, $this->workflow_scheme->getWorkflowForIssuetype($issuetype));
-                            }
-                        }
-                        return $this->renderJSON(array('content' => $this->getComponentHTML('configuration/workflowscheme', array('scheme' => $new_scheme))));
-                    }
-                    else
-                    {
-                        $this->error = $this->getI18n()->__('Please enter a valid name');
-                    }
+            try {
+                if ($request['scheme_id'] && !$request->hasParameter('clone')) {
+                    $workflow_scheme = entities\tables\WorkflowSchemes::getTable()->selectById($request['scheme_id']);
+                } else {
+                    $workflow_scheme = new entities\WorkflowScheme();
                 }
-                elseif (framework\Context::getScope()->isCustomWorkflowsEnabled() && $this->mode == 'delete_scheme')
+                if (framework\Context::getScope()->isCustomWorkflowsEnabled())
                 {
-                    $this->workflow_scheme->delete();
-                    return $this->renderJSON(array('success' => true, 'message' => $this->getI18n()->__('The workflow scheme was deleted')));
-                }
-                elseif (framework\Context::getScope()->isCustomWorkflowsEnabled() && $request->isPost())
-                {
-                    foreach ($request->getParameter('workflow_id', array()) as $issuetype_id => $workflow_id)
+                    if (trim($request['name']) == '') {
+                        throw new \Exception($this->getI18n()->__('Please give the scheme a name'));
+                    }
+
+                    $workflow_scheme->setName(trim($request['name']));
+                    $workflow_scheme->setDescription(trim($request['description']));
+                    $workflow_scheme->save();
+                    foreach ($request->getParameter('workflow_id', array()) as $issue_type_id => $workflow_id)
                     {
-                        $issuetype = entities\Issuetype::getB2DBTable()->selectById($issuetype_id);
-                        if ($workflow_id)
-                        {
+                        $issue_type = entities\tables\Issuetypes::getTable()->selectById($issue_type_id);
+                        if ($workflow_id) {
                             $workflow = entities\Workflow::getB2DBTable()->selectById($workflow_id);
-                            $this->workflow_scheme->associateIssuetypeWithWorkflow($issuetype, $workflow);
-                        }
-                        else
-                        {
-                            $this->workflow_scheme->unassociateIssuetype($issuetype);
+                            $workflow_scheme->associateIssuetypeWithWorkflow($issue_type, $workflow);
+                        } elseif ($workflow_scheme->getID()) {
+                            $workflow_scheme->unassociateIssuetype($issue_type);
                         }
                     }
-                    return $this->renderJSON(array('success' => true, 'message' => $this->getI18n()->__('Workflow associations were updated')));
+
+                    return $this->renderJSON([
+                        'message' => $this->getI18n()->__('Workflow associations were updated'),
+                        'item' => $workflow_scheme->toJSON(),
+                        'component' => $this->getComponentHTML('configuration/workflowscheme', ['scheme' => $workflow_scheme])
+                    ]);
                 }
+            } catch (\Exception $e) {
+                $this->getResponse()->setHttpStatus(400);
+                return $this->renderJSON(['error' => $e->getMessage()]);
             }
-            catch (\Exception $e)
-            {
-                if ($request->getRequestedFormat() == 'json')
-                {
-                    $this->getResponse()->setHttpStatus(400);
-                    return $this->renderJSON(array('success' => false, 'message' => $this->getI18n()->__('An error occured'), 'error' => $e->getMessage()));
-                }
-                else
-                {
-                    $this->error = $this->getI18n()->__('This workflow scheme does not exist');
-                }
-            }
+//                if (framework\Context::getScope()->isCustomWorkflowsEnabled() && $this->mode == 'copy_scheme')
+//                {
+//                    if ($new_name = $request['new_name'])
+//                    {
+//                        $new_scheme = new entities\WorkflowScheme();
+//                        $new_scheme->setName($new_name);
+//                        $new_scheme->save();
+//                        foreach ($this->issuetypes as $issuetype)
+//                        {
+//                            if ($this->workflow_scheme->hasWorkflowAssociatedWithIssuetype($issuetype))
+//                            {
+//                                $new_scheme->associateIssuetypeWithWorkflow($issuetype, $this->workflow_scheme->getWorkflowForIssuetype($issuetype));
+//                            }
+//                        }
+//                        return $this->renderJSON(array('content' => $this->getComponentHTML('configuration/workflowscheme', array('scheme' => $new_scheme))));
+//                    }
+//                    else
+//                    {
+//                        $this->error = $this->getI18n()->__('Please enter a valid name');
+//                    }
+//                }
+//                elseif (framework\Context::getScope()->isCustomWorkflowsEnabled() && $this->mode == 'delete_scheme')
+//                {
+//                    $this->workflow_scheme->delete();
+//                    return $this->renderJSON(array('success' => true, 'message' => $this->getI18n()->__('The workflow scheme was deleted')));
+//                }
         }
 
         public function runConfigureWorkflowSteps(framework\Request $request)

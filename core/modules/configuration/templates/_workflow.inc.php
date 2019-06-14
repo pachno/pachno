@@ -1,31 +1,59 @@
-<li id="workflow_<?php echo $workflow->getID(); ?>" class="greybox" style="margin-bottom: 5px;">
-    <table>
-        <tr>
-            <td class="workflow_info scheme">
-                <div class="workflow_name"><?php echo $workflow->getName(); ?></div>
-                <?php if ($workflow->getDescription()): ?>
-                    <div class="workflow_description"><?php echo $workflow->getDescription(); ?></div>
-                <?php endif; ?>
-            </td>
-            <td class="workflow_<?php if (!$workflow->isActive()) echo 'in'; ?>active"><?php echo ($workflow->isActive()) ? __('Active') : __('Inactive'); ?></td>
-            <td class="workflow_steps"><?php echo __('Steps: %number_of_workflow_steps', array('%number_of_workflow_steps' => '<span>'.$workflow->getNumberOfSteps().'</span>')); ?></td>
-            <td class="workflow_actions">
-                <div class="button-group">
-                    <?php echo link_tag(make_url('configure_workflow_steps', array('workflow_id' => $workflow->getID())), fa_image_tag('list-alt', array('title' => __('Show workflow details'))), array('class' => 'button')); ?>
+<?php
+
+    use pachno\core\entities\Workflow,
+        pachno\core\entities\Status;
+
+    /** @var Workflow $workflow */
+
+?>
+<div id="workflow_<?php echo $workflow->getID(); ?>" class="row" style="margin-bottom: 5px;" data-workflow data-id="<?= $workflow->getId(); ?>">
+    <div class="column name-container multiline">
+        <div class="title"><?php echo $workflow->getName(); ?><?php if (!$workflow->isActive()): ?><span class="count-badge"><?= __('Draft'); ?></span><?php endif; ?></div>
+        <?php if ($workflow->getDescription()): ?>
+            <div class="description"><?php echo $workflow->getDescription(); ?></div>
+        <?php endif; ?>
+    </div>
+    <div class="column grid">
+        <?php foreach ($workflow->getSteps() as $step): ?>
+            <div class="status-badge" style="background-color: <?php echo ($step->getLinkedStatus() instanceof Status) ? $step->getLinkedStatus()->getColor() : '#FFF'; ?>;"><?php echo ($step->getLinkedStatus() instanceof Status) ? $step->getLinkedStatus()->getName() : __('Unknown'); ?></div>
+        <?php endforeach; ?>
+    </div>
+    <div class="column actions">
+        <div class="dropper-container">
+            <button class="dropper button secondary">
+                <span><?= __('Actions'); ?></span>
+                <?= fa_image_tag('angle-down', ['class' => 'icon']); ?>
+            </button>
+            <div class="dropdown-container">
+                <div class="list-mode">
+                    <a class="list-item" href="<?= make_url('get_partial_for_backdrop', ['key' => 'edit_workflow', 'workflow_id' => $workflow->getID()]); ?>');">
+                        <span class="icon"><?= fa_image_tag('edit'); ?></span>
+                        <span class="name"><?= __('Edit workflow'); ?></span>
+                    </a>
                     <?php if (\pachno\core\framework\Context::getScope()->hasCustomWorkflowsAvailable()): ?>
-                        <a href="javascript:void(0);" onclick="$('copy_workflow_<?php echo $workflow->getID(); ?>_popup').toggle();" class="button copy_workflow_link"><?php echo fa_image_tag('clone', array('title' => __('Create a copy of this workflow'))); ?></a>
+                        <a class="list-item" href="javascript:void(0);" onclick="Pachno.Main.Helpers.Backdrop.show('<?= make_url('get_partial_for_backdrop', ['key' => 'edit_workflow', 'workflow_id' => $workflow->getId(), 'clone' => 'yes']); ?>');">
+                            <span class="icon"><?php echo fa_image_tag('clone'); ?></span>
+                            <span class="name"><?= __('Copy workflow'); ?></span>
+                        </a>
                     <?php endif; ?>
+                    <div class="list-item separator"></div>
                     <?php if ($workflow->isInUse()): ?>
-                        <a href="javascript:void(0);" onclick="Pachno.Main.Helpers.Message.error('<?php echo __('Cannot delete workflow'); ?>', '<?php echo __('This workflow can not be deleted as it is being used by %number_of_schemes workflow scheme(s)', array('%number_of_schemes' => $workflow->getNumberOfSchemes())); ?>');" class="button destroy-link"><?php echo fa_image_tag('times', array('title' => __('Delete this workflow'))); ?></a>
+                        <a class="list-item danger" href="javascript:void(0);" onclick="Pachno.Main.Helpers.Message.error('<?php echo __('Cannot delete workflow'); ?>', '<?php echo __('This workflow can not be deleted as it is being used by %number_of_schemes workflow scheme(s)', array('%number_of_schemes' => $workflow->getNumberOfSchemes())); ?>');">
+                            <span class="icon"><?php echo fa_image_tag('times'); ?></span>
+                            <span class="name"><?= __('Delete workflow'); ?></span>
+                        </a>
                     <?php else: ?>
-                        <a href="javascript:void(0);" onclick="$('delete_workflow_<?php echo $workflow->getID(); ?>_popup').toggle();" class="button destroy-link"><?php echo fa_image_tag('times', array('title' => __('Delete this workflow'))); ?></a>
+                        <a class="list-item danger" href="javascript:void(0);" onclick="$('delete_workflow_<?php echo $workflow->getID(); ?>_popup').toggle();">
+                            <span class="icon"><?php echo fa_image_tag('times'); ?></span>
+                            <span class="name"><?= __('Delete workflow'); ?></span>
+                        </a>
                     <?php endif; ?>
                 </div>
-            </td>
-        </tr>
-    </table>
-</li>
-<?php if (\pachno\core\framework\Context::getScope()->hasCustomWorkflowsAvailable()): ?>
+            </div>
+        </div>
+    </div>
+</div>
+<?php /* if (\pachno\core\framework\Context::getScope()->hasCustomWorkflowsAvailable()): ?>
     <li class="rounded_box white shadowed copy_workflow_popup" id="copy_workflow_<?php echo $workflow->getID(); ?>_popup" style="margin-bottom: 5px; padding: 10px; display: none;">
         <div class="header"><?php echo __('Copy workflow'); ?></div>
         <div class="content">
@@ -54,4 +82,4 @@
             </form>
         </div>
     </li>
-<?php endif; ?>
+<?php endif; */ ?>

@@ -31,6 +31,7 @@
                         <?php echo fa_image_tag('clone', ['class' => 'icon']); ?>
                         <span class="name"><?= __('Make a copy'); ?></span>
                     </a>
+                    <div class="list-item separator"></div>
                     <a class="list-item danger" title="<?php echo __('Remove issuetype'); ?>" onclick="<?php if (!$scheme->isInUse()): ?>Pachno.Main.Helpers.Dialog.show('<?php echo __('Delete this issue type?'); ?>', '<?php echo __('Do you really want to delete this issue type? Issues with this issue type will be unavailable.').'<br><b>'.__('This action cannot be reverted').'</b>'; ?>', {yes: {click: function() {Pachno.Config.Issuetype.remove('<?php echo make_url('configure_issuetypes_delete', array('id' => $scheme->getID())); ?>', <?php echo $scheme->getID(); ?>);}}, no: {click: Pachno.Main.Helpers.Dialog.dismiss}});<?php else: ?>Pachno.Main.Helpers.Message.error('<?php echo __('Cannot delete issuetype scheme'); ?>', '<?php echo __('This issuetype scheme can not be deleted as it is being used by %number_of_projects project(s)', array('%number_of_projects' => $scheme->getNumberOfProjects())); ?>');<?php endif; ?>">
                         <?php echo fa_image_tag('times', ['class' => 'icon']); ?>
                         <span class="name"><?= __('Delete'); ?></span>

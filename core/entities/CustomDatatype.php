@@ -294,7 +294,7 @@
         public function getTypeDescription()
         {
             $types = self::getFieldTypes();
-            return $types[$this->_itemtype]['title'];
+            return $types[$this->_itemtype]['title'] ?? 'INVALID TYPE';
         }
 
         public function hasCustomOptions()

@@ -103,105 +103,102 @@ configure_scope:
       section: 14
     csrf_enabled: false
 
-configure_workflow:
-    route: /configure/workflow
-    module: configuration
-    action: configureWorkflows
-    parameters:
-      config_module: core
-      section: 1
-    csrf_enabled: false
-
-configure_workflow_copy_workflow:
-    route: /configure/workflow/copy/workflow/:workflow_id
-    module: configuration
-    action: configureWorkflowSteps
-    parameters:
-      config_module: core
-      section: 1
-      mode: copy_workflow
-    csrf_enabled: false
-
-configure_workflow_delete_workflow:
-    route: /configure/workflow/delete/workflow/:workflow_id
-    module: configuration
-    action: configureWorkflowSteps
-    parameters:
-      config_module: core
-      section: 1
-      mode: delete_workflow
-    csrf_enabled: false
-
 configure_workflow_schemes:
-    route: /configure/workflow/schemes
-    module: configuration
-    action: configureWorkflowSchemes
-    parameters:
-      config_module: core
-      section: 1
-    csrf_enabled: false
-
-configure_workflow_copy_scheme:
-    route: /configure/workflow/copy/scheme/:scheme_id
-    module: configuration
-    action: configureWorkflowScheme
-    parameters:
-      config_module: core
-      section: 1
-      mode: copy_scheme
-    csrf_enabled: false
+  route: /configure/workflowschemes
+  module: configuration
+  action: configureWorkflowSchemes
+  parameters:
+    config_module: core
+    section: 1
+  csrf_enabled: false
 
 configure_workflow_delete_scheme:
-    route: /configure/workflow/delete/scheme/:scheme_id
-    module: configuration
-    action: configureWorkflowScheme
-    parameters:
-      config_module: core
-      section: 1
-      mode: delete_scheme
-    csrf_enabled: false
+  route: /configure/workflowschemes/:scheme_id/delete
+  module: configuration
+  action: configureWorkflowSchemeDelete
+  methods:
+    - POST
+  parameters:
+    config_module: core
+    section: 1
+    mode: delete_scheme
+  csrf_enabled: false
 
 configure_workflow_scheme:
-    route: /configure/workflow/scheme/:scheme_id
-    module: configuration
-    action: configureWorkflowScheme
-    parameters:
-      config_module: core
-      section: 1
-    csrf_enabled: false
+  route: /configure/workflowschemes/:scheme_id
+  module: configuration
+  action: configureWorkflowScheme
+  methods:
+    - POST
+  parameters:
+    config_module: core
+    section: 1
+  csrf_enabled: false
+
+configure_workflows:
+  route: /configure/workflows
+  module: configuration
+  action: configureWorkflows
+  parameters:
+    config_module: core
+    section: 1
+  csrf_enabled: false
+
+configure_workflow:
+  route: /configure/workflows/:workflow_id
+  module: configuration
+  action: configureWorkflows
+  parameters:
+    config_module: core
+    section: 1
+  csrf_enabled: false
+
+configure_workflow_delete_workflow:
+  route: /configure/workflows/:workflow_id/delete
+  module: configuration
+  action: configureWorkflowSteps
+  parameters:
+    config_module: core
+    section: 1
+    mode: delete_workflow
+  csrf_enabled: false
 
 configure_workflow_steps:
-    route: /configure/workflow/:workflow_id/steps
-    module: configuration
-    action: configureWorkflowSteps
-    parameters:
-      config_module: core
-      section: 1
-    csrf_enabled: false
+  route: /configure/workflows/:workflow_id/steps
+  module: configuration
+  action: configureWorkflowSteps
+  parameters:
+    config_module: core
+    section: 1
+  csrf_enabled: false
+
+configure_workflow_step_post:
+  route: /configure/workflows/:workflow_id/steps
+  module: configuration
+  action: configureWorkflowStep
+  methods:
+    - POST
+  parameters:
+    config_module: core
+    section: 1
+    mode: edit
+  csrf_enabled: false
 
 configure_workflow_step:
-    route: /configure/workflow/:workflow_id/step/:step_id
+    route: /configure/workflows/:workflow_id/steps/:step_id
     module: configuration
     action: configureWorkflowStep
     parameters:
       config_module: core
       section: 1
-    csrf_enabled: false
-
-configure_workflow_add_step:
-    route: /configure/workflow/:workflow_id/add/step
-    module: configuration
-    action: configureWorkflowStep
-    parameters:
-      config_module: core
-      section: 1
-      mode: edit
     csrf_enabled: false
 
 configure_workflow_delete_step_transitions:
-    route: /configure/workflow/:workflow_id/delete/all/outgoing/transitions/from/step/:step_id
+    route: /configure/workflows/:workflow_id/steps/:step_id/transitions
     module: configuration
     action: configureWorkflowStep
+    methods:
+      - DELETE
     parameters:
       config_module: core
       section: 1
@@ -209,9 +206,11 @@ configure_workflow_delete_step_transitions:
     csrf_enabled: false
 
 configure_workflow_delete_step:
-    route: /configure/workflow/:workflow_id/delete/step/:step_id
+    route: /configure/workflows/:workflow_id/steps/:step_id
     module: configuration
     action: configureWorkflowStep
+    methods:
+      - DELETE
     parameters:
       config_module: core
       section: 1
@@ -219,7 +218,7 @@ configure_workflow_delete_step:
     csrf_enabled: false
 
 configure_workflow_transition:
-    route: /configure/workflow/:workflow_id/transition/:transition_id
+    route: /configure/workflows/:workflow_id/transitions/:transition_id
     module: configuration
     action: configureWorkflowTransition
     parameters:
@@ -228,9 +227,11 @@ configure_workflow_transition:
     csrf_enabled: false
 
 configure_workflow_edit_transition:
-    route: /configure/workflow/:workflow_id/transition/edit/:transition_id
+    route: /configure/workflows/:workflow_id/transitions/:transition_id
     module: configuration
     action: configureWorkflowTransition
+    methods:
+      - POST
     parameters:
       config_module: core
       section: 1
@@ -238,9 +239,11 @@ configure_workflow_edit_transition:
     csrf_enabled: false
 
 configure_workflow_delete_transition:
-    route: /configure/workflow/:workflow_id/transition/delete/:transition_id
+    route: /configure/workflows/:workflow_id/transitions/:transition_id
     module: configuration
     action: configureWorkflowTransition
+    methods:
+      - DELETE
     parameters:
       config_module: core
       section: 1
@@ -248,81 +251,62 @@ configure_workflow_delete_transition:
     csrf_enabled: false
 
 configure_workflow_add_transition:
-    route: /configure/workflow/:workflow_id/step/:step_id/add/transition
+    route: /configure/workflows/:workflow_id/steps/:step_id/transitions
     module: configuration
     action: configureWorkflowTransition
+    methods:
+      - POST
     parameters:
       config_module: core
       section: 1
     csrf_enabled: false
 
-configure_workflow_transition_add_validation_rule:
-    route: /configure/workflow/:workflow_id/transition/:transition_id/add/:postorpre/validationrule/:rule
+configure_workflow_transition_validation_rule_edit:
+    route: /configure/workflows/:workflow_id/transitions/:transition_id/validationrules
     module: configuration
     action: configureWorkflowTransition
+    methods:
+      - POST
     parameters:
       config_module: core
       section: 1
       mode: new_validation_rule
     csrf_enabled: false
 
-configure_workflow_transition_update_validation_rule:
-    route: /configure/workflow/:workflow_id/transition/:transition_id/validationrule/:rule_id
+configure_workflow_transition_validation_rule_delete:
+    route: /configure/workflows/:workflow_id/transitions/:transition_id/validationrules/:rule_id
     module: configuration
     action: configureWorkflowTransition
-    parameters:
-      config_module: core
-      section: 1
-      mode: update_validation_rule
-    csrf_enabled: false
-
-configure_workflow_transition_delete_validation_rule:
-    route: /configure/workflow/:workflow_id/transition/:transition_id/delete/validationrule/:rule_id
-    module: configuration
-    action: configureWorkflowTransition
+    methods:
+      - DELETE
     parameters:
       config_module: core
       section: 1
       mode: delete_validation_rule
     csrf_enabled: false
 
-configure_workflow_transition_add_action:
-    route: /configure/workflow/:workflow_id/transition/:transition_id/add/action/:action_type
+configure_workflow_transition_action_edit:
+    route: /configure/workflows/:workflow_id/transitions/:transition_id/actions
     module: configuration
     action: configureWorkflowTransition
+    methods:
+      - POST
     parameters:
       config_module: core
       section: 1
       mode: new_action
     csrf_enabled: false
 
-configure_workflow_transition_update_action:
-    route: /configure/workflow/:workflow_id/transition/:transition_id/action/:action_id
+configure_workflow_transition_action_delete:
+    route: /configure/workflows/:workflow_id/transitions/:transition_id/actions/:action_id
     module: configuration
     action: configureWorkflowTransition
-    parameters:
-      config_module: core
-      section: 1
-      mode: update_action
-    csrf_enabled: false
-
-configure_workflow_transition_delete_action:
-    route: /configure/workflow/:workflow_id/transition/:transition_id/delete/action/:action_id
-    module: configuration
-    action: configureWorkflowTransition
+    methods:
+      - DELETE
     parameters:
       config_module: core
       section: 1
       mode: delete_action
-    csrf_enabled: false
-
-configure_workflow_workflows:
-    route: /configure/workflow/workflows
-    module: configuration
-    action: configureWorkflows
-    parameters:
-      config_module: core
-      section: 1
     csrf_enabled: false
 
 configure_files:

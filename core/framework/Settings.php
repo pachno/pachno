@@ -162,10 +162,10 @@
         const USER_DISPLAYNAME_FORMAT_REALNAME = 1;
         const USER_DISPLAYNAME_FORMAT_BUDDY = 0;
 
-        protected static $_ver_mj = 4;
-        protected static $_ver_mn = 3;
+        protected static $_ver_mj = 0;
+        protected static $_ver_mn = 6;
         protected static $_ver_rev = 0;
-        protected static $_ver_name = "";
+        protected static $_ver_name = "-dev";
         protected static $_defaultscope;
         protected static $_settings;
 
@@ -1071,7 +1071,7 @@
                 $config_sections['general'][self::CONFIGURATION_SECTION_ISSUETYPES] = array('route' => 'configure_issuetypes_schemes', 'fa_style' => 'fas', 'fa_icon' => 'copy', 'description' => $i18n->__('Issue types'), 'details' => $i18n->__('Manage issue types and configure issue fields for each issue type here'));
             }
             $config_sections['general'][self::CONFIGURATION_SECTION_ISSUEFIELDS] = array('route' => 'configure_issuefields', 'fa_style' => 'fas', 'fa_icon' => 'list', 'description' => $i18n->__('Issue fields'), 'details' => $i18n->__('Status types, resolution types, categories, custom fields, etc. are configurable from this section.'));
-            $config_sections['general'][self::CONFIGURATION_SECTION_WORKFLOW] = array('route' => 'configure_workflow', 'fa_style' => 'fas', 'fa_icon' => 'share-alt', 'description' => $i18n->__('Workflow'), 'details' => $i18n->__('Set up and edit workflow configuration from this section'));
+            $config_sections['general'][self::CONFIGURATION_SECTION_WORKFLOW] = array('route' => 'configure_workflows', 'fa_style' => 'fas', 'fa_icon' => 'share-alt', 'description' => $i18n->__('Workflow'), 'details' => $i18n->__('Set up and edit workflow configuration from this section'));
             $config_sections['general'][self::CONFIGURATION_SECTION_WORKFLOW_SCHEMES] = array('route' => 'configure_workflow_schemes', 'fa_style' => 'fas', 'fa_icon' => 'share-alt', 'description' => $i18n->__('Workflow schemes'), 'details' => $i18n->__('Set up and edit workflow configuration from this section'));
             $config_sections['general'][self::CONFIGURATION_SECTION_USERS] = array('route' => 'configure_users', 'description' => $i18n->__('Manage users and groups'), 'fa_style' => 'fas', 'fa_icon' => 'users', 'details' => $i18n->__('Create, edit and manage users from this section'));
             $config_sections['general'][self::CONFIGURATION_SECTION_TEAMS] = array('route' => 'configure_teams', 'description' => $i18n->__('Manage teams'), 'fa_style' => 'fas', 'fa_icon' => 'users', 'details' => $i18n->__('Create and manage teams from this section.'));

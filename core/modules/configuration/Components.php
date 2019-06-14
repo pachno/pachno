@@ -112,6 +112,14 @@
             }
         }
 
+        public function componentEditWorkflowScheme()
+        {
+            $this->issue_types = entities\Issuetype::getAll();
+            if (isset($this->clone)) {
+                $this->scheme->setName($this->getI18n()->__('Copy of %name', ['%name' => $this->scheme->getName()]));
+            }
+        }
+
         public function componentEditIssueField()
         {
             $this->showitems = false;

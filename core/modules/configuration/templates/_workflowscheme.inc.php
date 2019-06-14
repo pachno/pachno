@@ -1,42 +1,50 @@
-<li id="workflow_scheme_<?php echo $scheme->getID(); ?>" class="greybox" style="margin-bottom: 5px;">
-    <table>
-        <tr>
-            <td class="workflow_info scheme">
-                <div class="workflow_name"><?php echo $scheme->getName(); ?></div>
-                <?php if ($scheme->getDescription()): ?>
-                    <div class="workflow_description"><?php echo $scheme->getDescription(); ?></div>
-                <?php endif; ?>
-            </td>
-            <td class="workflow_scheme_issuetypes"><?php echo __('Issue types with associated workflows: %number_of_associated_issuetypes', array('%number_of_associated_issuetypes' => '<span>'.$scheme->getNumberOfAssociatedWorkflows().'</span>')); ?></td>
-            <td class="workflow_actions">
-                <div class="button-group">
-                    <?php echo link_tag(make_url('configure_workflow_scheme', array('scheme_id' => $scheme->getID())), fa_image_tag('list-alt', array('title' => __('Show / edit issue type associations'))), array('class' => 'button')); ?>
+<?php
+
+    /** @var \pachno\core\entities\WorkflowScheme $scheme */
+
+?>
+<div id="workflow_scheme_<?php echo $scheme->getID(); ?>" class="row" data-workflow-scheme data-id="<?= $scheme->getID(); ?>">
+    <div class="column name-container multiline">
+        <div class="title"><?php echo $scheme->getName(); ?></div>
+        <?php if ($scheme->getDescription()): ?>
+            <div class="description"><?php echo $scheme->getDescription(); ?></div>
+        <?php endif; ?>
+    </div>
+    <div class="column">
+        <?php echo __('Issue types: %number_of_associated_issuetypes', array('%number_of_associated_issuetypes' => '<span>'.$scheme->getNumberOfAssociatedWorkflows().'</span>')); ?>
+    </div>
+    <div class="column actions">
+        <div class="dropper-container">
+            <button class="dropper button secondary">
+                <span><?= __('Actions'); ?></span>
+                <?= fa_image_tag('angle-down', ['class' => 'icon']); ?>
+            </button>
+            <div class="dropdown-container">
+                <div class="list-mode">
+                    <a class="list-item" href="javascript:void(0);" onclick="Pachno.Main.Helpers.Backdrop.show('<?= make_url('get_partial_for_backdrop', ['key' => 'edit_workflow_scheme', 'scheme_id' => $scheme->getId()]); ?>');">
+                        <span class="icon"><?= fa_image_tag('edit'); ?></span>
+                        <span class="name"><?= __('Edit workflow scheme'); ?></span>
+                    </a>
                     <?php if (\pachno\core\framework\Context::getScope()->isCustomWorkflowsEnabled()): ?>
-                        <a href="javascript:void(0);" onclick="$('copy_scheme_<?php echo $scheme->getID(); ?>_popup').toggle();" class="button"><?php echo fa_image_tag('clone', array('title' => __('Create a copy of this workflow scheme'))); ?></a>
+                        <a class="list-item" href="javascript:void(0);" onclick="Pachno.Main.Helpers.Backdrop.show('<?= make_url('get_partial_for_backdrop', ['key' => 'edit_workflow_scheme', 'scheme_id' => $scheme->getId(), 'clone' => 'yes']); ?>');">
+                            <span class="icon"><?php echo fa_image_tag('clone'); ?></span>
+                            <span class="name"><?= __('Copy workflow scheme'); ?></span>
+                        </a>
                     <?php endif; ?>
+                    <div class="list-item separator"></div>
                     <?php if ($scheme->isInUse()): ?>
-                        <a href="javascript:void(0);" onclick="Pachno.Main.Helpers.Message.error('<?php echo __('Cannot delete workflow scheme'); ?>', '<?php echo __('This workflow scheme can not be deleted as it is being used by %number_of_projects project(s)', array('%number_of_projects' => $scheme->getNumberOfProjects())); ?>');" class="button destroy-link"><?php echo fa_image_tag('times', array('title' => __('Delete this issue type scheme'))); ?></a>
+                        <a class="list-item disabled danger" href="javascript:void(0);" onclick="Pachno.Main.Helpers.Message.error('<?php echo __('Cannot delete workflow scheme'); ?>', '<?php echo __('This workflow scheme can not be deleted as it is being used by %number_of_projects project(s)', array('%number_of_projects' => $scheme->getNumberOfProjects())); ?>');">
+                            <span class="icon"><?php echo fa_image_tag('times'); ?></span>
+                            <span class="name"><?= __('Delete workflow scheme'); ?></span>
+                        </a>
                     <?php else: ?>
-                        <a href="javascript:void(0);" onclick="Pachno.Main.Helpers.Dialog.show('<?php echo __('Do you really want to delete this workflow scheme?'); ?>', '<?php echo __('Please confirm that you want to completely remove this workflow scheme.'); ?>', {yes: {click: function() { Pachno.Config.Workflows.Scheme.remove('<?php echo make_url('configure_workflow_delete_scheme', array('scheme_id' => $scheme->getID())); ?>', <?php echo $scheme->getID(); ?>); }}, no: { click: Pachno.Main.Helpers.Dialog.dismiss }});" class="button destroy-link"><?php echo fa_image_tag('times', array('title' => __('Delete this workflow scheme'))); ?></a>
+                        <a class="list-item danger" href="javascript:void(0);" onclick="Pachno.Main.Helpers.Dialog.show('<?php echo __('Do you really want to delete this workflow scheme?'); ?>', '<?php echo __('Please confirm that you want to completely remove this workflow scheme.'); ?>', {yes: {click: function() { Pachno.Config.Workflows.Scheme.remove('<?php echo make_url('configure_workflow_delete_scheme', array('scheme_id' => $scheme->getID())); ?>', <?php echo $scheme->getID(); ?>); }}, no: { click: Pachno.Main.Helpers.Dialog.dismiss }});">
+                            <span class="icon"><?php echo fa_image_tag('times'); ?></span>
+                            <span class="name"><?= __('Delete workflow scheme'); ?></span>
+                        </a>
                     <?php endif; ?>
                 </div>
-            </td>
-        </tr>
-    </table>
-</li>
-<?php if (\pachno\core\framework\Context::getScope()->isCustomWorkflowsEnabled()): ?>
-    <li class="rounded_box white shadowed" id="copy_scheme_<?php echo $scheme->getID(); ?>_popup" style="margin-bottom: 5px; padding: 10px; display: none;">
-        <div class="header"><?php echo __('Copy worfklow scheme'); ?></div>
-        <div class="content">
-            <?php echo __('Please enter the name of the new worfklow scheme'); ?><br>
-            <form accept-charset="<?php echo \pachno\core\framework\Context::getI18n()->getCharset(); ?>" action="<?php echo make_url('configure_workflow_copy_scheme', array('scheme_id' => $scheme->getID())); ?>" onsubmit="Pachno.Config.Workflows.Scheme.copy('<?php echo make_url('configure_workflow_copy_scheme', array('scheme_id' => $scheme->getID())); ?>', <?php echo $scheme->getID(); ?>);return false;" id="copy_workflow_scheme_<?php echo $scheme->getID(); ?>_form">
-                <label for="copy_scheme_<?php echo $scheme->getID(); ?>_new_name"><?php echo __('New name'); ?></label>
-                <input type="text" name="new_name" id="copy_scheme_<?php echo $scheme->getID(); ?>_new_name" value="<?php echo __('Copy of %old_name', array('%old_name' => addslashes($scheme->getName()))); ?>" style="width: 300px;">
-                <div style="text-align: right;">
-                    <?php echo image_tag('spinning_16.gif', array('style' => 'margin-right: 5px; display: none;', 'id' => 'copy_workflow_scheme_'.$scheme->getID().'_indicator')); ?>
-                    <?php echo __('%copy_workflow_scheme or %cancel', array('%copy_workflow_scheme' => '<input type="submit" value="'.__('Copy worfklow scheme').'">', '%cancel' => javascript_link_tag(__('cancel'), array('onclick' => "$('copy_scheme_{$scheme->getID()}_popup').toggle();")))); ?>
-                </div>
-            </form>
+            </div>
         </div>
-    </li>
-<?php endif; ?>
+    </div>
+</div>

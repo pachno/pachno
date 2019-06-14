@@ -1,4 +1,10 @@
-<?php $pachno_response->setTitle(__('Configure issue types')); ?>
+<?php
+
+    /** @var \pachno\core\entities\IssuetypeScheme[] $issue_type_schemes */
+
+    $pachno_response->setTitle(__('Configure issue types'));
+
+?>
 <div class="content-with-sidebar">
     <?php include_component('configuration/sidebar', ['selected_section' => \pachno\core\framework\Settings::CONFIGURATION_SECTION_ISSUETYPE_SCHEMES]); ?>
     <div class="configuration-container">
@@ -17,8 +23,8 @@
                     <div class="column header"></div>
                     <div class="column header actions"></div>
                 </div>
-                <?php foreach ($issue_type_schemes as $scheme): ?>
-                    <?php include_component('issuetypescheme', ['scheme' => $scheme]); ?>
+                <?php foreach ($schemes as $scheme): ?>
+                    <?php include_component('configuration/issuetypescheme', ['scheme' => $scheme]); ?>
                 <?php endforeach; ?>
             </div>
         </div>

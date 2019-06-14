@@ -41,7 +41,6 @@
             $query = $this->getQuery();
             $query->where(self::SCOPE, framework\Context::getScope()->getID());
 
-            return 1;
             return (int) $this->count($query);
         }
 

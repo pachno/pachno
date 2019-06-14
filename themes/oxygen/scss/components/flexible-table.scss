@@ -95,9 +95,28 @@
       border-bottom-color: transparent;
     }
 
+    &.list {
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: center;
+    }
+
+    &.grid {
+      flex: 0 0 300px;
+      flex-direction: row;
+      flex-wrap: wrap;
+      align-items: flex-start;
+      justify-content: flex-start;
+
+      &:not(.header) {
+        > * {
+          margin: .15rem;
+        }
+      }
+    }
+
     &.info-icons {
       flex: 0 0 40px;
-      display: flex;
       justify-content: flex-end;
       align-items: center;
 
@@ -140,7 +159,7 @@
       min-width: 300px;
       text-overflow: ellipsis;
       overflow: hidden;
-      white-space: nowrap;
+      //white-space: nowrap;
     }
 
     &.multiline {

@@ -2,6 +2,8 @@
 
     namespace pachno\core\entities\tables;
 
+    use b2db\Query;
+    use pachno\core\entities\WorkflowScheme;
     use pachno\core\framework;
     use b2db\Core,
         b2db\Criteria,
@@ -20,8 +22,7 @@
     /**
      * Workflow schemes table
      *
-     * @package pachno
-     * @subpackage tables
+     * @method WorkflowScheme selectById($id, Query $query = null, $join = 'all')
      *
      * @Table(name="workflow_schemes")
      * @Entity(class="\pachno\core\entities\WorkflowScheme")

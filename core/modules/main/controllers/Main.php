@@ -3336,11 +3336,21 @@ class Main extends framework\Action
                 case 'edit_role':
                     $template_name = 'configuration/editrole';
                     if ($request['role_id']) {
-                        $role = new entities\Role($request['role_id']);
+                        $role = tables\ListTypes::getTable()->selectById($request['role_id']);
                     } else {
                         $role = new entities\Role();
                     }
                     $options['role'] = $role;
+                    break;
+                case 'edit_workflow_scheme':
+                    $template_name = 'configuration/editworkflowscheme';
+                    if ($request['scheme_id']) {
+                        $scheme = tables\WorkflowSchemes::getTable()->selectById($request['scheme_id']);
+                    } else {
+                        $scheme = new entities\WorkflowScheme();
+                    }
+                    $options['clone'] = $request->hasParameter('clone');
+                    $options['scheme'] = $scheme;
                     break;
                 case 'edit_issuetype':
                     $template_name = 'configuration/editissuetype';

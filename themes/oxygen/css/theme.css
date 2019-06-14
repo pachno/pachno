@@ -9867,9 +9867,20 @@ nav.sidebar {
         border-bottom-color: transparent; }
     .flexible-table .column.invisible {
       border-bottom-color: transparent; }
+    .flexible-table .column.list {
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: center; }
+    .flexible-table .column.grid {
+      flex: 0 0 300px;
+      flex-direction: row;
+      flex-wrap: wrap;
+      align-items: flex-start;
+      justify-content: flex-start; }
+      .flexible-table .column.grid:not(.header) > * {
+        margin: .15rem; }
     .flexible-table .column.info-icons {
       flex: 0 0 40px;
-      display: flex;
       justify-content: flex-end;
       align-items: center; }
       .flexible-table .column.info-icons .fas + .fas,
@@ -9895,8 +9906,7 @@ nav.sidebar {
       flex: 1 1 auto;
       min-width: 300px;
       text-overflow: ellipsis;
-      overflow: hidden;
-      white-space: nowrap; }
+      overflow: hidden; }
     .flexible-table .column.multiline {
       display: flex;
       flex-direction: column;
@@ -12782,5 +12792,3 @@ input[type=submit].workflow_transition_submit_button, input[type=submit].workflo
 
 /* end workflow styling */
 /* end config styling */
-
-/*# sourceMappingURL=theme.css.map */
