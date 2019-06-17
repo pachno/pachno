@@ -3,6 +3,7 @@
     namespace pachno\core\entities;
 
     use pachno\core\entities\common\IdentifiableScoped;
+    use pachno\core\framework;
 
     /**
      * Workflow class
@@ -89,26 +90,30 @@
         protected $_schemes = null;
 
         protected $_num_schemes = null;
-        
-        protected static function _populateWorkflows()
+
+        protected $_is_copied = false;
+
+        protected function _postSave($is_new = false)
         {
-            if (self::$_workflows === null)
-            {
-                self::$_workflows = tables\Workflows::getTable()->getAll();
+            if ($is_new && !$this->_is_copied) {
+                $step = new WorkflowStep();
+                $step->setName('New');
+                $step->setWorkflow($this);
+                $step->save();
+                $transition = new WorkflowTransition();
+                $transition->setOutgoingStep($step);
+                $transition->setName('Issue created');
+                $transition->setWorkflow($this);
+                $transition->setDescription('This is the initial transition for issues using this workflow');
+                $transition->save();
+
+                $this->setInitialTransition($transition);
+                $this->save();
+
+                $this->_is_copied = false;
             }
         }
-        
-        /**
-         * Return all workflows in the system
-         *
-         * @return \pachno\core\entities\Workflow[]]
-         */
-        public static function getAll()
-        {
-            self::_populateWorkflows();
-            return self::$_workflows;
-        }
-        
+
         public static function loadFixtures(Scope $scope)
         {
             $multi_team_workflow = new Workflow();
@@ -263,11 +268,28 @@
             }
             return $this->_num_schemes;
         }
-        
+
+        /**
+         * @return bool
+         */
+        public function isIsCopied(): bool
+        {
+            return $this->_is_copied;
+        }
+
+        /**
+         * @param bool $is_copied
+         */
+        public function setIsCopied(bool $is_copied): void
+        {
+            $this->_is_copied = $is_copied;
+        }
+
         public function copy($new_name)
         {
             $new_workflow = new Workflow();
             $new_workflow->setName($new_name);
+            $new_workflow->setIsCopied(true);
             $new_workflow->save();
             $step_mapper = array();
             $transition_mapper = array();

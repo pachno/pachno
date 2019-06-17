@@ -68,7 +68,9 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
                 },
                 IssuetypeScheme: {},
                 Workflows: {
-                    Workflow: {},
+                    Workflow: {
+                        Step: {}
+                    },
                     Transition: {
                         Actions: {},
                         Validations: {}
@@ -393,6 +395,52 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
             if (Event.KEY_ESC != event.keyCode)
                 return;
             Pachno.Main.Helpers.Backdrop.reset();
+        };
+
+        Pachno.Core.fetchPostHelper = function(form) {
+            return new Promise(function (resolve, reject) {
+                const $form = jQuery(form),
+                    data = new FormData($form[0]);
+
+                if ($form.hasClass('submitting')) return;
+
+                $form.find('.error-container').removeClass('invalid');
+                $form.find('.error-container > .error').html('');
+                $form.addClass('submitting');
+                $form.find('.button.primary').attr('disabled', true);
+
+                fetch($form.attr('action'), {
+                    method: 'POST',
+                    body: data
+                })
+                    .then(function(response) {
+                        resolve([$form, response]);
+                        // response.json().then(resolve);
+                        // res = response;
+                        // console.log(response);
+                        // resolve($form, res);
+                        // response.json()
+                        //     .then(function (json) {
+                        //     });
+                    })
+                    .catch(reject)
+            });
+        };
+
+        Pachno.Core.fetchPostDefaultFormHandler = function ([$form, response]) {
+            return new Promise(function (resolve, reject) {
+                response.json()
+                    .then(function (json) {
+                        if (!response.ok) {
+                            $form.find('.error-container > .error').html(json.error);
+                            $form.find('.error-container').addClass('invalid');
+                        }
+                        $form.removeClass('submitting');
+                    })
+                    .catch(reject);
+
+                resolve($form, response);
+            });
         };
 
         /**
@@ -3814,12 +3862,16 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
         };
 
         Pachno.Main.updateWidgets = function () {
-            jQuery("img[data-src]:not([data-src-processed])").each(function(){
-                var $img = jQuery(this);
-                $img.attr('src', $img.data('src')).data('src-processed', true);
-            });
-            jQuery('.fancydropdown').each(function () {
-                Pachno.Main.updateFancyDropdownLabel(jQuery(this));
+            return new Promise(function (resolve, reject) {
+                jQuery("img[data-src]:not([data-src-processed])").each(function(){
+                    var $img = jQuery(this);
+                    $img.attr('src', $img.data('src')).data('src-processed', true);
+                });
+                jQuery('.fancydropdown').each(function () {
+                    Pachno.Main.updateFancyDropdownLabel(jQuery(this));
+                });
+
+                resolve();
             });
         };
 
@@ -4600,25 +4652,14 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
         };
 
         Pachno.Config.IssuetypeScheme.showOptions = function ($item) {
-            const $container = jQuery('#issue-type-configuration-container'),
-                $options = jQuery('#selected-issue-type-options'),
-                url = $item.data('options-url');
-
-            $options.html('<div><i class="fas fa-spin fa-spinner"></i></div>');
-            $container.addClass('active');
-            $container.find('.issue-type-scheme-issue-type').removeClass('active');
-            $item.addClass('active');
-
-            fetch(url, {
-                method: 'GET'
-            })
-                .then(function (response) {
-                    response.json().then(function (json) {
-                        if (response.ok) {
-                            $options.html(json.content);
-                        }
-                    });
-                });
+            Pachno.Config.loadComponentOptions(
+                {
+                    container: '#issue-type-configuration-container',
+                    options: '#selected-issue-type-options',
+                    component: '.issue-type-scheme-issue-type'
+                },
+                $item
+            );
         };
 
         Pachno.Config.IssuetypeScheme.addField = function (url, key) {
@@ -4708,26 +4749,15 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
         };
 
         Pachno.Config.Issuefields.showOptions = function ($item) {
-            const $container = jQuery('#issue-fields-configuration-container'),
-                $options = jQuery('#selected-issue-field-options'),
-                url = $item.data('options-url');
-
-            $options.html('<div><i class="fas fa-spin fa-spinner"></i></div>');
-            $container.addClass('active');
-            $container.find('.issue-field').removeClass('active');
-            $item.addClass('active');
-
-            fetch(url, {
-                method: 'GET'
-            })
-                .then(function (response) {
-                    response.json().then(function (json) {
-                        if (response.ok) {
-                            $options.html(json.content);
-                        }
-                    });
-                });
-        }
+            Pachno.Config.loadComponentOptions(
+                {
+                    container: '#issue-fields-configuration-container',
+                    options: '#selected-issue-field-options',
+                    component: '.issue-field'
+                },
+                $item
+            );
+        };
 
         Pachno.Config.Issuefields.Options.save = function (form) {
             var $form = jQuery(form),
@@ -5338,89 +5368,70 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
                     update: 'client_' + client_id + '_item'
                 }
             });
-        }
+        };
 
-        Pachno.Config.Workflows.Transition.remove = function (url, transition_id, direction) {
-            $('transition_' + transition_id + '_delete_form').submit();
-        }
-
-        Pachno.Config.Workflows._updateLinks = function (json) {
-            if ($('current_workflow_num_count'))
-                $('current_workflow_num_count').update(json.total_count);
-            $$('.copy_workflow_link').each(function (element) {
-                (json.more_available) ? $(element).show() : $(element).hide();
-            });
-        }
-
-        Pachno.Config.Workflows.Workflow.copy = function (url, workflow_id) {
-            Pachno.Main.Helpers.ajax(url, {
-                form: 'copy_workflow_' + workflow_id + '_form',
-                loading: {indicator: 'copy_workflow_' + workflow_id + '_indicator'},
-                success: {
-                    hide: 'copy_workflow_' + workflow_id + '_popup',
-                    update: {element: 'workflows_list', insertion: true},
-                    callback: Pachno.Config.Workflows._updateLinks
-                }
-            });
-        }
-
-        Pachno.Config.Workflows.Workflow.remove = function (url, workflow_id) {
-            Pachno.Main.Helpers.ajax(url, {
-                form: 'delete_workflow_' + workflow_id + '_form',
-                loading: {indicator: 'delete_workflow_' + workflow_id + '_indicator'},
-                success: {
-                    remove: ['delete_workflow_' + workflow_id + '_popup', 'copy_workflow_' + workflow_id + '_popup', 'workflow_' + workflow_id],
-                    update: {element: 'workflows_list', insertion: true},
-                    callback: Pachno.Config.Workflows._updateLinks
-                }
-            });
-        }
-
-        Pachno.Config.Workflows.Scheme.save = function (form) {
-            var $form = jQuery(form),
-                data = new FormData($form[0]);
-
-            if ($form.hasClass('submitting')) return;
-
-            $form.find('.error-container').removeClass('invalid');
-            $form.find('.error-container > .error').html('');
-            $form.addClass('submitting');
-            $form.find('.button.primary').attr('disabled', true);
-
-            fetch($form.attr('action'), {
-                method: 'POST',
-                body: data
-            })
-                .then(function (response) {
-                    response.json().then(function (json) {
-                        if (response.ok) {
-                            const $scheme_container = jQuery('[data-workflow-scheme][data-id='+json.item.id+']');
-                            if ($scheme_container.length > 0) {
-                                $scheme_container.replaceWith(json.component);
-                            } else {
-                                const $schemes_container = jQuery('#workflow-schemes-list');
-                                if ($schemes_container.length > 0) {
-                                    $schemes_container.append(json.component);
-                                }
-                            }
-                            $form[0].reset();
-                            Pachno.Main.Helpers.Backdrop.reset();
+        Pachno.Config.fetchComponentUpdateHandler = function (type) {
+            return function ([$form, response]) {
+                response.json().then(function (json) {
+                    if (response.ok) {
+                        const $scheme_container = jQuery('[data-' + type + '][data-id='+json.item.id+']');
+                        if ($scheme_container.length > 0) {
+                            $scheme_container.replaceWith(json.component);
                         } else {
-                            $form.find('.error-container > .error').html(json.error);
-                            $form.find('.error-container').addClass('invalid');
+                            const $schemes_container = jQuery('#workflow-schemes-list');
+                            if ($schemes_container.length > 0) {
+                                $schemes_container.append(json.component);
+                            }
                         }
+                        $form[0].reset();
+                        Pachno.Main.Helpers.Backdrop.reset();
+                    } else {
+                        $form.find('.error-container > .error').html(json.error);
+                        $form.find('.error-container').addClass('invalid');
+                    }
+
+                    $form.removeClass('submitting');
+                    $form.find('.button.primary').attr('disabled', false);
+                })
+                    .catch(function (error) {
+                        $form.find('.error-container > .error').html(error);
+                        $form.find('.error-container').addClass('invalid');
 
                         $form.removeClass('submitting');
                         $form.find('.button.primary').attr('disabled', false);
-                    })
-                        .catch(function (error) {
-                            $form.find('.error-container > .error').html(error);
-                            $form.find('.error-container').addClass('invalid');
+                    });
+            };
+        };
 
-                            $form.removeClass('submitting');
-                            $form.find('.button.primary').attr('disabled', false);
+        Pachno.Config.loadComponentOptions = function (options, $item) {
+            return new Promise(function (resolve, reject) {
+                const $container = jQuery(options.container),
+                    $options = jQuery(options.options),
+                    url = $item.data('options-url');
+
+                $options.html('<div><i class="fas fa-spin fa-spinner"></i></div>');
+                $container.addClass('active');
+                $container.find(options.component).removeClass('active');
+                $item.addClass('active');
+
+                fetch(url, {
+                    method: 'GET'
+                })
+                    .then(function (response) {
+                        response.json().then(function (json) {
+                            if (response.ok) {
+                                $options.html(json.content);
+                                Pachno.Main.updateWidgets()
+                                    .then(resolve);
+                            }
                         });
-                });
+                    });
+            });
+        };
+
+        Pachno.Config.Workflows.Scheme.save = function (form) {
+            Pachno.Core.fetchPostHelper(form)
+                .then(Pachno.Config.fetchComponentUpdateHandler('workflow-scheme'));
         };
 
         Pachno.Config.Workflows.Scheme.remove = function (url, id) {
@@ -5439,7 +5450,56 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
                             Pachno.Main.Helpers.Message.error(error);
                         });
                 });
-        }
+        };
+
+        Pachno.Config.Workflows.Workflow.save = function (form) {
+            Pachno.Core.fetchPostHelper(form)
+                .then(Pachno.Core.fetchPostDefaultFormHandler);
+        };
+
+        Pachno.Config.Workflows.Workflow.copy = function (url, workflow_id) {
+            Pachno.Main.Helpers.ajax(url, {
+                form: 'copy_workflow_' + workflow_id + '_form',
+                loading: {indicator: 'copy_workflow_' + workflow_id + '_indicator'},
+                success: {
+                    hide: 'copy_workflow_' + workflow_id + '_popup',
+                    update: {element: 'workflows_list', insertion: true},
+                    callback: Pachno.Config.Workflows._updateLinks
+                }
+            });
+        };
+
+        Pachno.Config.Workflows.Workflow.remove = function (url, workflow_id) {
+            Pachno.Main.Helpers.ajax(url, {
+                form: 'delete_workflow_' + workflow_id + '_form',
+                loading: {indicator: 'delete_workflow_' + workflow_id + '_indicator'},
+                success: {
+                    remove: ['delete_workflow_' + workflow_id + '_popup', 'copy_workflow_' + workflow_id + '_popup', 'workflow_' + workflow_id],
+                    update: {element: 'workflows_list', insertion: true},
+                    callback: Pachno.Config.Workflows._updateLinks
+                }
+            });
+        };
+
+        Pachno.Config.Workflows.Workflow.Step.show = function ($item) {
+            Pachno.Config.loadComponentOptions(
+                {
+                    container: '#workflow-steps-container',
+                    options: '#selected-workflow-step-options',
+                    component: '.workflow-step'
+                },
+                $item
+            );
+        };
+
+        Pachno.Config.Workflows.Workflow.Step.save = function (form) {
+            Pachno.Core.fetchPostHelper(form)
+                .then(Pachno.Core.fetchPostDefaultFormHandler);
+        };
+
+        Pachno.Config.Workflows.Transition.remove = function (url, transition_id, direction) {
+            $('transition_' + transition_id + '_delete_form').submit();
+        };
 
         Pachno.Config.Workflows.Transition.Validations.add = function (url, mode, key) {
             Pachno.Main.Helpers.ajax(url, {

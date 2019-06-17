@@ -26,7 +26,7 @@
             </button>
             <div class="dropdown-container">
                 <div class="list-mode">
-                    <a class="list-item" href="<?= make_url('get_partial_for_backdrop', ['key' => 'edit_workflow', 'workflow_id' => $workflow->getID()]); ?>');">
+                    <a class="list-item" href="<?= make_url('configure_workflow', ['workflow_id' => $workflow->getID()]); ?>">
                         <span class="icon"><?= fa_image_tag('edit'); ?></span>
                         <span class="name"><?= __('Edit workflow'); ?></span>
                     </a>

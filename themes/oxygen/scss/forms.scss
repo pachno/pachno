@@ -259,6 +259,34 @@
           flex: 1 1 auto;
           max-width: none;
         }
+
+        &.embedded {
+          background: rgb(255, 255, 255);
+          border-color: rgba(200, 200, 200, .3);
+          &:hover {
+            border-color: $theme-primary;
+            cursor: pointer;
+          }
+          &.active {
+            border-color: $theme-primary;
+          }
+        }
+
+        &.invisible {
+
+          &:not(.embedded) {
+            background-color: transparent;
+
+            &:hover {
+              background-color: rgba(225, 225, 225, .2);
+            }
+          }
+
+          &.active,
+          &.active:hover {
+            border: 2px solid $theme-primary;
+          }
+        }
       }
     }
   }

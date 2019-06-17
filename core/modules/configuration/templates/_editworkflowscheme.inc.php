@@ -39,7 +39,7 @@
                                         <?= fa_image_tag('check-circle', ['class' => 'checked'], 'far') . fa_image_tag('circle', ['class' => 'unchecked'], 'far'); ?>
                                         <span class="name value"><?php echo __('Use default workflow'); ?></span>
                                     </label>
-                                    <?php foreach (\pachno\core\entities\Workflow::getAll() as $workflow): ?>
+                                    <?php foreach (\pachno\core\entities\tables\Workflows::getTable()->getAll() as $workflow): ?>
                                         <input class="fancycheckbox" type="radio" name="workflow_id[<?php echo $issue_type->getID(); ?>]" id="edit_workflow_id_<?php echo $issue_type->getID(); ?>_<?php echo $workflow->getID(); ?>" value="<?php echo $workflow->getID(); ?>"<?php if ($scheme->hasWorkflowAssociatedWithIssuetype($issue_type) && $scheme->getWorkflowForIssuetype($issue_type)->getID() == $workflow->getID()) echo 'checked'; ?>>
                                         <label for="edit_workflow_id_<?php echo $issue_type->getID(); ?>_<?php echo $workflow->getID(); ?>" class="list-item">
                                             <?= fa_image_tag('check-circle', ['class' => 'checked'], 'far') . fa_image_tag('circle', ['class' => 'unchecked'], 'far'); ?>

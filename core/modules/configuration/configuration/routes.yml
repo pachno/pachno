@@ -147,7 +147,20 @@ configure_workflows:
 configure_workflow:
   route: /configure/workflows/:workflow_id
   module: configuration
-  action: configureWorkflows
+  action: configureWorkflow
+  methods:
+    - GET
+  parameters:
+    config_module: core
+    section: 1
+  csrf_enabled: false
+
+configure_workflow_post:
+  route: /configure/workflows/:workflow_id
+  module: configuration
+  action: configureWorkflowPost
+  methods:
+    - POST
   parameters:
     config_module: core
     section: 1
@@ -172,10 +185,21 @@ configure_workflow_steps:
     section: 1
   csrf_enabled: false
 
+configure_workflow_step:
+    route: /configure/workflows/:workflow_id/steps/:step_id
+    module: configuration
+    action: configureWorkflowStep
+    methods:
+      - GET
+    parameters:
+      config_module: core
+      section: 1
+    csrf_enabled: false
+
 configure_workflow_step_post:
   route: /configure/workflows/:workflow_id/steps
   module: configuration
-  action: configureWorkflowStep
+  action: configureWorkflowStepPost
   methods:
     - POST
   parameters:
@@ -183,15 +207,6 @@ configure_workflow_step_post:
     section: 1
     mode: edit
   csrf_enabled: false
-
-configure_workflow_step:
-    route: /configure/workflows/:workflow_id/steps/:step_id
-    module: configuration
-    action: configureWorkflowStep
-    parameters:
-      config_module: core
-      section: 1
-    csrf_enabled: false
 
 configure_workflow_delete_step_transitions:
     route: /configure/workflows/:workflow_id/steps/:step_id/transitions

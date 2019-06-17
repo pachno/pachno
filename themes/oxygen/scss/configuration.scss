@@ -320,6 +320,15 @@
     }
   }
 
+  &.workflow-step {
+    > .row {
+      > .icon.workflow-icon {
+        //color: rgb(150, 150, 150);
+      }
+
+    }
+  }
+
   > form > .row,
   > .row {
     flex: 0 0 auto;
@@ -399,6 +408,10 @@
       text-overflow: ellipsis;
       white-space: nowrap;
 
+      &.with-dropdown {
+        overflow: visible;
+      }
+
       .title {
         font-weight: 400;
       }
@@ -450,6 +463,16 @@
 
       > .form-container {
         padding-top: .35rem;
+
+        .form-row {
+          &.header:first-child {
+            padding: 0 .35rem;
+
+            h2, h3, h4, h5 {
+              margin-top: 0;
+            }
+          }
+        }
 
         &.issue-field-option {
           .form-row {
@@ -758,301 +781,6 @@
 }
 
 /* workflow styling */
-.scheme_list td.workflow_info {
-  width: 400px;
-}
-
-.scheme_list td.workflow_info.workflow_scheme {
-  width: 350px;
-}
-
-.scheme_list td.workflow_inactive {
-  color: #A88;
-  font-weight: 400;
-  width: 100px;
-  text-align: center;
-}
-
-.scheme_list td.workflow_active {
-  color: #390;
-  font-weight: 400;
-  width: 100px;
-  text-align: center;
-}
-
-.scheme_list td.workflow_steps {
-  width: 100px;
-  text-align: left;
-}
-
-.scheme_list td.workflow_steps span {
-  font-weight: 400;
-}
-
-.scheme_list td.workflow_scheme_issuetypes {
-  width: 250px;
-  text-align: center;
-}
-
-.scheme_list td.workflow_scheme_projects {
-  width: 200px;
-  text-align: center;
-  font-size: 1em;
-}
-
-.scheme_list td.workflow_scheme_issuetypes span, .scheme_list td.workflow_scheme_projects span {
-  font-weight: 400;
-}
-
-.scheme_list td.workflow_actions {
-  width: 170px;
-  font-weight: 400;
-  font-size: 0.9em;
-  text-align: right;
-}
-
-.scheme_list td.workflow_actions .button-group {
-  float: right;
-}
-
-.scheme_list.issuetype_scheme_list td.workflow_info {
-  width: 400px;
-}
-
-.workflow_name {
-  font-weight: 400;
-  margin-bottom: 5px;
-}
-
-.workflow_description, .workflow_name span.builtin {
-  font-weight: 300;
-  font-style: italic;
-  font-size: 0.9em;
-}
-
-.workflow_name span.builtin {
-  color: #AAA;
-}
-
-.workflow_description {
-  color: #777;
-}
-
-.workflow_change_div {
-  height: 400px;
-  overflow: auto;
-  margin-top: 10px;
-}
-
-#no_such_workflow_error {
-  margin-top: 10px;
-}
-
-#workflow_steps_container {
-}
-
-#workflow_steps_container .workflow_steps_intro, #workflow_step_container .workflow_step_intro {
-  margin: 0 0 5px 0;
-  font-size: 1em;
-}
-
-#workflow_steps_container .workflow_steps_intro {
-  margin-bottom: 15px;
-}
-
-#workflow_step_container .workflow_step_intro {
-  float: left;
-  width: 400px;
-}
-
-.workflow_step_intro .header {
-  font-size: 1.3em;
-}
-
-#workflow_steps_list {
-  width: 100%;
-}
-
-#workflow_steps_list td, #workflow_steps_list th {
-  font-size: 0.9em;
-}
-
-#workflow_steps_list_tbody tr.step td {
-  border-bottom: 1px dotted #AAA;
-}
-
-#workflow_steps_list_tbody tr.step a.step_name {
-  color: #555;
-}
-
-#workflow_steps_list_tbody tr.step a.step_name:hover {
-  color: #777;
-}
-
-#workflow_steps_list_tbody tr.step a.step_name.faded_out {
-  color: #AAA;
-}
-
-#workflow_steps_list_tbody tr.step a.step_name.faded_out:hover {
-  color: #CCC;
-}
-
-#workflow_steps_list_tbody tr.step td.workflow_step_actions a {
-  font-size: 0.9em;
-}
-
-#workflow_steps_list_tbody tr.status td {
-  border-bottom: 0;
-}
-
-#workflow_steps_list_tbody .add_transition_separation {
-  font-size: 1px;
-  line-height: 0;
-  margin: 10px 20px;
-  border-bottom: 1px dotted #AAA;
-}
-
-.workflow_step_transition_name {
-  font-weight: 400;
-  font-size: 0.9em;
-  font-style: italic;
-  margin: 5px 0;
-}
-
-.workflow_step_transition_outgoing_step {
-  margin-left: 5px;
-  font-size: 0.95em;
-  color: #AAA;
-  font-weight: 300;
-  font-style: italic;
-}
-
-#workflow_transition_actions_validations {
-  margin-bottom: 100px;
-}
-
-#workflow_transition_actions_validations h3 {
-  margin-top: 25px;
-  position: relative;
-}
-
-#workflow_transition_actions_validations h3 ul {
-  margin: 25px 3px 0 0;
-  font-size: 0.8em;
-}
-
-#workflow_transition_actions_validations h3 ul#add_post_action {
-  top: auto;
-  bottom: 0;
-  margin-bottom: 30px;
-}
-
-#workflow_details_transition, #workflow_details_step {
-  margin-top: 0;
-  float: left;
-  width: 400px;
-}
-
-#workflow_details_transition label, #workflow_details_step label {
-  font-size: 0.9em;
-}
-
-#workflow_details_transition li, #workflow_details_step li {
-  margin-bottom: 5px;
-}
-
-#workflow_details_step dd div.workflow_step_status {
-  line-height: 0;
-  height: 14px;
-  width: 14px;
-  font-size: 1px;
-  float: left;
-  margin-right: 5px;
-  border: 1px solid #AAA;
-}
-
-#add_post_action.more_actions_dropdown {
-  width: 710px;
-  padding: 0 5px;
-  bottom: 0;
-  margin-bottom: 30px;
-}
-
-#add_post_action.more_actions_dropdown .column {
-  width: 230px;
-  margin: 0;
-  padding: 0;
-  display: inline-block;
-  vertical-align: top;
-}
-
-#add_post_action.more_actions_dropdown h1 {
-  font-size: 0.9em;
-  font-weight: 400;
-  border-bottom: 1px dotted #CCC;
-  color: #AAA;
-  padding: 5px 0;
-  margin: 0;
-}
-
-#workflow_browser_step {
-  float: right;
-  width: 300px;
-  padding: 5px;
-  text-align: center;
-  margin-left: 0;
-}
-
-#workflow_browser_step .header {
-  font-size: 1.1em;
-  text-align: center;
-  margin-bottom: 5px;
-}
-
-#workflow_browser_step .content {
-  font-size: 0.9em;
-  text-align: center;
-}
-
-.workflow_browser_step_image {
-  line-height: 0;
-  clear: both;
-}
-
-.workflow_browser_step_transition {
-  padding: 2px;
-  border: 1px dotted #AAA;
-  background-color: #F8F8F8;
-}
-
-.workflow_browser_step_transition span {
-  font-style: italic;
-}
-
-.workflow_browser_step_transition .image {
-  float: right;
-  margin: 1px 2px 0 -5px;
-}
-
-.workflow_browser_step_transition.outgoing .image {
-  margin: 10px 5px 0 -5px;
-}
-
-.workflow_browser_step_transition.transition {
-  padding-left: 0;
-}
-
-.workflow_browser_step_name {
-  padding: 5px;
-  font-size: 1.1em;
-  font-style: italic;
-  font-weight: 400;
-}
-
-input[type=submit].workflow_transition_submit_button, input[type=submit].workflow_transition_submit_button:hover {
-  padding: 4px 8px;
-  font-size: 1.1em;
-}
 
 /* end workflow styling */
 

@@ -129,7 +129,7 @@
         /**
          * Returns all severities available
          *
-         * @return array
+         * @return static[]
          */
         public static function getAll()
         {

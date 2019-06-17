@@ -633,7 +633,10 @@
                             $customtype->setType($request['type']);
                             $customtype->save();
 
-                            return $this->renderJSON(array('item' => $customtype->toJSON(), 'component' => $this->getComponentHTML('configuration/issuefield', ['type_key' => $customtype->getKey(), 'type' => $customtype])));
+                            return $this->renderJSON([
+                                'item' => $customtype->toJSON(),
+                                'component' => $this->getComponentHTML('configuration/issuefield', ['type_key' => $customtype->getKey(), 'type' => $customtype])
+                            ]);
                         }
                         catch (\Exception $e)
                         {
@@ -1877,34 +1880,50 @@
 
         public function runConfigureWorkflows(framework\Request $request)
         {
-            $this->workflows = entities\Workflow::getAll();
-            if ($request->isPost())
-            {
-                try
-                {
-                    $workflow_name = $request['workflow_name'];
+            $this->workflows = tables\Workflows::getTable()->getAll();
+        }
+
+        public function runConfigureWorkflowPost(framework\Request $request)
+        {
+            try {
+                if ($request['workflow_id']) {
+                    $workflow = tables\Workflows::getTable()->selectById($request['workflow_id']);
+                } else {
                     $workflow = new entities\Workflow();
-                    $workflow->setName($workflow_name);
-                    $workflow->save();
-                    $step = new entities\WorkflowStep();
-                    $step->setName($this->getI18n()->__('New'));
-                    $step->setWorkflow($workflow);
-                    $step->save();
-                    $transition = new entities\WorkflowTransition();
-                    $transition->setOutgoingStep($step);
-                    $transition->setName('Issue created');
-                    $transition->setWorkflow($workflow);
-                    $transition->setDescription('This is the initial transition for issues using this workflow');
-                    $transition->save();
-                    $workflow->setInitialTransition($transition);
-                    $workflow->save();
-                    $this->forward(framework\Context::getRouting()->generate('configure_workflow'));
                 }
-                catch (\Exception $e)
-                {
-                    $this->error = $e->getMessage();
+
+                if ($request->hasParameter('name')) {
+                    $name = trim($request['name']);
+                    if (!$name) {
+                        $this->getResponse()->setHttpStatus(400);
+                        return $this->renderJSON(['error' => $this->getI18n()->__('Please specify a name for this workflow')]);
+                    }
+                    $workflow->setName($name);
                 }
+
+                if ($request->hasParameter('description')) {
+                    $description = trim($request['description']);
+                    if (!$description) {
+                        $this->getResponse()->setHttpStatus(400);
+                        return $this->renderJSON(['error' => $this->getI18n()->__('Please specify a description for this workflow')]);
+                    }
+                    $workflow->setDescription($description);
+                }
+
+                $workflow->save();
+                return $this->renderJSON([
+                    'item' => $workflow->toJSON(),
+                    'component' => $this->getComponentHTML('configuration/workflow', ['workflow' => $workflow])
+                ]);
+            } catch (\Exception $e) {
+                $this->getResponse()->setHttpStatus(400);
+                return $this->renderJSON(['error' => $e->getMessage()]);
             }
+        }
+
+        public function runConfigureWorkflow(framework\Request $request)
+        {
+            $this->workflow = tables\Workflows::getTable()->selectById($request['workflow_id']);
         }
 
         public function runConfigureWorkflowSchemeDelete(framework\Request $request)
@@ -1989,11 +2008,8 @@
 
         public function runConfigureWorkflowSteps(framework\Request $request)
         {
-            $this->workflow = null;
-            $this->mode = $request->getParameter('mode', 'list');
-            try
-            {
-                $this->workflow = entities\Workflow::getB2DBTable()->selectById($request['workflow_id']);
+            try {
+                $workflow = tables\Workflows::getTable()->selectById($request['workflow_id']);
 //                $transition = new entities\WorkflowTransition();
 //                $step = tables\WorkflowSteps::getTable()->selectById(9);
 //                $transition->setOutgoingStep($step);
@@ -2004,23 +2020,23 @@
 //                $transition->save();
 //                $this->workflow->setInitialTransition($transition);
 //                $this->workflow->save();
-                if ($this->mode == 'copy_workflow')
-                {
-                    if ($new_name = $request['new_name'])
-                    {
-                        $new_workflow = $this->workflow->copy($new_name);
-                        return $this->renderJSON(array('content' => $this->getComponentHTML('configuration/workflow', array('workflow' => $new_workflow)), 'total_count' => entities\Workflow::getCustomWorkflowsCount(), 'more_available' => framework\Context::getScope()->hasCustomWorkflowsAvailable()));
-                    }
-                    else
-                    {
-                        $this->error = $this->getI18n()->__('Please enter a valid name');
-                    }
-                }
-                elseif ($this->mode == 'delete_workflow')
-                {
-                    $this->workflow->delete();
-                    return $this->renderJSON(array('success' => true, 'message' => $this->getI18n()->__('The workflow was deleted'), 'total_count' => entities\Workflow::getCustomWorkflowsCount(), 'more_available' => framework\Context::getScope()->hasCustomWorkflowsAvailable()));
-                }
+//                if ($this->mode == 'copy_workflow')
+//                {
+//                    if ($new_name = $request['new_name'])
+//                    {
+//                        $new_workflow = $this->workflow->copy($new_name);
+//                        return $this->renderJSON(array('content' => $this->getComponentHTML('configuration/workflow', array('workflow' => $new_workflow)), 'total_count' => entities\Workflow::getCustomWorkflowsCount(), 'more_available' => framework\Context::getScope()->hasCustomWorkflowsAvailable()));
+//                    }
+//                    else
+//                    {
+//                        $this->error = $this->getI18n()->__('Please enter a valid name');
+//                    }
+//                }
+//                elseif ($this->mode == 'delete_workflow')
+//                {
+//                    $this->workflow->delete();
+//                    return $this->renderJSON(array('success' => true, 'message' => $this->getI18n()->__('The workflow was deleted'), 'total_count' => entities\Workflow::getCustomWorkflowsCount(), 'more_available' => framework\Context::getScope()->hasCustomWorkflowsAvailable()));
+//                }
             }
             catch (\Exception $e)
             {
@@ -2037,6 +2053,15 @@
         }
 
         public function runConfigureWorkflowStep(framework\Request $request)
+        {
+            $workflow = tables\Workflows::getTable()->selectById($request['workflow_id']);
+            $step = tables\WorkflowSteps::getTable()->selectById($request['step_id']);
+            return $this->renderJSON([
+                'content' => $this->getComponentHTML('configuration/editworkflowstep', ['step' => $step])
+            ]);
+        }
+
+        public function runConfigureWorkflowStepPost(framework\Request $request)
         {
             $this->workflow = null;
             $this->step = null;
@@ -2071,6 +2096,8 @@
                     $this->step->setIsEditable((bool) $request['is_editable']);
                     $this->step->setIsClosed((bool) ($request['state'] == entities\Issue::STATE_CLOSED));
                     $this->step->save();
+
+
                     $this->forward(framework\Context::getRouting()->generate('configure_workflow_step', array('workflow_id' => $this->workflow->getID(), 'step_id' => $this->step->getID())));
                 }
             }
