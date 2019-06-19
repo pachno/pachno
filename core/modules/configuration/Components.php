@@ -112,6 +112,11 @@
             }
         }
 
+        public function componentTransitionStatusBadges()
+        {
+            $this->statuses = entities\Status::getAll();
+        }
+
         public function componentEditWorkflowScheme()
         {
             $this->issue_types = entities\Issuetype::getAll();

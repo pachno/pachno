@@ -201,7 +201,7 @@
         /**
          * Get all transitions in this workflow
          *
-         * @return array An array of \pachno\core\entities\WorkflowTransition objects
+         * @return \pachno\core\entities\WorkflowTransition[]
          */
         public function getTransitions()
         {

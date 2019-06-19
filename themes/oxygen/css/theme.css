@@ -12224,7 +12224,7 @@ dl.info {
     .configurable-component.active > .row > .icon.open:hover {
       background-color: transparent;
       color: #FFF; }
-  .configurable-component.issue-field .row {
+  .configurable-component.issue-field .row, .configurable-component.workflow-transition .row {
     flex-wrap: nowrap; }
   .configurable-component > form > .row,
   .configurable-component > .row {
@@ -12576,5 +12576,3 @@ dl.info {
 /* workflow styling */
 /* end workflow styling */
 /* end config styling */
-
-/*# sourceMappingURL=theme.css.map */

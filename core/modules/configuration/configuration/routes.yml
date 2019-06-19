@@ -241,7 +241,7 @@ configure_workflow_transition:
       section: 1
     csrf_enabled: false
 
-configure_workflow_edit_transition:
+configure_workflow_transition_post:
     route: /configure/workflows/:workflow_id/transitions/:transition_id
     module: configuration
     action: configureWorkflowTransition
@@ -253,7 +253,7 @@ configure_workflow_edit_transition:
       mode: edit
     csrf_enabled: false
 
-configure_workflow_delete_transition:
+configure_workflow_transition_delete:
     route: /configure/workflows/:workflow_id/transitions/:transition_id
     module: configuration
     action: configureWorkflowTransition

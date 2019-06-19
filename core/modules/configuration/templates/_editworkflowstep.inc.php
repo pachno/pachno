@@ -40,7 +40,7 @@
             </label>
         </div>
         <div class="form-row submit-container">
-            <a class="button secondary" href="javascript:void(0);" onclick="Pachno.Main.Helpers.Dialog.show('<?= __('Do you really want to delete this workflow step?'); ?>', '<?=__('This will also set the status of any issues currently in this step back to the initial workflow step.'); ?>', {yes: {click: function() {Pachno.Config.Workflows.Workflow.Step.remove('<?= make_url('configure_workflow_delete_step', ['workflow_id' => $step->getWorkflow()->getID(), 'step_id' => $step->getID()]); ?>')}}, no: { click: Pachno.Main.Helpers.Dialog.dismiss }});">
+            <a class="button secondary" href="javascript:void(0);" onclick="Pachno.Main.Helpers.Dialog.show('<?= __('Do you really want to delete this workflow step?'); ?>', '<?=__('This will set the status of any issues currently in this step back to the initial workflow step. It will also remove any transitions to / from this step.'); ?>', {yes: {click: function() {Pachno.Config.Workflows.Workflow.Step.remove('<?= make_url('configure_workflow_delete_step', ['workflow_id' => $step->getWorkflow()->getID(), 'step_id' => $step->getID()]); ?>')}}, no: { click: Pachno.Main.Helpers.Dialog.dismiss }});">
                 <span class="icon"><?= fa_image_tag('times'); ?></span>
                 <span class="name"><?= __('Remove step'); ?></span>
             </a>
@@ -51,8 +51,41 @@
         </div>
     </form>
 </div>
+<h5>
+    <span class="name">
+        <span><?= __('Outgoing transitions'); ?></span>
+        <?= fa_image_tag('spinner', ['class' => 'fa-spin indicator', 'id' => 'edit_transitions_indicator', 'style' => 'display: none;']); ?>
+    </span>
+    <span class="dropper-container">
+        <button class="button secondary dropper"><?= __('Add transition'); ?></button>
+        <span class="dropdown-container">
+            <span class="list-mode">
+                <span class="list-item filter-container">
+                    <input type="search" placeholder="<?= __('Filter values'); ?>">
+                </span>
+                <span class="column">
+                    <span class="list-item header"><?= __('Add existing transition'); ?></span>
+                    <?php foreach ($step->getWorkflow()->getTransitions() as $transition): ?>
+                        <?php if ($transition->getOutgoingStep() instanceof \pachno\core\entities\WorkflowStep && $transition->getOutgoingStep()->getID() == $step->getID()) continue; ?>
+                        <?php $has_transition = ($step->hasOutgoingTransition($transition)); ?>
+                        <a href="javascript:void(0);" class="list-item multiline <?php if ($has_transition) echo 'disabled'; ?>" data-workflow-transition data-id="<?= $transition->getID(); ?>" data-url="<?= make_url('configure_workflow_add_transition', array('workflow_id' => $step->getWorkflow()->getID(), 'step_id' => $step->getID())); ?>">
+                            <span class="name">
+                                <span class="title"><?= $transition->getName(); ?></span>
+                                <span class="description">
+                                    <span class="icon"><?= fa_image_tag('arrow-right'); ?></span>
+                                    <span><?php include_component('configuration/transitionstatusbadges', ['transition' => $transition]); ?></span>
+                                </span>
+                            </span>
+                        </a>
+                    <?php endforeach; ?>
+                </span>
+            </span>
+        </span>
+    </span>
+</h5>
 <div class="configurable-components-list" id="outgoing-transitions-list">
     <?php foreach ($step->getOutgoingTransitions() as $transition): ?>
+        <?php include_component('configuration/editworkflowtransition', ['transition' => $transition]); ?>
     <?php endforeach; ?>
 </div>
 <?php /*<td>

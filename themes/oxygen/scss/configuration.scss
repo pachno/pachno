@@ -314,7 +314,8 @@
     }
   }
 
-  &.issue-field {
+  &.issue-field,
+  &.workflow-transition {
     .row {
       flex-wrap: nowrap;
     }
