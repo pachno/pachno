@@ -105,7 +105,7 @@
                 $transition_object->setName($transition['name']);
                 $transition_object->setDescription($transition['description']);
                 $transition_object->setOutgoingStep($steps[$transition['outgoing_step']]['step']);
-                $transition_object->setTemplate($transition['template']);åja
+                $transition_object->setTemplate($transition['template']);
                 $transition_object->setWorkflow($workflow);
                 $transition_object->save();
                 $transitions[$key] = $transition_object;

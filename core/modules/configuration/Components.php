@@ -125,6 +125,11 @@
             }
         }
 
+        public function componentEditWorkflowTransitionPopup()
+        {
+            $this->workflow = $this->transition->getWorkflow();
+        }
+
         public function componentEditIssueField()
         {
             $this->showitems = false;

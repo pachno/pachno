@@ -85,7 +85,7 @@
 </h5>
 <div class="configurable-components-list" id="outgoing-transitions-list">
     <?php foreach ($step->getOutgoingTransitions() as $transition): ?>
-        <?php include_component('configuration/editworkflowtransition', ['transition' => $transition]); ?>
+        <?php include_component('configuration/editworkflowtransition', ['transition' => $transition, 'step' => $step]); ?>
     <?php endforeach; ?>
 </div>
 <?php /*<td>

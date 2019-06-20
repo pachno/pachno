@@ -5497,6 +5497,11 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
                 .then(Pachno.Core.fetchPostDefaultFormHandler);
         };
 
+        Pachno.Config.Workflows.Transition.save = function (form) {
+            Pachno.Core.fetchPostHelper(form)
+                .then(Pachno.Core.fetchPostDefaultFormHandler);
+        };
+
         Pachno.Config.Workflows.Transition.remove = function (url, transition_id, direction) {
             $('transition_' + transition_id + '_delete_form').submit();
         };

@@ -3352,6 +3352,16 @@ class Main extends framework\Action
                     $options['clone'] = $request->hasParameter('clone');
                     $options['scheme'] = $scheme;
                     break;
+                case 'edit_workflow_transition':
+                    $template_name = 'configuration/editworkflowtransitionpopup';
+                    if ($request['transition_id']) {
+                        $scheme = tables\WorkflowTransitions::getTable()->selectById($request['transition_id']);
+                    } else {
+                        $scheme = new entities\WorkflowTransition();
+                    }
+                    $options['step'] = tables\WorkflowSteps::getTable()->selectById($request['step_id']);
+                    $options['transition'] = $scheme;
+                    break;
                 case 'edit_issuetype':
                     $template_name = 'configuration/editissuetype';
                     if ($request['issuetype_id']) {

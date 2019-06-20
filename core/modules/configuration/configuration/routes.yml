@@ -276,10 +276,10 @@ configure_workflow_add_transition:
       section: 1
     csrf_enabled: false
 
-configure_workflow_transition_validation_rule_edit:
+configure_workflow_transition_validation_rule_post:
     route: /configure/workflows/:workflow_id/transitions/:transition_id/validationrules
     module: configuration
-    action: configureWorkflowTransition
+    action: configureWorkflowTransitionPost
     methods:
       - POST
     parameters:
@@ -300,7 +300,7 @@ configure_workflow_transition_validation_rule_delete:
       mode: delete_validation_rule
     csrf_enabled: false
 
-configure_workflow_transition_action_edit:
+configure_workflow_transition_action_post:
     route: /configure/workflows/:workflow_id/transitions/:transition_id/actions
     module: configuration
     action: configureWorkflowTransition

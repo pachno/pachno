@@ -12049,6 +12049,38 @@ dl.info {
         .configuration-container > .configuration-content > .form-container input[type=text]:not(.invisible):hover {
           border-color: #0C8990; }
 
+.workflow-transition-map {
+  width: 100%;
+  box-sizing: border-box;
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: stretch;
+  background: rgba(225, 225, 225, 0.25);
+  padding: 1rem;
+  border-radius: .5rem;
+  margin-top: 1em; }
+  .workflow-transition-map .step-list {
+    flex: 0 0 35%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    justify-items: center;
+    font-size: 1.1em; }
+  .workflow-transition-map .current-transition {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: stretch; }
+    .workflow-transition-map .current-transition .icon {
+      font-size: 1.1em; }
+    .workflow-transition-map .current-transition .transition-name {
+      font-size: 1.3em;
+      padding: .35em .75em; }
+
 .config-explanation {
   position: relative;
   color: #888; }

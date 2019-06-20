@@ -2107,6 +2107,10 @@
             }
         }
 
+        public function runConfigureWorkflowTransitionPost(framework\Request $request)
+        {
+        }
+
         public function runConfigureWorkflowTransition(framework\Request $request)
         {
             $this->workflow = null;

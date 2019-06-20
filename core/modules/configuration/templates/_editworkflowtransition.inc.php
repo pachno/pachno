@@ -16,7 +16,7 @@
             </div>
         </div>
         <div class="icon">
-            <button class="button secondary" onclick="Pachno.Main.Helpers.Backdrop.show('<?= make_url('get_partial_for_backdrop', ['key' => 'edit_workflow_transition', 'transition_id' => $transition->getId()]); ?>');return false;">
+            <button class="button secondary" onclick="Pachno.Main.Helpers.Backdrop.show('<?= make_url('get_partial_for_backdrop', ['key' => 'edit_workflow_transition', 'transition_id' => $transition->getId(), 'step_id' => $step->getId()]); ?>');return false;">
                 <?= fa_image_tag('edit', ['class' => 'icon'], 'far'); ?>
             </button>
             <a href="javascript:void(0);" class="button secondary icon" onclick="Pachno.Main.Helpers.Dialog.show('<?php echo __('Really delete this transition?'); ?>', '<?php echo __('Are you really sure you want to delete this transition?'); ?>', {yes: {click: function() {Pachno.Config.Issuefields.Options.remove('<?php echo make_url('configure_workflow_transition_delete', ['workflow_id' => $transition->getWorkflow()->getID(), 'transition_id' => $transition->getID()]); ?>'); }}, no: {click: Pachno.Main.Helpers.Dialog.dismiss}});"><?php echo fa_image_tag('trash-alt', [], 'far'); ?></a>
