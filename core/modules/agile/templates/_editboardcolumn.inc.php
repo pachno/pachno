@@ -27,14 +27,14 @@
             </div>
         <?php endif; ?>
         <div class="form-row">
-            <div class="fancydropdown-container">
-                <div class="fancydropdown" id="boardcolumn_<?php echo $column_id; ?>_status" data-filterkey="editagileboard_column_<?php echo $column_id; ?>_status" data-value="<?php echo join(',', $column->getStatusIds()); ?>">
+            <div class="fancy-dropdown-container">
+                <div class="fancy-dropdown" id="boardcolumn_<?php echo $column_id; ?>_status" data-filterkey="editagileboard_column_<?php echo $column_id; ?>_status" data-value="<?php echo join(',', $column->getStatusIds()); ?>">
                     <label><?php echo __('Status(es)'); ?></label>
                     <span class="value"></span>
                     <?= fa_image_tag('angle-down', ['class' => 'expander']); ?>
                     <div class="dropdown-container list-mode from-left">
                         <?php foreach ($statuses as $status): ?>
-                            <input type="checkbox" value="<?php echo $status->getID(); ?>" name="columns[<?php echo $column_id; ?>][status_ids][<?php echo $status->getID(); ?>]" id="editagileboard_column_<?php echo $column_id; ?>_statuss_<?php echo $status->getID(); ?>" class="fancycheckbox" <?php if ($column->hasStatusId($status->getID())) echo 'checked'; ?>>
+                            <input type="checkbox" value="<?php echo $status->getID(); ?>" name="columns[<?php echo $column_id; ?>][status_ids][<?php echo $status->getID(); ?>]" id="editagileboard_column_<?php echo $column_id; ?>_statuss_<?php echo $status->getID(); ?>" class="fancy-checkbox" <?php if ($column->hasStatusId($status->getID())) echo 'checked'; ?>>
                             <label for="editagileboard_column_<?php echo $column_id; ?>_statuss_<?php echo $status->getID(); ?>" class="list-item">
                                 <?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far'); ?>
                                 <span class="name value"><?php echo __($status->getName()); ?></span>

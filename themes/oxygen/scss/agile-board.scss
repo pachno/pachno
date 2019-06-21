@@ -2,8 +2,8 @@
   display: flex;
   flex-direction: column;
 
-  .fancydropdown-container {
-    .fancydropdown {
+  .fancy-dropdown-container {
+    .fancy-dropdown {
       background: rgb(255, 255, 255);
       border-color: rgba(200, 200, 200, .3);
       &:hover {
@@ -237,10 +237,10 @@
 
       .form-container {
         .form-row {
-          > .fancydropdown-container {
+          > .fancy-dropdown-container {
             flex: 1 1 100%;
 
-            .fancydropdown {
+            .fancy-dropdown {
               > .value {
                 max-width: 200px;
               }

@@ -34,7 +34,7 @@
         </div>
         <div class="top-search-filters-container" id="project_planning_action_strip">
             <div class="header">
-                <div class="fancytabs">
+                <div class="fancy-tabs">
                     <a class="tab selected" href="<?= make_url('agile_board', array('project_key' => $board->getProject()->getKey(), 'board_id' => $board->getID())); ?>">
                         <span class="icon"><?= fa_image_tag('stream'); ?></span>
                         <span class="name"><?= ($board->getType() == AgileBoard::TYPE_GENERIC) ? __('Planning') : __('Backlog'); ?></span>
@@ -66,12 +66,12 @@
                                         <span class="name"><?= __('Sort milestones'); ?></span>
                                     </a>
                                     <div class="list-item separator"></div>
-                                    <input type="checkbox" class="fancycheckbox" name="show_closed_issues" id="board-show-closed-issues-checkbox" onchange="Pachno.Project.Planning.toggleClosedIssues();">
+                                    <input type="checkbox" class="fancy-checkbox" name="show_closed_issues" id="board-show-closed-issues-checkbox" onchange="Pachno.Project.Planning.toggleClosedIssues();">
                                     <label for="board-show-closed-issues-checkbox" class="list-item toggler">
                                         <span class="icon"><?= fa_image_tag('toggle-on', ['class' => 'checked']) . fa_image_tag('toggle-off', ['class' => 'unchecked']); ?></span>
                                         <span class="name"><?= __('Show closed issues'); ?></span>
                                     </label>
-                                    <input type="checkbox" class="fancycheckbox" name="show_hidden_milestones" id="board-show-hidden-milestones-checkbox" onchange="$('planning_container').toggleClassName('show-unavailable');Pachno.Main.Profile.clearPopupsAndButtons();">
+                                    <input type="checkbox" class="fancy-checkbox" name="show_hidden_milestones" id="board-show-hidden-milestones-checkbox" onchange="$('planning_container').toggleClassName('show-unavailable');Pachno.Main.Profile.clearPopupsAndButtons();">
                                     <label for="board-show-hidden-milestones-checkbox" class="list-item toggler">
                                         <span class="icon"><?= fa_image_tag('toggle-on', ['class' => 'checked']) . fa_image_tag('toggle-off', ['class' => 'unchecked']); ?></span>
                                         <span class="name"><?= $togglemilestoneslabel; ?></span>

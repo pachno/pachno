@@ -13,6 +13,7 @@
     flex-direction: row;
     flex-wrap: wrap;
     align-items: center;
+    width: 100%;
 
     .submit-indicator {
       opacity: 0;
@@ -251,10 +252,10 @@
       color: #141823;
     }
 
-    > .fancydropdown-container {
+    > .fancy-dropdown-container {
       flex: 1 1 100%;
 
-      .fancydropdown {
+      .fancy-dropdown {
         > .value {
           flex: 1 1 auto;
           max-width: none;

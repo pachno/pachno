@@ -186,6 +186,61 @@
             return (bool) $this->_target_value;
         }
 
+        public function getDescription()
+        {
+            switch ($this->_action_type) {
+                case self::ACTION_ASSIGN_ISSUE_SELF:
+                    return __('Assign the issue to the current user');
+                case self::ACTION_SET_MILESTONE:
+                    return __('Set milestone to milestone provided by user');
+                case self::ACTION_CLEAR_ASSIGNEE:
+                    return __('Clear issue assignee');
+                case self::ACTION_CLEAR_PRIORITY:
+                    return __('Clear issue priority');
+                case self::ACTION_CLEAR_PERCENT:
+                    return __('Clear issue percent completed');
+                case self::ACTION_CLEAR_REPRODUCABILITY:
+                    return __('Clear issue reproducability');
+                case self::ACTION_CLEAR_RESOLUTION:
+                    return __('Clear issue resolution');
+                case self::ACTION_CLEAR_MILESTONE:
+                    return __('Clear issue milestone');
+                case self::ACTION_USER_START_WORKING:
+                    return __('Start logging time');
+                case self::ACTION_USER_STOP_WORKING:
+                    return __('Stop logging time and optionally add time spent');
+                case self::ACTION_SET_DUPLICATE:
+                    return __('Mark issue as duplicate of another, existing issue');
+                case self::ACTION_CLEAR_DUPLICATE:
+                    return __('Mark issue as unique (no longer a duplicate) issue');
+                case $this->isCustomClearAction():
+                    return __('Clear issue field %key', ['%key' => $this->getCustomActionType()]);
+
+            }
+        }
+
+        public function hasEdit()
+        {
+            switch ($this->_action_type) {
+                case self::ACTION_ASSIGN_ISSUE_SELF:
+                case self::ACTION_CLEAR_ASSIGNEE:
+                case self::ACTION_CLEAR_PRIORITY:
+                case self::ACTION_CLEAR_PERCENT:
+                case self::ACTION_CLEAR_REPRODUCABILITY:
+                case self::ACTION_CLEAR_RESOLUTION:
+                case self::ACTION_CLEAR_MILESTONE:
+                case self::ACTION_CLEAR_DUPLICATE:
+                case self::ACTION_USER_START_WORKING:
+                case self::ACTION_USER_STOP_WORKING:
+                case self::ACTION_SET_MILESTONE:
+                case self::ACTION_SET_DUPLICATE:
+                case self::CUSTOMFIELD_CLEAR_PREFIX . $this->getCustomActionType():
+                    return false;
+                default:
+                    return true;
+            }
+        }
+
         public function perform(\pachno\core\entities\Issue $issue, $request = null)
         {
             switch ($this->_action_type)
@@ -409,6 +464,14 @@
             return substr($this->_action_type, strlen($prefix));
         }
 
+        /**
+         * @return CustomDatatype
+         */
+        public function getCustomField()
+        {
+            return CustomDatatype::getByKey($this->getCustomActionType());
+        }
+
         public function isCustomClearAction($only_prefix = false)
         {
             return $this->isCustomAction($only_prefix, self::CUSTOMFIELD_CLEAR_PREFIX);
@@ -465,6 +528,53 @@
                     break;
                 default:
                     return true;
+            }
+        }
+
+        /**
+         * @return Datatype[]
+         */
+        public function getOptions()
+        {
+            switch ($this->getActionType()) {
+                case self::ACTION_SET_STATUS:
+                    return Status::getAll();
+
+                case self::ACTION_SET_PRIORITY:
+                    return Priority::getAll();
+
+                case self::ACTION_SET_PERCENT:
+                    return range(1, 100);
+
+                case self::ACTION_SET_RESOLUTION:
+                    return Resolution::getAll();
+
+                case self::ACTION_SET_REPRODUCABILITY:
+                    return Reproducability::getAll();
+
+                default:
+                    if ($this->isCustomAction()) {
+                        if ($this->getCustomField()->getType() != CustomDatatype::CALCULATED_FIELD) {
+                            return $this->getCustomField()->getOptions();
+                        }
+                    }
+            }
+        }
+
+        /**
+         * @return bool
+         */
+        public function hasOptions()
+        {
+            switch ($this->getActionType()) {
+                case self::ACTION_SET_STATUS:
+                case self::ACTION_SET_PRIORITY:
+                case self::ACTION_SET_PERCENT:
+                case self::ACTION_SET_RESOLUTION:
+                case self::ACTION_SET_REPRODUCABILITY:
+                    return true;
+                default:
+                    return ($this->isCustomAction() && $this->getCustomField()->getType() != CustomDatatype::CALCULATED_FIELD);
             }
         }
 

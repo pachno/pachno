@@ -23,15 +23,15 @@
 ?>
 <div class="textarea_container syntax_<?php echo $syntax; ?>">
     <div class="syntax_picker_container">
-        <div class="fancydropdown-container">
-            <div class="fancydropdown">
+        <div class="fancy-dropdown-container">
+            <div class="fancy-dropdown">
                 <label><?php echo __('Formatting'); ?></label>
                 <span class="value"><?= $syntaxname ?></span>
                 <?= fa_image_tag('angle-down', ['class' => 'expander']); ?>
                 <div class="dropdown-container">
                     <div class="list-mode">
                         <?php foreach ($syntax_options as $syntax_key => $syntax_description): ?>
-                            <input type="radio" value="<?= \pachno\core\framework\Settings::getSyntaxValue($syntax_key); ?>" class="fancycheckbox" name="<?= $area_name; ?>_syntax" id="<?= $area_name; ?>_syntax_<?= $syntax_key; ?>" <?php if ($syntax == $syntax_key) echo 'checked'; ?>>
+                            <input type="radio" value="<?= \pachno\core\framework\Settings::getSyntaxValue($syntax_key); ?>" class="fancy-checkbox" name="<?= $area_name; ?>_syntax" id="<?= $area_name; ?>_syntax_<?= $syntax_key; ?>" <?php if ($syntax == $syntax_key) echo 'checked'; ?>>
                             <label for="<?= $area_name; ?>_syntax_<?= $syntax_key; ?>" class="list-item multiline">
                                 <span class="icon"><?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far'); ?></span>
                                 <span class="name">

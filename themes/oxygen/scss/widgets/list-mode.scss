@@ -84,6 +84,7 @@
     font-size: .85rem;
     text-transform: none;
     white-space: nowrap;
+    min-width: 250px;
     transition: color .25s ease-in-out, background-color .25s ease-in-out;
 
     &.disabled {
@@ -270,7 +271,7 @@
 
   }
 
-  .fancycheckbox:checked + .list-item:not(.disabled):not(.not-selectable):not(.separator):not(.header):not(.filter-container):hover {
+  .fancy-checkbox:checked + .list-item:not(.disabled):not(.not-selectable):not(.separator):not(.header):not(.filter-container):hover {
     background-color: #0C8990;
     color: #FFF;
   }

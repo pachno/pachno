@@ -144,7 +144,7 @@
         </span>
     </div>
     <div id="account_details_container">
-        <div id="account_tabs" class="fancytabs">
+        <div id="account_tabs" class="fancy-tabs">
             <a class="tab <?php if ($selected_tab == 'profile'): ?> selected<?php endif; ?>" id="tab_profile" onclick="Pachno.Main.Helpers.tabSwitcher('tab_profile', 'account_tabs', true);" href="javascript:void(0);">
                 <?= fa_image_tag('edit', ['class' => 'icon']); ?>
                 <span class="name"><?= __('Profile'); ?></span>
@@ -397,7 +397,7 @@
                                     </td>
                                 <?php else: ?>
                                     <td style="width: 50px; text-align: center; border-bottom: 1px solid #DDD;" valign="middle">
-                                        <input type="checkbox" class="fancycheckbox" name="core_<?= $key; ?>" value="1" id="<?= $key; ?>_yes"<?php if (!$pachno_user->getNotificationSetting($key, true)->isOff()): ?> checked<?php endif; ?>><label for="<?= $key; ?>_yes"><?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far'); ?></label>
+                                        <input type="checkbox" class="fancy-checkbox" name="core_<?= $key; ?>" value="1" id="<?= $key; ?>_yes"<?php if (!$pachno_user->getNotificationSetting($key, true)->isOff()): ?> checked<?php endif; ?>><label for="<?= $key; ?>_yes"><?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far'); ?></label>
                                     </td>
                                 <?php endif; ?>
                             </tr>
@@ -487,7 +487,7 @@
                                     <td style="text-align: center; border-bottom: 1px solid #DDD;" valign="middle"></td>
                                 <?php else: ?>
                                     <td style="text-align: center; border-bottom: 1px solid #DDD;" valign="middle">
-                                        <input type="checkbox" class="fancycheckbox" name="core_<?= $key; ?>" value="1" id="<?= $key; ?>_yes"<?php if ($pachno_user->getNotificationSetting($key, $key == Settings::SETTINGS_USER_NOTIFY_MENTIONED, 'core')->isOn()) echo ' checked'; ?>><label for="<?= $key; ?>_yes"><?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far'); ?></label>
+                                        <input type="checkbox" class="fancy-checkbox" name="core_<?= $key; ?>" value="1" id="<?= $key; ?>_yes"<?php if ($pachno_user->getNotificationSetting($key, $key == Settings::SETTINGS_USER_NOTIFY_MENTIONED, 'core')->isOn()) echo ' checked'; ?>><label for="<?= $key; ?>_yes"><?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far'); ?></label>
                                     </td>
                                     <?php \pachno\core\framework\Event::createNew('core', 'account_pane_notificationsettings_cell')->trigger(compact('key')); ?>
                                 <?php endif; ?>
@@ -547,7 +547,7 @@
                     <table class="padded_table desktop-notifications-settings" cellpadding=0 cellspacing=0>
                         <tr>
                             <td>
-                                <input type="checkbox" class="fancycheckbox" name="enable_desktop_notifications_new_tab" value="1" id="profile_enable_desktop_notifications_new_tab"<?php if ($pachno_user->isDesktopNotificationsNewTabEnabled()): ?> checked<?php endif; ?>>
+                                <input type="checkbox" class="fancy-checkbox" name="enable_desktop_notifications_new_tab" value="1" id="profile_enable_desktop_notifications_new_tab"<?php if ($pachno_user->isDesktopNotificationsNewTabEnabled()): ?> checked<?php endif; ?>>
                                 <label for="profile_enable_desktop_notifications_new_tab"><?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far') . __('Open desktop notifications in new tab'); ?></label>
                             </td>
                         </tr>

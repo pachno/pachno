@@ -15,7 +15,7 @@
                 <?php if ($access_level == \pachno\core\framework\Settings::ACCESS_FULL): ?>
                     <form accept-charset="<?= \pachno\core\framework\Context::getI18n()->getCharset(); ?>" action="<?= make_url('configure_settings'); ?>" method="post" onsubmit="Pachno.Main.Helpers.formSubmit('<?= make_url('configure_settings'); ?>', 'config_settings'); return false;" id="config_settings">
                 <?php endif; ?>
-                <div class="fancytabs" id="settings_menu">
+                <div class="fancy-tabs" id="settings_menu">
                     <a class="tab selected" id="tab_general_settings" onclick="Pachno.Main.Helpers.tabSwitcher('tab_general_settings', 'settings_menu');" href="javascript:void(0);">
                         <?= fa_image_tag('cog', ['class' => 'icon']); ?>
                         <span class="name"><?= __('General', [], true); ?></span>

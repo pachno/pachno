@@ -12,7 +12,7 @@
             <?php include_component('main/textarea', ['area_name' => 'comment_body', 'target_type' => isset($mentionable_target_type) ? $mentionable_target_type : $comment->getTargetType(), 'target_id' => $comment->getTargetId(), 'area_id' => 'comment_edit_'.$comment->getID().'_bodybox', 'height' => '200px', 'width' => '100%', 'syntax' => Settings::getSyntaxClass($comment->getSyntax()), 'value' => Context::getI18n()->decodeUTF8($comment->getContent(), true)]); ?>
         </div>
         <div class="form-row">
-            <input type="checkbox" name="comment_visibility" id="comment_<?= $comment->getId(); ?>_visibility" class="fancycheckbox" value="1" <?php if ($comment->isPublic()) echo ' checked'; ?>>
+            <input type="checkbox" name="comment_visibility" id="comment_<?= $comment->getId(); ?>_visibility" class="fancy-checkbox" value="1" <?php if ($comment->isPublic()) echo ' checked'; ?>>
             <label for="comment_<?= $comment->getId(); ?>_visibility">
                 <?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far'); ?>
                 <span><?= __('Visible for all users'); ?></span>

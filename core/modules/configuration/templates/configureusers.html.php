@@ -12,7 +12,7 @@
             <h1>
                 <span class="name"><?= __('Manage users and groups'); ?></span>
             </h1>
-            <div class="fancytabs">
+            <div class="fancy-tabs">
                 <a class="tab selected" href="javascript:void(0);" onclick="Pachno.Main.Helpers.tabSwitcher('tab_users', 'usersteamsgroups_menu');">
                     <?= fa_image_tag('user', ['class' => 'icon']); ?>
                     <span class="name"><?= $users_text; ?><span class="count-badge"><?= $number_of_users; ?></span></span>
@@ -119,14 +119,14 @@
                         </div>
                         <?php \pachno\core\framework\Event::createNew('core', 'config.createuser.email')->trigger(); ?>
                         <div class="form-row">
-                            <div class="fancydropdown-container">
-                                <div class="fancydropdown">
+                            <div class="fancy-dropdown-container">
+                                <div class="fancy-dropdown">
                                     <label><?= __('Add user to group'); ?></label>
                                     <span class="value"></span>
                                     <?= fa_image_tag('angle-down', ['class' => 'expander']); ?>
                                     <div class="dropdown-container list-mode">
                                         <?php foreach ($groups as $group): ?>
-                                            <input type="radio" name="group_id" class="fancycheckbox" id="add-user-group-<?= $group->getId(); ?>" value="<?= $group->getID(); ?>" <?php if ($group->getID() == \pachno\core\framework\Settings::getDefaultGroup()->getID()) echo ' checked'; ?>>
+                                            <input type="radio" name="group_id" class="fancy-checkbox" id="add-user-group-<?= $group->getId(); ?>" value="<?= $group->getID(); ?>" <?php if ($group->getID() == \pachno\core\framework\Settings::getDefaultGroup()->getID()) echo ' checked'; ?>>
                                             <label for="add-user-group-<?= $group->getId(); ?>" class="list-item">
                                                 <?= fa_image_tag('check-circle', ['class' => 'checked'], 'far') . fa_image_tag('circle', ['class' => 'unchecked'], 'far'); ?>
                                                 <span class="name value"><?= $group->getName(); ?></span>
@@ -137,14 +137,14 @@
                             </div>
                         </div>
                         <div class="form-row">
-                            <div class="fancydropdown-container">
-                                <div class="fancydropdown" data-default-label="<?= __('No teams selected'); ?>">
+                            <div class="fancy-dropdown-container">
+                                <div class="fancy-dropdown" data-default-label="<?= __('No teams selected'); ?>">
                                     <label><?= __('Add user to team'); ?></label>
                                     <span class="value"></span>
                                     <?= fa_image_tag('angle-down', ['class' => 'expander']); ?>
                                     <div class="dropdown-container list-mode">
                                         <?php foreach ($teams as $team): ?>
-                                            <input type="checkbox" name="team_id[<?= $team->getId(); ?>]" class="fancycheckbox" id="add-user-team-<?= $team->getId(); ?>" value="<?= $team->getID(); ?>">
+                                            <input type="checkbox" name="team_id[<?= $team->getId(); ?>]" class="fancy-checkbox" id="add-user-team-<?= $team->getId(); ?>" value="<?= $team->getID(); ?>">
                                             <label for="add-user-team-<?= $team->getId(); ?>" class="list-item">
                                                 <?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far'); ?>
                                                 <span class="name value"><?= $team->getName(); ?></span>

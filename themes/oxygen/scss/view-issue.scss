@@ -513,8 +513,8 @@
         align-items: center;
         position: relative;
 
-        .fancydropdown-container {
-          .fancydropdown {
+        .fancy-dropdown-container {
+          .fancy-dropdown {
             background-color: transparent;
 
             &:hover {
@@ -582,7 +582,7 @@
       }
     }
 
-    .fancytabs {
+    .fancy-tabs {
       flex: 0 0 auto;
       align-self: flex-end;
     }

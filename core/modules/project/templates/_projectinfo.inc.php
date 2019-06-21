@@ -71,8 +71,8 @@
         <td><label for="use_prefix_yes"><?php echo __('Use prefix'); ?></label></td>
         <td>
             <?php if ($access_level == \pachno\core\framework\Settings::ACCESS_FULL): ?>
-                <input type="radio" name="use_prefix" value="1" class="fancycheckbox" id="use_prefix_yes"<?php if ($project->usePrefix()): ?> checked<?php endif; ?> onchange="if ($(this).checked) { $('prefix').enable(); }"><label for="use_prefix_yes"><?php echo fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far') . __('Yes'); ?></label>
-                <input type="radio" name="use_prefix" value="0" class="fancycheckbox" id="use_prefix_no"<?php if (!$project->usePrefix()): ?> checked<?php endif; ?> onchange="if ($(this).checked) { $('prefix').disable(); }"><label for="use_prefix_no"><?php echo fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far') . __('No'); ?></label>
+                <input type="radio" name="use_prefix" value="1" class="fancy-checkbox" id="use_prefix_yes"<?php if ($project->usePrefix()): ?> checked<?php endif; ?> onchange="if ($(this).checked) { $('prefix').enable(); }"><label for="use_prefix_yes"><?php echo fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far') . __('Yes'); ?></label>
+                <input type="radio" name="use_prefix" value="0" class="fancy-checkbox" id="use_prefix_no"<?php if (!$project->usePrefix()): ?> checked<?php endif; ?> onchange="if ($(this).checked) { $('prefix').disable(); }"><label for="use_prefix_no"><?php echo fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far') . __('No'); ?></label>
             <?php else: ?>
                 <?php echo ($project->usePrefix()) ? __('Yes') : __('No'); ?>
             <?php endif; ?>

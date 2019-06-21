@@ -53,13 +53,13 @@
                     </div>
                 <?php else: ?>
                     <div class="form-row">
-                        <div class="fancydropdown-container">
-                            <div class="fancydropdown">
+                        <div class="fancy-dropdown-container">
+                            <div class="fancy-dropdown">
                                 <label><?= __('Type of project'); ?></label>
                                 <span class="value"><?= __('Classic software project'); ?></span>
                                 <?= fa_image_tag('angle-down', ['class' => 'expander']); ?>
                                 <div class="dropdown-container list-mode">
-                                    <input type="radio" name="project_type" value="classic" id="edit_project_type_classic" class="fancycheckbox" checked>
+                                    <input type="radio" name="project_type" value="classic" id="edit_project_type_classic" class="fancy-checkbox" checked>
                                     <label for="edit_project_type_classic" class="list-item multiline">
                                         <span class="icon"><?php echo fa_image_tag('code'); ?></span>
                                         <span class="name">
@@ -67,7 +67,7 @@
                                             <span class="description"><?php echo __('Classic project template without specific settings'); ?></span>
                                         </span>
                                     </label>
-                                    <input type="radio" name="project_type" value="team" id="edit_project_type_team" class="fancycheckbox">
+                                    <input type="radio" name="project_type" value="team" id="edit_project_type_team" class="fancy-checkbox">
                                     <label for="edit_project_type_team" class="list-item multiline">
                                         <span class="icon"><?php echo fa_image_tag('users'); ?></span>
                                         <span class="name">
@@ -75,7 +75,7 @@
                                             <span class="description"><?php echo __('For projects with multiple teams, often distributed across locations'); ?></span>
                                         </span>
                                     </label>
-                                    <input type="radio" name="project_type" value="open-source" id="edit_project_type_open_source" class="fancycheckbox">
+                                    <input type="radio" name="project_type" value="open-source" id="edit_project_type_open_source" class="fancy-checkbox">
                                     <label for="edit_project_type_open_source" class="list-item multiline">
                                         <span class="icon"><?php echo fa_image_tag('code-branch'); ?></span>
                                         <span class="name">
@@ -83,7 +83,7 @@
                                             <span class="description"><?php echo __('For small/medium open source projects without multiple teams'); ?></span>
                                         </span>
                                     </label>
-                                    <input type="radio" name="project_type" value="agile" id="edit_project_type_agile" class="fancycheckbox">
+                                    <input type="radio" name="project_type" value="agile" id="edit_project_type_agile" class="fancy-checkbox">
                                     <label for="edit_project_type_agile" class="list-item multiline">
                                         <span class="icon"><?php echo fa_image_tag('redo', ['style' => 'transform: rotate(90deg)']); ?></span>
                                         <span class="name">
@@ -91,7 +91,7 @@
                                             <span class="description"><?php echo __('For projects with an agile methodology like e.g. scrum or kanban'); ?></span>
                                         </span>
                                     </label>
-                                    <input type="radio" name="project_type" value="service-desk" id="edit_project_type_service_desk" class="fancycheckbox">
+                                    <input type="radio" name="project_type" value="service-desk" id="edit_project_type_service_desk" class="fancy-checkbox">
                                     <label for="edit_project_type_service_desk" class="list-item multiline">
                                         <span class="icon"><?php echo fa_image_tag('phone'); ?></span>
                                         <span class="name">
@@ -99,7 +99,7 @@
                                             <span class="description"><?php echo __('For helpdesk or support projects without a traditional software development cycle'); ?></span>
                                         </span>
                                     </label>
-                                    <input type="radio" name="project_type" value="personal" id="edit_project_type_personal" class="fancycheckbox">
+                                    <input type="radio" name="project_type" value="personal" id="edit_project_type_personal" class="fancy-checkbox">
                                     <label for="edit_project_type_personal" class="list-item multiline">
                                         <span class="icon"><?php echo fa_image_tag('th-list'); ?></span>
                                         <span class="name">
@@ -118,19 +118,19 @@
                         <input type="hidden" name="mark_as_owner" value="1">
                         <input type="hidden" name="assignee_type" value="<?= $assignee_type; ?>">
                         <input type="hidden" name="assignee_id" value="<?= $assignee_id; ?>">
-                        <div class="fancydropdown-container">
-                            <div class="fancydropdown">
+                        <div class="fancy-dropdown-container">
+                            <div class="fancy-dropdown">
                                 <label><?= __('My role in this project'); ?></label>
                                 <span class="value"><?= __('I have no role in this project'); ?></span>
                                 <?= fa_image_tag('angle-down', ['class' => 'expander']); ?>
                                 <div class="dropdown-container list-mode">
-                                    <input type="radio" class="fancycheckbox" id="project_role_checkbox_0" name="role_id" value="0" checked>
+                                    <input type="radio" class="fancy-checkbox" id="project_role_checkbox_0" name="role_id" value="0" checked>
                                     <label for="project_role_checkbox_0" class="list-item">
                                         <?= fa_image_tag('check-circle', ['class' => 'checked'], 'far') . fa_image_tag('circle', ['class' => 'unchecked'], 'far'); ?>
                                         <span class="name value"><?= __('I have no role in this project'); ?></span>
                                     </label>
                                     <?php foreach ($roles as $role): ?>
-                                        <input type="radio" class="fancycheckbox" id="project_role_checkbox_<?= $role->getID(); ?>" name="role_id" value="<?= $role->getID(); ?>">
+                                        <input type="radio" class="fancy-checkbox" id="project_role_checkbox_<?= $role->getID(); ?>" name="role_id" value="<?= $role->getID(); ?>">
                                         <label for="project_role_checkbox_<?= $role->getID(); ?>" class="list-item">
                                             <?= fa_image_tag('check-circle', ['class' => 'checked'], 'far') . fa_image_tag('circle', ['class' => 'unchecked'], 'far'); ?>
                                             <span class="name value"><?= $role->getName(); ?></span>

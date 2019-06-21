@@ -88,7 +88,7 @@
                         <td colspan="3">
                             <?php foreach (\pachno\core\entities\Team::getAll() as $team): ?>
                                 <div class="teamlist_container">
-                                    <input type="checkbox" class="fancycheckbox" name="teams[<?= $team->getID(); ?>]" id="team_<?= $user->getID(); ?>_<?= $team->getID(); ?>" value="<?= $team->getID(); ?>"<?php if ($user->isMemberOfTeam($team)): ?> checked<?php endif; ?>>
+                                    <input type="checkbox" class="fancy-checkbox" name="teams[<?= $team->getID(); ?>]" id="team_<?= $user->getID(); ?>_<?= $team->getID(); ?>" value="<?= $team->getID(); ?>"<?php if ($user->isMemberOfTeam($team)): ?> checked<?php endif; ?>>
                                     <label for="team_<?= $user->getID(); ?>_<?= $team->getID(); ?>" style="font-weight: normal;"><?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far') . $team->getName(); ?></label>&nbsp;&nbsp;
                                 </div>
                             <?php endforeach; ?>
@@ -102,7 +102,7 @@
                         <td colspan="3">
                             <?php foreach (\pachno\core\entities\Client::getAll() as $client): ?>
                                 <div>
-                                    <input type="checkbox" class="fancycheckbox" name="clients[<?= $client->getID(); ?>]" id="client_<?= $user->getID(); ?>_<?= $client->getID(); ?>" value="<?= $client->getID(); ?>"<?php if ($user->isMemberOfClient($client)): ?> checked<?php endif; ?>>
+                                    <input type="checkbox" class="fancy-checkbox" name="clients[<?= $client->getID(); ?>]" id="client_<?= $user->getID(); ?>_<?= $client->getID(); ?>" value="<?= $client->getID(); ?>"<?php if ($user->isMemberOfClient($client)): ?> checked<?php endif; ?>>
                                     <label for="client_<?= $user->getID(); ?>_<?= $client->getID(); ?>" style="font-weight: normal;"><?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far') . $client->getName(); ?></label>&nbsp;&nbsp;
                                 </div>
                             <?php endforeach; ?>

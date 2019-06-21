@@ -34,7 +34,7 @@
                     <?php include_component('main/textarea', array('area_name' => 'comment_body', 'target_type' => $mentionable_target_type, 'target_id' => $target_id, 'area_id' => 'comment_bodybox', 'height' => '250px', 'width' => '100%', 'syntax' => $pachno_user->getPreferredCommentsSyntax(true), 'value' => ((isset($comment_error) && $comment_error) ? $comment_error_body : ''))); ?>
                 </div>
                 <div class="form-row">
-                    <input type="checkbox" name="comment_visibility" id="comment_0_visibility" class="fancycheckbox" value="1" checked>
+                    <input type="checkbox" name="comment_visibility" id="comment_0_visibility" class="fancy-checkbox" value="1" checked>
                     <label for="comment_0_visibility">
                         <?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far'); ?>
                         <span><?= __('Visible for all users'); ?></span>

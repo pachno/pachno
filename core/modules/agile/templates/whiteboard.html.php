@@ -12,7 +12,7 @@
         <div class="planning_indicator" id="planning_indicator"><?php echo image_tag('spinning_30.gif'); ?></div>
         <div class="top-search-filters-container" id="project_planning_action_strip">
             <div class="header">
-                <div class="fancytabs">
+                <div class="fancy-tabs">
                     <a class="tab" href="<?= make_url('agile_board', array('project_key' => $board->getProject()->getKey(), 'board_id' => $board->getID())); ?>">
                         <span class="icon"><?= fa_image_tag('stream'); ?></span>
                         <span class="name"><?= ($board->getType() == AgileBoard::TYPE_GENERIC) ? __('Planning') : __('Backlog'); ?></span>
@@ -25,8 +25,8 @@
             </div>
             <div class="search-and-filters-strip">
                 <div class="search-strip">
-                    <div class="fancydropdown-container filter">
-                        <div class="fancydropdown">
+                    <div class="fancy-dropdown-container filter">
+                        <div class="fancy-dropdown">
                             <label><?= ($board->getType() == AgileBoard::TYPE_SCRUM) ? __('Sprint') : __('Milestone'); ?></label>
                             <span class="value"></span>
                             <?= fa_image_tag('angle-down', ['class' => 'expander']); ?>
@@ -36,14 +36,14 @@
                                     <span class="name"><?= __('There are no milestones'); ?></span>
                                 </div>
                                 <?php if ($board->getType() != AgileBoard::TYPE_SCRUM): ?>
-                                    <input type="radio" name="selected_milestone" id="selected_milestone_0" class="fancycheckbox" checked>
+                                    <input type="radio" name="selected_milestone" id="selected_milestone_0" class="fancy-checkbox" checked>
                                     <label for="selected_milestone_0" class="list-item">
                                         <span class="icon"><?= fa_image_tag('money-check'); ?></span>
                                         <span class="name value"><?= __('Any milestones'); ?></span>
                                     </label>
                                 <?php endif; ?>
                                 <?php foreach ($board->getMilestones() as $milestone): ?>
-                                    <input type="radio" name="selected_milestone" id="selected_milestone_<?= $milestone->getId(); ?>" class="fancycheckbox" <?php if ($selected_milestone instanceof \pachno\core\entities\Milestone && $selected_milestone->getID() == $milestone->getID()) echo 'checked'; ?>>
+                                    <input type="radio" name="selected_milestone" id="selected_milestone_<?= $milestone->getId(); ?>" class="fancy-checkbox" <?php if ($selected_milestone instanceof \pachno\core\entities\Milestone && $selected_milestone->getID() == $milestone->getID()) echo 'checked'; ?>>
                                     <label class="list-item multiline" for="selected_milestone_<?= $milestone->getId(); ?>" data-board-value="<?php echo $board->getID(); ?>" onclick="window.location='#<?php echo $milestone->getID(); ?>';">
                                         <span class="icon"><?php echo fa_image_tag('money-check'); ?></span>
                                         <span class="name">
@@ -92,12 +92,12 @@
                                 </a>
                                 <span class="list-item separator"></span>
                                 <div class="header"><?= __('Card display'); ?></div>
-                                <input type="radio" class="fancycheckbox" name="card_mode" value="simple" checked id="card_mode_simple">
+                                <input type="radio" class="fancy-checkbox" name="card_mode" value="simple" checked id="card_mode_simple">
                                 <label for="card_mode_simple" class="list-item" onclick="Pachno.Project.Planning.Whiteboard.setViewMode(this, 'simple');">
                                     <span class="icon"><?php echo fa_image_tag('list'); ?></span>
                                     <span class="name"><?= __('Summary card view'); ?></span>
                                 </label>
-                                <input type="radio" class="fancycheckbox" name="card_mode" value="detailed" checked id="card_mode_detailed">
+                                <input type="radio" class="fancy-checkbox" name="card_mode" value="detailed" checked id="card_mode_detailed">
                                 <label for="card_mode_detailed" class="list-item" onclick="Pachno.Project.Planning.Whiteboard.setViewMode(this, 'detailed');">
                                     <span class="icon"><?php echo fa_image_tag('th-list'); ?></span>
                                     <span class="name"><?= __('Detailed card view'); ?></span>

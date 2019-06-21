@@ -15,7 +15,9 @@
     </div>
     <div class="column grid">
         <?php foreach ($workflow->getSteps() as $step): ?>
-            <div class="status-badge" style="background-color: <?php echo ($step->getLinkedStatus() instanceof Status) ? $step->getLinkedStatus()->getColor() : '#FFF'; ?>;"><?php echo ($step->getLinkedStatus() instanceof Status) ? $step->getLinkedStatus()->getName() : __('Unknown'); ?></div>
+            <div class="status-badge" style="background-color: <?php echo ($step->getLinkedStatus() instanceof Status) ? $step->getLinkedStatus()->getColor() : '#FFF'; ?>; color: <?php echo ($step->getLinkedStatus() instanceof Status) ? $step->getLinkedStatus()->getTextColor() : 'inherit'; ?>;">
+                <span><?php echo ($step->getLinkedStatus() instanceof Status) ? $step->getLinkedStatus()->getName() : __('Unknown'); ?></span>
+            </div>
         <?php endforeach; ?>
     </div>
     <div class="column actions">

@@ -1,6 +1,7 @@
 <?php
 
     use pachno\core\framework\Context;
+    use pachno\core\entities\Status;
 
     /** @var \pachno\core\entities\WorkflowStep $step */
 
@@ -9,7 +10,9 @@
     <div class="row">
         <div class="icon handle"><?= fa_image_tag('grip-vertical'); ?></div>
         <div class="name">
-            <span class="status-badge" style="background-color: <?php echo ($step->getLinkedStatus() instanceof \pachno\core\entities\Status) ? $step->getLinkedStatus()->getColor() : '#FFF'; ?>;"><span><?php echo ($step->getLinkedStatus() instanceof \pachno\core\entities\Status) ? $step->getLinkedStatus()->getName() : __('Unknown'); ?></span></span>
+            <span class="status-badge" style="background-color: <?php echo ($step->getLinkedStatus() instanceof Status) ? $step->getLinkedStatus()->getColor() : '#FFF'; ?>; color: <?php echo ($step->getLinkedStatus() instanceof Status) ? $step->getLinkedStatus()->getTextColor() : 'inherit'; ?>;">
+                <span><?php echo ($step->getLinkedStatus() instanceof Status) ? $step->getLinkedStatus()->getName() : __('Unknown'); ?></span>
+            </span>
         </div>
         <button class="icon open">
             <?= fa_image_tag('angle-right'); ?>

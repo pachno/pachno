@@ -7,7 +7,7 @@
         </div>
         <form id="close_me_<?= $key; ?>_form" action="<?= make_url('hide_infobox', array('key' => $key)); ?>" method="post" accept-charset="<?= \pachno\core\framework\Settings::getCharset(); ?>" onsubmit="Pachno.Main.hideInfobox('<?= make_url('hide_infobox', array('key' => $key)); ?>', '<?= $key; ?>');return false;">
             <div class="close_me">
-                <input type="checkbox" value="1" name="dont_show" id="close_me_<?= $key; ?>" class="fancycheckbox"><label for="close_me_<?= $key; ?>"><?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far') . __("Don't show this again"); ?></label>
+                <input type="checkbox" value="1" name="dont_show" id="close_me_<?= $key; ?>" class="fancy-checkbox"><label for="close_me_<?= $key; ?>"><?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far') . __("Don't show this again"); ?></label>
                 <input type="submit" value="<?= __('Hide'); ?>">
             </div>
         </form>

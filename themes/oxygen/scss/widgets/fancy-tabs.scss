@@ -1,4 +1,4 @@
-.fancytabs {
+.fancy-tabs {
   display: flex;
   flex-direction: row;
   justify-content: center;
@@ -9,7 +9,7 @@
   padding: .5rem 0;
   overflow-x: auto;
 }
-.fancytabs .tab {
+.fancy-tabs .tab {
   padding: 1rem;
   font-size: .85rem;
   font-weight: 600;
@@ -24,29 +24,29 @@
   flex-wrap: nowrap;
   max-width: 200px;
 }
-.fancytabs .spacer {
+.fancy-tabs .spacer {
   flex: 1 1 auto;
 }
-.fancytabs .button-container {
+.fancy-tabs .button-container {
   flex: 0 0 auto;
   align-items: center;
   display: flex;
   justify-content: flex-end;
 }
-.fancytabs .tab .name {
+.fancy-tabs .tab .name {
   flex: 1 1 auto;
   white-space: normal;
   line-height: 1.2em;
 }
-.fancytabs .tab .icon {
+.fancy-tabs .tab .icon {
   flex: 0 0 auto;
   margin-right: .6em;
   font-size: .95em;
 }
-.fancytabs .tab.selected {
+.fancy-tabs .tab.selected {
   color: rgb(255, 170, 0);
 }
-.fancytabs .tab.selected::after {
+.fancy-tabs .tab.selected::after {
   content: '';
   display: block;
   width: 50%;

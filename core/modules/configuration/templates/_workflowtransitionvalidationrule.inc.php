@@ -1,103 +1,90 @@
-<tr id="workflowtransitionvalidationrule_<?php echo $rule->getID(); ?>">
-    <?php
+<?php
 
-        switch ($rule->getRule())
-        {
-            case \pachno\core\entities\WorkflowTransitionValidationRule::RULE_MAX_ASSIGNED_ISSUES:
-                ?>
-                <td id="workflowtransitionvalidationrule_<?php echo $rule->getID(); ?>_description" style="padding: 2px;">
-                    <?php echo __('Current user can have no more than %number issues already assigned', array('%number' => '<span id="workflowtransitionvalidationrule_'.$rule->getID().'_value" style="font-weight: bold;">' . (($rule->getRuleValue()) ? (int) $rule->getRuleValue() : __('Unlimited')) . '</span>')); ?>
-                </td>
-                <td id="workflowtransitionvalidationrule_<?php echo $rule->getID(); ?>_edit" style="display: none; padding: 2px;">
-                    <form action="<?php echo make_url('configure_workflow_transition_update_validation_rule', array('workflow_id' => $rule->getWorkflow()->getID(), 'transition_id' => $rule->getTransition()->getID(), 'rule_id' => $rule->getID())); ?>" onsubmit="Pachno.Config.Workflows.Transition.Validations.update('<?php echo make_url('configure_workflow_transition_update_validation_rule', array('workflow_id' => $rule->getWorkflow()->getID(), 'transition_id' => $rule->getTransition()->getID(), 'rule_id' => $rule->getID())); ?>', <?php echo $rule->getID(); ?>);return false;" id="workflowtransitionvalidationrule_<?php echo $rule->getID(); ?>_form">
-                        <input type="submit" value="<?php echo __('Update'); ?>" style="float: right;">
-                        <label for="workflowtransitionvalidationrule_<?php echo $rule->getID(); ?>_input"><?php echo __('Current user can have no more than this many issues assigned'); ?></label>
-                        <select id="workflowtransitionvalidationrule_<?php echo $rule->getID(); ?>_input" name="rule_value">
-                            <?php foreach (range(0, 5) as $option): ?>
-                                <option value="<?php echo $option; ?>"<?php if ((int) $rule->getRuleValue() == $option) echo ' selected'; ?>><?php echo ($option == 0) ? __('Unlimited') : $option; ?></option>
-                            <?php endforeach; ?>
-                        </select>
-                        <?php echo image_tag('spinning_16.gif', array('id' => 'workflowtransitionvalidationrule_' . $rule->getID() . '_indicator', 'style' => 'display: none; margin-left: 5px;')); ?>
-                    </form>
-                </td>
-                <?php
-                break;
-            case \pachno\core\entities\WorkflowTransitionValidationRule::RULE_STATUS_VALID:
-            case \pachno\core\entities\WorkflowTransitionValidationRule::RULE_RESOLUTION_VALID:
-            case \pachno\core\entities\WorkflowTransitionValidationRule::RULE_REPRODUCABILITY_VALID:
-            case \pachno\core\entities\WorkflowTransitionValidationRule::RULE_PRIORITY_VALID:
-            case \pachno\core\entities\WorkflowTransitionValidationRule::RULE_TEAM_MEMBERSHIP_VALID:
-            case \pachno\core\entities\WorkflowTransitionValidationRule::RULE_ISSUE_IN_MILESTONE_VALID:
-            default:
-                ?>
-                <td id="workflowtransitionvalidationrule_<?php echo $rule->getID(); ?>_description" style="padding: 2px;">
-                    <?php if ($rule->getRule() == \pachno\core\entities\WorkflowTransitionValidationRule::RULE_STATUS_VALID): ?>
-                        <?php echo __('Status is any of these values: %statuses', array('%statuses' => '<span id="workflowtransitionvalidationrule_'.$rule->getID().'_value" style="font-weight: bold;">' . (($rule->getRuleValue()) ? $rule->getRuleValueAsJoinedString() : __('Any valid value')) . '</span>')); ?>
-                    <?php elseif ($rule->getRule() == \pachno\core\entities\WorkflowTransitionValidationRule::RULE_PRIORITY_VALID): ?>
-                        <?php echo __('Priority is any of these values: %priorities', array('%priorities' => '<span id="workflowtransitionvalidationrule_'.$rule->getID().'_value" style="font-weight: bold;">' . (($rule->getRuleValue()) ? $rule->getRuleValueAsJoinedString() : __('Any valid value')) . '</span>')); ?>
-                    <?php elseif ($rule->getRule() == \pachno\core\entities\WorkflowTransitionValidationRule::RULE_RESOLUTION_VALID): ?>
-                        <?php echo __('Resolution is any of these values: %resolutions', array('%resolutions' => '<span id="workflowtransitionvalidationrule_'.$rule->getID().'_value" style="font-weight: bold;">' . (($rule->getRuleValue()) ? $rule->getRuleValueAsJoinedString() : __('Any valid value')) . '</span>')); ?>
-                    <?php elseif ($rule->getRule() == \pachno\core\entities\WorkflowTransitionValidationRule::RULE_REPRODUCABILITY_VALID): ?>
-                        <?php echo __('Reproducability is any of these values: %reproducabilities', array('%reproducabilities' => '<span id="workflowtransitionvalidationrule_'.$rule->getID().'_value" style="font-weight: bold;">' . (($rule->getRuleValue()) ? $rule->getRuleValueAsJoinedString() : __('Any valid value')) . '</span>')); ?>
-                    <?php elseif ($rule->getRule() == \pachno\core\entities\WorkflowTransitionValidationRule::RULE_TEAM_MEMBERSHIP_VALID): ?>
-                        <?php echo __('Assignee is member of any of these teams: %teams', array('%teams' => '<span id="workflowtransitionvalidationrule_'.$rule->getID().'_value" style="font-weight: bold;">' . (($rule->getRuleValue()) ? $rule->getRuleValueAsJoinedString() : __('Any valid value')) . '</span>')); ?>
-                    <?php elseif ($rule->getRule() == \pachno\core\entities\WorkflowTransitionValidationRule::RULE_ISSUE_IN_MILESTONE_VALID): ?>
-                        <?php echo __('Issue is in any of these milestones: %milestones', array('%milestones' => '<span id="workflowtransitionvalidationrule_'.$rule->getID().'_value" style="font-weight: bold;">' . (($rule->getRuleValue()) ? $rule->getRuleValueAsJoinedString() : __('Any valid value')) . '</span>')); ?>
-                    <?php elseif ($rule->isCustom()): ?>
-                        <?php echo __('Custom field %customfield is any of these values: %values', array('%customfield' => $rule->getCustomFieldname(), '%values' => '<span id="workflowtransitionvalidationrule_'.$rule->getID().'_value" style="font-weight: bold;">' . (($rule->getRuleValue()) ? $rule->getRuleValueAsJoinedString() : __('Any valid value')) . '</span>')); ?>
-                    <?php endif; ?>
-                </td>
-                <td id="workflowtransitionvalidationrule_<?php echo $rule->getID(); ?>_edit" style="display: none; padding: 2px;">
-                    <form action="<?php echo make_url('configure_workflow_transition_update_validation_rule', array('workflow_id' => $rule->getWorkflow()->getID(), 'transition_id' => $rule->getTransition()->getID(), 'rule_id' => $rule->getID())); ?>" onsubmit="Pachno.Config.Workflows.Transition.Validations.update('<?php echo make_url('configure_workflow_transition_update_validation_rule', array('workflow_id' => $rule->getWorkflow()->getID(), 'transition_id' => $rule->getTransition()->getID(), 'rule_id' => $rule->getID())); ?>', <?php echo $rule->getID(); ?>);return false;" id="workflowtransitionvalidationrule_<?php echo $rule->getID(); ?>_form">
-                        <input type="submit" value="<?php echo __('Update'); ?>" style="float: right;">
-                        <input type="checkbox" class="fancycheckbox" onclick="var set_checked = $(this).checked; $(this).up('form').select('input[type=checkbox]').each(function (chk) { chk.checked = set_checked; } );">
-                        <label>
-                            <?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far'); ?>
-                            <?php if ($rule->getRule() == \pachno\core\entities\WorkflowTransitionValidationRule::RULE_STATUS_VALID): ?>
-                                <?php echo __('Status must be any of these values'); ?>
-                            <?php elseif ($rule->getRule() == \pachno\core\entities\WorkflowTransitionValidationRule::RULE_PRIORITY_VALID): ?>
-                                <?php echo __('Priority must be any of these values'); ?>
-                            <?php elseif ($rule->getRule() == \pachno\core\entities\WorkflowTransitionValidationRule::RULE_RESOLUTION_VALID): ?>
-                                <?php echo __('Resolution must be any of these values'); ?>
-                            <?php elseif ($rule->getRule() == \pachno\core\entities\WorkflowTransitionValidationRule::RULE_REPRODUCABILITY_VALID): ?>
-                                <?php echo __('Reproducability must be any of these values'); ?>
-                            <?php elseif ($rule->isCustom()): ?>
-                                <?php echo __('Custom field %customfield must be any of these values', array('%customfield' => $rule->getCustomFieldname())); ?>
-                            <?php elseif ($rule->getRule() == \pachno\core\entities\WorkflowTransitionValidationRule::RULE_TEAM_MEMBERSHIP_VALID && $rule->isPost()): ?>
-                                <?php echo __('Assignee must be member of any of these teams'); ?>
-                            <?php elseif ($rule->getRule() == \pachno\core\entities\WorkflowTransitionValidationRule::RULE_TEAM_MEMBERSHIP_VALID && $rule->isPre()): ?>
-                                <?php echo __('User must be member of any of these teams'); ?>
-                            <?php elseif ($rule->getRule() == \pachno\core\entities\WorkflowTransitionValidationRule::RULE_ISSUE_IN_MILESTONE_VALID && $rule->isPre()): ?>
-                                <?php echo __('Issue must be in any of these milestones'); ?>
-                            <?php endif; ?>
-                        </label>
-                        <?php foreach ($rule->getRuleOptions() as $option): ?>
-                            <br>
-                            <input type="checkbox" class="fancycheckbox" name="rule_value[<?php echo $option->getID(); ?>]" value="<?php echo $option->getID(); ?>"<?php if ($rule->isValueValid($option->getID())) echo ' checked'; ?> id="workflowtransitionvalidationrule_<?php echo $rule->getID(); ?>_input_<?php echo $option->getID(); ?>">
-                            <label for="workflowtransitionvalidationrule_<?php echo $rule->getID(); ?>_input_<?php echo $option->getID(); ?>">
-                                <?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far'); ?>
-                                <?php if ($option instanceof \pachno\core\entities\User): ?>
-                                    <?php echo $option->getNameWithUsername(); ?>
-                                <?php elseif ($option instanceof \pachno\core\entities\Milestone || $option instanceof \pachno\core\entities\Build || $option instanceof \pachno\core\entities\Component): ?>
-                                    <?php echo $option->getProject()->getName() . ' - ' . $option->getName(); ?>
-                                <?php elseif ($option instanceof \pachno\core\entities\common\Identifiable): ?>
-                                    <?php echo $option->getName(); ?>
-                                <?php else: ?>
-                                    <?php echo $option; ?>
+    use pachno\core\entities\WorkflowTransitionValidationRule;
+    use pachno\core\entities\User;
+    use pachno\core\entities\Build;
+    use pachno\core\entities\Component;
+    use pachno\core\entities\common\Identifiable;
+    use pachno\core\entities\Milestone;
+
+    /** @var WorkflowTransitionValidationRule $rule */
+
+?>
+<div class="configurable-component form-container workflow-transition-validation-rule" data-workflow-transition-validation-rule data-id="<?php echo $rule->getID(); ?>">
+    <form class="row" action="<?php echo make_url('configure_workflow_transition_validation_rule_post', ['workflow_id' => $rule->getWorkflow()->getID(), 'transition_id' => $rule->getTransition()->getID(), 'rule_id' => $rule->getID()]); ?>" onsubmit="Pachno.Config.Workflows.Transition.Validations.update(this);return false;" id="workflowtransitionvalidationrule_<?php echo $rule->getID(); ?>_form" data-interactive-form>
+        <?php if ($rule->getRule() == WorkflowTransitionValidationRule::RULE_MAX_ASSIGNED_ISSUES): ?>
+            <div class="name with-dropdown">
+                <div class="form-row">
+                    <div class="fancy-dropdown-container">
+                        <div class="fancy-dropdown">
+                            <label><?= __('Max number of assigned issues for current user'); ?></label>
+                            <span class="value"></span>
+                            <?= fa_image_tag('angle-down', ['class' => 'expander']); ?>
+                            <div class="dropdown-container list-mode">
+                                <?php foreach (range(0, 10) as $option): ?>
+                                    <input type="radio" name="rule_value" class="fancy-checkbox" id="edit-transition-rule-<?= $rule->getId(); ?>-<?= $option; ?>" value="<?= $option; ?>" <?php if ($rule->getRuleValue() == $option) echo ' checked'; ?>>
+                                    <label for="edit-transition-rule-<?= $rule->getId(); ?>-<?= $option; ?>" class="list-item">
+                                        <?= fa_image_tag('check-circle', ['class' => 'checked'], 'far') . fa_image_tag('circle', ['class' => 'unchecked'], 'far'); ?>
+                                        <span class="name value"><?= __('%number_of_issues issue(s)', ['%number_of_issues' => $option]); ?></span>
+                                    </label>
+                                <?php endforeach; ?>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        <?php else: ?>
+            <div class="name with-dropdown">
+                <div class="form-row">
+                    <div class="fancy-dropdown-container">
+                        <div class="fancy-dropdown invisible">
+                            <label>
+                                <?php if ($rule->getRule() == WorkflowTransitionValidationRule::RULE_STATUS_VALID): ?>
+                                    <?php echo __('Status is any of %list', ['%list' => '']); ?>
+                                <?php elseif ($rule->getRule() == WorkflowTransitionValidationRule::RULE_PRIORITY_VALID): ?>
+                                    <?php echo __('Priority is any of %list', ['%list' => '']); ?>
+                                <?php elseif ($rule->getRule() == WorkflowTransitionValidationRule::RULE_RESOLUTION_VALID): ?>
+                                    <?php echo __('Resolution is any of %list', ['%list' => '']); ?>
+                                <?php elseif ($rule->getRule() == WorkflowTransitionValidationRule::RULE_REPRODUCABILITY_VALID): ?>
+                                    <?php echo __('Reproducability is any of %list', ['%list' => '']); ?>
+                                <?php elseif ($rule->isCustom()): ?>
+                                    <?php echo __('Custom field %customfield is any of %list', ['%customfield' => $rule->getCustomFieldname(), '%list' => '']); ?>
+                                <?php elseif ($rule->getRule() == WorkflowTransitionValidationRule::RULE_TEAM_MEMBERSHIP_VALID && $rule->isPost()): ?>
+                                    <?php echo __('Assignee must be member of %list', ['%list' => '']); ?>
+                                <?php elseif ($rule->getRule() == WorkflowTransitionValidationRule::RULE_TEAM_MEMBERSHIP_VALID && $rule->isPre()): ?>
+                                    <?php echo __('User must be member of %list', ['%list' => '']); ?>
+                                <?php elseif ($rule->getRule() == WorkflowTransitionValidationRule::RULE_ISSUE_IN_MILESTONE_VALID && $rule->isPre()): ?>
+                                    <?php echo __('Issue must be in any of these milestones %list', ['%list' => '']); ?>
                                 <?php endif; ?>
                             </label>
-                        <?php endforeach; ?>
-                        <?php echo image_tag('spinning_16.gif', array('id' => 'workflowtransitionvalidationrule_' . $rule->getID() . '_indicator', 'style' => 'display: none; margin-left: 5px;')); ?>
-                    </form>
-                </td>
-                <?php
-                break;
-        }
-
-    ?>
-    <td style="width: 100px; text-align: right;">
-        <button id="workflowtransitionvalidationrule_<?php echo $rule->getID(); ?>_edit_button" onclick="$('workflowtransitionvalidationrule_<?php echo $rule->getID(); ?>_edit_button').toggle();$('workflowtransitionvalidationrule_<?php echo $rule->getID(); ?>_delete_button').toggle();$('workflowtransitionvalidationrule_<?php echo $rule->getID(); ?>_cancel_button').toggle();$('workflowtransitionvalidationrule_<?php echo $rule->getID(); ?>_description').toggle();$('workflowtransitionvalidationrule_<?php echo $rule->getID(); ?>_edit').toggle();"><?php echo __('Edit'); ?></button>
-        <button id="workflowtransitionvalidationrule_<?php echo $rule->getID(); ?>_delete_button" onclick="Pachno.Main.Helpers.Dialog.show('<?php echo __('Do you really want to delete this transition validation rule?'); ?>', '<?php echo __('Please confirm that you really want to delete this transition validation rule.'); ?>', {yes: {click: function() {Pachno.Config.Workflows.Transition.Validations.remove('<?php echo make_url('configure_workflow_transition_delete_validation_rule', array('workflow_id' => $rule->getWorkflow()->getID(), 'transition_id' => $rule->getTransition()->getID(), 'rule_id' => $rule->getID())); ?>', <?php echo $rule->getID(); ?>, '<?php echo $rule->isPreOrPost(); ?>', '<?php echo $rule->getRule(); ?>'); }}, no: { click: Pachno.Main.Helpers.Dialog.dismiss }});"><?php echo __('Delete'); ?></button>
-        <button id="workflowtransitionvalidationrule_<?php echo $rule->getID(); ?>_cancel_button" onclick="$('workflowtransitionvalidationrule_<?php echo $rule->getID(); ?>_edit_button').toggle();$('workflowtransitionvalidationrule_<?php echo $rule->getID(); ?>_delete_button').toggle();$('workflowtransitionvalidationrule_<?php echo $rule->getID(); ?>_cancel_button').toggle();$('workflowtransitionvalidationrule_<?php echo $rule->getID(); ?>_description').toggle();$('workflowtransitionvalidationrule_<?php echo $rule->getID(); ?>_edit').toggle();" style="display: none;"><?php echo __('Cancel'); ?></button>
-    </td>
-</tr>
+                            <span class="value"></span>
+                            <?= fa_image_tag('angle-down', ['class' => 'expander']); ?>
+                            <div class="dropdown-container list-mode">
+                                <?php foreach ($rule->getRuleOptions() as $option): ?>
+                                    <input type="radio" name="rule_value[<?= $option->getId(); ?>]" class="fancy-checkbox" id="edit-transition-rule-<?= $rule->getId(); ?>-<?= $option->getID(); ?>" value="<?= $option->getID(); ?>" <?php if ($rule->getRuleValue() == $option->getID()) echo ' checked'; ?>>
+                                    <label for="edit-transition-rule-<?= $rule->getId(); ?>-<?= $option->getID(); ?>" class="list-item">
+                                        <?= fa_image_tag('check-circle', ['class' => 'checked'], 'far') . fa_image_tag('circle', ['class' => 'unchecked'], 'far'); ?>
+                                        <span class="name value">
+                                            <?php if ($option instanceof User): ?>
+                                                <?php echo $option->getNameWithUsername(); ?>
+                                            <?php elseif ($option instanceof Milestone || $option instanceof Build || $option instanceof Component): ?>
+                                                <?php echo $option->getProject()->getName() . ' - ' . $option->getName(); ?>
+                                            <?php elseif ($option instanceof Identifiable): ?>
+                                                <?php echo $option->getName(); ?>
+                                            <?php else: ?>
+                                                <?php echo $option; ?>
+                                            <?php endif; ?>
+                                        </span>
+                                    </label>
+                                <?php endforeach; ?>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        <?php endif; ?>
+        <div class="icon">
+            <button class="secondary icon" onclick="Pachno.Main.Helpers.Dialog.show('<?php echo __('Do you really want to delete this transition validation rule?'); ?>', '<?php echo __('Please confirm that you really want to delete this transition validation rule.'); ?>', {yes: {click: function() {Pachno.Config.Workflows.Transition.Validations.remove('<?php echo make_url('configure_workflow_transition_validation_rule_delete', array('workflow_id' => $rule->getWorkflow()->getID(), 'transition_id' => $rule->getTransition()->getID(), 'rule_id' => $rule->getID())); ?>', <?php echo $rule->getID(); ?>, '<?php echo $rule->isPreOrPost(); ?>', '<?php echo $rule->getRule(); ?>'); }}, no: { click: Pachno.Main.Helpers.Dialog.dismiss }});return false;"><?php echo fa_image_tag('trash', ['class' => 'icon']); ?></button>
+        </div>
+    </form>
+</div>

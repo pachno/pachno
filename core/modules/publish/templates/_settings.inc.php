@@ -11,8 +11,8 @@
                 <tr>
                     <td style="padding: 5px;"><label for="hide_wiki_links_no"><?= __('Enable wiki'); ?></label></td>
                     <td>
-                        <input type="radio" class="fancycheckbox" name="hide_wiki_links" value="0" id="hide_wiki_links_no"<?php if ($module->getSetting('hide_wiki_links') != 1): ?> checked<?php endif; ?>><label for="hide_wiki_links_no"><?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far') . __('Yes'); ?></label>
-                        <input type="radio" class="fancycheckbox" name="hide_wiki_links" value="1" id="hide_wiki_links_yes"<?php if ($module->getSetting('hide_wiki_links') == 1): ?> checked<?php endif; ?>><label for="hide_wiki_links_yes"><?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far') . __('No'); ?></label>
+                        <input type="radio" class="fancy-checkbox" name="hide_wiki_links" value="0" id="hide_wiki_links_no"<?php if ($module->getSetting('hide_wiki_links') != 1): ?> checked<?php endif; ?>><label for="hide_wiki_links_no"><?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far') . __('Yes'); ?></label>
+                        <input type="radio" class="fancy-checkbox" name="hide_wiki_links" value="1" id="hide_wiki_links_yes"<?php if ($module->getSetting('hide_wiki_links') == 1): ?> checked<?php endif; ?>><label for="hide_wiki_links_yes"><?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far') . __('No'); ?></label>
                     </td>
                 </tr>
                 <tr>
@@ -36,8 +36,8 @@
                 <tr>
                     <td style="padding: 5px;"><label for="allow_camelcase_links_yes"><?= __('Allow "CamelCased" links'); ?></label></td>
                     <td>
-                        <input type="radio" class="fancycheckbox" name="allow_camelcase_links" value="1" id="allow_camelcase_links_yes"<?php if ($module->getSetting('allow_camelcase_links') == 1): ?> checked<?php endif; ?>><label for="allow_camelcase_links_yes"><?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far') . __('Yes'); ?></label>
-                        <input type="radio" class="fancycheckbox" name="allow_camelcase_links" value="0" id="allow_camelcase_links_no"<?php if ($module->getSetting('allow_camelcase_links') == 0): ?> checked<?php endif; ?>><label for="allow_camelcase_links_no"><?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far') . __('No'); ?></label>
+                        <input type="radio" class="fancy-checkbox" name="allow_camelcase_links" value="1" id="allow_camelcase_links_yes"<?php if ($module->getSetting('allow_camelcase_links') == 1): ?> checked<?php endif; ?>><label for="allow_camelcase_links_yes"><?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far') . __('Yes'); ?></label>
+                        <input type="radio" class="fancy-checkbox" name="allow_camelcase_links" value="0" id="allow_camelcase_links_no"<?php if ($module->getSetting('allow_camelcase_links') == 0): ?> checked<?php endif; ?>><label for="allow_camelcase_links_no"><?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far') . __('No'); ?></label>
                     </td>
                 </tr>
                 <tr>
@@ -46,8 +46,8 @@
                 <tr>
                     <td style="padding: 5px;"><label for="require_change_reason_yes"><?= __('Require change reason'); ?></label></td>
                     <td>
-                        <input type="radio" class="fancycheckbox" name="require_change_reason" value="1" id="require_change_reason_yes"<?php if ($module->getSetting('require_change_reason') == 1): ?> checked<?php endif; ?>><label for="require_change_reason_yes"><?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far') . __('Yes'); ?></label>
-                        <input type="radio" class="fancycheckbox" name="require_change_reason" value="0" id="require_change_reason_no"<?php if ($module->getSetting('require_change_reason') != 1): ?> checked<?php endif; ?>><label for="require_change_reason_no"><?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far') . __('No'); ?></label>
+                        <input type="radio" class="fancy-checkbox" name="require_change_reason" value="1" id="require_change_reason_yes"<?php if ($module->getSetting('require_change_reason') == 1): ?> checked<?php endif; ?>><label for="require_change_reason_yes"><?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far') . __('Yes'); ?></label>
+                        <input type="radio" class="fancy-checkbox" name="require_change_reason" value="0" id="require_change_reason_no"<?php if ($module->getSetting('require_change_reason') != 1): ?> checked<?php endif; ?>><label for="require_change_reason_no"><?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far') . __('No'); ?></label>
                     </td>
                 </tr>
                 <tr>
@@ -98,7 +98,7 @@
             <ul class="simple-list" id="import_articles_list">
             <?php foreach ($articles as $article_name => $details): ?>
                 <li class="article_category_<?= $details['category']; ?>" style="<?php if ($details['category'] != '') echo 'display: none;'; ?>">
-                    <input type="checkbox" class="fancycheckbox" value="1" name="import_article[<?= $article_name; ?>]" id="import_article_<?= mb_strtolower($article_name); ?>"<?php if (!$details['exists']) echo ' selected'; ?>>&nbsp;
+                    <input type="checkbox" class="fancy-checkbox" value="1" name="import_article[<?= $article_name; ?>]" id="import_article_<?= mb_strtolower($article_name); ?>"<?php if (!$details['exists']) echo ' selected'; ?>>&nbsp;
                     <label for="import_article_<?= mb_strtolower($article_name); ?>"><?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far') . urldecode($article_name); ?></label>
                     <?php if ($details['exists']): ?>
                         &nbsp;<?= link_tag(make_url('publish_article', array('article_name' => $article_name)), __('Open existing article in new window'), array('style' => 'font-size: 0.8em;', 'target' => "_{$article_name}")); ?>

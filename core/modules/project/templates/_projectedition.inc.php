@@ -4,7 +4,7 @@
         <a href="javascript:void(0);" class="closer" onclick="Pachno.Main.Helpers.Backdrop.reset();"><?= fa_image_tag('times'); ?></a>
     </div>
     <div id="backdrop_detail_content" class="backdrop_detail_content">
-        <div id="editions_menu" class="fancytabs">
+        <div id="editions_menu" class="fancy-tabs">
             <a class="tab <?php if ($selected_section == 'general') echo 'selected'; ?>" id="edition_settings" href="javascript:void(0);" onclick="Pachno.Main.Helpers.tabSwitcher('edition_settings', 'editions_menu');">
                 <?= fa_image_tag('edit', ['class' => 'icon'], 'far'); ?>
                 <span class="name"><?= __('Details & settings'); ?></span>

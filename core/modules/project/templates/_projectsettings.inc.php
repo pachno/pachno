@@ -11,8 +11,8 @@
             <td><label for="released_yes"><?php echo __('Released'); ?></label></td>
             <td>
                 <?php if ($access_level == \pachno\core\framework\Settings::ACCESS_FULL): ?>
-                    <input type="radio" name="released" value="1" class="fancycheckbox" id="released_yes"<?php if ($project->isReleased()): ?> checked<?php endif; ?>><label for="released_yes"><?php echo fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far') . __('Yes'); ?></label>
-                    <input type="radio" name="released" value="0" class="fancycheckbox" id="released_no"<?php if (!$project->isReleased()): ?> checked<?php endif; ?>><label for="released_no"><?php echo fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far') . __('No'); ?></label>
+                    <input type="radio" name="released" value="1" class="fancy-checkbox" id="released_yes"<?php if ($project->isReleased()): ?> checked<?php endif; ?>><label for="released_yes"><?php echo fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far') . __('Yes'); ?></label>
+                    <input type="radio" name="released" value="0" class="fancy-checkbox" id="released_no"<?php if (!$project->isReleased()): ?> checked<?php endif; ?>><label for="released_no"><?php echo fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far') . __('No'); ?></label>
                 <?php else: ?>
                     <?php echo ($project->isReleased()) ? __('Yes') : __('No'); ?>
                 <?php endif; ?>
@@ -65,8 +65,8 @@
             <td><label for="enable_builds_yes"><?php echo __('Enable releases'); ?></label></td>
             <td>
                 <?php if ($access_level == \pachno\core\framework\Settings::ACCESS_FULL): ?>
-                    <input type="radio" name="enable_builds" value="1" class="fancycheckbox" id="enable_builds_yes"<?php if ($project->isBuildsEnabled()): ?> checked<?php endif; ?>><label for="enable_builds_yes"><?php echo fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far') . __('Yes'); ?></label>
-                    <input type="radio" name="enable_builds" value="0" class="fancycheckbox" id="enable_builds_no"<?php if (!$project->isBuildsEnabled()): ?> checked<?php endif; ?>><label for="enable_builds_no"><?php echo fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far') . __('No'); ?></label>
+                    <input type="radio" name="enable_builds" value="1" class="fancy-checkbox" id="enable_builds_yes"<?php if ($project->isBuildsEnabled()): ?> checked<?php endif; ?>><label for="enable_builds_yes"><?php echo fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far') . __('Yes'); ?></label>
+                    <input type="radio" name="enable_builds" value="0" class="fancy-checkbox" id="enable_builds_no"<?php if (!$project->isBuildsEnabled()): ?> checked<?php endif; ?>><label for="enable_builds_no"><?php echo fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far') . __('No'); ?></label>
                 <?php else: ?>
                     <?php echo ($project->isBuildsEnabled()) ? __('Yes') : __('No'); ?>
                 <?php endif; ?>
@@ -79,8 +79,8 @@
             <td><label for="enable_editions_yes"><?php echo __('Use editions'); ?></label></td>
             <td>
                 <?php if ($access_level == \pachno\core\framework\Settings::ACCESS_FULL): ?>
-                    <input type="radio" name="enable_editions" value="1" class="fancycheckbox" id="enable_editions_yes"<?php if ($project->isEditionsEnabled()): ?> checked<?php endif; ?>><label for="enable_editions_yes"><?php echo fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far') . __('Yes'); ?></label>
-                    <input type="radio" name="enable_editions" value="0" class="fancycheckbox" id="enable_editions_no"<?php if (!$project->isEditionsEnabled()): ?> checked<?php endif; ?>><label for="enable_editions_no"><?php echo fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far') . __('No'); ?></label>
+                    <input type="radio" name="enable_editions" value="1" class="fancy-checkbox" id="enable_editions_yes"<?php if ($project->isEditionsEnabled()): ?> checked<?php endif; ?>><label for="enable_editions_yes"><?php echo fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far') . __('Yes'); ?></label>
+                    <input type="radio" name="enable_editions" value="0" class="fancy-checkbox" id="enable_editions_no"<?php if (!$project->isEditionsEnabled()): ?> checked<?php endif; ?>><label for="enable_editions_no"><?php echo fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far') . __('No'); ?></label>
                 <?php else: ?>
                     <?php echo ($project->isEditionsEnabled()) ? __('Yes') : __('No'); ?>
                 <?php endif; ?>
@@ -93,8 +93,8 @@
             <td><label for="enable_components_yes"><?php echo __('Use components'); ?></label></td>
             <td>
                 <?php if ($access_level == \pachno\core\framework\Settings::ACCESS_FULL): ?>
-                    <input type="radio" name="enable_components" value="1" class="fancycheckbox" id="enable_components_yes"<?php if ($project->isComponentsEnabled()): ?> checked<?php endif; ?>><label for="enable_components_yes"><?php echo fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far') . __('Yes'); ?></label>
-                    <input type="radio" name="enable_components" value="0" class="fancycheckbox" id="enable_components_no"<?php if (!$project->isComponentsEnabled()): ?> checked<?php endif; ?>><label for="enable_components_no"><?php echo fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far') . __('No'); ?></label>
+                    <input type="radio" name="enable_components" value="1" class="fancy-checkbox" id="enable_components_yes"<?php if ($project->isComponentsEnabled()): ?> checked<?php endif; ?>><label for="enable_components_yes"><?php echo fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far') . __('Yes'); ?></label>
+                    <input type="radio" name="enable_components" value="0" class="fancy-checkbox" id="enable_components_no"<?php if (!$project->isComponentsEnabled()): ?> checked<?php endif; ?>><label for="enable_components_no"><?php echo fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far') . __('No'); ?></label>
                 <?php else: ?>
                     <?php echo ($project->isComponentsEnabled()) ? __('Yes') : __('No'); ?>
                 <?php endif; ?>
@@ -116,8 +116,8 @@
             <td style="width: 300px;"><label for="locked_no"><?php echo __('Allow issues to be reported'); ?></label></td>
             <td style="width: 580px;">
                 <?php if ($access_level == \pachno\core\framework\Settings::ACCESS_FULL): ?>
-                    <input type="radio" name="locked" value="1" class="fancycheckbox" id="locked_yes"<?php if (!$project->isLocked()): ?> checked<?php endif; ?>><label for="locked_yes"><?php echo fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far') . __('Yes'); ?></label>
-                    <input type="radio" name="locked" value="0" class="fancycheckbox" id="locked_no"<?php if ($project->isLocked()): ?> checked<?php endif; ?>><label for="locked_no"><?php echo fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far') . __('No'); ?></label>
+                    <input type="radio" name="locked" value="1" class="fancy-checkbox" id="locked_yes"<?php if (!$project->isLocked()): ?> checked<?php endif; ?>><label for="locked_yes"><?php echo fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far') . __('Yes'); ?></label>
+                    <input type="radio" name="locked" value="0" class="fancy-checkbox" id="locked_no"<?php if ($project->isLocked()): ?> checked<?php endif; ?>><label for="locked_no"><?php echo fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far') . __('No'); ?></label>
                 <?php else: ?>
                     <?php echo (!$project->isLocked()) ? __('Yes') : __('No'); ?>
                 <?php endif; ?>
@@ -167,8 +167,8 @@
             <td><label for="allow_changing_without_working_yes"><?php echo __('Allow freelancing'); ?></label></td>
             <td>
                 <?php if ($access_level == \pachno\core\framework\Settings::ACCESS_FULL): ?>
-                    <input type="radio" name="allow_changing_without_working" value="1" class="fancycheckbox" id="allow_changing_without_working_yes"<?php if ($project->canChangeIssuesWithoutWorkingOnThem()): ?> checked<?php endif; ?>><label for="allow_changing_without_working_yes"><?php echo fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far') . __('Yes'); ?></label>
-                    <input type="radio" name="allow_changing_without_working" value="0" class="fancycheckbox" id="allow_changing_without_working_no"<?php if (!$project->canChangeIssuesWithoutWorkingOnThem()): ?> checked<?php endif; ?>><label for="allow_changing_without_working_no"><?php echo fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far') . __('No'); ?></label>
+                    <input type="radio" name="allow_changing_without_working" value="1" class="fancy-checkbox" id="allow_changing_without_working_yes"<?php if ($project->canChangeIssuesWithoutWorkingOnThem()): ?> checked<?php endif; ?>><label for="allow_changing_without_working_yes"><?php echo fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far') . __('Yes'); ?></label>
+                    <input type="radio" name="allow_changing_without_working" value="0" class="fancy-checkbox" id="allow_changing_without_working_no"<?php if (!$project->canChangeIssuesWithoutWorkingOnThem()): ?> checked<?php endif; ?>><label for="allow_changing_without_working_no"><?php echo fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far') . __('No'); ?></label>
                 <?php else: ?>
                     <?php echo ($project->canChangeIssuesWithoutWorkingOnThem()) ? __('Yes') : __('No'); ?>
                 <?php endif; ?>
@@ -181,7 +181,7 @@
             <td><label for="allow_autoassignment_yes"><?php echo __('Enable autoassignment'); ?></label></td>
             <td>
                 <?php if ($access_level == \pachno\core\framework\Settings::ACCESS_FULL): ?>
-                    <input type="radio" name="allow_autoassignment" value="1" class="fancycheckbox" id="allow_autoassignment_yes"<?php if ($project->canAutoassign()): ?> checked<?php endif; ?>><label for="allow_autoassignment_yes"><?php echo fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far') . __('Yes'); ?></label>
+                    <input type="radio" name="allow_autoassignment" value="1" class="fancy-checkbox" id="allow_autoassignment_yes"<?php if ($project->canAutoassign()): ?> checked<?php endif; ?>><label for="allow_autoassignment_yes"><?php echo fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far') . __('Yes'); ?></label>
                 <?php else: ?>
                     <?php echo ($project->canAutoassign()) ? __('Yes') : __('No'); ?>
                 <?php endif; ?>
@@ -195,7 +195,7 @@
             <td>
                 <?php if ($access_level == \pachno\core\framework\Settings::ACCESS_FULL): ?>
                     <?php foreach (\pachno\core\entities\common\Timeable::getUnits() as $time_unit): ?>
-                        <input type="checkbox" name="time_units[]" value="<?php echo $time_unit; ?>"<?php if ($project->hasTimeUnit($time_unit)): ?> checked<?php endif; ?> class="fancycheckbox" id="time_unit_<?= $time_unit; ?>">
+                        <input type="checkbox" name="time_units[]" value="<?php echo $time_unit; ?>"<?php if ($project->hasTimeUnit($time_unit)): ?> checked<?php endif; ?> class="fancy-checkbox" id="time_unit_<?= $time_unit; ?>">
                         <label for="time_unit_<?= $time_unit; ?>"><?php echo fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far') . __($time_unit); ?></label>
                     <?php endforeach; ?>
                 <?php else: ?>

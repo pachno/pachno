@@ -7,7 +7,7 @@ use pachno\core\framework;
 ?>
 <div class="project_overview">
     <?php if (!$pachno_user->isGuest()): ?>
-        <div id="projects_list_tabs" class="fancytabs">
+        <div id="projects_list_tabs" class="fancy-tabs">
             <a class="tab selected" id="tab_active" onclick="Pachno.Project.loadList('active', '<?= $active_url; ?>');return false;" href="javascript:void(0);">
                 <?= fa_image_tag('boxes', ['class' => 'icon']); ?>
                 <?= fa_image_tag('spinner', ['style' => 'display: none;', 'id' => 'project_list_tab_active_indicator', 'class' => 'icon fa-spin']); ?>

@@ -28,19 +28,19 @@
                 </div>
                 <?php foreach ($issue_types as $issue_type): ?>
                     <div class="form-row">
-                        <div class="fancydropdown-container">
-                            <div class="fancydropdown">
+                        <div class="fancy-dropdown-container">
+                            <div class="fancy-dropdown">
                                 <label><?= fa_image_tag($issue_type->getFontAwesomeIcon(), ['class' => 'issuetype-icon issuetype-' . $issue_type->getType()]); ?><?php echo $issue_type->getName(); ?></label>
                                 <span class="value"></span>
                                 <?= fa_image_tag('angle-down', ['class' => 'expander']); ?>
                                 <div class="dropdown-container list-mode from-left">
-                                    <input class="fancycheckbox" type="radio" name="workflow_id[<?php echo $issue_type->getID(); ?>]" id="edit_workflow_id_<?php echo $issue_type->getID(); ?>" value=""<?php if (!$scheme->hasWorkflowAssociatedWithIssuetype($issue_type)) echo 'checked'; ?>>
+                                    <input class="fancy-checkbox" type="radio" name="workflow_id[<?php echo $issue_type->getID(); ?>]" id="edit_workflow_id_<?php echo $issue_type->getID(); ?>" value=""<?php if (!$scheme->hasWorkflowAssociatedWithIssuetype($issue_type)) echo 'checked'; ?>>
                                     <label for="edit_workflow_id_<?php echo $issue_type->getID(); ?>" class="list-item">
                                         <?= fa_image_tag('check-circle', ['class' => 'checked'], 'far') . fa_image_tag('circle', ['class' => 'unchecked'], 'far'); ?>
                                         <span class="name value"><?php echo __('Use default workflow'); ?></span>
                                     </label>
                                     <?php foreach (\pachno\core\entities\tables\Workflows::getTable()->getAll() as $workflow): ?>
-                                        <input class="fancycheckbox" type="radio" name="workflow_id[<?php echo $issue_type->getID(); ?>]" id="edit_workflow_id_<?php echo $issue_type->getID(); ?>_<?php echo $workflow->getID(); ?>" value="<?php echo $workflow->getID(); ?>"<?php if ($scheme->hasWorkflowAssociatedWithIssuetype($issue_type) && $scheme->getWorkflowForIssuetype($issue_type)->getID() == $workflow->getID()) echo 'checked'; ?>>
+                                        <input class="fancy-checkbox" type="radio" name="workflow_id[<?php echo $issue_type->getID(); ?>]" id="edit_workflow_id_<?php echo $issue_type->getID(); ?>_<?php echo $workflow->getID(); ?>" value="<?php echo $workflow->getID(); ?>"<?php if ($scheme->hasWorkflowAssociatedWithIssuetype($issue_type) && $scheme->getWorkflowForIssuetype($issue_type)->getID() == $workflow->getID()) echo 'checked'; ?>>
                                         <label for="edit_workflow_id_<?php echo $issue_type->getID(); ?>_<?php echo $workflow->getID(); ?>" class="list-item">
                                             <?= fa_image_tag('check-circle', ['class' => 'checked'], 'far') . fa_image_tag('circle', ['class' => 'unchecked'], 'far'); ?>
                                             <span class="name value"><?php echo $workflow->getName(); ?></span>

@@ -6,7 +6,7 @@
         </div>
         <?php if ($comment->isPublic()): ?>
             <div class="form-row">
-                <input type="checkbox" name="comment_visibility" id="comment_<?= $comment->getId(); ?>_reply_visibility" class="fancycheckbox" value="1" checked>
+                <input type="checkbox" name="comment_visibility" id="comment_<?= $comment->getId(); ?>_reply_visibility" class="fancy-checkbox" value="1" checked>
                 <label for="comment_<?= $comment->getId(); ?>_reply_visibility">
                     <?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far'); ?>
                     <span><?= __('Visible for all users'); ?></span>

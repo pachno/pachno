@@ -21,14 +21,14 @@
                 <?php endif; ?>
                 <div class="column small">
                     <div class="form-row">
-                        <div class="fancydropdown-container">
-                            <div class="fancydropdown">
+                        <div class="fancy-dropdown-container">
+                            <div class="fancy-dropdown">
                                 <label><?= __('Issue type'); ?></label>
                                 <span class="value"></span>
                                 <?= fa_image_tag('angle-down', ['class' => 'expander']); ?>
                                 <div class="dropdown-container list-mode">
                                     <?php foreach ($icons as $icon => $description): ?>
-                                        <input type="radio" id="edit_issuetype_icon_<?= $icon; ?>" name="icon" value="<?= $icon; ?>" <?php if ($icon == $type->getIcon()) echo ' checked'; ?> class="fancycheckbox">
+                                        <input type="radio" id="edit_issuetype_icon_<?= $icon; ?>" name="icon" value="<?= $icon; ?>" <?php if ($icon == $type->getIcon()) echo ' checked'; ?> class="fancy-checkbox">
                                         <label for="edit_issuetype_icon_<?= $icon; ?>" class="list-item">
                                             <span class="icon"><?= fa_image_tag(entities\Issuetype::getFontAwesomeIconFromIcon($icon), ['class' => 'issuetype-icon issuetype-' . $icon]); ?></span>
                                             <span class="name value"><?= $description; ?></span>

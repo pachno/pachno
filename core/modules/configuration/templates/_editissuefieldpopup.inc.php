@@ -17,14 +17,14 @@
                         <label style for="edit_field_field_name"><?= __('Field name'); ?></label>
                     </div>
                     <div class="form-row">
-                        <div class="fancydropdown-container">
-                            <div class="fancydropdown">
+                        <div class="fancy-dropdown-container">
+                            <div class="fancy-dropdown">
                                 <label><?php echo __('Type of field'); ?></label>
                                 <span class="value"></span>
                                 <?= fa_image_tag('angle-down', ['class' => 'expander']); ?>
                                 <div class="dropdown-container list-mode">
                                     <?php foreach (\pachno\core\entities\CustomDatatype::getFieldTypes() as $type => $details): ?>
-                                        <input class="fancycheckbox" type="radio" name="type" value="<?php echo $type; ?>" id="field_type_dropdown_<?php echo $type; ?>">
+                                        <input class="fancy-checkbox" type="radio" name="type" value="<?php echo $type; ?>" id="field_type_dropdown_<?php echo $type; ?>">
                                         <label for="field_type_dropdown_<?php echo $type; ?>" class="list-item multiline">
                                             <span class="icon"><?php echo fa_image_tag($details['icon']); ?></span>
                                             <span class="name">

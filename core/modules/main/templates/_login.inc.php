@@ -18,7 +18,7 @@
             <label for="pachno_password"><?= __('Password'); ?></label>
         </div>
         <div class="form-row">
-            <input type="checkbox" class="fancycheckbox" name="rememberme" value="1" id="pachno_rememberme"><label class="login_fieldlabel" for="pachno_rememberme"><?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far') . __('Keep me logged in'); ?></label>
+            <input type="checkbox" class="fancy-checkbox" name="rememberme" value="1" id="pachno_rememberme"><label class="login_fieldlabel" for="pachno_rememberme"><?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far') . __('Keep me logged in'); ?></label>
         </div>
         <div class="form-row" id="login-error-container">
             <div class="error" id="login-error-message"></div>

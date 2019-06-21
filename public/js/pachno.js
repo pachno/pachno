@@ -123,7 +123,7 @@ define(['pachno/tools', 'pachno/index', 'domReady', 'jquery', 'mention'],
                 //         elm.addClassName('unfiltered');
                 // });
 
-                jQuery("body").on("click", ".fancydropdown", function (e) {
+                jQuery("body").on("click", ".fancy-dropdown", function (e) {
                     var is_visible = jQuery(this).hasClass('active');
                     Pachno.Main.Profile.clearPopupsAndButtons();
                     if (!is_visible) {

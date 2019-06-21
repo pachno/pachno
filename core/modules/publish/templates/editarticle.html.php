@@ -33,7 +33,7 @@
                 <tr>
                     <td><label for="article-type-selector" id="article-type-label"><?php echo __('Article type'); ?></label></td>
                     <td style="position: relative;">
-                        <span id="article-type-name" class="fancydropdown <?php if (!$article->getParentArticle() instanceof \pachno\core\entities\Article) echo ' changeable'; ?>"><?php echo ($article->getArticleType() == \pachno\core\entities\Article::TYPE_MANUAL) ? __('Page in a handbook') : __('Classic wiki page'); ?></span>
+                        <span id="article-type-name" class="fancy-dropdown <?php if (!$article->getParentArticle() instanceof \pachno\core\entities\Article) echo ' changeable'; ?>"><?php echo ($article->getArticleType() == \pachno\core\entities\Article::TYPE_MANUAL) ? __('Page in a handbook') : __('Classic wiki page'); ?></span>
                         <?php if (!$article->getParentArticle() instanceof \pachno\core\entities\Article): ?>
                             <ul class="article-type-selector" id="article-type-selector">
                                 <li data-article-type="<?php echo \pachno\core\entities\Article::TYPE_WIKI; ?>" data-class-name="at-wiki" class="article-type <?php if ($article->getArticleType() == \pachno\core\entities\Article::TYPE_WIKI) echo 'selected'; ?>">

@@ -13,7 +13,7 @@
                     <div class="dropdown-container">
                         <div class="list-mode grid-mode">
                             <?php foreach (\pachno\core\entities\Priority::getAvailableValues() as $value => $icon): ?>
-                                <input type="radio" name="itemdata" value="<?= $value; ?>" id="<?= $type; ?>_<?= $item->getID(); ?>_itemdata_input_<?= $value; ?>" class="fancycheckbox" <?php if ($item->getItemdata() == $value) echo 'checked'; ?>>
+                                <input type="radio" name="itemdata" value="<?= $value; ?>" id="<?= $type; ?>_<?= $item->getID(); ?>_itemdata_input_<?= $value; ?>" class="fancy-checkbox" <?php if ($item->getItemdata() == $value) echo 'checked'; ?>>
                                 <label class="list-item" for="<?= $type; ?>_<?= $item->getID(); ?>_itemdata_input_<?= $value; ?>">
                                     <span class="icon"><?= fa_image_tag($icon); ?></span>
                                 </label>

@@ -33,8 +33,8 @@
   > .configuration-content > .form-container {
     max-width: 750px;
 
-    .fancydropdown-container {
-      .fancydropdown {
+    .fancy-dropdown-container {
+      .fancy-dropdown {
         background: rgb(255, 255, 255);
         border-color: rgba(200, 200, 200, .3);
         &:hover {
@@ -295,6 +295,11 @@
   align-items: stretch;
   justify-content: center;
 
+  &:empty:before {
+    content: attr(data-placeholder);
+    color: #888;
+  }
+
   & + .configurable-components-list {
     margin-top: .75rem;
     border-top: 1px solid rgba(200, 200, 200, .8);
@@ -356,9 +361,11 @@
   }
 
   &.issue-field,
-  &.workflow-transition {
+  &.workflow-transition,
+  &.workflow-transition-validation-rule {
     .row {
       flex-wrap: nowrap;
+      overflow: visible;
     }
   }
 

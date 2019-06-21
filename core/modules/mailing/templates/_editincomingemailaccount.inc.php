@@ -42,8 +42,8 @@
                 <tr>
                     <td><label for="account_type_imap"><?php echo __('Account type'); ?></label></td>
                     <td>
-                        <div><input type="radio" class="fancycheckbox" name="account_type" id="account_type_imap" value="<?php echo \pachno\core\entities\IncomingEmailAccount::SERVER_IMAP; ?>"<?php if ($account->isImap()) echo ' checked'; ?>><label for="account_type_imap" style="font-weight: normal;"><?php echo fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far') . __('Microsoft Exchange / Outlook / Gmail / IMAP'); ?></label></div>
-                        <div><input type="radio" class="fancycheckbox" name="account_type" id="account_type_pop3" value="<?php echo \pachno\core\entities\IncomingEmailAccount::SERVER_POP3; ?>"<?php if ($account->isPop3()) echo ' checked'; ?>><label for="account_type_pop3" style="font-weight: normal;"><?php echo fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far') . __('POP3'); ?></label></div>
+                        <div><input type="radio" class="fancy-checkbox" name="account_type" id="account_type_imap" value="<?php echo \pachno\core\entities\IncomingEmailAccount::SERVER_IMAP; ?>"<?php if ($account->isImap()) echo ' checked'; ?>><label for="account_type_imap" style="font-weight: normal;"><?php echo fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far') . __('Microsoft Exchange / Outlook / Gmail / IMAP'); ?></label></div>
+                        <div><input type="radio" class="fancy-checkbox" name="account_type" id="account_type_pop3" value="<?php echo \pachno\core\entities\IncomingEmailAccount::SERVER_POP3; ?>"<?php if ($account->isPop3()) echo ' checked'; ?>><label for="account_type_pop3" style="font-weight: normal;"><?php echo fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far') . __('POP3'); ?></label></div>
                     </td>
                 </tr>
                 <tr>
@@ -69,22 +69,22 @@
                 <tr>
                     <td><label for="account_plaintext_authentication_yes"><?php echo __('Use plaintext authentication'); ?></label></td>
                     <td>
-                        <input type="radio" class="fancycheckbox" name="plaintext_authentication" class="fancycheckbox" id="account_plaintext_authentication_yes" value="1"<?php if ($account->usesPlaintextAuthentication()) echo ' checked'; ?>><label for="account_plaintext_authentication_yes" style="font-weight: normal;"><?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far') . __('Yes'); ?></label>
-                        <input type="radio" class="fancycheckbox" name="plaintext_authentication" class="fancycheckbox" id="account_plaintext_authentication_no" value="0"<?php if (!$account->usesPlaintextAuthentication()) echo ' checked'; ?>><label for="account_plaintext_authentication_no" style="font-weight: normal;"><?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far') . __('No'); ?></label>
+                        <input type="radio" class="fancy-checkbox" name="plaintext_authentication" class="fancy-checkbox" id="account_plaintext_authentication_yes" value="1"<?php if ($account->usesPlaintextAuthentication()) echo ' checked'; ?>><label for="account_plaintext_authentication_yes" style="font-weight: normal;"><?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far') . __('Yes'); ?></label>
+                        <input type="radio" class="fancy-checkbox" name="plaintext_authentication" class="fancy-checkbox" id="account_plaintext_authentication_no" value="0"<?php if (!$account->usesPlaintextAuthentication()) echo ' checked'; ?>><label for="account_plaintext_authentication_no" style="font-weight: normal;"><?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far') . __('No'); ?></label>
                     </td>
                 </tr>
                 <tr>
                     <td><label for="account_ssl"><?php echo __('Use secure connection (SSL)'); ?></label></td>
                     <td>
-                        <input type="radio" class="fancycheckbox" name="ssl" id="ssl_yes" value="1"<?php if ($account->usesSSL()) echo ' checked'; ?>><label for="ssl_yes" style="font-weight: normal;"><?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far') . __('Yes'); ?></label>
-                        <input type="radio" class="fancycheckbox" name="ssl" id="ssl_no" value="0"<?php if (!$account->usesSSL()) echo ' checked'; ?>><label for="ssl_no" style="font-weight: normal;"><?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far') . __('No'); ?></label>
+                        <input type="radio" class="fancy-checkbox" name="ssl" id="ssl_yes" value="1"<?php if ($account->usesSSL()) echo ' checked'; ?>><label for="ssl_yes" style="font-weight: normal;"><?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far') . __('Yes'); ?></label>
+                        <input type="radio" class="fancy-checkbox" name="ssl" id="ssl_no" value="0"<?php if (!$account->usesSSL()) echo ' checked'; ?>><label for="ssl_no" style="font-weight: normal;"><?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far') . __('No'); ?></label>
                     </td>
                 </tr>
                 <tr>
                     <td><label for="account_ignore_certificate_validation_yes"><?php echo __('Ignore certificate errors'); ?></label></td>
                     <td>
-                        <input type="radio" class="fancycheckbox" name="ignore_certificate_validation" id="account_ignore_certificate_validation_yes" value="1"<?php if ($account->doesIgnoreCertificateValidation()) echo ' checked'; ?>><label for="account_ignore_certificate_validation_yes" style="font-weight: normal;"><?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far') . __('Yes'); ?></label>
-                        <input type="radio" class="fancycheckbox" name="ignore_certificate_validation" id="account_ignore_certificate_validation_no" value="0"<?php if (!$account->doesIgnoreCertificateValidation()) echo ' checked'; ?>><label for="account_ignore_certificate_validation_no" style="font-weight: normal;"><?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far') . __('No'); ?></label>
+                        <input type="radio" class="fancy-checkbox" name="ignore_certificate_validation" id="account_ignore_certificate_validation_yes" value="1"<?php if ($account->doesIgnoreCertificateValidation()) echo ' checked'; ?>><label for="account_ignore_certificate_validation_yes" style="font-weight: normal;"><?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far') . __('Yes'); ?></label>
+                        <input type="radio" class="fancy-checkbox" name="ignore_certificate_validation" id="account_ignore_certificate_validation_no" value="0"<?php if (!$account->doesIgnoreCertificateValidation()) echo ' checked'; ?>><label for="account_ignore_certificate_validation_no" style="font-weight: normal;"><?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far') . __('No'); ?></label>
                     </td>
                 </tr>
                 <tr>
@@ -102,8 +102,8 @@
                 <tr>
                     <td><label for="account_keepemail_yes"><?php echo __('Keep email:'); ?></label></td>
                     <td>
-                        <input type="radio" name="keepemail" class="fancycheckbox" id="account_keepemail_yes" value="1"<?php if ($account->doesKeepEmails()) echo ' checked'; ?>><label for="account_keepemail_yes" style="font-weight: normal;"><?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far') . __('Yes'); ?></label>
-                        <input type="radio" name="keepemail" class="fancycheckbox" id="account_keepemail_no" value="0"<?php if (!$account->doesKeepEmails()) echo ' checked'; ?>><label for="account_keepemail_no" style="font-weight: normal;"><?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far') . __('No'); ?></label>
+                        <input type="radio" name="keepemail" class="fancy-checkbox" id="account_keepemail_yes" value="1"<?php if ($account->doesKeepEmails()) echo ' checked'; ?>><label for="account_keepemail_yes" style="font-weight: normal;"><?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far') . __('Yes'); ?></label>
+                        <input type="radio" name="keepemail" class="fancy-checkbox" id="account_keepemail_no" value="0"<?php if (!$account->doesKeepEmails()) echo ' checked'; ?>><label for="account_keepemail_no" style="font-weight: normal;"><?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far') . __('No'); ?></label>
                     </td>
                 </tr>
                 <tr>
@@ -113,8 +113,8 @@
                 <tr>
                     <td><label for="account_ssl"><?php echo __('Prefer HTML content'); ?></label></td>
                     <td>
-                        <input type="radio" class="fancycheckbox" name="prefer_html" id="prefer_html_yes" value="1"<?php if ($account->prefersHtml()) echo ' checked'; ?>><label for="prefer_html_yes" style="font-weight: normal;"><?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far') . __('Yes'); ?></label>
-                        <input type="radio" class="fancycheckbox" name="prefer_html" id="prefer_html_no" value="0"<?php if (!$account->prefersHtml()) echo ' checked'; ?>><label for="prefer_html_no" style="font-weight: normal;"><?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far') . __('No'); ?></label>
+                        <input type="radio" class="fancy-checkbox" name="prefer_html" id="prefer_html_yes" value="1"<?php if ($account->prefersHtml()) echo ' checked'; ?>><label for="prefer_html_yes" style="font-weight: normal;"><?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far') . __('Yes'); ?></label>
+                        <input type="radio" class="fancy-checkbox" name="prefer_html" id="prefer_html_no" value="0"<?php if (!$account->prefersHtml()) echo ' checked'; ?>><label for="prefer_html_no" style="font-weight: normal;"><?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far') . __('No'); ?></label>
                     </td>
                 </tr>
                 <tr>

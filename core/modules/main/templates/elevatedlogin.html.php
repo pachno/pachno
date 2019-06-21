@@ -22,14 +22,14 @@
                         <label for="pachno_password"><?php echo __('Password'); ?></label>
                     </div>
                     <div class="form-row">
-                        <div class="fancydropdown-container">
-                            <div class="fancydropdown">
+                        <div class="fancy-dropdown-container">
+                            <div class="fancy-dropdown">
                                 <label><?php echo __('Keep elevated privileges'); ?></label>
                                 <span class="value"></span>
                                 <?= fa_image_tag('angle-down', ['class' => 'expander']); ?>
                                 <div class="dropdown-container list-mode">
                                     <?php foreach ([5, 10, 15, 30, 60] as $minute): ?>
-                                        <input class="fancycheckbox" type="radio" name="elevation_duration" value="<?= $minute; ?>" id="elevation_duration_<?= $minute; ?>" <?php if ($minute == 30) echo 'checked'; ?>>
+                                        <input class="fancy-checkbox" type="radio" name="elevation_duration" value="<?= $minute; ?>" id="elevation_duration_<?= $minute; ?>" <?php if ($minute == 30) echo 'checked'; ?>>
                                         <label for="elevation_duration_<?= $minute; ?>" class="list-item">
                                             <span class="value name"><?= __('Remember for %minutes minutes', ['%minutes' => $minute]); ?></span>
                                         </label>

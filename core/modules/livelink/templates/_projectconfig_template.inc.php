@@ -31,7 +31,7 @@
                     <span class="description">
                         <?= __('Linking / importing %project_name', ['%project_name' => '<span class="project_name">' . fa_image_tag($connector->getConnector()->getLogo(), ['class' => 'connector_logo'], $connector->getConnector()->getLogoStyle()) . $display_name . '</span>']); ?>
                         <span class="live_import_type">
-                            <input type="checkbox" class="fancycheckbox" checked>
+                            <input type="checkbox" class="fancy-checkbox" checked>
                             <?php if ($input['live_link'] == 'import'): ?>
                                 <label><?= __("Only import the project"); ?></label>
                             <?php elseif ($input['live_link'] == 'simple'): ?>

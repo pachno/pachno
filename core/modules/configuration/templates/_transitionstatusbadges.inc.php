@@ -12,7 +12,7 @@
 
 ?>
 <?php if ($transition->getOutgoingStep() instanceof WorkflowStep && $transition->getOutgoingStep()->getLinkedStatus() instanceof Status): ?>
-    <span class="status-badge" style="background-color: <?php echo $transition->getOutgoingStep()->getLinkedStatus()->getColor(); ?>;">
+    <span class="status-badge" style="background-color: <?php echo $transition->getOutgoingStep()->getLinkedStatus()->getColor(); ?>; color: <?php echo $transition->getOutgoingStep()->getLinkedStatus()->getTextColor(); ?>;">
         <span class="value"><?php echo $transition->getOutgoingStep()->getLinkedStatus()->getName(); ?></span>
     </span>
 <?php elseif (!$transition->hasPostValidationRule(WorkflowTransitionValidationRule::RULE_STATUS_VALID)): ?>
@@ -22,7 +22,7 @@
 <?php else: ?>
     <?php foreach ($statuses as $status): ?>
         <?php if ($transition->getPostValidationRule(WorkflowTransitionValidationRule::RULE_STATUS_VALID)->isValueValid($status)): ?>
-            <span class="status-badge" style="background-color: <?php echo $status->getColor(); ?>;">
+            <span class="status-badge" style="background-color: <?php echo $status->getColor(); ?>; color: <?php echo $status->getTextColor(); ?>;">
                 <span class="value"><?php echo $status->getName(); ?></span>
             </span>
         <?php endif; ?>

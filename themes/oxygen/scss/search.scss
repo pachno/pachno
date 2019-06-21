@@ -6,8 +6,8 @@
   width: 100%;
   flex-direction: column;
 
-  .fancydropdown-container {
-    .fancydropdown {
+  .fancy-dropdown-container {
+    .fancy-dropdown {
       background: rgb(255, 255, 255);
       border-color: rgba(200, 200, 200, .3);
       &:hover {
@@ -77,7 +77,7 @@
     transform: scaleX(1);
     transform-origin: right;
 
-    .fancydropdown-container {
+    .fancy-dropdown-container {
       margin-right: .35rem;
     }
 

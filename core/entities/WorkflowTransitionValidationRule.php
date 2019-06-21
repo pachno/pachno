@@ -62,7 +62,7 @@
         /**
          * The connected transition
          *
-         * @var \pachno\core\entities\WorkflowTransition
+         * @var WorkflowTransition
          * @Column(type="integer", length=10)
          * @Relates(class="\pachno\core\entities\WorkflowTransition")
          */
@@ -71,7 +71,7 @@
         /**
          * The associated workflow object
          *
-         * @var \pachno\core\entities\Workflow
+         * @var Workflow
          * @Column(type="integer", length=10)
          * @Relates(class="\pachno\core\entities\Workflow")
          */
@@ -114,23 +114,26 @@
         /**
          * Return the workflow
          *
-         * @return \pachno\core\entities\Workflow
+         * @return Workflow
          */
         public function getWorkflow()
         {
             return $this->_b2dbLazyLoad('_workflow_id');
         }
 
-        public function setWorkflow(\pachno\core\entities\Workflow $workflow)
+        public function setWorkflow(Workflow $workflow)
         {
             $this->_workflow_id = $workflow;
         }
 
-        public function setTransition(\pachno\core\entities\WorkflowTransition $transition)
+        public function setTransition(WorkflowTransition $transition)
         {
             $this->_transition_id = $transition;
         }
 
+        /**
+         * @return WorkflowTransition
+         */
         public function getTransition()
         {
             return $this->_b2dbLazyLoad('_transition_id');

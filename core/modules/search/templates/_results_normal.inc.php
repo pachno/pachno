@@ -61,7 +61,7 @@ $current_spent_time = $current_estimated_time;
             <div class="row header">
                 <div class="column header invisible info-icons"></div>
                 <?php if (!$pachno_user->isGuest() && $actionable): ?>
-                    <div class="column header nosort sca_action_selector"><input type="checkbox" id="results_issue_all_checkbox" class="fancycheckbox"><label for="results_issue_all_checkbox"><?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far'); ?></label></div>
+                    <div class="column header nosort sca_action_selector"><input type="checkbox" id="results_issue_all_checkbox" class="fancy-checkbox"><label for="results_issue_all_checkbox"><?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far'); ?></label></div>
                 <?php endif; ?>
                 <?php if (!Context::isProjectContext() && $show_project == true): ?>
                     <div class="column header"><?php echo __('Project'); ?></div>
@@ -107,7 +107,7 @@ $current_spent_time = $current_estimated_time;
         <?php if (!$pachno_user->isGuest() && $actionable): ?>
             <div class="column sca_actions">
                 <?php if ($issue->isWorkflowTransitionsAvailable()): ?>
-                    <input type="checkbox" class="fancycheckbox" name="update_issue[<?php echo $issue->getID(); ?>]" value="<?php echo $issue->getID(); ?>" id="update_issue_<?= $issue->getID(); ?>_checkbox"><label for="update_issue_<?= $issue->getID(); ?>_checkbox"><?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far'); ?></label>
+                    <input type="checkbox" class="fancy-checkbox" name="update_issue[<?php echo $issue->getID(); ?>]" value="<?php echo $issue->getID(); ?>" id="update_issue_<?= $issue->getID(); ?>_checkbox"><label for="update_issue_<?= $issue->getID(); ?>_checkbox"><?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far'); ?></label>
                 <?php endif; ?>
             </div>
         <?php endif; ?>

@@ -51,7 +51,7 @@
     <?php if ($include_buttons): ?>
         <div class="actions-container">
             <?php if ($milestone->getID()): ?>
-                <input type="checkbox" class="fancycheckbox" name="show_issues" id="milestone-<?= $milestone->getId(); ?>-show-issues-checkbox" onchange="Pachno.Project.Planning.toggleMilestoneIssues(<?= $milestone->getID(); ?>);">
+                <input type="checkbox" class="fancy-checkbox" name="show_issues" id="milestone-<?= $milestone->getId(); ?>-show-issues-checkbox" onchange="Pachno.Project.Planning.toggleMilestoneIssues(<?= $milestone->getID(); ?>);">
                 <label class="button secondary toggle-issues" for="milestone-<?= $milestone->getId(); ?>-show-issues-checkbox">
                     <span class="icon indicator"><?= fa_image_tag('spinner', ['class' => 'fa-spin']); ?></span>
                     <span class="icon"><?= fa_image_tag('toggle-on', ['class' => 'checked']) . fa_image_tag('toggle-off', ['class' => 'unchecked']); ?></span>

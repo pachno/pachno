@@ -17,7 +17,7 @@
     <?php endif; ?>
     <div id="project_settings_container" class="project_info_container">
         <?php if (!isset($selected_tab)) $selected_tab = 'info'; ?>
-        <div class="fancytabs" id="project_config_menu">
+        <div class="fancy-tabs" id="project_config_menu">
             <a id="tab_information" href="javascript:void(0);" onclick="Pachno.Main.Helpers.tabSwitcher('tab_information', 'project_config_menu');return false;" class="tab <?php if ($selected_tab == 'info') echo 'selected'; ?>">
                 <?= fa_image_tag('edit', ['class' => 'icon'], 'far'); ?>
                 <span class="name"><?= __('Project details'); ?></span>

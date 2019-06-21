@@ -468,8 +468,8 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
             $('fullpage_backdrop_content').observe('click', Pachno.Core._resizeWatcher);
             document.observe('keydown', Pachno.Core._escapeWatcher);
 
-            jQuery('body').on('change', '.fancydropdown input[type=checkbox]', Pachno.Main.updateFancyDropdownValues);
-            jQuery('body').on('change', '.fancydropdown input[type=radio]', Pachno.Main.updateFancyDropdownValues);
+            jQuery('body').on('change', '.fancy-dropdown input[type=checkbox]', Pachno.Main.updateFancyDropdownValues);
+            jQuery('body').on('change', '.fancy-dropdown input[type=radio]', Pachno.Main.updateFancyDropdownValues);
             Pachno.Main.updateWidgets();
 
             Pachno.Core.Pollers.Callbacks.dataPoller();
@@ -1583,7 +1583,7 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
                 jQuery(this).removeClass('active');
             });
 
-            jQuery('.fancydropdown.active').each(function () {
+            jQuery('.fancy-dropdown.active').each(function () {
                 jQuery(this).removeClass('active');
             });
         };
@@ -3857,7 +3857,7 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
             event.stopImmediatePropagation();
             event.preventDefault();
             console.log('updating labels');
-            var $dropdown = jQuery(this).closest('.fancydropdown');
+            var $dropdown = jQuery(this).closest('.fancy-dropdown');
             Pachno.Main.updateFancyDropdownLabel($dropdown);
         };
 
@@ -3867,7 +3867,7 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
                     var $img = jQuery(this);
                     $img.attr('src', $img.data('src')).data('src-processed', true);
                 });
-                jQuery('.fancydropdown').each(function () {
+                jQuery('.fancy-dropdown').each(function () {
                     Pachno.Main.updateFancyDropdownLabel(jQuery(this));
                 });
 
@@ -7270,7 +7270,7 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
             let $body = jQuery('body');
             $body.on('change', 'input[type=radio].bulk-action-checkbox', Pachno.Search.bulkContainerChanger);
 
-            $body.on('change', '.filter .fancydropdown input[type=checkbox],.filter .fancydropdown input[type=radio]', function () {
+            $body.on('change', '.filter .fancy-dropdown input[type=checkbox],.filter .fancy-dropdown input[type=radio]', function () {
                 var filter = jQuery(this);
                 // if (jQuery('.filter_' + filter.data('filterkey'), filter).length) {
                 //     jQuery('.filter_' + filter.data('filterkey'), filter).data('dirty', 'dirty');

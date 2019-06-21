@@ -30,7 +30,7 @@
                 </span>
             </div>
         <?php endif; ?>
-        <div class="fancytabs" id="modules_menu">
+        <div class="fancy-tabs" id="modules_menu">
             <a id="tab_installed" class="tab selected"><?= javascript_link_tag(image_tag('spinning_16.gif', array('id' => 'installed_modules_indicator', 'style' => 'display: none;')).__('Installed modules (%count)', array('%count' => count($modules))), array('onclick' => "Pachno.Main.Helpers.tabSwitcher('tab_installed', 'modules_menu');")); ?></a>
             <a id="tab_uninstalled" class="tab"><?= javascript_link_tag(__('Installable local modules (%count)', array('%count' => count($uninstalled_modules))), array('onclick' => "Pachno.Main.Helpers.tabSwitcher('tab_uninstalled', 'modules_menu');")); ?></a>
             <?php if ($is_default_scope): ?>

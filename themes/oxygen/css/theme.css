@@ -4586,7 +4586,7 @@ h3 .dropdown_box a, h3 .dropdown_box a:hover {
   font-size: 1em;
   color: #AAA; }
 
-.whiteboard.edit-mode .search-strip .fancydropdown-container, .whiteboard.edit-mode .settings-dropper, .whiteboard.edit-mode .whiteboard-view-mode, .whiteboard.edit-mode input[type=search] {
+.whiteboard.edit-mode .search-strip .fancy-dropdown-container, .whiteboard.edit-mode .settings-dropper, .whiteboard.edit-mode .whiteboard-view-mode, .whiteboard.edit-mode input[type=search] {
   display: none; }
 
 .whiteboard .edit-mode-buttons, .whiteboard #planning_whiteboard_columns_form, .whiteboard.edit-mode #whiteboard {
@@ -8371,58 +8371,58 @@ input.icon.secondary:disabled {
       .dropper-container .dropper.active + .dropdown-container.from-center {
         transform: scaleY(1) translateX(-50%); }
 
-.fancycheckbox {
+.fancy-checkbox {
   display: none; }
-  .fancycheckbox + label {
+  .fancy-checkbox + label {
     display: inline-block;
     color: #555;
     transition: color .2s ease-in-out; }
-  .fancycheckbox + label .fas.unchecked,
-  .fancycheckbox + label .far.unchecked,
-  .fancycheckbox + .list-item .fas.unchecked,
-  .fancycheckbox + .list-item .far.unchecked {
+  .fancy-checkbox + label .fas.unchecked,
+  .fancy-checkbox + label .far.unchecked,
+  .fancy-checkbox + .list-item .fas.unchecked,
+  .fancy-checkbox + .list-item .far.unchecked {
     display: inline-block;
     margin-right: .3em; }
-  .fancycheckbox + label .fas.checked,
-  .fancycheckbox + label .far.checked,
-  .fancycheckbox + .list-item .fas.checked,
-  .fancycheckbox + .list-item .far.checked {
+  .fancy-checkbox + label .fas.checked,
+  .fancy-checkbox + label .far.checked,
+  .fancy-checkbox + .list-item .fas.checked,
+  .fancy-checkbox + .list-item .far.checked {
     display: none; }
-  .fancycheckbox:disabled + label,
-  .fancycheckbox:disabled + .list-item {
+  .fancy-checkbox:disabled + label,
+  .fancy-checkbox:disabled + .list-item {
     color: #DDD; }
-  .fancycheckbox:checked:not(:disabled) + label {
+  .fancy-checkbox:checked:not(:disabled) + label {
     color: #88AB75; }
-  .fancycheckbox:checked:not(:disabled) + .list-item:not(.toggler),
-  .fancycheckbox:checked:not(:disabled) + .list-item:not(.toggler):hover {
+  .fancy-checkbox:checked:not(:disabled) + .list-item:not(.toggler),
+  .fancy-checkbox:checked:not(:disabled) + .list-item:not(.toggler):hover {
     background-color: #0C8990;
     color: #FFF; }
-    .fancycheckbox:checked:not(:disabled) + .list-item:not(.toggler) .icon,
-    .fancycheckbox:checked:not(:disabled) + .list-item:not(.toggler):hover .icon {
+    .fancy-checkbox:checked:not(:disabled) + .list-item:not(.toggler) .icon,
+    .fancy-checkbox:checked:not(:disabled) + .list-item:not(.toggler):hover .icon {
       color: #FFF; }
-  .fancycheckbox:checked:not(:disabled) + .list-item.toggler {
+  .fancy-checkbox:checked:not(:disabled) + .list-item.toggler {
     color: #141823; }
-    .fancycheckbox:checked:not(:disabled) + .list-item.toggler .icon {
+    .fancy-checkbox:checked:not(:disabled) + .list-item.toggler .icon {
       color: #0C8990; }
-  .fancycheckbox:checked:not(:disabled) + label .fas.checked,
-  .fancycheckbox:checked:not(:disabled) + label .far.checked,
-  .fancycheckbox:checked:not(:disabled) + .list-item .fas.checked,
-  .fancycheckbox:checked:not(:disabled) + .list-item .far.checked {
+  .fancy-checkbox:checked:not(:disabled) + label .fas.checked,
+  .fancy-checkbox:checked:not(:disabled) + label .far.checked,
+  .fancy-checkbox:checked:not(:disabled) + .list-item .fas.checked,
+  .fancy-checkbox:checked:not(:disabled) + .list-item .far.checked {
     display: inline-block;
     margin-right: .3em; }
-  .fancycheckbox:checked:not(:disabled) + label .fas.unchecked,
-  .fancycheckbox:checked:not(:disabled) + label .far.unchecked,
-  .fancycheckbox:checked:not(:disabled) + .list-item .fas.unchecked,
-  .fancycheckbox:checked:not(:disabled) + .list-item .far.unchecked {
+  .fancy-checkbox:checked:not(:disabled) + label .fas.unchecked,
+  .fancy-checkbox:checked:not(:disabled) + label .far.unchecked,
+  .fancy-checkbox:checked:not(:disabled) + .list-item .fas.unchecked,
+  .fancy-checkbox:checked:not(:disabled) + .list-item .far.unchecked {
     display: none; }
-  .fancycheckbox:focus + label {
+  .fancy-checkbox:focus + label {
     color: #558; }
 
-.fancydropdown-container {
+.fancy-dropdown-container {
   display: flex;
   flex-direction: column;
   position: relative; }
-  .fancydropdown-container .fancydropdown {
+  .fancy-dropdown-container .fancy-dropdown {
     display: flex;
     align-items: center;
     position: relative;
@@ -8434,15 +8434,15 @@ input.icon.secondary:disabled {
     border-radius: 4px;
     color: #141823;
     background: rgba(200, 200, 200, 0.1); }
-    .fancydropdown-container .fancydropdown:hover {
+    .fancy-dropdown-container .fancy-dropdown:hover {
       background: rgba(200, 200, 200, 0.3);
       cursor: pointer; }
-    .fancydropdown-container .fancydropdown:focus {
+    .fancy-dropdown-container .fancy-dropdown:focus {
       border-color: #0C8990; }
-    .fancydropdown-container .fancydropdown.active {
+    .fancy-dropdown-container .fancy-dropdown.active {
       background-color: rgba(200, 200, 200, 0.3); }
-    .fancydropdown-container .fancydropdown .expander,
-    .fancydropdown-container .fancydropdown .fas.expander {
+    .fancy-dropdown-container .fancy-dropdown .expander,
+    .fancy-dropdown-container .fancy-dropdown .fas.expander {
       flex: 0 0 40px;
       box-sizing: border-box;
       transform: rotate(0);
@@ -8450,33 +8450,33 @@ input.icon.secondary:disabled {
       padding: 0 10px;
       text-align: center;
       transition: transform .25s ease-in-out; }
-    .fancydropdown-container .fancydropdown > label {
+    .fancy-dropdown-container .fancy-dropdown > label {
       flex: 0 0 auto;
       font-weight: 300;
       font-size: .9em;
       text-transform: uppercase;
       margin-right: .5em; }
-    .fancydropdown-container .fancydropdown > .value {
+    .fancy-dropdown-container .fancy-dropdown > .value {
       flex: 1 1 auto;
       white-space: nowrap;
       text-overflow: ellipsis;
       overflow: hidden;
       max-width: 250px;
       min-width: 100px; }
-    .fancydropdown-container .fancydropdown.no-value > .value {
+    .fancy-dropdown-container .fancy-dropdown.no-value > .value {
       color: #C8C8C8; }
-    .fancydropdown-container .fancydropdown .fas {
+    .fancy-dropdown-container .fancy-dropdown .fas {
       flex: 0 0 auto;
       font-size: 1em; }
-    .fancydropdown-container .fancydropdown .remove-button {
+    .fancy-dropdown-container .fancy-dropdown .remove-button {
       border-left: 1px solid rgba(100, 100, 100, 0.2);
       transition: background-color 0.3s ease;
       padding: 0 8px; }
-      .fancydropdown-container .fancydropdown .remove-button:hover {
+      .fancy-dropdown-container .fancy-dropdown .remove-button:hover {
         border-color: rgba(100, 100, 100, 0.4);
         background-color: rgba(250, 0, 0, 0.2);
         cursor: pointer; }
-    .fancydropdown-container .fancydropdown .dropdown-container {
+    .fancy-dropdown-container .fancy-dropdown .dropdown-container {
       list-style: none;
       font-size: 1em;
       display: flex;
@@ -8498,27 +8498,27 @@ input.icon.secondary:disabled {
       min-width: 100%;
       top: calc(100% + 3px);
       right: 0; }
-      .fancydropdown-container .fancydropdown .dropdown-container.list-mode,
-      .fancydropdown-container .fancydropdown .dropdown-container .list-mode {
+      .fancy-dropdown-container .fancy-dropdown .dropdown-container.list-mode,
+      .fancy-dropdown-container .fancy-dropdown .dropdown-container .list-mode {
         max-height: 450px;
         overflow-y: auto;
         overflow-x: hidden; }
-        .fancydropdown-container .fancydropdown .dropdown-container.list-mode .list-item.multiline span.name,
-        .fancydropdown-container .fancydropdown .dropdown-container .list-mode .list-item.multiline span.name {
+        .fancy-dropdown-container .fancy-dropdown .dropdown-container.list-mode .list-item.multiline span.name,
+        .fancy-dropdown-container .fancy-dropdown .dropdown-container .list-mode .list-item.multiline span.name {
           max-width: none; }
-      .fancydropdown-container .fancydropdown .dropdown-container.from-left {
+      .fancy-dropdown-container .fancy-dropdown .dropdown-container.from-left {
         right: auto;
         left: 0; }
-      .fancydropdown-container .fancydropdown .dropdown-container.from-bottom {
+      .fancy-dropdown-container .fancy-dropdown .dropdown-container.from-bottom {
         top: auto;
         bottom: calc(100% + 3px); }
-    .fancydropdown-container .fancydropdown.active .dropdown-container {
+    .fancy-dropdown-container .fancy-dropdown.active .dropdown-container {
       transform: scaleY(1);
       opacity: 1; }
-    .fancydropdown-container .fancydropdown.active .expander {
+    .fancy-dropdown-container .fancy-dropdown.active .expander {
       transform: rotate(180deg); }
 
-.fancytabs {
+.fancy-tabs {
   display: flex;
   flex-direction: row;
   justify-content: center;
@@ -8529,7 +8529,7 @@ input.icon.secondary:disabled {
   padding: .5rem 0;
   overflow-x: auto; }
 
-.fancytabs .tab {
+.fancy-tabs .tab {
   padding: 1rem;
   font-size: .85rem;
   font-weight: 600;
@@ -8544,29 +8544,29 @@ input.icon.secondary:disabled {
   flex-wrap: nowrap;
   max-width: 200px; }
 
-.fancytabs .spacer {
+.fancy-tabs .spacer {
   flex: 1 1 auto; }
 
-.fancytabs .button-container {
+.fancy-tabs .button-container {
   flex: 0 0 auto;
   align-items: center;
   display: flex;
   justify-content: flex-end; }
 
-.fancytabs .tab .name {
+.fancy-tabs .tab .name {
   flex: 1 1 auto;
   white-space: normal;
   line-height: 1.2em; }
 
-.fancytabs .tab .icon {
+.fancy-tabs .tab .icon {
   flex: 0 0 auto;
   margin-right: .6em;
   font-size: .95em; }
 
-.fancytabs .tab.selected {
+.fancy-tabs .tab.selected {
   color: #ffaa00; }
 
-.fancytabs .tab.selected::after {
+.fancy-tabs .tab.selected::after {
   content: '';
   display: block;
   width: 50%;
@@ -8642,6 +8642,7 @@ input.icon.secondary:disabled {
     font-size: .85rem;
     text-transform: none;
     white-space: nowrap;
+    min-width: 250px;
     transition: color .25s ease-in-out, background-color .25s ease-in-out; }
     .list-mode .list-item.disabled,
     .list-mode .list-item:hover.disabled {
@@ -8804,7 +8805,7 @@ input.icon.secondary:disabled {
       .list-mode .list-item:hover > a:not(.icon),
       .list-mode .list-item:hover > a:hover:not(.icon) {
         flex: 1 1 auto; }
-  .list-mode .fancycheckbox:checked + .list-item:not(.disabled):not(.not-selectable):not(.separator):not(.header):not(.filter-container):hover {
+  .list-mode .fancy-checkbox:checked + .list-item:not(.disabled):not(.not-selectable):not(.separator):not(.header):not(.filter-container):hover {
     background-color: #0C8990;
     color: #FFF; }
 
@@ -9090,7 +9091,8 @@ input.icon.secondary:disabled {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
-    align-items: center; }
+    align-items: center;
+    width: 100%; }
     .form-container form .submit-indicator {
       opacity: 0;
       transition: opacity .25s ease-in-out; }
@@ -9269,24 +9271,24 @@ input.icon.secondary:disabled {
       padding: .3em .7em;
       border-radius: 4px;
       color: #141823; }
-    .form-container .form-row > .fancydropdown-container {
+    .form-container .form-row > .fancy-dropdown-container {
       flex: 1 1 100%; }
-      .form-container .form-row > .fancydropdown-container .fancydropdown > .value {
+      .form-container .form-row > .fancy-dropdown-container .fancy-dropdown > .value {
         flex: 1 1 auto;
         max-width: none; }
-      .form-container .form-row > .fancydropdown-container .fancydropdown.embedded {
+      .form-container .form-row > .fancy-dropdown-container .fancy-dropdown.embedded {
         background: white;
         border-color: rgba(200, 200, 200, 0.3); }
-        .form-container .form-row > .fancydropdown-container .fancydropdown.embedded:hover {
+        .form-container .form-row > .fancy-dropdown-container .fancy-dropdown.embedded:hover {
           border-color: #0C8990;
           cursor: pointer; }
-        .form-container .form-row > .fancydropdown-container .fancydropdown.embedded.active {
+        .form-container .form-row > .fancy-dropdown-container .fancy-dropdown.embedded.active {
           border-color: #0C8990; }
-      .form-container .form-row > .fancydropdown-container .fancydropdown.invisible:not(.embedded) {
+      .form-container .form-row > .fancy-dropdown-container .fancy-dropdown.invisible:not(.embedded) {
         background-color: transparent; }
-        .form-container .form-row > .fancydropdown-container .fancydropdown.invisible:not(.embedded):hover {
+        .form-container .form-row > .fancy-dropdown-container .fancy-dropdown.invisible:not(.embedded):hover {
           background-color: rgba(225, 225, 225, 0.2); }
-      .form-container .form-row > .fancydropdown-container .fancydropdown.invisible.active, .form-container .form-row > .fancydropdown-container .fancydropdown.invisible.active:hover {
+      .form-container .form-row > .fancy-dropdown-container .fancy-dropdown.invisible.active, .form-container .form-row > .fancy-dropdown-container .fancy-dropdown.invisible.active:hover {
         border: 2px solid #0C8990; }
 
 .content-with-sidebar {
@@ -9378,13 +9380,13 @@ nav.sidebar {
   display: flex;
   width: 100%;
   flex-direction: column; }
-  #find_issues .fancydropdown-container .fancydropdown {
+  #find_issues .fancy-dropdown-container .fancy-dropdown {
     background: white;
     border-color: rgba(200, 200, 200, 0.3); }
-    #find_issues .fancydropdown-container .fancydropdown:hover {
+    #find_issues .fancy-dropdown-container .fancy-dropdown:hover {
       border-color: #0C8990;
       cursor: pointer; }
-    #find_issues .fancydropdown-container .fancydropdown.active {
+    #find_issues .fancy-dropdown-container .fancy-dropdown.active {
       border-color: #0C8990; }
   #find_issues .results_header {
     font-weight: 600;
@@ -9431,7 +9433,7 @@ nav.sidebar {
     display: flex;
     transform: scaleX(1);
     transform-origin: right; }
-    .bulk-action-container .search-bulk-actions .fancydropdown-container {
+    .bulk-action-container .search-bulk-actions .fancy-dropdown-container {
       margin-right: .35rem; }
     .bulk-action-container .search-bulk-actions.unavailable {
       opacity: 0;
@@ -10002,13 +10004,13 @@ textarea.markItUpEditor:focus {
   top: 5px;
   right: 5px;
   position: absolute; }
-  .syntax_picker_container .fancydropdown-container .fancydropdown {
+  .syntax_picker_container .fancy-dropdown-container .fancy-dropdown {
     background: white;
     border-color: rgba(200, 200, 200, 0.3); }
-    .syntax_picker_container .fancydropdown-container .fancydropdown:hover {
+    .syntax_picker_container .fancy-dropdown-container .fancy-dropdown:hover {
       border-color: #0C8990;
       cursor: pointer; }
-    .syntax_picker_container .fancydropdown-container .fancydropdown.active {
+    .syntax_picker_container .fancy-dropdown-container .fancy-dropdown.active {
       border-color: #0C8990; }
 
 .markItUpHeader {
@@ -10267,13 +10269,13 @@ textarea.markItUpEditor:focus {
 .boards-container {
   display: flex;
   flex-direction: column; }
-  .boards-container .fancydropdown-container .fancydropdown {
+  .boards-container .fancy-dropdown-container .fancy-dropdown {
     background: white;
     border-color: rgba(200, 200, 200, 0.3); }
-    .boards-container .fancydropdown-container .fancydropdown:hover {
+    .boards-container .fancy-dropdown-container .fancy-dropdown:hover {
       border-color: #0C8990;
       cursor: pointer; }
-    .boards-container .fancydropdown-container .fancydropdown.active {
+    .boards-container .fancy-dropdown-container .fancy-dropdown.active {
       border-color: #0C8990; }
 
 .project-boards-list-container {
@@ -10425,9 +10427,9 @@ textarea.markItUpEditor:focus {
         font-size: 1.1em;
         padding: 5px;
         margin-right: 33%; }
-      .whiteboard-columns-container .whiteboard-columns .edit-column .form-container .form-row > .fancydropdown-container {
+      .whiteboard-columns-container .whiteboard-columns .edit-column .form-container .form-row > .fancy-dropdown-container {
         flex: 1 1 100%; }
-        .whiteboard-columns-container .whiteboard-columns .edit-column .form-container .form-row > .fancydropdown-container .fancydropdown > .value {
+        .whiteboard-columns-container .whiteboard-columns .edit-column .form-container .form-row > .fancy-dropdown-container .fancy-dropdown > .value {
           max-width: 200px; }
       .whiteboard-columns-container .whiteboard-columns .edit-column p {
         margin: 15px 0 10px; }
@@ -11231,11 +11233,11 @@ textarea.markItUpEditor:focus {
       display: flex;
       align-items: center;
       position: relative; }
-      .viewissue-container .issue-card .fields-list > li .fancydropdown-container .fancydropdown {
+      .viewissue-container .issue-card .fields-list > li .fancy-dropdown-container .fancy-dropdown {
         background-color: transparent; }
-        .viewissue-container .issue-card .fields-list > li .fancydropdown-container .fancydropdown:hover {
+        .viewissue-container .issue-card .fields-list > li .fancy-dropdown-container .fancy-dropdown:hover {
           background-color: rgba(200, 200, 200, 0.1); }
-        .viewissue-container .issue-card .fields-list > li .fancydropdown-container .fancydropdown > label {
+        .viewissue-container .issue-card .fields-list > li .fancy-dropdown-container .fancy-dropdown > label {
           font-weight: 600;
           flex: 0 1 140px;
           text-transform: none;
@@ -11271,7 +11273,7 @@ textarea.markItUpEditor:focus {
             flex: 1 1 auto; }
           .viewissue-container .issue-card .fields-list > li > .value .value-container .dropdown-indicator {
             flex: 0 0 24; }
-  .viewissue-container .issue-card .fancytabs {
+  .viewissue-container .issue-card .fancy-tabs {
     flex: 0 0 auto;
     align-self: flex-end; }
   .viewissue-container .issue-card .fancypanes {
@@ -12016,16 +12018,16 @@ dl.info {
   .configuration-container > .form-container,
   .configuration-container > .configuration-content > .form-container {
     max-width: 750px; }
-    .configuration-container > .form-container .fancydropdown-container .fancydropdown,
-    .configuration-container > .configuration-content > .form-container .fancydropdown-container .fancydropdown {
+    .configuration-container > .form-container .fancy-dropdown-container .fancy-dropdown,
+    .configuration-container > .configuration-content > .form-container .fancy-dropdown-container .fancy-dropdown {
       background: white;
       border-color: rgba(200, 200, 200, 0.3); }
-      .configuration-container > .form-container .fancydropdown-container .fancydropdown:hover,
-      .configuration-container > .configuration-content > .form-container .fancydropdown-container .fancydropdown:hover {
+      .configuration-container > .form-container .fancy-dropdown-container .fancy-dropdown:hover,
+      .configuration-container > .configuration-content > .form-container .fancy-dropdown-container .fancy-dropdown:hover {
         border-color: #0C8990;
         cursor: pointer; }
-      .configuration-container > .form-container .fancydropdown-container .fancydropdown.active,
-      .configuration-container > .configuration-content > .form-container .fancydropdown-container .fancydropdown.active {
+      .configuration-container > .form-container .fancy-dropdown-container .fancy-dropdown.active,
+      .configuration-container > .configuration-content > .form-container .fancy-dropdown-container .fancy-dropdown.active {
         border-color: #0C8990; }
     .configuration-container > .form-container input[type=search],
     .configuration-container > .form-container input[type=text],
@@ -12216,6 +12218,9 @@ dl.info {
   flex-direction: column;
   align-items: stretch;
   justify-content: center; }
+  .configurable-components-list:empty:before {
+    content: attr(data-placeholder);
+    color: #888; }
   .configurable-components-list + .configurable-components-list {
     margin-top: .75rem;
     border-top: 1px solid rgba(200, 200, 200, 0.8);
@@ -12256,8 +12261,9 @@ dl.info {
     .configurable-component.active > .row > .icon.open:hover {
       background-color: transparent;
       color: #FFF; }
-  .configurable-component.issue-field .row, .configurable-component.workflow-transition .row {
-    flex-wrap: nowrap; }
+  .configurable-component.issue-field .row, .configurable-component.workflow-transition .row, .configurable-component.workflow-transition-validation-rule .row {
+    flex-wrap: nowrap;
+    overflow: visible; }
   .configurable-component > form > .row,
   .configurable-component > .row {
     flex: 0 0 auto;
@@ -12608,3 +12614,5 @@ dl.info {
 /* workflow styling */
 /* end workflow styling */
 /* end config styling */
+
+/*# sourceMappingURL=theme.css.map */

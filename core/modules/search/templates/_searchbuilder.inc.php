@@ -22,7 +22,7 @@
                             </div>
                             <div class="interactive_menu_values">
                                 <?php foreach ($columns as $c_key => $c_name): ?>
-                                    <input id="search_column_<?= $c_key; ?>_toggler_checkbox" type="checkbox" value="<?= $c_key; ?>" name="columns[<?= $c_key; ?>]" class="fancycheckbox">
+                                    <input id="search_column_<?= $c_key; ?>_toggler_checkbox" type="checkbox" value="<?= $c_key; ?>" name="columns[<?= $c_key; ?>]" class="fancy-checkbox">
                                     <label for="search_column_<?= $c_key; ?>_toggler_checkbox" data-value="<?= $c_key; ?>" class="list-item search_column filtervalue scs_<?= $c_key; ?>">
                                         <?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far'); ?>
                                         <span class="name value"><?= $c_name; ?></span>
@@ -44,7 +44,7 @@
                         <div class="column">
                             <div class="header"><?= __('Select how to present search results'); ?></div>
                             <?php foreach ($templates as $template_name => $template_details): ?>
-                                <input type="radio" name="template" id="filter_selected_template_<?= $template_name; ?>" value="<?= $search_object->getTemplateName(); ?>" class="fancycheckbox" <?php if ($template_name == $search_object->getTemplateName()) echo 'checked'; ?>>
+                                <input type="radio" name="template" id="filter_selected_template_<?= $template_name; ?>" value="<?= $search_object->getTemplateName(); ?>" class="fancy-checkbox" <?php if ($template_name == $search_object->getTemplateName()) echo 'checked'; ?>>
                                 <label for="filter_selected_template_<?= $template_name; ?>" class="list-item multiline" data-template-name="<?= $template_name; ?>" data-parameter="<?= (int) $template_details['parameter']; ?>" data-parameter-text="<?= ($template_details['parameter']) ? __e($template_details['parameter_text']) : ''; ?>">
                                     <?= fa_image_tag('check-circle', ['class' => 'checked icon'], 'far') . fa_image_tag('circle', ['class' => 'unchecked icon'], 'far'); ?>
                                     <span class="name">
@@ -81,20 +81,20 @@
                             </div>
                             <div id="filter_grouping_options">
                                 <?php foreach (array('asc' => __('Ascending'), 'desc' => __('Descending')) as $dir => $dir_desc): ?>
-                                    <input type="radio" class="fancycheckbox" value="<?= $dir; ?>" name="grouporder" id="search_grouping_grouporder_<?= $dir; ?>" <?php if ($search_object->getGrouporder() == $dir) echo 'checked'; ?>>
+                                    <input type="radio" class="fancy-checkbox" value="<?= $dir; ?>" name="grouporder" id="search_grouping_grouporder_<?= $dir; ?>" <?php if ($search_object->getGrouporder() == $dir) echo 'checked'; ?>>
                                     <label data-sort-order="<?= $dir; ?>" for="search_grouping_grouporder_<?= $dir; ?>" class="list-item filtervalue sticky" style="<?php if (!$search_object->getGroupby()) echo 'display: none;'; ?>">
                                         <?= fa_image_tag('check-circle', ['class' => 'checked'], 'far') . fa_image_tag('circle', ['class' => 'unchecked'], 'far'); ?>
                                         <span class="name value"><?= $dir_desc; ?></span>
                                     </label>
                                 <?php endforeach; ?>
                                 <div class="separator"></div>
-                                <input type="radio" value="" name="groupby" class="fancycheckbox" id="search_grouping_none" <?php if (!$search_object->getGroupby()) echo 'checked'; ?>>
+                                <input type="radio" value="" name="groupby" class="fancy-checkbox" id="search_grouping_none" <?php if (!$search_object->getGroupby()) echo 'checked'; ?>>
                                 <label for="search_grouping_none" data-groupby="" class="list-item groupby filtervalue">
                                     <?= fa_image_tag('check-circle', ['class' => 'checked'], 'far') . fa_image_tag('circle', ['class' => 'unchecked'], 'far'); ?>
                                     <span class="name"><?= __('No grouping'); ?></span>
                                 </label>
                                 <?php foreach ($groupoptions as $grouping => $group_desc): ?>
-                                    <input type="radio" value="<?= $grouping; ?>" name="groupby" class="fancycheckbox" id="search_grouping_groupby_<?= $grouping; ?>" <?php if ($search_object->getGroupby() == $grouping) echo 'checked'; ?>>
+                                    <input type="radio" value="<?= $grouping; ?>" name="groupby" class="fancy-checkbox" id="search_grouping_groupby_<?= $grouping; ?>" <?php if ($search_object->getGroupby() == $grouping) echo 'checked'; ?>>
                                     <label for="search_grouping_groupby_<?= $grouping; ?>" data-groupby="<?= $grouping; ?>" class="list-item groupby filtervalue">
                                         <?= fa_image_tag('check-circle', ['class' => 'checked'], 'far') . fa_image_tag('circle', ['class' => 'unchecked'], 'far'); ?>
                                         <span class="name"><?= $group_desc; ?></span>

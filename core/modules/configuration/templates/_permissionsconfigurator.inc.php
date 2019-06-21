@@ -1,4 +1,4 @@
-<div class="fancytabs" id="permissions_<?php echo $mode; ?>_<?php echo $base_id; ?>_tabs">
+<div class="fancy-tabs" id="permissions_<?php echo $mode; ?>_<?php echo $base_id; ?>_tabs">
     <a class="tab selected" id="<?php echo $mode.'_'.$base_id; ?>_tab_general" onclick="Pachno.Main.Helpers.tabSwitcher('<?php echo $mode.'_'.$base_id; ?>_tab_general', 'permissions_<?php echo $mode.'_'.$base_id; ?>_tabs');" href="javascript:void(0);">
         <span class="name"><?php echo __('General permissions'); ?></span>
     </a>
