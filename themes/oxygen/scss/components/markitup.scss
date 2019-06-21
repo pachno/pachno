@@ -33,8 +33,13 @@ textarea.markItUpEditor:focus {
   overflow: auto;
   display: block;
   font-family: 'Fira Mono', monospace;
-  border: 2px solid #0C8990;
   border-radius: 0 0 4px 4px;
+  border: 2px solid rgba(200, 200, 200, 0.3);
+  transition: border-color .25s ease-in-out;
+
+  &:focus {
+    border-color: #0C8990;
+  }
 }
 
 .markItUpPreviewFrame {

@@ -8518,6 +8518,41 @@ input.icon.secondary:disabled {
     .fancy-dropdown-container .fancy-dropdown.active .expander {
       transform: rotate(180deg); }
 
+.fancy-label-select {
+  display: inline-flex;
+  align-items: center;
+  flex-direction: row;
+  border: 2px solid #0C8990;
+  background-color: #FFF;
+  color: #0C8990;
+  border-radius: 4px; }
+  .fancy-label-select input {
+    display: none; }
+    .fancy-label-select input:disabled + label {
+      color: #DDD; }
+    .fancy-label-select input:checked:not(:disabled) + label {
+      background-color: #0C8990;
+      color: #FFF; }
+      .fancy-label-select input:checked:not(:disabled) + label + input + label::after {
+        border-right: none; }
+  .fancy-label-select label {
+    flex: 0 0 auto;
+    color: #555;
+    transition: color .2s ease-in-out, background-color .2s ease-in-out;
+    text-transform: none;
+    padding: .25rem 1rem;
+    position: relative; }
+    .fancy-label-select label:hover {
+      background-color: rgba(225, 225, 225, 0.15); }
+    .fancy-label-select label:not(:first-of-type)::after {
+      display: block;
+      content: '';
+      border-right: 1px solid #0C8990;
+      height: calc(100% - .5rem);
+      position: absolute;
+      left: 1px;
+      top: .25rem; }
+
 .fancy-tabs {
   display: flex;
   flex-direction: row;
@@ -9250,6 +9285,26 @@ input.icon.secondary:disabled {
         font-size: 1.25em;
         padding: .5em .2em;
         border-bottom-width: 2px; }
+      .form-container .form-row > textarea .number, .form-container .form-row > textarea:not(.invisible).number,
+      .form-container .form-row > input[type=text] .number,
+      .form-container .form-row > input[type=text]:not(.invisible).number,
+      .form-container .form-row > input[type=password] .number,
+      .form-container .form-row > input[type=password]:not(.invisible).number {
+        width: 10rem;
+        flex: 0 0 auto; }
+        .form-container .form-row > textarea .number.small, .form-container .form-row > textarea:not(.invisible).number.small,
+        .form-container .form-row > input[type=text] .number.small,
+        .form-container .form-row > input[type=text]:not(.invisible).number.small,
+        .form-container .form-row > input[type=password] .number.small,
+        .form-container .form-row > input[type=password]:not(.invisible).number.small {
+          width: 5rem; }
+      .form-container .form-row > textarea .medium, .form-container .form-row > textarea:not(.invisible).medium,
+      .form-container .form-row > input[type=text] .medium,
+      .form-container .form-row > input[type=text]:not(.invisible).medium,
+      .form-container .form-row > input[type=password] .medium,
+      .form-container .form-row > input[type=password]:not(.invisible).medium {
+        width: 20rem;
+        flex: 0 0 auto; }
       .form-container .form-row > textarea:focus + label,
       .form-container .form-row > textarea:active + label,
       .form-container .form-row > input[type=text]:focus + label,
@@ -9979,8 +10034,12 @@ textarea.markItUpEditor:focus {
   overflow: auto;
   display: block;
   font-family: 'Fira Mono', monospace;
-  border: 2px solid #0C8990;
-  border-radius: 0 0 4px 4px; }
+  border-radius: 0 0 4px 4px;
+  border: 2px solid rgba(200, 200, 200, 0.3);
+  transition: border-color .25s ease-in-out; }
+  textarea.markItUpEditor:focus,
+  textarea.markItUpEditor:focus:focus {
+    border-color: #0C8990; }
 
 .markItUpPreviewFrame {
   overflow: auto;
@@ -12035,7 +12094,8 @@ dl.info {
     .configuration-container > .configuration-content > .form-container input[type=text] {
       font-size: 1.1em;
       border-radius: 4px;
-      color: #141823; }
+      color: #141823;
+      transition: border-color .2s ease-in-out; }
       .configuration-container > .form-container input[type=search]:not(.invisible),
       .configuration-container > .form-container input[type=text]:not(.invisible),
       .configuration-container > .configuration-content > .form-container input[type=search]:not(.invisible),
@@ -12043,12 +12103,23 @@ dl.info {
         background: white;
         border: 1px solid rgba(200, 200, 200, 0.3);
         padding: .5em 1em;
-        margin: 0 .35rem 0 0;
-        flex: 1 1 65%; }
-        .configuration-container > .form-container input[type=search]:not(.invisible):hover,
-        .configuration-container > .form-container input[type=text]:not(.invisible):hover,
-        .configuration-container > .configuration-content > .form-container input[type=search]:not(.invisible):hover,
-        .configuration-container > .configuration-content > .form-container input[type=text]:not(.invisible):hover {
+        margin: 0 .35rem 0 0; }
+        .configuration-container > .form-container input[type=search]:not(.invisible):disabled,
+        .configuration-container > .form-container input[type=text]:not(.invisible):disabled,
+        .configuration-container > .configuration-content > .form-container input[type=search]:not(.invisible):disabled,
+        .configuration-container > .configuration-content > .form-container input[type=text]:not(.invisible):disabled {
+          background: rgba(255, 255, 255, 0.6);
+          border-color: rgba(200, 200, 200, 0.15);
+          color: #AAA; }
+        .configuration-container > .form-container input[type=search]:not(.invisible):not(.number):not(.medium),
+        .configuration-container > .form-container input[type=text]:not(.invisible):not(.number):not(.medium),
+        .configuration-container > .configuration-content > .form-container input[type=search]:not(.invisible):not(.number):not(.medium),
+        .configuration-container > .configuration-content > .form-container input[type=text]:not(.invisible):not(.number):not(.medium) {
+          flex: 1 1 65%; }
+        .configuration-container > .form-container input[type=search]:not(.invisible):not(:disabled):hover,
+        .configuration-container > .form-container input[type=text]:not(.invisible):not(:disabled):hover,
+        .configuration-container > .configuration-content > .form-container input[type=search]:not(.invisible):not(:disabled):hover,
+        .configuration-container > .configuration-content > .form-container input[type=text]:not(.invisible):not(:disabled):hover {
           border-color: #0C8990; }
 
 .workflow-transition-map {

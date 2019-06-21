@@ -224,6 +224,22 @@
         border-bottom-width: 2px;
       }
 
+      .number,
+      &:not(.invisible).number {
+        width: 10rem;
+        flex: 0 0 auto;
+
+        &.small {
+          width: 5rem;
+        }
+      }
+
+      .medium,
+      &:not(.invisible).medium {
+        width: 20rem;
+        flex: 0 0 auto;
+      }
+
       &:focus + label,
       &:active + label {
         color: $theme-primary;

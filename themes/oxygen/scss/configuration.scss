@@ -52,15 +52,25 @@
       font-size: 1.1em;
       border-radius: 4px;
       color: #141823;
+      transition: border-color .2s ease-in-out;
 
       &:not(.invisible) {
         background: rgb(255, 255, 255);
         border: 1px solid rgba(200, 200, 200, .3);
         padding: .5em 1em;
         margin: 0 .35rem 0 0;
-        flex: 1 1 65%;
 
-        &:hover {
+        &:disabled {
+          background: rgba(255, 255, 255, .6);
+          border-color: rgba(200, 200, 200, .15);
+          color: #AAA;
+        }
+
+        &:not(.number):not(.medium) {
+          flex: 1 1 65%;
+        }
+
+        &:not(:disabled):hover {
           border-color: $theme-primary;
         }
       }

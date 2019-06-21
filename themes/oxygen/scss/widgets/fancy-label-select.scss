@@ -1,0 +1,55 @@
+@import '../variables';
+
+.fancy-label-select {
+  display: inline-flex;
+  align-items: center;
+  flex-direction: row;
+  border: 2px solid $theme-primary;
+  background-color: #FFF;
+  color: $theme-primary;
+  border-radius: 4px;
+
+  input {
+    display: none;
+
+    &:disabled {
+      + label {
+        color: #DDD;
+      }
+    }
+
+    &:checked:not(:disabled) {
+      + label {
+        background-color: $theme-primary;
+        color: #FFF;
+
+        + input + label::after {
+          border-right: none;
+        }
+      }
+    }
+  }
+
+  label {
+    flex: 0 0 auto;
+    color: #555;
+    transition: color .2s ease-in-out, background-color .2s ease-in-out;
+    text-transform: none;
+    padding: .25rem 1rem;
+    position: relative;
+
+    &:hover {
+      background-color: rgba(225, 225, 225, .15);
+    }
+
+    &:not(:first-of-type)::after {
+      display: block;
+      content: '';
+      border-right: 1px solid $theme-primary;
+      height: calc(100% - .5rem);
+      position: absolute;
+      left: 1px;
+      top: .25rem;
+    }
+  }
+}
