@@ -31,8 +31,12 @@
             __('Enabling this setting allows a malicious admin user to potentially insert harmful code'), 'exclamation-triangle', 'fas'
         ); ?>
     </label>
-    <input type="radio" name="<?php echo \pachno\core\framework\Settings::SETTING_SITE_NAME_HTML; ?>" class="fancy-checkbox" <?php if ($access_level != \pachno\core\framework\Settings::ACCESS_FULL): ?> disabled<?php endif; ?>id="<?php echo \pachno\core\framework\Settings::SETTING_SITE_NAME_HTML; ?>_yes" value=1<?php if (\pachno\core\framework\Settings::isHeaderHtmlFormattingAllowed()): ?> checked<?php endif; ?>><label for="<?php echo \pachno\core\framework\Settings::SETTING_SITE_NAME_HTML; ?>_yes"><?php echo fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far') . __('Yes'); ?></label>
-    <input type="radio" name="<?php echo \pachno\core\framework\Settings::SETTING_SITE_NAME_HTML; ?>" class="fancy-checkbox" <?php if ($access_level != \pachno\core\framework\Settings::ACCESS_FULL): ?> disabled<?php endif; ?>id="<?php echo \pachno\core\framework\Settings::SETTING_SITE_NAME_HTML; ?>_no" value=0<?php if (!\pachno\core\framework\Settings::isHeaderHtmlFormattingAllowed()): ?> checked<?php endif; ?>><label for="<?php echo \pachno\core\framework\Settings::SETTING_SITE_NAME_HTML; ?>_no"><?php echo fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far') . __('No'); ?></label>
+    <div class="fancy-label-select">
+        <input type="radio" name="<?php echo \pachno\core\framework\Settings::SETTING_SITE_NAME_HTML; ?>" class="fancy-checkbox" <?php if ($access_level != \pachno\core\framework\Settings::ACCESS_FULL): ?> disabled<?php endif; ?>id="<?php echo \pachno\core\framework\Settings::SETTING_SITE_NAME_HTML; ?>_yes" value=1<?php if (\pachno\core\framework\Settings::isHeaderHtmlFormattingAllowed()): ?> checked<?php endif; ?>>
+        <label for="<?php echo \pachno\core\framework\Settings::SETTING_SITE_NAME_HTML; ?>_yes"><?php echo fa_image_tag('check', ['class' => 'checked']) . __('Yes, allow HTML'); ?></label>
+        <input type="radio" name="<?php echo \pachno\core\framework\Settings::SETTING_SITE_NAME_HTML; ?>" class="fancy-checkbox" <?php if ($access_level != \pachno\core\framework\Settings::ACCESS_FULL): ?> disabled<?php endif; ?>id="<?php echo \pachno\core\framework\Settings::SETTING_SITE_NAME_HTML; ?>_no" value=0<?php if (!\pachno\core\framework\Settings::isHeaderHtmlFormattingAllowed()): ?> checked<?php endif; ?>>
+        <label for="<?php echo \pachno\core\framework\Settings::SETTING_SITE_NAME_HTML; ?>_no"><?php echo fa_image_tag('check', ['class' => 'checked']) . __("No, don't allow HTML"); ?></label>
+    </div>
 </div>
 <div class="form-row">
     <label for="singleprojecttracker">
@@ -48,8 +52,12 @@
             )
         ); ?>
     </label>
-    <input type="radio" name="<?php echo \pachno\core\framework\Settings::SETTING_IS_SINGLE_PROJECT_TRACKER; ?>" class="fancy-checkbox" <?php if ($access_level != \pachno\core\framework\Settings::ACCESS_FULL): ?> disabled<?php endif; ?> id="<?php echo \pachno\core\framework\Settings::SETTING_IS_SINGLE_PROJECT_TRACKER; ?>_yes" value=1<?php if (\pachno\core\framework\Settings::isSingleProjectTracker()): ?> checked<?php endif; ?>><label for="<?php echo \pachno\core\framework\Settings::SETTING_IS_SINGLE_PROJECT_TRACKER; ?>_yes"><?php echo fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far') . __('Yes'); ?></label>
-    <input type="radio" name="<?php echo \pachno\core\framework\Settings::SETTING_IS_SINGLE_PROJECT_TRACKER; ?>" class="fancy-checkbox" <?php if ($access_level != \pachno\core\framework\Settings::ACCESS_FULL): ?> disabled<?php endif; ?> id="<?php echo \pachno\core\framework\Settings::SETTING_IS_SINGLE_PROJECT_TRACKER; ?>_no" value=0<?php if (!\pachno\core\framework\Settings::isSingleProjectTracker()): ?> checked<?php endif; ?>><label for="<?php echo \pachno\core\framework\Settings::SETTING_IS_SINGLE_PROJECT_TRACKER; ?>_no"><?php echo fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far') . __('No'); ?></label>
+    <div class="fancy-label-select">
+        <input type="radio" name="<?php echo \pachno\core\framework\Settings::SETTING_IS_SINGLE_PROJECT_TRACKER; ?>" class="fancy-checkbox" <?php if ($access_level != \pachno\core\framework\Settings::ACCESS_FULL): ?> disabled<?php endif; ?> id="<?php echo \pachno\core\framework\Settings::SETTING_IS_SINGLE_PROJECT_TRACKER; ?>_yes" value=1<?php if (\pachno\core\framework\Settings::isSingleProjectTracker()): ?> checked<?php endif; ?>>
+        <label for="<?php echo \pachno\core\framework\Settings::SETTING_IS_SINGLE_PROJECT_TRACKER; ?>_yes"><?= fa_image_tag('check', ['class' => 'checked']) . __('Single project mode'); ?></label>
+        <input type="radio" name="<?php echo \pachno\core\framework\Settings::SETTING_IS_SINGLE_PROJECT_TRACKER; ?>" class="fancy-checkbox" <?php if ($access_level != \pachno\core\framework\Settings::ACCESS_FULL): ?> disabled<?php endif; ?> id="<?php echo \pachno\core\framework\Settings::SETTING_IS_SINGLE_PROJECT_TRACKER; ?>_no" value=0<?php if (!\pachno\core\framework\Settings::isSingleProjectTracker()): ?> checked<?php endif; ?>>
+        <label for="<?php echo \pachno\core\framework\Settings::SETTING_IS_SINGLE_PROJECT_TRACKER; ?>_no"><?= fa_image_tag('check', ['class' => 'checked']) . __('Multiple projects'); ?></label>
+    </div>
 </div>
 <div class="form-row">
     <label for="showprojectsoverview">
@@ -58,6 +66,10 @@
             __('Whether the project overview list should appear on the frontpage or not')
         ); ?>
     </label>
-    <input type="radio" name="<?php echo \pachno\core\framework\Settings::SETTING_SHOW_PROJECTS_OVERVIEW; ?>" class="fancy-checkbox" <?php if ($access_level != \pachno\core\framework\Settings::ACCESS_FULL): ?> disabled<?php endif; ?> id="<?php echo \pachno\core\framework\Settings::SETTING_SHOW_PROJECTS_OVERVIEW; ?>_yes" value=1<?php if (\pachno\core\framework\Settings::isFrontpageProjectListVisible()): ?> checked<?php endif; ?>><label for="<?php echo \pachno\core\framework\Settings::SETTING_SHOW_PROJECTS_OVERVIEW; ?>_yes"><?php echo fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far') . __('Yes'); ?></label>
-    <input type="radio" name="<?php echo \pachno\core\framework\Settings::SETTING_SHOW_PROJECTS_OVERVIEW; ?>" class="fancy-checkbox" <?php if ($access_level != \pachno\core\framework\Settings::ACCESS_FULL): ?> disabled<?php endif; ?> id="<?php echo \pachno\core\framework\Settings::SETTING_SHOW_PROJECTS_OVERVIEW; ?>_no" value=0<?php if (!\pachno\core\framework\Settings::isFrontpageProjectListVisible()): ?> checked<?php endif; ?>><label for="<?php echo \pachno\core\framework\Settings::SETTING_SHOW_PROJECTS_OVERVIEW; ?>_no"><?php echo fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far') . __('No'); ?></label>
+    <div class="fancy-label-select">
+        <input type="radio" name="<?php echo \pachno\core\framework\Settings::SETTING_SHOW_PROJECTS_OVERVIEW; ?>" class="fancy-checkbox" <?php if ($access_level != \pachno\core\framework\Settings::ACCESS_FULL): ?> disabled<?php endif; ?> id="<?php echo \pachno\core\framework\Settings::SETTING_SHOW_PROJECTS_OVERVIEW; ?>_yes" value=1<?php if (\pachno\core\framework\Settings::isFrontpageProjectListVisible()): ?> checked<?php endif; ?>>
+        <label for="<?php echo \pachno\core\framework\Settings::SETTING_SHOW_PROJECTS_OVERVIEW; ?>_yes"><?php echo fa_image_tag('check', ['class' => 'checked']) . __('Yes'); ?></label>
+        <input type="radio" name="<?php echo \pachno\core\framework\Settings::SETTING_SHOW_PROJECTS_OVERVIEW; ?>" class="fancy-checkbox" <?php if ($access_level != \pachno\core\framework\Settings::ACCESS_FULL): ?> disabled<?php endif; ?> id="<?php echo \pachno\core\framework\Settings::SETTING_SHOW_PROJECTS_OVERVIEW; ?>_no" value=0<?php if (!\pachno\core\framework\Settings::isFrontpageProjectListVisible()): ?> checked<?php endif; ?>>
+        <label for="<?php echo \pachno\core\framework\Settings::SETTING_SHOW_PROJECTS_OVERVIEW; ?>_no"><?php echo fa_image_tag('check', ['class' => 'checked']) . __('No'); ?></label>
+    </div>
 </div>

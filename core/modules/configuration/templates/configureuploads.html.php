@@ -23,10 +23,10 @@
                         <div class="form-row">
                             <label for="enable_uploads_yes"><?php echo __('Enable uploads'); ?></label>
                             <div class="fancy-label-select">
-                                <input type="radio" name="enable_uploads" value="1" id="enable_uploads_yes"<?php if (\pachno\core\framework\Settings::isUploadsEnabled()) echo ' checked'; ?> onclick="toggleSettings();">
-                                <label for="enable_uploads_yes"><?php echo __('Yes'); ?></label>
-                                <input type="radio" name="enable_uploads" value="0" id="enable_uploads_no"<?php if (!\pachno\core\framework\Settings::isUploadsEnabled()) echo ' checked'; ?> onclick="toggleSettings();">
-                                <label for="enable_uploads_no"><?php echo __('No'); ?></label>
+                                <input type="radio" class="fancy-checkbox" name="enable_uploads" value="1" id="enable_uploads_yes"<?php if (\pachno\core\framework\Settings::isUploadsEnabled()) echo ' checked'; ?> onclick="toggleSettings();">
+                                <label for="enable_uploads_yes"><?php echo fa_image_tag('check', ['class' => 'checked']) . __('Yes'); ?></label>
+                                <input type="radio" class="fancy-checkbox" name="enable_uploads" value="0" id="enable_uploads_no"<?php if (!\pachno\core\framework\Settings::isUploadsEnabled()) echo ' checked'; ?> onclick="toggleSettings();">
+                                <label for="enable_uploads_no"><?php echo fa_image_tag('check', ['class' => 'checked']) . __('No'); ?></label>
                             </div>
                         </div>
                         <div class="form-row">
@@ -47,10 +47,10 @@
                         <div class="form-row">
                             <label for="upload-restriction-whitelist"><?php echo __('Upload restrictions'); ?></label>
                             <div class="fancy-label-select">
-                                <input name="upload_restriction_mode" id="upload-restriction-whitelist" type="radio" value="whitelist"<?php if (\pachno\core\framework\Settings::getUploadsRestrictionMode() == 'whitelist') echo ' checked'; ?> onchange="$('label_upload_extensions_list').update('<?php echo __('Allowed extensions'); ?>');">
-                                <label for="upload-restriction-whitelist"><?= __('Whitelist'); ?></label>
-                                <input name="upload_restriction_mode" id="upload-restriction-blacklist" type="radio" value="blacklist"<?php if (\pachno\core\framework\Settings::getUploadsRestrictionMode() == 'blacklist') echo ' checked'; ?> onchange="$('label_upload_extensions_list').update('<?php echo __('Denied extensions'); ?>');">
-                                <label for="upload-restriction-blacklist"><?= __('Blacklist'); ?></label>
+                                <input name="upload_restriction_mode" class="fancy-checkbox" id="upload-restriction-whitelist" type="radio" value="whitelist"<?php if (\pachno\core\framework\Settings::getUploadsRestrictionMode() == 'whitelist') echo ' checked'; ?> onchange="$('label_upload_extensions_list').update('<?php echo __('Allowed extensions'); ?>');">
+                                <label for="upload-restriction-whitelist"><?= fa_image_tag('check', ['class' => 'checked']) . __('Whitelist'); ?></label>
+                                <input name="upload_restriction_mode" class="fancy-checkbox" id="upload-restriction-blacklist" type="radio" value="blacklist"<?php if (\pachno\core\framework\Settings::getUploadsRestrictionMode() == 'blacklist') echo ' checked'; ?> onchange="$('label_upload_extensions_list').update('<?php echo __('Denied extensions'); ?>');">
+                                <label for="upload-restriction-blacklist"><?= fa_image_tag('check', ['class' => 'checked']) . __('Blacklist'); ?></label>
                             </div>
                         </div>
                         <div class="form-row">
@@ -66,10 +66,10 @@
                             <div class="form-row">
                                 <label for="upload-storage-database"><?php echo __('File storage'); ?></label>
                                 <div class="fancy-label-select">
-                                    <input name="upload_storage" id="upload-storage-filesystem" type="radio" value="files"<?php if (\pachno\core\framework\Settings::getUploadStorage() == 'files') echo ' checked'; ?> onchange="$('upload_localpath').enable();">
-                                    <label for="upload-storage-filesystem"><?= __('File system'); ?></label>
-                                    <input name="upload_storage" id="upload-storage-database" type="radio" value="database"<?php if (\pachno\core\framework\Settings::getUploadStorage() == 'database') echo ' checked'; ?> onchange="$('upload_localpath').disable();">
-                                    <label for="upload-storage-database"><?= __('Database'); ?></label>
+                                    <input name="upload_storage" class="fancy-checkbox" id="upload-storage-filesystem" type="radio" value="files"<?php if (\pachno\core\framework\Settings::getUploadStorage() == 'files') echo ' checked'; ?> onchange="$('upload_localpath').enable();">
+                                    <label for="upload-storage-filesystem"><?= fa_image_tag('check', ['class' => 'checked']) . __('File system'); ?></label>
+                                    <input name="upload_storage" class="fancy-checkbox" id="upload-storage-database" type="radio" value="database"<?php if (\pachno\core\framework\Settings::getUploadStorage() == 'database') echo ' checked'; ?> onchange="$('upload_localpath').disable();">
+                                    <label for="upload-storage-database"><?= fa_image_tag('check', ['class' => 'checked']) . __('Database'); ?></label>
                                 </div>
                             </div>
                             <div class="form-row">
@@ -89,10 +89,10 @@
                         <div class="form-row">
                             <label for="upload_delivery_use_xsend_yes"><?php echo __('Php X-Sendfile extension'); ?></label>
                             <div class="fancy-label-select">
-                                <input type="radio" name="upload_delivery_use_xsend" value="1" class="fancy-checkbox" id="upload_delivery_use_xsend_yes"<?php if (\pachno\core\framework\Settings::isUploadsDeliveryUseXsend()): ?> checked<?php endif; ?> onclick="toggleSettings();">
-                                <label for="upload_delivery_use_xsend_yes"><?php echo __('Use X-Sendfile'); ?></label>
-                                <input type="radio" name="upload_delivery_use_xsend" value="0" class="fancy-checkbox" id="upload_delivery_use_xsend_no"<?php if (!\pachno\core\framework\Settings::isUploadsDeliveryUseXsend()): ?> checked<?php endif; ?> onclick="toggleSettings();">
-                                <label for="upload_delivery_use_xsend_no"><?php echo __("Don't use X-Sendfile"); ?></label>
+                                <input type="radio" class="fancy-checkbox" name="upload_delivery_use_xsend" value="1" class="fancy-checkbox" id="upload_delivery_use_xsend_yes"<?php if (\pachno\core\framework\Settings::isUploadsDeliveryUseXsend()): ?> checked<?php endif; ?> onclick="toggleSettings();">
+                                <label for="upload_delivery_use_xsend_yes"><?php echo fa_image_tag('check', ['class' => 'checked']) . __('Use X-Sendfile'); ?></label>
+                                <input type="radio" class="fancy-checkbox" name="upload_delivery_use_xsend" value="0" class="fancy-checkbox" id="upload_delivery_use_xsend_no"<?php if (!\pachno\core\framework\Settings::isUploadsDeliveryUseXsend()): ?> checked<?php endif; ?> onclick="toggleSettings();">
+                                <label for="upload_delivery_use_xsend_no"><?php echo fa_image_tag('check', ['class' => 'checked']) . __("Don't use X-Sendfile"); ?></label>
                             </div>
                         </div>
                         <div class="form-row">
@@ -106,10 +106,10 @@
                         <div class="form-row">
                             <label for="upload_allow_image_caching_yes"><?php echo __('Browser caching (images)'); ?></label>
                             <div class="fancy-label-select">
-                                <input type="radio" name="upload_allow_image_caching" value="1" class="fancy-checkbox" id="upload_allow_image_caching_yes"<?php if (\pachno\core\framework\Settings::isUploadsImageCachingEnabled()): ?> checked<?php endif; ?> onclick="toggleSettings();">
-                                <label for="upload_allow_image_caching_yes"><?php echo __('Enable'); ?></label>
-                                <input type="radio" name="upload_allow_image_caching" value="0" class="fancy-checkbox" id="upload_allow_image_caching_no"<?php if (!\pachno\core\framework\Settings::isUploadsImageCachingEnabled()): ?> checked<?php endif; ?> onclick="toggleSettings();">
-                                <label for="upload_allow_image_caching_no"><?php echo __('Disable'); ?></label>
+                                <input type="radio" class="fancy-checkbox" name="upload_allow_image_caching" value="1" class="fancy-checkbox" id="upload_allow_image_caching_yes"<?php if (\pachno\core\framework\Settings::isUploadsImageCachingEnabled()): ?> checked<?php endif; ?> onclick="toggleSettings();">
+                                <label for="upload_allow_image_caching_yes"><?php echo fa_image_tag('check', ['class' => 'checked']) . __('Enable'); ?></label>
+                                <input type="radio" class="fancy-checkbox" name="upload_allow_image_caching" value="0" class="fancy-checkbox" id="upload_allow_image_caching_no"<?php if (!\pachno\core\framework\Settings::isUploadsImageCachingEnabled()): ?> checked<?php endif; ?> onclick="toggleSettings();">
+                                <label for="upload_allow_image_caching_no"><?php echo fa_image_tag('check', ['class' => 'checked']) . __('Disable'); ?></label>
                             </div>
                         </div>
                         <div class="form-row">

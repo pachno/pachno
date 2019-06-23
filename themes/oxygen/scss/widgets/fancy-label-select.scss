@@ -4,7 +4,7 @@
   display: inline-flex;
   align-items: center;
   flex-direction: row;
-  border: 2px solid $theme-primary;
+  border: 1px solid $theme-primary;
   background-color: #FFF;
   color: $theme-primary;
   border-radius: 4px;
@@ -22,6 +22,12 @@
       + label {
         background-color: $theme-primary;
         color: #FFF;
+
+        .fas,
+        .far {
+          font-size: .85em;
+          margin: 0 1em 0 0;
+        }
 
         + input + label::after {
           border-right: none;

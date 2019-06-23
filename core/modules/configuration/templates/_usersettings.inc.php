@@ -63,8 +63,12 @@
 </div>
 <div class="form-row">
     <label for="<?= Settings::SETTING_ENABLE_GRAVATARS; ?>_yes"><?= __('Enable %gravatar user icons', ['%gravatar' => link_tag('https://gravatar.com', 'gravatar.com')]); ?></label>
-    <input type="radio" name="<?= Settings::SETTING_ENABLE_GRAVATARS; ?>" class="fancy-checkbox" <?php if ($access_level != Settings::ACCESS_FULL): ?> disabled<?php endif; ?> id="<?= Settings::SETTING_ENABLE_GRAVATARS; ?>_yes" value=1<?php if (Settings::isGravatarsEnabled()): ?> checked<?php endif; ?>><label for="<?= Settings::SETTING_ENABLE_GRAVATARS; ?>_yes"><?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far') . __('Yes'); ?></label>
-    <input type="radio" name="<?= Settings::SETTING_ENABLE_GRAVATARS; ?>" class="fancy-checkbox" <?php if ($access_level != Settings::ACCESS_FULL): ?> disabled<?php endif; ?> id="<?= Settings::SETTING_ENABLE_GRAVATARS; ?>_no" value=0<?php if (!Settings::isGravatarsEnabled()): ?> checked<?php endif; ?>><label for="<?= Settings::SETTING_ENABLE_GRAVATARS; ?>_no"><?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far') . __('No'); ?></label>
+    <div class="fancy-label-select">
+        <input type="radio" name="<?= Settings::SETTING_ENABLE_GRAVATARS; ?>" class="fancy-checkbox" <?php if ($access_level != Settings::ACCESS_FULL): ?> disabled<?php endif; ?> id="<?= Settings::SETTING_ENABLE_GRAVATARS; ?>_yes" value=1<?php if (Settings::isGravatarsEnabled()): ?> checked<?php endif; ?>>
+        <label for="<?= Settings::SETTING_ENABLE_GRAVATARS; ?>_yes"><?= fa_image_tag('check', ['class' => 'checked']) . __('Yes, enable Gravatars'); ?></label>
+        <input type="radio" name="<?= Settings::SETTING_ENABLE_GRAVATARS; ?>" class="fancy-checkbox" <?php if ($access_level != Settings::ACCESS_FULL): ?> disabled<?php endif; ?> id="<?= Settings::SETTING_ENABLE_GRAVATARS; ?>_no" value=0<?php if (!Settings::isGravatarsEnabled()): ?> checked<?php endif; ?>>
+        <label for="<?= Settings::SETTING_ENABLE_GRAVATARS; ?>_no"><?= fa_image_tag('check', ['class' => 'checked']) . __('No, disable Gravatars'); ?></label>
+    </div>
 </div>
 <div class="form-row">
     <div class="helper-text"><?= __('Select whether to use the %gravatar.com user icon service for user avatars, or just use the default ones', array('%gravatar.com' => link_tag('http://www.gravatar.com', 'gravatar.com'))); ?></div>
@@ -121,6 +125,10 @@
 </div>
 <div class="form-row">
     <label for="displayname_format"><?= __('User\'s display name format'); ?></label>
-    <input type="radio" name="<?= Settings::SETTING_USER_DISPLAYNAME_FORMAT; ?>" class="fancy-checkbox" <?php if ($access_level != Settings::ACCESS_FULL): ?> disabled<?php endif; ?> id="<?= Settings::SETTING_USER_DISPLAYNAME_FORMAT; ?>_no" value=<?= Settings::USER_DISPLAYNAME_FORMAT_BUDDY; ?> <?php if (Settings::getUserDisplaynameFormat() == Settings::USER_DISPLAYNAME_FORMAT_BUDDY): ?> checked<?php endif; ?>><label for="<?= Settings::SETTING_USER_DISPLAYNAME_FORMAT; ?>_no"><?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far') . __('Prefer nickname'); ?></label>
-    <input type="radio" name="<?= Settings::SETTING_USER_DISPLAYNAME_FORMAT; ?>" class="fancy-checkbox" <?php if ($access_level != Settings::ACCESS_FULL): ?> disabled<?php endif; ?> id="<?= Settings::SETTING_USER_DISPLAYNAME_FORMAT; ?>_yes" value=<?= Settings::USER_DISPLAYNAME_FORMAT_REALNAME; ?> <?php if (Settings::getUserDisplaynameFormat() == Settings::USER_DISPLAYNAME_FORMAT_REALNAME): ?> checked<?php endif; ?>><label for="<?= Settings::SETTING_USER_DISPLAYNAME_FORMAT; ?>_yes"><?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far') . __('Prefer full name'); ?></label>
+    <div class="fancy-label-select">
+        <input type="radio" name="<?= Settings::SETTING_USER_DISPLAYNAME_FORMAT; ?>" class="fancy-checkbox" <?php if ($access_level != Settings::ACCESS_FULL): ?> disabled<?php endif; ?> id="<?= Settings::SETTING_USER_DISPLAYNAME_FORMAT; ?>_no" value=<?= Settings::USER_DISPLAYNAME_FORMAT_BUDDY; ?> <?php if (Settings::getUserDisplaynameFormat() == Settings::USER_DISPLAYNAME_FORMAT_BUDDY): ?> checked<?php endif; ?>>
+        <label for="<?= Settings::SETTING_USER_DISPLAYNAME_FORMAT; ?>_no"><?= fa_image_tag('check', ['class' => 'checked']) . __('Prefer nickname'); ?></label>
+        <input type="radio" name="<?= Settings::SETTING_USER_DISPLAYNAME_FORMAT; ?>" class="fancy-checkbox" <?php if ($access_level != Settings::ACCESS_FULL): ?> disabled<?php endif; ?> id="<?= Settings::SETTING_USER_DISPLAYNAME_FORMAT; ?>_yes" value=<?= Settings::USER_DISPLAYNAME_FORMAT_REALNAME; ?> <?php if (Settings::getUserDisplaynameFormat() == Settings::USER_DISPLAYNAME_FORMAT_REALNAME): ?> checked<?php endif; ?>>
+        <label for="<?= Settings::SETTING_USER_DISPLAYNAME_FORMAT; ?>_yes"><?= fa_image_tag('check', ['class' => 'checked']) . __('Prefer full name'); ?></label>
+    </div>
 </div>
