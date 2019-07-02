@@ -687,7 +687,7 @@
         {
             $this->module_message = framework\Context::getMessageAndClear('module_message');
             $this->module_error = framework\Context::getMessageAndClear('module_error');
-            $this->modules = framework\Context::getModules();
+            $this->modules = framework\Context::getAllModules();
             $this->writable = is_writable(PACHNO_MODULES_PATH);
             $this->uninstalled_modules = framework\Context::getUninstalledModules();
             $this->outdated_modules = framework\Context::getOutdatedModules();
@@ -862,12 +862,12 @@
                         switch ($request['mode'])
                         {
                             case 'disable':
-                                if ($module->getType() !== entities\Module::MODULE_AUTH):
+                                if ($module->getType() !== framework\interfaces\ModuleInterface::MODULE_AUTH):
                                     $module->disable();
                                 endif;
                                 break;
                             case 'enable':
-                                if ($module->getType() !== entities\Module::MODULE_AUTH):
+                                if ($module->getType() !== framework\interfaces\ModuleInterface::MODULE_AUTH):
                                     $module->enable();
                                 endif;
                                 break;
@@ -1201,7 +1201,7 @@
             $allmods = framework\Context::getModules();
             foreach ($allmods as $mod)
             {
-                if ($mod->getType() == entities\Module::MODULE_AUTH)
+                if ($mod->getType() == framework\interfaces\ModuleInterface::MODULE_AUTH)
                 {
                     $modules[] = $mod;
                 }

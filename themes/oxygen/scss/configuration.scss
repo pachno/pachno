@@ -403,6 +403,10 @@
     box-sizing: border-box;
     justify-content: flex-start;
 
+    &.actions {
+      justify-content: flex-end;
+    }
+
     .form-row {
       padding: 0;
       width: 100%;
@@ -548,6 +552,16 @@
       > .configurable-components-list + .form-container {
         padding-top: 0;
       }
+    }
+  }
+}
+
+.configurable-component.module {
+  .name {
+    .title {
+      font-size: 1.4em;
+      text-transform: uppercase;
+      font-weight: 400;
     }
   }
 }
@@ -775,17 +789,6 @@
 #tab_users_pane > strong {
   font-weight: 400;
   display: block;
-}
-
-.project_list nav .more_actions_dropdown li.finduser_container {
-  padding: 5px;
-  height: auto;
-  width: auto;
-  white-space: nowrap;
-}
-
-.project_list nav .more_actions_dropdown li.finduser_container:hover {
-  background-color: #FFF;
 }
 
 #users_more_actions_container .more_actions_dropdown li.separator {

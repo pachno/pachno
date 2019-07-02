@@ -37,80 +37,80 @@ class Context
 
     protected static $_environment = 2;
     protected static $_debug_mode = true;
-    protected static $debug_id = null;
-    protected static $_configuration = null;
-    protected static $_session_initialization_time = null;
-    protected static $_partials_visited = array();
+    protected static $debug_id;
+    protected static $_configuration;
+    protected static $_session_initialization_time;
+    protected static $_partials_visited = [];
 
     /**
      * Outdated modules
      *
      * @var array
      */
-    protected static $_outdated_modules = null;
+    protected static $_outdated_modules;
 
     /**
      * The current user
      *
      * @var \pachno\core\entities\User
      */
-    protected static $_user = null;
+    protected static $_user;
 
     /**
      * List of modules
      *
      * @var Module[]
      */
-    protected static $_modules = array();
+    protected static $_modules = [];
 
     /**
      * List of internal modules
      *
      * @var CoreModule[]
      */
-    protected static $_internal_modules = array();
+    protected static $_internal_modules = [];
 
     /**
      * List of internal module paths
      *
      * @var string[]
      */
-    protected static $_internal_module_paths = array();
+    protected static $_internal_module_paths = [];
 
     /**
      * List of permissions
      *
      * @var array
      */
-    protected static $_permissions = array();
+    protected static $_permissions = [];
 
     /**
      * List of available permissions
      *
      * @var array
      */
-    protected static $_available_permissions = null;
+    protected static $_available_permissions;
 
     /**
      * List of available permission paths
      *
      * @var array
      */
-    protected static $_available_permission_paths = null;
+    protected static $_available_permission_paths;
 
     /**
      * The include path
      *
      * @var string
      */
-    protected static $_includepath = null;
+    protected static $_includepath;
 
     /**
      * The path to pachno relative from url server root
      *
      * @var string
      */
-    protected static $_webroot = null;
+    protected static $_webroot;
 
     /**
      * Stripped version of the $_webroot
@@ -119,7 +119,7 @@ class Context
      *
      * @var string
      */
-    protected static $_stripped_webroot = null;
+    protected static $_stripped_webroot;
 
     /**
      * Whether we're in installmode or not
@@ -140,92 +140,92 @@ class Context
      *
      * @var \pachno\core\framework\I18n
      */
-    protected static $_i18n = null;
+    protected static $_i18n;
 
     /**
      * The request object
      *
      * @var \pachno\core\framework\Request
      */
-    protected static $_request = null;
+    protected static $_request;
 
     /**
      * The current action object
      *
      * @var \pachno\core\framework\Action
      */
-    protected static $_action = null;
+    protected static $_action;
 
     /**
      * The response object
      *
      * @var \pachno\core\framework\Response
      */
-    protected static $_response = null;
+    protected static $_response;
 
     /**
      * The current scope object
      *
      * @var \pachno\core\entities\Scope
      */
-    protected static $_scope = null;
+    protected static $_scope;
 
     /**
      * The currently selected project, if any
      *
      * @var \pachno\core\entities\Project
      */
-    protected static $_selected_project = null;
+    protected static $_selected_project;
 
     /**
      * The currently selected client, if any
      *
      * @var \pachno\core\entities\Client
      */
-    protected static $_selected_client = null;
+    protected static $_selected_client;
 
     /**
      * Used to determine when the b2 engine started loading
      *
      * @var integer
      */
-    protected static $_loadstart = null;
+    protected static $_loadstart;
 
     /**
      * List of classpaths
      *
      * @var array
      */
-    protected static $_classpaths = array();
+    protected static $_classpaths = [];
 
     /**
      * List of loaded libraries
      *
      * @var string
      */
-    protected static $_libs = array();
+    protected static $_libs = [];
 
     /**
      * The routing object
      *
      * @var \pachno\core\framework\Routing
      */
-    protected static $_routing = null;
+    protected static $_routing;
 
     /**
      * The cache object
      *
      * @var Cache
      */
-    protected static $_cache = null;
+    protected static $_cache;
 
     /**
      * Messages passed on from the previous request
      *
      * @var array
      */
-    protected static $_messages = null;
-    protected static $_redirect_login = null;
+    protected static $_messages;
+    protected static $_redirect_login;
 
     /**
      * Information about the latest available version. Should be null
@@ -233,7 +233,7 @@ class Context
      * failed), or an array with keys: maj, min, rev, nicever.
      *
      */
-    protected static $_latest_available_version = null;
+    protected static $_latest_available_version;
 
     /**
      * Returns whether or not we're in install mode
@@ -545,7 +545,7 @@ class Context
             if (array_key_exists('b2db', self::$_configuration))
                 \b2db\Core::initialize(self::$_configuration['b2db'], self::getCache());
             else
-                \b2db\Core::initialize(array(), self::getCache());
+                \b2db\Core::initialize([], self::getCache());
 
             if (self::isReadySetup() && !\b2db\Core::isInitialized())
             {
@@ -912,7 +912,7 @@ class Context
     public static function getThemes()
     {
         $theme_path_handle = opendir(PACHNO_PATH . 'themes' . DS);
-        $themes = array();
+        $themes = [];
         $parser = new TextParserMarkdown();
 
         while ($theme = readdir($theme_path_handle))
@@ -1090,7 +1090,7 @@ class Context
     {
         if (self::$_modules === null)
         {
-            self::$_modules = array();
+            self::$_modules = [];
         }
         self::$_modules[$module_name] = $module;
     }
@@ -1128,7 +1128,7 @@ class Context
     {
         if (self::$_outdated_modules == null)
         {
-            self::$_outdated_modules = array();
+            self::$_outdated_modules = [];
             foreach (self::getModules() as $module)
             {
                 if ($module->isOutdated())
@@ -1149,7 +1149,7 @@ class Context
     public static function getUninstalledModules()
     {
         $module_path_handle = opendir(PACHNO_MODULES_PATH);
-        $modules = array();
+        $modules = [];
         while ($module_name = readdir($module_path_handle))
         {
             if (is_dir(PACHNO_MODULES_PATH . $module_name) && file_exists(PACHNO_MODULES_PATH . $module_name . DS . ucfirst($module_name) . '.php'))
@@ -1238,7 +1238,7 @@ class Context
             $query->where(Permissions::TARGET_ID, $target_id);
         }
 
-        $permissions = array();
+        $permissions = [];
 
         if ($res = Permissions::getTable()->rawSelect($query))
         {
@@ -1257,7 +1257,7 @@ class Context
     public static function cacheAllPermissions()
     {
         Logging::log('caches permissions');
-        self::$_permissions = array();
+        self::$_permissions = [];
 
         if (!self::isInstallmode() && $permissions = self::getCache()->get(Cache::KEY_PERMISSIONS_CACHE))
         {
@@ -1275,15 +1275,15 @@ class Context
                     {
                         if (!array_key_exists($row->get(Permissions::MODULE), self::$_permissions))
                         {
-                            self::$_permissions[$row->get(Permissions::MODULE)] = array();
+                            self::$_permissions[$row->get(Permissions::MODULE)] = [];
                         }
                         if (!array_key_exists($row->get(Permissions::PERMISSION_TYPE), self::$_permissions[$row->get(Permissions::MODULE)]))
                         {
-                            self::$_permissions[$row->get(Permissions::MODULE)][$row->get(Permissions::PERMISSION_TYPE)] = array();
+                            self::$_permissions[$row->get(Permissions::MODULE)][$row->get(Permissions::PERMISSION_TYPE)] = [];
                         }
                         if (!array_key_exists($row->get(Permissions::TARGET_ID), self::$_permissions[$row->get(Permissions::MODULE)][$row->get(Permissions::PERMISSION_TYPE)]))
                         {
-                            self::$_permissions[$row->get(Permissions::MODULE)][$row->get(Permissions::PERMISSION_TYPE)][$row->get(Permissions::TARGET_ID)] = array();
+                            self::$_permissions[$row->get(Permissions::MODULE)][$row->get(Permissions::PERMISSION_TYPE)][$row->get(Permissions::TARGET_ID)] = [];
                         }
                         self::$_permissions[$row->get(Permissions::MODULE)][$row->get(Permissions::PERMISSION_TYPE)][$row->get(Permissions::TARGET_ID)][] = array('uid' => $row->get(Permissions::UID), 'gid' => $row->get(Permissions::GID), 'tid' => $row->get(Permissions::TID), 'allowed' => (bool) $row->get(Permissions::ALLOWED), 'role_id' => $row->get(Permissions::ROLE_ID));
                     }
@@ -1541,7 +1541,7 @@ class Context
             // Permissions relevant to module + permission type are stored in an
             // array, grouped based on whether they are applied against specific
             // target ID or globally.
-            $permission_groups = array();
+            $permission_groups = [];
 
             // Since we could have multiple matches, we need to keep track of
             // what permission has the most weight.
@@ -1626,10 +1626,10 @@ class Context
         {
             Logging::log("Loading and caching permissions tree");
             $i18n = self::getI18n();
-            self::$_available_permissions = array('user' => array(), 'general' => array(), 'project' => array());
+            self::$_available_permissions = array('user' => [], 'general' => [], 'project' => []);
 
             self::$_available_permissions['user']['canseegroupissues'] = array('description' => $i18n->__('Can see issues reported by users in the same group'), 'mode' => 'permissive');
-            self::$_available_permissions['configuration']['cansaveconfig'] = array('description' => $i18n->__('Can access the configuration page and edit all configuration'), 'details' => array());
+            self::$_available_permissions['configuration']['cansaveconfig'] = array('description' => $i18n->__('Can access the configuration page and edit all configuration'), 'details' => []);
             self::$_available_permissions['configuration']['cansaveconfig']['details'][] = array('canviewconfig' => array('description' => $i18n->__('Read-only access: "Settings" configuration page'), 'target_id' => 12));
             self::$_available_permissions['configuration']['cansaveconfig']['details'][] = array('cansaveconfig' => array('description' => $i18n->__('Read + write access: "Settings" configuration page'), 'target_id' => 12));
             self::$_available_permissions['configuration']['cansaveconfig']['details'][] = array('canviewconfig' => array('description' => $i18n->__('Read-only access: "Permissions" configuration page'), 'target_id' => 5));
@@ -1652,7 +1652,7 @@ class Context
             self::$_available_permissions['configuration']['cansaveconfig']['details'][] = array('cansaveconfig' => array('description' => $i18n->__('Read + write access: "Modules" configuration page and any modules'), 'target_id' => 15));
             self::$_available_permissions['configuration']['cansaveconfig']['details'][] = array('canviewconfig' => array('description' => $i18n->__('Read-only access: "Themes" configuration page and any themes'), 'target_id' => 19));
             self::$_available_permissions['configuration']['cansaveconfig']['details'][] = array('cansaveconfig' => array('description' => $i18n->__('Read + write access: "Themes" configuration page and any themes'), 'target_id' => 19));
-            self::$_available_permissions['general']['canfindissuesandsavesearches'] = array('description' => $i18n->__('Can search for issues and create saved searches'), 'details' => array());
+            self::$_available_permissions['general']['canfindissuesandsavesearches'] = array('description' => $i18n->__('Can search for issues and create saved searches'), 'details' => []);
             self::$_available_permissions['general']['canfindissuesandsavesearches']['details']['canfindissues'] = array('description' => $i18n->__('Can search for issues'));
             self::$_available_permissions['general']['canfindissuesandsavesearches']['details']['cancreatepublicsearches'] = array('description' => $i18n->__('Can create saved searches that are public'));
             self::$_available_permissions['general']['caneditmainmenu'] = array('description' => $i18n->__('Can edit main menu'));
@@ -1660,18 +1660,18 @@ class Context
             self::$_available_permissions['pages']['page_dashboard_access'] = array('description' => $i18n->__('Can access the user dashboard'));
             self::$_available_permissions['pages']['page_search_access'] = array('description' => $i18n->__('Can access the search page'));
             self::$_available_permissions['pages']['page_about_access'] = array('description' => $i18n->__('Can access the "About" page'));
-            self::$_available_permissions['pages']['page_account_access'] = array('description' => $i18n->__('Can access the "My account" page'), 'details' => array());
+            self::$_available_permissions['pages']['page_account_access'] = array('description' => $i18n->__('Can access the "My account" page'), 'details' => []);
             self::$_available_permissions['pages']['page_account_access']['details']['canchangepassword'] = array('description' => $i18n->__('Can change own password'), 'mode' => 'permissive');
             self::$_available_permissions['pages']['page_teamlist_access'] = array('description' => $i18n->__('Can see list of teams in header menu'));
             self::$_available_permissions['pages']['page_clientlist_access'] = array('description' => $i18n->__('Can access all clients'));
             self::$_available_permissions['project']['canseeallissues'] = array('description' => $i18n->__('Can see issues reported by other users'), 'mode' => 'permissive');
-            self::$_available_permissions['project']['canseeproject'] = array('description' => $i18n->__('Has access to the project'), 'details' => array());
+            self::$_available_permissions['project']['canseeproject'] = array('description' => $i18n->__('Has access to the project'), 'details' => []);
             self::$_available_permissions['project']['canseeproject']['details']['canseeprojecthierarchy'] = array('description' => $i18n->__('Can see complete project hierarchy'));
             self::$_available_permissions['project']['canseeproject']['details']['canseeprojecthierarchy']['details']['canseeallprojecteditions'] = array('description' => $i18n->__('Can see all editions'));
             self::$_available_permissions['project']['canseeproject']['details']['canseeprojecthierarchy']['details']['canseeallprojectcomponents'] = array('description' => $i18n->__('Can see all components'));
             self::$_available_permissions['project']['canseeproject']['details']['canseeprojecthierarchy']['details']['canseeallprojectbuilds'] = array('description' => $i18n->__('Can see all releases'));
             self::$_available_permissions['project']['canseeproject']['details']['canseeprojecthierarchy']['details']['canseeallprojectmilestones'] = array('description' => $i18n->__('Can see all milestones'));
-            self::$_available_permissions['project']['canseeproject']['details']['page_project_allpages_access'] = array('description' => $i18n->__('Can access all project pages'), 'details' => array());
+            self::$_available_permissions['project']['canseeproject']['details']['page_project_allpages_access'] = array('description' => $i18n->__('Can access all project pages'), 'details' => []);
             self::$_available_permissions['project']['canseeproject']['details']['page_project_allpages_access']['details']['page_project_dashboard_access'] = array('description' => $i18n->__('Can access the project dashboard'));
             self::$_available_permissions['project']['canseeproject']['details']['page_project_allpages_access']['details']['page_project_planning_access'] = array('description' => $i18n->__('Can access the project agile pages without planning page'));
             self::$_available_permissions['project']['canseeproject']['details']['page_project_allpages_access']['details']['page_project_only_planning_access'] = array('description' => $i18n->__('Can access the project planning pages'));
@@ -1699,8 +1699,8 @@ class Context
                 'own' => $i18n->__('For own issues only: edit any issue details, close and delete issues')
             ];
             foreach ($arr as $suffix => $description) {
-                self::$_available_permissions['issues']['caneditissue'.$suffix] = array('description' => $description, 'details' => array());
-                self::$_available_permissions['issues']['caneditissue'.$suffix]['details']['caneditissuebasic'.$suffix] = array('description' => $i18n->__('Can edit title, description and reproduction steps'), 'details' => array());
+                self::$_available_permissions['issues']['caneditissue'.$suffix] = array('description' => $description, 'details' => []);
+                self::$_available_permissions['issues']['caneditissue'.$suffix]['details']['caneditissuebasic'.$suffix] = array('description' => $i18n->__('Can edit title, description and reproduction steps'), 'details' => []);
                 self::$_available_permissions['issues']['caneditissue'.$suffix]['details']['caneditissuebasic'.$suffix]['details']['caneditissuetitle'.$suffix] = array('description' => $i18n->__('Can edit title'));
                 self::$_available_permissions['issues']['caneditissue'.$suffix]['details']['caneditissuebasic'.$suffix]['details']['caneditissuedescription'.$suffix] = array('description' => $i18n->__('Can edit description'));
                 self::$_available_permissions['issues']['caneditissue'.$suffix]['details']['caneditissuebasic'.$suffix]['details']['caneditissuereproduction_steps'.$suffix] = array('description' => $i18n->__('Can edit steps to reproduce'));
@@ -1720,7 +1720,7 @@ class Context
                 self::$_available_permissions['issues']['caneditissue'.$suffix]['details']['caneditissuemilestone'.$suffix] = array('description' => $i18n->__('Can set milestone'));
                 self::$_available_permissions['issues']['caneditissue'.$suffix]['details']['caneditissuecolor'.$suffix] = array('description' => $i18n->__('Can edit planning color'));
                 self::$_available_permissions['issues']['caneditissue'.$suffix]['details']['caneditissueuserpain'.$suffix] = array('description' => $i18n->__('Can edit user pain'));
-                self::$_available_permissions['issues']['caneditissue'.$suffix]['details']['canaddextrainformationtoissues'.$suffix] = array('description' => $i18n->__('Can add/remove extra information (edition, component, release, links and files) and link issues'), 'details' => array());
+                self::$_available_permissions['issues']['caneditissue'.$suffix]['details']['canaddextrainformationtoissues'.$suffix] = array('description' => $i18n->__('Can add/remove extra information (edition, component, release, links and files) and link issues'), 'details' => []);
                 self::$_available_permissions['issues']['caneditissue'.$suffix]['details']['canaddextrainformationtoissues'.$suffix]['details']['canaddbuilds'.$suffix] = array('description' => $i18n->__('Can add and remove affected releases / versions'));
                 self::$_available_permissions['issues']['caneditissue'.$suffix]['details']['canaddextrainformationtoissues'.$suffix]['details']['canaddcomponents'.$suffix] = array('description' => $i18n->__('Can add and remove affected components'));
                 self::$_available_permissions['issues']['caneditissue'.$suffix]['details']['canaddextrainformationtoissues'.$suffix]['details']['canaddeditions'.$suffix] = array('description' => $i18n->__('Can add and remove affected editions'));
@@ -1760,11 +1760,11 @@ class Context
                 }
             }
 
-            self::$_available_permissions['issues']['canpostseeandeditallcomments'] = array('description' => $i18n->__('Can see all comments (including non-public), post new, edit and delete all comments'), 'details' => array());
+            self::$_available_permissions['issues']['canpostseeandeditallcomments'] = array('description' => $i18n->__('Can see all comments (including non-public), post new, edit and delete all comments'), 'details' => []);
             self::$_available_permissions['issues']['canpostseeandeditallcomments']['details']['canseenonpubliccomments'] = array('description' => $i18n->__('Can see all comments including hidden'));
             self::$_available_permissions['issues']['canpostseeandeditallcomments']['details']['caneditcomments'] = array('description' => $i18n->__('Can edit all comments'));
             self::$_available_permissions['issues']['canpostseeandeditallcomments']['details']['candeletecomments'] = array('description' => $i18n->__('Can delete any comments'));
-            self::$_available_permissions['issues']['canpostandeditcomments'] = array('description' => $i18n->__('Can see public comments, post new, edit own and delete own comments'), 'details' => array());
+            self::$_available_permissions['issues']['canpostandeditcomments'] = array('description' => $i18n->__('Can see public comments, post new, edit own and delete own comments'), 'details' => []);
             self::$_available_permissions['issues']['canpostandeditcomments']['details']['canviewcomments'] = array('description' => $i18n->__('Can see public comments'));
             self::$_available_permissions['issues']['canpostandeditcomments']['details']['canpostcomments'] = array('description' => $i18n->__('Can post comments'));
             self::$_available_permissions['issues']['canpostandeditcomments']['details']['caneditcommentsown'] = array('description' => $i18n->__('Can edit own comments'));
@@ -1829,7 +1829,7 @@ class Context
         if ($applies_to === null)
         {
             $list = self::$_available_permissions;
-            $retarr = array();
+            $retarr = [];
             foreach ($list as $key => $details)
             {
                 foreach ($details as $dkey => $dd)
@@ -1839,7 +1839,7 @@ class Context
             }
             foreach (self::getModules() as $module_key => $module)
             {
-                $retarr['module_' . $module_key] = array();
+                $retarr['module_' . $module_key] = [];
                 foreach ($module->getAvailablePermissions() as $mpkey => $mp)
                 {
                     $retarr['module_' . $module_key][$mpkey] = $mp;
@@ -1861,7 +1861,7 @@ class Context
         }
         else
         {
-            return array();
+            return [];
         }
     }
 
@@ -1957,14 +1957,14 @@ class Context
 
     public static function populateBreadcrumbs()
     {
-        $childbreadcrumbs = array();
+        $childbreadcrumbs = [];
 
         if (self::$_selected_project instanceof Project)
         {
             $t = self::$_selected_project;
 
-            $hierarchy_breadcrumbs = array();
-            $projects_processed = array();
+            $hierarchy_breadcrumbs = [];
+            $projects_processed = [];
 
             while ($t instanceof Project)
             {
@@ -2107,7 +2107,7 @@ class Context
     {
         if (!array_key_exists('pachno_flash_message', $_SESSION))
         {
-            $_SESSION['pachno_flash_message'] = array();
+            $_SESSION['pachno_flash_message'] = [];
         }
         $_SESSION['pachno_flash_message'][$key] = $message;
     }
@@ -2116,7 +2116,7 @@ class Context
     {
         if (self::$_messages === null)
         {
-            self::$_messages = array();
+            self::$_messages = [];
             if (array_key_exists('pachno_flash_message', $_SESSION))
             {
                 self::$_messages = $_SESSION['pachno_flash_message'];
@@ -2731,7 +2731,7 @@ class Context
 
     protected static function generateDebugInfo()
     {
-        $debug_summary = array();
+        $debug_summary = [];
         $load_time = self::getLoadtime();
         $session_time = self::$_session_initialization_time;
         if (\b2db\Core::isInitialized())
@@ -2744,7 +2744,7 @@ class Context
         }
         $debug_summary['load_time'] = ($load_time >= 1) ? round($load_time, 2) . 's' : round($load_time * 1000, 1) . 'ms';
         $debug_summary['session_initialization_time'] = ($session_time >= 1) ? round($session_time, 2) . 's' : round($session_time * 1000, 1) . 'ms';
-        $debug_summary['scope'] = array();
+        $debug_summary['scope'] = [];
         $scope = self::getScope();
         $debug_summary['scope']['id'] = $scope instanceof Scope ? $scope->getID() : 'unknown';
         $debug_summary['scope']['hostnames'] = ($scope instanceof Scope && \b2db\Core::isConnected()) ? implode(', ', $scope->getHostnames()) : 'unknown';
@@ -2758,7 +2758,7 @@ class Context
         {
             if (!array_key_exists('___DEBUGINFO___', $_SESSION))
             {
-                $_SESSION['___DEBUGINFO___'] = array();
+                $_SESSION['___DEBUGINFO___'] = [];
             }
             $_SESSION['___DEBUGINFO___'][self::getDebugID()] = $debug_summary;
             while (count($_SESSION['___DEBUGINFO___']) > 25) {

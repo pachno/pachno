@@ -72,10 +72,6 @@
 
         protected static $_permissions = array();
 
-        const MODULE_NORMAL = 1;
-        const MODULE_AUTH = 2;
-        const MODULE_GRAPH = 3;
-
         /**
          * Installs a module
          *
@@ -181,11 +177,6 @@
             tables\Modules::getTable()->removeModuleByID($module_id);
         }
 
-        public final function isCore()
-        {
-            return in_array($this->_name, array('publish'));
-        }
-
         public function disable()
         {
             self::disableModule($this->getID());
@@ -259,19 +250,9 @@
             return array();
         }
 
-        public function setConfigTitle($title)
-        {
-            $this->_module_config_title = $title;
-        }
-
         public function getConfigTitle()
         {
             return $this->_module_config_title;
-        }
-
-        public function setConfigDescription($description)
-        {
-            $this->_module_config_description = $description;
         }
 
         public function getConfigDescription()
@@ -286,7 +267,7 @@
 
         public function getType()
         {
-            return self::MODULE_NORMAL;
+            return framework\interfaces\ModuleInterface::MODULE_NORMAL;
         }
 
         /**
@@ -401,11 +382,6 @@
         public function getAccountSettingsLogo()
         {
             return $this->_account_settings_logo;
-        }
-
-        public function setHasConfigSettings($val = true)
-        {
-            $this->_has_config_settings = (bool) $val;
         }
 
         public function hasConfigSettings()

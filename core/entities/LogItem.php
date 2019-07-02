@@ -325,4 +325,17 @@
             return ($this->_comment_id !== null);
         }
 
+        public function isVisible()
+        {
+            if ($this->getTargetType() == self::TYPE_ISSUE) {
+                if (!$this->getIssue() instanceof Issue) {
+                    return false;
+                }
+
+                return $this->getIssue()->hasAccess();
+            }
+
+            return true;
+        }
+
     }

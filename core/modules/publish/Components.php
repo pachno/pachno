@@ -44,7 +44,7 @@
         {
             $articles = array();
             $categories = array();
-            $_path_handle = opendir(PACHNO_MODULES_PATH . 'publish' . DS . 'fixtures' . DS);
+            $_path_handle = opendir(PACHNO_CORE_PATH . 'modules' . DS . 'publish' . DS . 'fixtures' . DS);
             while ($article_name = readdir($_path_handle))
             {
                 if (mb_strpos($article_name, '.') === false)

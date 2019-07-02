@@ -186,7 +186,7 @@
   text-decoration: line-through;
 }
 
-.dashboard.layout_standard ul.dashboard_column > li .imgtd img, #timeline .recent_activities .imgtd img {
+.dashboard.layout_standard ul.dashboard_column > li .imgtd img {
   padding: 4px 0 0 0 !important;
 }
 
@@ -223,10 +223,6 @@
   .button:first-child:last-child {
     margin-left: auto;
   }
-}
-
-.dashboard.layout_standard .dashboard_view_content .project_list {
-  font-size: 0.8em;
 }
 
 .dashboard.layout_standard .dashboard_view_header img {
@@ -463,81 +459,10 @@
   padding: 5px;
 }
 
-.dashboard_view_content .dashboard_project_recent_activities, .dashboard_view_content .dashboard_recent_comments, .dashboard_view_content .dashboard_logged_actions {
-  margin-right: -10px;
-  margin-left: -10px;
-}
-
-.dashboard_project_recent_activities .recent_activities, .dashboard_recent_comments .recent_activities, .dashboard_logged_actions .recent_activities {
-  width: 100%;
-  border-spacing: 0;
-  margin-top: -10px;
-}
-
-.dashboard_project_recent_activities .recent_activities .latest_action_dates, .dashboard_recent_comments .recent_activities .latest_action_dates, .dashboard_logged_actions .recent_activities .latest_action_dates {
-  background-color: #F7F7F7;
-  padding-top: 7px;
-  padding-bottom: 7px;
-  margin-bottom: 10px;
-  border-bottom: 1px solid #EAEAEA;
-  border-top: 1px solid #EAEAEA;
-  font-weight: 400;
-}
-
-.dashboard_recent_comments .recent_activities .latest_action_dates_cell, .dashboard_logged_actions .recent_activities .latest_action_dates_cell {
-  padding-top: 9px;
-  padding-bottom: 2px;
-}
-
-.dashboard_project_recent_activities .recent_activities .latest_action_dates_cell {
-  padding-top: 4px;
-  padding-bottom: 2px;
-}
-
-.dashboard_project_recent_activities .user {
-  display: inline-block;
-  margin-bottom: 5px;
-  color: #AAA;
-}
-
-.dashboard_recent_comments .recent_activities .imgtd > img {
-  margin-top: 0 !important;
-}
-
-.dashboard_logged_actions .recent_activities .imgtd > img {
-  margin-top: -3px !important;
-}
-
 .dashboard_view_content #project_description {
   margin-bottom: 10px;
   font-size: 0.9em;
   line-height: 1.5;
-}
-
-.dashboard_view_content .project_strip > div:first-child {
-  margin-top: 12px;
-}
-
-.dashboard_view_content .dashboard_subprojects .project_strip {
-  box-shadow: none;
-  border: none;
-  font-size: 1.1em;
-}
-
-.dashboard_view_content .dashboard_subprojects .project_list > li {
-  border-top: 1px solid rgba(200, 200, 200, 0.3);
-  transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
-  background-color: rgba(200, 200, 200, 0);
-  border-radius: 3px;
-}
-
-.dashboard_view_content .dashboard_subprojects .project_list > li:first-child {
-  border-top: none;
-}
-
-.dashboard_view_content .dashboard_subprojects .project_list > li:hover {
-  background-color: rgba(200, 200, 200, .1);
-  border-color: transparent;
 }
 
 .dashboard_view_content .release_item {
@@ -572,12 +497,6 @@
 
 .dashboard_view_content .project_client_info table {
   margin-top: 5px;
-}
-
-.dashboard_view_content .recent_activities tr td:last-child > b {
-  font-size: 1.1em;
-  line-height: 1.5;
-  margin-left: 5px;
 }
 
 #dashboard_lefthand .collapser_link {
@@ -853,3 +772,4 @@ dl.info {
 
 
 @import 'dashboards/user-projects';
+@import 'dashboards/log-items';

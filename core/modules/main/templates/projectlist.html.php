@@ -4,11 +4,11 @@
 
 ?>
 <?php if ($project_count > 0): ?>
-    <ul class="project_list simple-list">
+    <div class="project-list">
         <?php foreach ($projects as $project): ?>
-            <li><?php include_component('project/project', compact('project')); ?></li>
+            <?php include_component('project/project', compact('project')); ?>
         <?php endforeach; ?>
-    </ul>
+    </div>
     <?php if ($pagination->getTotalPages() > 1): ?>
         <?php include_component('main/pagination', compact('pagination')); ?>
     <?php endif; ?>

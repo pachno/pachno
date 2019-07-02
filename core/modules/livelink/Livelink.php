@@ -46,6 +46,8 @@
          */
         protected $_connectors = [];
 
+        protected $long_name = 'Pachno Live Link';
+
         /**
          * Return an instance of this module
          *

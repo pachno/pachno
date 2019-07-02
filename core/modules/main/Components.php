@@ -404,6 +404,15 @@
 
         public function componentLogitem()
         {
+            if (!isset($this->include_issue_title)) {
+                $this->include_issue_title = true;
+            }
+            if (!isset($this->include_time)) {
+                $this->include_time = $this->include_issue_title;
+            }
+            if (!isset($this->include_project)) {
+                $this->include_project = false;
+            }
         }
 
         public function componentComments()
@@ -642,6 +651,9 @@
         public function componentDashboardViewLoggedActions()
         {
             $this->log_items = tables\LogItems::getTable()->getByUserID($this->getUser()->getID(), 35);
+            $this->prev_date = null;
+            $this->prev_timestamp = null;
+            $this->prev_issue = null;
         }
 
         public function componentDashboardViewUserProjects()

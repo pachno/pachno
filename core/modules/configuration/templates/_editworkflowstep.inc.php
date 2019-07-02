@@ -18,7 +18,7 @@
                         <?php foreach (\pachno\core\entities\Status::getAll() as $status): ?>
                             <input type="radio" name="itemdata" value="<?= $status->getId(); ?>" id="edit_step_details_<?= $step->getId(); ?>_status_<?= $status->getID(); ?>" class="fancy-checkbox" <?php if ($step->getLinkedStatusID() == $status->getId()) echo 'checked'; ?>>
                             <label class="list-item" for="edit_step_details_<?= $step->getId(); ?>_status_<?= $status->getID(); ?>">
-                                <span class="name"><span class="status-badge" style="background-color: <?php echo $status->getColor(); ?>;"><span class="value"><?php echo $status->getName(); ?></span></span></span>
+                                <span class="name"><span class="status-badge" style="background-color: <?php echo $status->getColor(); ?>; color: <?php echo $status->getTextColor(); ?>;"><span class="value"><?php echo $status->getName(); ?></span></span></span>
                             </label>
                         <?php endforeach; ?>
                     </div>

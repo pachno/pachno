@@ -4,24 +4,12 @@
 
 ?>
 <?php if (count($pachno_user->getAssociatedProjects()) > 0): ?>
-    <ul id="associated_projects">
+    <div id="associated-projects" class="project-list">
         <?php foreach ($pachno_user->getAssociatedProjects() as $project): ?>
-            <?php if ($project->isDeleted()): continue; endif; ?>
-            <li style="text-align: right;">
-                <div style="padding: 0 5px;">
-                    <div class="project_name">
-                        <?php echo link_tag(make_url('project_dashboard', array('project_key' => $project->getKey())), $project->getName(), array('style' => 'font-weight: normal; font-size: 1.2em;')); ?>
-                    </div>
-                    <div style="float: right;" class="button-group">
-                        <?php foreach ($links as $link): ?>
-                            <?php echo link_tag(str_replace('%25project_key%25', $project->getKey(), $link['url']), $link['text'], array('class' => 'button')); ?>
-                        <?php endforeach; ?>
-                    </div>
-                    <br style="clear: both;">
-                </div>
-            </li>
+            <?php if ($project->isDeleted()) continue; ?>
+            <?php include_component('project/project', compact('project')); ?>
         <?php endforeach; ?>
-    </ul>
+    </div>
 <?php else: ?>
     <div class="no-items no-projects">
         <?= fa_image_tag('star-half-alt'); ?>

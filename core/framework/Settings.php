@@ -1077,16 +1077,18 @@
             $config_sections['general'][self::CONFIGURATION_SECTION_TEAMS] = array('route' => 'configure_teams', 'description' => $i18n->__('Manage teams'), 'fa_style' => 'fas', 'fa_icon' => 'users', 'details' => $i18n->__('Create and manage teams from this section.'));
             $config_sections['general'][self::CONFIGURATION_SECTION_CLIENTS] = array('route' => 'configure_clients', 'description' => $i18n->__('Manage clients'), 'fa_style' => 'fas', 'fa_icon' => 'users', 'details' => $i18n->__('Create and manage clients from this section.'));
             $config_sections['general'][self::CONFIGURATION_SECTION_MODULES] = array('route' => 'configure_modules', 'description' => $i18n->__('Manage modules'), 'fa_style' => 'fas', 'fa_icon' => 'puzzle-piece', 'details' => $i18n->__('Manage Pachno extensions from this section. New modules are installed from here.'), 'module' => 'core');
-            foreach (Context::getModules() as $module)
+            foreach (Context::getAllModules() as $modules)
             {
-                if ($module->hasConfigSettings() && $module->isEnabled()) {
-                    $module_array = array('route' => array('configure_module', array('config_module' => $module->getName())), 'description' => Context::geti18n()->__($module->getConfigTitle()), 'icon' => $module->getName(), 'details' => Context::geti18n()->__($module->getConfigDescription()), 'module' => $module->getName());
-                    if ($module->hasFontAwesomeIcon()) {
-                        $module_array['fa_icon'] = $module->getFontAwesomeIcon();
-                        $module_array['fa_style'] = $module->getFontAwesomeStyle();
-                        $module_array['fa_color'] = $module->getFontAwesomeColor();
+                foreach ($modules as $module) {
+                    if ($module->hasConfigSettings() && ($module instanceof CoreModule || $module->isEnabled())) {
+                        $module_array = array('route' => array('configure_module', array('config_module' => $module->getName())), 'description' => Context::geti18n()->__($module->getConfigTitle()), 'icon' => $module->getName(), 'details' => Context::geti18n()->__($module->getConfigDescription()), 'module' => $module->getName());
+                        if ($module->hasFontAwesomeIcon()) {
+                            $module_array['fa_icon'] = $module->getFontAwesomeIcon();
+                            $module_array['fa_style'] = $module->getFontAwesomeStyle();
+                            $module_array['fa_color'] = $module->getFontAwesomeColor();
+                        }
+                        $config_sections[self::CONFIGURATION_SECTION_MODULES][] = $module_array;
                     }
-                    $config_sections[self::CONFIGURATION_SECTION_MODULES][] = $module_array;
                 }
             }
 

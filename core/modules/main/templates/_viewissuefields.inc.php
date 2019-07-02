@@ -327,7 +327,7 @@
                                     case CustomDatatype::USER_CHOICE:
                                         ?>
                                         <span id="<?= $field; ?>_name"<?php if (!$info['value']): ?> style="display: none;"<?php endif; ?>>
-                                            <?= include_component('main/userdropdown', array('user' => $info['name'])); ?>
+                                            <?= include_component('main/userdropdown', array('user' => $info['value'])); ?>
                                         </span>
                                         <span class="no-value" id="no_<?= $field; ?>"<?php if ($info['value']): ?> style="display: none;"<?php endif; ?>>
                                             <?= __('Not determined'); ?>

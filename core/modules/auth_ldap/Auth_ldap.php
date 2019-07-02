@@ -78,7 +78,7 @@
          */
         public final function getType()
         {
-            return parent::MODULE_AUTH;
+            return framework\interfaces\ModuleInterface::MODULE_AUTH;
         }
 
 
