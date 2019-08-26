@@ -1,7 +1,6 @@
 <?php
 
     include_component('publish/wikibreadcrumbs');
-    \pachno\core\framework\Context::loadLibrary('publish/publish');
     $pachno_response->setTitle($article_name);
 
 ?>

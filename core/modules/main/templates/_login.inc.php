@@ -1,4 +1,3 @@
-<?php /* \pachno\core\framework\Event::createNew('core', 'login_form_tab')->trigger(array('selected_tab' => $selected_tab)); */ ?>
 <div class="logindiv form-container active" id="regular_login_container">
     <?php if ($loginintro instanceof \pachno\core\entities\Article): ?>
         <?php include_component('publish/articledisplay', array('article' => $loginintro, 'show_title' => false, 'show_details' => false, 'show_actions' => false, 'embedded' => true)); ?>

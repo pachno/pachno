@@ -56,9 +56,9 @@
          * What type of article this is
          *
          * @var integer
-         * @Column(type="integer", length=10, default=1)
+         * @Column(type="integer", length=10, default=2)
          */
-        protected $_article_type = self::TYPE_WIKI;
+        protected $_article_type = self::TYPE_MANUAL;
 
         /**
          * The old article content, used for history when saving
@@ -109,6 +109,31 @@
         protected $_child_articles = null;
 
         /**
+         * Array of users that are subscribed to this issue
+         *
+         * @var array
+         * @Relates(class="\pachno\core\entities\User", collection=true, manytomany=true, joinclass="\pachno\core\entities\tables\UserArticles")
+         */
+        protected $_subscribers = null;
+
+        /**
+         * Related project
+         *
+         * @var \pachno\core\entities\Project
+         * @Column(type="integer", length=10)
+         * @Relates(class="\pachno\core\entities\Project")
+         */
+        protected $_project_id;
+
+        /**
+         * Whether or not this page is a category page
+         *
+         * @Column(type="boolean")
+         * @var boolean
+         */
+        protected $_is_category = false;
+
+        /**
          * A list of articles that links to this article
          *
          * @var array
@@ -143,37 +168,14 @@
          */
         protected $_category_articles = null;
 
-        /**
-         * Whether or not this page is a category page
-         *
-         * @var boolean
-         */
-        protected $_is_category = null;
         protected $_history = null;
         protected $_category_name = null;
         protected $_namespaces = null;
         protected $_redirect_article = null;
 
-        /**
-         * Array of users that are subscribed to this issue
-         *
-         * @var array
-         * @Relates(class="\pachno\core\entities\User", collection=true, manytomany=true, joinclass="\pachno\core\entities\tables\UserArticles")
-         */
-        protected $_subscribers = null;
-
         protected $_new_subscribers = array();
 
         protected $_parser = null;
-
-        /**
-         * Related project
-         *
-         * @var \pachno\core\entities\Project
-         * @Column(type="integer", length=10)
-         * @Relates(class="\pachno\core\entities\Project")
-         */
-        protected $_project_id;
 
         /**
          * Article constructor
@@ -189,13 +191,10 @@
         protected function _preSave($is_new)
         {
             parent::_preSave($is_new);
-            if ($this->_article_type == self::TYPE_MANUAL) {
-                $this->_name = $this->_manual_name;
-            } else {
-                $this->_manual_name = $this->_name;
+            if (!framework\Context::isCLI()) {
+                $this->_date = NOW;
+                $this->_author = framework\Context::getUser();
             }
-            $this->_date = NOW;
-            $this->_author = framework\Context::getUser();
         }
 
         protected function _postDelete()
@@ -241,13 +240,16 @@
             \pachno\core\entities\tables\ArticleLinks::getTable()->deleteLinksByArticle($article_name);
         }
 
-        public static function createNew($name, $content, $scope = null, $options = array())
+        public static function createNew($name, $content, $scope = null, $options = array(), $project = null)
         {
             $user_id = (framework\Context::getUser() instanceof User) ? framework\Context::getUser()->getID() : 0;
 
             $article = new Article();
             $article->setName($name);
             $article->setContent($content);
+            if ($project !== null) {
+                $article->setProject($project->getID());
+            }
 
             if (!isset($options['noauthor']))
                 $article->setAuthor($user_id);
@@ -338,6 +340,7 @@
             if ($this->_subcategories === null)
             {
                 $this->_subcategories = array();
+                return;
                 if ($res = ArticleCategoryLinks::getTable()->getSubCategories($this->getCategoryName()))
                 {
                     while ($row = $res->getNextRow())
@@ -370,6 +373,7 @@
             if ($this->_category_articles === null)
             {
                 $this->_category_articles = array();
+                return;
                 if ($res = ArticleCategoryLinks::getTable()->getCategoryArticles($this->getCategoryName()))
                 {
                     while ($row = $res->getNextRow())
@@ -391,7 +395,10 @@
             }
         }
 
-        public function getCategoryArticles()
+        /**
+         * @return Article[]
+         */
+        public function getCategoryArticles(): array
         {
             $this->_populateCategoryArticles();
             return $this->_category_articles;
@@ -438,24 +445,17 @@
 
         public function isCategory()
         {
-            if ($this->_is_category === null)
-            {
-                $names = explode(':', $this->_name);
-                if (count($names) > 0)
-                {
-                    $this->_is_category = (bool) ($names[0] == 'Category');
-                }
-                else
-                {
-                    $this->_is_category = false;
-                }
-            }
             return $this->_is_category;
+        }
+
+        public function setIsCategory($is_category = true)
+        {
+            $this->_is_category = $is_category;
         }
 
         public function getSpacedName()
         {
-            return get_spaced_name($this->getName());
+            return preg_replace('/(?<=[a-z])(?=[A-Z])/', ' ', $this->getName());
         }
 
         public function getCategoryName()
@@ -514,7 +514,7 @@
 
             if (!$this->_redirect_article instanceof Article)
             {
-                $article = \pachno\core\entities\tables\Articles::getTable()->getArticleByName($this->_redirect_article);
+                $article = \pachno\core\entities\tables\Articles::getTable()->getArticleByName($this->_redirect_article, $this->getProject());
                 if ($article instanceof Article)
                     $this->_redirect_article = $article;
             }
@@ -883,7 +883,8 @@
          */
         public function setName($name)
         {
-            $this->_name = preg_replace('/[^\p{L}\p{N} :]/u', '', $name);
+//            $this->_name = preg_replace('/[^\p{L}\p{N} :]/u', '', $name);
+            $this->_name = $name;
         }
 
         /**
@@ -1200,6 +1201,30 @@
             }
 
             return $users;
+        }
+
+        public function getLink($mode = 'show')
+        {
+            switch ($mode) {
+                case 'show':
+                    if ($this->getProject() instanceof Project) {
+                        return framework\Context::getRouting()->generate('publish_project_article', ['project_key' => $this->getProject()->getKey(), 'article_id' => (int) $this->getId(), 'article_name' => $this->getName()]);
+                    }
+
+                    return framework\Context::getRouting()->generate('publish_article', ['article_id' => (int) $this->getId(), 'article_name' => $this->getName()]);
+
+                case 'history':
+                    return framework\Context::getRouting()->generate('publish_article_history', ['article_id' => (int) $this->getId(), 'article_name' => $this->getName()]);
+
+                case 'edit':
+                    if ($this->getProject() instanceof Project) {
+                        return framework\Context::getRouting()->generate('publish_project_article_edit', ['project_key' => $this->getProject()->getKey(), 'article_id' => (int) $this->getId()]);
+                    }
+
+                    return framework\Context::getRouting()->generate('publish_article_edit', ['article_id' => (int) $this->getId()]);
+            }
+
+            return '';
         }
 
     }

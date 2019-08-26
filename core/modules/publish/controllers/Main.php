@@ -2,16 +2,19 @@
 
     namespace pachno\core\modules\publish\controllers;
 
+    use pachno\core\entities\Project;
     use pachno\core\framework,
         pachno\core\entities\User,
         pachno\core\entities,
         pachno\core\entities\Article,
         pachno\core\entities\tables\Articles;
+    use pachno\core\framework\Request;
 
     /**
      * actions for the publish module
      *
      * @property \pachno\core\entities\Article $article
+     * @property \pachno\core\entities\Project $selected_project
      *
      * @Routes(name_prefix="publish_")
      */
@@ -50,87 +53,48 @@
         /**
          * Pre-execute function
          *
-         * @param \pachno\core\framework\Request $request
+         * @param Request $request
          */
-        public function preExecute(framework\Request $request, $action)
+        public function preExecute(Request $request, $action)
         {
             $this->article = null;
-            $this->article_name = ($request->hasParameter('new_article_name')) ? $request['new_article_name'] : $request['article_name'];
-            $this->article_id = (int) $request['article_id'];
-            $this->special = false;
+            $article_name = $request['article_name'];
+            $article_id = $request['article_id'];
 
-            if ($this->article_name && mb_strpos($request['article_name'], ':') !== false)
-            {
-                $this->article_name = $this->_getArticleNameDetails($this->article_name);
-            }
-            else
-            {
-                try
-                {
-                    if ($project_key = $request['project_key'])
-                    {
-                        $this->selected_project = \pachno\core\entities\Project::getByKey($project_key);
-                    }
-                    elseif ($project_id = (int) $request['project_id'])
-                    {
-                        $this->selected_project = \pachno\core\entities\tables\Projects::getTable()->selectById($project_id);
-                    }
+            try {
+                if ($project_key = $request['project_key']) {
+                    $this->selected_project = \pachno\core\entities\Project::getByKey($project_key);
                 }
-                catch (\Exception $e)
-                {
+            } catch (\Exception $e) {}
 
-                }
-            }
-
-            if (!$this->special)
-            {
-                if ($this->article_id)
-                {
-                    $this->article = Articles::getTable()->selectById($this->article_id);
-                }
-                elseif ($this->article_name)
-                {
-                    $this->article = Articles::getTable()->getArticleByName($this->article_name);
-                }
-
-                if (!$this->article instanceof Article)
-                {
-                    $this->article = new Article();
-                    if ($this->article_name)
-                    {
-                        $this->article->setName($this->article_name);
-                    }
-                    elseif ($request->hasParameter('parent_article_name'))
-                    {
-                        $this->article->setParentArticle(Articles::getTable()->getArticleByName($request['parent_article_name']));
-                        $this->_getArticleNameDetails($request['parent_article_name']);
-                        if ($this->article->getParentArticle() instanceof Article)
-                        {
-                            if ($this->article->getParentArticle()->getArticleType() == Article::TYPE_WIKI)
-                            {
-                                $this->article->setName($this->article->getParentArticle()->getName() . ':');
-                            }
-                            $this->article->setArticleType($this->article->getParentArticle()->getArticleType());
-                        }
-                    }
-                    $this->article->setContentSyntax($this->getUser()->getPreferredWikiSyntax(true));
-                }
-            }
-
-            if ($this->selected_project instanceof \pachno\core\entities\Project)
-            {
-                if (!$this->selected_project->hasAccess())
-                {
+            if ($this->selected_project instanceof \pachno\core\entities\Project) {
+                if (!$this->selected_project->hasAccess()) {
                     $this->forward403();
-                }
-                else
-                {
+                } else {
                     framework\Context::setCurrentProject($this->selected_project);
                 }
             }
+
+            $this->article = Articles::getTable()->selectById($article_id);
+//            }
+//            elseif ($this->article_name)
+//            {
+//                $this->article = Articles::getTable()->getArticleByName($this->article_name);
+//            }
+
+            if (!$this->article instanceof Article) {
+                $this->article = new Article();
+                $this->article->setProject($this->selected_project);
+                $this->article->setName($article_name);
+                if ($request->hasParameter('parent_article_id')) {
+                    $this->article->setParentArticle(Articles::getTable()->selectById($request['parent_article_id']));
+                }
+
+                $this->article->setContentSyntax($this->getUser()->getPreferredWikiSyntax(true));
+            }
         }
 
-        public function runSpecialArticle(framework\Request $request)
+        public function runSpecialArticle(Request $request)
         {
             $this->component = null;
             if (framework\ActionComponent::doesComponentExist("publish/special{$this->article_name}", false))
@@ -143,9 +107,21 @@
         /**
          * Show an article
          *
-         * @param \pachno\core\framework\Request $request
+         * @Route(name="project_article", url="/:project_key/wiki/:article_id/:article_name")
+         * @param Request $request
          */
-        public function runShowArticle(framework\Request $request)
+        public function runProjectArticle(Request $request)
+        {
+            $this->redirect('showarticle');
+        }
+
+        /**
+         * Show an article
+         *
+         * @Route(name="article", url="/wiki/:article_id/:article_name")
+         * @param Request $request
+         */
+        public function runShowArticle(Request $request)
         {
             if ($this->special)
                 $this->redirect('specialArticle');
@@ -167,10 +143,10 @@
 
                     if (!$request->hasParameter('no_redirect') && $this->article->isRedirect())
                     {
-                        if ($redirect_article = $this->article->getRedirectArticleName())
-                        {
+                        $redirect_article = $this->article->getRedirectArticle();
+                        if ($redirect_article instanceof Article) {
                             framework\Context::setMessage('publish_redirected_article', $this->article->getName());
-                            $this->forward(framework\Context::getRouting()->generate('publish_article', array('article_name' => $redirect_article)));
+                            $this->forward($redirect_article->getLink());
                         }
                     }
                     try
@@ -189,12 +165,12 @@
             }
         }
 
-        public function runArticleAttachments(framework\Request $request)
+        public function runArticleAttachments(Request $request)
         {
 
         }
 
-        public function runArticlePermissions(framework\Request $request)
+        public function runArticlePermissions(Request $request)
         {
             if ($this->article instanceof Article)
             {
@@ -206,7 +182,11 @@
             }
         }
 
-        public function runArticleHistory(framework\Request $request)
+        /**
+         * @param Request $request
+         * @Route(name="article_history", url="/wiki/:article_id/:article_name/history")
+         */
+        public function runArticleHistory(Request $request)
         {
             $this->history_action = $request['history_action'];
             if ($this->article instanceof Article)
@@ -264,9 +244,9 @@
         /**
          * Delete an article
          *
-         * @param \pachno\core\framework\Request $request
+         * @param Request $request
          */
-        public function runDeleteArticle(framework\Request $request)
+        public function runDeleteArticle(Request $request)
         {
             try
             {
@@ -298,9 +278,9 @@
         /**
          * Get avilable parent articles for an article
          *
-         * @param \pachno\core\framework\Request $request
+         * @param Request $request
          */
-        public function runGetAvailableParents(framework\Request $request)
+        public function runGetAvailableParents(Request $request)
         {
             $articles = Articles::getTable()->getManualSidebarArticles(framework\Context::getCurrentProject(), $request['find_article']);
 
@@ -318,13 +298,28 @@
         /**
          * Show an article
          *
-         * @param \pachno\core\framework\Request $request
+         * @Route(name="project_article_edit", url="/:project_key/wiki/:article_id")
+         * @param Request $request
          */
-        public function runEditArticle(framework\Request $request)
+        public function runProjectEditArticle(Request $request)
         {
-            $this->article_route = ($this->article->getID()) ? 'publish_article_edit' : 'publish_article_new';
-            $this->article_route_params = ($this->article->getID()) ? array('article_name' => $this->article_name) : array();
+            $this->redirect('editarticle');
+        }
 
+        /**
+         * Show an article
+         *
+         * @Route(name="article_edit", url="/wiki/:article_id")
+         * @param Request $request
+         */
+        public function runEditArticle(Request $request)
+        {
+            if (!$this->article) {
+                $this->article = new Article();
+                if ($this->selected_project instanceof Project) {
+                    $this->article->setProject($this->selected_project);
+                }
+            }
             if (!$this->article->canEdit())
             {
                 framework\Context::setMessage('publish_article_error', framework\Context::getI18n()->__('You do not have permission to edit this article'));
@@ -384,7 +379,7 @@
             }
         }
 
-        public function runFindArticles(framework\Request $request)
+        public function runFindArticles(Request $request)
         {
             $this->articlename = $request['articlename'];
 
@@ -397,9 +392,9 @@
         /**
          * Toggle favourite article (starring)
          *
-         * @param \pachno\core\framework\Request $request
+         * @param Request $request
          */
-        public function runToggleFavouriteArticle(framework\Request $request)
+        public function runToggleFavouriteArticle(Request $request)
         {
             // Read request parameters.
             $article_id = $request['article_id'];

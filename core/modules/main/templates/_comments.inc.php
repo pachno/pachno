@@ -9,7 +9,6 @@
      * @var int $target_type
      * @var int $mentionable_target_type
      * @var bool $save_changes_checked
-     * @var string $forward_url
      */
 
     use pachno\core\framework\Context,

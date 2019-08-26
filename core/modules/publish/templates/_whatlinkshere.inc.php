@@ -1,3 +1,16 @@
+<?php
+
+    use pachno\core\entities\Article;
+    use pachno\core\modules\publish\Publish;
+
+    /**
+     * @var Article[] $whatlinkshere
+     * @var Publish $publish
+     */
+
+    $publish = \pachno\core\framework\Context::getModule('publish');
+
+?>
 <div class="container_div toggled<?php if (count($whatlinkshere) == 0) echo ' visible'; ?>">
     <div class="header" onclick="if ($('nothing_links_here') == undefined) $(this).up().toggleClassName('visible');">
         <?php echo __('Links to this article'); ?>
@@ -9,7 +22,7 @@
                 <?php foreach ($whatlinkshere as $linking_article): ?>
                     <li>
                         <?php echo image_tag('news_item_medium.png', array('style' => 'float: left;'), false, 'publish'); ?>
-                        <?php echo link_tag(make_url('publish_article', array('article_name' => $linking_article->getName())), \pachno\core\framework\Settings::get('allow_camelcase_links', 'publish', \pachno\core\framework\Context::getScope()->getID(), 0) ? get_spaced_name($linking_article->getTitle()) : $linking_article->getTitle()); ?>
+                        <?php echo link_tag(make_url('publish_article', array('article_name' => $linking_article->getName())), \pachno\core\framework\Settings::get('allow_camelcase_links', 'publish', \pachno\core\framework\Context::getScope()->getID(), 0) ? $linking_article->getSpacedName() : $linking_article->getTitle()); ?>
                         <br>
                         <span><?php echo __('%time, by %user', array('%time' => \pachno\core\framework\Context::getI18n()->formatTime($linking_article->getPostedDate(), 3), '%user' => '<b>'.(($linking_article->getAuthor() instanceof \pachno\core\entities\common\Identifiable) ? '<a href="javascript:void(0);" onclick="Pachno.Main.Helpers.Backdrop.show(\'' . make_url('get_partial_for_backdrop', array('key' => 'usercard', 'user_id' => $linking_article->getAuthor()->getID())) . '\');">' . $linking_article->getAuthor()->getName() . '</a>' : __('System')).'</b>')); ; ?></span>
                     </li>

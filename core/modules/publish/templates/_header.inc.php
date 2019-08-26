@@ -1,5 +1,16 @@
 <?php
+
+    use pachno\core\entities\Article;
+    use pachno\core\modules\publish\Publish;
+
+    /**
+     * @var Article $article
+     * @var Publish $publish
+     */
+
     $article_name = $article->getName();
+    $publish = \pachno\core\framework\Context::getModule('publish');
+
 ?>
 <div class="header <?= $mode; ?>">
     <?php if ($mode != 'edit'): ?>
@@ -25,11 +36,11 @@
                 <?php if ($article->getID() && $mode != 'view'): ?>
                     <?= link_tag(make_url('publish_article', array('article_name' => $article->getName())), __('Show'), array('class' => 'button')); ?>
                 <?php endif; ?>
-                <?php if ((isset($article) && $article->canEdit()) || (!isset($article) && ((\pachno\core\framework\Context::isProjectContext() && !\pachno\core\framework\Context::getCurrentProject()->isArchived()) || (!\pachno\core\framework\Context::isProjectContext() && \pachno\core\framework\Context::getModule('publish')->canUserEditArticle($article_name))))): ?>
+                <?php if ((isset($article) && $article->canEdit()) || (!isset($article) && ((\pachno\core\framework\Context::isProjectContext() && !\pachno\core\framework\Context::getCurrentProject()->isArchived()) || (!\pachno\core\framework\Context::isProjectContext() && $publish->canUserEditArticle($article_name))))): ?>
                     <?php if ($mode == 'edit'): ?>
                         <?= javascript_link_tag(($article->getID()) ? __('Edit') : __('Create new article'), array('class' => 'button button-pressed')); ?>
                     <?php else: ?>
-                        <?= link_tag(make_url('publish_article_edit', array('article_name' => $article_name)), ($article->getID()) ? __('Edit') : __('Create new article'), array('class' => 'button')); ?>
+                        <?= link_tag(make_url('publish_edit_article', array('article_name' => $article_name)), ($article->getID()) ? __('Edit') : __('Create new article'), array('class' => 'button')); ?>
                     <?php endif; ?>
                 <?php endif; ?>
                 <?php if (!isset($embedded) || !$embedded): ?>
@@ -41,7 +52,7 @@
                             <li class="parent_article_selector_menu_entry"><a href="javascript:void(0);" onclick="$('parent_selector_container').toggle();Pachno.Main.loadParentArticles();"><?= fa_image_tag('newspaper') . __('Select parent article'); ?></a></li>
                         <?php endif; ?>
                         <?php if ($article->getID()): ?>
-                            <li<?php if ($mode == 'history'): ?> class="selected"<?php endif; ?>><?= link_tag(make_url('publish_article_history', array('article_name' => $article_name)), fa_image_tag('history') . __('History')); ?></li>
+                            <li<?php if ($mode == 'history'): ?> class="selected"<?php endif; ?>><?= link_tag($article->getLink('history'), fa_image_tag('history') . __('History')); ?></li>
                             <?php if (in_array($mode, array('show', 'edit')) && \pachno\core\framework\Settings::isUploadsEnabled() && $article->canEdit()): ?>
                                 <li><a href="javascript:void(0);" onclick="Pachno.Main.showUploader('<?= make_url('get_partial_for_backdrop', array('key' => 'uploader', 'mode' => 'article', 'article_name' => $article->getName())); ?>');"><?= fa_image_tag('paperclip') . __('Attach a file'); ?></a></li>
                             <?php endif; ?>
@@ -69,9 +80,9 @@
         <div id="article_edit_header_information">
             <div id="article_parent_container">
                 <input type="hidden" name="parent_article_name" id="parent_article_name" value="<?= ($article->getParentArticleName()) ? $article->getParentArticleName() : htmlentities($pachno_request['parent_article_name'], ENT_COMPAT, \pachno\core\framework\Context::getI18n()->getCharset()); ?>" style="width: 400px;">
-                <span class="parent_article_name <?php if (!$article->getParentArticle() instanceof \pachno\core\entities\Article) echo ' faded_out'; ?>">
+                <span class="parent_article_name <?php if (!$article->getParentArticle() instanceof Article) echo ' faded_out'; ?>">
                     <span id="parent_article_name_span">
-                        <?php if ($article->getParentArticle() instanceof \pachno\core\entities\Article): ?>
+                        <?php if ($article->getParentArticle() instanceof Article): ?>
                             <?= ($article->getParentArticle()->getManualName()) ? $article->getParentArticle()->getManualName() : $article->getParentArticle()->getName(); ?>
                         <?php else: ?>
                             <?= __('No parent article'); ?>
@@ -84,7 +95,7 @@
         </div>
     <?php else: ?>
     <?php
-        if ($article->getArticleType() == \pachno\core\entities\Article::TYPE_MANUAL)
+        if ($article->getArticleType() == Article::TYPE_MANUAL)
         {
             echo $article->getManualName();
         }
@@ -101,7 +112,7 @@
                 array_shift($namespaces);
                 echo '<span>', \pachno\core\framework\Context::getCurrentProject()->getName(), ':</span>';
             }
-            echo \pachno\core\framework\Settings::get('allow_camelcase_links', 'publish', \pachno\core\framework\Context::getScope()->getID(), 0) ? get_spaced_name(implode(':', $namespaces)) : implode(':', $namespaces);
+            echo \pachno\core\framework\Settings::get('allow_camelcase_links', 'publish', \pachno\core\framework\Context::getScope()->getID(), 0) ? Publish::getSpacedName(implode(':', $namespaces)) : implode(':', $namespaces);
         }
     ?>
     <?php endif; ?>

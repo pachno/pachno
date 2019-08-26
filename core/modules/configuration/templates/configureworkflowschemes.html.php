@@ -12,8 +12,7 @@
             <h1><?php echo __('Configure workflow schemes'); ?></h1>
             <div class="helper-text">
                 <p>
-                    <?php echo __('Workflow lets you define the lifecycle of an issue. You can define steps, transitions and more, that makes an issue move through its defined lifecycle.'); ?>
-                    <?php echo __('You can read more about how the workflow in Pachno works and is set up in %link_to_wiki_workflow.', array('%link_to_wiki_workflow' => link_tag(make_url('publish_article', array('article_name' => 'Workflow')), 'Workflow'))); ?>
+                    <?php echo __('Workflow schemes links issue types to workflows. You can read more about how the workflow in Pachno works and is set up in %link_to_wiki_workflow.', array('%link_to_wiki_workflow' => link_tag(make_url('publish_article', array('article_name' => 'Workflow')), 'Workflow'))); ?>
                 </p>
             </div>
             <h3>

@@ -501,10 +501,10 @@
          *
          * @return Project
          */
-        public static function getByKey($key)
+        public static function getByKey($key): ?Project
         {
-            if ($key)
-            {
+            if ($key) {
+                $key = mb_strtolower($key);
                 self::_populateProjects();
                 return (array_key_exists($key, self::$_projects)) ? self::$_projects[$key] : null;
             }
@@ -538,10 +538,10 @@
         {
             if (self::$_projects === null)
             {
-                self::$_projects = Projects::getTable()->getAll();
-                foreach (self::$_projects as $key => $project) {
-                    if (!$project->hasAccess()) {
-                        unset(self::$_projects[$key]);
+                self::$_projects = [];
+                foreach (Projects::getTable()->getAll() as $project) {
+                    if ($project->hasAccess()) {
+                        self::$_projects[$project->getKey()] = $project;
                     }
                 }
             }
@@ -1319,7 +1319,7 @@
 
         /**
          * Returns an array with all open milestones
-         * 
+         *
          * @return \pachno\core\entities\Milestone[]
          */
         public function getOpenMilestones()
@@ -1335,7 +1335,7 @@
 
         /**
          * Returns an array with all milestones visible for the roadmap
-         * 
+         *
          * @return \pachno\core\entities\Milestone[]
          */
         public function getMilestonesForRoadmap()
@@ -1353,7 +1353,7 @@
 
         /**
          * Returns an array with all milestones visible for issues
-         * 
+         *
          * @return \pachno\core\entities\Milestone[]
          */
         public function getMilestonesForIssues()
@@ -1371,7 +1371,7 @@
 
         /**
          * Returns an array with all milestones visible for issues or the roadmap
-         * 
+         *
          * @return \pachno\core\entities\Milestone[]
          */
         public function getAvailableMilestones()
@@ -3291,7 +3291,7 @@
 
             $preloaded = true;
         }
-        
+
         public function toJSON($detailed = true)
         {
         	$jsonArray = [

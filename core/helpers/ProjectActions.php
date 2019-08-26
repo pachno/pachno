@@ -37,7 +37,8 @@
                     elseif ($project_key)
                         $this->selected_project = entities\Project::getByKey($project_key);
                 }
-                catch (\Exception $e) { }
+                catch (\Exception $e) {
+                }
             }
 
             if (!$this->selected_project instanceof entities\Project)

@@ -1,7 +1,6 @@
 <?php
 
     include_component('publish/wikibreadcrumbs', array('article_name' => $article_name, 'edit' => true));
-    \pachno\core\framework\Context::loadLibrary('publish/publish');
     $pachno_response->setTitle(__('Editing %article_name', array('%article_name' => $article_name)));
 
 ?>

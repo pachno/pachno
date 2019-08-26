@@ -2,20 +2,21 @@
 
     use pachno\core\entities\Comment;
     use pachno\core\framework\Context;
+    use pachno\core\entities\Article;
+    use pachno\core\framework\Response;
 
-    include_component('publish/wikibreadcrumbs', ['article_name' => $article_name]);
-    Context::loadLibrary('publish/publish');
-    $pachno_response->setTitle($article_name);
+    /**
+     * @var Article $article
+     * @var Response $pachno_response
+     */
+
+    $pachno_response->setTitle($article->getName());
 
 ?>
+<div class="content-with-sidebar">
 <?php if ($article instanceof \pachno\core\entities\Article): ?>
-    <div class="side_bar <?php if ($article->getArticleType() == \pachno\core\entities\Article::TYPE_MANUAL) echo 'manual'; ?>">
-        <?php if ($article->getArticleType() == \pachno\core\entities\Article::TYPE_MANUAL): ?>
-            <?php include_component('manualsidebar', ['article' => $article]); ?>
-        <?php else: ?>
-            <?php include_component('leftmenu', ['article' => $article]); ?>
-        <?php endif; ?>
-    </div>
+    <?php include_component('manualsidebar', ['article' => $article]); ?>
+    <?php //include_component('leftmenu', ['article' => $article]); ?>
     <div class="main_area article">
         <a name="top"></a>
         <?php if ($error): ?>
@@ -36,20 +37,19 @@
         <?php endif; ?>
         <?php if ($article->getID()): ?>
             <?php include_component('articledisplay', ['article' => $article, 'show_article' => true, 'redirected_from' => $redirected_from]); ?>
-            <?php $article_name = $article->getName(); ?>
         <?php else: ?>
             <div class="article">
                 <?php include_component('publish/header', ['article' => $article, 'show_actions' => true, 'mode' => 'view']); ?>
                 <?php if (Context::isProjectContext() && Context::getCurrentProject()->isArchived()): ?>
-                    <?php include_component('publish/placeholder', ['article_name' => $article_name, 'nocreate' => true]); ?>
+                    <?php include_component('publish/placeholder', ['article_name' => $article->getName(), 'nocreate' => true]); ?>
                 <?php else: ?>
-                    <?php include_component('publish/placeholder', ['article_name' => $article_name]); ?>
+                    <?php include_component('publish/placeholder', ['article_name' => $article->getName()]); ?>
                 <?php endif; ?>
             </div>
         <?php endif; ?>
-        <?php if (!$article->getID() && ((Context::isProjectContext() && !Context::getCurrentProject()->isArchived()) || (!Context::isProjectContext() && Context::getModule('publish')->canUserEditArticle($article_name)))): ?>
+        <?php if (!$article->getID() && ((Context::isProjectContext() && !Context::getCurrentProject()->isArchived()) || (!Context::isProjectContext() && Context::getModule('publish')->canUserEditArticle($article->getName())))): ?>
             <div class="publish_article_actions">
-                <form action="<?php echo make_url('publish_article_edit', ['article_name' => $article_name]); ?>" method="get" style="float: left; margin-right: 10px;">
+                <form action="<?php echo make_url('publish_article_edit', ['article_name' => $article->getName()]); ?>" method="get" style="float: left; margin-right: 10px;">
                     <input class="button button-green" type="submit" value="<?php echo __('Create this article'); ?>">
                 </form>
             </div>
@@ -63,7 +63,7 @@
                 <h4>
                     <span class="header-text"><?php echo __('Article attachments'); ?></span>
                     <?php if (\pachno\core\framework\Settings::isUploadsEnabled() && $article->canEdit()): ?>
-                        <button class="button" onclick="Pachno.Main.showUploader('<?php echo make_url('get_partial_for_backdrop', ['key' => 'uploader', 'mode' => 'article', 'article_name' => $article_name]); ?>');"><?php echo __('Attach a file'); ?></button>
+                        <button class="button" onclick="Pachno.Main.showUploader('<?php echo make_url('get_partial_for_backdrop', ['key' => 'uploader', 'mode' => 'article', 'article_name' => $article->getName()]); ?>');"><?php echo __('Attach a file'); ?></button>
                     <?php else: ?>
                         <button class="button disabled" onclick="Pachno.Main.Helpers.Message.error('<?php echo __('File uploads are not enabled'); ?>');"><?php echo __('Attach a file'); ?></button>
                     <?php endif; ?>
@@ -88,7 +88,7 @@
                         <button id="comment_add_button" class="button" onclick="Pachno.Main.Comment.showPost();"><?php echo __('Post comment'); ?></button>
                     <?php endif; ?>
                 </h4>
-                <?php include_component('main/comments', ['target_id' => $article->getID(), 'mentionable_target_type' => 'article', 'target_type' => Comment::TYPE_ARTICLE, 'show_button' => false, 'comment_count_div' => 'article_comment_count', 'forward_url' => make_url('publish_article', ['article_name' => $article->getName()])]); ?>
+                <?php //include_component('main/comments', ['target_id' => $article->getID(), 'mentionable_target_type' => 'article', 'target_type' => Comment::TYPE_ARTICLE, 'show_button' => false, 'comment_count_div' => 'article_comment_count']); ?>
             </div>
         <?php endif; ?>
     </div>

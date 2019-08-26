@@ -1,4 +1,12 @@
-<?php \pachno\core\framework\Context::loadLibrary('publish/publish'); ?>
+<?php
+
+    use pachno\core\entities\Article;
+
+    /**
+     * @var Article $article
+     */
+
+?>
 <div class="article syntax_<?php echo \pachno\core\framework\Settings::getSyntaxClass($article->getContentSyntax()); ?>">
     <?php if ($show_title): ?>
         <?php include_component('publish/header', array('article_name' => $article->getName(), 'article' => $article, 'show_actions' => $show_actions, 'mode' => $mode, 'embedded' => $embedded)); ?>
@@ -44,7 +52,7 @@
     </div>
     <br style="clear: both;">
 <?php endif; ?>
-<?php if (!$embedded && $show_article && count($article->getCategories()) > 0 && $article->getContentSyntax() == \pachno\core\framework\Settings::SYNTAX_MW): ?>
+<?php /* if (!$embedded && $show_article && count($article->getCategories()) > 0 && $article->getContentSyntax() == \pachno\core\framework\Settings::SYNTAX_MW): ?>
     <br style="clear: both;">
     <div class="greybox categories">
         <?php echo __('Categories:'); ?>
@@ -54,4 +62,4 @@
         <?php endforeach; ?>
         <?php echo join(', ', $category_links); ?>
     </div>
-<?php endif; ?>
+<?php endif; */ ?>

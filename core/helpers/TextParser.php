@@ -2,11 +2,13 @@
 
     namespace pachno\core\helpers;
 
+    use pachno\core\entities\Project;
     use pachno\core\entities\traits\TextParserTodo;
     use Highlight\Highlighter;
     use pachno\core\framework,
         pachno\core\entities\tables\Articles,
         pachno\core\entities\Article;
+    use pachno\core\modules\publish\Publish;
 
     /**
      * Text parser class
@@ -530,10 +532,15 @@
             $title = preg_replace('/^.*?\:/', '', $title);
 
             if (!$namespace || !array_key_exists($namespace, array('ftp', 'http', 'https', 'gopher', 'mailto', 'news', 'nntp', 'telnet', 'wais', 'file', 'prospero', 'aim', 'webcal'))) {
-                if ($namespace) $href = $namespace . ':' . $href;
+                $namespaced_href = ($namespace) ? $namespace . ':' . $href : $href;
+                $project = ($namespace) ? Project::getByKey($namespace) : null;
+//                var_dump($project);
+//                var_dump($namespaced_href);
+//                var_dump($href);
+//                die();
                 $href = $this->_wiki_link($href);
                 $title = (isset($title)) ? $title : $href;
-                $this->addInternalLinkOccurrence($href);
+                $this->addInternalLinkOccurrence($namespaced_href);
 
                 if (framework\Context::isCLI()) return $href;
 
@@ -541,7 +548,7 @@
                     $href_options['class'] = 'missing_wiki_page';
                 }
 
-                $href = framework\Context::getRouting()->generate('publish_article', array('article_name' => $href));
+                $href = Publish::getArticleLink($href, $project);
             } else {
                 $href = $namespace . ':' . $this->_wiki_link($href);
             }

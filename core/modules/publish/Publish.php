@@ -244,7 +244,7 @@
             return ($project_context) ? $i18n->__('Project wiki') : $i18n->__('Wiki');
         }
 
-        public function getSpacedName($camelcased)
+        public static function getSpacedName($camelcased)
         {
             return preg_replace('/(?<=[a-z])(?=[A-Z])/', ' ', $camelcased);
         }
@@ -267,7 +267,7 @@
         {
             $article_link = $matches[0];
             $parser->addInternalLinkOccurrence($article_link);
-            $article_name = $this->getSpacedName($matches[0]);
+            $article_name = self::getSpacedName($matches[0]);
 
             if (!framework\Context::isCLI())
             {
@@ -380,6 +380,18 @@
             $event->addToReturnList($link);
         }
 
+        public static function getArticleLink($article_name, $project = null, $mode = 'show')
+        {
+            $article = Articles::getTable()->getArticleByName($article_name, $project);
+            if (!$article instanceof Article) {
+                $article = new Article();
+                $article->setName($article_name);
+                $article->setProject($project);
+            }
+
+            return $article->getLink($mode);
+        }
+
         /**
          * Header wiki menu and search dropdown / list
          *
@@ -389,10 +401,15 @@
          */
         public function listen_MenustripLinks(framework\Event $event)
         {
-            $project_url = ($event->getSubject() instanceof Project) ? framework\Context::getRouting()->generate('publish_article', array('article_name' => ucfirst($event->getSubject()->getKey()) . ':MainPage')) : null;
+            if ($event->getSubject() instanceof Project) {
+                $article = Articles::getTable()->getArticleByName('MainPage', $event->getSubject()->getID());
+                $project_url = framework\Context::getRouting()->generate('publish_project_article', ['project_key' => $event->getSubject()->getKey(), 'article_id' => $article->getId(), 'article_name' => 'MainPage']);
+            } else {
+                $article = Articles::getTable()->getArticleByName('MainPage', $event->getSubject());
+                $project_url = framework\Context::getRouting()->generate('publish_article', ['article_id' => $article->getId(), 'article_name' => 'MainPage']);
+            }
             $wiki_url = ($event->getSubject() instanceof Project && $event->getSubject()->hasWikiURL()) ? $event->getSubject()->getWikiURL() : null;
-            $url = framework\Context::getRouting()->generate('publish');
-            framework\ActionComponent::includeComponent('publish/menustriplinks', array('url' => $url, 'project_url' => $project_url, 'project' => $event->getSubject(), 'wiki_url' => $wiki_url, 'selected_tab' => $event->getParameter('selected_tab')));
+            framework\ActionComponent::includeComponent('publish/menustriplinks', array('project_url' => $project_url, 'project' => $event->getSubject(), 'wiki_url' => $wiki_url, 'selected_tab' => $event->getParameter('selected_tab')));
         }
 
         public function listen_createNewProject(framework\Event $event)
@@ -400,7 +417,7 @@
             if (!Article::getByName(ucfirst($event->getSubject()->getKey()) . ':MainPage') instanceof Article)
             {
                 $project_key = $event->getSubject()->getKey();
-                $article = Article::createNew("{$project_key}:MainPage", "This is the wiki frontpage for {$event->getSubject()->getName()} \n\n[[Category:{$project_key}:About]]");
+                $article = Article::createNew("Main Page", "This is the frontpage for {$event->getSubject()->getName()}", null, [], $event->getSubject());
                 $this->loadArticles($project_key);
             }
         }

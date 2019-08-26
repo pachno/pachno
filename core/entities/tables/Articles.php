@@ -2,8 +2,12 @@
 
     namespace pachno\core\entities\tables;
 
+    use b2db\Criterion;
     use b2db\Insertion;
+    use b2db\Query;
     use b2db\Update;
+    use pachno\core\entities\Project;
+    use pachno\core\entities\Scope;
     use pachno\core\entities\tables\ArticleLinks;
     use pachno\core\framework,
         pachno\core\entities\tables\ScopedTable,
@@ -13,6 +17,8 @@
     /**
      * @static @method Articles getTable() Retrieves an instance of this table
      * @method \pachno\core\entities\Article selectById(integer $id) Retrieves an article
+     * @method \pachno\core\entities\Article[] select(Query $id, $join = 'all') Retrieves articles
+     * @method \pachno\core\entities\Article selectOne(Query $id, $join = 'all') Retrieves articles
      *
      * @Table(name="articles")
      * @Entity(class="\pachno\core\entities\Article")
@@ -44,13 +50,13 @@
             return $this->select($query);
         }
 
-        public function getManualSidebarArticles(\pachno\core\entities\Project $project = null, $filter = null)
+        public function getManualSidebarArticles(Project $project = null, $filter = null)
         {
             $query = $this->getQuery();
             $query->where(self::SCOPE, framework\Context::getScope()->getID());
             $query->where('articles.article_type', Article::TYPE_MANUAL);
             $query->where('articles.name', '%' . strtolower($filter) . '%', \b2db\Criterion::LIKE);
-            if ($project instanceof \pachno\core\entities\Project)
+            if ($project instanceof Project)
             {
                 $criteria = new Criteria();
                 $criteria->where(self::NAME, ucfirst($project->getKey()) . ":%", \b2db\Criterion::LIKE);
@@ -78,13 +84,13 @@
             return $articles;
         }
 
-        public function getManualSidebarCategories(\pachno\core\entities\Project $project = null)
+        public function getManualSidebarCategories(Project $project = null)
         {
             $query = $this->getQuery();
             $query->where(self::SCOPE, framework\Context::getScope()->getID());
             $query->where('articles.article_type', Article::TYPE_MANUAL);
             $query->where('articles.parent_article_id', 0);
-            if ($project instanceof \pachno\core\entities\Project)
+            if ($project instanceof Project)
             {
                 $query->where(self::NAME, "Category:" . ucfirst($project->getKey()) . "%", \b2db\Criterion::LIKE);
             }
@@ -109,55 +115,118 @@
             return $articles;
         }
 
-        public function getArticles(\pachno\core\entities\Project $project = null)
+        /**
+         * @param Project|null $project
+         * @return Article[]
+         */
+        public function getArticles(Project $project = null): array
         {
             $query = $this->getQuery();
-            $query->where(self::SCOPE, framework\Context::getScope()->getID());
+            if ($project instanceof Project && $project->getScope() instanceof Scope) {
+                $query->where(self::SCOPE, $project->getScope()->getID());
+                $query->where('articles.project_id', $project->getID());
+            } else {
+                $query->where(self::SCOPE, framework\Context::getScope()->getID());
+                if ($project instanceof Project) {
+                    $query->where('articles.project_id', $project->getID());
+                } else {
+                    $query->where('articles.project_id', 0);
+                }
+            }
+
+            $query->addOrderBy(self::DATE, 'desc');
+            $articles = [];
+
+            foreach ($this->select($query) as $article) {
+                if ($article->hasAccess()) {
+                    $articles[$article->getID()] = $article;
+                }
+            }
+
+            return $articles;
+        }
+
+        /**
+         * @param Project|null $project
+         * @param bool $check_access
+         * @return Article[]
+         * @throws \b2db\Exception
+         */
+        public function getLegacyArticles(Project $project = null, $check_access = true): array
+        {
+            $query = $this->getQuery();
+            if ($project instanceof Project && $project->getScope() instanceof Scope) {
+                $query->where(self::SCOPE, $project->getScope()->getID());
+            } else {
+                $query->where(self::SCOPE, framework\Context::getScope()->getID());
+            }
             $query->where('articles.article_type', Article::TYPE_WIKI);
 
-            if ($project instanceof \pachno\core\entities\Project)
+            if ($project instanceof Project)
             {
-                $query->where(self::NAME, "Category:" . ucfirst($project->getKey()) . "%", \b2db\Criterion::LIKE);
-                $query->or(self::NAME, ucfirst($project->getKey()) . ":%", \b2db\Criterion::LIKE);
+                $criteria = new Criteria();
+                $criteria->where(self::NAME, "Category:" . ucfirst($project->getKey()) . "%", \b2db\Criterion::LIKE);
+                $criteria->or(self::NAME, ucfirst($project->getKey()) . ":%", \b2db\Criterion::LIKE);
+                $query->where($criteria);
             }
             else
             {
-                foreach (\pachno\core\entities\tables\Projects::getTable()->getAllIncludingDeleted() as $project)
+                foreach (\pachno\core\entities\tables\Projects::getTable()->getAllIncludingDeleted() as $existing_project)
                 {
-                    $query->where(self::NAME, "Category:" . ucfirst($project->getKey()) . "%", \b2db\Criterion::NOT_LIKE);
-                    $query->where(self::NAME, ucfirst($project->getKey()) . ":%", \b2db\Criterion::NOT_LIKE);
+                    $query->where(self::NAME, "Category:" . ucfirst($existing_project->getKey()) . "%", \b2db\Criterion::NOT_LIKE);
+                    $query->where(self::NAME, ucfirst($existing_project->getKey()) . ":%", \b2db\Criterion::NOT_LIKE);
                 }
             }
 
             $query->addOrderBy(self::DATE, 'desc');
 
             $articles = $this->select($query);
-            foreach ($articles as $id => $article)
-            {
-                if (!$article->hasAccess())
-                    unset($articles[$id]);
+            if ($check_access) {
+                foreach ($articles as $id => $article) {
+                    if (!$article->hasAccess())
+                        unset($articles[$id]);
+                }
             }
 
             return $articles;
         }
 
-        public function getArticleByName($name)
+        /**
+         * @param $name
+         * @param Project|integer|null $project
+         *
+         * @return Article
+         */
+        public function getArticleByName($name, $project = null): ?Article
         {
+            if (mb_substr($name, 0, 9) == 'Category:') {
+                $article_name = mb_substr($name, 9);
+                $key_delimiter = mb_stripos($article_name, ':');
+                if ($key_delimiter !== 0) {
+                    $project_key = mb_strtolower(mb_substr($article_name, 0, $key_delimiter));
+                    $project = Project::getByKey($project_key);
+                    $article_name = mb_substr($article_name, mb_strlen($project_key) + 1);
+                }
+                $is_category = true;
+            } else {
+                $article_name = $name;
+                $is_category = false;
+            }
+            $project_id = ($project instanceof Project) ? $project->getId() : $project;
+
             $query = $this->getQuery();
-            $query->where(self::NAME, $name);
+            $query->where(self::NAME, $article_name);
+            $query->where('articles.is_category', $is_category);
             $query->where(self::SCOPE, framework\Context::getScope()->getID());
+            if ($project_id !== null) {
+                $query->where('articles.project_id', $project_id);
+            } else {
+                $query->where('articles.project_id', 0);
+            }
             return $this->selectOne($query, 'none');
         }
 
-        public function getArticleByID($id)
-        {
-            $query = $this->getQuery();
-            $query->where(self::SCOPE, framework\Context::getScope()->getID());
-
-            return $this->rawSelectById($id, $query);
-        }
-
-        public function doesArticleExist($name)
+        public function doesArticleExist($name): bool
         {
             $query = $this->getQuery();
             $query->where(self::NAME, $name);
@@ -192,7 +261,7 @@
         public function findArticlesContaining($content, $project = null, $limit = 5, $offset = 0)
         {
             $query = $this->getQuery();
-            if ($project instanceof \pachno\core\entities\Project)
+            if ($project instanceof Project)
             {
                 $criteria = new Criteria();
                 $criteria->where(self::NAME, "%{$content}%", \b2db\Criterion::LIKE);
@@ -271,12 +340,12 @@
             }
         }
 
-        public function getDeadEndArticles(\pachno\core\entities\Project $project = null)
+        public function getDeadEndArticles(Project $project = null)
         {
             $names = ArticleLinks::getTable()->getUniqueArticleNames();
 
             $query = $this->getQuery();
-            if ($project instanceof \pachno\core\entities\Project)
+            if ($project instanceof Project)
             {
                 $query->where(self::NAME, ucfirst($project->getKey()) . ":%", \b2db\Criterion::LIKE);
             }
@@ -316,12 +385,12 @@
             return $this->select($query);
         }
 
-        public function getUnlinkedArticles(\pachno\core\entities\Project $project = null)
+        public function getUnlinkedArticles(Project $project = null)
         {
             $names = ArticleLinks::getTable()->getUniqueLinkedArticleNames();
 
             $query = $this->getQuery();
-            if ($project instanceof \pachno\core\entities\Project)
+            if ($project instanceof Project)
             {
                 $query->where(self::NAME, ucfirst($project->getKey()) . ":%", \b2db\Criterion::LIKE);
             }
@@ -342,10 +411,10 @@
             return $this->select($query);
         }
 
-        public function getUncategorizedArticles(\pachno\core\entities\Project $project = null)
+        public function getUncategorizedArticles(Project $project = null)
         {
             $query = $this->getQuery();
-            if ($project instanceof \pachno\core\entities\Project)
+            if ($project instanceof Project)
             {
                 $query->where(self::NAME, ucfirst($project->getKey()) . ":%", \b2db\Criterion::LIKE);
             }
@@ -367,10 +436,10 @@
             return $this->select($query);
         }
 
-        public function getUncategorizedCategories(\pachno\core\entities\Project $project = null)
+        public function getUncategorizedCategories(Project $project = null)
         {
             $query = $this->getQuery();
-            if ($project instanceof \pachno\core\entities\Project)
+            if ($project instanceof Project)
             {
                 $query->where(self::NAME, "Category:" . ucfirst($project->getKey()) . ":%", \b2db\Criterion::LIKE);
             }
@@ -390,10 +459,10 @@
             return $this->select($query);
         }
 
-        public function getAllArticlesSpecial(\pachno\core\entities\Project $project = null)
+        public function getAllArticlesSpecial(Project $project = null)
         {
             $query = $this->getQuery();
-            if ($project instanceof \pachno\core\entities\Project)
+            if ($project instanceof Project)
             {
                 $query->where(self::NAME, "Category:" . ucfirst($project->getKey()) . ":%", \b2db\Criterion::NOT_LIKE);
                 $query->where(self::NAME, ucfirst($project->getKey()) . ":%", \b2db\Criterion::LIKE);
@@ -413,10 +482,10 @@
             return $this->select($query);
         }
 
-        protected function _getAllInNamespace($namespace, \pachno\core\entities\Project $project = null)
+        protected function _getAllInNamespace($namespace, Project $project = null)
         {
             $query = $this->getQuery();
-            if ($project instanceof \pachno\core\entities\Project)
+            if ($project instanceof Project)
             {
                 $query->where(self::NAME, "{$namespace}:" . ucfirst($project->getKey()) . ":%", \b2db\Criterion::LIKE);
             }
@@ -436,12 +505,12 @@
             return $this->select($query);
         }
 
-        public function getAllCategories(\pachno\core\entities\Project $project = null)
+        public function getAllCategories(Project $project = null)
         {
             return $this->_getAllInNamespace('Category', $project);
         }
 
-        public function getAllTemplates(\pachno\core\entities\Project $project = null)
+        public function getAllTemplates(Project $project = null)
         {
             return $this->_getAllInNamespace('Template', $project);
         }

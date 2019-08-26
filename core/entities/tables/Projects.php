@@ -2,6 +2,7 @@
 
     namespace pachno\core\entities\tables;
 
+    use b2db\Query;
     use b2db\Update;
     use pachno\core\entities\Project;
     use pachno\core\framework;
@@ -27,6 +28,7 @@
      *
      * @method static Projects getTable() Retrieves an instance of this table
      * @method Project selectById(integer $id) Retrieves a project
+     * @method Project[] select(Query $query, $join = 'all')
      *
      * @Table(name="projects")
      * @Entity(class="\pachno\core\entities\Project")
@@ -93,15 +95,20 @@
             return $this->selectOne($query);
         }
 
-        public function getAll()
+        /**
+         * @param bool $all_scopes
+         * @return Project[]
+         */
+        public function getAll($all_scopes = false): array
         {
             $query = $this->getQuery();
             $query->addOrderBy(self::NAME, \b2db\QueryColumnSort::SORT_ASC);
-            $query->where(self::SCOPE, framework\Context::getScope()->getID());
+            if (!$all_scopes) {
+                $query->where(self::SCOPE, framework\Context::getScope()->getID());
+            }
             $query->where(self::DELETED, false);
-            $query->indexBy(self::KEY);
-            $res = $this->select($query, false);
-            return $res;
+
+            return $this->select($query, false);
         }
 
         public function getAllIncludingDeleted()
@@ -109,7 +116,6 @@
             $query = $this->getQuery();
             $query->addOrderBy(self::NAME, \b2db\QueryColumnSort::SORT_ASC);
             $query->where(self::SCOPE, framework\Context::getScope()->getID());
-            $query->indexBy(self::KEY);
             $res = $this->select($query, false);
             return $res;
         }
