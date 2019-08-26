@@ -7,18 +7,18 @@
      */
 
 ?>
+<?php if ($show_title): ?>
+    <?php include_component('publish/header', array('article_name' => $article->getName(), 'article' => $article, 'show_actions' => $show_actions, 'mode' => $mode, 'embedded' => $embedded)); ?>
+<?php endif; ?>
+<?php if ($show_details && $show_article): ?>
+    <div class="details">
+        <?php if (isset($redirected_from)): ?>
+            <div class="redirected_from">&rarr; <?php echo __('Redirected from %article_name', array('%article_name' => link_tag(make_url('publish_article_edit', array('article_name' => $redirected_from)), $redirected_from))); ?></div>
+        <?php endif; ?>
+        <?php echo __('Last updated at %time, by %user', array('%time' => \pachno\core\framework\Context::getI18n()->formatTime($article->getPostedDate(), 3), '%user' => '<b>'.(($article->getAuthor() instanceof \pachno\core\entities\common\Identifiable) ? '<a href="javascript:void(0);" onclick="Pachno.Main.Helpers.Backdrop.show(\'' . make_url('get_partial_for_backdrop', array('key' => 'usercard', 'user_id' => $article->getAuthor()->getID())) . '\');" class="faded_out">' . $article->getAuthor()->getName() . '</a>' : __('System')).'</b>')); ; ?>
+    </div>
+<?php endif; ?>
 <div class="article syntax_<?php echo \pachno\core\framework\Settings::getSyntaxClass($article->getContentSyntax()); ?>">
-    <?php if ($show_title): ?>
-        <?php include_component('publish/header', array('article_name' => $article->getName(), 'article' => $article, 'show_actions' => $show_actions, 'mode' => $mode, 'embedded' => $embedded)); ?>
-    <?php endif; ?>
-    <?php if ($show_details && $show_article): ?>
-        <div class="details">
-            <?php if (isset($redirected_from)): ?>
-                <div class="redirected_from">&rarr; <?php echo __('Redirected from %article_name', array('%article_name' => link_tag(make_url('publish_article_edit', array('article_name' => $redirected_from)), $redirected_from))); ?></div>
-            <?php endif; ?>
-            <?php echo __('Last updated at %time, by %user', array('%time' => \pachno\core\framework\Context::getI18n()->formatTime($article->getPostedDate(), 3), '%user' => '<b>'.(($article->getAuthor() instanceof \pachno\core\entities\common\Identifiable) ? '<a href="javascript:void(0);" onclick="Pachno.Main.Helpers.Backdrop.show(\'' . make_url('get_partial_for_backdrop', array('key' => 'usercard', 'user_id' => $article->getAuthor()->getID())) . '\');" class="faded_out">' . $article->getAuthor()->getName() . '</a>' : __('System')).'</b>')); ; ?>
-        </div>
-    <?php endif; ?>
     <?php if ($show_article): ?>
         <div class="content"><?php echo $article->getParsedContent(array('embedded' => $embedded, 'article' => $article)); ?></div>
     <?php endif; ?>

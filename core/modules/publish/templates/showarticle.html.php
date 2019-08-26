@@ -17,7 +17,7 @@
 <?php if ($article instanceof \pachno\core\entities\Article): ?>
     <?php include_component('manualsidebar', ['article' => $article]); ?>
     <?php //include_component('leftmenu', ['article' => $article]); ?>
-    <div class="main_area article">
+    <div class="main_area">
         <a name="top"></a>
         <?php if ($error): ?>
             <div class="redbox">
@@ -38,8 +38,8 @@
         <?php if ($article->getID()): ?>
             <?php include_component('articledisplay', ['article' => $article, 'show_article' => true, 'redirected_from' => $redirected_from]); ?>
         <?php else: ?>
+            <?php include_component('publish/header', ['article' => $article, 'show_actions' => true, 'mode' => 'view']); ?>
             <div class="article">
-                <?php include_component('publish/header', ['article' => $article, 'show_actions' => true, 'mode' => 'view']); ?>
                 <?php if (Context::isProjectContext() && Context::getCurrentProject()->isArchived()): ?>
                     <?php include_component('publish/placeholder', ['article_name' => $article->getName(), 'nocreate' => true]); ?>
                 <?php else: ?>

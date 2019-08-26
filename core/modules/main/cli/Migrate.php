@@ -69,11 +69,11 @@ namespace pachno\core\modules\main\cli;
                     if (trim($article->getManualName())) {
                         $article->setName($article->getManualName());
                     }
+                    $article->setIsCategory(0);
+
                     if (strpos($article->getName(), 'Category:') === 0) {
                         $article->setIsCategory(true);
                         $article->setName(substr($article->getName(), 9));
-                    } else {
-                        $article->setIsCategory(false);
                     }
                     $article->setName(substr($article->getName(), strlen($project->getKey()) + 1));
                     $article->setArticleType(Article::TYPE_MANUAL);

@@ -401,13 +401,17 @@
          */
         public function listen_MenustripLinks(framework\Event $event)
         {
+            $article = Articles::getTable()->getArticleByName('MainPage', $event->getSubject());
+            if (!$article instanceof Article) {
+                return;
+            }
+
             if ($event->getSubject() instanceof Project) {
-                $article = Articles::getTable()->getArticleByName('MainPage', $event->getSubject()->getID());
                 $project_url = framework\Context::getRouting()->generate('publish_project_article', ['project_key' => $event->getSubject()->getKey(), 'article_id' => $article->getId(), 'article_name' => 'MainPage']);
             } else {
-                $article = Articles::getTable()->getArticleByName('MainPage', $event->getSubject());
                 $project_url = framework\Context::getRouting()->generate('publish_article', ['article_id' => $article->getId(), 'article_name' => 'MainPage']);
             }
+
             $wiki_url = ($event->getSubject() instanceof Project && $event->getSubject()->hasWikiURL()) ? $event->getSubject()->getWikiURL() : null;
             framework\ActionComponent::includeComponent('publish/menustriplinks', array('project_url' => $project_url, 'project' => $event->getSubject(), 'wiki_url' => $wiki_url, 'selected_tab' => $event->getParameter('selected_tab')));
         }

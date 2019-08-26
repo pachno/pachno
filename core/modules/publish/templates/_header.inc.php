@@ -12,11 +12,11 @@
     $publish = \pachno\core\framework\Context::getModule('publish');
 
 ?>
-<div class="header <?= $mode; ?>">
+<div class="header-container <?= $mode; ?>">
     <?php if ($mode != 'edit'): ?>
-        <div class="title_left_images">
+        <div class="toggle-favourite">
             <?php if ($pachno_user->isGuest()): ?>
-                <?= image_tag('star_faded.png', array('id' => 'article_favourite_faded_'.$article->getId())); ?>
+                <?= fa_image_tag('star', array('id' => 'article_favourite_faded_'.$article->getId(), 'class' => 'unsubscribed')); ?>
                 <div class="tooltip from-above leftie">
                     <?= __('Please log in to subscribe to updates for this article'); ?>
                 </div>
@@ -24,12 +24,38 @@
                 <div class="tooltip from-above leftie">
                     <?= __('Click the star to toggle whether you want to be notified whenever this article updates or changes'); ?><br>
                 </div>
-                <?= image_tag('spinning_20.gif', array('id' => 'article_favourite_indicator_'.$article->getId(), 'style' => 'display: none;')); ?>
+                <?= fa_image_tag('spinner', array('id' => 'article_favourite_indicator_'.$article->getId(), 'style' => 'display: none;', 'class' => 'fa-spin')); ?>
                 <?= fa_image_tag('star', array('id' => 'article_favourite_faded_'.$article->getId(), 'class' => 'unsubscribed', 'style' => ($pachno_user->isArticleStarred($article->getID())) ? 'display: none;' : '', 'onclick' => "Pachno.Main.toggleFavouriteArticle('".make_url('toggle_favourite_article', array('article_id' => $article->getID(), 'user_id' => $pachno_user->getID()))."', ".$article->getID().");")); ?>
                 <?= fa_image_tag('star', array('id' => 'article_favourite_normal_'.$article->getId(), 'class' => 'subscribed', 'style' => (!$pachno_user->isArticleStarred($article->getID())) ? 'display: none;' : '', 'onclick' => "Pachno.Main.toggleFavouriteArticle('".make_url('toggle_favourite_article', array('article_id' => $article->getID(), 'user_id' => $pachno_user->getID()))."', ".$article->getID().");")); ?>
             <?php endif; ?>
         </div>
     <?php endif; ?>
+    <div class="title-container">
+        <?php if ($mode == 'edit'): ?>
+            <span id="article_edit_header_information" class="title-crumbs">
+                <div id="article_parent_container">
+                    <input type="hidden" name="parent_article_name" id="parent_article_name" value="<?= ($article->getParentArticleName()) ? $article->getParentArticleName() : htmlentities($pachno_request['parent_article_name'], ENT_COMPAT, \pachno\core\framework\Context::getI18n()->getCharset()); ?>" style="width: 400px;">
+                    <span class="parent_article_name <?php if (!$article->getParentArticle() instanceof Article) echo ' faded_out'; ?>">
+                        <span id="parent_article_name_span">
+                            <?php if ($article->getParentArticle() instanceof Article): ?>
+                                <?= ($article->getParentArticle()->getManualName()) ? $article->getParentArticle()->getManualName() : $article->getParentArticle()->getName(); ?>
+                            <?php else: ?>
+                                <?= __('No parent article'); ?>
+                            <?php endif; ?>
+                        </span>
+                    &nbsp;&raquo;</span>
+                </div>
+                <input type="text" name="article_name" id="article_name" value="<?= $article->getName(); ?>">
+            </span>
+        <?php else: ?>
+            <div>
+                <span class="title-name"><?= $article->getName(); ?></span>
+                <?php if ($article->isCategory()): ?>
+                    <span class="status-badge"><span class="name"><?= __('Category'); ?></span></span>
+                <?php endif; ?>
+            </div>
+        <?php endif; ?>
+    </div>
     <?php if ($article->getID() || $mode == 'edit'): ?>
         <?php if ($show_actions): ?>
             <div class="button-group">
@@ -76,66 +102,4 @@
             </div>
         <?php endif; ?>
     <?php endif; ?>
-    <?php if ($mode == 'edit'): ?>
-        <div id="article_edit_header_information">
-            <div id="article_parent_container">
-                <input type="hidden" name="parent_article_name" id="parent_article_name" value="<?= ($article->getParentArticleName()) ? $article->getParentArticleName() : htmlentities($pachno_request['parent_article_name'], ENT_COMPAT, \pachno\core\framework\Context::getI18n()->getCharset()); ?>" style="width: 400px;">
-                <span class="parent_article_name <?php if (!$article->getParentArticle() instanceof Article) echo ' faded_out'; ?>">
-                    <span id="parent_article_name_span">
-                        <?php if ($article->getParentArticle() instanceof Article): ?>
-                            <?= ($article->getParentArticle()->getManualName()) ? $article->getParentArticle()->getManualName() : $article->getParentArticle()->getName(); ?>
-                        <?php else: ?>
-                            <?= __('No parent article'); ?>
-                        <?php endif; ?>
-                    </span>
-                &nbsp;&raquo;</span>
-            </div>
-            <input type="text" name="new_article_name" id="new_article_name" value="<?= $article->getName(); ?>">
-            <input type="text" name="manual_name" id="manual_name" value="<?= $article->getManualName(); ?>">
-        </div>
-    <?php else: ?>
-    <?php
-        if ($article->getArticleType() == Article::TYPE_MANUAL)
-        {
-            echo $article->getManualName();
-        }
-        else
-        {
-            $namespaces = explode(':', $article_name);
-            if (count($namespaces) > 1 && $namespaces[0] == 'Category')
-            {
-                array_shift($namespaces);
-                echo '<span class="faded_out blue">Category:</span>';
-            }
-            if (\pachno\core\framework\Context::isProjectContext() && count($namespaces) > 1 && mb_strtolower($namespaces[0]) == \pachno\core\framework\Context::getCurrentProject()->getKey())
-            {
-                array_shift($namespaces);
-                echo '<span>', \pachno\core\framework\Context::getCurrentProject()->getName(), ':</span>';
-            }
-            echo \pachno\core\framework\Settings::get('allow_camelcase_links', 'publish', \pachno\core\framework\Context::getScope()->getID(), 0) ? Publish::getSpacedName(implode(':', $namespaces)) : implode(':', $namespaces);
-        }
-    ?>
-    <?php endif; ?>
-    <?php
-
-        if ($article->getID() && $mode)
-        {
-            switch ($mode)
-            {
-                /* case 'edit':
-                    ?><span class="faded_out"><?= __('%article_name ~ Edit', array('%article_name' => '')); ?></span><?php
-                    break; */
-                case 'history':
-                    ?><span class="faded_out"><?= __('%article_name ~ History', array('%article_name' => '')); ?></span><?php
-                    break;
-                case 'permissions':
-                    ?><span class="faded_out"><?= __('%article_name ~ Permissions', array('%article_name' => '')); ?></span><?php
-                    break;
-                case 'attachments':
-                    ?><span class="faded_out"><?= __('%article_name ~ Attachments', array('%article_name' => '')); ?></span><?php
-                    break;
-            }
-        }
-
-    ?>
 </div>

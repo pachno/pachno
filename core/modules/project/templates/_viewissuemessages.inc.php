@@ -1,4 +1,4 @@
-<div id="issue-messages-container" class="issue-messages-container">
+<div id="issue-messages-container" class="messages-container">
     <?php if (isset($error) && $error): ?>
         <div class="message error" id="viewissue_error">
             <?php if ($error == 'transition_error'): ?>

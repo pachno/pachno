@@ -128,7 +128,7 @@
         /**
          * Whether or not this page is a category page
          *
-         * @Column(type="boolean")
+         * @Column(type="boolean", default=false)
          * @var boolean
          */
         protected $_is_category = false;
