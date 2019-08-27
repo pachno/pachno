@@ -30,7 +30,7 @@
             <?php endif; ?>
         </div>
     <?php endif; ?>
-    <div class="title-container">
+    <div class="title-container article-title">
         <?php if ($mode == 'edit'): ?>
             <span id="article_edit_header_information" class="title-crumbs">
                 <div id="article_parent_container">
@@ -51,7 +51,9 @@
             <div>
                 <span class="title-name"><?= $article->getName(); ?></span>
                 <?php if ($article->isCategory()): ?>
-                    <span class="status-badge"><span class="name"><?= __('Category'); ?></span></span>
+                    <span class="title-crumbs">
+                        <span class="status-badge"><span class="name"><?= __('Category'); ?></span></span>
+                    </span>
                 <?php endif; ?>
             </div>
         <?php endif; ?>

@@ -50,38 +50,32 @@
             return $this->select($query);
         }
 
-        public function getManualSidebarArticles(Project $project = null, $filter = null)
+        /**
+         * @param Project|null $project
+         * @param null $filter
+         *
+         * @return Article[]
+         */
+        public function getManualSidebarArticles(Project $project = null, $filter = null): array
         {
             $query = $this->getQuery();
             $query->where(self::SCOPE, framework\Context::getScope()->getID());
-            $query->where('articles.article_type', Article::TYPE_MANUAL);
-            $query->where('articles.name', '%' . strtolower($filter) . '%', \b2db\Criterion::LIKE);
-            if ($project instanceof Project)
-            {
-                $criteria = new Criteria();
-                $criteria->where(self::NAME, ucfirst($project->getKey()) . ":%", \b2db\Criterion::LIKE);
-                $criteria->or(self::NAME, "Category:" . ucfirst($project->getKey()) . "%", \b2db\Criterion::LIKE);
-                $query->where($criteria);
+            $query->where('articles.is_category', false);
+            $query->where('articles.parent_article_id', 0);
+
+            if ($project instanceof Project) {
+                $query->where('articles.project_id', $project->getID());
+            } else {
+                $query->where('articles.project_id', 0);
             }
-            else
-            {
-                foreach (\pachno\core\entities\tables\Projects::getTable()->getAllIncludingDeleted() as $project)
-                {
-                    $query->where(self::NAME, "Category:" . ucfirst($project->getKey()) . "%", \b2db\Criterion::NOT_LIKE);
-                    $query->where(self::NAME, ucfirst($project->getKey()) . ":%", \b2db\Criterion::NOT_LIKE);
-                }
+
+            if ($filter !== null) {
+                $query->where('articles.name', '%' . strtolower($filter) . '%', \b2db\Criterion::LIKE);
             }
 
             $query->addOrderBy(self::NAME, 'asc');
 
-            $articles = $this->select($query);
-            foreach ($articles as $i => $article)
-            {
-                if (!$article->hasAccess())
-                    unset($articles[$i]);
-            }
-
-            return $articles;
+            return $this->select($query);
         }
 
         public function getManualSidebarCategories(Project $project = null)
@@ -148,34 +142,28 @@
 
         /**
          * @param Project|null $project
+         * @param Scope|null $scope
          * @param bool $check_access
          * @return Article[]
          * @throws \b2db\Exception
          */
-        public function getLegacyArticles(Project $project = null, $check_access = true): array
+        public function getLegacyArticles(Project $project = null, Scope $scope = null, $check_access = true): array
         {
             $query = $this->getQuery();
             if ($project instanceof Project && $project->getScope() instanceof Scope) {
                 $query->where(self::SCOPE, $project->getScope()->getID());
-            } else {
-                $query->where(self::SCOPE, framework\Context::getScope()->getID());
+            } elseif ($scope instanceof Scope) {
+                $query->where(self::SCOPE, $scope->getID());
             }
             $query->where('articles.article_type', Article::TYPE_WIKI);
 
-            if ($project instanceof Project)
-            {
+            if ($project instanceof Project) {
                 $criteria = new Criteria();
                 $criteria->where(self::NAME, "Category:" . ucfirst($project->getKey()) . "%", \b2db\Criterion::LIKE);
                 $criteria->or(self::NAME, ucfirst($project->getKey()) . ":%", \b2db\Criterion::LIKE);
                 $query->where($criteria);
-            }
-            else
-            {
-                foreach (\pachno\core\entities\tables\Projects::getTable()->getAllIncludingDeleted() as $existing_project)
-                {
-                    $query->where(self::NAME, "Category:" . ucfirst($existing_project->getKey()) . "%", \b2db\Criterion::NOT_LIKE);
-                    $query->where(self::NAME, ucfirst($existing_project->getKey()) . ":%", \b2db\Criterion::NOT_LIKE);
-                }
+            } else {
+                $query->where('articles.project_id', 0);
             }
 
             $query->addOrderBy(self::DATE, 'desc');
@@ -205,17 +193,30 @@
                 if ($key_delimiter !== 0) {
                     $project_key = mb_strtolower(mb_substr($article_name, 0, $key_delimiter));
                     $project = Project::getByKey($project_key);
-                    $article_name = mb_substr($article_name, mb_strlen($project_key) + 1);
+                    $article_name = mb_substr($article_name, $key_delimiter + 1);
                 }
                 $is_category = true;
             } else {
-                $article_name = $name;
+                $colon_pos = mb_strpos($name, ':');
+                if ($colon_pos !== 0) {
+                    $project_key = mb_strtolower(mb_substr($name, 0, $colon_pos));
+                    $project = Project::getByKey($project_key);
+                }
+
+                if ($project instanceof Project) {
+                    $article_name = mb_substr($name, $colon_pos + 1);
+                } else {
+                    if (framework\Context::isProjectContext()) {
+                        $project = framework\Context::getCurrentProject();
+                    }
+                    $article_name = $name;
+                }
                 $is_category = false;
             }
             $project_id = ($project instanceof Project) ? $project->getId() : $project;
 
             $query = $this->getQuery();
-            $query->where(self::NAME, $article_name);
+            $query->where(self::NAME, $article_name, Criterion::LIKE);
             $query->where('articles.is_category', $is_category);
             $query->where(self::SCOPE, framework\Context::getScope()->getID());
             if ($project_id !== null) {
@@ -223,16 +224,23 @@
             } else {
                 $query->where('articles.project_id', 0);
             }
-            return $this->selectOne($query, 'none');
+            $article = $this->selectOne($query, 'none');
+
+            if (!$article instanceof Article) {
+                $query = $this->getQuery();
+                $query->where(self::NAME, $article_name, Criterion::LIKE);
+                $query->where('articles.is_category', $is_category);
+                $query->where(self::SCOPE, framework\Context::getScope()->getID());
+                $query->where('articles.project_id', 0);
+                $article = $this->selectOne($query);
+            }
+
+            return $article;
         }
 
         public function doesArticleExist($name): bool
         {
-            $query = $this->getQuery();
-            $query->where(self::NAME, $name);
-            $query->where(self::SCOPE, framework\Context::getScope()->getID());
-
-            return (bool) $this->count($query);
+            return $this->getArticleByName($name) instanceof Article;
         }
 
         public function deleteArticleByName($name)

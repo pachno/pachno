@@ -9,6 +9,9 @@
         pachno\core\entities\tables\Articles,
         pachno\core\entities\tables\ArticleHistory;
 
+    /**
+     * @property Article $article
+     */
     class Components extends framework\ActionComponent
     {
 
@@ -77,7 +80,8 @@
 
         public function componentManualSidebar()
         {
-            $parents = array();
+            $top_level_articles = Articles::getTable()->getManualSidebarArticles($this->article->getProject());
+            $parents = [];
             $article = $this->article;
             do
             {
@@ -92,6 +96,7 @@
 
             $this->main_article = $article;
             $this->parents = $parents;
+            $this->top_level_articles = $top_level_articles;
         }
 
         public function componentSpecialSpecialPages()

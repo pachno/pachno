@@ -977,7 +977,9 @@
                         if (($user->getNotificationSetting(framework\Settings::SETTINGS_USER_NOTIFY_MENTIONED, false)->isOn())) $this->_addNotificationIfNotNotified(Notification::TYPE_ARTICLE_MENTIONED, $user, $this->getAuthor());
                     }
                 }
-                $this->_addCreateNotifications($this->getAuthor());
+                if ($this->getAuthor() instanceof User) {
+                    $this->_addCreateNotifications($this->getAuthor());
+                }
             }
             else
             {

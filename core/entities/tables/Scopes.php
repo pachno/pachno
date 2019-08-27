@@ -6,6 +6,7 @@
     use b2db\Core,
         b2db\Criteria,
         b2db\Criterion;
+    use pachno\core\entities\Scope;
 
     /**
      * Scopes table
@@ -22,8 +23,9 @@
      *
      * @package pachno
      * @subpackage tables
-     * 
+     *
      * @method static Scopes getTable()
+     * @method Scope[] selectAll()
      *
      * @Entity(class="\pachno\core\entities\Scope")
      * @Table(name="scopes")
@@ -71,11 +73,11 @@
 
             $res = $this->rawSelect($query);
             $scope_ids = [];
-            
+
             while ($row = $res->getNextRow()) {
                 $scope_ids[] = $row[self::ID];
             }
-            
+
             return $scope_ids;
         }
 

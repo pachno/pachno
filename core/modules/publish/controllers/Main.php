@@ -130,6 +130,10 @@
             $this->error = framework\Context::getMessageAndClear('publish_article_error');
             $this->redirected_from = framework\Context::getMessageAndClear('publish_redirected_article');
 
+            if ($this->redirected_from) {
+                $this->redirected_from = Articles::getTable()->selectById($this->redirected_from);
+            }
+
             if ($this->article instanceof Article)
             {
                 if (!$this->article->hasAccess())
@@ -145,7 +149,7 @@
                     {
                         $redirect_article = $this->article->getRedirectArticle();
                         if ($redirect_article instanceof Article) {
-                            framework\Context::setMessage('publish_redirected_article', $this->article->getName());
+                            framework\Context::setMessage('publish_redirected_article', $this->article->getID());
                             $this->forward($redirect_article->getLink());
                         }
                     }

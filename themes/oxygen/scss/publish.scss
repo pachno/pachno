@@ -14,6 +14,12 @@
 .toc .publish_toc_5 { margin: 0 0 3px 27px; font-size: 0.95em; }
 .toc .publish_toc_6 { margin: 0 0 3px 35px; font-size: 0.9em; }
 
+.article-title {
+    .status-badge {
+        background-color: rgba(39, 124, 186, 0.4);
+        color: #FFF;
+    }
+}
 .article .article .content a { border-bottom: 1px dotted #CCC; }
 .article h1, .article h2, .article h3, .article h4, .article h5, .article h6 {
     margin: 20px 0 5px 0;
@@ -72,10 +78,6 @@
 .article .publish_article_actions {
     display: block;
     box-sizing: border-box;
-    -o-box-sizing: border-box;
-    -ms-box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    -webkit-box-sizing: border-box;
     width: 100%;
     padding: 10px;
     text-align: right;
@@ -107,10 +109,6 @@
 }
 .main_area.article.edit {
     padding: 0;
-    background: -o-linear-gradient(top, rgba(240, 240, 240, 0) 0%, rgba(240, 240, 240, 0.6) 20px); /* Opera11.10+ */
-    background: -ms-linear-gradient(top, rgba(240, 240, 240, 0) 0%, rgba(240, 240, 240, 0.6) 20px); /* Opera11.10+ */
-    background: -moz-linear-gradient(top, rgba(240, 240, 240, 0) 0%, rgba(240, 240, 240, 0.6) 20px); /* Opera11.10+ */
-    background: -webkit-linear-gradient(top, rgba(240, 240, 240, 0) 0%, rgba(240, 240, 240, 0.6) 20px); /* Opera11.10+ */
     background: linear-gradient(to bottom, rgba(240, 240, 240, 0) 0%, rgba(240, 240, 240, 0.6) 20px); /* Opera11.10+ */
 }
 .article.edit label { font-size: 1.2em; }
@@ -121,10 +119,6 @@
     border: none;
     padding: 15px;
     box-sizing: border-box;
-    -o-box-sizing: border-box;
-    -ms-box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    -webkit-box-sizing: border-box;
     width: 100%;
     font-size: 1.3em;
     line-height: 1.5em;
@@ -145,10 +139,6 @@
 #change_reason {
     font-size: 1em;
     box-sizing: border-box;
-    -o-box-sizing: border-box;
-    -ms-box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    -webkit-box-sizing: border-box;
     width: 100%;
 }
 
@@ -163,10 +153,6 @@
 }
 .article.edit .markItUpHeader ul {
     box-sizing: border-box;
-    -o-box-sizing: border-box;
-    -ms-box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    -webkit-box-sizing: border-box;
     width: 100%;
     padding-left: 15px;
 }
@@ -189,10 +175,6 @@
     padding: 7px;
     border-radius: 3px;
     box-sizing: border-box;
-    -o-box-sizing: border-box;
-    -ms-box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    -webkit-box-sizing: border-box;
     width: 100%;
 }
 .article.edit .markItUp { margin: 0; }
@@ -295,10 +277,6 @@ INS { display: inline; background-color: #8D8; text-decoration: none; } DEL { di
 #parent_selector_container input[type=search] {
     display: inline-block;
     box-sizing: border-box;
-    -o-box-sizing: border-box;
-    -ms-box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    -webkit-box-sizing: border-box;
     width: 505px;
     padding: 5px;
     font-size: 1.1em;
@@ -307,10 +285,6 @@ INS { display: inline; background-color: #8D8; text-decoration: none; } DEL { di
 #parent_selector_container input[type=submit] {
     display: inline-block;
     box-sizing: border-box;
-    -o-box-sizing: border-box;
-    -ms-box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    -webkit-box-sizing: border-box;
     width: 80px;
     padding: 7px;
     font-size: 1.1em;
@@ -329,10 +303,6 @@ INS { display: inline; background-color: #8D8; text-decoration: none; } DEL { di
 }
 
 #edit_article_form {
-    -webkit-transition: left 0.3s ease, top 0.3s ease, bottom 0.3s ease, right 0.3s ease;
-    -moz-transition: left 0.3s ease, top 0.3s ease, bottom 0.3s ease, right 0.3s ease;
-    -ms-transition: left 0.3s ease, top 0.3s ease, bottom 0.3s ease, right 0.3s ease;
-    -o-transition: left 0.3s ease, top 0.3s ease, bottom 0.3s ease, right 0.3s ease;
     transition: left 0.3s ease, top 0.3s ease, bottom 0.3s ease, right 0.3s ease;
 }
 #main_container.distraction-free > header,
@@ -354,10 +324,6 @@ INS { display: inline; background-color: #8D8; text-decoration: none; } DEL { di
     padding: 2px 4px;
     font-size: 0.8em;
     opacity: 0.1;
-    -webkit-transition: opacity 0.3s ease;
-    -moz-transition: opacity 0.3s ease;
-    -ms-transition: opacity 0.3s ease;
-    -o-transition: opacity 0.3s ease;
     transition: opacity 0.3s ease;
 }
 #main_container.distraction-free .article.edit .header.edit {

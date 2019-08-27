@@ -508,6 +508,8 @@
                 self::_populateProjects();
                 return (array_key_exists($key, self::$_projects)) ? self::$_projects[$key] : null;
             }
+
+            return null;
         }
 
         public static function getValidSubprojects(Project $project)
