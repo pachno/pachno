@@ -413,7 +413,8 @@
             }
 
             $wiki_url = ($event->getSubject() instanceof Project && $event->getSubject()->hasWikiURL()) ? $event->getSubject()->getWikiURL() : null;
-            framework\ActionComponent::includeComponent('publish/menustriplinks', array('project_url' => $project_url, 'project' => $event->getSubject(), 'wiki_url' => $wiki_url, 'selected_tab' => $event->getParameter('selected_tab')));
+            $top_level_articles = Articles::getTable()->getManualSidebarArticles($article->getProject());
+            framework\ActionComponent::includeComponent('publish/menustriplinks', ['project_url' => $project_url, 'project' => $event->getSubject(), 'wiki_url' => $wiki_url, 'top_level_articles' => $top_level_articles]);
         }
 
         public function listen_createNewProject(framework\Event $event)

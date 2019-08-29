@@ -157,8 +157,10 @@
             }
             $query->where('articles.article_type', Article::TYPE_WIKI);
 
-            $project_key_normalized = ucfirst(mb_str_replace($project->getKey(), ['-'], ['']));
             if ($project instanceof Project) {
+                $project_key_normalized = str_replace(['-'], [''], $project->getKey());
+                $project_key_normalized = ucfirst($project_key_normalized);
+
                 $criteria = new Criteria();
                 $criteria->where(self::NAME, "Category:" . ucfirst($project->getKey()) . "%", \b2db\Criterion::LIKE);
                 $criteria->or(self::NAME, "Category:" . $project_key_normalized . "%", \b2db\Criterion::LIKE);

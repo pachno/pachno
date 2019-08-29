@@ -348,7 +348,11 @@
                 }
                 echo self::cli_echo($exception->getMessage(), 'red', 'bold') . "\n";
                 echo "\n";
-                self::cli_echo('Stack trace') . ":\n";
+                self::cli_echo("occured in\n");
+                self::cli_echo($exception->getFile() . ', line ' . $exception->getLine(), 'blue', 'bold');
+                echo "\n";
+                echo "\n";
+                self::cli_echo("Stack trace:\n");
                 $trace_elements = $exception->getTrace();
             }
             else

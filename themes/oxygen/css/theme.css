@@ -9318,6 +9318,8 @@ nav.sidebar {
       margin: 1em auto; }
   nav.sidebar .collapser {
     flex: 0 0 auto; }
+  nav.sidebar .button-group .button + .button.button-report-issue {
+    margin-left: auto; }
   nav.sidebar.collapsed {
     flex: 0 0 75px;
     overflow: visible; }

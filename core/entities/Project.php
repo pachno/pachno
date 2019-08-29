@@ -546,7 +546,14 @@
             if (self::$_projects === null)
             {
                 self::$_projects = [];
-                foreach (Projects::getTable()->getAll() as $project) {
+
+                $projects = Projects::getTable()->getAll();
+                foreach ($projects as $index => $project) {
+                    if (!$project instanceof Project) {
+                        var_dump($project);
+                        var_dump($index);
+                        die();
+                    }
                     if ($project->hasAccess()) {
                         self::$_projects[$project->getKey()] = $project;
                     }
@@ -2448,12 +2455,14 @@
          */
         public function hasAccess($target_user = null)
         {
+            if (framework\Context::isCLI()) return true;
+
             $user = ($target_user === null) ? framework\Context::getUser() : $target_user;
 
             if ($this->getOwner() instanceof \pachno\core\entities\User && $this->getOwner()->getID() == $user->getID()) return true;
             if ($this->getLeader() instanceof \pachno\core\entities\User && $this->getLeader()->getID() == $user->getID()) return true;
 
-            return framework\Context::getUser()->hasPermission('canseeproject', $this->getID());
+            return $user->hasPermission('canseeproject', $this->getID());
         }
 
         protected function _populateLogItems($limit = null, $important = true, $offset = null)

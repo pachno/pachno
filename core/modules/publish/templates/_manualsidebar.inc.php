@@ -15,7 +15,9 @@
 ?>
 <nav class="project-context sidebar">
     <div class="list-mode">
-        <?php if ($article->getProject() instanceof Project) include_component('project/projectheader', ['subpage' => __('Documentation')]); ?>
+        <?php if ($article->getProject() instanceof Project): ?>
+            <?php include_component('project/projectheader', ['subpage' => __('Documentation'), 'show_back' => true]); ?>
+        <?php endif; ?>
         <?php foreach ($top_level_articles as $top_level_article): ?>
             <?php if (array_key_exists($top_level_article->getID(), $parents)): ?>
                 <?php include_component('publish/manualsidebarlink', compact('parents', 'article', 'main_article', 'level', 'first')); ?>

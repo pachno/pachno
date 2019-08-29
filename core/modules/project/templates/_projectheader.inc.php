@@ -1,6 +1,13 @@
 <?php
 
+    use pachno\core\entities\User;
     use pachno\core\framework;
+
+    /**
+     * @var framework\Response $pachno_response
+     * @var User $pachno_user
+     */
+
     $selected_project = \pachno\core\framework\Context::getCurrentProject();
 
 ?>
@@ -22,6 +29,11 @@
             </div>
         <?php endif; */ ?>
     <div class="button-group">
+        <?php if (isset($show_back) && $show_back): ?>
+            <a href="<?= make_url('project_dashboard', ['project_key' => $selected_project->getKey()]); ?>" class="button secondary icon">
+                <?= fa_image_tag('arrow-left', ['class' => 'icon']); ?>
+            </a>
+        <?php endif; ?>
         <?php if ($pachno_user->canEditProjectDetails(framework\Context::getCurrentProject())): ?>
             <a href="<?= make_url('project_settings', array('project_key' => \pachno\core\framework\Context::getCurrentProject()->getKey())); ?>" class="button secondary <?php if ($pachno_response->getPage() == 'project_settings') echo 'active'; ?>">
                 <?= fa_image_tag('cog', ['class' => 'icon']); ?>
@@ -29,7 +41,7 @@
             </a>
         <?php endif; ?>
         <?php if (framework\Context::isProjectContext() && !framework\Context::getCurrentProject()->isArchived() && !framework\Context::getCurrentProject()->isLocked() && $pachno_user->canReportIssues(framework\Context::getCurrentProject())): ?>
-            <?= javascript_link_tag(fa_image_tag('plus') . '<span>'.__('Report an issue').'</span>', array('onclick' => "Pachno.Issues.Add('" . make_url('get_partial_for_backdrop', array('key' => 'reportissue', 'project_id' => framework\Context::getCurrentProject()->getId())) . "');", 'class' => 'button button-lightblue', 'id' => 'reportissue_button')); ?>
+            <?= javascript_link_tag(fa_image_tag('plus') . '<span>'.__('Report an issue').'</span>', array('onclick' => "Pachno.Issues.Add('" . make_url('get_partial_for_backdrop', array('key' => 'reportissue', 'project_id' => framework\Context::getCurrentProject()->getId())) . "');", 'class' => 'button button-report-issue', 'id' => 'reportissue_button')); ?>
             <script type="text/javascript">
                 var Pachno;
 

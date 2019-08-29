@@ -66,6 +66,16 @@ nav.sidebar {
     flex: 0 0 auto;
   }
 
+  .button-group {
+
+    .button {
+      & + .button.button-report-issue {
+        margin-left: auto;
+      }
+    }
+
+  }
+
   &.collapsed {
     flex: 0 0 75px;
     overflow: visible;
