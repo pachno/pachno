@@ -248,6 +248,7 @@
         /**
          * Delete an article
          *
+         * @Route(name="article_delete", url="/wiki/:article_id/delete")
          * @param Request $request
          */
         public function runDeleteArticle(Request $request)
@@ -396,6 +397,7 @@
         /**
          * Toggle favourite article (starring)
          *
+         * @Route(name="toggle_favourite_article", url="/wiki/:article_id/:user_id")
          * @param Request $request
          */
         public function runToggleFavouriteArticle(Request $request)

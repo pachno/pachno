@@ -16,8 +16,7 @@
 <div class="content-with-sidebar">
 <?php if ($article instanceof \pachno\core\entities\Article): ?>
     <?php include_component('manualsidebar', ['article' => $article]); ?>
-    <?php //include_component('leftmenu', ['article' => $article]); ?>
-    <div class="main_area">
+    <div class="main_area article">
         <a name="top"></a>
         <?php if ($error): ?>
             <div class="redbox">

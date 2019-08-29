@@ -2,6 +2,8 @@
 
     /** @var \pachno\core\entities\Link[] $links */
 
+use pachno\core\modules\publish\Publish;
+
 ?>
 <div class="list-mode" id="menu_links_<?php echo $target_type; ?>_<?php echo $target_id; ?>_container">
     <div class="header not-selectable">
@@ -32,7 +34,7 @@
                     <?php else: ?>
                         <?php echo __('Enter the link URL here, along with an (optional) description, and press "%add_item" to add it to the menu.', array('%add_item' => __('Add item'))); ?><br /><br />
                     <?php endif; ?>
-                    <?php echo __('To add free text, just enter text in the description - without any url - and press the "%add_item" button (Text will be parsed according to the %wiki_formatting).', array('%add_item' => __('Add item'), '%wiki_formatting' => link_tag(make_url('publish_article', array('article_name' => 'WikiFormatting')), 'WikiFormatting'))); ?><br /><br />
+                    <?php echo __('To add free text, just enter text in the description - without any url - and press the "%add_item" button (Text will be parsed according to the %wiki_formatting).', array('%add_item' => __('Add item'), '%wiki_formatting' => link_tag(Publish::getArticleLink('WikiFormatting'), 'WikiFormatting'))); ?><br /><br />
                     <?php echo __('To add a spacer, just press "%add_item", without any url or description.', array('%add_item' => __('Add item'))); ?>
 
                     <div style="text-align: right; margin-top: 10px; font-size: 1.1em;">

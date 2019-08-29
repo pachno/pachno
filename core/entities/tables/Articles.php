@@ -157,10 +157,13 @@
             }
             $query->where('articles.article_type', Article::TYPE_WIKI);
 
+            $project_key_normalized = ucfirst(mb_str_replace($project->getKey(), ['-'], ['']));
             if ($project instanceof Project) {
                 $criteria = new Criteria();
                 $criteria->where(self::NAME, "Category:" . ucfirst($project->getKey()) . "%", \b2db\Criterion::LIKE);
+                $criteria->or(self::NAME, "Category:" . $project_key_normalized . "%", \b2db\Criterion::LIKE);
                 $criteria->or(self::NAME, ucfirst($project->getKey()) . ":%", \b2db\Criterion::LIKE);
+                $criteria->or(self::NAME, $project_key_normalized . ":%", \b2db\Criterion::LIKE);
                 $query->where($criteria);
             } else {
                 $query->where('articles.project_id', 0);
@@ -188,30 +191,25 @@
         public function getArticleByName($name, $project = null): ?Article
         {
             if (mb_substr($name, 0, 9) == 'Category:') {
-                $article_name = mb_substr($name, 9);
-                $key_delimiter = mb_stripos($article_name, ':');
-                if ($key_delimiter !== 0) {
-                    $project_key = mb_strtolower(mb_substr($article_name, 0, $key_delimiter));
-                    $project = Project::getByKey($project_key);
-                    $article_name = mb_substr($article_name, $key_delimiter + 1);
-                }
+                $name = mb_substr($name, 9);
                 $is_category = true;
             } else {
-                $colon_pos = mb_strpos($name, ':');
-                if ($colon_pos !== 0) {
-                    $project_key = mb_strtolower(mb_substr($name, 0, $colon_pos));
-                    $project = Project::getByKey($project_key);
-                }
-
-                if ($project instanceof Project) {
-                    $article_name = mb_substr($name, $colon_pos + 1);
-                } else {
-                    if (framework\Context::isProjectContext()) {
-                        $project = framework\Context::getCurrentProject();
-                    }
-                    $article_name = $name;
-                }
                 $is_category = false;
+            }
+
+            $colon_pos = mb_strpos($name, ':');
+            if ($colon_pos !== 0) {
+                $project_key = mb_strtolower(mb_substr($name, 0, $colon_pos));
+                $project = Project::getByKey($project_key);
+            }
+
+            if ($project instanceof Project) {
+                $article_name = mb_substr($name, $colon_pos + 1);
+            } else {
+                if (framework\Context::isProjectContext()) {
+                    $project = framework\Context::getCurrentProject();
+                }
+                $article_name = $name;
             }
             $project_id = ($project instanceof Project) ? $project->getId() : $project;
 

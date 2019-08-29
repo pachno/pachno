@@ -154,6 +154,11 @@
         protected $_key = null;
 
         /**
+         * @var string
+         */
+        protected $_normalized_key = null;
+
+        /**
          * List of editions for this project
          *
          * @var array|Edition
