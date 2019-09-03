@@ -42,20 +42,6 @@
         <?php endif; ?>
         <?php if (framework\Context::isProjectContext() && !framework\Context::getCurrentProject()->isArchived() && !framework\Context::getCurrentProject()->isLocked() && $pachno_user->canReportIssues(framework\Context::getCurrentProject())): ?>
             <?= javascript_link_tag(fa_image_tag('plus') . '<span>'.__('Report an issue').'</span>', array('onclick' => "Pachno.Issues.Add('" . make_url('get_partial_for_backdrop', array('key' => 'reportissue', 'project_id' => framework\Context::getCurrentProject()->getId())) . "');", 'class' => 'button button-report-issue', 'id' => 'reportissue_button')); ?>
-            <script type="text/javascript">
-                var Pachno;
-
-                require(['domReady', 'pachno/index', 'jquery'], function (domReady, pachno_index_js, jQuery) {
-                    domReady(function () {
-                        Pachno = pachno_index_js;
-                        var hash = window.location.hash;
-
-                        if (hash != undefined && hash.indexOf('report_an_issue') == 1) {
-                            jQuery('#reportissue_button').trigger('click');
-                        }
-                    });
-                });
-            </script>
         <?php endif; ?>
     </div>
     <?php if ($pachno_response->getPage() == 'project_summary'): ?>

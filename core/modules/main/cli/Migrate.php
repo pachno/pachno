@@ -18,6 +18,7 @@ namespace pachno\core\modules\main\cli;
     use pachno\core\entities\tables\Files;
     use pachno\core\entities\tables\Projects;
     use pachno\core\entities\tables\Scopes;
+    use pachno\core\entities\tables\Settings;
     use pachno\core\framework\cli\Command;
     use pachno\core\modules\main\cli\entities\tbg;
 
@@ -144,6 +145,9 @@ namespace pachno\core\modules\main\cli;
                 $this->migrateArticles($articles);
                 $cc += 1;
             }
+
+            $this->cliEcho("Migrating settings\n");
+            Settings::getTable()->migrateSettings();
         }
 
     }

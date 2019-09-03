@@ -3,7 +3,9 @@
     namespace pachno\core\entities\tables;
 
     use b2db\Insertion;
+    use b2db\Query;
     use b2db\Update;
+    use pachno\core\entities\Setting;
     use pachno\core\framework,
         b2db\Core,
         b2db\Criteria,
@@ -22,10 +24,11 @@
     /**
      * Settings table
      *
-     * @package pachno
-     * @subpackage tables
+     * @method Setting[] select(Query $query, $join = 'all')
+     * @method Setting selectOne(Query $query, $join = 'all')
      *
      * @Table(name="settings")
+     * @Entity(class="\pachno\core\entities\Setting")
      */
     class Settings extends ScopedTable
     {
@@ -45,27 +48,14 @@
             $this->addIndex('scope_uid', array(self::SCOPE, self::UID));
         }
 
-        protected function initialize()
-        {
-            parent::setup(self::B2DBNAME, self::ID);
-            parent::addVarchar(self::NAME, 45);
-            parent::addVarchar(self::MODULE, 45);
-            parent::addVarchar(self::VALUE, 200);
-            parent::addInteger(self::UID, 10);
-            parent::addInteger(self::UPDATED_AT, 10);
-        }
-
+        /**
+         * @param $scope
+         * @param int $uid
+         * @return Setting[]
+         */
         public function getSettingsForScope($scope, $uid = 0)
         {
             $query = $this->getQuery();
-            if (framework\Context::isUpgrademode())
-            {
-                $query->addSelectionColumn(self::NAME);
-                $query->addSelectionColumn(self::MODULE);
-                $query->addSelectionColumn(self::VALUE);
-                $query->addSelectionColumn(self::UID);
-                $query->addSelectionColumn(self::SCOPE);
-            }
             $query->where(self::UID, $uid);
 
             $criteria = new Criteria();
@@ -73,8 +63,25 @@
             $criteria->or(self::SCOPE, 0);
             $query->and($criteria);
 
-            $res = $this->rawSelect($query, 'none');
-            return $res;
+            return $this->select($query);
+        }
+
+        /**
+         * @param $name
+         * @param $module
+         * @param $uid
+         * @param $scope
+         * @return Setting
+         */
+        public function getSetting($name, $module, $uid, $scope): ?Setting
+        {
+            $query = $this->getQuery();
+            $query->where(self::NAME, $name);
+            $query->where(self::MODULE, $module);
+            $query->where(self::UID, $uid);
+            $query->where(self::SCOPE, $scope);
+
+            return $this->selectOne($query);
         }
 
         public function saveSetting($name, $module, $value, $uid, $scope)

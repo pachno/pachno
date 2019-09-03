@@ -4,6 +4,7 @@
 
     use pachno\core\entities\Scope,
         pachno\core\entities\tables;
+    use pachno\core\entities\Setting;
 
     /**
      * Settings class
@@ -198,28 +199,19 @@
             {
                 Logging::log('Loading settings');
                 if (self::$_settings === null)
-                    self::$_settings = array();
+                    self::$_settings = [];
 
                 Logging::log('Settings not cached or install mode enabled. Retrieving from database');
-                if ($res = tables\Settings::getTable()->getSettingsForScope(Context::getScope()->getID(), $uid))
-                {
-                    $cc = 0;
-                    while ($row = $res->getNextRow())
-                    {
-                        $cc++;
-                        self::$_settings[$row->get(tables\Settings::MODULE)][$row->get(tables\Settings::NAME)][$row->get(tables\Settings::UID)] = $row->get(tables\Settings::VALUE);
-                    }
-                    if ($cc == 0 && !Context::isInstallmode() && $uid == 0)
-                    {
-                        Logging::log('There were no settings stored in the database!', 'main', Logging::LEVEL_FATAL);
-                        throw new SettingsException('Could not retrieve settings from database (no settings stored)');
-                    }
+                $settings = tables\Settings::getTable()->getSettingsForScope(Context::getScope()->getID(), $uid);
+                foreach ($settings as $setting) {
+                    self::$_settings[$setting->getModuleKey()][$setting->getName()][$setting->getUserId()] = $setting;
                 }
-                elseif (!Context::isInstallmode() && $uid == 0)
-                {
+
+                if (!count($settings) && !Context::isInstallmode() && $uid == 0) {
                     Logging::log('Settings could not be retrieved from the database!', 'main', Logging::LEVEL_FATAL);
                     throw new SettingsException('Could not retrieve settings from database');
                 }
+
                 self::$_loadedsettings[$uid] = true;
                 self::$_timezone = new \DateTimeZone(self::getServerTimezoneIdentifier());
                 Logging::log('Retrieved');
@@ -252,24 +244,29 @@
          */
         public static function saveSetting($name, $value, $module = 'core', $scope = 0, $uid = 0)
         {
-            if ($scope == 0 && $name != 'defaultscope' && $module == 'core' && $uid == 0)
-            {
-                if (($scope = Context::getScope()) instanceof Scope)
-                {
+            if ($scope == 0 && $name != 'defaultscope' && $module == 'core' && $uid == 0) {
+                if (($scope = Context::getScope()) instanceof Scope) {
                     $scope = $scope->getID();
-                }
-                else
-                {
+                } else {
                     throw new \Exception('No scope loaded, cannot autoload it');
                 }
             }
 
-            tables\Settings::getTable()->saveSetting($name, $module, $value, $uid, $scope);
-
-            if ($scope != 0 && ((!Context::getScope() instanceof Scope) || $scope == Context::getScope()->getID()))
-            {
+            if ($scope != 0 && ((!Context::getScope() instanceof Scope) || $scope == Context::getScope()->getID())) {
                 self::$_settings[$module][$name][$uid] = $value;
+            } else {
+                $setting = tables\Settings::getTable()->getSetting($name, $module, $uid, $scope);
+                if (!$setting instanceof Setting) {
+                    $setting = new Setting();
+                    $setting->setModuleKey($module);
+                    $setting->setName($name);
+                    $setting->setUserId($uid);
+                    $setting->setScope($scope);
+                }
+                $setting->setValue($value);
+                $setting->save();
             }
+
         }
 
         public static function copyDefaultScopeSetting($name, $module = 'core')
