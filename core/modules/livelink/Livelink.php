@@ -73,11 +73,6 @@
             return 'Pachno Live Link';
         }
 
-        public function isEnabled()
-        {
-            return false;
-        }
-
         /**
          * @Listener(module='core', identifier='project_sidebar_links')
          * @param \pachno\core\framework\Event $event

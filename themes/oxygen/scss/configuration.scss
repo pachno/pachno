@@ -212,22 +212,6 @@
   opacity: 0.5;
 }
 
-.plugin .plugin-actions form {
-  display: inline-block;
-}
-
-.plugin .button img {
-  display: none;
-}
-
-.plugin .button.installing img {
-  display: inline;
-}
-
-.plugins-list .plugin:nth-child(odd) {
-  margin-right: 0;
-}
-
 .plugins-list .plugin-actions .button.update-button {
   display: none;
 }
@@ -242,12 +226,6 @@
 
 .plugins-list .plugin.can-update .plugin-actions .button.update-button {
   display: inline-block;
-}
-
-.plugins-list .plugin-actions {
-  position: absolute;
-  top: 12px;
-  right: 12px;
 }
 
 .plugins-list .plugin > h1 {

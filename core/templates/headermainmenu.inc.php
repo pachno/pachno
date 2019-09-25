@@ -1,5 +1,6 @@
 <?php
 
+    use pachno\core\entities\Project;
     use pachno\core\framework;
 
     /**
@@ -46,7 +47,11 @@
                                 <?php endif; ?>
                             <?php endif; ?>
                             <?php foreach ($saved_searches['public'] as $saved_search): ?>
-                                <li><?= link_tag(make_url('project_issues', array('saved_search' => $saved_search->getID(), 'search' => true)), fa_image_tag('search') . __($saved_search->getName())); ?></li>
+                                <?php if ($saved_search->getProject() instanceof Project): ?>
+                                    <li><?= link_tag(make_url('project_issues', array('saved_search' => $saved_search->getID(), 'search' => true, 'project_key' => $saved_search->getProject()->getKey())), fa_image_tag('search') . __($saved_search->getName())); ?></li>
+                                <?php else: ?>
+                                    <li><?= link_tag(make_url('search', array('saved_search' => $saved_search->getID(), 'search' => true)), fa_image_tag('search') . __($saved_search->getName())); ?></li>
+                                <?php endif; ?>
                             <?php endforeach; ?>
                         <?php else: ?>
                             <li class="disabled"><?= __('You have no saved searches'); ?></li>

@@ -168,6 +168,10 @@
         protected static $_ver_rev = 0;
         protected static $_ver_name = "-dev";
         protected static $_defaultscope;
+
+        /**
+         * @var Setting[][]|Setting[][][]
+         */
         protected static $_settings;
 
         /**
@@ -292,7 +296,7 @@
             if ($scope != Context::getScope()->getID() && $scope !== null)
             {
                 $setting = self::_loadSetting($name, $module, $scope);
-                return $setting[$uid];
+                return ($setting[$uid] instanceof Setting) ? $setting[$uid]->getValue() : null;
             }
             if (self::$_settings === null)
             {
@@ -312,7 +316,7 @@
             }
             if ($uid !== 0 && array_key_exists($uid, self::$_settings[$module][$name]))
             {
-                return self::$_settings[$module][$name][$uid];
+                return (self::$_settings[$module][$name][$uid] instanceof Setting) ? self::$_settings[$module][$name][$uid]->getValue() : null;
             }
             else
             {
@@ -320,7 +324,7 @@
                 {
                     return null;
                 }
-                return self::$_settings[$module][$name][$uid];
+                return (self::$_settings[$module][$name][$uid] instanceof Setting) ? self::$_settings[$module][$name][$uid]->getValue() : null;
             }
         }
 

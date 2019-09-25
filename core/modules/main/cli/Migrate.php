@@ -16,6 +16,7 @@ namespace pachno\core\modules\main\cli;
     use pachno\core\entities\File;
     use pachno\core\entities\tables\Articles;
     use pachno\core\entities\tables\Files;
+    use pachno\core\entities\tables\Modules;
     use pachno\core\entities\tables\Projects;
     use pachno\core\entities\tables\Scopes;
     use pachno\core\entities\tables\Settings;
@@ -66,7 +67,7 @@ namespace pachno\core\modules\main\cli;
             }
 
             $this->cliEcho("\n");
-            $this->cliEcho("Generating trees: ");
+            $this->cliEcho("Generating article relations: ");
 
             foreach ($articles as $article) {
                 $this->cliEcho('.');
@@ -148,6 +149,8 @@ namespace pachno\core\modules\main\cli;
 
             $this->cliEcho("Migrating settings\n");
             Settings::getTable()->migrateSettings();
+
+            Modules::getTable()->removeModuleByName('vcs_integration', true);
         }
 
     }

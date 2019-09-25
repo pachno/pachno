@@ -84,6 +84,23 @@
             return $this->selectOne($query);
         }
 
+        public function preventDuplicate(Setting $setting)
+        {
+            $query = $this->getQuery();
+            $query->where(self::NAME, $setting->getName());
+            $query->where(self::MODULE, $setting->getModuleKey());
+            $query->where(self::UID, $setting->getUserId());
+            $query->where(self::SCOPE, $setting->getScope()->getID());
+
+            if ($setting->getID()) {
+                $query->where(self::ID, $setting->getID(), Criterion::NOT_EQUALS);
+            }
+
+            if ($this->count($query)) {
+                throw new \RuntimeException('Cannot save duplicate settings object');
+            }
+        }
+
         public function saveSetting($name, $module, $value, $uid, $scope)
         {
             $query = $this->getQuery();
@@ -198,6 +215,16 @@
             }
 
             return $file_ids;
+        }
+
+        public function migrateSettings()
+        {
+            $query = $this->getQuery();
+            $query->where(self::VALUE, 'The Bug Genie');
+
+            $update = new Update();
+            $update->update(self::VALUE, 'Pachno');
+            $this->rawUpdate($update, $query);
         }
 
     }

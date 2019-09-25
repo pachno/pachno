@@ -103,16 +103,31 @@
             return $this->rawDeleteById($module_id);
         }
 
-        public function disableModuleByName($module_name)
+        public function disableModuleByName($module_name, $all_scopes = false)
         {
             $query = $this->getQuery();
             $update = new Update();
 
             $update->add(self::ENABLED, 0);
             $query->where(self::MODULE_NAME, $module_name);
-            $query->where(self::SCOPE, framework\Context::getScope()->getID());
+
+            if (!$all_scopes) {
+                $query->where(self::SCOPE, framework\Context::getScope()->getID());
+            }
 
             return $this->rawUpdate($update, $query);
+        }
+
+        public function removeModuleByName($module_name, $all_scopes = false)
+        {
+            $query = $this->getQuery();
+            $query->where(self::MODULE_NAME, $module_name);
+
+            if (!$all_scopes) {
+                $query->where(self::SCOPE, framework\Context::getScope()->getID());
+            }
+
+            return $this->rawDelete($query);
         }
 
         public function installModule($identifier, $scope)

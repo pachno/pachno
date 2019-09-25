@@ -144,7 +144,7 @@
         /**
          * The project this saved search applies to
          *
-         * @var \pachno\core\entities\Project
+         * @var Project
          * @Column(type="integer", length=10)
          * @Relates(class="\pachno\core\entities\Project")
          */
@@ -355,7 +355,7 @@
         }
 
         /**
-         * @param \pachno\core\entities\Project $applies_to_project
+         * @param Project $applies_to_project
          */
         public function setAppliesToProject($applies_to_project)
         {
@@ -363,13 +363,16 @@
         }
 
         /**
-         * @return \pachno\core\entities\Project
+         * @return Project
          */
         public function getAppliesToProject()
         {
             return $this->_b2dbLazyLoad('_applies_to_project');
         }
 
+        /**
+         * @return Project
+         */
         public function getProject()
         {
             return $this->getAppliesToProject();
