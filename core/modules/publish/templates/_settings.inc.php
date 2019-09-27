@@ -1,3 +1,12 @@
+<?php
+
+    use pachno\core\modules\publish\Publish;
+
+    /**
+     * @var string[] $categories
+     */
+
+?>
 <div style="margin-top: 5px;" class="tab_menu inset">
     <ul id="publish_settings_menu">
         <li class="selected" id="publish_tab_settings"><a onclick="Pachno.Main.Helpers.tabSwitcher('publish_tab_settings', 'publish_settings_menu');" href="javascript:void(0);"><?= fa_image_tag('cog'); ?><span><?= __('General wiki settings'); ?></span></a></li>
@@ -41,7 +50,7 @@
                     </td>
                 </tr>
                 <tr>
-                    <td class="config-explanation" colspan="2"><?= __('Traditionally, %CamelCasing has been used to specify links between documents in Wikis. If you want to keep this turned on, specify so here. Make sure you read the %wikiformatting wiki article if you are unsure how to use this feature.', array('%CamelCasing' => link_tag('http://wikipedia.org/wiki/CamelCase', __('CamelCasing'), array('target' => '_blank')), '%wikiformatting' => link_tag(make_url('publish_article', array('article_name' => 'WikiFormatting')), 'WikiFormatting', array('target' => '_blank')))); ?></td>
+                    <td class="config-explanation" colspan="2"><?= __('Traditionally, %CamelCasing has been used to specify links between documents in Wikis. If you want to keep this turned on, specify so here. Make sure you read the %wikiformatting wiki article if you are unsure how to use this feature.', array('%CamelCasing' => link_tag('http://wikipedia.org/wiki/CamelCase', __('CamelCasing'), array('target' => '_blank')), '%wikiformatting' => link_tag(Publish::getArticleLink('WikiFormatting'), 'WikiFormatting', array('target' => '_blank')))); ?></td>
                 </tr>
                 <tr>
                     <td style="padding: 5px;"><label for="require_change_reason_yes"><?= __('Require change reason'); ?></label></td>
@@ -101,7 +110,7 @@
                     <input type="checkbox" class="fancy-checkbox" value="1" name="import_article[<?= $article_name; ?>]" id="import_article_<?= mb_strtolower($article_name); ?>"<?php if (!$details['exists']) echo ' selected'; ?>>&nbsp;
                     <label for="import_article_<?= mb_strtolower($article_name); ?>"><?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far') . urldecode($article_name); ?></label>
                     <?php if ($details['exists']): ?>
-                        &nbsp;<?= link_tag(make_url('publish_article', array('article_name' => $article_name)), __('Open existing article in new window'), array('style' => 'font-size: 0.8em;', 'target' => "_{$article_name}")); ?>
+                        &nbsp;<?= link_tag(Publish::getArticleLink($article_name), __('Open existing article in new window'), array('style' => 'font-size: 0.8em;', 'target' => "_{$article_name}")); ?>
                         <div class="faded_out"><?= __('Importing this article will overwrite an existing article in the database'); ?></div>
                     <?php endif; ?>
                 </li>
