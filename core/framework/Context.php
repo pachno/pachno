@@ -11,7 +11,9 @@ use pachno\core\framework\cli,
     pachno\core\entities\Scope,
     pachno\core\entities\User,
     pachno\core\entities\tables\Permissions;
+use pachno\core\framework\routing\Route;
 use pachno\core\helpers\TextParserMarkdown;
+use Ramsey\Uuid\Uuid;
 
 /**
  * The core class of the framework powering pachno
@@ -52,7 +54,7 @@ class Context
     /**
      * The current user
      *
-     * @var \pachno\core\entities\User
+     * @var User
      */
     protected static $_user;
 
@@ -154,7 +156,17 @@ class Context
      *
      * @var \pachno\core\framework\Action
      */
-    protected static $_action;
+    protected static $_current_controller_object;
+
+    /**
+     * @var string
+     */
+    protected static $_current_controller_method;
+
+    /**
+     * @var string
+     */
+    protected static $_current_controller_module;
 
     /**
      * The response object
@@ -208,7 +220,7 @@ class Context
     /**
      * The routing object
      *
-     * @var \pachno\core\framework\Routing
+     * @var Routing
      */
     protected static $_routing;
 
@@ -327,22 +339,19 @@ class Context
     public static function setCLIRouting($module, $action)
     {
         $routing = self::getRouting();
-        $routing->setCurrentRouteModule($module);
-        $routing->setCurrentRouteAction($action);
-        $routing->setCurrentRouteName('cli');
-        $routing->setCurrentRouteCSRFenabled(false);
+        $routing->setCurrentRoute(new Route('cli', $module, $action));
     }
 
     /**
      * Returns the routing object
      *
-     * @return \pachno\core\framework\Routing
+     * @return Routing
      */
     public static function getRouting()
     {
         if (!self::$_routing)
         {
-            self::$_routing = new \pachno\core\framework\Routing();
+            self::$_routing = new Routing();
         }
         return self::$_routing;
     }
@@ -395,7 +404,7 @@ class Context
     protected static function _setWebroot()
     {
         self::$_webroot = defined('\pachno\core\entities\_CLI') ? '.' : dirname($_SERVER['PHP_SELF']);
-        if (stristr(PHP_OS, 'WIN'))
+        if (stripos(PHP_OS, 'WIN') !== false)
         {
             self::$_webroot = str_replace("\\", "/", self::$_webroot); /* Windows adds a \ to the URL which we don't want */
         }
@@ -500,7 +509,7 @@ class Context
     {
         try
         {
-            self::$debug_id = uniqid();
+            self::$debug_id = Uuid::uuid4()->toString();
 
             // The time the script was loaded
             $starttime = explode(' ', microtime());
@@ -603,8 +612,8 @@ class Context
     protected static function setupI18n()
     {
         Logging::log('Initializing i18n');
-        if (true || !self::isCLI())
-        {
+//        if (true || !self::isCLI())
+//        {
             $language = (self::$_user instanceof User) ? self::$_user->getLanguage() : Settings::getLanguage();
 
             if (self::$_user instanceof User && self::$_user->getLanguage() == 'sys')
@@ -615,7 +624,7 @@ class Context
             Logging::log("Initializing i18n with language {$language}");
             self::$_i18n = new I18n($language);
             self::$_i18n->initialize();
-        }
+//        }
         Logging::log('done (initializing i18n)');
     }
 
@@ -652,6 +661,12 @@ class Context
                 Logging::log('done (caching permissions)');
             }
         }
+        catch (exceptions\TwoFactorAuthenticationException $e)
+        {
+            Logging::log("Could not authenticate 2FA token: " . $e->getMessage(), 'main', Logging::LEVEL_INFO);
+            self::setMessage('elevated_login_message_err', $e->getMessage());
+            self::$_redirect_login = '2fa_login';
+        }
         catch (exceptions\ElevatedLoginException $e)
         {
             Logging::log("Could not reauthenticate elevated permissions: " . $e->getMessage(), 'main', Logging::LEVEL_INFO);
@@ -662,7 +677,7 @@ class Context
         {
             Logging::log("Something happened while setting up user: " . $e->getMessage(), 'main', Logging::LEVEL_WARNING);
 
-            $is_anonymous_route = self::isCLI() || self::getRouting()->isCurrentRouteAnonymousRoute();
+            $is_anonymous_route = self::isCLI() || self::getRouting()->getCurrentRoute()->isAnonymous();
 
             if (!$is_anonymous_route)
             {
@@ -817,7 +832,7 @@ class Context
         self::$_configuration = $configuration;
 
         self::$_debug_mode = self::$_configuration['core']['debug'];
-        
+
         $log_file = (isset(self::$_configuration['core']['log_file'])) ? self::$_configuration['core']['log_file'] : null;
         if($log_file)
         {
@@ -846,9 +861,9 @@ class Context
      *
      * @return \pachno\core\framework\Action
      */
-    public static function getCurrentAction()
+    public static function getCurrentControllerObject()
     {
-        return self::$_action;
+        return self::$_current_controller_object;
     }
 
     /**
@@ -935,27 +950,29 @@ class Context
     /**
      * Load the user object into the user property
      *
-     * @return \pachno\core\entities\User
+     * @param User $user
+     *
+     * @return User
      */
-    public static function loadUser($user = null)
+    public static function loadUser(User $user = null)
     {
         try
         {
-            self::$_user = ($user === null) ? User::identify(self::getRequest(), self::getCurrentAction(), true) : $user;
+            self::$_user = ($user) ?? User::identify(self::getRequest(), self::getCurrentControllerObject(), true);
             if (self::$_user->isAuthenticated())
             {
                 if (!self::getRequest()->hasCookie('original_username'))
                 {
                     self::$_user->updateLastSeen();
                 }
-                if (!self::getScope()->isDefault() && !self::getRequest()->isAjaxCall() && !in_array(self::getRouting()->getCurrentRouteName(), array('add_scope', 'debugger', 'logout')) && !self::$_user->isGuest() && !self::$_user->isConfirmedMemberOfScope(self::getScope()))
+                if (!self::getScope()->isDefault() && !self::getRequest()->isAjaxCall() && !in_array(self::getRouting()->getCurrentRoute()->getName(), ['add_scope', 'debugger', 'logout']) && !self::$_user->isGuest() && !self::$_user->isConfirmedMemberOfScope(self::getScope()))
                 {
                     self::getResponse()->headerRedirect(self::getRouting()->generate('add_scope'));
                 }
                 self::$_user->save();
                 if (!(self::$_user->getGroup() instanceof \pachno\core\entities\Group))
                 {
-                    throw new \Exception('This user account belongs to a group that does not exist anymore. <br>Please contact the system administrator.');
+                    throw new \RuntimeException('This user account belongs to a group that does not exist anymore. Please contact the system administrator.');
                 }
             }
         }
@@ -974,7 +991,7 @@ class Context
     /**
      * Returns the user object
      *
-     * @return \pachno\core\entities\User
+     * @return User
      */
     public static function getUser()
     {
@@ -984,7 +1001,7 @@ class Context
     /**
      * Set the current user
      *
-     * @param \pachno\core\entities\User $user
+     * @param User $user
      */
     public static function setUser(User $user)
     {
@@ -2174,7 +2191,7 @@ class Context
         return null;
     }
 
-    public static function generateCSRFtoken()
+    public static function getCsrfToken()
     {
         if (!array_key_exists('csrf_token', $_SESSION) || $_SESSION['csrf_token'] == '')
         {
@@ -2183,9 +2200,9 @@ class Context
         return $_SESSION['csrf_token'];
     }
 
-    public static function checkCSRFtoken()
+    public static function checkCsrfToken()
     {
-        $token = self::generateCSRFtoken();
+        $token = self::getCsrfToken();
         if ($token == self::getRequest()->getParameter('csrf_token'))
             return true;
 
@@ -2215,11 +2232,11 @@ class Context
                 require PACHNO_MODULES_PATH . $module . DS . 'lib' . DS . $lib_file_name;
                 self::$_libs[$lib_name] = PACHNO_MODULES_PATH . $module . DS . 'lib' . DS . $lib_file_name;
             }
-            elseif (file_exists(PACHNO_MODULES_PATH . self::getRouting()->getCurrentRouteModule() . DS . 'lib' . DS . $lib_file_name))
+            elseif (file_exists(PACHNO_MODULES_PATH . self::getRouting()->getCurrentRoute()->getModuleName() . DS . 'lib' . DS . $lib_file_name))
             {
                 // Include the library from the current module if it exists
-                require PACHNO_MODULES_PATH . self::getRouting()->getCurrentRouteModule() . DS . 'lib' . DS . $lib_file_name;
-                self::$_libs[$lib_name] = PACHNO_MODULES_PATH . self::getRouting()->getCurrentRouteModule() . DS . 'lib' . DS . $lib_file_name;
+                require PACHNO_MODULES_PATH . self::getRouting()->getCurrentRoute()->getModuleName() . DS . 'lib' . DS . $lib_file_name;
+                self::$_libs[$lib_name] = PACHNO_MODULES_PATH . self::getRouting()->getCurrentRoute()->getModuleName() . DS . 'lib' . DS . $lib_file_name;
             }
             elseif (file_exists(PACHNO_CORE_PATH . 'lib' . DS . $lib_file_name))
             {
@@ -2231,8 +2248,8 @@ class Context
             {
                 // Throw an exception if the library can't be found in any of
                 // the above directories
-                Logging::log("The \"{$lib_name}\" library does not exist in either " . PACHNO_MODULES_PATH . self::getRouting()->getCurrentRouteModule() . DS . 'lib' . DS . ' or ' . PACHNO_CORE_PATH . 'lib' . DS, 'core', Logging::LEVEL_FATAL);
-                throw new exceptions\LibraryNotFoundException("The \"{$lib_name}\" library does not exist in either " . PACHNO_MODULES_PATH . self::getRouting()->getCurrentRouteModule() . DS . 'lib' . DS . ' or ' . PACHNO_CORE_PATH . 'lib' . DS);
+                Logging::log("The \"{$lib_name}\" library does not exist in either " . PACHNO_MODULES_PATH . self::getRouting()->getCurrentRoute()->getModuleName() . DS . 'lib' . DS . ' or ' . PACHNO_CORE_PATH . 'lib' . DS, 'core', Logging::LEVEL_FATAL);
+                throw new exceptions\LibraryNotFoundException("The \"{$lib_name}\" library does not exist in either " . PACHNO_MODULES_PATH . self::getRouting()->getCurrentRoute()->getModuleName() . DS . 'lib' . DS . ' or ' . PACHNO_CORE_PATH . 'lib' . DS);
             }
         }
     }
@@ -2299,159 +2316,126 @@ class Context
     /**
      * Performs an action.
      *
-     * @param $action
-     * @param string $module Name of the action module
-     * @param string $method Name of the action method to run
-     *
      * @return bool
      * @throws \Exception
      */
-    public static function performAction($action, $module, $method)
+    public static function performAction()
     {
         // Set content variable
         $content = null;
 
         // Set the template to be used when rendering the html (or other) output
-        $templateBasePath = (self::isInternalModule($module)) ? PACHNO_INTERNAL_MODULES_PATH : PACHNO_MODULES_PATH;
-        $templatePath = $templateBasePath . $module . DS . 'templates' . DS;
+        $templateBasePath = (self::isInternalModule(self::$_current_controller_module)) ? PACHNO_INTERNAL_MODULES_PATH : PACHNO_MODULES_PATH;
+        $templatePath = $templateBasePath . self::$_current_controller_module . DS . 'templates' . DS;
 
-        $actionClassName = get_class($action);
-        $actionToRunName = 'run' . ucfirst($method);
-        $preActionToRunName = 'pre' . ucfirst($method);
+        $controllerClassName = get_class(self::$_current_controller_object);
+        $unPrefixedControllerMethod = substr(self::$_current_controller_method, 3);
+        $preActionToRunName = 'pre' . $unPrefixedControllerMethod;
 
         // Set up the response object, responsible for controlling any output
-        self::getResponse()->setPage(self::getRouting()->getCurrentRouteName());
-        self::getResponse()->setTemplate(mb_strtolower($method) . '.' . self::getRequest()->getRequestedFormat() . '.php');
+        self::getResponse()->setPage(self::getRouting()->getCurrentRoute()->getName());
+        self::getResponse()->setTemplate(mb_strtolower($unPrefixedControllerMethod) . '.' . self::getRequest()->getRequestedFormat() . '.php');
         self::getResponse()->setupResponseContentType(self::getRequest()->getRequestedFormat());
         self::setCurrentProject(null);
 
         // Run the specified action method set if it exists
-        if (method_exists($action, $actionToRunName))
-        {
+        if (method_exists(self::$_current_controller_object, self::$_current_controller_method)) {
             // Turning on output buffering
             ob_start('mb_output_handler');
             ob_implicit_flush(0);
 
-            if (self::getRouting()->isCurrentRouteCSRFenabled())
-            {
-                // If the csrf check fails, don't proceed
-                if (!self::checkCSRFtoken())
-                {
-                    return true;
-                }
+            if (self::getRouting()->getCurrentRoute()->isCsrfProtected() && !self::checkCsrfToken()) {
+                return true;
             }
 
-            if (self::$_debug_mode)
-            {
+            if (self::$_debug_mode) {
                 $time = explode(' ', microtime());
                 $pretime = $time[1] + $time[0];
             }
-            if ($content === null)
-            {
+            if ($content === null) {
                 Logging::log('Running main pre-execute action');
                 // Running any overridden preExecute() method defined for that module
                 // or the default empty one provided by \pachno\core\framework\Action
-                if ($pre_action_retval = $action->preExecute(self::getRequest(), $method))
-                {
+                if ($pre_action_retval = self::$_current_controller_object->preExecute(self::getRequest(), self::$_current_controller_method)) {
                     $content = ob_get_clean();
                     Logging::log('preexecute method returned something, skipping further action');
                     if (self::$_debug_mode)
-                        $visited_templatename = "{$actionClassName}::preExecute()";
+                        $visited_templatename = "{$controllerClassName}::preExecute()";
                 }
             }
 
-            if ($content === null)
-            {
-                $action_retval = null;
-                if (self::getResponse()->getHttpStatus() == 200)
-                {
+            if ($content === null) {
+                $action_output = null;
+                if (self::getResponse()->getHttpStatus() == 200) {
                     // Checking for and running action-specific preExecute() function if
                     // it exists
-                    if (method_exists($action, $preActionToRunName))
-                    {
+                    if (method_exists(self::$_current_controller_object, $preActionToRunName)) {
                         Logging::log('Running custom pre-execute action');
-                        $action->$preActionToRunName(self::getRequest(), $method);
+                        self::$_current_controller_object->$preActionToRunName(self::getRequest(), self::$_current_controller_method);
                     }
 
                     // Running main route action
-                    Logging::log('Running route action ' . $actionToRunName . '()');
-                    if (self::$_debug_mode)
-                    {
+                    Logging::log('Running route action ' . self::$_current_controller_method . '()');
+                    if (self::$_debug_mode) {
                         $time = explode(' ', microtime());
                         $action_pretime = $time[1] + $time[0];
                     }
-                    $action_retval = $action->$actionToRunName(self::getRequest());
+                    $action_output = self::$_current_controller_object->{self::$_current_controller_method}(self::getRequest());
 
-                    if (self::$_debug_mode)
-                    {
+                    if (self::$_debug_mode) {
                         $time = explode(' ', microtime());
                         $action_posttime = $time[1] + $time[0];
-                        self::visitPartial("{$actionClassName}::{$actionToRunName}()", $action_posttime - $action_pretime);
-                    }
-                    else
-                    {
+                        self::visitPartial("{$controllerClassName}::" . self::$_current_controller_method . "()", $action_posttime - $action_pretime);
+                    } else {
                         //session_write_close();
                     }
                 }
-                if (self::getResponse()->getHttpStatus() == 200 && $action_retval)
-                {
+                if ($action_output && self::getResponse()->getHttpStatus() == 200) {
                     // If the action returns *any* output, we're done, and collect the
                     // output to a variable to be outputted in context later
                     $content = ob_get_clean();
                     Logging::log('...done');
-                }
-                elseif (!$action_retval)
-                {
+                } elseif (!$action_output) {
                     // If the action doesn't return any output (which it usually doesn't)
                     // we continue on to rendering the template file for that specific action
                     Logging::log('...done');
                     Logging::log('Displaying template');
 
                     // Check to see if we have a translated version of the template
-                    if ($method == 'notFound' && $module == 'main')
-                    {
+                    if (self::$_current_controller_method == 'runNotFound' && self::$_current_controller_module == 'main') {
                         $templateName = $templatePath . self::getResponse()->getTemplate();
-                    }
-                    elseif (!self::isReadySetup() || ($templateName = self::getI18n()->hasTranslatedTemplate(self::getResponse()->getTemplate())) === false)
-                    {
+                    } elseif (!self::isReadySetup() || ($templateName = self::getI18n()->hasTranslatedTemplate(self::getResponse()->getTemplate())) === false) {
                         // Check to see if any modules provide an alternate template
-                        $event = Event::createNew('core', "self::performAction::renderTemplate")->triggerUntilProcessed(array('class' => $actionClassName, 'action' => $actionToRunName));
-                        if ($event->isProcessed())
-                        {
+                        $event = Event::createNew('core', "self::performAction::renderTemplate")->triggerUntilProcessed(['class' => $controllerClassName, 'action' => self::$_current_controller_method]);
+                        if ($event->isProcessed()) {
                             $templateName = $event->getReturnValue();
                         }
 
                         // Check to see if the template has been changed, and whether it's in a
                         // different module, specified by "module/templatename"
-                        if (mb_strpos(self::getResponse()->getTemplate(), '/'))
-                        {
+                        if (mb_strpos(self::getResponse()->getTemplate(), '/')) {
                             $newPath = explode('/', self::getResponse()->getTemplate());
                             $templateName = (self::isInternalModule($newPath[0])) ? PACHNO_INTERNAL_MODULES_PATH : PACHNO_MODULES_PATH;
                             $templateName .= $newPath[0] . DS . 'templates' . DS . $newPath[1] . '.' . self::getRequest()->getRequestedFormat() . '.php';
-                        }
-                        else
-                        {
+                        } else {
                             $templateName = $templatePath . self::getResponse()->getTemplate();
                         }
                     }
 
                     // Check to see if the template exists and throw an exception otherwise
-                    if (!isset($templateName) || !file_exists($templateName))
-                    {
-                        Logging::log('The template file for the ' . $method . ' action ("' . self::getResponse()->getTemplate() . '") does not exist', 'core', Logging::LEVEL_FATAL);
+                    if (!isset($templateName) || !file_exists($templateName)) {
+                        Logging::log('The template file for the ' . self::$_current_controller_method . ' action ("' . self::getResponse()->getTemplate() . '") does not exist', 'core', Logging::LEVEL_FATAL);
                         Logging::log('Trying to load file "' . $templateName . '"', 'core', Logging::LEVEL_FATAL);
-                        throw new exceptions\TemplateNotFoundException('The template file for the ' . $method . ' action ("' . self::getResponse()->getTemplate() . '") does not exist');
+                        throw new exceptions\TemplateNotFoundException('The template file for the ' . self::$_current_controller_method . ' action ("' . self::getResponse()->getTemplate() . '") does not exist');
                     }
 
                     self::loadLibrary('common');
                     // Present template for current action
-                    ActionComponent::presentTemplate($templateName, $action->getParameterHolder());
+                    ActionComponent::presentTemplate($templateName, self::$_current_controller_object->getParameterHolder());
                     $content = ob_get_clean();
                     Logging::log('...completed');
                 }
-            }
-            elseif (self::$_debug_mode)
-            {
+            } elseif (self::$_debug_mode) {
                 $time = explode(' ', microtime());
                 $posttime = $time[1] + $time[0];
                 self::visitPartial($visited_templatename, $posttime - $pretime);
@@ -2463,12 +2447,10 @@ class Context
             self::getResponse()->setLayoutPath(PACHNO_CORE_PATH . 'templates');
 
             // Trigger event for rendering (so layout path can be overwritten)
-            \pachno\core\framework\Event::createNew('core', '\pachno\core\framework\Context::renderBegins')->trigger();
+            Event::createNew('core', '\pachno\core\framework\Context::renderBegins')->trigger();
 
-            if (Settings::isMaintenanceModeEnabled() && !mb_strstr(self::getRouting()->getCurrentRouteName(), 'configure'))
-            {
-                if (!file_exists(self::getResponse()->getLayoutPath() . DS . 'offline.inc.php'))
-                {
+            if (Settings::isMaintenanceModeEnabled() && !mb_strstr(self::getRouting()->getCurrentRoute()->getName(), 'configure')) {
+                if (!file_exists(self::getResponse()->getLayoutPath() . DS . 'offline.inc.php')) {
                     throw new exceptions\TemplateNotFoundException('Can not find offline mode template');
                 }
                 ob_start('mb_output_handler');
@@ -2480,26 +2462,20 @@ class Context
             // Render output in correct order
             self::getResponse()->renderHeaders();
 
-            if (self::getResponse()->getDecoration() == Response::DECORATE_DEFAULT && !self::getRequest()->isAjaxCall())
-            {
-                if (!file_exists(self::getResponse()->getLayoutPath() . DS . 'layout.php'))
-                {
+            if (self::getResponse()->getDecoration() == Response::DECORATE_DEFAULT && !self::getRequest()->isAjaxCall()) {
+                if (!file_exists(self::getResponse()->getLayoutPath() . DS . 'layout.php')) {
                     throw new exceptions\TemplateNotFoundException('Can not find layout template');
                 }
                 ob_start('mb_output_handler');
                 ob_implicit_flush(0);
-                $layoutproperties = self::setupLayoutProperties($content);
-                ActionComponent::presentTemplate(self::getResponse()->getLayoutPath() . DS . 'layout.php', $layoutproperties);
+                $layout_properties = self::setupLayoutProperties($content);
+                ActionComponent::presentTemplate(self::getResponse()->getLayoutPath() . DS . 'layout.php', $layout_properties);
                 ob_flush();
-            }
-            else
-            {
+            } else {
                 // Render header template if any, and store the output in a variable
-                if (!self::getRequest()->isAjaxCall() && self::getResponse()->doDecorateHeader())
-                {
+                if (!self::getRequest()->isAjaxCall() && self::getResponse()->doDecorateHeader()) {
                     Logging::log('decorating with header');
-                    if (!file_exists(self::getResponse()->getHeaderDecoration()))
-                    {
+                    if (!file_exists(self::getResponse()->getHeaderDecoration())) {
                         throw new exceptions\TemplateNotFoundException('Can not find header decoration: ' . self::getResponse()->getHeaderDecoration());
                     }
                     ActionComponent::presentTemplate(self::getResponse()->getHeaderDecoration());
@@ -2508,16 +2484,14 @@ class Context
                 echo $content;
 
                 // Trigger event for ending the rendering
-                \pachno\core\framework\Event::createNew('core', '\pachno\core\framework\Context::renderEnds')->trigger();
+                Event::createNew('core', '\pachno\core\framework\Context::renderEnds')->trigger();
 
                 Logging::log('...done (rendering content)');
 
                 // Render footer template if any
-                if (!self::getRequest()->isAjaxCall() && self::getResponse()->doDecorateFooter())
-                {
+                if (!self::getRequest()->isAjaxCall() && self::getResponse()->doDecorateFooter()) {
                     Logging::log('decorating with footer');
-                    if (!file_exists(self::getResponse()->getFooterDecoration()))
-                    {
+                    if (!file_exists(self::getResponse()->getFooterDecoration())) {
                         throw new exceptions\TemplateNotFoundException('Can not find footer decoration: ' . self::getResponse()->getFooterDecoration());
                     }
                     ActionComponent::presentTemplate(self::getResponse()->getFooterDecoration());
@@ -2528,11 +2502,9 @@ class Context
             Logging::log('done (rendering final content)');
 
             return true;
-        }
-        else
-        {
-            Logging::log("Cannot find the method {$actionToRunName}() in class {$actionClassName}.", 'core', Logging::LEVEL_FATAL);
-            throw new exceptions\ActionNotFoundException("Cannot find the method {$actionToRunName}() in class {$actionClassName}. Make sure the method exists.");
+        } else {
+            Logging::log("Cannot find the method " . self::$_current_controller_method . "() in class {$controllerClassName}.", 'core', Logging::LEVEL_FATAL);
+            throw new exceptions\ActionNotFoundException("Cannot find the method " . self::$_current_controller_method . "() in class {$controllerClassName}. Make sure the method exists.");
         }
     }
 
@@ -2586,62 +2558,25 @@ class Context
             if (($route = self::getRouting()->getRouteFromUrl(self::getRequest()->getParameter('url', null, false))) || self::isInstallmode()) {
 
                 if (self::isUpgrademode()) {
-                    $route = array('module' => 'installation', 'action' => 'upgrade');
+                    $route = new Route('installation_upgrade', 'installation', 'upgrade');
                 } elseif (self::isInstallmode()) {
-                    $route = array('module' => 'installation', 'action' => 'installIntro');
+                    $route = new Route('installation_intro', 'installation', 'installIntro');
                 }
 
-                if (!self::isInternalModule($route['module'])) {
-                    if (is_dir(PACHNO_MODULES_PATH . $route['module'])) {
-                        if (!file_exists(PACHNO_MODULES_PATH . $route['module'] . DS . 'controllers' . DS . 'Main.php')) {
-                            throw new \pachno\core\framework\exceptions\ActionNotFoundException(
-                                'The `' . $route['module'] . '` module is missing a `/controllers/Main.php` controller, containing the module its initial actions.'
-                            );
-                        }
-                    } else {
-                        throw new \Exception('Cannot load the ' . $route['module'] . ' module');
-                    }
-                    $actionClassBase = "\\pachno\\modules\\".$route['module'].'\\controllers\\';
-                } else {
-                    $actionClassBase = "\\pachno\\core\\modules\\".$route['module'].'\\controllers\\';
-                }
+                self::getRouting()->setCurrentRoute($route);
 
-                /**
-                 * Set up the action object by identifying the Controller from the action. The following actions can
-                 * be resolved by the Framework:
-                 *
-                 *  actionName          => /controllers/Main.php::runActionName()
-                 *  ::actionName        => /controllers/Main.php::runActionName()
-                 *  Other::actionName   => /controllers/Other.php::runActionName()
-                 *
-                 **/
-
-                // If a separate controller is defined within the action name
-                if (strpos($route['action'], '::')) {
-                    $routing = explode('::', $route['action']);
-
-                    $moduleController = $actionClassBase . $routing[0];
-                    $moduleMethod = $routing[1];
-
-                    if (class_exists($moduleController) && is_callable($moduleController, 'run'.ucfirst($moduleMethod))) {
-                        $actionObject = new $moduleController();
-                    } else {
-                        throw new \Exception('The `' . $route['action'] . '` controller action is not callable');
-                    }
-                } else {
-                    $actionClassName = $actionClassBase . 'Main';
-                    $actionObject = new $actionClassName();
-                    $moduleMethod = $route['action'];
-                }
-                $moduleName = $route['module'];
+                $controllerObject = $route->getController();
+                $controllerMethod = $route->getModuleActionMethod();
+                $moduleName = $route->getModuleName();
             } else {
-                // Default
-                $actionObject = new \pachno\core\modules\main\controllers\Common();
+                $controllerObject = new \pachno\core\modules\main\controllers\Common();
+                $controllerMethod = 'runNotFound';
                 $moduleName = 'main';
-                $moduleMethod = 'notFound';
             }
 
-            self::$_action = $actionObject;
+            self::$_current_controller_object = $controllerObject;
+            self::$_current_controller_method = $controllerMethod;
+            self::$_current_controller_module = $moduleName;
 
             if (!self::isInstallmode())
                 self::initializeUser();
@@ -2659,24 +2594,34 @@ class Context
             if (self::$_redirect_login == 'login') {
 
                 Logging::log('An error occurred setting up the user object, redirecting to login', 'main', Logging::LEVEL_NOTICE);
-                if (self::getRouting()->getCurrentRouteName() != 'login')
+                if (self::getRouting()->getCurrentRoute()->getName() != 'login')
                 {
                     self::setMessage('login_message_err', self::geti18n()->__('Please log in'));
-                    self::setMessage('login_referer', self::getRouting()->generate(self::getRouting()->getCurrentRouteName(), self::getRequest()->getParameters()));
+                    self::setMessage('login_referer', self::getRouting()->generate(self::getRouting()->getCurrentRoute()->getName(), self::getRequest()->getParameters()));
                 }
                 self::getResponse()->headerRedirect(self::getRouting()->generate('login_page'), 403);
             }
 
             if (self::$_redirect_login == 'elevated_login') {
                 Logging::log('Elevated permissions required', 'main', Logging::LEVEL_NOTICE);
-                if (self::getRouting()->getCurrentRouteName() != 'elevated_login')
+                if (self::getRouting()->getCurrentRoute()->getName() != 'elevated_login') {
                     self::setMessage('elevated_login_message_err', self::geti18n()->__('Please re-enter your password to continue'));
-                $actionObject = new \pachno\core\modules\main\controllers\Main();
-                $moduleName = 'main';
-                $moduleMethod = 'elevatedLogin';
+                }
+
+                self::$_current_controller_object = new \pachno\core\modules\main\controllers\Main();
+                self::$_current_controller_method = 'runElevatedLogin';
+                self::$_current_controller_module = 'main';
             }
 
-            if (self::performAction($actionObject, $moduleName, $moduleMethod)) {
+            if (self::$_redirect_login == '2fa_login') {
+                Logging::log('2FA verification required', 'main', Logging::LEVEL_NOTICE);
+
+                self::getResponse()->headerRedirect(self::getRouting()->generate('2fa_code_input'));
+
+                return true;
+            }
+
+            if (self::performAction()) {
                 if (self::isDebugMode()) {
                     self::generateDebugInfo();
                 }
@@ -2699,10 +2644,13 @@ class Context
             throw $e;
 
         } catch (\pachno\core\framework\exceptions\ActionNotAllowedException $e) {
-            $actionObject = new \pachno\core\modules\main\controllers\Common();
-            $actionObject['message'] = $e->getMessage();
+            self::$_current_controller_object = new \pachno\core\modules\main\controllers\Common();
+            self::$_current_controller_object['message'] = $e->getMessage();
 
-            self::performAction($actionObject, 'main', 'forbidden');
+            self::$_current_controller_method = 'runForbidden';
+            self::$_current_controller_module = 'main';
+
+            self::performAction();
 
         } catch (\pachno\core\framework\exceptions\CSRFFailureException $e) {
             \b2db\Core::closeDBLink();
@@ -2752,7 +2700,7 @@ class Context
         $debug_summary['memory'] = memory_get_usage();
         $debug_summary['partials'] = self::getVisitedPartials();
         $debug_summary['log'] = Logging::getEntries();
-        $debug_summary['routing'] = array('name' => self::getRouting()->getCurrentRouteName(), 'module' => self::getRouting()->getCurrentRouteModule(), 'action' => self::getRouting()->getCurrentRouteAction());
+        $debug_summary['routing'] = (self::getRouting()->getCurrentRoute() instanceof Route) ? self::getRouting()->getCurrentRoute()->toJSON() : [];
 
         if (isset($_SESSION))
         {

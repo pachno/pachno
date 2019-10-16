@@ -28,7 +28,7 @@
     </div>
     <div id="fullpage_backdrop_content" class="fullpage_backdrop_content"> </div>
 </div>
-<?php if (\pachno\core\framework\Context::getRouting()->getCurrentRouteName() != 'login_page' && $pachno_user->isGuest()): ?>
+<?php if (\pachno\core\framework\Context::getRouting()->getCurrentRoute()->getName() != 'login_page' && $pachno_user->isGuest()): ?>
     <div id="login_backdrop" class="fullpage_backdrop" style="display: none;">
         <div id="login_content" class="fullpage_backdrop_content">
             <?php include_component('main/loginpopup', array('content' => get_component_html('main/login'), 'mandatory' => false)); ?>

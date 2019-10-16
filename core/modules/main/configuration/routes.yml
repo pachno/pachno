@@ -89,13 +89,6 @@ get_javascript:
     parameters: [ ]
     csrf_enabled: false
 
-switch_to_user:
-    route: /switch/to/user/:user_id
-    module: main
-    action: switchUser
-    parameters: [ ]
-    csrf_enabled: false
-
 disable_tutorial:
     route: /disable/tutorial
     module: main
@@ -107,48 +100,6 @@ add_scope:
     route: /add/scope
     module: main
     action: addScope
-    parameters: [ ]
-    csrf_enabled: false
-
-switch_back_user:
-    route: /switch/back
-    module: main
-    action: switchUser
-    parameters: [ ]
-    csrf_enabled: false
-
-elevated_login:
-    route: /do/relogin
-    module: main
-    action: doElevatedLogin
-    parameters: [ ]
-    csrf_enabled: false
-
-elevated_login_page:
-    route: /relogin
-    module: main
-    action: elevatedLogin
-    parameters: [ ]
-    csrf_enabled: false
-
-login_section:
-    route: '/login/section/:section/*'
-    module: main
-    action: login
-    parameters: [ ]
-    csrf_enabled: false
-
-set_state:
-    route: /set/state/:state_id
-    module: main
-    action: setState
-    parameters: [ ]
-    csrf_enabled: false
-
-logout:
-    route: /logout
-    module: main
-    action: Common::logout
     parameters: [ ]
     csrf_enabled: false
 

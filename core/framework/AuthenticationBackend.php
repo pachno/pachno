@@ -16,6 +16,7 @@
     use pachno\core\entities\User;
     use pachno\core\entities\UserSession;
     use pachno\core\framework\exceptions\ElevatedLoginException;
+    use pachno\core\framework\exceptions\TwoFactorAuthenticationException;
 
     /**
      * Parameter holder class used in the MVC part of the framework for \pachno\core\entities\Action and \pachno\core\entities\ActionComponent
@@ -48,22 +49,30 @@
         {
             $user = Users::getTable()->getByUsername($username);
 
-            if (!$user instanceof User)
-            {
+            if (!$user instanceof User) {
                 Context::logout();
                 return;
             }
 
-            if (!$user->verifyUserSession($token, $is_elevated))
-            {
-                if ($is_elevated)
-                {
-                    Context::setUser($user);
-                    Context::getRouting()->setCurrentRouteName('elevated_login_page');
-                    throw new ElevatedLoginException('reenter');
-                }
+            Context::setUser($user);
 
-                $user = null;
+            if (!$user->verifyUserSession($token, $is_elevated)) {
+                $userSession = $user->getUserSession($token);
+
+                if ($userSession instanceof UserSession) {
+                    $user->setAuthenticated(true);
+                    $must_verify_2fa = !in_array(Context::getRouting()->getCurrentRoute()->getName(), ['logout', '2fa_verify_code', 'user_verify_2fa']);
+
+                    if ($user->is2FaEnabled() && !$userSession->is2FaVerified() && !Context::getRouting()->getCurrentRoute()->isAnonymous()) {
+                        if ($must_verify_2fa) {
+                            throw new TwoFactorAuthenticationException('2fa');
+                        }
+                    }
+
+                    if ($is_elevated && !$userSession->isElevated()) {
+                        throw new ElevatedLoginException('reenter');
+                    }
+                }
             }
 
             return $user;

@@ -96,7 +96,7 @@
 
             $this->config_sections = $config_sections;
             if ($this->selected_section == framework\Settings::CONFIGURATION_SECTION_MODULES) {
-                if (framework\Context::getRouting()->getCurrentRouteName() == 'configure_modules') {
+                if (framework\Context::getRouting()->getCurrentRoute()->getName() == 'configure_modules') {
                     $this->selected_subsection = 'core';
                 } else {
                     $this->selected_subsection = framework\Context::getRequest()->getParameter('config_module');

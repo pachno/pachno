@@ -237,7 +237,7 @@
             }
             else
             {
-                $module = Context::getRouting()->getCurrentRouteModule();
+                $module = Context::getRouting()->getCurrentRoute()->getModuleName();
                 $templatefile = ($is_component) ? '_' . $template . '.inc.php' : $template . '.' . Context::getRequest()->getRequestedFormat() . '.php';
             }
             if (file_exists(PACHNO_MODULES_PATH . $module . DS . 'i18n' . DS . $this->_language . DS . 'templates' . DS . $templatefile))

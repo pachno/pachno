@@ -9099,6 +9099,16 @@ input.icon.secondary:disabled {
       .form-container .form-row.header button:first-child:last-child,
       .form-container .form-row.header .button:first-child:last-child {
         margin-left: auto; }
+    .form-container .form-row .password-preview {
+      font-size: 1.4em; }
+    .form-container .form-row.centered {
+      justify-content: center; }
+      .form-container .form-row.centered input[type=text],
+      .form-container .form-row.centered input[type=number] {
+        text-align: center; }
+      .form-container .form-row.centered label {
+        justify-content: center;
+        text-align: center; }
     .form-container .form-row.submit-container {
       justify-content: space-between;
       justify-items: flex-end;
@@ -9208,6 +9218,10 @@ input.icon.secondary:disabled {
         font-size: 1.25em;
         padding: .5em .2em;
         border-bottom-width: 2px; }
+      .form-container .form-row > textarea.code-input-6,
+      .form-container .form-row > input[type=text].code-input-6,
+      .form-container .form-row > input[type=password].code-input-6 {
+        max-width: 10rem; }
       .form-container .form-row > textarea .number, .form-container .form-row > textarea:not(.invisible).number,
       .form-container .form-row > input[type=text] .number,
       .form-container .form-row > input[type=text]:not(.invisible).number,
@@ -13379,5 +13393,3 @@ DEL {
   white-space: normal; }
 
 /* END: modules/publish/ contributions styling */
-
-/*# sourceMappingURL=theme.css.map */

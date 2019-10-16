@@ -10,7 +10,7 @@
     <?php endif; ?>
     <ul>
         <?php if ($pachno_user->canAccessConfigurationPage()): ?>
-            <li id="header_config_link" class="<?php if (in_array(\pachno\core\framework\Context::getRouting()->getCurrentRouteModule(), ['configuration', 'import'])) echo ' selected'; ?>">
+            <li id="header_config_link" class="<?php if (in_array(\pachno\core\framework\Context::getRouting()->getCurrentRoute()->getModuleName(), ['configuration', 'import'])) echo ' selected'; ?>">
                 <?= link_tag(make_url('configure'), fa_image_tag('cog')); ?>
             </li>
         <?php endif; ?>
@@ -32,13 +32,13 @@
                 </div>
             </li>
         <?php endif; ?>
-        <li class="with-dropdown <?php if ($pachno_request->hasCookie('original_username')): ?>temporarily_switched<?php endif; ?> <?php if ($pachno_routing->getCurrentRouteName() == 'account') echo 'selected'; ?>" id="header_usermenu_link">
+        <li class="with-dropdown <?php if ($pachno_request->hasCookie('original_username')): ?>temporarily_switched<?php endif; ?> <?php if ($pachno_routing->getCurrentRoute()->getName() == 'account') echo 'selected'; ?>" id="header_usermenu_link">
             <?php if ($pachno_user->isGuest()): ?>
-                <a href="javascript:void(0);" <?php if (\pachno\core\framework\Context::getRouting()->getCurrentRouteName() != 'login_page'): ?>onclick="Pachno.Main.Login.showLogin('regular_login_container');"<?php endif; ?>><?= fa_image_tag('user'); ?></a>
+                <a href="javascript:void(0);" <?php if (\pachno\core\framework\Context::getRouting()->getCurrentRoute()->getName() != 'login_page'): ?>onclick="Pachno.Main.Login.showLogin('regular_login_container');"<?php endif; ?>><?= fa_image_tag('user'); ?></a>
             <?php else: ?>
                 <a href="javascript:void(0);" class="dropper header-user-info">
                     <span class="header_avatar">
-                        <?php if (\pachno\core\framework\Context::getRouting()->getCurrentRouteName() != 'login_page'): ?>
+                        <?php if (\pachno\core\framework\Context::getRouting()->getCurrentRoute()->getName() != 'login_page'): ?>
                             <?= image_tag($pachno_user->getAvatarURL(true), array('alt' => '[avatar]', 'id' => 'header_avatar'), true); ?>
                         <?php else: ?>
                             <?= image_tag($pachno_user->getAvatarURL(true), array('alt' => '[avatar]', 'id' => 'header_avatar'), true); ?>
@@ -48,10 +48,10 @@
                         <span class="header-user-name-name"><?= $pachno_user->getName(); ?></span>
                         <span class="header-user-name-username">@<?= $pachno_user->getUsername(); ?></span>
                     </span>
-                    <?php if (\pachno\core\framework\Context::getRouting()->getCurrentRouteName() != 'login_page') echo fa_image_tag('angle-down', ['class' => 'dropdown-indicator']); ?>
+                    <?php if (\pachno\core\framework\Context::getRouting()->getCurrentRoute()->getName() != 'login_page') echo fa_image_tag('angle-down', ['class' => 'dropdown-indicator']); ?>
                 </a>
             <?php endif; ?>
-            <?php if (\pachno\core\framework\Context::getRouting()->getCurrentRouteName() != 'login_page'): ?>
+            <?php if (\pachno\core\framework\Context::getRouting()->getCurrentRoute()->getName() != 'login_page'): ?>
                 <?php if (\pachno\core\framework\Event::createNew('core', 'header_usermenu_decider')->trigger()->getReturnValue() !== false): ?>
                     <?php if (!$pachno_user->isGuest()): ?>
                         <ul class="tab_menu_dropdown user_menu_dropdown popup_box" id="user_menu">
@@ -69,7 +69,7 @@
                                 <li><?= link_tag(make_url('switch_back_user'), image_tag('switchuser.png').__('Switch back to original user')); ?></li>
                             <?php endif; ?>
                             <?php \pachno\core\framework\Event::createNew('core', 'user_dropdown_reg')->trigger(); ?>
-                            <li class="help"><?= link_tag('https://pachno.com/help/'.\pachno\core\framework\Context::getRouting()->getCurrentRouteName(), fa_image_tag('question-circle').__('Help for this page'), array('id' => 'global_help_link')); ?></li>
+                            <li class="help"><?= link_tag('https://pachno.com/help/'.\pachno\core\framework\Context::getRouting()->getCurrentRoute()->getName(), fa_image_tag('question-circle').__('Help for this page'), array('id' => 'global_help_link')); ?></li>
                             <li class="header"><?= __('Your issues'); ?></li>
                             <li><?= link_tag(make_url('my_reported_issues'), fa_image_tag('search') . __('Issues reported by me')); ?></li>
                             <li><?= link_tag(make_url('my_assigned_issues'), fa_image_tag('search') . __('Open issues assigned to me')); ?></li>

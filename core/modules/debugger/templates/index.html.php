@@ -68,7 +68,11 @@
         <li onclick="pachno_debug_show_menu_tab('debug_routes', $(this));">
             <?php echo fa_image_tag('desktop'); ?>
             <span>
-                [<i><?php echo $pachno_summary['routing']['name']; ?></i>] <?php echo $pachno_summary['routing']['module']; ?> / <?php echo $pachno_summary['routing']['action']; ?>
+                <?php if ($pachno_summary['routing'] instanceof \pachno\core\framework\routing\Route): ?>
+                    [<i><?php echo $pachno_summary['routing']->getName(); ?></i>] <?php echo $pachno_summary['routing']->getModuleName(); ?> / <?php echo $pachno_summary['routing']->getModuleAction(); ?>
+                <?php else: ?>
+                    [<i>Unknown route</i>] - / -
+                <?php endif; ?>
             </span>
         </li>
         <li onclick="pachno_debug_show_menu_tab('log_timing', $(this));" title="Click to toggle timing overview">

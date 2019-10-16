@@ -46,27 +46,4 @@ class Common extends framework\Action
         $this->getResponse()->setTemplate('main/forbidden');
     }
 
-    /**
-     * Logs the user out
-     *
-     * @param \pachno\core\framework\Request $request
-     *
-     * @return bool
-     */
-    public function runLogout(framework\Request $request)
-    {
-        if ($this->getUser() instanceof entities\User)
-        {
-            framework\Logging::log('Setting user logout state');
-            $this->getUser()->setOffline();
-            $this->getUser()->save();
-        }
-        framework\Context::logout();
-        if ($request->isAjaxCall())
-        {
-            return $this->renderJSON(array('status' => 'logout ok', 'url' => framework\Context::getRouting()->generate(framework\Settings::getLogoutReturnRoute())));
-        }
-        $this->forward(framework\Context::getRouting()->generate(framework\Settings::getLogoutReturnRoute()));
-    }
-
 }

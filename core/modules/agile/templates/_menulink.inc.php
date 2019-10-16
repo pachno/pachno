@@ -1,6 +1,9 @@
 <?php
 
-    /** @var \pachno\core\entities\Link $link */
+    /**
+     * @var \pachno\core\entities\Link $link
+     * @var \pachno\core\framework\Routing $pachno_routing
+     */
 
 ?>
 <?php if ($link->hasUrl()): ?>
@@ -15,7 +18,7 @@
         <?php endif; ?>
     </span>
     <?php if ($link->getTargetType() == 'wiki' && $link->hasUrl()): ?>
-        <?php if ($pachno_routing->getCurrentRouteModule() == 'publish' && $pachno_request['article_name'] == $link->getUrl()): ?>
+        <?php if ($pachno_routing->getCurrentRoute()->getModuleName() == 'publish' && $pachno_request['article_name'] == $link->getUrl()): ?>
             <?php echo link_tag(make_url('publish_article', array('article_name' => strip_tags($link->getUrl()))), (($link->getDescription() != '') ? fa_image_tag('book') . \pachno\core\helpers\TextParser::parseText($link->getDescription(), false, null, array('embedded' => true)) : fa_image_tag('book') . strip_tags($link->getUrl())), array('class' => 'selected')); ?>
         <?php else: ?>
             <?php echo link_tag(make_url('publish_article', array('article_name' => strip_tags($link->getUrl()))), (($link->getDescription() != '') ? fa_image_tag('book') . \pachno\core\helpers\TextParser::parseText($link->getDescription(), false, null, array('embedded' => true)) : fa_image_tag('book') . strip_tags($link->getUrl()))); ?>

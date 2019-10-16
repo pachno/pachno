@@ -93,6 +93,24 @@
       }
     }
 
+    .password-preview {
+      font-size: 1.4em;
+    }
+
+    &.centered {
+      justify-content: center;
+
+      input[type=text],
+      input[type=number] {
+        text-align: center;
+      }
+
+      label {
+        justify-content: center;
+        text-align: center;
+      }
+    }
+
     &.submit-container {
       justify-content: space-between;
       justify-items: flex-end;
@@ -227,6 +245,10 @@
         font-size: 1.25em;
         padding: .5em .2em;
         border-bottom-width: 2px;
+      }
+
+      &.code-input-6 {
+        max-width: 10rem;
       }
 
       .number,

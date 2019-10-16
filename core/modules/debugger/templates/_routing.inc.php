@@ -1,16 +1,24 @@
-<?php use pachno\core\framework\Context; ?>
+<?php
+
+    use pachno\core\framework\Context;
+
+    /**
+     * @var \pachno\core\framework\Routing $pachno_routing
+     * @var \pachno\core\framework\routing\Route $routing
+     */
+
+?>
 <li id="debug_routes">
     <h1>Routes (<?php echo count($pachno_routing->getRoutes()); ?>)</h1>
     <ul>
         <?php foreach ($pachno_routing->getRoutes() as $route_name => $route): ?>
-            <?php list($route, $regexp, $names, $names_hash, $module, $action, $params, $csrf_enabled, $methods, $overridden) = $route; ?>
-            <li <?php if ($routing['name'] == $route_name) echo 'class="selected"'; ?>>
-                <span class="badge csrf <?php echo ($csrf_enabled) ? 'enabled' : ''; ?>">CSRF</span>
+            <li <?php if ($routing instanceof \pachno\core\framework\routing\Route && $routing->getName() == $route_name) echo 'class="selected"'; ?>>
+                <span class="badge csrf <?php echo ($route->isCsrfProtected()) ? 'enabled' : ''; ?>">CSRF</span>
                 <span class="badge routename"><?php echo $route_name; ?></span>
-                <span class="badge url"><?php echo $route; ?></span>
-                <span class="badge method">\pachno\<?php echo (Context::isInternalModule($module)) ? "core\\" : ''; ?><span class="badge modulename"><?php echo $module; ?></span>\Actions::<?php echo $action; ?>()</span>
-                <?php if ($overridden): ?>
-                    <span class="badge csrf <?php echo ($csrf_enabled) ? 'enabled' : ''; ?>">Overridden</span>
+                <span class="badge url"><?php echo $route->getUrl(); ?></span>
+                <span class="badge method">\pachno\<?php echo (Context::isInternalModule($route->getModuleName())) ? "core\\" : ''; ?><span class="badge modulename"><?php echo $route->getModuleName(); ?></span>\<?php echo $route->getModuleAction(); ?>()</span>
+                <?php if ($route->isOverridden()): ?>
+                    <span class="badge csrf enabled">Overridden</span>
                 <?php endif; ?>
             </li>
         <?php endforeach; ?>

@@ -12,7 +12,7 @@
 
 ?>
 <?php if (!isset($wiki_url)): ?>
-    <a href="<?= (isset($project_url)) ? $project_url : $url; ?>" class="list-item expandable <?php if (Context::getRouting()->getCurrentRouteModule() == 'publish'): ?>selected expanded<?php endif; ?>">
+    <a href="<?= (isset($project_url)) ? $project_url : $url; ?>" class="list-item expandable <?php if (Context::getRouting()->getCurrentRoute()->getModuleName() == 'publish'): ?>selected expanded<?php endif; ?>">
         <?= fa_image_tag('book', ['class' => 'icon']); ?>
         <span class="name"><?= $publish->getMenuTitle($project instanceof Project); ?></span>
         <?= fa_image_tag('angle-down', ['class' => 'expander']); ?>

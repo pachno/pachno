@@ -2,22 +2,10 @@
 
     namespace pachno\core\modules\main\cli\entities\tbg;
 
-    use pachno\core\entities\Comment;
-    use pachno\core\entities\Notification;
-    use \pachno\core\framework,
-        \pachno\core\entities\File,
-        \pachno\core\entities\Project,
-        \pachno\core\entities\User,
-        pachno\core\entities\tables\UserArticles,
-        pachno\core\entities\tables\Articles,
-        pachno\core\entities\tables\ArticleCategoryLinks,
-        pachno\core\entities\tables\ArticleFiles,
-        pachno\core\entities\tables\ArticleHistory,
-        pachno\core\entities\tables\ArticleLinks;
-    use pachno\core\entities\tables;
+    use \pachno\core\framework;
 
     /**
-     * @Table(name="\pachno\core\entities\tables\Articles")
+     * @Table(name="\pachno\core\modules\main\cli\entities\tbg\tables\Articles")
      */
     class Article extends \pachno\core\entities\common\IdentifiableScoped
     {

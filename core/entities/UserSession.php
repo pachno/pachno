@@ -61,6 +61,12 @@
         protected $_is_elevated = false;
 
         /**
+         * @var bool
+         * @Column(type="boolean", default=false)
+         */
+        protected $_is_2fa_verified = false;
+
+        /**
          * @var int
          * @Column(type="integer", length=10)
          */
@@ -185,6 +191,22 @@
         public function setIsElevated($is_elevated)
         {
             $this->_is_elevated = $is_elevated;
+        }
+
+        /**
+         * @return bool
+         */
+        public function is2FaVerified()
+        {
+            return $this->_is_2fa_verified;
+        }
+
+        /**
+         * @param bool $is_verified
+         */
+        public function setIs2FaVerified($is_verified)
+        {
+            $this->_is_2fa_verified = $is_verified;
         }
 
         /**

@@ -43,7 +43,7 @@
             }
             else
             {
-                $module = Context::getRouting()->getCurrentRouteModule();
+                $module = Context::getRouting()->getCurrentRoute()->getModuleName();
             }
             return array('module' => $module, 'file' => $template);
         }
@@ -69,7 +69,7 @@
             {
                 if (!$throw_exceptions)
                     return false;
-                throw new exceptions\TemplateNotFoundException("The template file <b>_{$module_file['file']}.inc.php</b> cannot be found in the template directory for module \"" . Context::getRouting()->getCurrentRouteModule() . '"');
+                throw new exceptions\TemplateNotFoundException("The template file <b>_{$module_file['file']}.inc.php</b> cannot be found in the template directory for module \"" . Context::getRouting()->getCurrentRoute()->getModuleName() . '"');
             }
             if (!$throw_exceptions)
                 return true;

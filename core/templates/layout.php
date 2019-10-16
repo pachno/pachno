@@ -229,8 +229,8 @@
         <?php \pachno\core\framework\Event::createNew('core', 'layout.php::header-ends')->trigger(); ?>
     </head>
     <body id="body">
-        <div id="main_container" class="<?php if (\pachno\core\framework\Context::isProjectContext()) echo 'project-context'; ?> page-<?= \pachno\core\framework\Context::getRouting()->getCurrentRouteName(); ?> cf" data-url="<?= make_url('userdata'); ?>">
-            <?php if (!in_array(\pachno\core\framework\Context::getRouting()->getCurrentRouteName(), array('login_page', 'elevated_login_page', 'reset_password'))): ?>
+        <div id="main_container" class="<?php if (\pachno\core\framework\Context::isProjectContext()) echo 'project-context'; ?> page-<?= \pachno\core\framework\Context::getRouting()->getCurrentRoute()->getName(); ?> cf" data-url="<?= make_url('userdata'); ?>">
+            <?php if (!\pachno\core\framework\Context::getRouting()->getCurrentRoute()->isAnonymous()): ?>
                 <?php \pachno\core\framework\Logging::log('Rendering header'); ?>
                 <?php require PACHNO_CORE_PATH . 'templates/headertop.inc.php'; ?>
                 <?php \pachno\core\framework\Logging::log('done (rendering header)'); ?>
@@ -240,9 +240,11 @@
                 <?= $content; ?>
                 <?php \pachno\core\framework\Logging::log('done (rendering content)'); ?>
             </div>
-            <?php \pachno\core\framework\Event::createNew('core', 'layout.php::footer-begins')->trigger(); ?>
-            <?php require PACHNO_CORE_PATH . 'templates/footer.inc.php'; ?>
-            <?php \pachno\core\framework\Event::createNew('core', 'layout.php::footer-ends')->trigger(); ?>
+            <?php if (!\pachno\core\framework\Context::getRouting()->getCurrentRoute()->isAnonymous()): ?>
+                <?php \pachno\core\framework\Event::createNew('core', 'layout.php::footer-begins')->trigger(); ?>
+                <?php require PACHNO_CORE_PATH . 'templates/footer.inc.php'; ?>
+                <?php \pachno\core\framework\Event::createNew('core', 'layout.php::footer-ends')->trigger(); ?>
+            <?php endif; ?>
         </div>
         <?php require PACHNO_CORE_PATH . 'templates/backdrops.inc.php'; ?>
         <script type="text/javascript">

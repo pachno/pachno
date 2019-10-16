@@ -2,12 +2,14 @@
 
 namespace pachno\core\modules\main\controllers;
 
+use pachno\core\entities\UserSession;
 use pachno\core\framework,
     pachno\core\entities,
     pachno\core\entities\tables,
     pachno\core\modules\agile,
     pachno\core\entities\Comment,
     pachno\core\helpers\Pagination;
+use PragmaRX\Google2FA\Google2FA;
 
 /**
  * @property entities\Project $selected_project
@@ -785,61 +787,22 @@ class Main extends framework\Action
     }
 
     /**
-     * Static login page
-     *
-     * @Route(name="login_page", url="/login")
-     * @AnonymousRoute
-     *
+     * User 2FA verification action
+     * @Route(name="account_disable_2fa", url="/disable_2fa/:csrf_token", methods="POST")
      * @param \pachno\core\framework\Request $request
      */
-    public function runLogin(framework\Request $request)
+    public function runDisable2FA(framework\Request $request)
     {
-        //if (!$this->getUser()->isGuest()) return $this->forward($this->$this->getRouting()->generate('home'));
-        $this->section = $request->getParameter('section', 'login');
-    }
+        $this->getUser()->set2faToken('');
+        $this->getUser()->set2FaEnabled(false);
+        $this->getUser()->save();
 
-    /**
-     * Static elevated login page
-     * @param \pachno\core\framework\Request $request
-     */
-    public function runDoElevatedLogin(framework\Request $request)
-    {
-        if ($this->getUser()->hasPassword($request['elevated_password']))
-        {
-            // Calculate expiration period in seconds. setCookie() method should
-            // add expiration period to current time.
-            $expiration = 60 * $request->getParameter('elevation_duration', 30);
-            $authentication_backend = framework\Settings::getAuthenticationBackend();
-
-            if ($authentication_backend->getAuthenticationMethod() == framework\AuthenticationBackend::AUTHENTICATION_TYPE_TOKEN)
-            {
-                $token = $this->getUser()->createUserSession();
-                $token->setExpiresAt(time() + $expiration);
-                $token->setIsElevated(true);
-                $token->save();
-
-                framework\Context::getResponse()->setCookie('elevated_session_token', $token->getToken(), $expiration);
-            }
-            else
-            {
-                framework\Context::getResponse()->setCookie('elevated_password', $this->getUser()->getHashPassword(), $expiration);
-            }
-            return $this->renderJSON(array('elevated' => true));
+        foreach ($this->getUser()->getUserSessions() as $userSession) {
+            $userSession->setIs2FaVerified(false);
+            $userSession->save();
         }
-        else
-        {
-            return $this->renderJSON(array('elevated' => false, 'error' => $this->getI18n()->__('Incorrect password')));
-        }
-    }
 
-    /**
-     * Static elevated login page
-     * @param \pachno\core\framework\Request $request
-     */
-    public function runElevatedLogin(framework\Request $request)
-    {
-        if ($this->getUser()->isGuest())
-            return $this->forward($this->getRouting()->generate('login_page'));
+        return $this->renderJSON(['disabled' => 'ok']);
     }
 
     public function runDisableTutorial(framework\Request $request)
@@ -848,111 +811,6 @@ class Main extends framework\Action
             $this->getUser()->disableTutorial($request['key']);
 
         return $this->renderJSON(array('disabled' => $request['key']));
-    }
-
-    public function runSwitchUser(framework\Request $request)
-    {
-        if (!$this->getUser()->canAccessConfigurationPage(framework\Settings::CONFIGURATION_SECTION_USERS) && !$request->hasCookie('original_username'))
-            return $this->forward403();
-
-        $response = $this->getResponse();
-        $authentication_backend = framework\Settings::getAuthenticationBackend();
-        if ($request['user_id'])
-        {
-            $user = new entities\User($request['user_id']);
-            if ($authentication_backend->getAuthenticationMethod() == framework\AuthenticationBackend::AUTHENTICATION_TYPE_TOKEN)
-            {
-                $response->setCookie('original_username', $request->getCookie('username'));
-                $response->setCookie('original_session_token', $request->getCookie('session_token'));
-                framework\Context::getResponse()->setCookie('username', $user->getUsername());
-                framework\Context::getResponse()->setCookie('session_token', $user->createUserSession()->getToken());
-            }
-            else
-            {
-                $response->setCookie('original_username', $request->getCookie('username'));
-                $response->setCookie('original_password', $request->getCookie('password'));
-                framework\Context::getResponse()->setCookie('password', $user->getHashPassword());
-                framework\Context::getResponse()->setCookie('username', $user->getUsername());
-            }
-        }
-        else
-        {
-            if ($authentication_backend->getAuthenticationMethod() == framework\AuthenticationBackend::AUTHENTICATION_TYPE_TOKEN)
-            {
-                $response->setCookie('username', $request->getCookie('original_username'));
-                $response->setCookie('session_token', $request->getCookie('original_session_token'));
-                framework\Context::getResponse()->deleteCookie('original_session_token');
-                framework\Context::getResponse()->deleteCookie('original_username');
-            }
-            else
-            {
-                $response->setCookie('username', $request->getCookie('original_username'));
-                $response->setCookie('password', $request->getCookie('original_password'));
-                framework\Context::getResponse()->deleteCookie('original_password');
-                framework\Context::getResponse()->deleteCookie('original_username');
-            }
-        }
-        $this->forward($this->getRouting()->generate('home'));
-    }
-
-    /**
-     * Do login (AJAX call)
-     *
-     * @Route(name="login", url="/do/login", methods="POST")
-     * @AnonymousRoute
-     *
-     * @param \pachno\core\framework\Request $request
-     */
-    public function runDoLogin(framework\Request $request)
-    {
-        $authentication_backend = framework\Settings::getAuthenticationBackend();
-
-        try
-        {
-            $username = trim($request->getParameter('username', ''));
-            $password = trim($request->getParameter('password', ''));
-            $persist  = (bool) $request->getParameter('rememberme', false);
-
-            if ($username && $password)
-            {
-                $user = entities\User::identify($request, $this);
-
-                if (!$user instanceof entities\User || $user->isGuest())
-                {
-                    throw new \Exception('No such login');
-                }
-
-                $user->setOnline();
-                $user->save();
-
-                framework\Context::setUser($user);
-                $this->verifyScopeMembership($user);
-
-                if (!$user->isGuest())
-                {
-                    $this->_persistLogin($authentication_backend, $user, $persist);
-                }
-            }
-            else
-            {
-                throw new \Exception('Please enter a username and password');
-            }
-        }
-        catch (\Exception $e)
-        {
-            $this->getResponse()->setHttpStatus(401);
-            framework\Logging::log($e->getMessage(), 'auth', framework\Logging::LEVEL_WARNING_RISK);
-            return $this->renderJSON(["error" => $this->getI18n()->__("Invalid login details")]);
-        }
-
-        if (!$user instanceof entities\User)
-        {
-            $this->getResponse()->setHttpStatus(401);
-            return $this->renderJSON(["error" => $this->getI18n()->__("Invalid login details")]);
-        }
-
-        $forward_url = $this->_getLoginForwardUrl($request);
-        return $this->renderJSON(['forward' => $forward_url]);
     }
 
     /**
@@ -3406,6 +3264,9 @@ class Main extends framework\Action
                     }
                     $options['scope'] = $scope;
                     break;
+                case 'enable_2fa':
+                    $template_name = 'main/enable2fa';
+                    break;
                 case 'project_config':
                     $template_name = 'project/editproject';
                     if ($request['project_id']) {
@@ -4356,41 +4217,6 @@ class Main extends framework\Action
         }
     }
 
-    /**
-     * Generate captcha picture
-     *
-     * @Route(name="captcha", url="/captcha/*")
-     * @AnonymousRoute
-     *
-     * @param \pachno\core\framework\Request $request The request object
-     * @global array $_SESSION['activation_number'] The session captcha activation number
-     */
-    public function runCaptcha(framework\Request $request)
-    {
-        framework\Context::loadLibrary('ui');
-
-        if (!function_exists('imagecreatetruecolor'))
-        {
-            return $this->return404();
-        }
-
-        $this->getResponse()->setContentType('image/png');
-        $this->getResponse()->setDecoration(\pachno\core\framework\Response::DECORATE_NONE);
-        $chain = str_split($_SESSION['activation_number'], 1);
-        $size = getimagesize(PACHNO_PATH . DS . 'themes' . DS . framework\Settings::getThemeName() . DS . 'images' . DS . 'numbers' . DS . '0.png');
-        $captcha = imagecreatetruecolor($size[0] * sizeof($chain), $size[1]);
-        foreach ($chain as $n => $number)
-        {
-            $pic = imagecreatefrompng(PACHNO_PATH . DS . 'themes' . DS . framework\Settings::getThemeName() . DS . 'images' . DS . 'numbers' . DS . "{$number}.png");
-            imagecopymerge($captcha, $pic, $size[0] * $n, 0, 0, 0, imagesx($pic), imagesy($pic), 100);
-            imagedestroy($pic);
-        }
-        imagepng($captcha);
-        imagedestroy($captcha);
-
-        return true;
-    }
-
     public function runIssueGetTempFieldValue(framework\Request $request)
     {
         switch ($request['field'])
@@ -4637,11 +4463,12 @@ class Main extends framework\Action
                     $message = framework\Context::getI18n()->__('Milestone saved');
                     return $this->renderJSON(array('message' => $message, 'component' => $component, 'milestone_id' => $milestone->getID()));
                 case $action_option == 'details':
-                    \pachno\core\framework\Context::performAction(
-                        new \pachno\core\modules\project\controllers\Main(),
-                        'project',
-                        'MilestoneDetails'
-                    );
+                    throw new \Exception('Yikes');
+//                    \pachno\core\framework\Context::performAction(
+//                        new \pachno\core\modules\project\controllers\Main(),
+//                        'project',
+//                        'MilestoneDetails'
+//                    );
                     return true;
                 default:
                     return $this->forward($this->getRouting()->generate('project_roadmap', array('project_key' => $this->selected_project->getKey())));
@@ -4743,52 +4570,6 @@ class Main extends framework\Action
         foreach ($al_teams as $tid)
         {
             framework\Context::setPermission('canviewissue', $issue->getID(), 'core', 0, 0, $tid, true);
-        }
-    }
-
-    /**
-     * @param framework\Request $request
-     * @return mixed|string
-     * @throws \Exception
-     */
-    protected function _getLoginForwardUrl(framework\Request $request)
-    {
-        $forward_url = $this->getRouting()->generate('home');
-
-        if ($request->hasParameter('return_to'))
-        {
-            $forward_url = $request['return_to'];
-        }
-        else
-        {
-            if (framework\Settings::get('returnfromlogin') == 'referer')
-            {
-                $forward_url = $request->getParameter('referer', $this->getRouting()->generate('dashboard'));
-            }
-            else
-            {
-                $forward_url = $this->getRouting()->generate(framework\Settings::get('returnfromlogin'));
-            }
-        }
-
-        $forward_url = htmlentities($forward_url, ENT_COMPAT, framework\Context::getI18n()->getCharset());
-
-        return $forward_url;
-    }
-
-    /**
-     * @param $authentication_backend
-     * @param $user
-     * @param $persist
-     */
-    protected function _persistLogin($authentication_backend, $user, $persist)
-    {
-        if ($authentication_backend->getAuthenticationMethod() == framework\AuthenticationBackend::AUTHENTICATION_TYPE_TOKEN) {
-            $token = $user->createUserSession();
-            $authentication_backend->persistTokenSession($user, $token, $persist);
-        } else {
-            $password = $user->getHashPassword();
-            $authentication_backend->persistPasswordSession($user, $password, $persist);
         }
     }
 

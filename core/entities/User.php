@@ -88,6 +88,22 @@
         protected $_private_email = true;
 
         /**
+         * Is 2FA enabled
+         *
+         * @var boolean
+         * @Column(type="boolean")
+         */
+        protected $_enable_2fa = false;
+
+        /**
+         * 2FA token
+         *
+         * @var string
+         * @Column(type="string", length="200")
+         */
+        protected $_2fa_token = '';
+
+        /**
          * The user state
          *
          * @var \pachno\core\entities\Userstate
@@ -362,6 +378,11 @@
          */
         protected $_user_sessions = null;
 
+        /**
+         * @var UserSession
+         */
+        protected $_current_user_session;
+
         protected $_unread_notifications_count = null;
 
         protected $_read_notifications_count = null;
@@ -369,6 +390,10 @@
         protected $_filter_first_notification = null;
 
         protected $_permissions_cache = [];
+
+        protected $_authenticated = true;
+
+        protected $_verified = false;
 
         /**
          * Retrieve a user by username
@@ -847,16 +872,6 @@
         public function __toString()
         {
             return $this->getNameWithUsername();
-        }
-
-        /**
-         * Whether this user is authenticated or just an authenticated guest
-         *
-         * @return boolean
-         */
-        public function isAuthenticated()
-        {
-            return (bool) ($this->getID() == framework\Context::getUser()->getID() && ($this->getID() != framework\Settings::getDefaultUserID() || !framework\Settings::isDefaultUserGuest()));
         }
 
         /**
@@ -2800,21 +2815,46 @@
             return $userSession;
         }
 
+        /**
+         * @param $token
+         * @return UserSession|null
+         */
+        public function getUserSession($token): ?UserSession
+        {
+            $userSessions = $this->getUserSessions();
+
+            foreach ($userSessions as $userSession) {
+                if ($userSession->getExpiresAt() >= time() && $userSession->getToken() == $token) {
+                    return $userSession;
+                }
+            }
+
+            return null;
+        }
+
         public function verifyUserSession($token, $is_elevated = false)
         {
             $userSessions = $this->getUserSessions();
             framework\Logging::log('Cycling user sessions for given user. Count: '.count($userSessions), 'auth', framework\Logging::LEVEL_INFO);
 
-            foreach ($userSessions as $userSession)
-            {
-                if ($userSession->getExpiresAt() < time())
-                {
+            foreach ($userSessions as $userSession) {
+                if ($userSession->getExpiresAt() < time()) {
                     $userSession->delete();
                     continue;
                 }
 
-                if ($userSession->getToken() == $token && $is_elevated == $userSession->isElevated())
-                {
+                if ($userSession->getToken() != $token) {
+                    continue;
+                }
+
+                $this->setCurrentUserSession($userSession);
+
+                if (!$userSession->is2FaVerified() && $this->is2FaEnabled()) {
+                    continue;
+                }
+
+                if ($is_elevated == $userSession->isElevated()) {
+                    $this->setVerified(true);
                     framework\Logging::log('Verified user session', 'auth', framework\Logging::LEVEL_INFO);
                     return true;
                 }
@@ -2973,6 +3013,86 @@
             if ($notification->getNotificationType() != \pachno\core\entities\Notification::TYPE_ISSUE_UPDATED) return;
 
             tables\Notifications::getTable()->markUserNotificationsReadByTypesAndIdAndGroupableMinutes(array(\pachno\core\entities\Notification::TYPE_ISSUE_UPDATED), $notification->getTargetID(), $this->getID(), $this->getNotificationSetting(framework\Settings::SETTINGS_USER_NOTIFY_GROUPED_NOTIFICATIONS, false, 'core')->getValue(), (int) $notification->isRead(), false);
+        }
+
+        /**
+         * @return bool
+         */
+        public function is2FaEnabled(): bool
+        {
+            return $this->_enable_2fa;
+        }
+
+        /**
+         * @param bool $enable_2fa
+         */
+        public function set2FaEnabled(bool $enable_2fa): void
+        {
+            $this->_enable_2fa = $enable_2fa;
+        }
+
+        /**
+         * @return string
+         */
+        public function get2faToken(): string
+        {
+            return $this->_2fa_token;
+        }
+
+        /**
+         * @param string $token
+         */
+        public function set2faToken(string $token): void
+        {
+            $this->_2fa_token = $token;
+        }
+
+        /**
+         * @return UserSession
+         */
+        public function getCurrentUserSession(): UserSession
+        {
+            return $this->_current_user_session;
+        }
+
+        /**
+         * @param UserSession $current_user_session
+         */
+        public function setCurrentUserSession(UserSession $current_user_session): void
+        {
+            $this->_current_user_session = $current_user_session;
+        }
+
+        /**
+         * @return bool
+         */
+        public function isVerified(): bool
+        {
+            return $this->_verified;
+        }
+
+        /**
+         * @param bool $verified
+         */
+        public function setVerified(bool $verified): void
+        {
+            $this->_verified = $verified;
+        }
+
+        /**
+         * @return bool
+         */
+        public function isAuthenticated(): bool
+        {
+            return $this->_authenticated;
+        }
+
+        /**
+         * @param bool $authenticated
+         */
+        public function setAuthenticated(bool $authenticated): void
+        {
+            $this->_authenticated = $authenticated;
         }
 
     }

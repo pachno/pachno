@@ -159,7 +159,7 @@
      */
     function csrf_tag()
     {
-        return '<input type="hidden" name="csrf_token" value="' . \pachno\core\framework\Context::generateCSRFtoken() . '">';
+        return '<input type="hidden" name="csrf_token" value="' . \pachno\core\framework\Context::getCsrfToken() . '">';
     }
 
     /**

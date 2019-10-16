@@ -20,6 +20,8 @@ namespace pachno\core\modules\main\cli;
     use pachno\core\entities\tables\Projects;
     use pachno\core\entities\tables\Scopes;
     use pachno\core\entities\tables\Settings;
+    use pachno\core\entities\tables\Users;
+    use pachno\core\entities\tables\UserSessions;
     use pachno\core\framework\cli\Command;
     use pachno\core\modules\main\cli\entities\tbg;
 
@@ -110,6 +112,11 @@ namespace pachno\core\modules\main\cli;
                 $this->cliEcho("Pachno is not installed\n", 'red');
                 return;
             }
+
+            $this->cliEcho("Migrating users\n");
+            Users::getTable()->upgrade(tbg\tables\Users::getTable());
+            UserSessions::getTable()->upgrade(tbg\tables\UserSessions::getTable());
+            $this->cliEcho("\n");
 
             Articles::getTable()->upgrade(tbg\tables\Articles::getTable());
             $projects = Projects::getTable()->getAll(true);

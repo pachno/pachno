@@ -439,7 +439,7 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
                     })
                     .catch(reject);
 
-                resolve($form, response);
+                resolve([$form, response]);
             });
         };
 
@@ -2105,6 +2105,42 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
             //         }
             //     }
             // });
+        };
+
+        Pachno.Main.Login.verify2FaTokenWithLogin = function (form) {
+            Pachno.Core.fetchPostHelper(form)
+                .then(Pachno.Core.fetchPostDefaultFormHandler)
+                .then(([$form, response]) => {
+                    if (response.ok) {
+                        response.json().then(function (json) {
+                            window.location = json.forward;
+                        });
+                    }
+                })
+        };
+
+        Pachno.Main.Login.verify2FaToken = function (form) {
+            Pachno.Core.fetchPostHelper(form)
+                .then(Pachno.Core.fetchPostDefaultFormHandler)
+                .then(([$form, response]) => {
+                    if (response.ok) {
+                        $('#account_2fa_enabled').show();
+                        $('#account_2fa_disabled').hide();
+                    }
+                    $form.find('.button.primary').attr('disabled', false);
+                    Pachno.Main.Helpers.Dialog.dismiss();
+                });
+        };
+
+        Pachno.Main.Login.disable2Fa = function (url) {
+            fetch(url, {method: 'POST'})
+                .then(function(response) {
+                    if (response.ok) {
+                        $('#account_2fa_enabled').hide();
+                        $('#account_2fa_disabled').show();
+                    }
+                })
+                .catch(Pachno.Main.Helpers.Dialog.error);
         };
 
         Pachno.Main.Login.elevatedLogin = function (url)

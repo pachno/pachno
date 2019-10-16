@@ -44,7 +44,7 @@
                 </div>
             <?php endif; ?>
             <?php if ($pachno_user->canAccessConfigurationPage(\pachno\core\framework\Settings::CONFIGURATION_SECTION_USERS)): ?>
-                <?php if ($pachno_routing->getCurrentRouteName() != 'configure_users_find_user'): ?>
+                <?php if ($pachno_routing->getCurrentRoute()->getName() != 'configure_users_find_user'): ?>
                     <a class="list-item" href="<?php echo make_url('configure_users'); ?>?finduser=<?php echo $user->getUsername(); ?>">
                         <span class="icon"><?= fa_image_tag('edit'); ?></span>
                         <span class="name"><?php echo __('Edit this user'); ?></span>

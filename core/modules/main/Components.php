@@ -8,6 +8,7 @@
         pachno\core\entities,
         pachno\core\entities\tables;
     use pachno\core\framework\interfaces\AuthenticationProvider;
+    use PragmaRX\Google2FA\Google2FA;
 
     /**
      * Main action components
@@ -735,6 +736,21 @@
         public function componentMenuLink()
         {
             $this->link_id = $this->link->getId();
+        }
+
+        public function componentEnable2FA()
+        {
+            $secret = $this->getUser()->get2faToken();
+            if (!$secret) {
+                $google2fa = new Google2FA();
+                $secret = $google2fa->generateSecretKey();
+                $this->getUser()->set2faToken($secret);
+                $this->getUser()->save();
+            }
+
+            $google2fa_qr_code = new \PragmaRX\Google2FAQRCode\Google2FA();
+            $this->qr_code_inline = $google2fa_qr_code->getQRCodeInline('Pachno', $this->getUser()->getEmail(), $secret);
+            $this->session_token = framework\Context::getRequest()->getCookie('session_token');
         }
 
     }

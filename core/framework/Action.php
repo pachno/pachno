@@ -250,7 +250,7 @@
                 {
                     Context::setMessage('login_message_err', htmlentities($message));
                     Context::setMessage('login_force_redirect', true);
-                    Context::setMessage('login_referer', Context::getRouting()->generate(Context::getRouting()->getCurrentRouteName(), Context::getRequest()->getParameters()));
+                    Context::setMessage('login_referer', Context::getRouting()->generate(Context::getRouting()->getCurrentRoute()->getName(), Context::getRequest()->getParameters()));
                     $this->forward(Context::getRouting()->generate('login_page'), Response::HTTP_STATUS_FORBIDDEN);
                 }
                 elseif (Context::getRequest()->isAjaxCall())

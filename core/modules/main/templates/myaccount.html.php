@@ -2,6 +2,11 @@
 
     use pachno\core\framework\Settings;
 
+    /**
+     * @var \pachno\core\framework\Response $pachno_response
+     * @var \pachno\core\entities\User $pachno_user
+     */
+
     $pachno_response->setTitle(__('Your account details'));
     $pachno_response->addBreadcrumb(__('Account details'), make_url('account'));
 
@@ -181,17 +186,6 @@
         </div>
         <div id="account_tabs_panes">
             <div id="tab_profile_pane" style="<?php if ($selected_tab != 'profile'): ?> display: none;<?php endif; ?>">
-                <div class="header" style="display: none;">
-                    <a href="javascript:void(0);" onclick="$('usermenu_changestate').toggle();" id="usermenu_changestate_toggler" class="button"><?= __('Change'); ?></a>
-                    <?= image_tag('spinning_16.gif', array('style' => 'display: none;', 'id' => 'change_userstate_dropdown')); ?>
-                    <?= __('You are: %userstate', array('%userstate' => '<span class="current_userstate userstate">'.__($pachno_user->getState()->getName()).'</span>')); ?>
-                </div>
-                <div id="usermenu_changestate" style="display: none;" onclick="$('usermenu_changestate').toggle();">
-                    <?php foreach (\pachno\core\entities\Userstate::getAll() as $state): ?>
-                        <?php if ($state->getID() == \pachno\core\framework\Settings::getOfflineState()->getID()) continue; ?>
-                        <a href="javascript:void(0);" onclick="Pachno.Main.Profile.setState('<?= make_url('set_state', array('state_id' => $state->getID())); ?>', 'change_userstate_dropdown');"><?= __($state->getName()); ?></a>
-                    <?php endforeach; ?>
-                </div>
                 <?php if (\pachno\core\framework\Settings::isUsingExternalAuthenticationBackend()): ?>
                     <?= \pachno\core\helpers\TextParser::parseText(\pachno\core\framework\Settings::get('changedetails_message'), false, null, array('embedded' => true)); ?>
                 <?php else: ?>
@@ -565,6 +559,20 @@
                 </form>
             </div>
             <div id="tab_security_pane" style="<?php if ($selected_tab != 'security'): ?> display: none;<?php endif; ?>">
+                <h3 style="position: relative;"><?= __('Two-factor authentication'); ?></h3>
+                <p><?= __("Enabling two-factor authentication increases account security by requiring that you provide a one-time code every time you log in on a new device."); ?></p>
+                <ul class="access_keys_list">
+                    <li id="account_2fa_disabled" style="<?php if ($pachno_user->is2FaEnabled()) echo 'display: none;'; ?>">
+                        <h4><?= fa_image_tag('times', ['class' => 'icon']); ?><span><?= __('Two-factor authentication is not enabled'); ?></span></h4>
+                        <p><?= __('Enable two-factor authentication to increase account security'); ?></p>
+                        <button class="button" onclick="Pachno.Main.Helpers.Backdrop.show('<?= make_url('get_partial_for_backdrop', ['key' => 'enable_2fa']); ?>');"><?= __('Enable'); ?></button>
+                    </li>
+                    <li id="account_2fa_enabled" style="<?php if (!$pachno_user->is2FaEnabled()) echo 'display: none;'; ?>">
+                        <h4><?= fa_image_tag('check', ['class' => 'icon']); ?><span><?= __('Two-factor authentication is enabled'); ?></span></h4>
+                        <p><?= __('A one-time code is required to log in on a new device'); ?></p>
+                        <button class="button" onclick="Pachno.Main.Helpers.Dialog.show('<?= __('Really disable two-factor authentication?'); ?>', '<?= __('Do you really want to two-factor authentication? By doing this, only your username and password is required when logging in.'); ?>', {yes: {click: function () { Pachno.Main.Login.disable2Fa('<?= make_url('account_disable_2fa', array('csrf_token' => \pachno\core\framework\Context::getCsrfToken())); ?>') }}, no: {click: Pachno.Main.Helpers.Dialog.dismiss}});"><?= __('Disable 2FA'); ?></button>
+                    </li>
+                </ul>
                 <h3 style="position: relative;">
                     <?= __('Passwords and keys'); ?>
                     <a class="button dropper" id="password_actions" href="javascript:void(0);"><?= __('Actions'); ?></a>
@@ -582,13 +590,13 @@
                 <p><?= __("When authenticating with Pachno you only use your main password on the website - other applications and RSS feeds needs specific access tokens that you can enable / disable on an individual basis. You can control all your passwords and keys from here."); ?></p>
                 <ul class="access_keys_list">
                     <li>
-                        <button class="button" onclick="Pachno.Main.Helpers.Dialog.show('<?= __('Regenerate your RSS key?'); ?>', '<?= __('Do you really want to regenerate your RSS access key? By doing this all your previously bookmarked or linked RSS feeds will stop working and you will have to get the link from inside Pachno again.'); ?>', {yes: {href: '<?= make_url('account_regenerate_rss_key', array('csrf_token' => \pachno\core\framework\Context::generateCSRFtoken())); ?>'}, no: {click: Pachno.Main.Helpers.Dialog.dismiss}});"><?= __('Reset'); ?></button>
+                        <button class="button" onclick="Pachno.Main.Helpers.Dialog.show('<?= __('Regenerate your RSS key?'); ?>', '<?= __('Do you really want to regenerate your RSS access key? By doing this all your previously bookmarked or linked RSS feeds will stop working and you will have to get the link from inside Pachno again.'); ?>', {yes: {href: '<?= make_url('account_regenerate_rss_key', array('csrf_token' => \pachno\core\framework\Context::getCsrfToken())); ?>'}, no: {click: Pachno.Main.Helpers.Dialog.dismiss}});"><?= __('Reset'); ?></button>
                         <h4><?= __('RSS feeds access key'); ?></h4>
                         <p><?= __('Automatically used as part of RSS feed URLs. Regenerating this key prevents your previous RSS feed links from working.'); ?></p>
                     </li>
                     <?php foreach ($pachno_user->getApplicationPasswords() as $password): ?>
                         <li id="application_password_<?= $password->getID(); ?>">
-                            <button class="button" onclick="Pachno.Main.Helpers.Dialog.show('<?= __('Remove this application-specific password?'); ?>', '<?= __('Do you really want to remove this application-specific password? By doing this, that application will no longer have access, and you will have to generate a new application password for the application to regain access.'); ?>', {yes: {click: function() {Pachno.Main.Profile.removeApplicationPassword('<?= make_url('account_remove_application_password', array('id' => $password->getID(), 'csrf_token' => \pachno\core\framework\Context::generateCSRFtoken())); ?>', <?= $password->getID(); ?>);}}, no: {click: Pachno.Main.Helpers.Dialog.dismiss}});"><?= __('Delete'); ?></button>
+                            <button class="button" onclick="Pachno.Main.Helpers.Dialog.show('<?= __('Remove this application-specific password?'); ?>', '<?= __('Do you really want to remove this application-specific password? By doing this, that application will no longer have access, and you will have to generate a new application password for the application to regain access.'); ?>', {yes: {click: function() {Pachno.Main.Profile.removeApplicationPassword('<?= make_url('account_remove_application_password', array('id' => $password->getID(), 'csrf_token' => \pachno\core\framework\Context::getCsrfToken())); ?>', <?= $password->getID(); ?>);}}, no: {click: Pachno.Main.Helpers.Dialog.dismiss}});"><?= __('Delete'); ?></button>
                             <h4><?= __('Application password: %password_name', array('%password_name' => $password->getName())); ?></h4>
                             <p><?= __('Last used: %last_used_time, created at: %created_at_time', array('%last_used_time' => ($password->getLastUsedAt()) ? \pachno\core\framework\Context::getI18n()->formatTime($password->getLastUsedAt(), 20) : __('never used'), '%created_at_time' => \pachno\core\framework\Context::getI18n()->formatTime($password->getCreatedAt(), 20))); ?></p>
                         </li>
