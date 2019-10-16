@@ -120,7 +120,10 @@ class Authentication extends framework\Action
      */
     public function runTwoFactorVerification(framework\Request $request)
     {
-        if (!$this->getUser()->isGuest()) {
+        if (!$this->getUser()->isAuthenticated()) {
+            return $this->forward($this->getRouting()->generate('login'));
+        }
+        if ($this->getUser()->isVerified()) {
             return $this->forward($this->getRouting()->generate('account'));
         }
 
@@ -169,6 +172,7 @@ class Authentication extends framework\Action
      * Switch user action
      *
      * @Route(name="switch_to_user", url="/userswitch/switch/:user_id/:csrf_token")
+     * @CsrfProtected
      *
      * @param framework\Request $request
      */

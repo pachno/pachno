@@ -7,7 +7,7 @@
     <div class="backdrop_box login_page login_popup" id="login_popup">
         <div id="backdrop_detail_content" class="backdrop_detail_content rounded_top login_content">
             <div class="logindiv form-container active" id="regular_login_container">
-                <form accept-charset="<?= \pachno\core\framework\Context::getI18n()->getCharset(); ?>" action="<?= make_url('user_verify_2fa'); ?>" method="post" id="login_form" onsubmit="Pachno.Main.Login.verify2FaToken(this); return false;">
+                <form accept-charset="<?= \pachno\core\framework\Context::getI18n()->getCharset(); ?>" action="<?= make_url('user_verify_2fa'); ?>" method="post" id="login_form" onsubmit="Pachno.Main.Login.verify2FaTokenWithLogin(this); return false;">
                     <div class="form-row">
                         <h3><?= __('Two-factor authentication required'); ?></h3>
                     </div>

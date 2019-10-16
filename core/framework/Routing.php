@@ -150,7 +150,84 @@
             return $this->component_override_map[$component];
         }
 
-        public function loadRoutes($module_name)
+        /**
+         * Load routes into the routing object
+         *
+         * @param bool $skip_cache Whether to skip the cache when reading routes
+         */
+        public function loadRoutes($skip_cache = false)
+        {
+            if ($skip_cache || !$this->hasCachedRoutes()) {
+                $this->loadRoutesFromFiles();
+                if (!$skip_cache) {
+                    $this->cache();
+                }
+            } else {
+                $this->loadCachedRoutes();
+            }
+        }
+
+        /**
+         * Loads routes by looking through module controllers and configuration files
+         */
+        protected function loadRoutesFromFiles()
+        {
+            Logging::log('Loading routes from routing files', 'routing');
+
+            foreach (Context::getAllModules() as $modules) {
+                foreach ($modules as $module_name => $module) {
+                    $this->loadModuleRoutes($module_name);
+                }
+            }
+            $this->loadYamlRoutes(\PACHNO_CONFIGURATION_PATH . 'routes.yml');
+            Context::loadEventListeners($this->getAnnotationListeners());
+
+            Logging::log('...done (loading routes from routing file)', 'routing');
+        }
+
+        /**
+         * Loads routes by reading them from the cache
+         */
+        protected function loadCachedRoutes()
+        {
+            Logging::log('Loading routes from cache', 'routing');
+            $cache = Context::getCache();
+            $routes = $cache->get(Cache::KEY_ROUTES_CACHE);
+            $component_override_map = $cache->get(Cache::KEY_COMPONENT_OVERRIDE_MAP_CACHE);
+            $annotation_listeners = $cache->get(Cache::KEY_ANNOTATION_LISTENERS_CACHE);
+
+            if ($routes === null) {
+                Logging::log('Loading routes from disk cache', 'routing');
+                $routes = $cache->fileGet(Cache::KEY_ROUTES_CACHE);
+            }
+            if ($component_override_map === null) {
+                Logging::log('Loading component override mappings from disk cache', 'routing');
+                $component_override_map = $cache->fileGet(Cache::KEY_COMPONENT_OVERRIDE_MAP_CACHE);
+            }
+            if ($annotation_listeners === null) {
+                Logging::log('Loading event listeners from disk cache', 'routing');
+                $annotation_listeners = $cache->fileGet(Cache::KEY_ANNOTATION_LISTENERS_CACHE);
+            }
+
+            if ($routes === null || $component_override_map === null || $annotation_listeners === null) {
+                throw new exceptions\CacheException('There is an issue with the cache. Clear the cache and try again.');
+            }
+
+            Logging::log('Setting routes from cache', 'routing');
+            $this->setRoutes($routes);
+            Logging::log('Setting component override mappings from cache', 'routing');
+            $this->setComponentOverrideMap($component_override_map);
+            Logging::log('Setting annotation listeners from cache', 'routing');
+            Context::loadEventListeners($annotation_listeners);
+            Logging::log('...done', 'routing');
+        }
+
+        /**
+         * Loads all routes within a module
+         *
+         * @param string $module_name
+         */
+        protected function loadModuleRoutes($module_name)
         {
             $module_path_prefix = (Context::isInternalModule($module_name)) ? \PACHNO_INTERNAL_MODULES_PATH : \PACHNO_MODULES_PATH;
             $module_routes_filename = $module_path_prefix . $module_name . DS . 'configuration' . DS . 'routes.yml';
@@ -162,21 +239,27 @@
             $this->loadAnnotationListeners($module_name);
         }
 
-        public function loadYamlRoutes($yaml_filename, $module_name = null)
+        /**
+         * Load all routes defined in a yaml file
+         *
+         * @param string $yaml_filename Full path to yaml file
+         * @param string $module_name
+         */
+        protected function loadYamlRoutes($yaml_filename, $module_name = null)
         {
             $routes = \Spyc::YAMLLoad($yaml_filename);
 
             foreach ($routes as $route => $details) {
-                if (!isset($details['module'])) $details['module'] = $module_name;
+                $details['module'] = ($details['module']) ?? $module_name;
                 $this->addYamlRoute($route, $details);
             }
         }
 
-        public function loadAnnotationRoutes($module_name)
+        protected function loadAnnotationRoutes($module_name)
         {
             $is_internal = Context::isInternalModule($module_name);
             $namespace = ($is_internal) ? '\\pachno\\core\\modules\\' : '\\pachno\\modules\\';
-            $controller_path = ($is_internal) ? PACHNO_INTERNAL_MODULES_PATH . $module_name . "/controllers" : PACHNO_MODULES_PATH . $module_name . "/controllers";
+            $controller_path = ($is_internal) ? PACHNO_INTERNAL_MODULES_PATH . $module_name . '/controllers' : PACHNO_MODULES_PATH . $module_name . '/controllers';
 
             if (file_exists($controller_path)) {
                 // Point the annotated routes to the right module controllers
@@ -188,67 +271,78 @@
             }
 
             if (!$is_internal) {
-                $this->loadModuleOverrideMappings($namespace . $module_name . '\\Components', $module_name);
+                $this->loadModuleComponentOverrideMappings($namespace . $module_name . '\\Components', $module_name);
             }
         }
 
-        public function loadAnnotationListeners($module_name)
+        /**
+         * Load all listeners in a module defined through annotations
+         *
+         * @param string $module_name
+         */
+        protected function loadAnnotationListeners($module_name)
         {
             $is_internal = Context::isInternalModule($module_name);
             $namespace = ($is_internal) ? '\\pachno\\core\\modules\\' : '\\pachno\\modules\\';
-            $this->loadModuleAnnotationListeners($namespace . $module_name . '\\' . ucfirst($module_name), $module_name);
-        }
+            $classname = $namespace . $module_name . '\\' . ucfirst($module_name);
 
-        protected function loadModuleOverrideMappings($classname, $module)
-        {
-            if (!class_exists($classname))
+            if (!class_exists($classname)) {
                 return;
+            }
 
             $reflection = new \ReflectionClass($classname);
             foreach ($reflection->getMethods() as $method) {
-                $annotationset = new AnnotationSet($method->getDocComment());
-                if ($annotationset->hasAnnotation('Overrides')) {
-                    $overridden_component = $annotationset->getAnnotation('Overrides')->getProperty('name');
-                    $component = ['module' => $module, 'method' => substr($method->name, 9)];
+                $annotation_set = new AnnotationSet($method->getDocComment());
+                if ($annotation_set->hasAnnotation('Listener')) {
+                    $listener_annotation = $annotation_set->getAnnotation('Listener');
+                    $event_module = $listener_annotation->getProperty('module');
+                    $event_identifier = $listener_annotation->getProperty('identifier');
+                    $this->annotation_listeners[] = [$event_module, $event_identifier, $module_name, $method->name];
+                }
+            }
+        }
+
+        /**
+         * Load all component overrides defined in a module class
+         *
+         * @param string $classname
+         * @param string $module_name
+         */
+        protected function loadModuleComponentOverrideMappings($classname, $module_name)
+        {
+            if (!class_exists($classname)) {
+                return;
+            }
+
+            $reflection = new \ReflectionClass($classname);
+            foreach ($reflection->getMethods() as $method) {
+                $annotation_set = new AnnotationSet($method->getDocComment());
+                if ($annotation_set->hasAnnotation('Overrides')) {
+                    $overridden_component = $annotation_set->getAnnotation('Overrides')->getProperty('name');
+                    $component = ['module' => $module_name, 'method' => substr($method->name, 9)];
                     $this->component_override_map[$overridden_component] = $component;
                 }
             }
         }
 
-        protected function loadModuleAnnotationListeners($classname, $module)
+        protected function loadModuleAnnotationRoutes($classname, $module_name)
         {
-            if (!class_exists($classname))
+            if (!class_exists($classname)) {
                 return;
-
-            $reflection = new \ReflectionClass($classname);
-            foreach ($reflection->getMethods() as $method) {
-                $annotationset = new AnnotationSet($method->getDocComment());
-                if ($annotationset->hasAnnotation('Listener')) {
-                    $listener_annotation = $annotationset->getAnnotation('Listener');
-                    $event_module = $listener_annotation->getProperty('module');
-                    $event_identifier = $listener_annotation->getProperty('identifier');
-                    $this->annotation_listeners[] = [$event_module, $event_identifier, $module, $method->name];
-                }
             }
-        }
 
-        protected function loadModuleAnnotationRoutes($classname, $module)
-        {
-            if (!class_exists($classname))
-                return;
-
-            $internal = Context::isInternalModule($module);
+            $internal = Context::isInternalModule($module_name);
             $reflection = new \ReflectionClass($classname);
             $docblock = $reflection->getDocComment();
-            $annotationset = new AnnotationSet($docblock);
+            $annotation_set = new AnnotationSet($docblock);
             $paths = explode('/', str_replace('\\', '/', $classname));
             $controller = array_pop($paths);
 
             $route_url_prefix = '';
             $route_name_prefix = '';
-            $default_route_name_prefix = ($internal) ? '' : $module . '_';
-            if ($annotationset->hasAnnotation('Routes')) {
-                $routes = $annotationset->getAnnotation('Routes');
+            $default_route_name_prefix = ($internal) ? '' : $module_name . '_';
+            if ($annotation_set->hasAnnotation('Routes')) {
+                $routes = $annotation_set->getAnnotation('Routes');
                 if ($routes->hasProperty('url_prefix')) {
                     $route_url_prefix = $routes->getProperty('url_prefix');
                 }
@@ -260,16 +354,16 @@
             }
 
             foreach ($reflection->getMethods() as $method) {
-                $annotationset = new AnnotationSet($method->getDocComment());
-                if ($annotationset->hasAnnotation('Route')) {
-                    $route = Route::fromAnnotation($module, $controller, $route_name_prefix, $route_url_prefix, $method, $annotationset);
+                $annotation_set = new AnnotationSet($method->getDocComment());
+                if ($annotation_set->hasAnnotation('Route')) {
+                    $route = Route::fromAnnotation($module_name, $controller, $route_name_prefix, $route_url_prefix, $method, $annotation_set);
 
-                    if ($annotationset->hasAnnotation('Overrides')) {
-                        $name = $annotationset->getAnnotation('Overrides')->getProperty('name');
-                        $this->overrideRoute($name, $module, $route->getModuleAction());
+                    if ($annotation_set->hasAnnotation('Overrides')) {
+                        $name = $annotation_set->getAnnotation('Overrides')->getProperty('name');
+                        $this->overrideRoute($name, $module_name, $route->getModuleAction());
                     } else {
                         if ($this->hasRoute($route->getName())) {
-                            throw new exceptions\RoutingException("Trying to override route '{$route->getName()}' in {$module}/{$route->getModuleAction()}. A route that overrides another route must have an @Override annotation");
+                            throw new exceptions\RoutingException("Trying to override route '{$route->getName()}' in {$module_name}/{$route->getModuleAction()}. A route that overrides another route must have an @Override annotation");
                         }
 
                         $this->addRoute($route);
@@ -278,7 +372,7 @@
             }
         }
 
-        public function addYamlRoute($key, $details)
+        protected function addYamlRoute($key, $details)
         {
             $name = $key;
             $module = $details['module'];
@@ -457,12 +551,17 @@
             $params = self::arrayDeepMerge($defaults, $params);
             if ($route->isCsrfProtected()) {
                 $params['csrf_token'] = Context::getCsrfToken();
+                $defaults['csrf_token'] = Context::getCsrfToken();
             }
 
             // all params must be given
             foreach ($route->getParameterNames() as $tmp) {
                 if (!isset($params[$tmp]) && !isset($defaults[$tmp])) {
-                    throw new \Exception(sprintf('Route named "%s" have a mandatory "%s" parameter', $name, $tmp));
+                    if ($tmp == 'csrf_token') {
+                        throw new \Exception(sprintf('Route named "%s" have a mandatory "%s" parameter, but is not marked as csrf protected.', $name, $tmp));
+                    } else {
+                        throw new \Exception(sprintf('Route named "%s" have a mandatory "%s" parameter', $name, $tmp));
+                    }
                 }
             }
 

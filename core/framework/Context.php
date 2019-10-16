@@ -282,17 +282,13 @@ class Context
         if (self::isDebugMode() && !self::isInstallmode())
             self::generateDebugInfo();
 
-        if (self::getRequest() instanceof Request && self::getRequest()->isAjaxCall())
-        {
+        if (self::getRequest() instanceof Request && self::getRequest()->isAjaxCall()) {
             self::getResponse()->ajaxResponseText(404, $exception->getMessage());
         }
 
-        if (self::isCLI())
-        {
+        if (self::isCLI()) {
             self::cliError($exception->getMessage(), $exception);
-        }
-        else
-        {
+        } else {
             self::getResponse()->cleanBuffer();
             require PACHNO_CORE_PATH . 'templates' . DS . 'error.php';
         }
@@ -303,27 +299,22 @@ class Context
     {
         // Do not run the handler for suppressed errors. Normally this should be
         // only commands where supression is done via the @ operator.
-        if (error_reporting() === 0)
-        {
+        if (error_reporting() === 0) {
             return false;
         }
 
         if (self::isDebugMode())
             self::generateDebugInfo();
 
-        if (self::getRequest() instanceof Request && self::getRequest()->isAjaxCall())
-        {
+        if (self::getRequest() instanceof Request && self::getRequest()->isAjaxCall()) {
             self::getResponse()->ajaxResponseText(404, $error);
         }
 
         $details = compact('code', 'error', 'file', 'line');
 
-        if (self::isCLI())
-        {
+        if (self::isCLI()) {
             self::cliError($error, $details);
-        }
-        else
-        {
+        } else {
             self::getResponse()->cleanBuffer();
             require PACHNO_CORE_PATH . 'templates' . DS . 'error.php';
         }
@@ -349,8 +340,7 @@ class Context
      */
     public static function getRouting()
     {
-        if (!self::$_routing)
-        {
+        if (!self::$_routing) {
             self::$_routing = new Routing();
         }
         return self::$_routing;
@@ -363,8 +353,7 @@ class Context
      */
     public static function getCache()
     {
-        if (!self::$_cache)
-        {
+        if (!self::$_cache) {
             self::$_cache = new Cache();
         }
         return self::$_cache;
@@ -377,8 +366,7 @@ class Context
      */
     public static function getWebroot()
     {
-        if (self::$_webroot === null)
-        {
+        if (self::$_webroot === null) {
             self::_setWebroot();
         }
         return self::$_webroot;
@@ -391,8 +379,7 @@ class Context
      */
     public static function getStrippedWebroot()
     {
-        if (self::$_stripped_webroot === null)
-        {
+        if (self::$_stripped_webroot === null) {
             self::$_stripped_webroot = (self::isCLI()) ? '' : rtrim(self::getWebroot(), '/');
         }
         return self::$_stripped_webroot;
@@ -404,8 +391,7 @@ class Context
     protected static function _setWebroot()
     {
         self::$_webroot = defined('\pachno\core\entities\_CLI') ? '.' : dirname($_SERVER['PHP_SELF']);
-        if (stripos(PHP_OS, 'WIN') !== false)
-        {
+        if (stripos(PHP_OS, 'WIN') !== false) {
             self::$_webroot = str_replace("\\", "/", self::$_webroot); /* Windows adds a \ to the URL which we don't want */
         }
         if (self::$_webroot[strlen(self::$_webroot) - 1] != '/')
@@ -446,18 +432,13 @@ class Context
 
     public static function checkInstallMode()
     {
-        if (!is_readable(PACHNO_PATH . 'installed'))
-        {
+        if (!is_readable(PACHNO_PATH . 'installed')) {
             self::$_installmode = true;
-        }
-        elseif (is_readable(PACHNO_PATH . 'upgrade'))
-        {
+        } elseif (is_readable(PACHNO_PATH . 'upgrade')) {
             self::$_installmode = true;
             self::$_upgrademode = true;
             self::getCache()->disable();
-        }
-        else
-        {
+        } else {
             $version_info = explode(',', file_get_contents(PACHNO_PATH . 'installed'));
             if (count($version_info) < 2)
                 throw new exceptions\ConfigurationException("Version information not present", exceptions\ConfigurationException::NO_VERSION_INFO);
@@ -469,12 +450,10 @@ class Context
             self::$_installmode = false;
             self::$_upgrademode = false;
         }
-        if (self::$_installmode)
-        {
+        if (self::$_installmode) {
             Logging::log('Installation mode enabled');
         }
-        if (self::$_upgrademode)
-        {
+        if (self::$_upgrademode) {
             Logging::log('Upgrade mode enabled');
         }
     }
@@ -507,13 +486,12 @@ class Context
      */
     public static function initialize()
     {
-        try
-        {
+        try {
             self::$debug_id = Uuid::uuid4()->toString();
 
             // The time the script was loaded
             $starttime = explode(' ', microtime());
-            define('NOW', (integer) $starttime[1]);
+            define('NOW', (integer)$starttime[1]);
 
             // Set the start time
             self::setLoadStart($starttime[1] + $starttime[0]);
@@ -522,19 +500,13 @@ class Context
 
             self::getCache()->setPrefix(str_replace('.', '_', Settings::getVersion()));
 
-            if (!self::isReadySetup())
-            {
+            if (!self::isReadySetup()) {
                 self::getCache()->disable();
-            }
-            else
-            {
+            } else {
                 self::getCache()->checkEnabled();
-                if (self::getCache()->isEnabled())
-                {
+                if (self::getCache()->isEnabled()) {
                     Logging::log((self::getCache()->getCacheType() == Cache::TYPE_APC) ? 'Caching enabled: APC, filesystem' : 'Caching enabled: filesystem');
-                }
-                else
-                {
+                } else {
                     Logging::log('No caching available');
                 }
             }
@@ -556,15 +528,13 @@ class Context
             else
                 \b2db\Core::initialize([], self::getCache());
 
-            if (self::isReadySetup() && !\b2db\Core::isInitialized())
-            {
+            if (self::isReadySetup() && !\b2db\Core::isInitialized()) {
                 throw new exceptions\ConfigurationException("Pachno seems installed, but B2DB isn't configured.", exceptions\ConfigurationException::NO_B2DB_CONFIGURATION);
             }
 
             Logging::log('...done (Initializing B2DB)');
 
-            if (\b2db\Core::isInitialized() && self::isReadySetup())
-            {
+            if (\b2db\Core::isInitialized() && self::isReadySetup()) {
                 Logging::log('Database connection details found, connecting');
                 \b2db\Core::doConnect();
                 Logging::log('...done (Database connection details found, connecting)');
@@ -583,28 +553,18 @@ class Context
             Logging::log('done (loading scope)');
 
             self::loadInternalModules();
-            if (!self::isInstallmode())
-            {
+            if (!self::isInstallmode()) {
                 self::setupCoreListeners();
                 self::loadModules();
             }
 
-            if (!self::getRouting()->hasCachedRoutes())
-            {
-                self::loadRoutes();
-            }
-            else
-            {
-                self::loadCachedRoutes();
-            }
+            self::getRouting()->loadRoutes(!self::isInstallmode());
 
             Logging::log('...done');
             Logging::log('...done initializing');
 
             Logging::log('Caspar framework loaded');
-        }
-        catch (\Exception $e)
-        {
+        } catch (\Exception $e) {
             throw $e;
         }
     }
@@ -614,16 +574,15 @@ class Context
         Logging::log('Initializing i18n');
 //        if (true || !self::isCLI())
 //        {
-            $language = (self::$_user instanceof User) ? self::$_user->getLanguage() : Settings::getLanguage();
+        $language = (self::$_user instanceof User) ? self::$_user->getLanguage() : Settings::getLanguage();
 
-            if (self::$_user instanceof User && self::$_user->getLanguage() == 'sys')
-            {
-                $language = Settings::getLanguage();
-            }
+        if (self::$_user instanceof User && self::$_user->getLanguage() == 'sys') {
+            $language = Settings::getLanguage();
+        }
 
-            Logging::log("Initializing i18n with language {$language}");
-            self::$_i18n = new I18n($language);
-            self::$_i18n->initialize();
+        Logging::log("Initializing i18n with language {$language}");
+        self::$_i18n = new I18n($language);
+        self::$_i18n->initialize();
 //        }
         Logging::log('done (initializing i18n)');
     }
@@ -631,16 +590,12 @@ class Context
     protected static function initializeUser()
     {
         Logging::log('Loading user');
-        try
-        {
+        try {
             Logging::log('is this logout?');
-            if (self::getRequest()->getParameter('logout'))
-            {
+            if (self::getRequest()->getParameter('logout')) {
                 Logging::log('yes');
                 self::logout();
-            }
-            else
-            {
+            } else {
                 Logging::log('no');
                 Logging::log('sets up user object');
                 $event = Event::createNew('core', 'pre_login');
@@ -660,32 +615,23 @@ class Context
                 self::cacheAllPermissions();
                 Logging::log('done (caching permissions)');
             }
-        }
-        catch (exceptions\TwoFactorAuthenticationException $e)
-        {
+        } catch (exceptions\TwoFactorAuthenticationException $e) {
             Logging::log("Could not authenticate 2FA token: " . $e->getMessage(), 'main', Logging::LEVEL_INFO);
             self::setMessage('elevated_login_message_err', $e->getMessage());
             self::$_redirect_login = '2fa_login';
-        }
-        catch (exceptions\ElevatedLoginException $e)
-        {
+        } catch (exceptions\ElevatedLoginException $e) {
             Logging::log("Could not reauthenticate elevated permissions: " . $e->getMessage(), 'main', Logging::LEVEL_INFO);
             self::setMessage('elevated_login_message_err', $e->getMessage());
             self::$_redirect_login = 'elevated_login';
-        }
-        catch (\Exception $e)
-        {
+        } catch (\Exception $e) {
             Logging::log("Something happened while setting up user: " . $e->getMessage(), 'main', Logging::LEVEL_WARNING);
 
             $is_anonymous_route = self::isCLI() || self::getRouting()->getCurrentRoute()->isAnonymous();
 
-            if (!$is_anonymous_route)
-            {
+            if (!$is_anonymous_route) {
                 self::setMessage('login_message_err', $e->getMessage());
                 self::$_redirect_login = 'login';
-            }
-            else
-            {
+            } else {
                 self::$_user = User::getB2DBTable()->selectById(Settings::getDefaultUserID());
             }
         }
@@ -713,18 +659,16 @@ class Context
     {
         if (!self::getCache()->isEnabled())
             return;
-        foreach (array(Cache::KEY_MAIN_MENU_LINKS) as $key)
-        {
+        foreach (array(Cache::KEY_MAIN_MENU_LINKS) as $key) {
             self::getCache()->delete($key);
             self::getCache()->fileDelete($key);
         }
     }
 
-    protected static function loadEventListeners($event_listeners)
+    public static function loadEventListeners($event_listeners)
     {
         Logging::log('Loading event listeners');
-        foreach ($event_listeners as $listener)
-        {
+        foreach ($event_listeners as $listener) {
             list($event_module, $event_identifier, $module, $method) = $listener;
             Event::listen($event_module, $event_identifier, array(self::getModule($module), $method));
         }
@@ -742,77 +686,18 @@ class Context
         ];
     }
 
-    protected static function loadRoutes()
-    {
-        Logging::log('Loading routes from routing files', 'routing');
-
-        foreach (self::getAllModules() as $modules)
-        {
-            foreach ($modules as $module_name => $module)
-            {
-                self::getRouting()->loadRoutes($module_name);
-            }
-        }
-        self::getRouting()->loadYamlRoutes(\PACHNO_CONFIGURATION_PATH . 'routes.yml');
-        self::loadEventListeners(self::getRouting()->getAnnotationListeners());
-
-        if (!self::isInstallmode())
-        {
-            self::getRouting()->cache();
-        }
-
-        Logging::log('...done (loading routes from routing file)', 'routing');
-    }
-
-    protected static function loadCachedRoutes()
-    {
-        Logging::log('Loading routes from cache', 'routing');
-        $routes = self::getCache()->get(Cache::KEY_ROUTES_CACHE);
-        $component_override_map = self::getCache()->get(Cache::KEY_COMPONENT_OVERRIDE_MAP_CACHE);
-        $annotation_listeners = self::getCache()->get(Cache::KEY_ANNOTATION_LISTENERS_CACHE);
-        if ($routes === null)
-        {
-            Logging::log('Loading routes from disk cache', 'routing');
-            $routes = self::getCache()->fileGet(Cache::KEY_ROUTES_CACHE);
-        }
-        if ($component_override_map === null)
-        {
-            Logging::log('Loading component override mappings from disk cache', 'routing');
-            $component_override_map = self::getCache()->fileGet(Cache::KEY_COMPONENT_OVERRIDE_MAP_CACHE);
-        }
-        if ($annotation_listeners === null)
-        {
-            Logging::log('Loading event listeners from disk cache', 'routing');
-            $annotation_listeners = self::getCache()->fileGet(Cache::KEY_ANNOTATION_LISTENERS_CACHE);
-        }
-
-        if ($routes === null || $component_override_map === null || $annotation_listeners === null)
-            throw new exceptions\CacheException('There is an issue with the cache. Clear the cache and try again.');
-
-        Logging::log('Setting routes from cache', 'routing');
-        self::getRouting()->setRoutes($routes);
-        Logging::log('Setting component override mappings from cache', 'routing');
-        self::getRouting()->setComponentOverrideMap($component_override_map);
-        Logging::log('Setting annotation listeners from cache', 'routing');
-        self::loadEventListeners($annotation_listeners);
-        Logging::log('...done', 'routing');
-    }
-
     protected static function loadConfiguration()
     {
         Logging::log('Loading configuration from cache', 'core');
-        if (self::isReadySetup())
-        {
+        if (self::isReadySetup()) {
             $configuration = self::getCache()->get(Cache::KEY_CONFIGURATION, false);
-            if (!$configuration)
-            {
+            if (!$configuration) {
                 Logging::log('Loading configuration from disk cache', 'core');
                 $configuration = self::getCache()->fileGet(Cache::KEY_CONFIGURATION, false);
             }
         }
 
-        if (!self::isReadySetup() || !$configuration)
-        {
+        if (!self::isReadySetup() || !$configuration) {
             Logging::log('Loading configuration from files', 'core');
             $config_filename = \PACHNO_CONFIGURATION_PATH . "settings.yml";
             $b2db_filename = \PACHNO_CONFIGURATION_PATH . "b2db.yml";
@@ -823,8 +708,7 @@ class Context
             $b2db_config = \Spyc::YAMLLoad($b2db_filename);
             $configuration = array_merge($config, $b2db_config);
 
-            if (self::isReadySetup())
-            {
+            if (self::isReadySetup()) {
                 self::getCache()->fileAdd(Cache::KEY_CONFIGURATION, $configuration, false);
                 self::getCache()->add(Cache::KEY_CONFIGURATION, $configuration, false);
             }
@@ -834,8 +718,7 @@ class Context
         self::$_debug_mode = self::$_configuration['core']['debug'];
 
         $log_file = (isset(self::$_configuration['core']['log_file'])) ? self::$_configuration['core']['log_file'] : null;
-        if($log_file)
-        {
+        if ($log_file) {
             Logging::setLogFilePath($log_file);
             Logging::log('Log file path set. At this point, configuration is loaded & caching enabled, if possible.', 'core');
         }
@@ -849,8 +732,7 @@ class Context
      */
     public static function getRequest()
     {
-        if (!self::$_request instanceof Request)
-        {
+        if (!self::$_request instanceof Request) {
             self::$_request = new Request();
         }
         return self::$_request;
@@ -873,8 +755,7 @@ class Context
      */
     public static function getResponse()
     {
-        if (!self::$_response instanceof Response)
-        {
+        if (!self::$_response instanceof Response) {
             self::$_response = new Response();
         }
         return self::$_response;
@@ -887,12 +768,9 @@ class Context
      */
     public static function reinitializeI18n($language = null)
     {
-        if (!$language)
-        {
+        if (!$language) {
             self::$_i18n = new I18n(Settings::get('language'));
-        }
-        else
-        {
+        } else {
             Logging::log('Changing language to ' . $language);
             self::$_i18n = new I18n($language);
             self::$_i18n->initialize();
@@ -906,8 +784,7 @@ class Context
      */
     public static function getI18n(): I18n
     {
-        if (!self::isI18nInitialized())
-        {
+        if (!self::isI18nInitialized()) {
             Logging::log('Cannot access the translation object until the i18n system has been initialized!', 'i18n', Logging::LEVEL_WARNING);
             throw new \Exception('Cannot access the translation object until the i18n system has been initialized!');
         }
@@ -930,10 +807,8 @@ class Context
         $themes = [];
         $parser = new TextParserMarkdown();
 
-        while ($theme = readdir($theme_path_handle))
-        {
-            if ($theme != '.' && $theme != '..' && is_dir(PACHNO_PATH . 'themes' . DS . $theme) && file_exists(PACHNO_PATH . 'themes' . DS . $theme . DS . 'theme.php'))
-            {
+        while ($theme = readdir($theme_path_handle)) {
+            if ($theme != '.' && $theme != '..' && is_dir(PACHNO_PATH . 'themes' . DS . $theme) && file_exists(PACHNO_PATH . 'themes' . DS . $theme . DS . 'theme.php')) {
                 $themes[$theme] = array(
                     'key' => $theme,
                     'name' => ucfirst($theme),
@@ -956,32 +831,23 @@ class Context
      */
     public static function loadUser(User $user = null)
     {
-        try
-        {
+        try {
             self::$_user = ($user) ?? User::identify(self::getRequest(), self::getCurrentControllerObject(), true);
-            if (self::$_user->isAuthenticated())
-            {
-                if (!self::getRequest()->hasCookie('original_username'))
-                {
+            if (self::$_user->isAuthenticated()) {
+                if (!self::getRequest()->hasCookie('original_username')) {
                     self::$_user->updateLastSeen();
                 }
-                if (!self::getScope()->isDefault() && !self::getRequest()->isAjaxCall() && !in_array(self::getRouting()->getCurrentRoute()->getName(), ['add_scope', 'debugger', 'logout']) && !self::$_user->isGuest() && !self::$_user->isConfirmedMemberOfScope(self::getScope()))
-                {
+                if (!self::getScope()->isDefault() && !self::getRequest()->isAjaxCall() && !in_array(self::getRouting()->getCurrentRoute()->getName(), ['add_scope', 'debugger', 'logout']) && !self::$_user->isGuest() && !self::$_user->isConfirmedMemberOfScope(self::getScope())) {
                     self::getResponse()->headerRedirect(self::getRouting()->generate('add_scope'));
                 }
                 self::$_user->save();
-                if (!(self::$_user->getGroup() instanceof \pachno\core\entities\Group))
-                {
+                if (!(self::$_user->getGroup() instanceof \pachno\core\entities\Group)) {
                     throw new \RuntimeException('This user account belongs to a group that does not exist anymore. Please contact the system administrator.');
                 }
             }
-        }
-        catch (exceptions\ElevatedLoginException $e)
-        {
+        } catch (exceptions\ElevatedLoginException $e) {
             throw $e;
-        }
-        catch (\Exception $e)
-        {
+        } catch (\Exception $e) {
             self::$_user = new User();
             throw $e;
         }
@@ -1027,10 +893,8 @@ class Context
         Logging::log('Loading internal modules');
 
         $modules = self::getCache()->get(Cache::KEY_INTERNAL_MODULES, false);
-        if (self::isReadySetup() || !$modules)
-        {
-            foreach (scandir(PACHNO_INTERNAL_MODULES_PATH) as $modulename)
-            {
+        if (self::isReadySetup() || !$modules) {
+            foreach (scandir(PACHNO_INTERNAL_MODULES_PATH) as $modulename) {
                 if (in_array($modulename, array('.', '..')) || !is_dir(PACHNO_INTERNAL_MODULES_PATH . $modulename))
                     continue;
 
@@ -1038,15 +902,12 @@ class Context
             }
 
             self::getCache()->add(Cache::KEY_INTERNAL_MODULES, $modules, false);
-        }
-        else
-        {
+        } else {
             Logging::log('Loading cached modules');
             self::$_internal_module_paths = $modules;
         }
 
-        foreach (self::$_internal_module_paths as $modulename)
-        {
+        foreach (self::$_internal_module_paths as $modulename) {
             $classname = "\\pachno\\core\\modules\\{$modulename}\\" . ucfirst($modulename);
             self::$_internal_modules[$modulename] = new $classname($modulename);
             self::$_internal_modules[$modulename]->initialize();
@@ -1065,8 +926,7 @@ class Context
         if (self::isInstallmode())
             return;
 
-        if (self::isUpgrademode())
-        {
+        if (self::isUpgrademode()) {
             self::$_modules = Module::getB2DBTable()->getAllNames();
             return;
         }
@@ -1076,16 +936,12 @@ class Context
         Logging::log('done (setting up module objects)');
 
         Logging::log('initializing modules');
-        if (!empty(self::$_modules))
-        {
-            foreach (self::$_modules as $module)
-            {
+        if (!empty(self::$_modules)) {
+            foreach (self::$_modules as $module) {
                 $module->initialize();
             }
             Logging::log('done (initializing modules)');
-        }
-        else
-        {
+        } else {
             Logging::log('no modules found');
         }
         Logging::log('...done (loading modules)');
@@ -1105,8 +961,7 @@ class Context
      */
     public static function addModule($module, $module_name)
     {
-        if (self::$_modules === null)
-        {
+        if (self::$_modules === null) {
             self::$_modules = [];
         }
         self::$_modules[$module_name] = $module;
@@ -1119,8 +974,7 @@ class Context
      */
     public static function unloadModule($module_name)
     {
-        if (isset(self::$_modules[$module_name]))
-        {
+        if (isset(self::$_modules[$module_name])) {
             unset(self::$_modules[$module_name]);
             Event::clearListeners($module_name);
         }
@@ -1143,13 +997,10 @@ class Context
      */
     public static function getOutdatedModules()
     {
-        if (self::$_outdated_modules == null)
-        {
+        if (self::$_outdated_modules == null) {
             self::$_outdated_modules = [];
-            foreach (self::getModules() as $module)
-            {
-                if ($module->isOutdated())
-                {
+            foreach (self::getModules() as $module) {
+                if ($module->isOutdated()) {
                     self::$_outdated_modules[] = $module;
                 }
             }
@@ -1167,15 +1018,12 @@ class Context
     {
         $module_path_handle = opendir(PACHNO_MODULES_PATH);
         $modules = [];
-        while ($module_name = readdir($module_path_handle))
-        {
-            if (is_dir(PACHNO_MODULES_PATH . $module_name) && file_exists(PACHNO_MODULES_PATH . $module_name . DS . ucfirst($module_name) . '.php'))
-            {
+        while ($module_name = readdir($module_path_handle)) {
+            if (is_dir(PACHNO_MODULES_PATH . $module_name) && file_exists(PACHNO_MODULES_PATH . $module_name . DS . ucfirst($module_name) . '.php')) {
                 if (self::isModuleLoaded($module_name))
                     continue;
-                $module_class = "\\pachno\\modules\\{$module_name}\\".ucfirst($module_name);
-                if (class_exists($module_class))
-                {
+                $module_class = "\\pachno\\modules\\{$module_name}\\" . ucfirst($module_name);
+                if (class_exists($module_class)) {
                     $modules[$module_name] = new $module_class();
                 }
             }
@@ -1192,12 +1040,9 @@ class Context
      */
     public static function getModule($module_name)
     {
-        if (!self::isModuleLoaded($module_name) && !isset(self::$_internal_modules[$module_name]))
-        {
+        if (!self::isModuleLoaded($module_name) && !isset(self::$_internal_modules[$module_name])) {
             throw new \Exception("The module '{$module_name}' is not loaded");
-        }
-        else
-        {
+        } else {
             return (isset(self::$_internal_modules[$module_name])) ? self::$_internal_modules[$module_name] : self::$_modules[$module_name];
         }
     }
@@ -1232,16 +1077,12 @@ class Context
         $query->where(Permissions::SCOPE, self::getScope()->getID());
         $query->where(Permissions::PERMISSION_TYPE, $type);
 
-        if (($uid + $tid + $gid) == 0 && !$all)
-        {
+        if (($uid + $tid + $gid) == 0 && !$all) {
             $query->where(Permissions::UID, $uid);
             $query->where(Permissions::TID, $tid);
             $query->where(Permissions::GID, $gid);
-        }
-        else
-        {
-            switch (true)
-            {
+        } else {
+            switch (true) {
                 case ($uid != 0):
                     $query->where(Permissions::UID, $uid);
                 case ($tid != 0):
@@ -1250,17 +1091,14 @@ class Context
                     $query->where(Permissions::GID, $gid);
             }
         }
-        if ($target_id !== null)
-        {
+        if ($target_id !== null) {
             $query->where(Permissions::TARGET_ID, $target_id);
         }
 
         $permissions = [];
 
-        if ($res = Permissions::getTable()->rawSelect($query))
-        {
-            while ($row = $res->getNextRow())
-            {
+        if ($res = Permissions::getTable()->rawSelect($query)) {
+            while ($row = $res->getNextRow()) {
                 $permissions[] = array('p_type' => $row->get(Permissions::PERMISSION_TYPE), 'target_id' => $row->get(Permissions::TARGET_ID), 'allowed' => $row->get(Permissions::ALLOWED), 'uid' => $row->get(Permissions::UID), 'gid' => $row->get(Permissions::GID), 'tid' => $row->get(Permissions::TID), 'id' => $row->get(Permissions::ID));
             }
         }
@@ -1276,41 +1114,30 @@ class Context
         Logging::log('caches permissions');
         self::$_permissions = [];
 
-        if (!self::isInstallmode() && $permissions = self::getCache()->get(Cache::KEY_PERMISSIONS_CACHE))
-        {
+        if (!self::isInstallmode() && $permissions = self::getCache()->get(Cache::KEY_PERMISSIONS_CACHE)) {
             self::$_permissions = $permissions;
             Logging::log('Using cached permissions');
-        }
-        else
-        {
-            if (self::isInstallmode() || !$permissions = self::getCache()->fileGet(Cache::KEY_PERMISSIONS_CACHE))
-            {
+        } else {
+            if (self::isInstallmode() || !$permissions = self::getCache()->fileGet(Cache::KEY_PERMISSIONS_CACHE)) {
                 Logging::log('starting to cache access permissions');
-                if ($res = Permissions::getTable()->getAll())
-                {
-                    while ($row = $res->getNextRow())
-                    {
-                        if (!array_key_exists($row->get(Permissions::MODULE), self::$_permissions))
-                        {
+                if ($res = Permissions::getTable()->getAll()) {
+                    while ($row = $res->getNextRow()) {
+                        if (!array_key_exists($row->get(Permissions::MODULE), self::$_permissions)) {
                             self::$_permissions[$row->get(Permissions::MODULE)] = [];
                         }
-                        if (!array_key_exists($row->get(Permissions::PERMISSION_TYPE), self::$_permissions[$row->get(Permissions::MODULE)]))
-                        {
+                        if (!array_key_exists($row->get(Permissions::PERMISSION_TYPE), self::$_permissions[$row->get(Permissions::MODULE)])) {
                             self::$_permissions[$row->get(Permissions::MODULE)][$row->get(Permissions::PERMISSION_TYPE)] = [];
                         }
-                        if (!array_key_exists($row->get(Permissions::TARGET_ID), self::$_permissions[$row->get(Permissions::MODULE)][$row->get(Permissions::PERMISSION_TYPE)]))
-                        {
+                        if (!array_key_exists($row->get(Permissions::TARGET_ID), self::$_permissions[$row->get(Permissions::MODULE)][$row->get(Permissions::PERMISSION_TYPE)])) {
                             self::$_permissions[$row->get(Permissions::MODULE)][$row->get(Permissions::PERMISSION_TYPE)][$row->get(Permissions::TARGET_ID)] = [];
                         }
-                        self::$_permissions[$row->get(Permissions::MODULE)][$row->get(Permissions::PERMISSION_TYPE)][$row->get(Permissions::TARGET_ID)][] = array('uid' => $row->get(Permissions::UID), 'gid' => $row->get(Permissions::GID), 'tid' => $row->get(Permissions::TID), 'allowed' => (bool) $row->get(Permissions::ALLOWED), 'role_id' => $row->get(Permissions::ROLE_ID));
+                        self::$_permissions[$row->get(Permissions::MODULE)][$row->get(Permissions::PERMISSION_TYPE)][$row->get(Permissions::TARGET_ID)][] = array('uid' => $row->get(Permissions::UID), 'gid' => $row->get(Permissions::GID), 'tid' => $row->get(Permissions::TID), 'allowed' => (bool)$row->get(Permissions::ALLOWED), 'role_id' => $row->get(Permissions::ROLE_ID));
                     }
                 }
                 Logging::log('done (starting to cache access permissions)');
                 if (!self::isInstallmode())
                     self::getCache()->fileAdd(Cache::KEY_PERMISSIONS_CACHE, self::$_permissions);
-            }
-            else
-            {
+            } else {
                 self::$_permissions = $permissions;
             }
             if (!self::isInstallmode())
@@ -1321,10 +1148,8 @@ class Context
 
     public static function deleteModulePermissions($module_name, $scope)
     {
-        if ($scope == self::getScope()->getID())
-        {
-            if (array_key_exists($module_name, self::$_permissions))
-            {
+        if ($scope == self::getScope()->getID()) {
+            if (array_key_exists($module_name, self::$_permissions)) {
                 unset(self::$_permissions[$module_name]);
             }
         }
@@ -1393,8 +1218,7 @@ class Context
         if ($scope === null)
             $scope = self::getScope()->getID();
 
-        if ($role_id === null)
-        {
+        if ($role_id === null) {
             self::removePermission($permission_type, $target_id, $module, $uid, $gid, $tid, false, $scope, 0);
         }
         Permissions::getTable()->setPermission($uid, $gid, $tid, $allowed, $module, $permission_type, $target_id, $scope, $role_id);
@@ -1406,39 +1230,29 @@ class Context
     public static function isPermissionSet($type, $permission_key, $id, $target_id = 0, $module_name = 'core', $without_role = null)
     {
         if (array_key_exists($module_name, self::$_permissions) &&
-                array_key_exists($permission_key, self::$_permissions[$module_name]) &&
-                array_key_exists($target_id, self::$_permissions[$module_name][$permission_key]))
-        {
-            if ($type == 'group')
-            {
-                foreach (self::$_permissions[$module_name][$permission_key][$target_id] as $permission)
-                {
+            array_key_exists($permission_key, self::$_permissions[$module_name]) &&
+            array_key_exists($target_id, self::$_permissions[$module_name][$permission_key])) {
+            if ($type == 'group') {
+                foreach (self::$_permissions[$module_name][$permission_key][$target_id] as $permission) {
                     if ($permission['gid'] == $id && (($without_role == true && $permission['role_id'] == 0) || ($without_role == false && $permission['role_id'] != 0)))
                         return $permission['allowed'];
                 }
             }
-            if ($type == 'user')
-            {
-                foreach (self::$_permissions[$module_name][$permission_key][$target_id] as $permission)
-                {
+            if ($type == 'user') {
+                foreach (self::$_permissions[$module_name][$permission_key][$target_id] as $permission) {
                     if ($permission['uid'] == $id && (($without_role == true && $permission['role_id'] == 0) || ($without_role == false && $permission['role_id'] != 0)))
                         return $permission['allowed'];
                 }
             }
-            if ($type == 'team')
-            {
-                foreach (self::$_permissions[$module_name][$permission_key][$target_id] as $permission)
-                {
+            if ($type == 'team') {
+                foreach (self::$_permissions[$module_name][$permission_key][$target_id] as $permission) {
                     if ($permission['tid'] == $id && (($without_role == true && $permission['role_id'] == 0) || ($without_role == false && $permission['role_id'] != 0)))
                         return $permission['allowed'];
                 }
             }
-            if ($type == 'everyone')
-            {
-                foreach (self::$_permissions[$module_name][$permission_key][$target_id] as $permission)
-                {
-                    if ($permission['uid'] + $permission['gid'] + $permission['tid'] == 0 && (($without_role == true && $permission['role_id'] == 0) || ($without_role == false && $permission['role_id'] != 0)))
-                    {
+            if ($type == 'everyone') {
+                foreach (self::$_permissions[$module_name][$permission_key][$target_id] as $permission) {
+                    if ($permission['uid'] + $permission['gid'] + $permission['tid'] == 0 && (($without_role == true && $permission['role_id'] == 0) || ($without_role == false && $permission['role_id'] != 0))) {
                         return $permission['allowed'];
                     }
                 }
@@ -1485,44 +1299,35 @@ class Context
         // weight based on criteria of specificity. Have a look at method
         // description for logic behind it.
         $weight_bases = array(
-                              'specific_target_id' => 1000,
-                              'specific_uid'       =>  750,
-                              'specific_tid'       =>  500,
-                              'specific_gid'       =>  250,
-                              'allow_false'        =>   50,
-                              'allow_true'         =>    0,
-                              );
+            'specific_target_id' => 1000,
+            'specific_uid' => 750,
+            'specific_tid' => 500,
+            'specific_gid' => 250,
+            'allow_false' => 50,
+            'allow_true' => 0,
+        );
 
         // Assume least weight initially.
         $weight = 0;
 
         // Add weight based on target ID specificity.
-        if ($target_id != 0)
-        {
+        if ($target_id != 0) {
             $weight += $weight_bases['specific_target_id'];
         }
 
         // Apply weight based on user matching specificity.
-        if ($permission['uid'] != 0)
-        {
+        if ($permission['uid'] != 0) {
             $weight += $weight_bases['specific_uid'];
-        }
-        else if ($permission['tid'] != 0)
-        {
+        } else if ($permission['tid'] != 0) {
             $weight += $weight_bases['specific_tid'];
-        }
-        else if ($permission['gid'] != 0)
-        {
+        } else if ($permission['gid'] != 0) {
             $weight += $weight_bases['specific_gid'];
         }
 
         // Add weight based on result specificity.
-        if ($permission['allowed'] === false)
-        {
+        if ($permission['allowed'] === false) {
             $weight += $weight_bases['allow_false'];
-        }
-        else if ($permission['allowed'] === true)
-        {
+        } else if ($permission['allowed'] === true) {
             $weight += $weight_bases['allow_true'];
         }
 
@@ -1534,8 +1339,6 @@ class Context
      * membership, or team membership should be granted access to specified
      * resource.
      *
-     * @see User::hasPermission() For description of module name, permission type, target ID.
-     *
      * @param string module_name Name of the module associated with permission type.
      * @param string permission_type Permission type.
      * @param mixed target_id Target (object) ID, if applicable. If not applicable, set to 0. Should be either non-negative integer or string.
@@ -1544,6 +1347,8 @@ class Context
      * @param array team_ids List of team IDs for matching the users. Set to empty array if it should not be used for matching, or if $uid, $gid and $team_ids are all 0/empty, match any user.
      *
      * @return mixed If permission matching the specified criteria has been found in database (cache, to be more precise), returns permission value (true or false). If no matching permission has been found, returns null. Receiving null means the caller needs to apply a default rule (allow or deny), which depends on caller implementation.
+     * @see User::hasPermission() For description of module name, permission type, target ID.
+     *
      */
     public static function checkPermission($module_name, $permission_type, $target_id, $uid, $gid, $team_ids)
     {
@@ -1553,8 +1358,7 @@ class Context
 
         // Check if there are any permission rules stored for given module and permission type.
         if (array_key_exists($module_name, self::$_permissions) &&
-            array_key_exists($permission_type, self::$_permissions[$module_name]))
-        {
+            array_key_exists($permission_type, self::$_permissions[$module_name])) {
             // Permissions relevant to module + permission type are stored in an
             // array, grouped based on whether they are applied against specific
             // target ID or globally.
@@ -1567,34 +1371,28 @@ class Context
             // Populate permission groups with permissions specific to provided
             // target IDs and global permissions. Use target_id as index since
             // we need to pass it in for weight calculation.
-            if (($target_id != 0 || is_string($target_id)) && array_key_exists($target_id, self::$_permissions[$module_name][$permission_type]))
-            {
+            if (($target_id != 0 || is_string($target_id)) && array_key_exists($target_id, self::$_permissions[$module_name][$permission_type])) {
                 $permission_groups[$target_id] = self::$_permissions[$module_name][$permission_type][$target_id];
             }
 
-            if (array_key_exists(0, self::$_permissions[$module_name][$permission_type]))
-            {
+            if (array_key_exists(0, self::$_permissions[$module_name][$permission_type])) {
                 $permission_groups[0] = self::$_permissions[$module_name][$permission_type][0];
             }
 
-            foreach ($permission_groups as $permission_group_target_id => $permission_group)
-            {
-                foreach ($permission_group as $permission)
-                {
+            foreach ($permission_groups as $permission_group_target_id => $permission_group) {
+                foreach ($permission_group as $permission) {
                     // Permission is applicable if we can match it against the
                     // user specifier (uid, gid, or one of team IDs), or if the
                     // permission should be applied to all users.
                     if (($uid != 0 && $uid == $permission['uid']) ||
                         (count($team_ids) != 0 && in_array($permission['tid'], $team_ids)) ||
-                        ($gid !=0 && $gid == $permission['gid'])  ||
-                        ($permission['uid'] == 0 && $permission['gid'] == 0 && $permission['tid'] == 0))
-                    {
+                        ($gid != 0 && $gid == $permission['gid']) ||
+                        ($permission['uid'] == 0 && $permission['gid'] == 0 && $permission['tid'] == 0)) {
                         // Calculate the permissions weight, and apply its
                         // result (allow/deny) if it outweighs the previously
                         // matched permission.
                         $permission_weight = self::_getPermissionWeight($permission, $permission_group_target_id);
-                        if ($permission_weight > $permission_candidate_weight)
-                        {
+                        if ($permission_weight > $permission_candidate_weight) {
                             $permission_candidate_weight = $permission_weight;
                             $result = $permission['allowed'];
                         }
@@ -1620,15 +1418,13 @@ class Context
         } else {
             $permissions_list = ($permissions_list === null) ? self::getModule($module_name)->getAvailablePermissions() : $permissions_list;
         }
-        foreach ($permissions_list as $permission_key => $permission_info)
-        {
+        foreach ($permissions_list as $permission_key => $permission_info) {
             if (is_numeric($permission_key))
                 return null;
             if ($permission_key == $permission)
                 return $permission_info;
 
-            if (in_array($permission_key, array_keys(self::$_available_permissions)) || (array_key_exists('details', $permission_info) && is_array($permission_info['details']) && count($permission_info['details'])))
-            {
+            if (in_array($permission_key, array_keys(self::$_available_permissions)) || (array_key_exists('details', $permission_info) && is_array($permission_info['details']) && count($permission_info['details']))) {
                 $p_info = (in_array($permission_key, array_keys(self::$_available_permissions))) ? $permission_info : $permission_info['details'];
                 $retval = self::getPermissionDetails($permission, $p_info, $module_name);
                 if ($retval)
@@ -1639,8 +1435,7 @@ class Context
 
     protected static function _cacheAvailablePermissions()
     {
-        if (self::$_available_permissions === null)
-        {
+        if (self::$_available_permissions === null) {
             Logging::log("Loading and caching permissions tree");
             $i18n = self::getI18n();
             self::$_available_permissions = array('user' => [], 'general' => [], 'project' => []);
@@ -1712,44 +1507,44 @@ class Context
             self::$_available_permissions['milestone']['canseemilestone'] = array('description' => $i18n->__('Can see this milestone'));
 
             $arr = [
-                ''    => $i18n->__('For issues reported by anyone: edit any issue details, close and delete issues'),
+                '' => $i18n->__('For issues reported by anyone: edit any issue details, close and delete issues'),
                 'own' => $i18n->__('For own issues only: edit any issue details, close and delete issues')
             ];
             foreach ($arr as $suffix => $description) {
-                self::$_available_permissions['issues']['caneditissue'.$suffix] = array('description' => $description, 'details' => []);
-                self::$_available_permissions['issues']['caneditissue'.$suffix]['details']['caneditissuebasic'.$suffix] = array('description' => $i18n->__('Can edit title, description and reproduction steps'), 'details' => []);
-                self::$_available_permissions['issues']['caneditissue'.$suffix]['details']['caneditissuebasic'.$suffix]['details']['caneditissuetitle'.$suffix] = array('description' => $i18n->__('Can edit title'));
-                self::$_available_permissions['issues']['caneditissue'.$suffix]['details']['caneditissuebasic'.$suffix]['details']['caneditissuedescription'.$suffix] = array('description' => $i18n->__('Can edit description'));
-                self::$_available_permissions['issues']['caneditissue'.$suffix]['details']['caneditissuebasic'.$suffix]['details']['caneditissuereproduction_steps'.$suffix] = array('description' => $i18n->__('Can edit steps to reproduce'));
-                self::$_available_permissions['issues']['caneditissue'.$suffix]['details']['canvoteforissues'.$suffix] = array('description' => $i18n->__('Can vote for issues'));
-                self::$_available_permissions['issues']['caneditissue'.$suffix]['details']['caneditissueposted_by'.$suffix] = array('description' => $i18n->__('Can edit issue poster'));
-                self::$_available_permissions['issues']['caneditissue'.$suffix]['details']['caneditissueowned_by'.$suffix] = array('description' => $i18n->__('Can edit owner'));
-                self::$_available_permissions['issues']['caneditissue'.$suffix]['details']['caneditissueassigned_to'.$suffix] = array('description' => $i18n->__('Can edit assignee'));
-                self::$_available_permissions['issues']['caneditissue'.$suffix]['details']['caneditissuestatus'.$suffix] = array('description' => $i18n->__('Can edit status'));
-                self::$_available_permissions['issues']['caneditissue'.$suffix]['details']['caneditissuecategory'.$suffix] = array('description' => $i18n->__('Can edit category'));
-                self::$_available_permissions['issues']['caneditissue'.$suffix]['details']['caneditissuepriority'.$suffix] = array('description' => $i18n->__('Can edit priority'));
-                self::$_available_permissions['issues']['caneditissue'.$suffix]['details']['caneditissueseverity'.$suffix] = array('description' => $i18n->__('Can edit severity'));
-                self::$_available_permissions['issues']['caneditissue'.$suffix]['details']['caneditissuereproducability'.$suffix] = array('description' => $i18n->__('Can edit reproducability'));
-                self::$_available_permissions['issues']['caneditissue'.$suffix]['details']['caneditissueresolution'.$suffix] = array('description' => $i18n->__('Can edit resolution'));
-                self::$_available_permissions['issues']['caneditissue'.$suffix]['details']['caneditissueestimated_time'.$suffix] = array('description' => $i18n->__('Can set estimate'));
-                self::$_available_permissions['issues']['caneditissue'.$suffix]['details']['caneditissuespent_time'.$suffix] = array('description' => $i18n->__('Can spend time working on issues'));
-                self::$_available_permissions['issues']['caneditissue'.$suffix]['details']['caneditissuepercent_complete'.$suffix] = array('description' => $i18n->__('Can edit percent complete'));
-                self::$_available_permissions['issues']['caneditissue'.$suffix]['details']['caneditissuemilestone'.$suffix] = array('description' => $i18n->__('Can set milestone'));
-                self::$_available_permissions['issues']['caneditissue'.$suffix]['details']['caneditissuecolor'.$suffix] = array('description' => $i18n->__('Can edit planning color'));
-                self::$_available_permissions['issues']['caneditissue'.$suffix]['details']['caneditissueuserpain'.$suffix] = array('description' => $i18n->__('Can edit user pain'));
-                self::$_available_permissions['issues']['caneditissue'.$suffix]['details']['canaddextrainformationtoissues'.$suffix] = array('description' => $i18n->__('Can add/remove extra information (edition, component, release, links and files) and link issues'), 'details' => []);
-                self::$_available_permissions['issues']['caneditissue'.$suffix]['details']['canaddextrainformationtoissues'.$suffix]['details']['canaddbuilds'.$suffix] = array('description' => $i18n->__('Can add and remove affected releases / versions'));
-                self::$_available_permissions['issues']['caneditissue'.$suffix]['details']['canaddextrainformationtoissues'.$suffix]['details']['canaddcomponents'.$suffix] = array('description' => $i18n->__('Can add and remove affected components'));
-                self::$_available_permissions['issues']['caneditissue'.$suffix]['details']['canaddextrainformationtoissues'.$suffix]['details']['canaddeditions'.$suffix] = array('description' => $i18n->__('Can add and remove affected editions'));
-                self::$_available_permissions['issues']['caneditissue'.$suffix]['details']['canaddextrainformationtoissues'.$suffix]['details']['canaddlinkstoissues'.$suffix] = array('description' => $i18n->__('Can add and remove links'));
-                self::$_available_permissions['issues']['caneditissue'.$suffix]['details']['canaddextrainformationtoissues'.$suffix]['details']['canaddfilestoissues'.$suffix] = array('description' => $i18n->__('Can add and remove attachments'));
-                self::$_available_permissions['issues']['caneditissue'.$suffix]['details']['canaddextrainformationtoissues'.$suffix]['details']['canaddrelatedissues'.$suffix] = array('description' => $i18n->__('Can add and remove related issues'));
-                self::$_available_permissions['issues']['caneditissue'.$suffix]['details']['cantransitionissue'.$suffix] = array('description' => $i18n->__('Can transition issue'));
-                self::$_available_permissions['issues']['caneditissue'.$suffix]['details']['candeleteissues'.$suffix] = array('description' => $i18n->__('Can delete issue'));
+                self::$_available_permissions['issues']['caneditissue' . $suffix] = array('description' => $description, 'details' => []);
+                self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['caneditissuebasic' . $suffix] = array('description' => $i18n->__('Can edit title, description and reproduction steps'), 'details' => []);
+                self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['caneditissuebasic' . $suffix]['details']['caneditissuetitle' . $suffix] = array('description' => $i18n->__('Can edit title'));
+                self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['caneditissuebasic' . $suffix]['details']['caneditissuedescription' . $suffix] = array('description' => $i18n->__('Can edit description'));
+                self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['caneditissuebasic' . $suffix]['details']['caneditissuereproduction_steps' . $suffix] = array('description' => $i18n->__('Can edit steps to reproduce'));
+                self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['canvoteforissues' . $suffix] = array('description' => $i18n->__('Can vote for issues'));
+                self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['caneditissueposted_by' . $suffix] = array('description' => $i18n->__('Can edit issue poster'));
+                self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['caneditissueowned_by' . $suffix] = array('description' => $i18n->__('Can edit owner'));
+                self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['caneditissueassigned_to' . $suffix] = array('description' => $i18n->__('Can edit assignee'));
+                self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['caneditissuestatus' . $suffix] = array('description' => $i18n->__('Can edit status'));
+                self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['caneditissuecategory' . $suffix] = array('description' => $i18n->__('Can edit category'));
+                self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['caneditissuepriority' . $suffix] = array('description' => $i18n->__('Can edit priority'));
+                self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['caneditissueseverity' . $suffix] = array('description' => $i18n->__('Can edit severity'));
+                self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['caneditissuereproducability' . $suffix] = array('description' => $i18n->__('Can edit reproducability'));
+                self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['caneditissueresolution' . $suffix] = array('description' => $i18n->__('Can edit resolution'));
+                self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['caneditissueestimated_time' . $suffix] = array('description' => $i18n->__('Can set estimate'));
+                self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['caneditissuespent_time' . $suffix] = array('description' => $i18n->__('Can spend time working on issues'));
+                self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['caneditissuepercent_complete' . $suffix] = array('description' => $i18n->__('Can edit percent complete'));
+                self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['caneditissuemilestone' . $suffix] = array('description' => $i18n->__('Can set milestone'));
+                self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['caneditissuecolor' . $suffix] = array('description' => $i18n->__('Can edit planning color'));
+                self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['caneditissueuserpain' . $suffix] = array('description' => $i18n->__('Can edit user pain'));
+                self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['canaddextrainformationtoissues' . $suffix] = array('description' => $i18n->__('Can add/remove extra information (edition, component, release, links and files) and link issues'), 'details' => []);
+                self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['canaddextrainformationtoissues' . $suffix]['details']['canaddbuilds' . $suffix] = array('description' => $i18n->__('Can add and remove affected releases / versions'));
+                self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['canaddextrainformationtoissues' . $suffix]['details']['canaddcomponents' . $suffix] = array('description' => $i18n->__('Can add and remove affected components'));
+                self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['canaddextrainformationtoissues' . $suffix]['details']['canaddeditions' . $suffix] = array('description' => $i18n->__('Can add and remove affected editions'));
+                self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['canaddextrainformationtoissues' . $suffix]['details']['canaddlinkstoissues' . $suffix] = array('description' => $i18n->__('Can add and remove links'));
+                self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['canaddextrainformationtoissues' . $suffix]['details']['canaddfilestoissues' . $suffix] = array('description' => $i18n->__('Can add and remove attachments'));
+                self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['canaddextrainformationtoissues' . $suffix]['details']['canaddrelatedissues' . $suffix] = array('description' => $i18n->__('Can add and remove related issues'));
+                self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['cantransitionissue' . $suffix] = array('description' => $i18n->__('Can transition issue'));
+                self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['candeleteissues' . $suffix] = array('description' => $i18n->__('Can delete issue'));
             }
 
             foreach ($arr as $suffix => $description) {
-                self::$_available_permissions['issues']['caneditissue'.$suffix]['details']['caneditissuecustomfields'.$suffix] = [
+                self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['caneditissuecustomfields' . $suffix] = [
                     'description' => $i18n->__('Can edit custom fields for issues'),
                     'details' => []
                 ];
@@ -1757,7 +1552,7 @@ class Context
 
             foreach (CustomDatatype::getAll() as $cdf) {
                 foreach ($arr as $suffix => $description) {
-                    self::$_available_permissions['issues']['caneditissue'.$suffix]['details']['caneditissuecustomfields'.$suffix]['details']['caneditissuecustomfields' . $cdf->getKey() . $suffix] = array('description' => $i18n->__('Can change custom field "%field_name"', array('%field_name' => $i18n->__($cdf->getDescription()))));
+                    self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['caneditissuecustomfields' . $suffix]['details']['caneditissuecustomfields' . $cdf->getKey() . $suffix] = array('description' => $i18n->__('Can change custom field "%field_name"', array('%field_name' => $i18n->__($cdf->getDescription()))));
                 }
 
                 // Set permissions for custom option types
@@ -1765,7 +1560,7 @@ class Context
                     $options = $cdf->getOptions();
                     foreach ($options as $option) {
                         foreach ($arr as $suffix => $description) {
-                            self::$_available_permissions['issues']['caneditissue'.$suffix]['details']['set_datatype_' . $option->getID().$suffix] = array('description' => $i18n->__('Can change issue field to "%option_name"', array('%option_name' => $i18n->__($option->getValue()))));
+                            self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['set_datatype_' . $option->getID() . $suffix] = array('description' => $i18n->__('Can change issue field to "%option_name"', array('%option_name' => $i18n->__($option->getValue()))));
                         }
                     }
                 }
@@ -1773,7 +1568,7 @@ class Context
 
             foreach (Datatype::getTypes() as $type => $class) {
                 foreach ($arr as $suffix => $description) {
-                    self::$_available_permissions['issues']['caneditissue'.$suffix]['details']['set_datatype_' . $type . $suffix] = array('description' => $i18n->__('Can change field "%type_name"', array('%type_name' => $i18n->__($type))));
+                    self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['set_datatype_' . $type . $suffix] = array('description' => $i18n->__('Can change field "%type_name"', array('%type_name' => $i18n->__($type))));
                 }
             }
 
@@ -1843,41 +1638,30 @@ class Context
     public static function getAvailablePermissions($applies_to = null)
     {
         self::_cacheAvailablePermissions();
-        if ($applies_to === null)
-        {
+        if ($applies_to === null) {
             $list = self::$_available_permissions;
             $retarr = [];
-            foreach ($list as $key => $details)
-            {
-                foreach ($details as $dkey => $dd)
-                {
+            foreach ($list as $key => $details) {
+                foreach ($details as $dkey => $dd) {
                     $retarr[$dkey] = $dd;
                 }
             }
-            foreach (self::getModules() as $module_key => $module)
-            {
+            foreach (self::getModules() as $module_key => $module) {
                 $retarr['module_' . $module_key] = [];
-                foreach ($module->getAvailablePermissions() as $mpkey => $mp)
-                {
+                foreach ($module->getAvailablePermissions() as $mpkey => $mp) {
                     $retarr['module_' . $module_key][$mpkey] = $mp;
                 }
             }
             return $retarr;
         }
-        if (array_key_exists($applies_to, self::$_available_permissions))
-        {
+        if (array_key_exists($applies_to, self::$_available_permissions)) {
             return self::$_available_permissions[$applies_to];
-        }
-        elseif (mb_substr($applies_to, 0, 7) == 'module_')
-        {
+        } elseif (mb_substr($applies_to, 0, 7) == 'module_') {
             $module_name = mb_substr($applies_to, 7);
-            if (self::isModuleLoaded($module_name))
-            {
+            if (self::isModuleLoaded($module_name)) {
                 return self::getModule($module_name)->getAvailablePermissions();
             }
-        }
-        else
-        {
+        } else {
             return [];
         }
     }
@@ -1904,8 +1688,7 @@ class Context
     public static function setScope($scope = null)
     {
         Logging::log("Setting current scope");
-        if ($scope !== null)
-        {
+        if ($scope !== null) {
             Logging::log("Setting scope from function parameter");
             self::$_scope = $scope;
             Settings::forceSettingsReload();
@@ -1914,11 +1697,9 @@ class Context
         }
 
         $row = null;
-        try
-        {
+        try {
             $hostname = null;
-            if (!self::isCLI() && !self::isInstallmode())
-            {
+            if (!self::isCLI() && !self::isInstallmode()) {
                 Logging::log("Checking if scope can be set from hostname (" . $_SERVER['HTTP_HOST'] . ")");
                 $hostname = $_SERVER['HTTP_HOST'];
             }
@@ -1926,8 +1707,7 @@ class Context
             if (!self::isUpgrademode() && !self::isInstallmode())
                 $scope = \pachno\core\entities\tables\Scopes::getTable()->getByHostnameOrDefault($hostname);
 
-            if (!$scope instanceof Scope)
-            {
+            if (!$scope instanceof Scope) {
                 Logging::log("It couldn't", 'main', Logging::LEVEL_WARNING);
                 if (!self::isInstallmode())
                     throw new \Exception("Pachno isn't set up to work with this server name.");
@@ -1941,22 +1721,15 @@ class Context
             Settings::loadSettings();
             Logging::log("...done (Setting scope from hostname)");
             return true;
-        }
-        catch (\Exception $e)
-        {
-            if (self::isCLI())
-            {
+        } catch (\Exception $e) {
+            if (self::isCLI()) {
                 Logging::log("Couldn't set up default scope.", 'main', Logging::LEVEL_FATAL);
                 throw new \Exception("Could not load default scope. Error message was: " . $e->getMessage());
-            }
-            elseif (!self::isInstallmode())
-            {
+            } elseif (!self::isInstallmode()) {
                 Logging::log("Couldn't find a scope for hostname {$_SERVER['HTTP_HOST']}", 'main', Logging::LEVEL_FATAL);
                 Logging::log($e->getMessage(), 'main', Logging::LEVEL_FATAL);
                 throw new \Exception("Could not load scope. This is usually because the scopes table doesn't have a scope for this hostname");
-            }
-            else
-            {
+            } else {
                 Logging::log("Couldn't find a scope for hostname {$_SERVER['HTTP_HOST']}, but we're in installmode so continuing anyway");
             }
         }
@@ -1976,17 +1749,14 @@ class Context
     {
         $childbreadcrumbs = [];
 
-        if (self::$_selected_project instanceof Project)
-        {
+        if (self::$_selected_project instanceof Project) {
             $t = self::$_selected_project;
 
             $hierarchy_breadcrumbs = [];
             $projects_processed = [];
 
-            while ($t instanceof Project)
-            {
-                if (array_key_exists($t->getKey(), $projects_processed))
-                {
+            while ($t instanceof Project) {
+                if (array_key_exists($t->getKey(), $projects_processed)) {
                     // We have a cyclic dependency! Oh no!
                     // If this happens, throw an exception
 
@@ -1997,11 +1767,9 @@ class Context
 
                 $itemsubmenulinks = self::getResponse()->getPredefinedBreadcrumbLinks('project_summary', $t);
 
-                if ($t->hasChildren())
-                {
+                if ($t->hasChildren()) {
                     $itemsubmenulinks[] = array('separator' => true);
-                    foreach ($t->getChildren() as $child)
-                    {
+                    foreach ($t->getChildren() as $child) {
                         if (!$child->hasAccess())
                             continue;
                         $itemsubmenulinks[] = array('url' => self::getRouting()->generate('project_dashboard', array('project_key' => $child->getKey())), 'title' => $child->getName());
@@ -2010,26 +1778,20 @@ class Context
 
                 $hierarchy_breadcrumbs[] = array($t, $itemsubmenulinks);
 
-                if ($t->hasParent())
-                {
+                if ($t->hasParent()) {
                     $parent = $t->getParent();
                     $t = $t->getParent();
-                }
-                else
-                {
+                } else {
                     $t = null;
                 }
             }
 
-            if (self::$_selected_project->hasClient())
-            {
+            if (self::$_selected_project->hasClient()) {
                 self::setCurrentClient(self::$_selected_project->getClient());
             }
-            if (mb_strtolower(Settings::getSiteHeaderName()) != mb_strtolower(self::$_selected_project->getName()) || self::isClientContext())
-            {
+            if (mb_strtolower(Settings::getSiteHeaderName()) != mb_strtolower(self::$_selected_project->getName()) || self::isClientContext()) {
                 self::getResponse()->addBreadcrumb(Settings::getSiteHeaderName(), self::getRouting()->generate('home'), self::getResponse()->getPredefinedBreadcrumbLinks('main_links', self::$_selected_project));
-                if (self::isClientContext())
-                {
+                if (self::isClientContext()) {
                     self::getResponse()->addBreadcrumb(self::getCurrentClient()->getName(), self::getRouting()->generate('client_dashboard', array('client_id' => self::getCurrentClient()->getID())), self::getResponse()->getPredefinedBreadcrumbLinks('client_list'));
                 }
             }
@@ -2037,18 +1799,14 @@ class Context
             // Add root breadcrumb first, so reverse order
             $hierarchy_breadcrumbs = array_reverse($hierarchy_breadcrumbs);
 
-            foreach ($hierarchy_breadcrumbs as $breadcrumb)
-            {
+            foreach ($hierarchy_breadcrumbs as $breadcrumb) {
                 $class = null;
-                if ($breadcrumb[0]->getKey() == self::getCurrentProject()->getKey())
-                {
+                if ($breadcrumb[0]->getKey() == self::getCurrentProject()->getKey()) {
                     $class = 'selected_project';
                 }
                 self::getResponse()->addBreadcrumb($breadcrumb[0]->getName(), self::getRouting()->generate('project_dashboard', array('project_key' => $breadcrumb[0]->getKey())), $breadcrumb[1], $class);
             }
-        }
-        else
-        {
+        } else {
             self::getResponse()->addBreadcrumb(Settings::getSiteHeaderName(), self::getRouting()->generate('home'), self::getResponse()->getPredefinedBreadcrumbLinks('main_links'));
         }
     }
@@ -2081,7 +1839,7 @@ class Context
      */
     public static function isProjectContext()
     {
-        return (bool) (self::getCurrentProject() instanceof Project);
+        return (bool)(self::getCurrentProject() instanceof Project);
     }
 
     /**
@@ -2111,7 +1869,7 @@ class Context
      */
     public static function isClientContext()
     {
-        return (bool) (self::getCurrentClient() instanceof Client);
+        return (bool)(self::getCurrentClient() instanceof Client);
     }
 
     /**
@@ -2122,8 +1880,7 @@ class Context
      */
     public static function setMessage($key, $message)
     {
-        if (!array_key_exists('pachno_flash_message', $_SESSION))
-        {
+        if (!array_key_exists('pachno_flash_message', $_SESSION)) {
             $_SESSION['pachno_flash_message'] = [];
         }
         $_SESSION['pachno_flash_message'][$key] = $message;
@@ -2131,11 +1888,9 @@ class Context
 
     protected static function _setupMessages()
     {
-        if (self::$_messages === null)
-        {
+        if (self::$_messages === null) {
             self::$_messages = [];
-            if (array_key_exists('pachno_flash_message', $_SESSION))
-            {
+            if (array_key_exists('pachno_flash_message', $_SESSION)) {
                 self::$_messages = $_SESSION['pachno_flash_message'];
                 unset($_SESSION['pachno_flash_message']);
             }
@@ -2170,8 +1925,7 @@ class Context
      */
     public static function clearMessage($key)
     {
-        if (self::hasMessage($key))
-        {
+        if (self::hasMessage($key)) {
             unset(self::$_messages[$key]);
         }
     }
@@ -2183,8 +1937,7 @@ class Context
      */
     public static function getMessageAndClear($key)
     {
-        if ($message = self::getMessage($key))
-        {
+        if ($message = self::getMessage($key)) {
             self::clearMessage($key);
             return $message;
         }
@@ -2193,9 +1946,8 @@ class Context
 
     public static function getCsrfToken()
     {
-        if (!array_key_exists('csrf_token', $_SESSION) || $_SESSION['csrf_token'] == '')
-        {
-            $_SESSION['csrf_token'] = str_replace('.', '_', uniqid(rand(), TRUE));
+        if (!array_key_exists('csrf_token', $_SESSION) || $_SESSION['csrf_token'] == '') {
+            $_SESSION['csrf_token'] = Uuid::uuid4()->toString();
         }
         return $_SESSION['csrf_token'];
     }
@@ -2217,35 +1969,26 @@ class Context
      */
     public static function loadLibrary($lib_name)
     {
-        if (mb_strpos($lib_name, '/') !== false)
-        {
+        if (mb_strpos($lib_name, '/') !== false) {
             list ($module, $lib_name) = explode('/', $lib_name);
         }
 
         // Skip the library if it already exists
-        if (!array_key_exists($lib_name, self::$_libs))
-        {
+        if (!array_key_exists($lib_name, self::$_libs)) {
             $lib_file_name = "{$lib_name}.inc.php";
 
-            if (isset($module) && file_exists(PACHNO_MODULES_PATH . $module . DS . 'lib' . DS . $lib_file_name))
-            {
+            if (isset($module) && file_exists(PACHNO_MODULES_PATH . $module . DS . 'lib' . DS . $lib_file_name)) {
                 require PACHNO_MODULES_PATH . $module . DS . 'lib' . DS . $lib_file_name;
                 self::$_libs[$lib_name] = PACHNO_MODULES_PATH . $module . DS . 'lib' . DS . $lib_file_name;
-            }
-            elseif (file_exists(PACHNO_MODULES_PATH . self::getRouting()->getCurrentRoute()->getModuleName() . DS . 'lib' . DS . $lib_file_name))
-            {
+            } elseif (file_exists(PACHNO_MODULES_PATH . self::getRouting()->getCurrentRoute()->getModuleName() . DS . 'lib' . DS . $lib_file_name)) {
                 // Include the library from the current module if it exists
                 require PACHNO_MODULES_PATH . self::getRouting()->getCurrentRoute()->getModuleName() . DS . 'lib' . DS . $lib_file_name;
                 self::$_libs[$lib_name] = PACHNO_MODULES_PATH . self::getRouting()->getCurrentRoute()->getModuleName() . DS . 'lib' . DS . $lib_file_name;
-            }
-            elseif (file_exists(PACHNO_CORE_PATH . 'lib' . DS . $lib_file_name))
-            {
+            } elseif (file_exists(PACHNO_CORE_PATH . 'lib' . DS . $lib_file_name)) {
                 // Include the library from the global library directory if it exists
                 require PACHNO_CORE_PATH . 'lib' . DS . $lib_file_name;
                 self::$_libs[$lib_name] = PACHNO_CORE_PATH . 'lib' . DS . $lib_file_name;
-            }
-            else
-            {
+            } else {
                 // Throw an exception if the library can't be found in any of
                 // the above directories
                 Logging::log("The \"{$lib_name}\" library does not exist in either " . PACHNO_MODULES_PATH . self::getRouting()->getCurrentRoute()->getModuleName() . DS . 'lib' . DS . ' or ' . PACHNO_CORE_PATH . 'lib' . DS, 'core', Logging::LEVEL_FATAL);
@@ -2258,12 +2001,9 @@ class Context
     {
         if (!self::$_debug_mode)
             return;
-        if (!array_key_exists($template_name, self::$_partials_visited))
-        {
+        if (!array_key_exists($template_name, self::$_partials_visited)) {
             self::$_partials_visited[$template_name] = array('time' => $time, 'count' => 1);
-        }
-        else
-        {
+        } else {
             self::$_partials_visited[$template_name]['count']++;
             self::$_partials_visited[$template_name]['time'] += $time;
         }
@@ -2284,8 +2024,7 @@ class Context
         $basepath = PACHNO_PATH . PACHNO_PUBLIC_FOLDER_NAME . DS;
         $theme = \pachno\core\framework\Settings::getThemeName();
         $themepath = PACHNO_PATH . 'themes' . DS . $theme . DS;
-        foreach (self::getModules() as $module)
-        {
+        foreach (self::getModules() as $module) {
             $module_path = (self::isInternalModule($module->getName())) ? PACHNO_INTERNAL_MODULES_PATH : PACHNO_MODULES_PATH;
             $module_name = $module->getName();
             if (file_exists($module_path . $module_name . DS . 'public' . DS . 'css' . DS . "{$module_name}.css")) {
@@ -2594,8 +2333,7 @@ class Context
             if (self::$_redirect_login == 'login') {
 
                 Logging::log('An error occurred setting up the user object, redirecting to login', 'main', Logging::LEVEL_NOTICE);
-                if (self::getRouting()->getCurrentRoute()->getName() != 'login')
-                {
+                if (self::getRouting()->getCurrentRoute()->getName() != 'login') {
                     self::setMessage('login_message_err', self::geti18n()->__('Please log in'));
                     self::setMessage('login_referer', self::getRouting()->generate(self::getRouting()->getCurrentRoute()->getName(), self::getRequest()->getParameters()));
                 }
@@ -2626,8 +2364,7 @@ class Context
                     self::generateDebugInfo();
                 }
 
-                if (\b2db\Core::isInitialized())
-                {
+                if (\b2db\Core::isInitialized()) {
                     \b2db\Core::closeDBLink();
                 }
                 return true;
@@ -2661,8 +2398,7 @@ class Context
             self::getResponse()->setHttpStatus(301);
             $message = $e->getMessage();
 
-            if (self::getRequest()->getRequestedFormat() == 'json')
-            {
+            if (self::getRequest()->getRequestedFormat() == 'json') {
                 self::getResponse()->setContentType('application/json');
                 $message = json_encode(array('message' => $message));
             }
@@ -2682,8 +2418,7 @@ class Context
         $debug_summary = [];
         $load_time = self::getLoadtime();
         $session_time = self::$_session_initialization_time;
-        if (\b2db\Core::isInitialized())
-        {
+        if (\b2db\Core::isInitialized()) {
             $debug_summary['db']['queries'] = \b2db\Core::getSQLHits();
             $debug_summary['db']['timing'] = \b2db\Core::getSQLTiming();
             $debug_summary['db']['objectpopulation'] = \b2db\Core::getObjectPopulationHits();
@@ -2702,10 +2437,8 @@ class Context
         $debug_summary['log'] = Logging::getEntries();
         $debug_summary['routing'] = (self::getRouting()->getCurrentRoute() instanceof Route) ? self::getRouting()->getCurrentRoute()->toJSON() : [];
 
-        if (isset($_SESSION))
-        {
-            if (!array_key_exists('___DEBUGINFO___', $_SESSION))
-            {
+        if (isset($_SESSION)) {
+            if (!array_key_exists('___DEBUGINFO___', $_SESSION)) {
                 $_SESSION['___DEBUGINFO___'] = [];
             }
             $_SESSION['___DEBUGINFO___'][self::getDebugID()] = $debug_summary;
@@ -2742,18 +2475,14 @@ class Context
 
     public static function getCurrentCLIusername()
     {
-        if (extension_loaded('posix'))
-        {
+        if (extension_loaded('posix')) {
             // Original code
             $processUser = posix_getpwuid(posix_geteuid());
             return $processUser['name'];
-        }
-        else
-        {
+        } else {
             // Try to get CLI process owner without the POSIX extension
             $environmentUser = getenv('USERNAME');
-            if ($environmentUser === false)
-            {
+            if ($environmentUser === false) {
                 $environmentUser = 'Unknown';
             }
             return $environmentUser;
@@ -2778,7 +2507,7 @@ class Context
      */
     public static function isMinifiedAssets()
     {
-        return ! empty(self::$_configuration['core']['minified_assets']);
+        return !empty(self::$_configuration['core']['minified_assets']);
     }
 
     /**
@@ -2805,8 +2534,7 @@ class Context
     public static function getLatestAvailableVersionInformation()
     {
         // Use cached information if available.
-        if (self::$_latest_available_version !== null)
-        {
+        if (self::$_latest_available_version !== null) {
             return self::$_latest_available_version;
         }
 
@@ -2817,15 +2545,13 @@ class Context
         $response = $client->request('GET', '/updatecheck.php');
 
         // Verify status code.
-        if ($response->getStatusCode() == 200)
-        {
+        if ($response->getStatusCode() == 200) {
             // Decode response.
             $info = json_decode($response->getBody());
 
             // Cache value if response was decoded and necessary
             // information was read from it.
-            if (is_object($info) && isset($info->maj, $info->min, $info->rev, $info->nicever))
-            {
+            if (is_object($info) && isset($info->maj, $info->min, $info->rev, $info->nicever)) {
                 self::$_latest_available_version = $info;
             }
         }
@@ -2849,16 +2575,11 @@ class Context
         $update_available = false;
 
         // Check if we are out of date.
-        if ($version->maj > Settings::getMajorVer())
-        {
+        if ($version->maj > Settings::getMajorVer()) {
             $update_available = true;
-        }
-        elseif ($version->min > Settings::getMinorVer() && ($version->maj == Settings::getMajorVer()))
-        {
+        } elseif ($version->min > Settings::getMinorVer() && ($version->maj == Settings::getMajorVer())) {
             $update_available = true;
-        }
-        elseif ($version->rev > Settings::getRevision() && ($version->maj == Settings::getMajorVer()) && ($version->min == Settings::getMinorVer()))
-        {
+        } elseif ($version->rev > Settings::getRevision() && ($version->maj == Settings::getMajorVer()) && ($version->min == Settings::getMinorVer())) {
             $update_available = true;
         }
 
