@@ -1,49 +1,45 @@
 <?php
 
+    /**
+     * @var \pachno\core\framework\Response $pachno_response
+     * @var \pachno\core\entities\Project $selected_project
+     */
+
     $pachno_response->addBreadcrumb(__('Project settings'), make_url('project_settings', array('project_key' => $selected_project->getKey())));
     $pachno_response->setTitle(__('"%project_name" settings', array('%project_name' => $selected_project->getName())));
+    $selected_tab = ($selected_tab) ?? 'info';
 
 ?>
 <div id="project_settings" class="content-with-sidebar">
-    <?php include_component('project/sidebar'); ?>
-    <?php if ($settings_saved): ?>
-        <script type="text/javascript">
-            require(['domReady', 'pachno/index'], function (domReady, Pachno) {
-                domReady(function () {
-                    Pachno.Main.Helpers.Message.success('<?php echo __('Settings saved'); ?>', '<?php echo __('Project settings have been saved successfully'); ?>');
-                });
-            });
-        </script>
-    <?php endif; ?>
-    <div id="project_settings_container" class="project_info_container">
-        <?php if (!isset($selected_tab)) $selected_tab = 'info'; ?>
-        <div class="fancy-tabs" id="project_config_menu">
-            <a id="tab_information" href="javascript:void(0);" onclick="Pachno.Main.Helpers.tabSwitcher('tab_information', 'project_config_menu');return false;" class="tab <?php if ($selected_tab == 'info') echo 'selected'; ?>">
-                <?= fa_image_tag('edit', ['class' => 'icon'], 'far'); ?>
-                <span class="name"><?= __('Project details'); ?></span>
-            </a>
-            <a id="tab_other" href="javiscript:void(0);" onclick="Pachno.Main.Helpers.tabSwitcher('tab_other', 'project_config_menu');return false;" class="tab <?php if ($selected_tab == 'other') echo 'selected'; ?>">
-                <?= fa_image_tag('list-alt', ['class' => 'icon'], 'far'); ?>
-                <span class="name"><?= __('Display settings'); ?></span>
-            </a>
-            <a id="tab_settings" href="javascript:void(0);" onclick="Pachno.Main.Helpers.tabSwitcher('tab_settings', 'project_config_menu');return false;" class="tab <?php if ($selected_tab == 'settings') echo 'selected'; ?>">
-                <?= fa_image_tag('cogs', ['class' => 'icon']); ?>
-                <span class="name"><?= __('Advanced settings'); ?></span>
-            </a>
-            <a id="tab_hierarchy" href="javascript:void(0);" onclick="Pachno.Main.Helpers.tabSwitcher('tab_hierarchy', 'project_config_menu');return false;" class="tab <?php if ($selected_tab == 'hierarchy') echo 'selected'; ?>">
-                <?= fa_image_tag('boxes', ['class' => 'icon']); ?>
-                <span class="name"><?= __('Editions and components'); ?></span>
-            </a>
-            <a id="tab_developers" href="javascript:void(0);" onclick="Pachno.Main.Helpers.tabSwitcher('tab_developers', 'project_config_menu');return false;" class="tab <?php if ($selected_tab == 'developers') echo 'selected'; ?>">
-                <?= fa_image_tag('users', ['class' => 'icon']); ?>
-                <span class="name"><?= __('Team'); ?></span>
-            </a>
-            <a id="tab_permissions" href="javascript:void(0);" onclick="Pachno.Main.Helpers.tabSwitcher('tab_permissions', 'project_config_menu');return false;" class="tab <?php if ($selected_tab == 'permissions') echo 'selected'; ?>">
-                <?= fa_image_tag('user-shield', ['class' => 'icon']); ?>
-                <span class="name"><?= __('Roles and permissions'); ?></span>
-            </a>
-            <?php \pachno\core\framework\Event::createNew('core', 'config_project_tabs')->trigger(array('selected_tab' => $selected_tab)); ?>
+    <?php include_component('project/sidebar', ['selected_tab' => $selected_tab]); ?>
+    <div id="project_config_menu_panes" class="configuration-container">
+        <div id="tab_information_pane" class="configuration-content" <?php if ($selected_tab != 'info'): ?> style="display: none;"<?php endif; ?>>
+            <?php include_component('project/projectinfo', array('access_level' => $access_level, 'project' => $selected_project)); ?>
         </div>
-        <?php include_component('project/projectconfig', array('project' => $selected_project)); ?>
+        <div id="tab_settings_pane" class="configuration-content" <?php if ($selected_tab != 'settings'): ?> style="display: none;"<?php endif; ?>>
+            <?php include_component('project/projectsettings', array('access_level' => $access_level, 'project' => $selected_project)); ?>
+        </div>
+        <div id="tab_links_pane" class="configuration-content" <?php if ($selected_tab != 'links'): ?> style="display: none;"<?php endif; ?>>
+            <?php include_component('project/projectlinks', array('access_level' => $access_level, 'project' => $selected_project)); ?>
+        </div>
+        <div id="tab_icons_pane" class="configuration-content" <?php if ($selected_tab != 'icons'): ?> style="display: none;"<?php endif; ?>>
+            <?php include_component('project/settings_project_icons', array('access_level' => $access_level, 'project' => $selected_project)); ?>
+        </div>
+        <div id="tab_issues_and_workflow_pane" class="configuration-content" <?php if ($selected_tab != 'issues_and_workflow'): ?> style="display: none;"<?php endif; ?>>
+            <?php include_component('project/settings_project_issues_and_workflow', array('access_level' => $access_level, 'project' => $selected_project)); ?>
+        </div>
+        <div id="tab_hierarchy_pane" class="configuration-content" <?php if ($selected_tab != 'hierarchy'): ?> style="display: none;"<?php endif; ?>>
+            <?php include_component('project/projecthierarchy', array('access_level' => $access_level, 'project' => $selected_project)); ?>
+        </div>
+        <div id="tab_developers_pane" class="configuration-content" <?php if ($selected_tab != 'developers'): ?> style="display: none;"<?php endif; ?>>
+            <?php include_component('project/projectdevelopers', array('access_level' => $access_level, 'project' => $selected_project)); ?>
+        </div>
+        <div id="tab_other_pane" class="configuration-content" <?php if ($selected_tab != 'other'): ?> style="display: none;"<?php endif; ?>>
+            <?php include_component('project/projectother', array('access_level' => $access_level, 'project' => $selected_project)); ?>
+        </div>
+        <div id="tab_permissions_pane" class="configuration-content" <?php if ($selected_tab != 'permissions'): ?>style=" display: none;"<?php endif; ?>>
+            <?php include_component('project/projectpermissions', array('access_level' => $access_level, 'project' => $selected_project)); ?>
+        </div>
+        <?php \pachno\core\framework\Event::createNew('core', 'config_project_panes')->trigger(['selected_tab' => $selected_tab, 'access_level' => $access_level, 'project' => $selected_project]); ?>
     </div>
 </div>

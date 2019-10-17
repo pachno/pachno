@@ -8087,20 +8087,6 @@ li#tab_groups.selected {
 
 /* Project settings */
 
-#project_settings input[type="text"], #project_settings input[type="email"],
-#project_settings input[type="search"], #project_settings input[type="password"],
-#project_settings input[type="url"], #project_settings textarea, #project_settings select {
-  box-sizing: border-box;
-}
-
-#project_settings #project_description_input_toggle_syntax_button {
-  top: 0;
-}
-
-#project_settings label {
-  padding: 0;
-}
-
 #change_workflow_box select {
   padding: 0;
   margin-left: 10px;

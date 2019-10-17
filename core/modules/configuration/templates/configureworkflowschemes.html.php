@@ -1,6 +1,9 @@
 <?php
 
-    /** @var \pachno\core\entities\WorkflowScheme[] $schemes */
+    /**
+     * @var \pachno\core\entities\WorkflowScheme[] $schemes
+     * @var \pachno\core\framework\Response $pachno_response
+     */
 
     $pachno_response->setTitle(__('Configure workflow schemes'));
 
@@ -12,7 +15,7 @@
             <h1><?php echo __('Configure workflow schemes'); ?></h1>
             <div class="helper-text">
                 <p>
-                    <?php echo __('Workflow schemes links issue types to workflows. You can read more about how the workflow in Pachno works and is set up in %link_to_wiki_workflow.', array('%link_to_wiki_workflow' => link_tag(make_url('publish_article', array('article_name' => 'Workflow')), 'Workflow'))); ?>
+                    <?php echo __('Workflow schemes links issue types to workflows. You can read more about how the workflow in Pachno works and is set up in %link_to_wiki_workflow.', array('%link_to_wiki_workflow' => link_tag(\pachno\core\modules\publish\Publish::getArticleLink('Workflow'), 'Workflow'))); ?>
                 </p>
             </div>
             <h3>

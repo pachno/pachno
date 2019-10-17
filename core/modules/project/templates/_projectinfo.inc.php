@@ -1,150 +1,140 @@
-<?php use pachno\core\modules\publish\Publish;if ($access_level == \pachno\core\framework\Settings::ACCESS_FULL): ?>
-    <form accept-charset="<?php echo \pachno\core\framework\Context::getI18n()->getCharset(); ?>" action="<?php echo make_url('configure_project_settings', array('project_id' => $project->getID())); ?>" method="post" id="project_info" onsubmit="Pachno.Project.submitInfo('<?php echo make_url('configure_project_settings', array('project_id' => $project->getID())); ?>'); return false;">
-<?php endif; ?>
-<table class="padded_table" cellpadding=0 cellspacing=0>
-    <tr>
-        <td><label for="project_name_input"><?php echo __('Project name'); ?></label></td>
-        <td>
+<?php
+
+/**
+ * @var \pachno\core\entities\Project $project
+ * @var \pachno\core\entities\Project[] $valid_subproject_targets
+ */
+
+?>
+<h1><?= __('Project details'); ?></h1>
+<div class="form-container">
+    <?php use pachno\core\modules\publish\Publish;if ($access_level == \pachno\core\framework\Settings::ACCESS_FULL): ?>
+        <form accept-charset="<?php echo \pachno\core\framework\Context::getI18n()->getCharset(); ?>" action="<?php echo make_url('configure_project_settings', array('project_id' => $project->getID())); ?>" method="post" id="project_info" onsubmit="Pachno.Project.submitInfo('<?php echo make_url('configure_project_settings', array('project_id' => $project->getID())); ?>'); return false;">
+    <?php endif; ?>
+        <div class="form-row">
             <?php if ($access_level == \pachno\core\framework\Settings::ACCESS_FULL): ?>
-                <input type="text" name="project_name" id="project_name_input" onblur="Pachno.Project.updatePrefix('<?php echo make_url('configure_project_get_updated_key', array('project_id' => $project->getID())); ?>', <?php echo $project->getID(); ?>);" value="<?php print $project->getName(); ?>" style="width: 100%;">
+                <input type="text" class="name-input-enhance" name="project_name" id="project_name_input" onblur="Pachno.Project.updatePrefix('<?= make_url('configure_project_get_updated_key', ['project_id' => $project->getID()]); ?>', <?= $project->getID(); ?>);" value="<?php print $project->getName(); ?>" placeholder="<?= __('A great project name'); ?>">
             <?php else: ?>
-                <?php echo $project->getName(); ?>
+                <span class="value"><?= $project->getName(); ?></span>
             <?php endif; ?>
-        </td>
-    </tr>
-    <tr>
-        <td><label for="project_key_input"><?php echo __('Project key'); ?></label></td>
-        <td>
+            <label for="project_name_input"><?= __('Project name'); ?></label>
+        </div>
+        <div class="form-row">
             <?php if ($access_level == \pachno\core\framework\Settings::ACCESS_FULL): ?>
-                <div id="project_key_indicator" class="semi_transparent" style="position: absolute; height: 23px; background-color: #FFF; width: 210px; text-align: center; display: none;"><?php echo image_tag('spinning_16.gif'); ?></div>
-                <input type="text" name="project_key" id="project_key_input" value="<?php print $project->getKey(); ?>" style="width: 200px;">
+                <div id="project_key_indicator" class="semi_transparent" style="position: absolute; height: 23px; background-color: #FFF; width: 210px; text-align: center; display: none;"><?= image_tag('spinning_16.gif'); ?></div>
+                <input type="text" name="project_key" id="project_key_input" value="<?php print $project->getKey(); ?>" style="width: 150px;">
             <?php else: ?>
-                <?php echo $project->getKey(); ?>
+                <?= $project->getKey(); ?>
             <?php endif; ?>
-            <div style="float: right; margin-right: 5px;" class="faded_out"><?php echo __('This is a part of all urls referring to this project'); ?></div>
-        </td>
-    </tr>
-    <tr>
-        <td><label><?php echo __('Project icons'); ?></label></td>
-        <td style="padding: 15px 0;">
-            <div class="button-group project_icons_buttons">
-                <div class="button" onclick="Pachno.Main.Helpers.Backdrop.show('<?php echo make_url('get_partial_for_backdrop', array('key' => 'project_icons', 'project_id' => $project->getId())); ?>');"><?php echo ($project->hasSmallIcon() || $project->hasLargeIcon()) ? __('Change project icons') : __('Set project icons'); ?></div>
-                <?php if ($project->hasSmallIcon() || $project->hasLargeIcon()): ?>
-                    <div class="button" onclick="Pachno.Main.Helpers.Dialog.show('<?php echo __('Reset project icons?'); ?>', '<?php echo __('Do you really want to reset the project icons? Please confirm.'); ?>', {yes: {click: function() {Pachno.Project.resetIcons('<?php echo make_url('configure_projects_icons', array('project_id' => $project->getID())); ?>');}}, no: {click: Pachno.Main.Helpers.Dialog.dismiss}});"><?php echo __('Reset icons'); ?></div>
-                <?php endif; ?>
-            </div>
-            <?php echo image_tag($project->getSmallIconName(), array('style' => 'float: left; margin: 8px 10px 0 0; width: 16px; height: 16px;'), $project->hasSmallIcon()); ?>
-            <?php echo image_tag($project->getLargeIconName(), array('style' => 'width: 32px; height: 32px;'), $project->hasLargeIcon()); ?> &nbsp;
-        </td>
-    </tr>
-    <tr>
-        <td><label for="subproject_id"><?php echo __('Subproject of'); ?></label></td>
-        <td>
+            <label for="project_key_input"><?= __('Project key'); ?></label>
+            <div class="helper-text"><?= __('This is a part of all urls referring to this project'); ?></div>
+        </div>
+        <div class="form-row">
             <?php if ($access_level == \pachno\core\framework\Settings::ACCESS_FULL): ?>
-                <select name="subproject_id" id="subproject_id" style="width: 100%">
-                    <option value="0"<?php if (!($project->hasParent())): ?> selected<?php endif; ?>><?php echo __('Not a subproject'); ?></option>
-                    <?php foreach ($valid_subproject_targets as $aproject): ?>
-                        <option value=<?php echo $aproject->getID(); ?><?php if ($project->hasParent() && $project->getParent()->getID() == $aproject->getID()): ?> selected<?php endif; ?>><?php echo $aproject->getName(); ?></option>
-                    <?php endforeach; ?>
-                </select>
+                <div class="fancy-dropdown-container">
+                    <div class="fancy-dropdown">
+                        <label><?= __('Subproject of'); ?></label>
+                        <span class="value"><?= __('Not a subproject'); ?></span>
+                        <?= fa_image_tag('angle-down', ['class' => 'expander']); ?>
+                        <div class="dropdown-container list-mode">
+                            <input type="radio" class="fancy-checkbox" id="subproject_id_checkbox_0" name="subproject_id" value="0" <?php if (!$project->hasParent()) echo 'checked'; ?>>
+                            <label for="subproject_id_checkbox_0" class="list-item">
+                                <span class="icon"><?= fa_image_tag('check-circle', ['class' => 'checked'], 'far') . fa_image_tag('circle', ['class' => 'unchecked'], 'far'); ?></span>
+                                <span class="name value"><?= __('Not a subproject'); ?></span>
+                            </label>
+                            <?php foreach ($valid_subproject_targets as $aproject): ?>
+                                <input type="radio" class="fancy-checkbox" id="subproject_id_checkbox_<?= $aproject->getID(); ?>" name="subproject_id" value="<?= $aproject->getID(); ?>" <?php if ($project->hasParent() && $project->getParent()->getID() == $aproject->getID()) echo 'checked'; ?>>
+                                <label for="subproject_id_checkbox_<?= $aproject->getID(); ?>" class="list-item">
+                                    <span class="icon"><?= fa_image_tag('check-circle', ['class' => 'checked'], 'far') . fa_image_tag('circle', ['class' => 'unchecked'], 'far'); ?></span>
+                                    <span class="name value"><?= $aproject->getName(); ?></span>
+                                </label>
+                            <?php endforeach; ?>
+                        </div>
+                    </div>
+                </div>
             <?php else: ?>
                 <?php if (!($project->hasParent())): echo __('Not a subproject'); else: echo $project->getParent()->getName(); endif; ?>
+                <label for="subproject_id"><?php echo __('Subproject of'); ?></label>
             <?php endif; ?>
-        </td>
-    </tr>
-    <tr>
-        <td><label for="client"><?php echo __('Client'); ?></label></td>
-        <td>
+        </div>
+        <div class="form-row">
             <?php if ($access_level == \pachno\core\framework\Settings::ACCESS_FULL): ?>
-                <select name="client" id="client" style="width: 100%">
-                    <option value="0"<?php if ($project->getClient() == null): ?> selected<?php endif; ?>><?php echo __('No client'); ?></option>
-                    <?php foreach (\pachno\core\entities\Client::getAll() as $client): ?>
-                        <option value=<?php echo $client->getID(); ?><?php if (($project->getClient() instanceof \pachno\core\entities\Client) && $project->getClient()->getID() == $client->getID()): ?> selected<?php endif; ?>><?php echo $client->getName(); ?></option>
-                    <?php endforeach; ?>
-                </select>
+                <div class="fancy-dropdown-container">
+                    <div class="fancy-dropdown">
+                        <label><?= __('Client'); ?></label>
+                        <span class="value"><?= __('No client assigned'); ?></span>
+                        <?= fa_image_tag('angle-down', ['class' => 'expander']); ?>
+                        <div class="dropdown-container list-mode">
+                            <?php if (count(\pachno\core\entities\Client::getAll())): ?>
+                                <input type="radio" class="fancy-checkbox" id="client_id_checkbox_0" name="client_id" value="0" <?php if (!$project->hasClient()) echo 'checked'; ?>>
+                                <label for="client_id_checkbox_0" class="list-item">
+                                    <span class="icon"><?= fa_image_tag('check-circle', ['class' => 'checked'], 'far') . fa_image_tag('circle', ['class' => 'unchecked'], 'far'); ?></span>
+                                    <span class="name value"><?= __('No client assigned'); ?></span>
+                                </label>
+                                <?php foreach (\pachno\core\entities\Client::getAll() as $client): ?>
+                                    <input type="radio" class="fancy-checkbox" id="client_id_checkbox_<?= $client->getID(); ?>" name="client_id" value="<?= $client->getID(); ?>" <?php if ($project->hasClient() && $project->getClient()->getID() == $client->getID()) echo 'checked'; ?>>
+                                    <label for="client_id_checkbox_<?= $client->getID(); ?>" class="list-item">
+                                        <span class="icon"><?= fa_image_tag('check-circle', ['class' => 'checked'], 'far') . fa_image_tag('circle', ['class' => 'unchecked'], 'far'); ?></span>
+                                        <span class="name value"><?= $client->getName(); ?></span>
+                                    </label>
+                                <?php endforeach; ?>
+                            <?php else: ?>
+                                <input type="radio" class="fancy-checkbox" id="client_id_checkbox_0" name="client_id" value="0">
+                                <label for="client_id_checkbox_0" class="list-item disabled">
+                                    <span class="icon"><?= fa_image_tag('check-circle', ['class' => 'checked'], 'far') . fa_image_tag('circle', ['class' => 'unchecked'], 'far'); ?></span>
+                                    <span class="name value"><?= __('No clients exist'); ?></span>
+                                </label>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                </div>
             <?php else: ?>
                 <?php if ($project->getClient() == null): echo __('No client'); else: echo $project->getClient()->getName(); endif; ?>
+                <label for="client"><?php echo __('Client'); ?></label>
             <?php endif; ?>
-        </td>
-    </tr>
-    <tr>
-        <td><label for="use_prefix_yes"><?php echo __('Use prefix'); ?></label></td>
-        <td>
-            <?php if ($access_level == \pachno\core\framework\Settings::ACCESS_FULL): ?>
-                <input type="radio" name="use_prefix" value="1" class="fancy-checkbox" id="use_prefix_yes"<?php if ($project->usePrefix()): ?> checked<?php endif; ?> onchange="if ($(this).checked) { $('prefix').enable(); }"><label for="use_prefix_yes"><?php echo fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far') . __('Yes'); ?></label>
-                <input type="radio" name="use_prefix" value="0" class="fancy-checkbox" id="use_prefix_no"<?php if (!$project->usePrefix()): ?> checked<?php endif; ?> onchange="if ($(this).checked) { $('prefix').disable(); }"><label for="use_prefix_no"><?php echo fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far') . __('No'); ?></label>
-            <?php else: ?>
-                <?php echo ($project->usePrefix()) ? __('Yes') : __('No'); ?>
-            <?php endif; ?>
-        </td>
-    </tr>
-    <tr>
-        <td><label for="prefix"><?php echo __('Issue prefix'); ?></label></td>
-        <td>
-            <?php if ($access_level == \pachno\core\framework\Settings::ACCESS_FULL): ?>
-                <input type="text" name="prefix" id="prefix" maxlength="10" value="<?php print $project->getPrefix(); ?>" style="width: 70px;"<?php if (!$project->usePrefix()): ?> disabled<?php endif; ?>>
-            <?php elseif ($project->hasPrefix()): ?>
-                <?php echo $project->getPrefix(); ?>
-            <?php else: ?>
-                <span class="faded_out"><?php echo __('No prefix set'); ?></span>
-            <?php endif; ?>
-            <div style="float: right; margin-right: 5px;" class="faded_out"><?php echo __('See %about_issue_prefix for an explanation about issue prefixes', array('%about_issue_prefix' => link_tag(Publish::getArticleLink('AboutIssuePrefixes'), __('about issue prefixes'), array('target' => '_new')))); ?></div>
-        </td>
-    </tr>
-    <tr>
-        <td><label for="description"><?php echo __('Project description'); ?></label></td>
-        <td>
-            <?php if ($access_level == \pachno\core\framework\Settings::ACCESS_FULL): ?>
-                <?php include_component('main/textarea', array('area_name' => 'description', 'target_type' => 'project', 'target_id' => $project->getID(), 'area_id' => 'project_description_input', 'height' => '75px', 'width' => '100%', 'value' => $project->getDescription(), 'hide_hint' => true)); ?>
-            <?php elseif ($project->hasDescription()): ?>
-                <?php echo $project->getDescription(); ?>
-            <?php else: ?>
-                <span class="faded_out"><?php echo __('No description set'); ?></span>
-            <?php endif; ?>
-        </td>
-    </tr>
-    <tr>
-        <td><label for="homepage"><?php echo __('Homepage'); ?></label></td>
-        <td>
-            <?php if ($access_level == \pachno\core\framework\Settings::ACCESS_FULL): ?>
-                <input type="text" name="homepage" id="homepage" value="<?php echo $project->getHomepage(); ?>" style="width: 100%;">
-            <?php elseif ($project->hasHomepage()): ?>
-                <a href="<?php echo $project->getHomepage(); ?>"><?php echo $project->getHomepage(); ?></a>
-            <?php else: ?>
-                <span class="faded_out"><?php echo __('No homepage set'); ?></span>
-            <?php endif; ?>
-        </td>
-    </tr>
-    <tr>
-        <td><label for="doc_url"><?php echo __('Documentation URL'); ?></label></td>
-        <td>
-            <?php if ($access_level == \pachno\core\framework\Settings::ACCESS_FULL): ?>
-                <input type="text" name="doc_url" id="doc_url" value="<?php echo $project->getDocumentationURL(); ?>" style="width: 100%;">
-            <?php elseif ($project->hasDocumentationURL()): ?>
-                <a href="<?php echo $project->getDocumentationURL(); ?>"><?php echo $project->getDocumentationURL(); ?></a>
-            <?php else: ?>
-                <span class="faded_out"><?php echo __('No documentation URL provided'); ?></span>
-            <?php endif; ?>
-        </td>
-    </tr>
-    <tr>
-        <td><label for="wiki_url"><?php echo __('Wiki URL'); ?></label></td>
-        <td>
-            <?php if ($access_level == \pachno\core\framework\Settings::ACCESS_FULL): ?>
-                <input type="text" name="wiki_url" id="wiki_url" value="<?php echo $project->getWikiURL(); ?>" style="width: 100%;">
-            <?php elseif ($project->hasWikiURL()): ?>
-                <a href="<?php echo $project->getWikiURL(); ?>"><?php echo $project->getWikiURL(); ?></a>
-            <?php else: ?>
-                <span class="faded_out"><?php echo __('No wiki URL provided'); ?></span>
-            <?php endif; ?>
-        </td>
-    </tr>
-    <?php \pachno\core\framework\Event::createNew('core', 'project/projectinfo', $project)->trigger(); ?>
-</table>
-<?php if ($access_level == \pachno\core\framework\Settings::ACCESS_FULL): ?>
-    <div class="project_save_container">
-        <span id="project_info_indicator" style="display: none;"><?php echo image_tag('spinning_20.gif'); ?></span>
-        <input class="button" type="submit" id="project_submit_settings_button" value="<?php echo __('Save project settings'); ?>">
-    </div>
-</form>
-<?php endif; ?>
+        </div>
+        <div class="form-row">
+            <label for="use_prefix_yes"><?php echo __('Use prefix'); ?></label>
+
+                <?php if ($access_level == \pachno\core\framework\Settings::ACCESS_FULL): ?>
+                    <input type="radio" name="use_prefix" value="1" class="fancy-checkbox" id="use_prefix_yes"<?php if ($project->usePrefix()): ?> checked<?php endif; ?> onchange="if ($(this).checked) { $('prefix').enable(); }"><label for="use_prefix_yes"><?php echo fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far') . __('Yes'); ?></label>
+                    <input type="radio" name="use_prefix" value="0" class="fancy-checkbox" id="use_prefix_no"<?php if (!$project->usePrefix()): ?> checked<?php endif; ?> onchange="if ($(this).checked) { $('prefix').disable(); }"><label for="use_prefix_no"><?php echo fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far') . __('No'); ?></label>
+                <?php else: ?>
+                    <?php echo ($project->usePrefix()) ? __('Yes') : __('No'); ?>
+                <?php endif; ?>
+
+        </div>
+        <div class="form-row">
+            <label for="prefix"><?php echo __('Issue prefix'); ?></label>
+
+                <?php if ($access_level == \pachno\core\framework\Settings::ACCESS_FULL): ?>
+                    <input type="text" name="prefix" id="prefix" maxlength="10" value="<?php print $project->getPrefix(); ?>" style="width: 70px;"<?php if (!$project->usePrefix()): ?> disabled<?php endif; ?>>
+                <?php elseif ($project->hasPrefix()): ?>
+                    <?php echo $project->getPrefix(); ?>
+                <?php else: ?>
+                    <span class="faded_out"><?php echo __('No prefix set'); ?></span>
+                <?php endif; ?>
+                <div style="float: right; margin-right: 5px;" class="faded_out"><?php echo __('See %about_issue_prefix for an explanation about issue prefixes', array('%about_issue_prefix' => link_tag(Publish::getArticleLink('AboutIssuePrefixes'), __('about issue prefixes'), array('target' => '_new')))); ?></div>
+
+        </div>
+        <div class="form-row">
+            <div class="form-row">
+                <label for="project_description_input"><?= __('Project description'); ?></label>
+                <?php if ($access_level == \pachno\core\framework\Settings::ACCESS_FULL): ?>
+                    <?php include_component('main/textarea', ['area_name' => 'description', 'target_type' => 'project', 'target_id' => $project->getID(), 'area_id' => 'project_description_input', 'height' => '200px', 'width' => '100%', 'value' => $project->getDescription(), 'hide_hint' => true]); ?>
+                <?php else: ?>
+                    <span class="value"><?= ($project->hasDescription()) ? $project->getDescription() : __('No description set'); ?></span>
+                <?php endif; ?>
+            </div>
+        </div>
+        <?php \pachno\core\framework\Event::createNew('core', 'project/projectinfo', $project)->trigger(); ?>
+    <?php if ($access_level == \pachno\core\framework\Settings::ACCESS_FULL): ?>
+        <div class="form-row submit-container">
+            <button type="submit" class="button primary">
+                <span><?php echo __('Save'); ?></span>
+                <?= fa_image_tag('spinner', ['class' => 'fa-spin icon indicator']); ?>
+            </button>
+        </div>
+    </form>
+    <?php endif; ?>
+</div>

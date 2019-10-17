@@ -4294,6 +4294,10 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
             Pachno.Project._submitDetails(url, 'project_info', pid);
         }
 
+        Pachno.Project.submitLinks = function (url, pid) {
+            Pachno.Project._submitDetails(url, 'project_links', pid);
+        }
+
         Pachno.Project._submitDetails = function (url, form_id, pid) {
             Pachno.Main.Helpers.ajax(url, {
                 form: form_id,

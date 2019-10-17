@@ -85,6 +85,9 @@
             return tables\Clients::getTable()->doesClientNameExist($client_name);
         }
 
+        /**
+         * @return Client[]
+         */
         public static function getAll()
         {
             if (self::$_clients === null)

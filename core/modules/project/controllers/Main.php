@@ -722,7 +722,7 @@ class Main extends helpers\ProjectActions
     public function runSettings(framework\Request $request)
     {
         $this->forward403if(framework\Context::getCurrentProject()->isArchived() || !$this->getUser()->canEditProjectDetails(framework\Context::getCurrentProject()));
-        $this->settings_saved = framework\Context::getMessageAndClear('project_settings_saved');
+        $this->access_level = ($this->getUser()->canEditProjectDetails(framework\Context::getCurrentProject())) ? framework\Settings::ACCESS_FULL : framework\Settings::ACCESS_READ;
     }
 
     public function runReleaseCenter(framework\Request $request)
@@ -1565,24 +1565,6 @@ class Main extends helpers\ProjectActions
         }
         $this->getResponse()->setHttpStatus(400);
         return $this->renderJSON(array("error" => $this->getI18n()->__("You don't have access to modify edition")));
-    }
-
-    public function runConfigureProject(framework\Request $request)
-    {
-        try
-        {
-            // Build list of valid targets for the subproject dropdown
-            // The following items are banned from the list: current project, children of the current project
-            // Any further tests and things get silly, so we will trap it when building breadcrumbs
-            $valid_subproject_targets = entities\Project::getValidSubprojects($this->selected_project);
-            $content = $this->getComponentHTML('project/projectconfig', array('valid_subproject_targets' => $valid_subproject_targets, 'project' => $this->selected_project, 'access_level' => $this->access_level, 'section' => 'hierarchy'));
-            return $this->renderJSON(array('content' => $content));
-        }
-        catch (\Exception $e)
-        {
-            $this->getResponse()->setHttpStatus(400);
-            return $this->renderJSON(array('error' => $e->getMessage()));
-        }
     }
 
     public function runGetUpdatedProjectKey(framework\Request $request)

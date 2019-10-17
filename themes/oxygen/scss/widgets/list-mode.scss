@@ -59,6 +59,17 @@
 
     .info-container {
       font-size: .6em;
+      display: flex;
+      align-content: center;
+      justify-content: flex-start;
+
+      .icon {
+        flex: 0 0 25px;
+        padding: .35em 0;
+        color: #646464;
+        align-self: center;
+        text-align: center;
+      }
     }
 
     .button-group {

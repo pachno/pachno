@@ -481,4 +481,9 @@
             return $output;
         }
 
+        public function isCore()
+        {
+            return false;
+        }
+
     }

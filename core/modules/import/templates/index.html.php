@@ -13,7 +13,7 @@
             <div id="import_menu_panes">
                 <div id="tab_csv_pane" style="padding-top: 0;">
                     <div class="tab_content">
-                        <?php echo __('You can import data from a CSV file copied into a text box in Pachno, exported from other sources. Please see the %CSVImport wiki article for further details and instructions.', array('%CSVImport' => link_tag(make_url('publish_article', array('article_name' => 'CSVImport')), __('CSVImport'), array('target' => '_blank')))); ?>
+                        <?php echo __('You can import data from a CSV file copied into a text box in Pachno, exported from other sources. Please see the %CSVImport wiki article for further details and instructions.', array('%CSVImport' => link_tag(\pachno\core\modules\publish\Publish::getArticleLink('CSVImport'), __('CSVImport'), array('target' => '_blank')))); ?>
                         <div id="csv_button_area" class="button-group">
                             <button class="button" onclick="Pachno.Main.Helpers.Backdrop.show('<?php echo make_url('import_csv', array('type' => 'issues')); ?>');"><?php echo __('Issues'); ?></button>
                             <button class="button" onclick="Pachno.Main.Helpers.Backdrop.show('<?php echo make_url('import_csv', array('type' => 'projects')); ?>');"><?php echo __('Projects'); ?></button>

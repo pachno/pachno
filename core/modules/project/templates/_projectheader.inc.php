@@ -19,7 +19,13 @@
             </div>
             <span class="name-container">
                 <span><?php echo $selected_project->getName(); ?></span>
-                <span class="info-container"><?php echo ($subpage != '') ? $subpage : __('Project dashboard'); ?></span>
+                <span class="info-container">
+                    <?php if ($pachno_response->getPage() == 'project_settings'): ?>
+                        <?= fa_image_tag('cog', ['class' => 'icon']); ?><span class="name"><?= __('Project settings'); ?></span>
+                    <?php else: ?>
+                        <?= ($subpage != '') ? $subpage : __('Project dashboard'); ?>
+                    <?php endif; ?>
+                </span>
             </span>
         </div>
         <?php \pachno\core\framework\Event::createNew('core', 'project/templates/projectheader/namelabel', $selected_project)->trigger(); ?>
@@ -34,8 +40,8 @@
                 <?= fa_image_tag('arrow-left', ['class' => 'icon']); ?>
             </a>
         <?php endif; ?>
-        <?php if ($pachno_user->canEditProjectDetails(framework\Context::getCurrentProject())): ?>
-            <a href="<?= make_url('project_settings', array('project_key' => \pachno\core\framework\Context::getCurrentProject()->getKey())); ?>" class="button secondary <?php if ($pachno_response->getPage() == 'project_settings') echo 'active'; ?>">
+        <?php if ($pachno_response->getPage() != 'project_settings' && $pachno_user->canEditProjectDetails(framework\Context::getCurrentProject())): ?>
+            <a href="<?= make_url('project_settings', ['project_key' => \pachno\core\framework\Context::getCurrentProject()->getKey()]); ?>" class="button secondary <?php if ($pachno_response->getPage() == 'project_settings') echo 'active'; ?>">
                 <?= fa_image_tag('cog', ['class' => 'icon']); ?>
                 <span class="name"><?= __('Settings'); ?></span>
             </a>

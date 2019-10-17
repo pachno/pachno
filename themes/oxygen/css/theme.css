@@ -6740,17 +6740,6 @@ li#tab_groups.selected {
   width: 100%; }
 
 /* Project settings */
-#project_settings input[type="text"], #project_settings input[type="email"],
-#project_settings input[type="search"], #project_settings input[type="password"],
-#project_settings input[type="url"], #project_settings textarea, #project_settings select {
-  box-sizing: border-box; }
-
-#project_settings #project_description_input_toggle_syntax_button {
-  top: 0; }
-
-#project_settings label {
-  padding: 0; }
-
 #change_workflow_box select {
   padding: 0;
   margin-left: 10px;
@@ -8575,7 +8564,16 @@ input.icon.secondary:disabled {
         flex-direction: column;
         padding: .7em 0; }
     .list-mode .header-banner .info-container {
-      font-size: .6em; }
+      font-size: .6em;
+      display: flex;
+      align-content: center;
+      justify-content: flex-start; }
+      .list-mode .header-banner .info-container .icon {
+        flex: 0 0 25px;
+        padding: .35em 0;
+        color: #646464;
+        align-self: center;
+        text-align: center; }
     .list-mode .header-banner .button-group {
       padding: 15px;
       justify-content: flex-end; }

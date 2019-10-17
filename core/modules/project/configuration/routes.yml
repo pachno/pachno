@@ -218,15 +218,6 @@ configure_project_component:
       section: 10
     csrf_enabled: false
 
-configure_project:
-    route: /configure/project/:project_id/hierarchy
-    module: project
-    action: configureProject
-    parameters:
-      config_module: core
-      section: 10
-    csrf_enabled: false
-
 project_getmenulinks:
     route: /:project_key/menulinks
     module: project
