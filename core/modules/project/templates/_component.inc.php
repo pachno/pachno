@@ -8,10 +8,12 @@
 <div id="component_<?php print $component->getID(); ?>" class="row" data-component-id="<?= $component->getId(); ?>">
     <div class="column name-container">
         <div class="form-container">
-            <form class="row" accept-charset="<?php echo \pachno\core\framework\Context::getI18n()->getCharset(); ?>" action="<?php echo make_url('configure_project_component_post', ['component_id' => $component->getID()]); ?>" onsubmit="Pachno.Config.Workflows.Transition.save(this);return false;" data-interactive-form>
-                <?php echo fa_image_tag('puzzle', ['class' => 'icon']); ?>
-                <input type="text" name="name" value="<?= $component->getName(); ?>" class="invisible" id="component_<?= $component->getID(); ?>_input">
-                <label for="component_<?= $component->getID(); ?>_input"><?= __('Component name'); ?></label>
+            <form accept-charset="<?php echo \pachno\core\framework\Context::getI18n()->getCharset(); ?>" action="<?php echo make_url('configure_project_component_post', ['project_id' => $component->getProject()->getId(), 'component_id' => $component->getID()]); ?>" onsubmit="Pachno.Config.Workflows.Transition.save(this);return false;" data-interactive-form>
+                <div class="form-row">
+                    <?php echo fa_image_tag('puzzle-piece', ['class' => 'icon']); ?>
+                    <input type="text" name="name" value="<?= $component->getName(); ?>" class="invisible" id="component_<?= $component->getID(); ?>_input">
+                    <label for="component_<?= $component->getID(); ?>_input"><?= __('Component name'); ?></label>
+                </div>
             </form>
         </div>
     </div>
