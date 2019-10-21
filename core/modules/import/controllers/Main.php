@@ -1023,7 +1023,7 @@ class Main extends framework\Action
                             if (isset($activerow[self::CSV_PROJECT_FREELANCE]))
                             {
                                 if ($activerow[self::CSV_PROJECT_FREELANCE] == '1')
-                                    $project->setChangeIssuesWithoutWorkingOnThem(true);
+                                    $project->setStrictWorkflowMode(false);
                             }
 
                             if (isset($activerow[self::CSV_PROJECT_EN_BUILDS]))

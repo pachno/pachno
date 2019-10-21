@@ -140,7 +140,7 @@
             if ($this->issue instanceof entities\Issue)
             {
                 $this->project = $this->issue->getProject();
-                $this->statuses = ($this->project->isFreelancingAllowed()) ? $this->project->getAvailableStatuses() : $this->issue->getAvailableStatuses();
+                $this->statuses = ($this->project->useStrictWorkflowMode()) ? $this->project->getAvailableStatuses() : $this->issue->getAvailableStatuses();
                 $this->issuetypes = $this->project->getIssuetypeScheme()->getIssuetypes();
                 $fields_list = [];
                 $fields_list['category'] = ['title' => $i18n->__('Category'), 'fa_icon' => 'chart-pie', 'fa_icon_style' => 'fas', 'choices' => [], 'visible' => $this->issue->isCategoryVisible(), 'value' => (($this->issue->getCategory() instanceof entities\Category) ? $this->issue->getCategory()->getId() : 0), 'icon' => false, 'change_tip' => $i18n->__('Click to change category'), 'change_header' => $i18n->__('Change category'), 'clear' => $i18n->__('Clear the category'), 'select' => $i18n->__('%clear_the_category or click to select a new category', ['%clear_the_category' => ''])];
@@ -227,7 +227,7 @@
                     $all_statuses = [];
                     $project_statuses = $this->project->getAvailableStatuses();
                     foreach ($this->issues as $issue) {
-                        $statuses = ($this->project->isFreelancingAllowed()) ? $project_statuses : $issue->getAvailableStatuses();
+                        $statuses = ($this->project->useStrictWorkflowMode()) ? $project_statuses : $issue->getAvailableStatuses();
                         foreach ($statuses as $status_id => $status) {
                             $all_statuses[$status_id] = $status;
                         }

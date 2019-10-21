@@ -251,6 +251,7 @@ class Authentication extends framework\Action
         } catch (\Exception $e) {
             $this->getResponse()->setHttpStatus(401);
             framework\Logging::log($e->getMessage(), 'auth', framework\Logging::LEVEL_WARNING_RISK);
+            return $this->renderJSON(["error" => $e->getMessage()]);
             return $this->renderJSON(["error" => $this->getI18n()->__("Invalid login details")]);
         }
 
@@ -270,7 +271,6 @@ class Authentication extends framework\Action
      * @AnonymousRoute
      *
      * @param framework\Request $request The request object
-     * @global array $_SESSION ['activation_number'] The session captcha activation number
      */
     public function runCaptcha(framework\Request $request)
     {

@@ -1,6 +1,6 @@
 .status-badge {
   font-weight: 300;
-  display: inline-block;
+  display: inline-flex;
   color: rgba(0, 0, 0, 0.45);
   text-transform: uppercase;
   border: 1px solid rgba(0, 0, 0, 0.2);
@@ -8,4 +8,20 @@
   line-height: 1;
   border-radius: 3px;
   vertical-align: middle;
+
+  .fas,
+  .far {
+    flex: 0 0 auto;
+    line-height: 1em;
+    height: 1em;
+  }
+
+  span {
+    flex: 1 1 auto;
+  }
+
+  .name {
+    height: auto;
+    padding: .3em;
+  }
 }

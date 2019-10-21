@@ -37,7 +37,6 @@ class Context
     const INTERNAL_MODULES = 'internal_modules';
     const EXTERNAL_MODULES = 'external_modules';
 
-    protected static $_environment = 2;
     protected static $_debug_mode = true;
     protected static $debug_id;
     protected static $_configuration;
@@ -99,13 +98,6 @@ class Context
      * @var array
      */
     protected static $_available_permission_paths;
-
-    /**
-     * The include path
-     *
-     * @var string
-     */
-    protected static $_includepath;
 
     /**
      * The path to pachno relative from url server root
@@ -204,16 +196,9 @@ class Context
     protected static $_loadstart;
 
     /**
-     * List of classpaths
-     *
-     * @var array
-     */
-    protected static $_classpaths = [];
-
-    /**
      * List of loaded libraries
      *
-     * @var string
+     * @var string[]
      */
     protected static $_libs = [];
 
@@ -1970,7 +1955,7 @@ class Context
     public static function loadLibrary($lib_name)
     {
         if (mb_strpos($lib_name, '/') !== false) {
-            list ($module, $lib_name) = explode('/', $lib_name);
+            list($module, $lib_name) = explode('/', $lib_name);
         }
 
         // Skip the library if it already exists

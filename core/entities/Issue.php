@@ -1643,7 +1643,7 @@
             if ($this->_editable !== null) return $this->_editable;
 
             if ($this->getProject()->isArchived()) $this->_editable = false;
-            else $this->_editable = ($this->isOpen() && ($this->getProject()->canChangeIssuesWithoutWorkingOnThem() || ($this->getWorkflowStep() instanceof WorkflowStep && $this->getWorkflowStep()->isEditable())));
+            else $this->_editable = ($this->isOpen() && ($this->getProject()->useStrictWorkflowMode() || ($this->getWorkflowStep() instanceof WorkflowStep && $this->getWorkflowStep()->isEditable())));
 
             return $this->_editable;
         }
@@ -1653,7 +1653,7 @@
             if ($this->_updateable !== null) return $this->_updateable;
 
             if ($this->getProject()->isArchived()) $this->_updateable = false;
-            else $this->_updateable = ($this->isOpen() && ($this->getProject()->canChangeIssuesWithoutWorkingOnThem() || !$this->getWorkflowStep() instanceof WorkflowStep || !$this->getWorkflowStep()->isClosed()));
+            else $this->_updateable = ($this->isOpen() && ($this->getProject()->useStrictWorkflowMode() || !$this->getWorkflowStep() instanceof WorkflowStep || !$this->getWorkflowStep()->isClosed()));
 
             return $this->_updateable;
         }

@@ -63,7 +63,7 @@
             $criteria->or(self::SCOPE, 0);
             $query->and($criteria);
 
-            return $this->select($query);
+            return $this->select($query, 'none');
         }
 
         /**
@@ -81,7 +81,7 @@
             $query->where(self::UID, $uid);
             $query->where(self::SCOPE, $scope);
 
-            return $this->selectOne($query);
+            return $this->selectOne($query, 'none');
         }
 
         public function preventDuplicate(Setting $setting)

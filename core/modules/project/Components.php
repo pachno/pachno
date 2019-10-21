@@ -8,6 +8,8 @@
 
     /**
      * Project action components
+     *
+     * @property entities\Issue $issue
      */
     class Components extends framework\ActionComponent
     {
@@ -43,7 +45,7 @@
 
         public function componentViewIssueHeader()
         {
-            $this->statuses = ($this->issue->getProject()->isFreelancingAllowed()) ? $this->issue->getProject()->getAvailableStatuses() : $this->issue->getAvailableStatuses();
+            $this->statuses = ($this->issue->getProject()->useStrictWorkflowMode()) ? $this->issue->getProject()->getAvailableStatuses() : $this->issue->getAvailableStatuses();
         }
 
         public function componentMilestone()

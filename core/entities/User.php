@@ -1000,7 +1000,7 @@
          */
         public function isLoggedIn()
         {
-            return ($this->_id != 0) ? true : false;
+            return ($this->isAuthenticated() && $this->isVerified());
         }
 
         /**
@@ -1010,7 +1010,7 @@
          */
         public function isGuest()
         {
-            return (bool) (!$this->isLoggedIn() || ($this->getID() == framework\Settings::getDefaultUserID() && framework\Settings::isDefaultUserGuest()));
+            return (bool) ($this->getID() == framework\Settings::getDefaultUserID());
         }
 
         /**

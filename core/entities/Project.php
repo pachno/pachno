@@ -497,7 +497,7 @@
 
         protected $time_units_array = null;
 
-        protected $time_units_indexes = array('1' => 'months', '2' => 'weeks', '3' => 'days', '4' => 'hours', '5' => 'minutes');
+        protected $time_units_indexes = [1 => 'months', 2 => 'weeks', 3 => 'days', 4 => 'hours', 5 => 'minutes'];
 
         /**
          * Retrieve a project by its key
@@ -1546,22 +1546,11 @@
         /**
          * Return whether a user can change details about an issue without working on the issue
          *
-         * @deprecated since version 3.3
          * @return boolean
          */
-        public function canChangeIssuesWithoutWorkingOnThem()
+        public function useStrictWorkflowMode()
         {
-            return (bool) $this->_allow_freelancing;
-        }
-
-        /**
-         * Return whether a user can change issue status without following the workflow
-         *
-         * @return boolean
-         */
-        public function isFreelancingAllowed()
-        {
-            return (bool) $this->_allow_freelancing;
+            return (bool) !$this->_allow_freelancing;
         }
 
         /**
@@ -1569,9 +1558,9 @@
          *
          * @param boolean $val
          */
-        public function setChangeIssuesWithoutWorkingOnThem($val)
+        public function setStrictWorkflowMode($val)
         {
-            $this->_allow_freelancing = (bool) $val;
+            $this->_allow_freelancing = !$val;
         }
 
         /**
@@ -2981,6 +2970,9 @@
             return (bool) count($this->getChildren());
         }
 
+        /**
+         * @return Project
+         */
         public function getParent()
         {
             return $this->_b2dbLazyLoad('_parent');
@@ -3001,6 +2993,11 @@
             $this->_parent = $project;
         }
 
+        /**
+         * @return Project[]
+         *
+         * @param bool $archived [optional] Show archived projects
+         */
         public function getChildProjects($archived = false)
         {
             return $this->getChildren($archived);
@@ -3338,7 +3335,7 @@
                     'builds_enabled' => $this->isBuildsEnabled(),
                     'editions_enabled' => $this->isEditionsEnabled(),
                     'components_enabled' => $this->isComponentsEnabled(),
-                    'allow_freelancing' => $this->canChangeIssuesWithoutWorkingOnThem(),
+                    'allow_freelancing' => $this->useStrictWorkflowMode(),
                     'frontpage_shown' => $this->isShownInFrontpageSummary(),
                     'frontpage_summary_type' => $this->getFrontpageSummaryType(),
                     'frontpage_milestones_visible' => $this->isMilestonesVisibleInFrontpageSummary(),
@@ -3385,7 +3382,8 @@
             if ($this->time_units_array === null)
             {
                 // If time units column is 0, all units are reportable
-                $this->time_units_array = $this->_time_units == 0 ? $this->time_units_indexes : array_intersect_key($this->time_units_indexes, array_flip(str_split((string) $this->_time_units)));
+                // $this->time_units_array = $this->_time_units == 0 ? $this->time_units_indexes : array_intersect_key($this->time_units_indexes, array_flip(str_split((string) $this->_time_units)));
+                $this->time_units_array = $this->time_units_indexes;
             }
 
             return $this->time_units_array;
@@ -3400,7 +3398,8 @@
          */
         public function hasTimeUnit($time_unit)
         {
-            return in_array($time_unit, $this->getTimeUnits());
+            return true;
+            // return in_array($time_unit, $this->getTimeUnits());
         }
 
         public function applyTemplate($template)
@@ -3484,7 +3483,7 @@
                     $this->setBuildsEnabled(false);
                     $this->setEditionsEnabled(false);
                     $this->setComponentsEnabled(true);
-                    $this->setChangeIssuesWithoutWorkingOnThem(true);
+                    $this->setStrictWorkflowMode(false);
                     $this->setFrontpageSummaryType(Project::SUMMARY_TYPE_ISSUELIST);
 
                     $dashboard_views[DashboardView::VIEW_PROJECT_INFO] = ['column' => 1, 'order' => 1];

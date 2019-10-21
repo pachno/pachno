@@ -23,7 +23,7 @@
                     <?= fa_image_tag('edit', ['class' => 'icon'], 'far'); ?>
                     <span class="name"><?= __('Details'); ?></span>
                 </a>
-                <a id="tab_other" href="javascript:void(0);" onclick="Pachno.Main.Helpers.tabSwitcher('tab_other', 'project_config_menu');return false;" class="list-item <?php if ($selected_tab == 'other') echo 'selected'; ?>">
+                <a id="tab_settings" href="javascript:void(0);" onclick="Pachno.Main.Helpers.tabSwitcher('tab_settings', 'project_config_menu');return false;" class="list-item <?php if ($selected_tab == 'settings') echo 'selected'; ?>">
                     <?= fa_image_tag('list-alt', ['class' => 'icon'], 'far'); ?>
                     <span class="name"><?= __('Settings'); ?></span>
                 </a>

@@ -1,3 +1,11 @@
+<?php
+
+/**
+ * @var integer $access_level
+ * @var \pachno\core\entities\Project $project
+ */
+
+?>
 <?php if ($access_level == \pachno\core\framework\Settings::ACCESS_FULL): ?>
     <div class="project_save_container">
         <div class="button" id="add_edition_button" style="<?php if (!$project->isEditionsEnabled()): ?> display: none;<?php endif; ?>" onclick="$('add_edition_form').toggle();if ($('add_edition_form').visible()) $('edition_name').focus();"><?php echo __('Add an edition'); ?></div>
@@ -12,7 +20,7 @@
         <table cellpadding=0 cellspacing=0 style="display: none; margin-left: 5px; width: 300px;" id="edition_add_indicator">
             <tr>
                 <td style="width: 20px; padding: 2px;"><?php echo image_tag('spinning_20.gif'); ?></td>
-                <td style="padding: 0px; text-align: left;"><?php echo __('Adding edition, please wait'); ?>...</td>
+                <td style="padding: 0; text-align: left;"><?php echo __('Adding edition, please wait'); ?>...</td>
             </tr>
         </table>
     </form>
@@ -30,6 +38,42 @@
         </table>
     </form>
 <?php endif; ?>
+<div class="form-row">
+    <?php if ($access_level == \pachno\core\framework\Settings::ACCESS_FULL): ?>
+        <div class="fancy-dropdown-container">
+            <div class="fancy-dropdown">
+                <label><?= __('Client'); ?></label>
+                <span class="value"><?= __('No client assigned'); ?></span>
+                <?= fa_image_tag('angle-down', ['class' => 'expander']); ?>
+                <div class="dropdown-container list-mode">
+                    <?php if (count(\pachno\core\entities\Client::getAll())): ?>
+                        <input type="radio" class="fancy-checkbox" id="client_id_checkbox_0" name="client_id" value="0" <?php if (!$project->hasClient()) echo 'checked'; ?>>
+                        <label for="client_id_checkbox_0" class="list-item">
+                            <span class="icon"><?= fa_image_tag('check-circle', ['class' => 'checked'], 'far') . fa_image_tag('circle', ['class' => 'unchecked'], 'far'); ?></span>
+                            <span class="name value"><?= __('No client assigned'); ?></span>
+                        </label>
+                        <?php foreach (\pachno\core\entities\Client::getAll() as $client): ?>
+                            <input type="radio" class="fancy-checkbox" id="client_id_checkbox_<?= $client->getID(); ?>" name="client_id" value="<?= $client->getID(); ?>" <?php if ($project->hasClient() && $project->getClient()->getID() == $client->getID()) echo 'checked'; ?>>
+                            <label for="client_id_checkbox_<?= $client->getID(); ?>" class="list-item">
+                                <span class="icon"><?= fa_image_tag('check-circle', ['class' => 'checked'], 'far') . fa_image_tag('circle', ['class' => 'unchecked'], 'far'); ?></span>
+                                <span class="name value"><?= $client->getName(); ?></span>
+                            </label>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <input type="radio" class="fancy-checkbox" id="client_id_checkbox_0" name="client_id" value="0">
+                        <label for="client_id_checkbox_0" class="list-item disabled">
+                            <span class="icon"><?= fa_image_tag('check-circle', ['class' => 'checked'], 'far') . fa_image_tag('circle', ['class' => 'unchecked'], 'far'); ?></span>
+                            <span class="name value"><?= __('No clients exist'); ?></span>
+                        </label>
+                    <?php endif; ?>
+                </div>
+            </div>
+        </div>
+    <?php else: ?>
+        <?php if ($project->getClient() == null): echo __('No client'); else: echo $project->getClient()->getName(); endif; ?>
+        <label for="client"><?php echo __('Client'); ?></label>
+    <?php endif; ?>
+</div>
 <h4><?php echo __('Project editions'); ?></h4>
 <div id="project_editions"<?php if (!$project->isEditionsEnabled()): ?> style="display: none;"<?php endif; ?>>
     <div class="faded_out" id="no_editions" style="padding: 5px;<?php if (count($project->getEditions()) > 0): ?> display: none;<?php endif; ?>"><?php echo __('There are no editions'); ?></div>

@@ -1123,8 +1123,8 @@ class Main extends helpers\ProjectActions
             if ($request->hasParameter('enable_components'))
                 $this->selected_project->setComponentsEnabled((bool) $request['enable_components']);
 
-            if ($request->hasParameter('allow_changing_without_working'))
-                $this->selected_project->setChangeIssuesWithoutWorkingOnThem((bool) $request['allow_changing_without_working']);
+            if ($request->hasParameter('strict_workflow_mode'))
+                $this->selected_project->setStrictWorkflowMode((bool) $request['strict_workflow_mode']);
 
             if ($request->hasParameter('allow_autoassignment'))
                 $this->selected_project->setAutoassign((bool) $request['allow_autoassignment']);
