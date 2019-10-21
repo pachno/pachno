@@ -9220,23 +9220,27 @@ input.icon.secondary:disabled {
       .form-container .form-row > input[type=text].code-input-6,
       .form-container .form-row > input[type=password].code-input-6 {
         max-width: 10rem; }
-      .form-container .form-row > textarea .number, .form-container .form-row > textarea:not(.invisible).number,
-      .form-container .form-row > input[type=text] .number,
+      .form-container .form-row > textarea.number, .form-container .form-row > textarea.prefix-and-key, .form-container .form-row > textarea:not(.invisible).number,
+      .form-container .form-row > input[type=text].number,
+      .form-container .form-row > input[type=text].prefix-and-key,
       .form-container .form-row > input[type=text]:not(.invisible).number,
-      .form-container .form-row > input[type=password] .number,
+      .form-container .form-row > input[type=password].number,
+      .form-container .form-row > input[type=password].prefix-and-key,
       .form-container .form-row > input[type=password]:not(.invisible).number {
         width: 10rem;
         flex: 0 0 auto; }
-        .form-container .form-row > textarea .number.small, .form-container .form-row > textarea:not(.invisible).number.small,
-        .form-container .form-row > input[type=text] .number.small,
+        .form-container .form-row > textarea.number.small, .form-container .form-row > textarea.prefix-and-key.small, .form-container .form-row > textarea:not(.invisible).number.small,
+        .form-container .form-row > input[type=text].number.small,
+        .form-container .form-row > input[type=text].prefix-and-key.small,
         .form-container .form-row > input[type=text]:not(.invisible).number.small,
-        .form-container .form-row > input[type=password] .number.small,
+        .form-container .form-row > input[type=password].number.small,
+        .form-container .form-row > input[type=password].prefix-and-key.small,
         .form-container .form-row > input[type=password]:not(.invisible).number.small {
           width: 5rem; }
-      .form-container .form-row > textarea .medium, .form-container .form-row > textarea:not(.invisible).medium,
-      .form-container .form-row > input[type=text] .medium,
+      .form-container .form-row > textarea.medium, .form-container .form-row > textarea:not(.invisible).medium,
+      .form-container .form-row > input[type=text].medium,
       .form-container .form-row > input[type=text]:not(.invisible).medium,
-      .form-container .form-row > input[type=password] .medium,
+      .form-container .form-row > input[type=password].medium,
       .form-container .form-row > input[type=password]:not(.invisible).medium {
         width: 20rem;
         flex: 0 0 auto; }
@@ -12032,10 +12036,10 @@ dl.info {
           background: rgba(255, 255, 255, 0.6);
           border-color: rgba(200, 200, 200, 0.15);
           color: #AAA; }
-        .configuration-container > .form-container input[type=search]:not(.invisible):not(.number):not(.medium),
-        .configuration-container > .form-container input[type=text]:not(.invisible):not(.number):not(.medium),
-        .configuration-container > .configuration-content > .form-container input[type=search]:not(.invisible):not(.number):not(.medium),
-        .configuration-container > .configuration-content > .form-container input[type=text]:not(.invisible):not(.number):not(.medium) {
+        .configuration-container > .form-container input[type=search]:not(.invisible):not(.number):not(.medium):not(.prefix-and-key),
+        .configuration-container > .form-container input[type=text]:not(.invisible):not(.number):not(.medium):not(.prefix-and-key),
+        .configuration-container > .configuration-content > .form-container input[type=search]:not(.invisible):not(.number):not(.medium):not(.prefix-and-key),
+        .configuration-container > .configuration-content > .form-container input[type=text]:not(.invisible):not(.number):not(.medium):not(.prefix-and-key) {
           flex: 1 1 65%; }
         .configuration-container > .form-container input[type=search]:not(.invisible):not(:disabled):hover,
         .configuration-container > .form-container input[type=text]:not(.invisible):not(:disabled):hover,

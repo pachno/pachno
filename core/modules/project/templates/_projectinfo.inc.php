@@ -22,8 +22,8 @@
         <div class="form-row">
             <label for="project_key_input"><?= __('Project key'); ?></label>
             <?php if ($access_level == \pachno\core\framework\Settings::ACCESS_FULL): ?>
-                <div id="project_key_indicator" class="semi_transparent" style="position: absolute; height: 23px; background-color: #FFF; width: 210px; text-align: center; display: none;"><?= image_tag('spinning_16.gif'); ?></div>
-                <input type="text" name="project_key" id="project_key_input" value="<?php print $project->getKey(); ?>" style="width: 150px;">
+                <div id="project_key_indicator" style="display: none;"><?= image_tag('spinning_16.gif'); ?></div>
+                <input type="text" name="project_key" id="project_key_input" value="<?php print $project->getKey(); ?>" class="prefix-and-key">
             <?php else: ?>
                 <?= $project->getKey(); ?>
             <?php endif; ?>

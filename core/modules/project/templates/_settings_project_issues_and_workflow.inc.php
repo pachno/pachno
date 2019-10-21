@@ -86,13 +86,12 @@
         </div>
         <div class="column">
             <div class="form-row">
+                <label for="project_prefix_input"><?php echo __('Issue number prefix'); ?></label>
                 <?php if ($access_level == Settings::ACCESS_FULL): ?>
-                    <label for="project_prefix_input"><?php echo __('Issue number prefix'); ?></label>
-                    <input type="text" name="prefix" id="project_prefix_input" maxlength="10" value="<?php print $project->getPrefix(); ?>" style="width: 70px;"<?php if (!$project->usePrefix()): ?> disabled<?php endif; ?>>
+                    <input type="text" class="prefix-and-key" name="prefix" id="project_prefix_input" maxlength="10" value="<?php print $project->getPrefix(); ?>" <?php if (!$project->usePrefix()): ?> disabled<?php endif; ?>>
                 <?php elseif ($project->hasPrefix()): ?>
                     <?php echo $project->getPrefix(); ?>
                 <?php else: ?>
-                    <label for="project_prefix_input"><?php echo __('Issue number prefix'); ?></label>
                     <span class="faded_out"><?php echo __('No prefix set'); ?></span>
                 <?php endif; ?>
             </div>

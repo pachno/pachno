@@ -23,7 +23,7 @@
             <div class="helper-text"><?php echo __('If this project has regular new main- or test-releases, you should enable releases'); ?></div>
         </div>
         <div class="form-row">
-            <label for="enable_editions_yes"><?php echo __('Use editions'); ?></label>
+            <label for="enable_editions_yes"><?php echo __('Enable editions'); ?></label>
             <div class="fancy-label-select">
                 <?php if ($access_level == \pachno\core\framework\Settings::ACCESS_FULL): ?>
                     <input type="radio" name="enable_editions" value="1" class="fancy-checkbox" id="enable_editions_yes"<?php if ($project->isEditionsEnabled()): ?> checked<?php endif; ?>>
@@ -37,7 +37,7 @@
             <div class="helper-text"><?php echo __('If the project has more than one edition which differ in features or capabilities, you should enable editions'); ?></div>
         </div>
         <div class="form-row">
-            <label for="enable_components_yes"><?php echo __('Use components'); ?></label>
+            <label for="enable_components_yes"><?php echo __('Enable components'); ?></label>
             <div class="fancy-label-select">
                 <?php if ($access_level == \pachno\core\framework\Settings::ACCESS_FULL): ?>
                     <input type="radio" name="enable_components" value="1" class="fancy-checkbox" id="enable_components_yes"<?php if ($project->isComponentsEnabled()): ?> checked<?php endif; ?>>

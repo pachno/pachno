@@ -200,19 +200,23 @@ configure_project_updateother:
     parameters: [ ]
     csrf_enabled: false
 
-configure_project_edition:
+configure_project_edition_post:
     route: /configure/project/:project_id/edition/:edition_id
     module: project
     action: configureProjectEdition
+    methods:
+      - POST
     parameters:
       config_module: core
       section: 10
     csrf_enabled: false
 
-configure_project_component:
+configure_project_component_post:
     route: /configure/project/:project_id/component/:component_id
     module: project
     action: editComponent
+    methods:
+      - POST
     parameters:
       config_module: core
       section: 10

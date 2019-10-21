@@ -91,8 +91,12 @@
          * @param $username
          * @return User
          */
-        public function getByUsername($username)
+        public function getByUsername($username): ?User
         {
+            if (trim($username) == '') {
+                return null;
+            }
+
             if (!array_key_exists($username, $this->_username_lookup_cache)) {
                 $query = $this->getQuery();
                 $query->where(self::UNAME, strtolower($username), \b2db\Criterion::EQUALS, '', '', \b2db\Query::DB_LOWER);
