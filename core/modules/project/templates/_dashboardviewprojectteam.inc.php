@@ -2,9 +2,9 @@
     <?php foreach ($assignees as $assignee): ?>
         <div class="project_team_assignee">
             <?php if ($assignee instanceof \pachno\core\entities\User): ?>
-                <?php echo include_component('main/userdropdown', array('user' => $assignee)); ?>
+                <?php include_component('main/userdropdown', array('user' => $assignee)); ?>
             <?php else: ?>
-                <?php echo include_component('main/teamdropdown', array('team' => $assignee)); ?>
+                <?php include_component('main/teamdropdown', array('team' => $assignee)); ?>
             <?php endif; ?>
             <span class="faded_out"> -
                 <?php $roles = ($assignee instanceof \pachno\core\entities\User) ? $project->getRolesForUser($assignee) : $project->getRolesForTeam($assignee); ?>

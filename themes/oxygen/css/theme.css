@@ -8010,17 +8010,46 @@ button, button:hover,
   flex-direction: row;
   align-items: center; }
   input[type=submit] span + .fas,
+  input[type=submit] span + .icon,
   input[type=submit] span + .far, input[type=submit]:hover span + .fas,
+  input[type=submit]:hover span + .icon,
   input[type=submit]:hover span + .far,
   input[type=button] span + .fas,
+  input[type=button] span + .icon,
   input[type=button] span + .far, input[type=button]:hover span + .fas,
+  input[type=button]:hover span + .icon,
   input[type=button]:hover span + .far,
   button span + .fas,
+  button span + .icon,
   button span + .far, button:hover span + .fas,
+  button:hover span + .icon,
   button:hover span + .far,
   .button span + .fas,
+  .button span + .icon,
   .button span + .far, .button:hover span + .fas,
+  .button:hover span + .icon,
   .button:hover span + .far {
+    margin-left: .35rem; }
+  input[type=submit] .icon + span,
+  input[type=submit] .fas + span,
+  input[type=submit] .far + span, input[type=submit]:hover .icon + span,
+  input[type=submit]:hover .fas + span,
+  input[type=submit]:hover .far + span,
+  input[type=button] .icon + span,
+  input[type=button] .fas + span,
+  input[type=button] .far + span, input[type=button]:hover .icon + span,
+  input[type=button]:hover .fas + span,
+  input[type=button]:hover .far + span,
+  button .icon + span,
+  button .fas + span,
+  button .far + span, button:hover .icon + span,
+  button:hover .fas + span,
+  button:hover .far + span,
+  .button .icon + span,
+  .button .fas + span,
+  .button .far + span, .button:hover .icon + span,
+  .button:hover .fas + span,
+  .button:hover .far + span {
     margin-left: .35rem; }
 
 button + button, button + button:hover,
@@ -8167,6 +8196,67 @@ input.icon.secondary:disabled {
     background: transparent;
     color: rgba(200, 200, 200, 0.3); }
 
+button.danger,
+.button.danger,
+input.button.danger,
+button.icon.danger,
+.button.icon.danger,
+input.icon.danger {
+  background-color: #cb1a00;
+  color: #FFF; }
+  button.danger .icon,
+  .button.danger .icon,
+  input.button.danger .icon,
+  button.icon.danger .icon,
+  .button.icon.danger .icon,
+  input.icon.danger .icon {
+    color: #FFF; }
+  button.danger:hover,
+  .button.danger:hover,
+  input.button.danger:hover,
+  button.icon.danger:hover,
+  .button.icon.danger:hover,
+  input.icon.danger:hover {
+    background-color: #9e1200;
+    color: #FFF; }
+    button.danger:hover .icon,
+    .button.danger:hover .icon,
+    input.button.danger:hover .icon,
+    button.icon.danger:hover .icon,
+    .button.icon.danger:hover .icon,
+    input.icon.danger:hover .icon {
+      color: #FFF; }
+  button.danger.secondary,
+  .button.danger.secondary,
+  input.button.danger.secondary,
+  button.icon.danger.secondary,
+  .button.icon.danger.secondary,
+  input.icon.danger.secondary {
+    background: transparent;
+    color: #cb1a00; }
+    button.danger.secondary .icon,
+    .button.danger.secondary .icon,
+    input.button.danger.secondary .icon,
+    button.icon.danger.secondary .icon,
+    .button.icon.danger.secondary .icon,
+    input.icon.danger.secondary .icon {
+      color: #cb1a00; }
+    button.danger.secondary:hover,
+    .button.danger.secondary:hover,
+    input.button.danger.secondary:hover,
+    button.icon.danger.secondary:hover,
+    .button.icon.danger.secondary:hover,
+    input.icon.danger.secondary:hover {
+      background-color: #cb1a00;
+      color: #FFF; }
+      button.danger.secondary:hover .icon,
+      .button.danger.secondary:hover .icon,
+      input.button.danger.secondary:hover .icon,
+      button.icon.danger.secondary:hover .icon,
+      .button.icon.danger.secondary:hover .icon,
+      input.icon.danger.secondary:hover .icon {
+        color: #FFF; }
+
 .button-group {
   display: flex;
   flex-direction: row;
@@ -8278,14 +8368,16 @@ input.icon.secondary:disabled {
 .fancy-checkbox {
   display: none; }
   .fancy-checkbox + label {
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
     color: #555;
     transition: color .2s ease-in-out; }
   .fancy-checkbox + label .fas.unchecked,
   .fancy-checkbox + label .far.unchecked,
   .fancy-checkbox + .list-item .fas.unchecked,
   .fancy-checkbox + .list-item .far.unchecked {
-    display: inline-block;
+    align-items: center;
+    display: inline-flex;
     margin-right: .3em; }
   .fancy-checkbox + label .fas.checked,
   .fancy-checkbox + label .far.checked,
@@ -8519,6 +8611,12 @@ input.icon.secondary:disabled {
   left: 50%;
   transform: translateX(-50%);
   background-color: #ffaa00; }
+
+input[data-interactive-toggle].submitting + label .indicator {
+  display: inline-block;
+  margin-right: .35em;
+  opacity: 1;
+  width: auto; }
 
 .list-mode {
   padding: 0;
@@ -9050,9 +9148,11 @@ input.icon.secondary:disabled {
       opacity: 0;
       transition: opacity .25s ease-in-out; }
     .form-container form.submitting .form-row > input[type=text].invisible,
+    .form-container form.submitting .form-row > input[type=url].invisible,
     .form-container form.submitting .form-row > input[type=password].invisible {
       border: 1px dashed #0C8990; }
       .form-container form.submitting .form-row > input[type=text].invisible + label,
+      .form-container form.submitting .form-row > input[type=url].invisible + label,
       .form-container form.submitting .form-row > input[type=password].invisible + label {
         opacity: 1;
         transform: translateY(0); }
@@ -9074,6 +9174,12 @@ input.icon.secondary:disabled {
       .form-container > .column.small + .column:not(.small),
       .form-container > .row > .column.small + .column:not(.small) {
         max-width: none; }
+  .form-container .separator {
+    flex: 1 0 100%;
+    box-sizing: border-box;
+    padding: 1em 1em 0 1em;
+    border-bottom: 1px dotted rgba(0, 0, 0, 0.4);
+    margin-bottom: 1em; }
   .form-container .form-row {
     flex: 1 0 100%;
     display: flex;
@@ -9102,6 +9208,7 @@ input.icon.secondary:disabled {
     .form-container .form-row.centered {
       justify-content: center; }
       .form-container .form-row.centered input[type=text],
+      .form-container .form-row.centered input[type=url],
       .form-container .form-row.centered input[type=number] {
         text-align: center; }
       .form-container .form-row.centered label {
@@ -9156,6 +9263,7 @@ input.icon.secondary:disabled {
         margin-right: .5em; }
     .form-container .form-row > textarea,
     .form-container .form-row > input[type=text],
+    .form-container .form-row > input[type=url],
     .form-container .form-row > input[type=password] {
       flex: 1 1 100%;
       padding: .2em;
@@ -9163,6 +9271,7 @@ input.icon.secondary:disabled {
       box-sizing: border-box; }
       .form-container .form-row > textarea.invisible,
       .form-container .form-row > input[type=text].invisible,
+      .form-container .form-row > input[type=url].invisible,
       .form-container .form-row > input[type=password].invisible {
         background-color: transparent;
         border: 1px solid transparent;
@@ -9171,39 +9280,47 @@ input.icon.secondary:disabled {
         flex: 1 1 auto; }
         .form-container .form-row > textarea.invisible.title,
         .form-container .form-row > input[type=text].invisible.title,
+        .form-container .form-row > input[type=url].invisible.title,
         .form-container .form-row > input[type=password].invisible.title {
           font-weight: 400; }
         .form-container .form-row > textarea.invisible.inline,
         .form-container .form-row > input[type=text].invisible.inline,
+        .form-container .form-row > input[type=url].invisible.inline,
         .form-container .form-row > input[type=password].invisible.inline {
           flex: 0 0 auto; }
         .form-container .form-row > textarea.invisible + label,
         .form-container .form-row > input[type=text].invisible + label,
+        .form-container .form-row > input[type=url].invisible + label,
         .form-container .form-row > input[type=password].invisible + label {
           opacity: 0;
           transform: translateY(-100%);
           margin-bottom: -1.8em; }
         .form-container .form-row > textarea.invisible:hover,
         .form-container .form-row > input[type=text].invisible:hover,
+        .form-container .form-row > input[type=url].invisible:hover,
         .form-container .form-row > input[type=password].invisible:hover {
           border: 1px solid transparent;
           background-color: rgba(200, 200, 200, 0.15);
           cursor: pointer; }
         .form-container .form-row > textarea.invisible:focus,
         .form-container .form-row > input[type=text].invisible:focus,
+        .form-container .form-row > input[type=url].invisible:focus,
         .form-container .form-row > input[type=password].invisible:focus {
           background: #FFF;
           border-color: #0C8990; }
           .form-container .form-row > textarea.invisible:focus.with-label,
           .form-container .form-row > input[type=text].invisible:focus.with-label,
+          .form-container .form-row > input[type=url].invisible:focus.with-label,
           .form-container .form-row > input[type=password].invisible:focus.with-label {
             padding-bottom: 2rem; }
           .form-container .form-row > textarea.invisible:focus:hover,
           .form-container .form-row > input[type=text].invisible:focus:hover,
+          .form-container .form-row > input[type=url].invisible:focus:hover,
           .form-container .form-row > input[type=password].invisible:focus:hover {
             cursor: text; }
           .form-container .form-row > textarea.invisible:focus + label,
           .form-container .form-row > input[type=text].invisible:focus + label,
+          .form-container .form-row > input[type=url].invisible:focus + label,
           .form-container .form-row > input[type=password].invisible:focus + label {
             opacity: 1;
             transform: translateY(calc(-100% - 2px));
@@ -9212,18 +9329,23 @@ input.icon.secondary:disabled {
             padding: .35rem; }
       .form-container .form-row > textarea.name-input-enhance,
       .form-container .form-row > input[type=text].name-input-enhance,
+      .form-container .form-row > input[type=url].name-input-enhance,
       .form-container .form-row > input[type=password].name-input-enhance {
         font-size: 1.25em;
         padding: .5em .2em;
         border-bottom-width: 2px; }
       .form-container .form-row > textarea.code-input-6,
       .form-container .form-row > input[type=text].code-input-6,
+      .form-container .form-row > input[type=url].code-input-6,
       .form-container .form-row > input[type=password].code-input-6 {
         max-width: 10rem; }
       .form-container .form-row > textarea.number, .form-container .form-row > textarea.prefix-and-key, .form-container .form-row > textarea:not(.invisible).number,
       .form-container .form-row > input[type=text].number,
       .form-container .form-row > input[type=text].prefix-and-key,
       .form-container .form-row > input[type=text]:not(.invisible).number,
+      .form-container .form-row > input[type=url].number,
+      .form-container .form-row > input[type=url].prefix-and-key,
+      .form-container .form-row > input[type=url]:not(.invisible).number,
       .form-container .form-row > input[type=password].number,
       .form-container .form-row > input[type=password].prefix-and-key,
       .form-container .form-row > input[type=password]:not(.invisible).number {
@@ -9233,6 +9355,9 @@ input.icon.secondary:disabled {
         .form-container .form-row > input[type=text].number.small,
         .form-container .form-row > input[type=text].prefix-and-key.small,
         .form-container .form-row > input[type=text]:not(.invisible).number.small,
+        .form-container .form-row > input[type=url].number.small,
+        .form-container .form-row > input[type=url].prefix-and-key.small,
+        .form-container .form-row > input[type=url]:not(.invisible).number.small,
         .form-container .form-row > input[type=password].number.small,
         .form-container .form-row > input[type=password].prefix-and-key.small,
         .form-container .form-row > input[type=password]:not(.invisible).number.small {
@@ -9240,6 +9365,8 @@ input.icon.secondary:disabled {
       .form-container .form-row > textarea.medium, .form-container .form-row > textarea:not(.invisible).medium,
       .form-container .form-row > input[type=text].medium,
       .form-container .form-row > input[type=text]:not(.invisible).medium,
+      .form-container .form-row > input[type=url].medium,
+      .form-container .form-row > input[type=url]:not(.invisible).medium,
       .form-container .form-row > input[type=password].medium,
       .form-container .form-row > input[type=password]:not(.invisible).medium {
         width: 20rem;
@@ -9248,6 +9375,8 @@ input.icon.secondary:disabled {
       .form-container .form-row > textarea:active + label,
       .form-container .form-row > input[type=text]:focus + label,
       .form-container .form-row > input[type=text]:active + label,
+      .form-container .form-row > input[type=url]:focus + label,
+      .form-container .form-row > input[type=url]:active + label,
       .form-container .form-row > input[type=password]:focus + label,
       .form-container .form-row > input[type=password]:active + label {
         color: #0C8990; }
@@ -9255,6 +9384,7 @@ input.icon.secondary:disabled {
       color: rgba(0, 0, 0, 0.4); }
       .form-container .form-row.add-placeholder > .icon + textarea,
       .form-container .form-row.add-placeholder > .icon + input[type=text],
+      .form-container .form-row.add-placeholder > .icon + input[type=url],
       .form-container .form-row.add-placeholder > .icon + input[type=password] {
         flex: 1 1 calc(100% - 55px);
         margin-left: 1em; }
@@ -12014,36 +12144,46 @@ dl.info {
       .configuration-container > .configuration-content > .form-container .fancy-dropdown-container .fancy-dropdown.active {
         border-color: #0C8990; }
     .configuration-container > .form-container input[type=search],
+    .configuration-container > .form-container input[type=url],
     .configuration-container > .form-container input[type=text],
     .configuration-container > .configuration-content > .form-container input[type=search],
+    .configuration-container > .configuration-content > .form-container input[type=url],
     .configuration-container > .configuration-content > .form-container input[type=text] {
       font-size: 1.1em;
       border-radius: 4px;
       color: #141823;
       transition: border-color .2s ease-in-out; }
       .configuration-container > .form-container input[type=search]:not(.invisible),
+      .configuration-container > .form-container input[type=url]:not(.invisible),
       .configuration-container > .form-container input[type=text]:not(.invisible),
       .configuration-container > .configuration-content > .form-container input[type=search]:not(.invisible),
+      .configuration-container > .configuration-content > .form-container input[type=url]:not(.invisible),
       .configuration-container > .configuration-content > .form-container input[type=text]:not(.invisible) {
         background: white;
         border: 1px solid rgba(200, 200, 200, 0.3);
         padding: .5em 1em;
         margin: 0 .35rem 0 0; }
         .configuration-container > .form-container input[type=search]:not(.invisible):disabled,
+        .configuration-container > .form-container input[type=url]:not(.invisible):disabled,
         .configuration-container > .form-container input[type=text]:not(.invisible):disabled,
         .configuration-container > .configuration-content > .form-container input[type=search]:not(.invisible):disabled,
+        .configuration-container > .configuration-content > .form-container input[type=url]:not(.invisible):disabled,
         .configuration-container > .configuration-content > .form-container input[type=text]:not(.invisible):disabled {
           background: rgba(255, 255, 255, 0.6);
           border-color: rgba(200, 200, 200, 0.15);
           color: #AAA; }
         .configuration-container > .form-container input[type=search]:not(.invisible):not(.number):not(.medium):not(.prefix-and-key),
+        .configuration-container > .form-container input[type=url]:not(.invisible):not(.number):not(.medium):not(.prefix-and-key),
         .configuration-container > .form-container input[type=text]:not(.invisible):not(.number):not(.medium):not(.prefix-and-key),
         .configuration-container > .configuration-content > .form-container input[type=search]:not(.invisible):not(.number):not(.medium):not(.prefix-and-key),
+        .configuration-container > .configuration-content > .form-container input[type=url]:not(.invisible):not(.number):not(.medium):not(.prefix-and-key),
         .configuration-container > .configuration-content > .form-container input[type=text]:not(.invisible):not(.number):not(.medium):not(.prefix-and-key) {
           flex: 1 1 65%; }
         .configuration-container > .form-container input[type=search]:not(.invisible):not(:disabled):hover,
+        .configuration-container > .form-container input[type=url]:not(.invisible):not(:disabled):hover,
         .configuration-container > .form-container input[type=text]:not(.invisible):not(:disabled):hover,
         .configuration-container > .configuration-content > .form-container input[type=search]:not(.invisible):not(:disabled):hover,
+        .configuration-container > .configuration-content > .form-container input[type=url]:not(.invisible):not(:disabled):hover,
         .configuration-container > .configuration-content > .form-container input[type=text]:not(.invisible):not(:disabled):hover {
           border-color: #0C8990; }
 

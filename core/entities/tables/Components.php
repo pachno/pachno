@@ -2,6 +2,7 @@
 
     namespace pachno\core\entities\tables;
 
+    use pachno\core\entities\Component;
     use pachno\core\framework;
     use b2db\Core,
         b2db\Criteria,
@@ -20,13 +21,16 @@
     /**
      * Components table
      *
+     * @method static Components getTable()
+     * @method Component selectById($id)
+     *
      * @package pachno
      * @subpackage tables
      *
      * @Table(name="components")
      * @Entity(class="\pachno\core\entities\Component")
      */
-    class Components extends ScopedTable 
+    class Components extends ScopedTable
     {
 
         const B2DB_TABLE_VERSION = 2;

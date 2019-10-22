@@ -429,15 +429,15 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
 
         Pachno.Core.fetchPostDefaultFormHandler = function ([$form, response]) {
             return new Promise(function (resolve, reject) {
-                response.json()
-                    .then(function (json) {
-                        if (!response.ok) {
+                if (!response.ok) {
+                    response.json()
+                        .then(function (json) {
                             $form.find('.error-container > .error').html(json.error);
                             $form.find('.error-container').addClass('invalid');
-                        }
-                        $form.removeClass('submitting');
-                    })
-                    .catch(reject);
+                            $form.removeClass('submitting');
+                        })
+                        .catch(reject);
+                }
 
                 resolve([$form, response]);
             });
@@ -3873,7 +3873,6 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
                     }
                 });
 
-                console.log('VALUES', values);
                 if (values.length > 0) {
                     $dropdown.removeClass('no-value');
                     $label.html(values.join(', '));
@@ -3892,7 +3891,6 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
             event.stopPropagation();
             event.stopImmediatePropagation();
             event.preventDefault();
-            console.log('updating labels');
             var $dropdown = jQuery(this).closest('.fancy-dropdown');
             Pachno.Main.updateFancyDropdownLabel($dropdown);
         };
@@ -4137,6 +4135,99 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
                 }
             });
         };
+
+        Pachno.Project.Component.save = function (form) {
+            Pachno.Core.fetchPostHelper(form)
+                .then(Pachno.Core.fetchPostDefaultFormHandler)
+                .then(([$form, response]) => {
+                    if (response.ok) {
+                        response.json().then(function (json) {
+                            const $component_container = jQuery('[data-component][data-id='+json.item.id+']');
+                            if ($component_container.length > 0) {
+                                $component_container.replaceWith(json.component);
+                            } else {
+                                const $components_container = jQuery('#project-components-list');
+                                if ($components_container.length > 0) {
+                                    $components_container.append(json.component);
+                                }
+                            }
+                            $form[0].reset();
+                        })
+                    }
+                });
+        };
+
+        Pachno.Project.Component.remove = function (url, id) {
+            fetch(url, { method: 'DELETE' })
+                .then(function (response) {
+                    response.json().then(function (json) {
+                        Pachno.Main.Helpers.Dialog.dismiss();
+                        if (response.ok) {
+                            jQuery('[data-component][data-id=' + id + ']').remove();
+                        } else {
+                            Pachno.Main.Helpers.Message.error(json.error);
+                        }
+                    })
+                        .catch(function (error) {
+                            Pachno.Main.Helpers.Dialog.dismiss();
+                            Pachno.Main.Helpers.Message.error(error);
+                        });
+                });
+        }
+
+        Pachno.Project.Edition.showOptions = function ($item) {
+            Pachno.Config.loadComponentOptions(
+                {
+                    container: '#project-editions-list-container',
+                    options: '#selected-edition-options',
+                    component: '.project-edition'
+                },
+                $item
+            );
+        };
+
+        Pachno.Project.Edition.save = function (form) {
+            Pachno.Core.fetchPostHelper(form)
+                .then(Pachno.Core.fetchPostDefaultFormHandler)
+                .then(([$form, response]) => {
+                    if (response.ok) {
+                        response.json().then(function (json) {
+                            const $edition_container = jQuery('[data-edition][data-id='+json.item.id+']');
+                            if ($edition_container.length > 0) {
+                                $edition_container.replaceWith(json.edition);
+                            } else {
+                                const $editions_container = jQuery('#project-editions-list');
+                                if ($editions_container.length > 0) {
+                                    $editions_container.append(json.edition);
+                                }
+                            }
+                            $form[0].reset();
+                            jQuery('#project-editions-list-container').removeClass('active');
+                            jQuery('#selected-edition-options').html('');
+                        })
+                    }
+                });
+        };
+
+        Pachno.Project.Edition.remove = function (url, id) {
+            fetch(url, { method: 'DELETE' })
+                .then(function (response) {
+                    response.json().then(function (json) {
+                        Pachno.Main.Helpers.Dialog.dismiss();
+                        if (response.ok) {
+                            jQuery('[data-edition][data-id=' + id + ']').remove();
+                            jQuery('#project-editions-list-container').removeClass('active');
+                            jQuery('#selected-edition-options').html('');
+                        } else {
+                            Pachno.Main.Helpers.Message.error(json.error);
+                        }
+                    })
+                        .catch(function (error) {
+                            Pachno.Main.Helpers.Dialog.dismiss();
+                            Pachno.Main.Helpers.Message.error(error);
+                        });
+                });
+        }
 
         Pachno.Project.saveOther = function (url) {
             Pachno.Main.Helpers.ajax(url, {
@@ -4455,12 +4546,10 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
                     response.json().then(function (json) {
                         if (response.ok) {
                             const $issue_type_container = jQuery('[data-issue-type][data-id='+json.issue_type.id+']');
-                            console.log($issue_type_container);
                             if ($issue_type_container.length > 0) {
                                 $issue_type_container.find('[data-name]').html(json.issue_type.name);
                             } else {
                                 const $issue_types_container = jQuery('#issue-types-list');
-                                console.log($issue_types_container);
                                 if ($issue_types_container.length > 0) {
                                     $issue_types_container.append(json.component);
                                 }
@@ -4680,7 +4769,6 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
                     response.json().then(function (json) {
                         if (response.ok) {
                             const $issue_option_container = jQuery('[data-issue-field-option][data-id='+json.item.id+']');
-                            console.log($issue_option_container);
                             if ($issue_option_container.length > 0) {
                                 $issue_option_container.replaceWith(json.component);
                             } else {
@@ -5559,7 +5647,6 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
                                                 if ($(fieldname + '_id')) {
                                                     $(fieldname + '_id').update('');
                                                     for (var opt in json.fields[fieldname].values) {
-                                                      console.log('opt2', typeof(opt))
                                                         $(fieldname + '_id').insert('<option value="' + opt.substr(1) + '">' + json.fields[fieldname].values[opt] + '</option>');
                                                     }
                                                     $(fieldname + '_id').setValue(prev_val);
@@ -6726,7 +6813,6 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
             var selected_radio_value = jQuery('input[name=search_bulk_action]:checked', '#search-bulk-action-form').val(),
                 sub_container_id = 'bulk_action_subcontainer_' + selected_radio_value;
 
-            console.log(sub_container_id);
             $$('.bulk_action_subcontainer').each(function (element) {
                 element.hide();
             });

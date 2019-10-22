@@ -993,6 +993,32 @@ class Main extends helpers\ProjectActions
      *
      * @param framework\Request $request The request object
      */
+    public function runConfigureProjectSetting(framework\Request $request)
+    {
+        switch ($request['setting_key']) {
+            case 'enable_editions':
+                $this->selected_project->setEditionsEnabled((bool) $request['value']);
+                $this->selected_project->save();
+                return $this->renderJSON(['item' => $this->selected_project->toJSON(false)]);
+
+                break;
+            case 'enable_components':
+                $this->selected_project->setComponentsEnabled((bool) $request['value']);
+                $this->selected_project->save();
+                return $this->renderJSON(['item' => $this->selected_project->toJSON(false)]);
+
+                break;
+            default:
+                $this->getResponse()->setHttpStatus(400);
+                return $this->renderJSON(['error' => $this->getI18n()->__('Invalid setting')]);
+        }
+    }
+
+    /**
+     * Configure project settings
+     *
+     * @param framework\Request $request The request object
+     */
     public function runConfigureProjectSettings(framework\Request $request)
     {
         if ($request->isPost())
@@ -1206,11 +1232,11 @@ class Main extends helpers\ProjectActions
             catch (\Exception $e)
             {
                 $this->getResponse()->setHttpStatus(400);
-                return $this->renderJSON(array("error" => $i18n->__('The edition could not be added') . ", " . $e->getMessage()));
+                return $this->renderJSON(array('error' => $i18n->__('The edition could not be added') . ", " . $e->getMessage()));
             }
         }
         $this->getResponse()->setHttpStatus(400);
-        return $this->renderJSON(array("error" => $i18n->__("You don't have access to add project editions")));
+        return $this->renderJSON(array('error' => $i18n->__("You don't have access to add project editions")));
     }
 
     /**
@@ -1252,7 +1278,7 @@ class Main extends helpers\ProjectActions
         catch (\Exception $e)
         {
             $this->getResponse()->setHttpStatus(400);
-            return $this->renderJSON(array("error" => $e->getMessage()));
+            return $this->renderJSON(array('error' => $e->getMessage()));
         }
     }
 
@@ -1347,43 +1373,6 @@ class Main extends helpers\ProjectActions
     }
 
     /**
-     * Add a component (AJAX call)
-     *
-     * @param framework\Request $request The request object
-     */
-    public function runAddComponent(framework\Request $request)
-    {
-        $i18n = framework\Context::getI18n();
-
-        if ($this->getUser()->canManageProjectReleases($this->selected_project))
-        {
-            try
-            {
-                if (($c_name = $request['c_name']) && trim($c_name) != '')
-                {
-                    if (in_array($c_name, $this->selected_project->getComponents()))
-                    {
-                        throw new \Exception($i18n->__('This component already exists for this project'));
-                    }
-                    $component = $this->selected_project->addComponent($c_name);
-                    return $this->renderJSON(array(/* 'title' => $i18n->__('The component has been added'), */'html' => $this->getComponentHTML('componentbox', array('component' => $component, 'access_level' => framework\Settings::ACCESS_FULL))));
-                }
-                else
-                {
-                    throw new \Exception($i18n->__('You need to specify a name for the new component'));
-                }
-            }
-            catch (\Exception $e)
-            {
-                $this->getResponse()->setHttpStatus(400);
-                return $this->renderJSON(array("error" => $i18n->__('The component could not be added') . ", " . $e->getMessage()));
-            }
-        }
-        $this->getResponse()->setHttpStatus(400);
-        return $this->renderJSON(array("error" => $i18n->__("You don't have access to add components")));
-    }
-
-    /**
      * Add or remove a component to/from an edition (AJAX call)
      *
      * @param framework\Request $request The request object
@@ -1410,11 +1399,42 @@ class Main extends helpers\ProjectActions
             catch (\Exception $e)
             {
                 $this->getResponse()->setHttpStatus(400);
-                return $this->renderJSON(array("error" => $i18n->__('The component could not be added to this edition') . ", " . $e->getMessage()));
+                return $this->renderJSON(array('error' => $i18n->__('The component could not be added to this edition') . ", " . $e->getMessage()));
             }
         }
         $this->getResponse()->setHttpStatus(400);
-        return $this->renderJSON(array("error" => $i18n->__("You don't have access to modify components")));
+        return $this->renderJSON(array('error' => $i18n->__("You don't have access to modify components")));
+    }
+
+    /**
+     * Delete a component
+     *
+     * @param framework\Request $request The request object
+     */
+    public function runDeleteComponent(framework\Request $request)
+    {
+        $i18n = framework\Context::getI18n();
+        $can_manage_components = $this->getUser()->canManageProject($this->selected_project) || $this->getUser()->canManageProjectReleases($this->selected_project);
+
+        if (!$can_manage_components) {
+            $this->getResponse()->setHttpStatus(400);
+            return $this->renderJSON(['error' => $i18n->__("You don't have access to modify components")]);
+        }
+
+        if (!$request['component_id']) {
+            $this->getResponse()->setHttpStatus(400);
+            return $this->renderJSON(['error' => $i18n->__("Can't remove this component")]);
+        }
+
+        $component = tables\Components::getTable()->selectById($request['component_id']);
+
+        if (!$component instanceof entities\Component) {
+            $this->getResponse()->setHttpStatus(400);
+            return $this->renderJSON(['error' => framework\Context::getI18n()->__('Could not remove this component')]);
+        }
+
+        $component->delete();
+        return $this->renderJSON(['removed' => 'ok']);
     }
 
     /**
@@ -1425,146 +1445,136 @@ class Main extends helpers\ProjectActions
     public function runEditComponent(framework\Request $request)
     {
         $i18n = framework\Context::getI18n();
+        $can_manage_components = $this->getUser()->canManageProject($this->selected_project) || $this->getUser()->canManageProjectReleases($this->selected_project);
 
-        if ($this->getUser()->canManageProject($this->selected_project) || $this->getUser()->canManageProjectReleases($this->selected_project))
-        {
-            try
-            {
-                $component = entities\Component::getB2DBTable()->selectById($request['component_id']);
-                if (is_null($request['mode']))
-                {
-                    $content = $this->getComponentHTML('project/projectcomponent', array('component' => $component, 'access_level' => $this->access_level));
-                    return $this->renderJSON(array('content' => $content));
-                }
-                else if ($request['mode'] == 'update')
-                {
-                    if (($c_name = $request['c_name']) && trim($c_name) != '')
-                    {
-                        if ($c_name == $component->getName())
-                        {
-                            return $this->renderJSON(array('newname' => $c_name));
-                        }
-                        if (in_array($c_name, $component->getProject()->getComponents()))
-                        {
-                            throw new \Exception($i18n->__('This component already exists for this project'));
-                        }
-                        $component->setName($c_name);
-                        $component->save();
-                        return $this->renderJSON(array('failed' => false, 'newname' => $component->getName()));
-                    }
-                    else
-                    {
-                        throw new \Exception($i18n->__('You need to specify a name for this component'));
-                    }
-                }
-                elseif ($request['mode'] == 'delete')
-                {
-                    $this->selected_project = $component->getProject();
-                    $component->delete();
-                    $count = $this->selected_project->countComponents();
-                    return $this->renderJSON(array('deleted' => true, 'itemcount' => $count, 'message' => framework\Context::getI18n()->__('Component deleted')));
-                }
-            }
-            catch (\Exception $e)
-            {
-                $this->getResponse()->setHttpStatus(400);
-                return $this->renderJSON(array("error" => framework\Context::getI18n()->__('Could not edit this component') . ", " . $e->getMessage()));
-            }
+        if (!$can_manage_components) {
+            $this->getResponse()->setHttpStatus(400);
+            return $this->renderJSON(['error' => $i18n->__("You don't have access to modify components")]);
         }
-        $this->getResponse()->setHttpStatus(400);
-        return $this->renderJSON(array("error" => $i18n->__("You don't have access to modify components")));
+
+        try {
+            if ($request['component_id']) {
+                $component = tables\Components::getTable()->selectById($request['component_id']);
+            } else {
+                $component = new entities\Component();
+                $component->setProject($this->selected_project);
+            }
+
+            if (!$component instanceof entities\Component) {
+                $this->getResponse()->setHttpStatus(400);
+                return $this->renderJSON(['error' => framework\Context::getI18n()->__('Could not edit this component')]);
+            }
+
+            $name = trim($request['name']);
+            if (!$name) {
+                $this->getResponse()->setHttpStatus(400);
+                return $this->renderJSON(['error' => framework\Context::getI18n()->__('Please provide a valid name')]);
+            }
+            $component->setName($name);
+            $component->save();
+
+            $content = $this->getComponentHTML('project/component', ['component' => $component, 'access_level' => $this->access_level]);
+            return $this->renderJSON(['component' => $content, 'item' => $component->toJSON()]);
+        } catch (\Exception $e) {
+            $this->getResponse()->setHttpStatus(400);
+            return $this->renderJSON(['error' => framework\Context::getI18n()->__('Could not edit this component')]);
+        }
     }
 
+    /**
+     * Delete an edition
+     *
+     * @param framework\Request $request The request object
+     */
     public function runDeleteEdition(framework\Request $request)
     {
-        if ($this->getUser()->canManageProject($this->selected_project) || $this->getUser()->canManageProjectReleases($this->selected_project))
-        {
-            try
-            {
-                $edition = entities\Edition::getB2DBTable()->selectById($request['edition_id']);
-                $edition->delete();
-                $count = $this->selected_project->countEditions();
-                return $this->renderJSON(array('deleted' => true, 'itemcount' => $count, 'message' => framework\Context::getI18n()->__('Edition deleted')));
-            }
-            catch (\Exception $e)
-            {
-                $this->getResponse()->setHttpStatus(400);
-                return $this->renderJSON(array("error" => framework\Context::getI18n()->__('Could not delete this edition') . ", " . $e->getMessage()));
-            }
+        $i18n = framework\Context::getI18n();
+        $can_manage_editions = $this->getUser()->canManageProject($this->selected_project) || $this->getUser()->canManageProjectReleases($this->selected_project);
+
+        if (!$can_manage_editions) {
+            $this->getResponse()->setHttpStatus(400);
+            return $this->renderJSON(['error' => $i18n->__("You don't have access to modify editions")]);
         }
-        $this->getResponse()->setHttpStatus(400);
-        return $this->renderJSON(array("error" => $this->getI18n()->__("You don't have access to modify edition")));
+
+        if (!$request['edition_id']) {
+            $this->getResponse()->setHttpStatus(400);
+            return $this->renderJSON(['error' => $i18n->__("Can't remove this edition")]);
+        }
+
+        $edition = tables\Editions::getTable()->selectById($request['edition_id']);
+
+        if (!$edition instanceof entities\Edition) {
+            $this->getResponse()->setHttpStatus(400);
+            return $this->renderJSON(['error' => framework\Context::getI18n()->__('Could not remove this edition')]);
+        }
+
+        $edition->delete();
+        return $this->renderJSON(['removed' => 'ok']);
     }
 
-    public function runConfigureProjectEdition(framework\Request $request)
+    public function runEditEdition(framework\Request $request)
     {
-        if ($this->getUser()->canManageProject($this->selected_project) || $this->getUser()->canManageProjectReleases($this->selected_project))
-        {
-            try
-            {
-                if ($edition_id = $request['edition_id'])
-                {
-                    $edition = entities\Edition::getB2DBTable()->selectById($edition_id);
-                    if ($request->isPost())
-                    {
-                        $release_date = null;
-                        if ($request['has_release_date'])
-                        {
-                            $release_date = mktime(0, 0, 1, $request['release_month'], $request['release_day'], $request['release_year']);
-                        }
-                        $edition->setReleaseDate($release_date);
+        $i18n = framework\Context::getI18n();
+        $can_manage_editions = $this->getUser()->canManageProject($this->selected_project) || $this->getUser()->canManageProjectReleases($this->selected_project);
 
-                        if (($e_name = $request['edition_name']) && trim($e_name) != '')
-                        {
-                            if ($e_name != $edition->getName())
-                            {
-                                if (in_array($e_name, $edition->getProject()->getEditions()))
-                                {
-                                    throw new \Exception(framework\Context::getI18n()->__('This edition already exists for this project'));
-                                }
-                                $edition->setName($e_name);
-                            }
-                        }
-                        else
-                        {
-                            throw new \Exception(framework\Context::getI18n()->__('You need to specify a name for this edition'));
-                        }
-
-                        $edition->setDescription($request->getParameter('description', null, false));
-                        $edition->setDocumentationURL($request['doc_url']);
-                        $edition->setReleased((int) $request['released']);
-                        $edition->setLocked((bool) $request['locked']);
-                        $edition->save();
-                        return $this->renderJSON(array('edition_name' => $edition->getName(), 'message' => framework\Context::getI18n()->__('Edition details saved')));
-                    }
-                    else
-                    {
-                        switch ($request['mode'])
-                        {
-                            case 'releases':
-                            case 'components':
-                                $this->selected_section = $request['mode'];
-                                break;
-                            default:
-                                $this->selected_section = 'general';
-                        }
-                        $content = $this->getComponentHTML('project/projectedition', array('edition' => $edition, 'access_level' => $this->access_level, 'selected_section' => $this->selected_section));
-                        return $this->renderJSON(array('content' => $content));
-                    }
-                }
-                else
-                {
-                    throw new \Exception(framework\Context::getI18n()->__('Invalid edition id'));
-                }
-            }
-            catch (\Exception $e)
-            {
-                $this->getResponse()->setHttpStatus(400);
-                return $this->renderJSON(array('error' => $e->getMessage()));
-            }
+        if (!$can_manage_editions) {
+            $this->getResponse()->setHttpStatus(400);
+            return $this->renderJSON(['error' => $i18n->__("You don't have access to modify editions")]);
         }
-        $this->getResponse()->setHttpStatus(400);
-        return $this->renderJSON(array("error" => $this->getI18n()->__("You don't have access to modify edition")));
+
+        try {
+            if ($request['edition_id']) {
+                $edition = tables\Editions::getTable()->selectById($request['edition_id']);
+            } else {
+                $edition = new entities\Edition();
+                $edition->setProject($this->selected_project);
+            }
+
+            if (!$edition instanceof entities\Edition) {
+                $this->getResponse()->setHttpStatus(400);
+                return $this->renderJSON(['error' => framework\Context::getI18n()->__('Could not edit this edition')]);
+            }
+
+            if (!$request->isPost()) {
+                return $this->renderJSON(['content' => $this->getComponentHTML('project/editedition', ['edition' => $edition, 'access_level' => $this->access_level])]);
+            }
+
+            $name = trim($request['name']);
+            $description = trim($request['description']);
+            $url = trim($request['documentation_url']);
+
+            if (!$name) {
+                $this->getResponse()->setHttpStatus(400);
+                return $this->renderJSON(['error' => framework\Context::getI18n()->__('Please provide a valid name')]);
+            }
+            $edition->setName($name);
+            $edition->setDescription($description);
+            $edition->setDocumentationURL($url);
+            $edition->save();
+
+            if ($request->hasParameter('components')) {
+                $components = $request['components'];
+                if (is_array($components)) {
+                    foreach ($edition->getProject()->getComponents() as $component) {
+                        $hasComponent = $edition->hasComponent($component);
+
+                        if (array_key_exists($component->getID(), $components)) {
+                            if (!$hasComponent) {
+                                $edition->addComponent($component);
+                            }
+                        } elseif ($hasComponent) {
+                            $edition->removeComponent($component);
+                        }
+                    }
+                }
+            }
+
+            $content = $this->getComponentHTML('project/edition', ['edition' => $edition, 'access_level' => $this->access_level]);
+            return $this->renderJSON(['edition' => $content, 'item' => $edition->toJSON()]);
+        } catch (\Exception $e) {
+            $this->getResponse()->setHttpStatus(400);
+            return $this->renderJSON(['error' => framework\Context::getI18n()->__('Could not edit this edition: %error', ['%error' => $e->getMessage()])]);
+        }
     }
 
     public function runGetUpdatedProjectKey(framework\Request $request)
@@ -1606,7 +1616,7 @@ class Main extends helpers\ProjectActions
             }
         }
         $this->getResponse()->setHttpStatus(400);
-        return $this->renderJSON(array("error" => $this->getI18n()->__("You don't have access to perform this action")));
+        return $this->renderJSON(array('error' => $this->getI18n()->__("You don't have access to perform this action")));
     }
 
     public function runProjectIcons(framework\Request $request)

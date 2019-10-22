@@ -77,7 +77,7 @@
             <?php if ($issue->getAssignee() instanceof \pachno\core\entities\User): ?>
                 <a href="javascript:void(0);" onclick="Pachno.Main.Helpers.Backdrop.show('<?php echo make_url('get_partial_for_backdrop', array('key' => 'usercard', 'user_id' => $issue->getAssignee()->getID())); ?>');"><?php echo image_tag($issue->getAssignee()->getAvatarURL(), array('alt' => ' ', 'class' => 'avatar'), true); ?></a>
             <?php else: ?>
-                <?php echo include_component('main/teamdropdown', array('team' => $issue->getAssignee(), 'size' => 'large', 'displayname' => '')); ?>
+                <?php include_component('main/teamdropdown', array('team' => $issue->getAssignee(), 'size' => 'large', 'displayname' => '')); ?>
             <?php endif; ?>
         <?php endif; ?>
     </div>

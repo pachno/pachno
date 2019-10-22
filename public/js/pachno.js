@@ -24,6 +24,35 @@ define(['pachno/tools', 'pachno/index', 'domReady', 'jquery', 'mention'],
                     $form.submit();
                 });
 
+                jQuery('body').on('change', 'input[data-interactive-toggle]', function () {
+                    const $input = jQuery(this),
+                        value = $input.is(':checked') ? '1' : '0';
+
+                    if ($input.hasClass('submitting')) return;
+
+                    $input.addClass('submitting');
+                    $input.attr('disabled', true);
+
+                    let data = new FormData();
+                    data.append('value', value);
+
+                    fetch($input.data('url'), {
+                        method: 'POST',
+                        body: data
+                    })
+                        .then(function(response) {
+                            $input.removeClass('submitting');
+                            $input.attr('disabled', false);
+                            // response.json().then(resolve);
+                            // res = response;
+                            // console.log(response);
+                            // resolve($form, res);
+                            // response.json()
+                            //     .then(function (json) {
+                            //     });
+                        })
+                });
+
                 jQuery('body').on('change', 'form[data-interactive-form] input[type=checkbox],form[data-interactive-form] input[type=radio]', function () {
                     console.log('CHAINGING');
                     const $form = jQuery(this).parents('form');

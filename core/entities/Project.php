@@ -1090,7 +1090,7 @@
          */
         public function isBuildsEnabled()
         {
-            return $this->_enable_builds;
+            return (bool) $this->_enable_builds;
         }
 
         /**
@@ -1110,7 +1110,7 @@
          */
         public function isEditionsEnabled()
         {
-            return $this->_enable_editions;
+            return (bool) $this->_enable_editions;
         }
 
         /**
@@ -1130,7 +1130,7 @@
          */
         public function isComponentsEnabled()
         {
-            return $this->_enable_components;
+            return (bool) $this->_enable_components;
         }
 
         /**
@@ -3187,6 +3187,10 @@
             }
         }
 
+        /**
+         * @param User $user
+         * @return Role[]
+         */
         public function getRolesForUser($user)
         {
             $this->_populateUserRoles();
@@ -3201,6 +3205,10 @@
             }
         }
 
+        /**
+         * @param Team $team
+         * @return Role[]
+         */
         public function getRolesForTeam($team)
         {
             $this->_populateTeamRoles();

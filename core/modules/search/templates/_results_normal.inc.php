@@ -125,9 +125,9 @@ $current_spent_time = $current_estimated_time;
         <div class="column sc_assigned_to<?php if (!$issue->isAssigned()): ?> faded_out<?php endif; ?>"<?php if (!in_array('assigned_to', $visible_columns)): ?> style="display: none;"<?php endif; ?>>
             <?php if ($issue->isAssigned()): ?>
                 <?php if ($issue->getAssignee() instanceof User): ?>
-                    <?php echo include_component('main/userdropdown', ['user' => $issue->getAssignee(), 'size' => 'small']); ?>
+                    <?php include_component('main/userdropdown', ['user' => $issue->getAssignee(), 'size' => 'small']); ?>
                 <?php else: ?>
-                    <?php echo include_component('main/teamdropdown', ['team' => $issue->getAssignee(), 'size' => 'small']); ?>
+                    <?php include_component('main/teamdropdown', ['team' => $issue->getAssignee(), 'size' => 'small']); ?>
                 <?php endif; ?>
             <?php else: ?>
                 -
@@ -135,7 +135,7 @@ $current_spent_time = $current_estimated_time;
         </div>
         <div class="column sc_posted_by<?php if (!$issue->isPostedBy()): ?> faded_out<?php endif; ?>"<?php if (!in_array('posted_by', $visible_columns)): ?> style="display: none;"<?php endif; ?>>
             <?php if ($issue->isPostedBy()): ?>
-                <?php echo include_component('main/userdropdown', array('user' => $issue->getPostedBy())); ?>
+                <?php include_component('main/userdropdown', array('user' => $issue->getPostedBy())); ?>
             <?php else: ?>
                 -
             <?php endif; ?>

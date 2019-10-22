@@ -20,35 +20,21 @@
                     <?php echo ($project->isBuildsEnabled()) ? __('Yes') : __('No'); ?>
                 <?php endif; ?>
             </div>
-            <div class="helper-text"><?php echo __('If this project has regular new main- or test-releases, you should enable releases'); ?></div>
+            <div class="helper-text"><?php echo __('If this project has regular new main- or test-releases, you can use this feature to track issue across different releases'); ?></div>
         </div>
         <div class="form-row">
-            <label for="enable_editions_yes"><?php echo __('Enable editions'); ?></label>
+            <label for="project_downloads_enabled"><?php echo __('Enable downloads'); ?></label>
             <div class="fancy-label-select">
                 <?php if ($access_level == \pachno\core\framework\Settings::ACCESS_FULL): ?>
-                    <input type="radio" name="enable_editions" value="1" class="fancy-checkbox" id="enable_editions_yes"<?php if ($project->isEditionsEnabled()): ?> checked<?php endif; ?>>
-                    <label for="enable_editions_yes"><?php echo fa_image_tag('check', ['class' => 'checked']) . __('Yes'); ?></label>
-                    <input type="radio" name="enable_editions" value="0" class="fancy-checkbox" id="enable_editions_no"<?php if (!$project->isEditionsEnabled()): ?> checked<?php endif; ?>>
-                    <label for="enable_editions_no"><?php echo fa_image_tag('check', ['class' => 'checked']) . __('No'); ?></label>
+                    <input type="radio" name="enable_downloads" value="1" class="fancy-checkbox" id="enable_downloads_yes"<?php if ($project->hasDownloads()): ?> checked<?php endif; ?>>
+                    <label for="enable_downloads_yes"><?php echo fa_image_tag('check', ['class' => 'checked']) . __('Yes'); ?></label>
+                    <input type="radio" name="enable_downloads" value="0" class="fancy-checkbox" id="enable_downloads_no"<?php if (!$project->hasDownloads()): ?> checked<?php endif; ?>>
+                    <label for="enable_downloads_no"><?php echo fa_image_tag('check', ['class' => 'checked']) . __('No'); ?></label>
                 <?php else: ?>
-                    <?php echo ($project->isEditionsEnabled()) ? __('Yes') : __('No'); ?>
+                    <?php echo ($project->hasDownloads()) ? __('Yes') : __('No'); ?>
                 <?php endif; ?>
             </div>
-            <div class="helper-text"><?php echo __('If the project has more than one edition which differ in features or capabilities, you should enable editions'); ?></div>
-        </div>
-        <div class="form-row">
-            <label for="enable_components_yes"><?php echo __('Enable components'); ?></label>
-            <div class="fancy-label-select">
-                <?php if ($access_level == \pachno\core\framework\Settings::ACCESS_FULL): ?>
-                    <input type="radio" name="enable_components" value="1" class="fancy-checkbox" id="enable_components_yes"<?php if ($project->isComponentsEnabled()): ?> checked<?php endif; ?>>
-                    <label for="enable_components_yes"><?php echo fa_image_tag('check', ['class' => 'checked']) . __('Yes'); ?></label>
-                    <input type="radio" name="enable_components" value="0" class="fancy-checkbox" id="enable_components_no"<?php if (!$project->isComponentsEnabled()): ?> checked<?php endif; ?>>
-                    <label for="enable_components_no"><?php echo fa_image_tag('check', ['class' => 'checked']) . __('No'); ?></label>
-                <?php else: ?>
-                    <?php echo ($project->isComponentsEnabled()) ? __('Yes') : __('No'); ?>
-                <?php endif; ?>
-            </div>
-            <div class="helper-text"><?php echo __('If the project consists of several easily identifiable sub-parts, you should enable components'); ?></div>
+            <div class="helper-text"><?php echo __('If project releases can be downloaded, use this feature to either upload the files or point to download links'); ?></div>
         </div>
     <?php if ($access_level == \pachno\core\framework\Settings::ACCESS_FULL): ?>
         <div class="form-row submit-container">

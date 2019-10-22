@@ -44,7 +44,7 @@
                 <ul class="project_team_list teams">
                     <?php foreach ($assigned_teams as $team): ?>
                         <li>
-                            <?php echo include_component('main/teamdropdown', array('team' => $team)); ?>
+                            <?php include_component('main/teamdropdown', array('team' => $team)); ?>
                             <div class="roles_list">
                                 <?php $roles = $selected_project->getRolesForTeam($team); ?>
                                 <?php $role_names = array(); ?>

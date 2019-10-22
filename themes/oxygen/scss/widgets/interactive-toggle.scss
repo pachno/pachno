@@ -1,0 +1,12 @@
+input[data-interactive-toggle] {
+  &.submitting {
+    + label {
+      .indicator {
+        display: inline-block;
+        margin-right: .35em;
+        opacity: 1;
+        width: auto;
+      }
+    }
+  }
+}

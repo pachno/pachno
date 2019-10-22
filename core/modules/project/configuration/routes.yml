@@ -5,6 +5,15 @@ configure_project_settings:
     parameters: [ ]
     csrf_enabled: false
 
+configure_project_setting:
+    route: /configure/project/:project_id/settings/:setting_key
+    module: project
+    action: configureProjectSetting
+    methods:
+      - POST
+    parameters: [ ]
+    csrf_enabled: false
+
 configure_project_developers:
     route: /configure/project/:project_id/developers
     module: project
@@ -54,20 +63,6 @@ configure_project_remove_assignee:
       config_module: core
       section: 10
       mode: user
-    csrf_enabled: false
-
-configure_projects_add_edition:
-    route: /configure/project/:project_id/add/edition
-    module: project
-    action: addEdition
-    parameters: [ ]
-    csrf_enabled: false
-
-configure_projects_add_component:
-    route: /configure/project/:project_id/add/component
-    module: project
-    action: addComponent
-    parameters: [ ]
     csrf_enabled: false
 
 configure_projects_build:
@@ -122,36 +117,6 @@ configure_edition_add_build:
     parameters: [ ]
     csrf_enabled: false
 
-configure_edition_add_component:
-    route: /configure/project/:project_id/edition/:edition_id/add/component/:component_id
-    module: project
-    action: editEditionComponent
-    parameters:
-      config_module: core
-      section: 10
-      mode: add
-    csrf_enabled: false
-
-configure_edition_remove_component:
-    route: /configure/project/:project_id/edition/:edition_id/remove/component/:component_id
-    module: project
-    action: editEditionComponent
-    parameters:
-      config_module: core
-      section: 10
-      mode: remove
-    csrf_enabled: false
-
-configure_update_component:
-    route: /configure/project/:project_id/component/:component_id/update
-    module: project
-    action: editComponent
-    parameters:
-      config_module: core
-      section: 10
-      mode: update
-    csrf_enabled: false
-
 configure_component_set_assignedto:
     route: '/configure/project/:project_id/component/:component_id/set/:field/*'
     module: project
@@ -160,30 +125,6 @@ configure_component_set_assignedto:
       config_module: core
       section: 10
       item_type: component
-    csrf_enabled: false
-
-configure_delete_component:
-    route: /configure/project/:project_id/component/:component_id/delete
-    module: project
-    action: editComponent
-    parameters:
-      config_module: core
-      section: 10
-      mode: delete
-    csrf_enabled: false
-
-configure_delete_edition:
-    route: /configure/project/:project_id/edition/:edition_id/delete
-    module: project
-    action: deleteEdition
-    parameters: [ ]
-    csrf_enabled: false
-
-configure_project_editions_components:
-    route: /configure/project/:project_id/editions_and_components
-    module: project
-    action: configureProjectEditionsAndComponents
-    parameters: [ ]
     csrf_enabled: false
 
 configure_project_other:
@@ -200,12 +141,34 @@ configure_project_updateother:
     parameters: [ ]
     csrf_enabled: false
 
+configure_project_edition:
+    route: /configure/project/:project_id/edition/:edition_id
+    module: project
+    action: editEdition
+    methods:
+      - GET
+    parameters:
+      config_module: core
+      section: 10
+    csrf_enabled: false
+
 configure_project_edition_post:
     route: /configure/project/:project_id/edition/:edition_id
     module: project
-    action: configureProjectEdition
+    action: editEdition
     methods:
       - POST
+    parameters:
+      config_module: core
+      section: 10
+    csrf_enabled: false
+
+configure_project_edition_delete:
+    route: /configure/project/:project_id/edition/:edition_id
+    module: project
+    action: deleteEdition
+    methods:
+      - DELETE
     parameters:
       config_module: core
       section: 10
@@ -217,6 +180,17 @@ configure_project_component_post:
     action: editComponent
     methods:
       - POST
+    parameters:
+      config_module: core
+      section: 10
+    csrf_enabled: false
+
+configure_project_component_delete:
+    route: /configure/project/:project_id/component/:component_id
+    module: project
+    action: deleteComponent
+    methods:
+      - DELETE
     parameters:
       config_module: core
       section: 10

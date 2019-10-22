@@ -23,6 +23,7 @@
     &.submitting {
       .form-row {
         > input[type=text].invisible,
+        > input[type=url].invisible,
         > input[type=password].invisible {
           border: 1px dashed $theme-primary;
 
@@ -57,6 +58,14 @@
         max-width: none;
       }
     }
+  }
+
+  .separator {
+    flex: 1 0 100%;
+    box-sizing: border-box;
+    padding: 1em 1em 0 1em;
+    border-bottom: 1px dotted rgba(0, 0, 0, .4);
+    margin-bottom: 1em;
   }
 
   .form-row {
@@ -101,6 +110,7 @@
       justify-content: center;
 
       input[type=text],
+      input[type=url],
       input[type=number] {
         text-align: center;
       }
@@ -186,6 +196,7 @@
 
     > textarea,
     > input[type=text],
+    > input[type=url],
     > input[type=password] {
       flex: 1 1 100%;
       padding: .2em;
@@ -280,6 +291,7 @@
 
         & + textarea,
         & + input[type=text],
+        & + input[type=url],
         & + input[type=password] {
           flex: 1 1 calc(100% - 55px);
           margin-left: 1em;

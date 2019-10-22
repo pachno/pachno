@@ -2,7 +2,8 @@
   display: none;
 
   + label {
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
     color: #555;
     transition: color .2s ease-in-out;
   }
@@ -11,7 +12,8 @@
   + .list-item {
     .fas.unchecked,
     .far.unchecked {
-      display: inline-block;
+      align-items: center;
+      display: inline-flex;
       margin-right: .3em;
     }
 

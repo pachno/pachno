@@ -155,20 +155,6 @@
                 ?>
             <?php endif; ?>
         </div>
-        <div class="form-row">
-            <label for="allow_autoassignment_yes"><?php echo __('Enable autoassignment'); ?></label>
-            <div class="fancy-label-select">
-                <?php if ($access_level == Settings::ACCESS_FULL): ?>
-                    <input type="radio" name="allow_autoassignment" value="1" class="fancy-checkbox" id="allow_autoassignment_yes"<?php if ($project->canAutoassign()): ?> checked<?php endif; ?>>
-                    <label for="allow_autoassignment_yes"><?php echo fa_image_tag('check', ['class' => 'checked']) . __('Yes'); ?></label>
-                    <input type="radio" name="allow_autoassignment" value="0" class="fancy-checkbox" id="allow_autoassignment_no"<?php if (!$project->canAutoassign()): ?> checked<?php endif; ?>>
-                    <label for="allow_autoassignment_no"><?php echo fa_image_tag('check', ['class' => 'checked']) . __('No'); ?></label>
-                <?php else: ?>
-                    <?php echo ($project->canAutoassign()) ? __('Yes') : __('No'); ?>
-                <?php endif; ?>
-            </div>
-        </div>
-        <div class="helper-text"><?php echo __('You can set issues to be automatically assigned to users depending on the leader set for editions, components and projects. If you wish to use this feature you can turn it on here.'); ?></div>
         <?php \pachno\core\framework\Event::createNew('core', 'project/projectinfo', $project)->trigger(); ?>
     <?php if ($access_level == Settings::ACCESS_FULL): ?>
         <div class="form-row submit-container">

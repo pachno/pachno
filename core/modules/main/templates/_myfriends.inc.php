@@ -7,7 +7,7 @@
 <?php if (count($friends) > 0): ?>
     <?php foreach ($friends as $friend): ?>
         <div class="list-item">
-            <div class="name"><?php echo include_component('main/userdropdown', array('user' => $friend)); ?></div>
+            <div class="name"><?php include_component('main/userdropdown', array('user' => $friend)); ?></div>
         </div>
     <?php endforeach; ?>
 <?php else: ?>

@@ -2,6 +2,7 @@
 
     namespace pachno\core\entities\tables;
 
+    use pachno\core\entities\Edition;
     use pachno\core\framework;
     use b2db\Core,
         b2db\Criteria,
@@ -19,6 +20,9 @@
 
     /**
      * Editions table
+     *
+     * @method static Editions getTable()
+     * @method Edition selectById($id)
      *
      * @package pachno
      * @subpackage tables

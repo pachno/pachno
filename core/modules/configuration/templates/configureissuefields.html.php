@@ -10,24 +10,6 @@
             <div class="helper-text">
                 <p><?php echo __('Edit built-in and custom issue fields and values here. Remember that the issue fields visibility (in the issue view or during reporting) is decided by the %issuetype_scheme in use by the project.', array('%issuetype_scheme' => link_tag(make_url('configure_issuetypes_schemes'), __('Issuetype scheme')))); ?></p>
             </div>
-            <div style="display: none;">
-                <form accept-charset="<?php echo \pachno\core\framework\Context::getI18n()->getCharset(); ?>" action="<?php echo make_url('configure_issuefields_add_customtype'); ?>" onsubmit="Pachno.Config.Issuefields.Custom.add('<?php echo make_url('configure_issuefields_add_customtype'); ?>');return false;" id="add_custom_type_form">
-                    <div style="position: absolute; right: 15px; top: 15px;">
-                        <input type="submit" value="<?php echo __('Add issue field'); ?>" style="font-weight: normal; font-size: 14px;" id="add_custom_type_button">
-                        <?php echo image_tag('spinning_16.gif', array('style' => 'margin-right: 5px; display: none;', 'id' => 'add_custom_type_indicator')); ?>
-                    </div>
-                    <label for="new_custom_field_name" style="width: 150px; display: inline-block;"><?php echo __('Add new issue field'); ?></label>
-                    <input type="text" name="name" id="new_custom_field_name" style="width: 250px;">
-                    <br style="clear: both;">
-                    <label for="new_custom_field_name" style="width: 150px; display: inline-block;"><?php echo __('Field type'); ?></label>
-                    <select id="new_custom_field_type" name="field_type" style="width: 400px;">
-                        <?php foreach (\pachno\core\entities\CustomDatatype::getFieldTypes() as $type => $details): ?>
-                            <option value="<?php echo $type; ?>"><?php echo $details['description']; ?></option>
-                        <?php endforeach; ?>
-                    </select>
-                    <br style="clear: both;">
-                </form>
-            </div>
             <div class="configurable-components-container" id="issue-fields-configuration-container">
                 <div class="configurable-components-list-container">
                     <h3><?php echo __('Issue fields'); ?></h3>

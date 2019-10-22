@@ -46,7 +46,7 @@ use pachno\core\framework\Context; ?>
             <label><?php echo __('Posted by'); ?></label>
             <div id="posted_by_content" class="dropper-container">
                 <div id="posted_by_name" class="value">
-                    <?php echo include_component('main/userdropdown', ['user' => $issue->getPostedBy(), 'size' => 'medium']); ?>
+                    <?php include_component('main/userdropdown', ['user' => $issue->getPostedBy(), 'size' => 'medium']); ?>
                     <?php if ($issue->isEditable() && $issue->canEditPostedBy()): ?>
                         <a href="javascript:void(0);" class="button secondary dropper" title="<?php echo __('Click to change owner'); ?>"><?= fa_image_tag('angle-down'); ?></a>
                         <div class="dropdown-container from-left">

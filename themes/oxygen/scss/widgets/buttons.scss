@@ -45,7 +45,14 @@ button, button:hover,
   align-items: center;
 
   span + .fas,
+  span + .icon,
   span + .far {
+    margin-left: .35rem;
+  }
+
+  .icon + span,
+  .fas + span,
+  .far + span {
     margin-left: .35rem;
   }
 }
@@ -179,6 +186,46 @@ input.icon.secondary:disabled {
   &:hover {
     background: transparent;
     color: rgba(200, 200, 200, .3);
+  }
+}
+button.danger,
+.button.danger,
+input.button.danger,
+button.icon.danger,
+.button.icon.danger,
+input.icon.danger {
+  background-color: #cb1a00;
+  color: #FFF;
+
+  .icon {
+    color: #FFF;
+  }
+
+  &:hover {
+    background-color: #9e1200;
+    color: #FFF;
+
+    .icon {
+      color: #FFF;
+    }
+  }
+
+  &.secondary {
+    background: transparent;
+    color: #cb1a00;
+
+    .icon {
+      color: #cb1a00;
+    }
+
+    &:hover {
+      background-color: #cb1a00;
+      color: #FFF;
+
+      .icon {
+        color: #FFF;
+      }
+    }
   }
 }
 .button-group {

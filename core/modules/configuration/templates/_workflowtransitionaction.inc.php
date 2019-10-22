@@ -153,7 +153,7 @@ use pachno\core\entities\Component;
                             <?php switch (CustomDatatype::getByKey($action->getCustomActionType())->getType()) {
                                 case CustomDatatype::INPUT_TEXTAREA_MAIN:
                                 case CustomDatatype::INPUT_TEXTAREA_SMALL:
-                                    echo include_component('main/textarea', array('area_name' => 'target_value', 'target_type' => 'workflowtransitionaction', 'target_id' => $action->getID(), 'area_id' => 'workflowtransitionaction_'. $action->getID() .'_value', 'class' => 'inline', 'value' => $action->getTargetValue()));
+                                    include_component('main/textarea', array('area_name' => 'target_value', 'target_type' => 'workflowtransitionaction', 'target_id' => $action->getID(), 'area_id' => 'workflowtransitionaction_'. $action->getID() .'_value', 'class' => 'inline', 'value' => $action->getTargetValue()));
                                     break;
                                 case CustomDatatype::DATE_PICKER:
                                 case CustomDatatype::DATETIME_PICKER: ?>
