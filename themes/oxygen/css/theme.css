@@ -9148,10 +9148,12 @@ input[data-interactive-toggle].submitting + label .indicator {
       opacity: 0;
       transition: opacity .25s ease-in-out; }
     .form-container form.submitting .form-row > input[type=text].invisible,
+    .form-container form.submitting .form-row > input[type=search].invisible,
     .form-container form.submitting .form-row > input[type=url].invisible,
     .form-container form.submitting .form-row > input[type=password].invisible {
       border: 1px dashed #0C8990; }
       .form-container form.submitting .form-row > input[type=text].invisible + label,
+      .form-container form.submitting .form-row > input[type=search].invisible + label,
       .form-container form.submitting .form-row > input[type=url].invisible + label,
       .form-container form.submitting .form-row > input[type=password].invisible + label {
         opacity: 1;
@@ -9208,6 +9210,7 @@ input[data-interactive-toggle].submitting + label .indicator {
     .form-container .form-row.centered {
       justify-content: center; }
       .form-container .form-row.centered input[type=text],
+      .form-container .form-row.centered input[type=search],
       .form-container .form-row.centered input[type=url],
       .form-container .form-row.centered input[type=number] {
         text-align: center; }
@@ -9263,6 +9266,7 @@ input[data-interactive-toggle].submitting + label .indicator {
         margin-right: .5em; }
     .form-container .form-row > textarea,
     .form-container .form-row > input[type=text],
+    .form-container .form-row > input[type=search],
     .form-container .form-row > input[type=url],
     .form-container .form-row > input[type=password] {
       flex: 1 1 100%;
@@ -9271,6 +9275,7 @@ input[data-interactive-toggle].submitting + label .indicator {
       box-sizing: border-box; }
       .form-container .form-row > textarea.invisible,
       .form-container .form-row > input[type=text].invisible,
+      .form-container .form-row > input[type=search].invisible,
       .form-container .form-row > input[type=url].invisible,
       .form-container .form-row > input[type=password].invisible {
         background-color: transparent;
@@ -9280,16 +9285,19 @@ input[data-interactive-toggle].submitting + label .indicator {
         flex: 1 1 auto; }
         .form-container .form-row > textarea.invisible.title,
         .form-container .form-row > input[type=text].invisible.title,
+        .form-container .form-row > input[type=search].invisible.title,
         .form-container .form-row > input[type=url].invisible.title,
         .form-container .form-row > input[type=password].invisible.title {
           font-weight: 400; }
         .form-container .form-row > textarea.invisible.inline,
         .form-container .form-row > input[type=text].invisible.inline,
+        .form-container .form-row > input[type=search].invisible.inline,
         .form-container .form-row > input[type=url].invisible.inline,
         .form-container .form-row > input[type=password].invisible.inline {
           flex: 0 0 auto; }
         .form-container .form-row > textarea.invisible + label,
         .form-container .form-row > input[type=text].invisible + label,
+        .form-container .form-row > input[type=search].invisible + label,
         .form-container .form-row > input[type=url].invisible + label,
         .form-container .form-row > input[type=password].invisible + label {
           opacity: 0;
@@ -9297,6 +9305,7 @@ input[data-interactive-toggle].submitting + label .indicator {
           margin-bottom: -1.8em; }
         .form-container .form-row > textarea.invisible:hover,
         .form-container .form-row > input[type=text].invisible:hover,
+        .form-container .form-row > input[type=search].invisible:hover,
         .form-container .form-row > input[type=url].invisible:hover,
         .form-container .form-row > input[type=password].invisible:hover {
           border: 1px solid transparent;
@@ -9304,22 +9313,26 @@ input[data-interactive-toggle].submitting + label .indicator {
           cursor: pointer; }
         .form-container .form-row > textarea.invisible:focus,
         .form-container .form-row > input[type=text].invisible:focus,
+        .form-container .form-row > input[type=search].invisible:focus,
         .form-container .form-row > input[type=url].invisible:focus,
         .form-container .form-row > input[type=password].invisible:focus {
           background: #FFF;
           border-color: #0C8990; }
           .form-container .form-row > textarea.invisible:focus.with-label,
           .form-container .form-row > input[type=text].invisible:focus.with-label,
+          .form-container .form-row > input[type=search].invisible:focus.with-label,
           .form-container .form-row > input[type=url].invisible:focus.with-label,
           .form-container .form-row > input[type=password].invisible:focus.with-label {
             padding-bottom: 2rem; }
           .form-container .form-row > textarea.invisible:focus:hover,
           .form-container .form-row > input[type=text].invisible:focus:hover,
+          .form-container .form-row > input[type=search].invisible:focus:hover,
           .form-container .form-row > input[type=url].invisible:focus:hover,
           .form-container .form-row > input[type=password].invisible:focus:hover {
             cursor: text; }
           .form-container .form-row > textarea.invisible:focus + label,
           .form-container .form-row > input[type=text].invisible:focus + label,
+          .form-container .form-row > input[type=search].invisible:focus + label,
           .form-container .form-row > input[type=url].invisible:focus + label,
           .form-container .form-row > input[type=password].invisible:focus + label {
             opacity: 1;
@@ -9329,6 +9342,7 @@ input[data-interactive-toggle].submitting + label .indicator {
             padding: .35rem; }
       .form-container .form-row > textarea.name-input-enhance,
       .form-container .form-row > input[type=text].name-input-enhance,
+      .form-container .form-row > input[type=search].name-input-enhance,
       .form-container .form-row > input[type=url].name-input-enhance,
       .form-container .form-row > input[type=password].name-input-enhance {
         font-size: 1.25em;
@@ -9336,6 +9350,7 @@ input[data-interactive-toggle].submitting + label .indicator {
         border-bottom-width: 2px; }
       .form-container .form-row > textarea.code-input-6,
       .form-container .form-row > input[type=text].code-input-6,
+      .form-container .form-row > input[type=search].code-input-6,
       .form-container .form-row > input[type=url].code-input-6,
       .form-container .form-row > input[type=password].code-input-6 {
         max-width: 10rem; }
@@ -9343,6 +9358,9 @@ input[data-interactive-toggle].submitting + label .indicator {
       .form-container .form-row > input[type=text].number,
       .form-container .form-row > input[type=text].prefix-and-key,
       .form-container .form-row > input[type=text]:not(.invisible).number,
+      .form-container .form-row > input[type=search].number,
+      .form-container .form-row > input[type=search].prefix-and-key,
+      .form-container .form-row > input[type=search]:not(.invisible).number,
       .form-container .form-row > input[type=url].number,
       .form-container .form-row > input[type=url].prefix-and-key,
       .form-container .form-row > input[type=url]:not(.invisible).number,
@@ -9355,6 +9373,9 @@ input[data-interactive-toggle].submitting + label .indicator {
         .form-container .form-row > input[type=text].number.small,
         .form-container .form-row > input[type=text].prefix-and-key.small,
         .form-container .form-row > input[type=text]:not(.invisible).number.small,
+        .form-container .form-row > input[type=search].number.small,
+        .form-container .form-row > input[type=search].prefix-and-key.small,
+        .form-container .form-row > input[type=search]:not(.invisible).number.small,
         .form-container .form-row > input[type=url].number.small,
         .form-container .form-row > input[type=url].prefix-and-key.small,
         .form-container .form-row > input[type=url]:not(.invisible).number.small,
@@ -9365,6 +9386,8 @@ input[data-interactive-toggle].submitting + label .indicator {
       .form-container .form-row > textarea.medium, .form-container .form-row > textarea:not(.invisible).medium,
       .form-container .form-row > input[type=text].medium,
       .form-container .form-row > input[type=text]:not(.invisible).medium,
+      .form-container .form-row > input[type=search].medium,
+      .form-container .form-row > input[type=search]:not(.invisible).medium,
       .form-container .form-row > input[type=url].medium,
       .form-container .form-row > input[type=url]:not(.invisible).medium,
       .form-container .form-row > input[type=password].medium,
@@ -9375,11 +9398,21 @@ input[data-interactive-toggle].submitting + label .indicator {
       .form-container .form-row > textarea:active + label,
       .form-container .form-row > input[type=text]:focus + label,
       .form-container .form-row > input[type=text]:active + label,
+      .form-container .form-row > input[type=search]:focus + label,
+      .form-container .form-row > input[type=search]:active + label,
       .form-container .form-row > input[type=url]:focus + label,
       .form-container .form-row > input[type=url]:active + label,
       .form-container .form-row > input[type=password]:focus + label,
       .form-container .form-row > input[type=password]:active + label {
         color: #0C8990; }
+    .form-container .form-row.search-container input[type=search] {
+      flex: 1 1 auto;
+      margin-right: 1em;
+      font-size: 1.25em;
+      padding: .5em .2em;
+      border-bottom-width: 2px; }
+      .form-container .form-row.search-container input[type=search] + button {
+        flex: 0 0 auto; }
     .form-container .form-row.add-placeholder > .icon {
       color: rgba(0, 0, 0, 0.4); }
       .form-container .form-row.add-placeholder > .icon + textarea,

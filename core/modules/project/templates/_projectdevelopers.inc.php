@@ -5,36 +5,18 @@
  */
 
 ?>
-<?php if ($access_level == \pachno\core\framework\Settings::ACCESS_FULL): ?>
-    <div class="project_save_container">
-        <div class="button" onclick="$('add_people_to_project_container').toggle();"><?= __('Add people'); ?></div>
-        <button class="button dropper"><?= __('More actions'); ?></button>
-        <ul class="simple-list rounded_box white shadowed rightie popup_box more_actions_dropdown">
-            <li><a href="javascript:void(0);" onclick="$('owned_by_change').up('td').down('label').toggleClassName('button-pressed');$('owned_by_change').toggle();"><?= __('Change / set project owner'); ?></a></li>
-            <li><a href="javascript:void(0);" onclick="$('lead_by_change').up('td').down('label').toggleClassName('button-pressed');$('lead_by_change').toggle();"><?= __('Change / set project leader'); ?></a></li>
-            <li><a href="javascript:void(0);" onclick="$('qa_by_change').up('td').down('label').toggleClassName('button-pressed');$('qa_by_change').toggle();"><?= __('Change / set project qa responsible'); ?></a></li>
-        </ul>
-    </div>
-    <div class="rounded_box lightgrey" style="margin: 0 0 10px 0; width: 765px; padding: 5px 10px 5px 10px; display: none;" id="add_people_to_project_container">
-        <form accept-charset="<?= \pachno\core\framework\Context::getI18n()->getCharset(); ?>" action="<?= make_url('configure_project_find_assignee', array('project_id' => $project->getID())); ?>" method="post" onsubmit="Pachno.Project.findDevelopers('<?= make_url('configure_project_find_assignee', array('project_id' => $project->getID())); ?>');return false;" id="find_dev_form">
-            <table style="width: 100%; margin-top: 3px;" cellpadding=0 cellspacing=0 id="find_user">
-                <tr>
-                    <td style="width: 200px; padding: 2px; text-align: left;"><label for="find_by"><?= __('Find team or user'); ?></label></td>
-                    <td style="width: auto; padding: 2px;"><input type="text" name="find_by" id="find_by" value="" style="width: 100%;"></td>
-                    <td style="width: 50px; padding: 2px; text-align: right;"><input type="submit" value="<?= __('Find'); ?>" style="width: 45px;"></td>
-                </tr>
-            </table>
-        </form>
-        <div style="padding: 10px 0 10px 0; display: none;" id="find_dev_indicator"><span style="float: left;"><?= image_tag('spinning_16.gif'); ?></span>&nbsp;<?= __('Please wait'); ?></div>
-        <div id="find_dev_results">
-            <div class="faded_out" style="padding: 4px;"><?= __('To add people to this project, enter the name of a user or team to search for it'); ?></div>
-        </div>
-    </div>
-<?php endif; ?>
-<h4><?= __('Project administration'); ?></h4>
-<p class="faded_out" style="margin-bottom: 10px;">
-    <?= __('These are the people in charge of different areas of the project. The project owner has total control over this project and can edit information, settings, and anything about it. The project leader does not have this power, but will be notified of anything happening in the project. The QA responsible role does not grant any special privileges, it is purely an informational setting.'); ?>
-</p>
+<h3>
+    <span><?= __('Project team'); ?></span>
+    <?php if ($access_level == \pachno\core\framework\Settings::ACCESS_FULL): ?>
+        <button class="button secondary" onclick="Pachno.Main.Helpers.Backdrop.show('<?php echo make_url('get_partial_for_backdrop', ['key' => 'project_add_people', 'project_id' => $project->getID()]); ?>');">
+            <?= fa_image_tag('user-plus', ['class' => 'icon']); ?>
+            <span class="name"><?= __('Add people'); ?></span>
+        </button>
+    <?php endif; ?>
+</h3>
+<div class="helper-text">
+    <?= __('The project owner has total control over this project and can edit information, settings, and anything about it'); ?>
+</div>
 <div id="project_team_list" class="flexible-table">
     <div class="row header">
         <div class="column header name-container"><?= __('Name'); ?></div>

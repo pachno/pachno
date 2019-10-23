@@ -1,8 +1,24 @@
 <?php if ($message): ?>
-    <p class="faded_out" style="padding: 5px;"><?php echo __('Please specify something to search for'); ?></p>
+    <div class="onboarding medium">
+        <div class="image-container">
+            <?= image_tag('/unthemed/onboarding_search_missing_input.png', [], true); ?>
+        </div>
+        <div class="helper-text">
+            <?= __('Woops, you probably forgot to type something before you tried searching.'); ?>
+        </div>
+    </div>
+<?php elseif (!count($teams) && !count($users)): ?>
+    <div class="onboarding medium">
+        <div class="image-container">
+            <?= image_tag('/unthemed/onboarding_no_users_found.png', [], true); ?>
+        </div>
+        <div class="helper-text">
+            <?= __("Oh noes, we didn't find any users or teams."); ?>
+        </div>
+    </div>
 <?php else: ?>
-    <div class="config_header" style="margin-top: 10px;"><b><?php echo __('The following teams were found based on your search criteria'); ?>:</b></div>
     <?php if ($teams): ?>
+        <div class="config_header" style="margin-top: 10px;"><b><?php echo __('The following teams were found based on your search criteria'); ?>:</b></div>
         <div style="margin: 5px 0 0 10px;">
             <?php foreach ($teams as $team): ?>
                 <div id="assign_team_<?php echo $team->getID(); ?>">
@@ -25,11 +41,9 @@
                 </div>
             <?php endforeach; ?>
         </div>
-    <?php else: ?>
-        <p class="faded_out" style="padding: 2px 0 0 10px;"><?php echo __('Could not find any teams based on your search criteria'); ?></p>
     <?php endif;?>
-    <div class="config_header" style="margin-top: 10px;"><b><?php echo __('The following users were found based on your search criteria'); ?>:</b></div>
     <?php if ($users): ?>
+        <div class="config_header" style="margin-top: 10px;"><b><?php echo __('The following users were found based on your search criteria'); ?>:</b></div>
         <div style="margin: 5px 0 0 10px;">
             <?php foreach ($users as $user): ?>
                  <div id="assign_user_<?php echo $user->getID(); ?>">
@@ -52,8 +66,6 @@
                 </div>
             <?php endforeach; ?>
         </div>
-    <?php else: ?>
-        <p class="faded_out" style="padding: 2px 0 0 10px;"><?php echo __('Could not find any users based on your search criteria'); ?></p>
     <?php endif;?>
 <?php endif; ?>
 <div style="padding: 10px 0 10px 0; display: none;" id="assign_dev_indicator"><span style="float: left;"><?php echo image_tag('spinning_16.gif'); ?></span>&nbsp;<?php echo __('Please wait'); ?></div>

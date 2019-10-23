@@ -23,6 +23,7 @@
     &.submitting {
       .form-row {
         > input[type=text].invisible,
+        > input[type=search].invisible,
         > input[type=url].invisible,
         > input[type=password].invisible {
           border: 1px dashed $theme-primary;
@@ -110,6 +111,7 @@
       justify-content: center;
 
       input[type=text],
+      input[type=search],
       input[type=url],
       input[type=number] {
         text-align: center;
@@ -196,6 +198,7 @@
 
     > textarea,
     > input[type=text],
+    > input[type=search],
     > input[type=url],
     > input[type=password] {
       flex: 1 1 100%;
@@ -282,6 +285,20 @@
       &:focus + label,
       &:active + label {
         color: $theme-primary;
+      }
+    }
+
+    &.search-container {
+      input[type=search] {
+        flex: 1 1 auto;
+        margin-right: 1em;
+        font-size: 1.25em;
+        padding: .5em .2em;
+        border-bottom-width: 2px;
+
+        & + button {
+          flex: 0 0 auto;
+        }
       }
     }
 

@@ -4298,7 +4298,18 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
             Pachno.Main.Helpers.ajax(url, {
                 form: 'find_dev_form',
                 loading: {indicator: 'find_dev_indicator'},
-                success: {update: 'find_dev_results'}
+                success: {
+                    update: 'find_dev_results',
+                    callback: function () {
+                        let $form = jQuery('#find_dev_form');
+                        $form.removeClass('submitting');
+                        $form.find('button[type=submit]').each(function () {
+                            var $button = jQuery(this);
+                            $button.removeClass('auto-disabled');
+                            $button.attr("disabled", false);
+                        })
+                    }
+                }
             });
         }
 

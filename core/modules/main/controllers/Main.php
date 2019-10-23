@@ -3165,6 +3165,10 @@ class Main extends framework\Action
                     $template_name = 'project/projectworkflow';
                     $options['project'] = tables\Projects::getTable()->selectById($request['project_id']);
                     break;
+                case 'project_add_people':
+                    $template_name = 'project/projectaddpeople';
+                    $options['project'] = tables\Projects::getTable()->selectById($request['project_id']);
+                    break;
                 case 'permissions':
                     $options['key'] = $request['permission_key'];
                     $target_module = ($request['target_module'] !== 'core') ? $request['target_module'] : null;

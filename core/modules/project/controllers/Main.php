@@ -775,7 +775,7 @@ class Main extends helpers\ProjectActions
         if ($request['find_by'])
         {
             $this->selected_project = entities\Project::getB2DBTable()->selectById($request['project_id']);
-            $this->users = tables\Users::getTable()->getByDetails($request['find_by'], 10);
+            $this->users = []; // tables\Users::getTable()->getByDetails($request['find_by'], 10);
             $this->teams = tables\Teams::getTable()->quickfind($request['find_by']);
             $this->global_roles = entities\Role::getAll();
             $this->project_roles = entities\Role::getByProjectID($this->selected_project->getID());
