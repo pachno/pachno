@@ -2,15 +2,7 @@
 
     namespace pachno\core\framework;
 
-    /**
-     * Logging class
-     *
-     * @author Daniel Andre Eikeland <zegenie@zegeniestudios.net>
-     * @version 3.1
-     * @license http://opensource.org/licenses/MPL-2.0 Mozilla Public License 2.0 (MPL 2.0)
-     * @package pachno
-     * @subpackage core
-     */
+    use pachno\core\framework\cli\Command;
 
     /**
      * Logging class
@@ -21,20 +13,24 @@
     class Logging
     {
         const LEVEL_INFO = 1;
+
         const LEVEL_NOTICE = 5;
+
         const LEVEL_WARNING = 10;
+
         const LEVEL_WARNING_RISK = 15;
+
         const LEVEL_FATAL = 20;
-        
+
         protected static $_logging_enabled = true;
-        
+
         protected static $_logfile;
-        
+
         protected static $_logonajaxcalls = true;
-        
-        protected static $_entries = array();
-        
-        protected static $_categorized_entries = array();
+
+        protected static $_entries = [];
+
+        protected static $_categorized_entries = [];
 
         protected static $_loglevel = 1;
 
@@ -51,22 +47,19 @@
         {
             if (!self::$_logging_enabled) return false;
             if (self::$_loglevel > $level) return false;
-            if (self::$_cli_log_to_screen_in_debug_mode && Context::isCLI() && Context::isDebugMode() && class_exists('\pachno\core\framework\cli\Command'))
-            {
-                \pachno\core\framework\cli\Command::cli_echo(mb_strtoupper(self::getLevelName($level)), 'white', 'bold');
-                \pachno\core\framework\cli\Command::cli_echo(" [{$category}] ", 'green', 'bold');
-                \pachno\core\framework\cli\Command::cli_echo("$message\n");
+            if (self::$_cli_log_to_screen_in_debug_mode && Context::isCLI() && Context::isDebugMode() && class_exists('\pachno\core\framework\cli\Command')) {
+                Command::cli_echo(mb_strtoupper(self::getLevelName($level)), 'white', 'bold');
+                Command::cli_echo(" [{$category}] ", 'green', 'bold');
+                Command::cli_echo("$message\n");
             }
-            if (self::$_logonajaxcalls || Context::getRequest()->isAjaxCall())
-            {
-                if (self::$_logfile !== null)
-                {
+            if (self::$_logonajaxcalls || Context::getRequest()->isAjaxCall()) {
+                if (self::$_logfile !== null) {
                     file_put_contents(self::$_logfile, mb_strtoupper(self::getLevelName($level)) . " [{$category}] {$message}\n", FILE_APPEND);
                 }
                 $time_msg = (($load_time = Context::getLoadtime()) >= 1) ? round($load_time, 2) . ' seconds' : round(($load_time * 1000), 3) . ' ms';
-                
-                self::$_entries[] = array('category' => $category, 'time' => $time_msg, 'message' => $message, 'level' => $level);
-                self::$_categorized_entries[$category][] = array('time' => $time_msg, 'message' => $message, 'level' => $level);
+
+                self::$_entries[] = ['category' => $category, 'time' => $time_msg, 'message' => $message, 'level' => $level];
+                self::$_categorized_entries[$category][] = ['time' => $time_msg, 'message' => $message, 'level' => $level];
             }
         }
 
@@ -79,8 +72,7 @@
          */
         public static function getLevelName($level)
         {
-            switch ($level)
-            {
+            switch ($level) {
                 case self::LEVEL_INFO:
                     return 'info';
                 case self::LEVEL_NOTICE:
@@ -95,7 +87,7 @@
                     return 'unknown';
             }
         }
-        
+
         /**
          * Sets path for the log file. If the log file does not exist at
          * designated path, it will be created.
@@ -107,8 +99,7 @@
          */
         public static function setLogFilePath($filename)
         {
-            if (!file_exists($filename))
-            {
+            if (!file_exists($filename)) {
                 touch($filename);
             }
             self::$_logfile = $filename;
@@ -123,8 +114,7 @@
          */
         public static function getCategoryColor($category)
         {
-            switch ($category)
-            {
+            switch ($category) {
                 case 'main':
                     return "55C";
                 case 'B2DB':
@@ -139,7 +129,7 @@
                     return "2FA";
                 case 'publish':
                     return "A79";
-                default: 
+                default:
                     return "999";
             }
         }
@@ -159,22 +149,21 @@
          *
          * @param string $category
          * @param integer $min_level [optional]
-         * 
+         *
          * @return array
          */
         public static function getEntriesForCategory($category, $min_level = 1)
         {
-            $retval = array();
-            foreach (self::$_entries as $entry)
-            {
-                if ($entry['category'] == $category && $entry['level'] >= $min_level)
-                {
+            $retval = [];
+            foreach (self::$_entries as $entry) {
+                if ($entry['category'] == $category && $entry['level'] >= $min_level) {
                     $retval[] = $entry;
                 }
             }
+
             return $retval;
         }
-        
+
         /**
          * Get log messages for a specific category
          *
@@ -185,14 +174,13 @@
          */
         public static function getMessagesForCategory($category, $min_level = 1)
         {
-            $retval = array();
-            foreach (self::$_entries as $entry)
-            {
-                if ($entry['category'] == $category && $entry['level'] >= $min_level)
-                {
+            $retval = [];
+            foreach (self::$_entries as $entry) {
+                if ($entry['category'] == $category && $entry['level'] >= $min_level) {
                     $retval[] = $entry['message'];
                 }
             }
+
             return $retval;
         }
 
@@ -210,6 +198,6 @@
         {
             self::$_cli_log_to_screen_in_debug_mode = $value;
         }
-        
+
     }
     

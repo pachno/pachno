@@ -2,7 +2,9 @@
 
     namespace pachno\core\entities;
 
+    use Exception;
     use pachno\core\entities\common\IdentifiableScoped;
+    use pachno\core\entities\tables\Teams;
     use pachno\core\framework;
 
     /**
@@ -52,7 +54,7 @@
         /**
          * List of team's dashboards
          *
-         * @var array|\pachno\core\entities\Dashboard
+         * @var array|Dashboard
          * @Relates(class="\pachno\core\entities\Dashboard", collection=true, foreign_column="team_id", orderby="name")
          */
         protected $_dashboards = null;
@@ -66,45 +68,44 @@
 
         public static function getAll()
         {
-            if (self::$_teams === null)
-            {
-                self::$_teams = \pachno\core\entities\tables\Teams::getTable()->getAll();
+            if (self::$_teams === null) {
+                self::$_teams = Teams::getTable()->getAll();
             }
+
             return self::$_teams;
         }
 
         public static function doesIDExist($id)
         {
-            return (bool) static::getB2DBTable()->doesIDExist($id);
+            return (bool)static::getB2DBTable()->doesIDExist($id);
         }
 
-        public static function loadFixtures(\pachno\core\entities\Scope $scope)
+        public static function loadFixtures(Scope $scope)
         {
-            $staff_members = new \pachno\core\entities\Team();
+            $staff_members = new Team();
             $staff_members->setName('Staff members');
             $staff_members->save();
 
-            $developers = new \pachno\core\entities\Team();
+            $developers = new Team();
             $developers->setName('Developers');
             $developers->save();
 
-            $team_leaders = new \pachno\core\entities\Team();
+            $team_leaders = new Team();
             $team_leaders->setName('Team leaders');
             $team_leaders->save();
 
-            $testers = new \pachno\core\entities\Team();
+            $testers = new Team();
             $testers->setName('Testers');
             $testers->save();
 
-            $translators = new \pachno\core\entities\Team();
+            $translators = new Team();
             $translators->setName('Translators');
             $translators->save();
         }
 
         public static function countAll()
         {
-            if (self::$_num_teams === null)
-            {
+            if (self::$_num_teams === null) {
                 if (self::$_teams !== null)
                     self::$_num_teams = count(self::$_teams);
                 else
@@ -122,11 +123,11 @@
         /**
          * Adds a user to the team
          *
-         * @param \pachno\core\entities\User $user
+         * @param User $user
          */
-        public function addMember(\pachno\core\entities\User $user)
+        public function addMember(User $user)
         {
-            if (!$user->getID()) throw new \Exception('Cannot add user object to team until the object is saved');
+            if (!$user->getID()) throw new Exception('Cannot add user object to team until the object is saved');
 
             tables\TeamMembers::getTable()->addUserToTeam($user->getID(), $this->getID());
 
@@ -134,70 +135,15 @@
                 $this->_members[$user->getID()] = $user->getID();
         }
 
-        public function getMembers()
+        public function removeMember(User $user)
         {
-            if ($this->_members === null)
-            {
-                $this->_members = array();
-                foreach (tables\TeamMembers::getTable()->getUIDsForTeamID($this->getID()) as $uid)
-                {
-                    $this->_members[$uid] = \pachno\core\entities\User::getB2DBTable()->selectById($uid);
-                }
-            }
-            return $this->_members;
-        }
-
-        public function removeMember(\pachno\core\entities\User $user)
-        {
-            if ($this->_members !== null)
-            {
+            if ($this->_members !== null) {
                 unset($this->_members[$user->getID()]);
             }
-            if ($this->_num_members !== null)
-            {
+            if ($this->_num_members !== null) {
                 $this->_num_members--;
             }
             tables\TeamMembers::getTable()->removeUserFromTeam($user->getID(), $this->getID());
-        }
-
-        protected function _preDelete()
-        {
-            tables\TeamMembers::getTable()->removeUsersFromTeam($this->getID());
-        }
-
-        public function getNumberOfMembers()
-        {
-            if ($this->_members !== null)
-            {
-                return count($this->_members);
-            }
-            elseif ($this->_num_members === null)
-            {
-                $this->_num_members = tables\TeamMembers::getTable()->getNumberOfMembersByTeamID($this->getID());
-            }
-
-            return $this->_num_members;
-        }
-
-        /**
-         * Get all the projects a team is associated with
-         *
-         * @return array
-         */
-        public function getAssociatedProjects()
-        {
-            if ($this->_associated_projects === null)
-            {
-                $this->_associated_projects = array();
-
-                $project_ids = tables\ProjectAssignedTeams::getTable()->getProjectsByTeamID($this->getID());
-                foreach ($project_ids as $project_id)
-                {
-                    $this->_associated_projects[$project_id] = \pachno\core\entities\Project::getB2DBTable()->selectById($project_id);
-                }
-            }
-
-            return $this->_associated_projects;
         }
 
         /**
@@ -208,28 +154,23 @@
             /** @var Project[] $projects */
             $projects = [];
 
-            foreach (Project::getAllByOwner($this) as $project)
-            {
+            foreach (Project::getAllByOwner($this) as $project) {
                 $projects[$project->getID()] = $project;
             }
-            foreach (Project::getAllByLeader($this) as $project)
-            {
+            foreach (Project::getAllByLeader($this) as $project) {
                 $projects[$project->getID()] = $project;
             }
-            foreach (Project::getAllByQaResponsible($this) as $project)
-            {
+            foreach (Project::getAllByQaResponsible($this) as $project) {
                 $projects[$project->getID()] = $project;
             }
-            foreach ($this->getAssociatedProjects() as $project_id => $project)
-            {
+            foreach ($this->getAssociatedProjects() as $project_id => $project) {
                 $projects[$project_id] = $project;
             }
 
             $active_projects = [];
             $archived_projects = [];
 
-            foreach ($projects as $project_id => $project)
-            {
+            foreach ($projects as $project_id => $project) {
                 if ($project->isArchived()) {
                     $archived_projects[$project_id] = $project;
                 } else {
@@ -238,6 +179,25 @@
             }
 
             return [$active_projects, $archived_projects];
+        }
+
+        /**
+         * Get all the projects a team is associated with
+         *
+         * @return array
+         */
+        public function getAssociatedProjects()
+        {
+            if ($this->_associated_projects === null) {
+                $this->_associated_projects = [];
+
+                $project_ids = tables\ProjectAssignedTeams::getTable()->getProjectsByTeamID($this->getID());
+                foreach ($project_ids as $project_id) {
+                    $this->_associated_projects[$project_id] = Project::getB2DBTable()->selectById($project_id);
+                }
+            }
+
+            return $this->_associated_projects;
         }
 
         public function isOndemand()
@@ -252,17 +212,7 @@
 
         public function hasAccess()
         {
-            return (bool) (framework\Context::getUser()->hasPageAccess('teamlist') || framework\Context::getUser()->isMemberOfTeam($this));
-        }
-
-        /**
-         * Return the items name
-         *
-         * @return string
-         */
-        public function getName()
-        {
-            return $this->_name;
+            return (bool)(framework\Context::getUser()->hasPageAccess('teamlist') || framework\Context::getUser()->isMemberOfTeam($this));
         }
 
         /**
@@ -273,6 +223,16 @@
         public function getNameWithUsername()
         {
             return $this->getName();
+        }
+
+        /**
+         * Return the items name
+         *
+         * @return string
+         */
+        public function getName()
+        {
+            return $this->_name;
         }
 
         /**
@@ -288,31 +248,60 @@
         /**
          * Returns an array of team dashboards
          *
-         * @return \pachno\core\entities\Dashboard[]
+         * @return Dashboard[]
          */
         public function getDashboards()
         {
             $this->_b2dbLazyLoad('_dashboards');
+
             return $this->_dashboards;
         }
 
         public function toJSON($detailed = true)
         {
-            $returnJSON = array(
+            $returnJSON = [
                 'id' => $this->getID(),
                 'name' => $this->getName(),
-            	'type' => 'team' // This is for distinguishing of assignees & similar "ambiguous" values in JSON.
-            );
-            
-            if($detailed) {
-            	 $returnJSON['member_count'] = $this->getNumberOfMembers();
-            	 $returnJSON['members'] = array();
-            	 foreach ($this->getMembers() as $member) {
-            	 	$returnJSON['members'][] = $member->toJSON();
-            	 }
+                'type' => 'team' // This is for distinguishing of assignees & similar "ambiguous" values in JSON.
+            ];
+
+            if ($detailed) {
+                $returnJSON['member_count'] = $this->getNumberOfMembers();
+                $returnJSON['members'] = [];
+                foreach ($this->getMembers() as $member) {
+                    $returnJSON['members'][] = $member->toJSON();
+                }
             }
-            
+
             return $returnJSON;
+        }
+
+        public function getNumberOfMembers()
+        {
+            if ($this->_members !== null) {
+                return count($this->_members);
+            } elseif ($this->_num_members === null) {
+                $this->_num_members = tables\TeamMembers::getTable()->getNumberOfMembersByTeamID($this->getID());
+            }
+
+            return $this->_num_members;
+        }
+
+        public function getMembers()
+        {
+            if ($this->_members === null) {
+                $this->_members = [];
+                foreach (tables\TeamMembers::getTable()->getUIDsForTeamID($this->getID()) as $uid) {
+                    $this->_members[$uid] = User::getB2DBTable()->selectById($uid);
+                }
+            }
+
+            return $this->_members;
+        }
+
+        protected function _preDelete()
+        {
+            tables\TeamMembers::getTable()->removeUsersFromTeam($this->getID());
         }
 
     }

@@ -13,22 +13,20 @@
     {
 
         const B2DB_TABLE_VERSION = 1;
+
         const B2DBNAME = 'savedsearchfilters';
+
         const ID = 'savedsearchfilters.id';
+
         const SCOPE = 'savedsearchfilters.scope';
+
         const VALUE = 'savedsearchfilters.value';
+
         const OPERATOR = 'savedsearchfilters.operator';
+
         const SEARCH_ID = 'savedsearchfilters.search_id';
+
         const FILTER_KEY = 'savedsearchfilters.filter_key';
-        
-        protected function initialize()
-        {
-            parent::setup(self::B2DBNAME, self::ID);
-            parent::addVarchar(self::VALUE, 200);
-            parent::addVarchar(self::OPERATOR, 40);
-            parent::addVarchar(self::FILTER_KEY, 100);
-            parent::addForeignKeyColumn(self::SEARCH_ID, SavedSearches::getTable(), SavedSearches::ID);
-        }
 
         public function getFiltersBySavedSearchID($savedsearch_id)
         {
@@ -36,18 +34,38 @@
             $query->where(self::SCOPE, framework\Context::getScope()->getID());
             $query->where(self::SEARCH_ID, $savedsearch_id);
 
-            $retarr = array();
+            $retarr = [];
 
-            if ($res = $this->rawSelect($query))
-            {
-                while ($row = $res->getNextRow())
-                {
-                    if (!array_key_exists($row->get(self::FILTER_KEY), $retarr)) $retarr[$row->get(self::FILTER_KEY)] = array();
-                    $retarr[$row->get(self::FILTER_KEY)][] = array('operator' => $row->get(self::OPERATOR), 'value' => $row->get(self::VALUE));
+            if ($res = $this->rawSelect($query)) {
+                while ($row = $res->getNextRow()) {
+                    if (!array_key_exists($row->get(self::FILTER_KEY), $retarr)) $retarr[$row->get(self::FILTER_KEY)] = [];
+                    $retarr[$row->get(self::FILTER_KEY)][] = ['operator' => $row->get(self::OPERATOR), 'value' => $row->get(self::VALUE)];
                 }
             }
 
             return $retarr;
+        }
+
+        public function deleteBySearchID($saved_search_id)
+        {
+            $query = $this->getQuery();
+            $query->where(self::SCOPE, framework\Context::getScope()->getID());
+            $query->where(self::SEARCH_ID, $saved_search_id);
+            $this->rawDelete($query);
+        }
+
+        public function saveFiltersForSavedSearch($saved_search_id, $filters)
+        {
+            foreach ($filters as $filter => $filter_info) {
+                if (array_key_exists('value', $filter_info)) {
+                    $this->_saveFilterForSavedSearch($saved_search_id, $filter, $filter_info['value'], $filter_info['operator']);
+                } else {
+                    foreach ($filter_info as $k => $single_filter) {
+                        $this->_saveFilterForSavedSearch($saved_search_id, $filter, $single_filter['value'], $single_filter['operator']);
+                    }
+                }
+            }
+
         }
 
         protected function _saveFilterForSavedSearch($saved_search_id, $filter_key, $value, $operator)
@@ -61,31 +79,13 @@
             $this->rawInsert($insertion);
         }
 
-        public function deleteBySearchID($saved_search_id)
+        protected function initialize()
         {
-            $query = $this->getQuery();
-            $query->where(self::SCOPE, framework\Context::getScope()->getID());
-            $query->where(self::SEARCH_ID, $saved_search_id);
-            $this->rawDelete($query);
+            parent::setup(self::B2DBNAME, self::ID);
+            parent::addVarchar(self::VALUE, 200);
+            parent::addVarchar(self::OPERATOR, 40);
+            parent::addVarchar(self::FILTER_KEY, 100);
+            parent::addForeignKeyColumn(self::SEARCH_ID, SavedSearches::getTable(), SavedSearches::ID);
         }
 
-        public function saveFiltersForSavedSearch($saved_search_id, $filters)
-        {
-            foreach ($filters as $filter => $filter_info)
-            {
-                if (array_key_exists('value', $filter_info))
-                {
-                    $this->_saveFilterForSavedSearch($saved_search_id, $filter, $filter_info['value'], $filter_info['operator']);
-                }
-                else
-                {
-                    foreach ($filter_info as $k => $single_filter)
-                    {
-                        $this->_saveFilterForSavedSearch($saved_search_id, $filter, $single_filter['value'], $single_filter['operator']);
-                    }
-                }
-            }
-            
-        }
-        
     }

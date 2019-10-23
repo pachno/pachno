@@ -2,9 +2,9 @@
 
     namespace pachno\core\entities\tables;
 
-    use b2db\Criteria;
+    use b2db\Criterion;
+    use b2db\QueryColumnSort;
     use pachno\core\entities\Branch;
-    use pachno\core\entities\Commit;
     use pachno\core\entities\Project;
 
     /**
@@ -22,18 +22,18 @@
     {
 
         const B2DB_TABLE_VERSION = 1;
-        const B2DBNAME = 'branches';
-        const ID = 'branches.id';
-        const SCOPE = 'branches.scope';
-        const PROJECT_ID = 'branches.project_id';
 
-        protected function setupIndexes()
-        {
-            $this->addIndex('project', self::PROJECT_ID);
-        }
+        const B2DBNAME = 'branches';
+
+        const ID = 'branches.id';
+
+        const SCOPE = 'branches.scope';
+
+        const PROJECT_ID = 'branches.project_id';
 
         /**
          * Get all branches inside a project
+         *
          * @param Project $project
          *
          * @return Branch[]
@@ -44,13 +44,14 @@
 
             $query->where(self::PROJECT_ID, $project->getID());
             $query->where('branches.is_deleted', false);
-            $query->addOrderBy('branches.name', \b2db\QueryColumnSort::SORT_ASC);
+            $query->addOrderBy('branches.name', QueryColumnSort::SORT_ASC);
 
             return $this->select($query);
         }
 
         /**
          * Get all branches inside a project
+         *
          * @param int[] $commit_ids
          * @param Project $project
          *
@@ -61,7 +62,7 @@
             $query = $this->getQuery();
 
             $query->where(self::PROJECT_ID, $project->getID());
-            $query->where('branches.latest_commit_id', $commit_ids, \b2db\Criterion::IN);
+            $query->where('branches.latest_commit_id', $commit_ids, Criterion::IN);
             $query->where('branches.is_deleted', false);
 
             $branches = [];
@@ -73,6 +74,20 @@
             }
 
             return $branches;
+        }
+
+        public function getOrCreateByBranchNameAndProject($name, Project $project)
+        {
+            $branch = $this->getByBranchNameAndProject($name, $project);
+
+            if (!$branch instanceof Branch) {
+                $branch = new Branch();
+                $branch->setName($name);
+                $branch->setProject($project);
+                $branch->save();
+            }
+
+            return $branch;
         }
 
         public function getByBranchNameAndProject($name, Project $project)
@@ -88,18 +103,9 @@
             return $branch;
         }
 
-        public function getOrCreateByBranchNameAndProject($name, Project $project)
+        protected function setupIndexes()
         {
-            $branch = $this->getByBranchNameAndProject($name, $project);
-
-            if (!$branch instanceof Branch) {
-                $branch = new Branch();
-                $branch->setName($name);
-                $branch->setProject($project);
-                $branch->save();
-            }
-
-            return $branch;
+            $this->addIndex('project', self::PROJECT_ID);
         }
 
     }

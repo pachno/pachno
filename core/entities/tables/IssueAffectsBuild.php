@@ -2,10 +2,12 @@
 
     namespace pachno\core\entities\tables;
 
+    use b2db\Criterion;
     use b2db\Insertion;
+    use b2db\Join;
     use b2db\Update;
-    use pachno\core\framework,
-        b2db\Criteria;
+    use pachno\core\entities\Issue;
+    use pachno\core\framework;
 
     /**
      * Issue affects build table
@@ -29,63 +31,39 @@
     {
 
         const B2DB_TABLE_VERSION = 1;
+
         const B2DBNAME = 'issueaffectsbuild';
+
         const ID = 'issueaffectsbuild.id';
+
         const SCOPE = 'issueaffectsbuild.scope';
+
         const ISSUE = 'issueaffectsbuild.issue';
+
         const BUILD = 'issueaffectsbuild.build';
+
         const CONFIRMED = 'issueaffectsbuild.confirmed';
+
         const STATUS = 'issueaffectsbuild.status';
 
         protected $_preloaded_values = null;
 
-        protected function initialize()
-        {
-            parent::setup(self::B2DBNAME, self::ID);
-            parent::addBoolean(self::CONFIRMED);
-            parent::addForeignKeyColumn(self::BUILD, Builds::getTable(), Builds::ID);
-            parent::addForeignKeyColumn(self::ISSUE, Issues::getTable(), Issues::ID);
-            parent::addForeignKeyColumn(self::STATUS, ListTypes::getTable(), ListTypes::ID);
-        }
-
-        protected function setupIndexes()
-        {
-            $this->addIndex('issue', self::ISSUE);
-        }
-
-        public function getByIssueIDs($issue_ids)
-        {
-            $query = $this->getQuery();
-            $query->where(self::ISSUE, $issue_ids, \b2db\Criterion::IN);
-            $query->join(Issues::getTable(), Issues::ID, self::ISSUE, [], \b2db\Join::INNER);
-            $query->join(Builds::getTable(), Builds::ID, self::BUILD, [], \b2db\Join::INNER);
-            $res = $this->rawSelect($query, false);
-            return $res;
-        }
-
         public function getByIssueID($issue_id)
         {
-            if (is_array($this->_preloaded_values))
-            {
-                if (array_key_exists($issue_id, $this->_preloaded_values))
-                {
+            if (is_array($this->_preloaded_values)) {
+                if (array_key_exists($issue_id, $this->_preloaded_values)) {
                     $values = $this->_preloaded_values[$issue_id];
                     unset($this->_preloaded_values[$issue_id]);
+
                     return $values;
-                }
-                else
-                {
+                } else {
                     return [];
                 }
-            }
-            else
-            {
-                $res = $this->getByIssueIDs(array($issue_id));
+            } else {
+                $res = $this->getByIssueIDs([$issue_id]);
                 $rows = [];
-                if ($res)
-                {
-                    while ($row = $res->getNextRow())
-                    {
+                if ($res) {
+                    while ($row = $res->getNextRow()) {
                         $rows[] = $row;
                     }
                 }
@@ -94,15 +72,24 @@
             }
         }
 
+        public function getByIssueIDs($issue_ids)
+        {
+            $query = $this->getQuery();
+            $query->where(self::ISSUE, $issue_ids, Criterion::IN);
+            $query->join(Issues::getTable(), Issues::ID, self::ISSUE, [], Join::INNER);
+            $query->join(Builds::getTable(), Builds::ID, self::BUILD, [], Join::INNER);
+            $res = $this->rawSelect($query, false);
+
+            return $res;
+        }
+
         public function preloadValuesByIssueIDs($issue_ids)
         {
             $this->_preloaded_values = [];
             $build_ids = [];
             $res = $this->getByIssueIDs($issue_ids);
-            if ($res)
-            {
-                while ($row = $res->getNextRow())
-                {
+            if ($res) {
+                while ($row = $res->getNextRow()) {
                     $issue_id = $row->get(self::ISSUE);
                     $build_id = $row->get(self::BUILD);
                     if (!array_key_exists($issue_id, $this->_preloaded_values)) $this->_preloaded_values[$issue_id] = [];
@@ -119,16 +106,6 @@
             $this->_preloaded_custom_fields = null;
         }
 
-        public function getByIssueIDandBuildID($issue_id, $build_id)
-        {
-            $query = $this->getQuery();
-            $query->where(self::BUILD, $build_id);
-            $query->where(self::ISSUE, $issue_id);
-            $res = $this->rawSelectOne($query);
-            return $res;
-        }
-
-
         public function deleteByBuildID($build_id)
         {
             $query = $this->getQuery();
@@ -138,28 +115,33 @@
 
         public function deleteByIssueIDandBuildID($issue_id, $build_id)
         {
-            if (!$this->getByIssueIDandBuildID($issue_id, $build_id))
-            {
+            if (!$this->getByIssueIDandBuildID($issue_id, $build_id)) {
                 return false;
-            }
-            else
-            {
+            } else {
                 $query = $this->getQuery();
                 $query->where(self::ISSUE, $issue_id);
                 $query->where(self::BUILD, $build_id);
                 $this->rawDelete($query);
+
                 return true;
             }
         }
 
+        public function getByIssueIDandBuildID($issue_id, $build_id)
+        {
+            $query = $this->getQuery();
+            $query->where(self::BUILD, $build_id);
+            $query->where(self::ISSUE, $issue_id);
+            $res = $this->rawSelectOne($query);
+
+            return $res;
+        }
+
         public function confirmByIssueIDandBuildID($issue_id, $build_id, $confirmed = true)
         {
-            if (!($res = $this->getByIssueIDandBuildID($issue_id, $build_id)))
-            {
+            if (!($res = $this->getByIssueIDandBuildID($issue_id, $build_id))) {
                 return false;
-            }
-            else
-            {
+            } else {
                 $update = new Update();
                 $update->add(self::CONFIRMED, $confirmed);
                 $this->rawUpdateById($update, $res->get(self::ID));
@@ -170,12 +152,9 @@
 
         public function setStatusByIssueIDandBuildID($issue_id, $build_id, $status_id)
         {
-            if (!($res = $this->getByIssueIDandBuildID($issue_id, $build_id)))
-            {
+            if (!($res = $this->getByIssueIDandBuildID($issue_id, $build_id))) {
                 return false;
-            }
-            else
-            {
+            } else {
                 $update = new Update();
                 $update->add(self::STATUS, $status_id);
                 $this->rawUpdateById($update, $res->get(self::ID));
@@ -186,17 +165,15 @@
 
         public function setIssueAffected($issue_id, $build_id)
         {
-            if (!$this->getByIssueIDandBuildID($issue_id, $build_id))
-            {
+            if (!$this->getByIssueIDandBuildID($issue_id, $build_id)) {
                 $insertion = new Insertion();
                 $insertion->add(self::ISSUE, $issue_id);
                 $insertion->add(self::BUILD, $build_id);
                 $insertion->add(self::SCOPE, framework\Context::getScope()->getID());
                 $ret = $this->rawInsert($insertion);
+
                 return $ret->getInsertID();
-            }
-            else
-            {
+            } else {
                 return false;
             }
         }
@@ -208,9 +185,23 @@
 
             $query2 = clone $query;
             $query2->join(Issues::getTable(), Issues::ID, self::ISSUE);
-            $query2->where(Issues::STATE, \pachno\core\entities\Issue::STATE_CLOSED);
+            $query2->where(Issues::STATE, Issue::STATE_CLOSED);
 
-            return array($this->count($query), $this->count($query2));
+            return [$this->count($query), $this->count($query2)];
+        }
+
+        protected function initialize()
+        {
+            parent::setup(self::B2DBNAME, self::ID);
+            parent::addBoolean(self::CONFIRMED);
+            parent::addForeignKeyColumn(self::BUILD, Builds::getTable(), Builds::ID);
+            parent::addForeignKeyColumn(self::ISSUE, Issues::getTable(), Issues::ID);
+            parent::addForeignKeyColumn(self::STATUS, ListTypes::getTable(), ListTypes::ID);
+        }
+
+        protected function setupIndexes()
+        {
+            $this->addIndex('issue', self::ISSUE);
         }
 
     }

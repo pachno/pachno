@@ -2,9 +2,9 @@
 
     namespace pachno\core\entities;
 
+    use framework\Context;
     use pachno\core\entities\common\IdentifiableScoped;
-    use pachno\core\framework;
-    use pachno\core\entities\BoardSwimlane;
+    use pachno\core\entities\tables\Issues;
 
     /**
      * Agile board class
@@ -28,11 +28,15 @@
     {
 
         const TYPE_GENERIC = 0;
+
         const TYPE_SCRUM = 1;
+
         const TYPE_KANBAN = 2;
 
         const SWIMLANES_ISSUES = 'issues';
+
         const SWIMLANES_GROUPING = 'grouping';
+
         const SWIMLANES_EXPEDITE = 'expedite';
 
         /**
@@ -60,35 +64,35 @@
         protected $_is_private = true;
 
         /**
-         * @var \pachno\core\entities\User
+         * @var User
          * @Column(type="integer", length=10)
          * @Relates(class="\pachno\core\entities\User")
          */
         protected $_user_id;
 
         /**
-         * @var \pachno\core\entities\Project
+         * @var Project
          * @Column(type="integer", length=10)
          * @Relates(class="\pachno\core\entities\Project")
          */
         protected $_project_id;
 
         /**
-         * @var \pachno\core\entities\Issuetype
+         * @var Issuetype
          * @Column(type="integer", length=10)
          * @Relates(class="\pachno\core\entities\Issuetype")
          */
         protected $_epic_issuetype_id;
 
         /**
-         * @var \pachno\core\entities\Issuetype
+         * @var Issuetype
          * @Column(type="integer", length=10)
          * @Relates(class="\pachno\core\entities\Issuetype")
          */
         protected $_task_issuetype_id;
 
         /**
-         * @var \pachno\core\entities\SavedSearch
+         * @var SavedSearch
          * @Column(type="integer", length=10)
          * @Relates(class="\pachno\core\entities\SavedSearch")
          */
@@ -116,7 +120,7 @@
          */
         protected $_use_swimlanes = false;
 
-        protected $_swimlanes = array();
+        protected $_swimlanes = [];
 
         /**
          * Swimlane type
@@ -140,25 +144,25 @@
          * @var array
          * @Column(type="serializable", length=500)
          */
-        protected $_swimlane_field_values = array();
+        protected $_swimlane_field_values = [];
 
         /**
          * Cached search object
-         * @var \pachno\core\entities\SavedSearch
+         * @var SavedSearch
          */
         protected $_search_object;
 
         /**
          * Array of epic issues
          *
-         * @var array|\pachno\core\entities\Issue
+         * @var array|Issue
          */
         protected $_epic_issues = null;
 
         /**
          * Board columns
          *
-         * @var array|\pachno\core\entities\BoardColumn
+         * @var array|BoardColumn
          * @Relates(class="\pachno\core\entities\BoardColumn", collection=true, foreign_column="board_id", orderby="sort_order")
          */
         protected $_board_columns = null;
@@ -169,12 +173,12 @@
          * @var array
          * @Column(type="serializable", length=500)
          */
-        protected $_issue_field_values = array();
+        protected $_issue_field_values = [];
 
         /**
          * Returns the associated user
          *
-         * @return \pachno\core\entities\User
+         * @return User
          */
         public function getUser()
         {
@@ -186,49 +190,14 @@
             $this->_user_id = $user;
         }
 
-        /**
-         * Returns the associated project
-         *
-         * @return \pachno\core\entities\Project
-         */
-        public function getProject()
-        {
-            return $this->_b2dbLazyLoad('_project_id');
-        }
-
         public function setProject($project)
         {
             $this->_project_id = $project;
         }
 
-        /**
-         * Returns the associated epic issue type
-         *
-         * @return \pachno\core\entities\Issuetype
-         */
-        public function getEpicIssuetype()
-        {
-            return $this->_b2dbLazyLoad('_epic_issuetype_id');
-        }
-
-        public function getEpicIssuetypeID()
-        {
-            return ($this->getEpicIssuetype() instanceof \pachno\core\entities\Issuetype) ? $this->getEpicIssuetype()->getID() : 0;
-        }
-
         public function setEpicIssuetype($epic_issuetype_id)
         {
             $this->_epic_issuetype_id = $epic_issuetype_id;
-        }
-
-        /**
-         * Returns the associated task issue type
-         *
-         * @return \pachno\core\entities\Issuetype
-         */
-        public function getTaskIssuetype()
-        {
-            return $this->_b2dbLazyLoad('_task_issuetype_id');
         }
 
         public function setTaskIssuetype($task_issuetype_id)
@@ -238,17 +207,17 @@
 
         public function getTaskIssuetypeID()
         {
-            return ($this->getTaskIssuetype() instanceof \pachno\core\entities\Issuetype) ? $this->getTaskIssuetype()->getID() : 0;
+            return ($this->getTaskIssuetype() instanceof Issuetype) ? $this->getTaskIssuetype()->getID() : 0;
         }
 
         /**
-         * Returns the associated backlog saved search
+         * Returns the associated task issue type
          *
-         * @return \pachno\core\entities\SavedSearch
+         * @return Issuetype
          */
-        public function getBacklogSearch()
+        public function getTaskIssuetype()
         {
-            return $this->_b2dbLazyLoad('_backlog_search_id');
+            return $this->_b2dbLazyLoad('_task_issuetype_id');
         }
 
         public function setBacklogSearch($backlog_search)
@@ -258,11 +227,14 @@
             $this->_search_object = null;
         }
 
-        public function setAutogeneratedSearch($autogenerated_search)
+        public function getBacklogSearchIdentifier()
         {
-            $this->_autogenerated_search = $autogenerated_search;
-            $this->_backlog_search_id = null;
-            $this->_search_object = null;
+            return ($this->usesAutogeneratedSearchBacklog()) ? 'predefined_' . $this->getAutogeneratedSearch() : 'saved_' . $this->getBacklogSearchObject()->getID();
+        }
+
+        public function usesAutogeneratedSearchBacklog()
+        {
+            return (bool)$this->_autogenerated_search;
         }
 
         public function getAutogeneratedSearch()
@@ -270,47 +242,65 @@
             return $this->_autogenerated_search;
         }
 
-        public function usesAutogeneratedSearchBacklog()
+        public function setAutogeneratedSearch($autogenerated_search)
         {
-            return (bool) $this->_autogenerated_search;
-        }
-
-        public function usesSavedSearchBacklog()
-        {
-            return (bool) $this->_backlog_search_id;
+            $this->_autogenerated_search = $autogenerated_search;
+            $this->_backlog_search_id = null;
+            $this->_search_object = null;
         }
 
         /**
          * Returns the associated search object
          *
-         * @return \pachno\core\entities\SavedSearch
+         * @return SavedSearch
          */
         public function getBacklogSearchObject()
         {
-            if ($this->_search_object === null)
-            {
-                if ($this->usesSavedSearchBacklog())
-                {
+            if ($this->_search_object === null) {
+                if ($this->usesSavedSearchBacklog()) {
                     $this->_search_object = $this->getBacklogSearch();
-                }
-                elseif (!$this->_search_object instanceof \pachno\core\entities\SavedSearch)
-                {
-                    $this->_search_object = \pachno\core\entities\SavedSearch::getPredefinedSearchObject($this->_autogenerated_search);
-                    $this->_search_object->setFilter('issuetype', \pachno\core\entities\SearchFilter::createFilter('issuetype', array('o' => '!=', 'v' => $this->getEpicIssuetypeID())));
-                    $this->_search_object->setFilter('milestone', \pachno\core\entities\SearchFilter::createFilter('milestone', array('o' => '!=', 'v' => null)));
+                } elseif (!$this->_search_object instanceof SavedSearch) {
+                    $this->_search_object = SavedSearch::getPredefinedSearchObject($this->_autogenerated_search);
+                    $this->_search_object->setFilter('issuetype', SearchFilter::createFilter('issuetype', ['o' => '!=', 'v' => $this->getEpicIssuetypeID()]));
+                    $this->_search_object->setFilter('milestone', SearchFilter::createFilter('milestone', ['o' => '!=', 'v' => null]));
                 }
                 $this->_search_object->setIssuesPerPage(0);
                 $this->_search_object->setOffset(0);
-                $this->_search_object->setSortFields(array(\pachno\core\entities\tables\Issues::MILESTONE_ORDER => 'desc'));
+                $this->_search_object->setSortFields([Issues::MILESTONE_ORDER => 'desc']);
                 $this->_search_object->setGroupBy(null);
             }
 
             return $this->_search_object;
         }
 
-        public function getBacklogSearchIdentifier()
+        public function usesSavedSearchBacklog()
         {
-            return ($this->usesAutogeneratedSearchBacklog()) ? 'predefined_' . $this->getAutogeneratedSearch() : 'saved_' . $this->getBacklogSearchObject()->getID();
+            return (bool)$this->_backlog_search_id;
+        }
+
+        /**
+         * Returns the associated backlog saved search
+         *
+         * @return SavedSearch
+         */
+        public function getBacklogSearch()
+        {
+            return $this->_b2dbLazyLoad('_backlog_search_id');
+        }
+
+        public function getEpicIssuetypeID()
+        {
+            return ($this->getEpicIssuetype() instanceof Issuetype) ? $this->getEpicIssuetype()->getID() : 0;
+        }
+
+        /**
+         * Returns the associated epic issue type
+         *
+         * @return Issuetype
+         */
+        public function getEpicIssuetype()
+        {
+            return $this->_b2dbLazyLoad('_epic_issuetype_id');
         }
 
         public function getName()
@@ -323,14 +313,14 @@
             $this->_name = $name;
         }
 
+        public function hasDescription()
+        {
+            return (bool)($this->getDescription() != '');
+        }
+
         public function getDescription()
         {
             return $this->_description;
-        }
-
-        public function hasDescription()
-        {
-            return (bool) ($this->getDescription() != '');
         }
 
         public function setDescription($description)
@@ -338,14 +328,14 @@
             $this->_description = $description;
         }
 
-        public function getIsPrivate()
-        {
-            return $this->_is_private;
-        }
-
         public function isPrivate()
         {
             return $this->getIsPrivate();
+        }
+
+        public function getIsPrivate()
+        {
+            return $this->_is_private;
         }
 
         public function setIsPrivate($is_private)
@@ -365,25 +355,41 @@
 
         public function getBacklogIssuesUrl()
         {
-            if ($this->usesSavedSearchBacklog())
-            {
-                $url = \framework\Context::getRouting()->generate('project_issues', array('project_key' => $this->getProject()->getKey(), 'saved_search' => $this->getBacklogSearch()->getID(), 'search' => true, 'format' => 'backlog'));
-            }
-            else
-            {
-                $url = \framework\Context::getRouting()->generate('project_issues', array('project_key' => $this->getProject()->getKey(), 'predefined_search' => $this->getAutogeneratedSearch(), 'search' => true, 'format' => 'backlog'));
+            if ($this->usesSavedSearchBacklog()) {
+                $url = Context::getRouting()->generate('project_issues', ['project_key' => $this->getProject()->getKey(), 'saved_search' => $this->getBacklogSearch()->getID(), 'search' => true, 'format' => 'backlog']);
+            } else {
+                $url = Context::getRouting()->generate('project_issues', ['project_key' => $this->getProject()->getKey(), 'predefined_search' => $this->getAutogeneratedSearch(), 'search' => true, 'format' => 'backlog']);
             }
 
             return $url;
         }
 
+        /**
+         * Returns the associated project
+         *
+         * @return Project
+         */
+        public function getProject()
+        {
+            return $this->_b2dbLazyLoad('_project_id');
+        }
+
         public function getEpicIssues()
         {
-            if ($this->_epic_issues === null)
-            {
-                $this->_epic_issues = \pachno\core\entities\tables\Issues::getTable()->getOpenIssuesByProjectIDAndIssuetypeID($this->getProject()->getID(), $this->getEpicIssuetypeID());
+            if ($this->_epic_issues === null) {
+                $this->_epic_issues = Issues::getTable()->getOpenIssuesByProjectIDAndIssuetypeID($this->getProject()->getID(), $this->getEpicIssuetypeID());
             }
+
             return $this->_epic_issues;
+        }
+
+        public function getDefaultSelectedMilestone()
+        {
+            foreach ($this->getMilestones() as $milestone) {
+                if (!$milestone->isReached()) {
+                    return $milestone;
+                }
+            }
         }
 
         public function getMilestones()
@@ -391,50 +397,9 @@
             return $this->getProject()->getOpenMilestones();
         }
 
-        public function getDefaultSelectedMilestone()
-        {
-            foreach ($this->getMilestones() as $milestone)
-            {
-                if (!$milestone->isReached())
-                {
-                    return $milestone;
-                }
-            }
-        }
-
         public function getReleases()
         {
             return $this->getProject()->getUnreleasedBuilds();
-        }
-
-        public function usesSwimlanes()
-        {
-            return $this->_use_swimlanes;
-        }
-
-        public function getSwimlaneType()
-        {
-            return $this->_swimlane_type;
-        }
-
-        public function getSwimlaneIdentifier()
-        {
-            return $this->_swimlane_identifier;
-        }
-
-        public function getSwimlaneFieldValues()
-        {
-            return $this->_swimlane_field_values;
-        }
-
-        public function getIssueFieldValues()
-        {
-            return $this->_issue_field_values;
-        }
-
-        public function setUseSwimlanes($use_swimlanes = true)
-        {
-            $this->_use_swimlanes = $use_swimlanes;
         }
 
         public function useSwimlanes($use_swimlanes = true)
@@ -442,9 +407,9 @@
             $this->setUseSwimlanes($use_swimlanes);
         }
 
-        public function setSwimlaneType($swimlane_type)
+        public function setUseSwimlanes($use_swimlanes = true)
         {
-            $this->_swimlane_type = $swimlane_type;
+            $this->_use_swimlanes = $use_swimlanes;
         }
 
         public function clearSwimlaneType()
@@ -452,39 +417,34 @@
             $this->_swimlane_type = null;
         }
 
-        public function setSwimlaneIdentifier($swimlane_identifier)
-        {
-            $this->_swimlane_identifier = $swimlane_identifier;
-        }
-
         public function clearSwimlaneIdentifier()
         {
             $this->_swimlane_identifier = null;
         }
 
-        public function setSwimlaneFieldValues($swimlane_field_values)
-        {
-            $this->_swimlane_field_values = $swimlane_field_values;
-        }
-
         public function clearSwimlaneFieldValues()
         {
-            $this->_swimlane_field_values = array();
-        }
-
-        public function setIssueFieldValues($issue_field_values)
-        {
-            $this->_issue_field_values = $issue_field_values;
+            $this->_swimlane_field_values = [];
         }
 
         public function clearIssueFieldValues()
         {
-            $this->_issue_field_values = array();
+            $this->_issue_field_values = [];
         }
 
         public function hasSwimlaneFieldValue($value)
         {
             return in_array($value, $this->getSwimlaneFieldValues());
+        }
+
+        public function getSwimlaneFieldValues()
+        {
+            return $this->_swimlane_field_values;
+        }
+
+        public function setSwimlaneFieldValues($swimlane_field_values)
+        {
+            $this->_swimlane_field_values = $swimlane_field_values;
         }
 
         public function hasSwimlaneFieldValues()
@@ -497,6 +457,16 @@
             return in_array($value, $this->getIssueFieldValues());
         }
 
+        public function getIssueFieldValues()
+        {
+            return $this->_issue_field_values;
+        }
+
+        public function setIssueFieldValues($issue_field_values)
+        {
+            $this->_issue_field_values = $issue_field_values;
+        }
+
         public function hasIssueFieldValues()
         {
             return (count($this->getIssueFieldValues()) > 0);
@@ -505,92 +475,93 @@
         /**
          * Returns an array of board columns
          *
-         * @return array|\pachno\core\entities\BoardColumn
+         * @return array|BoardColumn
          */
         public function getColumns()
         {
             return $this->_b2dbLazyLoad('_board_columns');
         }
 
-        protected function _populateMilestoneSwimlanes(\pachno\core\entities\Milestone $milestone)
+        /**
+         * Retrieve all available swimlanes for the selected milestone
+         *
+         * @param Milestone $milestone
+         *
+         * @return array|BoardSwimlane
+         */
+        public function getMilestoneSwimlanes($milestone)
         {
-            if (!array_key_exists($milestone->getID(), $this->_swimlanes))
-            {
-                $this->_swimlanes[$milestone->getID()] = array();
-                $swimlanes = array();
-                if ($this->usesSwimlanes())
-                {
-                    switch ($this->getSwimlaneType())
-                    {
+            if (!($milestone instanceof Milestone)) {
+                return [];
+            }
+
+            $this->_populateMilestoneSwimlanes($milestone);
+
+            return $this->_swimlanes[$milestone->getID()];
+        }
+
+        protected function _populateMilestoneSwimlanes(Milestone $milestone)
+        {
+            if (!array_key_exists($milestone->getID(), $this->_swimlanes)) {
+                $this->_swimlanes[$milestone->getID()] = [];
+                $swimlanes = [];
+                if ($this->usesSwimlanes()) {
+                    switch ($this->getSwimlaneType()) {
                         case self::SWIMLANES_EXPEDITE:
                         case self::SWIMLANES_GROUPING:
-                            switch ($this->getSwimlaneIdentifier())
-                            {
+                            switch ($this->getSwimlaneIdentifier()) {
                                 case 'priority':
-                                    $items = \pachno\core\entities\Priority::getAll();
+                                    $items = Priority::getAll();
                                     break;
                                 case 'severity':
-                                    $items = \pachno\core\entities\Severity::getAll();
+                                    $items = Severity::getAll();
                                     break;
                                 case 'category':
-                                    $items = \pachno\core\entities\Category::getAll();
+                                    $items = Category::getAll();
                                     break;
                                 default:
-                                    $items = array();
+                                    $items = [];
                                     break;
                             }
-                            if ($this->getSwimlaneType() == self::SWIMLANES_EXPEDITE)
-                            {
-                                $expedite_items = array();
-                                foreach ($this->getSwimlaneFieldValues() as $value)
-                                {
-                                    if (array_key_exists($value, $items))
-                                    {
+                            if ($this->getSwimlaneType() == self::SWIMLANES_EXPEDITE) {
+                                $expedite_items = [];
+                                foreach ($this->getSwimlaneFieldValues() as $value) {
+                                    if (array_key_exists($value, $items)) {
                                         $expedite_items[$items[$value]->getID()] = $items[$value];
                                         unset($items[$value]);
                                     }
                                 }
 
-                                $swimlanes[] = array('identifiables' => $expedite_items);
-                                $swimlanes[] = array('identifiables' => $items);
-                                $swimlanes[] = array('identifiables' => 0);
-                            }
-                            else
-                            {
-                                foreach ($items as $item)
-                                {
-                                    $swimlanes[] = array('identifiables' => $item);
+                                $swimlanes[] = ['identifiables' => $expedite_items];
+                                $swimlanes[] = ['identifiables' => $items];
+                                $swimlanes[] = ['identifiables' => 0];
+                            } else {
+                                foreach ($items as $item) {
+                                    $swimlanes[] = ['identifiables' => $item];
                                 }
-                                $swimlanes[] = array('identifiables' => 0);
+                                $swimlanes[] = ['identifiables' => 0];
                             }
                             break;
                         case self::SWIMLANES_ISSUES:
-                            foreach ($milestone->getIssues() as $issue)
-                            {
-                                if ($issue->isChildIssue())
-                                {
-                                    foreach ($issue->getParentIssues() as $parent)
-                                    {
+                            foreach ($milestone->getIssues() as $issue) {
+                                if ($issue->isChildIssue()) {
+                                    foreach ($issue->getParentIssues() as $parent) {
                                         if ($parent->getIssueType()->getID() != $this->getEpicIssuetypeID()) continue 2;
                                     }
                                 }
 
-                                if (in_array($issue->getIssueType()->getID(), $this->getSwimlaneFieldValues()))
-                                {
-                                    $swimlanes[] = array('identifiables' => $issue);
+                                if (in_array($issue->getIssueType()->getID(), $this->getSwimlaneFieldValues())) {
+                                    $swimlanes[] = ['identifiables' => $issue];
                                 }
                             }
-                            $swimlanes[] = array('identifiables' => 0);
+                            $swimlanes[] = ['identifiables' => 0];
                             break;
                     }
-                }
-                else
-                {
-                    $swimlanes[] = array('identifiables' => 0);
+                } else {
+                    $swimlanes[] = ['identifiables' => 0];
                 }
 
-                foreach ($swimlanes as $details)
-                {
+                foreach ($swimlanes as $details) {
                     $swimlane = new BoardSwimlane();
                     $swimlane->setBoard($this);
                     $swimlane->setIdentifiables($details['identifiables']);
@@ -600,22 +571,29 @@
             }
         }
 
-        /**
-         * Retrieve all available swimlanes for the selected milestone
-         *
-         * @param \pachno\core\entities\Milestone $milestone
-         * @return array|BoardSwimlane
-         */
-        public function getMilestoneSwimlanes($milestone)
+        public function usesSwimlanes()
         {
-            if (!($milestone instanceof \pachno\core\entities\Milestone))
-            {
-                return array();
-            }
+            return $this->_use_swimlanes;
+        }
 
-            $this->_populateMilestoneSwimlanes($milestone);
+        public function getSwimlaneType()
+        {
+            return $this->_swimlane_type;
+        }
 
-            return $this->_swimlanes[$milestone->getID()];
+        public function setSwimlaneType($swimlane_type)
+        {
+            $this->_swimlane_type = $swimlane_type;
+        }
+
+        public function getSwimlaneIdentifier()
+        {
+            return $this->_swimlane_identifier;
+        }
+
+        public function setSwimlaneIdentifier($swimlane_identifier)
+        {
+            $this->_swimlane_identifier = $swimlane_identifier;
         }
 
     }

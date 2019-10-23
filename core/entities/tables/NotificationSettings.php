@@ -2,8 +2,6 @@
 
     namespace pachno\core\entities\tables;
 
-    use pachno\core\entities\tables\ScopedTable;
-
     /**
      * User notification settings table
      *

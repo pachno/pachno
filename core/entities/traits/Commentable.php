@@ -31,6 +31,7 @@
         public function getComments()
         {
             $this->_populateComments();
+
             return $this->_comments;
         }
 
@@ -39,10 +40,14 @@
          */
         protected function _populateComments()
         {
-            if ($this->_comments === null)
-            {
+            if ($this->_comments === null) {
                 $this->_b2dbLazyLoad('_comments');
             }
+        }
+
+        public function countComments()
+        {
+            return $this->getCommentCount();
         }
 
         /**
@@ -52,8 +57,7 @@
          */
         public function getCommentCount()
         {
-            if ($this->_num_comments === null)
-            {
+            if ($this->_num_comments === null) {
                 if ($this->_comments !== null)
                     $this->_num_comments = count($this->_comments);
                 else
@@ -61,11 +65,6 @@
             }
 
             return $this->_num_comments;
-        }
-
-        public function countComments()
-        {
-            return $this->getCommentCount();
         }
 
     }

@@ -2,11 +2,15 @@
 
     namespace pachno\core\entities;
 
-    use b2db\Update,
-        pachno\core\entities\common\IdentifiableScoped,
-        pachno\core\entities\tables\Modules,
-        GuzzleHttp\Client as GuzzleClient,
-        pachno\core\framework;
+    use b2db\Core;
+    use b2db\Row;
+    use b2db\Update;
+    use Exception;
+    use GuzzleHttp\Client as GuzzleClient;
+    use pachno\core\entities\common\IdentifiableScoped;
+    use pachno\core\entities\tables\Modules;
+    use pachno\core\framework;
+    use ZipArchive;
 
     /**
      * Module class, extended by all pachno modules
@@ -28,6 +32,8 @@
      */
     abstract class Module extends IdentifiableScoped implements framework\interfaces\ModuleInterface
     {
+
+        protected static $_permissions = [];
 
         /**
          * The name of the object
@@ -56,43 +62,50 @@
         protected $_version = '';
 
         protected $_longname = '';
+
         protected $_shortname = '';
+
         protected $_showinconfig = false;
+
         protected $_module_config_title = '';
+
         protected $_module_config_description = '';
+
         protected $_description = '';
-        protected $_availablepermissions = array();
-        protected $_settings = array();
-        protected $_routes = array();
+
+        protected $_availablepermissions = [];
+
+        protected $_settings = [];
+
+        protected $_routes = [];
 
         protected $_has_account_settings = false;
-        protected $_account_settings_name = null;
-        protected $_account_settings_logo = null;
-        protected $_has_config_settings = false;
 
-        protected static $_permissions = array();
+        protected $_account_settings_name = null;
+
+        protected $_account_settings_logo = null;
+
+        protected $_has_config_settings = false;
 
         /**
          * Installs a module
          *
          * @param string $module_name the module key
+         *
          * @return boolean Whether the install succeeded or not
          */
         public static function installModule($module_name, $scope = null)
         {
             $scope_id = ($scope) ? $scope->getID() : framework\Context::getScope()->getID();
-            if (!framework\Context::getScope() instanceof \pachno\core\entities\Scope) throw new \Exception('No scope??');
+            if (!framework\Context::getScope() instanceof Scope) throw new Exception('No scope??');
 
             framework\Logging::log('installing module ' . $module_name);
-            $transaction = \b2db\Core::startTransaction();
-            try
-            {
+            $transaction = Core::startTransaction();
+            try {
                 $module = tables\Modules::getTable()->installModule($module_name, $scope_id);
                 $module->install($scope_id);
                 $transaction->commitAndEnd();
-            }
-            catch (\Exception $e)
-            {
+            } catch (Exception $e) {
                 $transaction->rollback();
                 throw $e;
             }
@@ -109,62 +122,10 @@
             framework\Context::unloadModule($module_key);
         }
 
-        protected function _addAvailablePermissions() { }
-
-        protected function _addListeners() { }
-
-        abstract protected function _initialize();
-
-        protected function _install($scope) { }
-
-        protected function _uninstall() { }
-
-        protected function _upgrade() { }
-
-        /**
-         * Class constructor
-         */
-        final public function _construct(\b2db\Row $row, $foreign_key = null)
+        public function disable()
         {
-            if ($this->_version != $row->get(tables\Modules::VERSION))
-            {
-                throw new \Exception('This module must be upgraded to the latest version');
-            }
-        }
-
-        protected function _loadFixtures($scope) { }
-
-        final public function install($scope)
-        {
-            try
-            {
-                framework\Context::clearRoutingCache();
-                framework\Context::clearPermissionsCache();
-                $this->_install($scope);
-                $b2db_classpath = PACHNO_MODULES_PATH . $this->_name . DS . 'entities' . DS . 'tables';
-
-                if ($scope == framework\Settings::getDefaultScopeID() && is_dir($b2db_classpath))
-                {
-                    $b2db_classpath_handle = opendir($b2db_classpath);
-                    while ($table_class_file = readdir($b2db_classpath_handle))
-                    {
-                        if (($tablename = mb_substr($table_class_file, 0, mb_strpos($table_class_file, '.'))) != '')
-                        {
-                            \b2db\Core::getTable("\\pachno\\modules\\".$this->_name."\\entities\\tables\\".$tablename)->create();
-                        }
-                    }
-                }
-                $this->_loadFixtures($scope);
-            }
-            catch (\Exception $e)
-            {
-                throw $e;
-            }
-        }
-
-        public function log($message, $level = 1)
-        {
-            framework\Logging::log($message, $this->getName(), $level);
+            self::disableModule($this->getID());
+            $this->_enabled = false;
         }
 
         public static function disableModule($module_id)
@@ -177,10 +138,134 @@
             tables\Modules::getTable()->removeModuleByID($module_id);
         }
 
-        public function disable()
+        /**
+         * @param $module_key
+         *
+         * @throws framework\exceptions\ModuleDownloadException
+         */
+        public static function downloadModule($module_key)
         {
-            self::disableModule($this->getID());
-            $this->_enabled = false;
+            self::downloadPlugin('addon', $module_key);
+        }
+
+        /**
+         * @param $plugin_type
+         * @param $plugin_key
+         *
+         * @throws framework\exceptions\ModuleDownloadException
+         */
+        public static function downloadPlugin($plugin_type, $plugin_key)
+        {
+            try {
+                $client = new GuzzleClient(['base_uri' => 'https://pachno.com']);
+                $response = $client->get('/' . $plugin_type . 's/' . $plugin_key . '.json');
+
+                if ($response->getStatusCode() === 200) {
+                    $plugin_json = json_decode($response->getBody());
+                }
+            } catch (Exception $e) {
+            }
+
+            if (isset($plugin_json) && $plugin_json !== false) {
+                $filename = PACHNO_CACHE_PATH . $plugin_type . '_' . $plugin_json->key . '.zip';
+                $response = $client->get($plugin_json->download);
+                if ($response->getStatusCode() != 200) {
+                    throw new framework\exceptions\ModuleDownloadException("", framework\exceptions\ModuleDownloadException::JSON_NOT_FOUND);
+                }
+                file_put_contents($filename, $response->getBody());
+                $module_zip = new ZipArchive();
+                $module_zip->open($filename);
+                switch ($plugin_type) {
+                    case 'addon':
+                        $target_folder = PACHNO_MODULES_PATH;
+                        break;
+                    case 'theme':
+                        $target_folder = PACHNO_PATH . 'themes';
+                        break;
+                }
+                if (!is_writable($target_folder)) {
+                    throw new framework\exceptions\ModuleDownloadException("", framework\exceptions\ModuleDownloadException::READONLY_TARGET);
+                }
+                $module_zip->extractTo(realpath($target_folder));
+                $module_zip->close();
+            } else {
+                throw new framework\exceptions\ModuleDownloadException("", framework\exceptions\ModuleDownloadException::FILE_NOT_FOUND);
+            }
+        }
+
+        /**
+         * @param $module_key
+         *
+         * @throws framework\exceptions\ModuleDownloadException
+         */
+        public static function downloadTheme($theme_key)
+        {
+            self::downloadPlugin('theme', $theme_key);
+        }
+
+        /**
+         * Class constructor
+         */
+        final public function _construct(Row $row, $foreign_key = null)
+        {
+            if ($this->_version != $row->get(tables\Modules::VERSION)) {
+                throw new Exception('This module must be upgraded to the latest version');
+            }
+        }
+
+        final public function install($scope)
+        {
+            try {
+                framework\Context::clearRoutingCache();
+                framework\Context::clearPermissionsCache();
+                $this->_install($scope);
+                $b2db_classpath = PACHNO_MODULES_PATH . $this->_name . DS . 'entities' . DS . 'tables';
+
+                if ($scope == framework\Settings::getDefaultScopeID() && is_dir($b2db_classpath)) {
+                    $b2db_classpath_handle = opendir($b2db_classpath);
+                    while ($table_class_file = readdir($b2db_classpath_handle)) {
+                        if (($tablename = mb_substr($table_class_file, 0, mb_strpos($table_class_file, '.'))) != '') {
+                            Core::getTable("\\pachno\\modules\\" . $this->_name . "\\entities\\tables\\" . $tablename)->create();
+                        }
+                    }
+                }
+                $this->_loadFixtures($scope);
+            } catch (Exception $e) {
+                throw $e;
+            }
+        }
+
+        protected function _install($scope)
+        {
+        }
+
+        protected function _loadFixtures($scope)
+        {
+        }
+
+        public function log($message, $level = 1)
+        {
+            framework\Logging::log($message, $this->getName(), $level);
+        }
+
+        /**
+         * Return the items name
+         *
+         * @return string
+         */
+        public function getName()
+        {
+            return $this->_name;
+        }
+
+        /**
+         * Set the edition name
+         *
+         * @param string $name
+         */
+        public function setName($name)
+        {
+            $this->_name = $name;
         }
 
         public function enable()
@@ -200,11 +285,14 @@
             Modules::getTable()->setModuleVersion($this->_name, static::VERSION);
         }
 
+        protected function _upgrade()
+        {
+        }
+
         final public function uninstall($scope = null)
         {
-            if ($this->isCore())
-            {
-                throw new \Exception('Cannot uninstall core modules');
+            if ($this->isCore()) {
+                throw new Exception('Cannot uninstall core modules');
             }
             $this->_uninstall();
             $this->delete();
@@ -215,6 +303,10 @@
             framework\Context::clearPermissionsCache();
         }
 
+        protected function _uninstall()
+        {
+        }
+
         public function __toString()
         {
             return $this->_name;
@@ -222,12 +314,7 @@
 
         public function __call($func, $args)
         {
-            throw new \Exception('Trying to call function ' . $func . '() in module ' . $this->_name . ', but the function does not exist');
-        }
-
-        public function setLongName($name)
-        {
-            $this->_longname = $name;
+            throw new Exception('Trying to call function ' . $func . '() in module ' . $this->_name . ', but the function does not exist');
         }
 
         public function getLongName()
@@ -235,9 +322,14 @@
             return $this->_longname;
         }
 
+        public function setLongName($name)
+        {
+            $this->_longname = $name;
+        }
+
         public function addAvailablePermission($permission_name, $description, $target = 0)
         {
-            $this->_availablepermissions[$permission_name] = array('description' => $description, 'target_id' => $target);
+            $this->_availablepermissions[$permission_name] = ['description' => $description, 'target_id' => $target];
         }
 
         public function getAvailablePermissions()
@@ -247,7 +339,7 @@
 
         public function getAvailableCommandLineCommands()
         {
-            return array();
+            return [];
         }
 
         public function getConfigTitle()
@@ -273,8 +365,8 @@
         /**
          * Shortcut for the global settings function
          *
-         * @param string  $name the name of the setting
-         * @param integer $uid     the uid for the user to check
+         * @param string $name the name of the setting
+         * @param integer $uid the uid for the user to check
          *
          * @return mixed
          */
@@ -294,6 +386,23 @@
             framework\Settings::deleteSetting($name, $this->getName(), $scope, $uid);
         }
 
+        public function addRoute($key, $url, $function, $params = [], $options = [], $module_name = null)
+        {
+            $module_name = ($module_name !== null) ? $module_name : $this->getName();
+            $this->_routes[] = [$key, $url, $module_name, $function, $params, $options];
+        }
+
+        final public function initialize()
+        {
+            $this->_initialize();
+            if ($this->isEnabled()) {
+                $this->_addListeners();
+                $this->_addAvailablePermissions();
+            }
+        }
+
+        abstract protected function _initialize();
+
         /**
          * Returns whether the module is enabled
          *
@@ -302,10 +411,10 @@
         public function isEnabled()
         {
             /* Outdated modules can not be used */
-            if ($this->isOutdated())
-            {
+            if ($this->isOutdated()) {
                 return false;
             }
+
             return $this->_enabled;
         }
 
@@ -316,37 +425,29 @@
          */
         public function isOutdated()
         {
-            if ($this->_version != static::VERSION)
-            {
+            if ($this->_version != static::VERSION) {
                 return true;
             }
+
             return false;
         }
 
-        public function addRoute($key, $url, $function, $params = array(), $options = array(), $module_name = null)
+        protected function _addListeners()
         {
-            $module_name = ($module_name !== null) ? $module_name : $this->getName();
-            $this->_routes[] = array($key, $url, $module_name, $function, $params, $options);
         }
 
-        final public function initialize()
+        protected function _addAvailablePermissions()
         {
-            $this->_initialize();
-            if ($this->isEnabled())
-            {
-                $this->_addListeners();
-                $this->_addAvailablePermissions();
-            }
-        }
-
-        public function setDescription($description)
-        {
-            $this->_description = $description;
         }
 
         public function getDescription()
         {
             return $this->_description;
+        }
+
+        public function setDescription($description)
+        {
+            $this->_description = $description;
         }
 
         public function loadHelpTitle($topic)
@@ -356,7 +457,7 @@
 
         public function setHasAccountSettings($val = true)
         {
-            $this->_has_account_settings = (bool) $val;
+            $this->_has_account_settings = (bool)$val;
         }
 
         public function hasAccountSettings()
@@ -364,24 +465,24 @@
             return $this->_has_account_settings;
         }
 
-        public function setAccountSettingsName($name)
-        {
-            $this->_account_settings_name = $name;
-        }
-
         public function getAccountSettingsName()
         {
             return framework\Context::geti18n()->__($this->_account_settings_name);
         }
 
-        public function setAccountSettingsLogo($logo)
+        public function setAccountSettingsName($name)
         {
-            $this->_account_settings_logo = $logo;
+            $this->_account_settings_name = $name;
         }
 
         public function getAccountSettingsLogo()
         {
             return $this->_account_settings_logo;
+        }
+
+        public function setAccountSettingsLogo($logo)
+        {
+            $this->_account_settings_logo = $logo;
         }
 
         public function hasConfigSettings()
@@ -432,90 +533,6 @@
         public function postAccountSettings(framework\Request $request)
         {
 
-        }
-
-        /**
-         * Return the items name
-         *
-         * @return string
-         */
-        public function getName()
-        {
-            return $this->_name;
-        }
-
-        /**
-         * Set the edition name
-         *
-         * @param string $name
-         */
-        public function setName($name)
-        {
-            $this->_name = $name;
-        }
-
-        /**
-         * @param $plugin_type
-         * @param $plugin_key
-         * @throws framework\exceptions\ModuleDownloadException
-         */
-        public static function downloadPlugin($plugin_type, $plugin_key)
-        {
-            try
-            {
-                $client = new GuzzleClient(['base_uri' => 'https://pachno.com']);
-                $response = $client->get('/' . $plugin_type . 's/' . $plugin_key . '.json');
-
-                if ($response->getStatusCode() === 200) {
-                    $plugin_json = json_decode($response->getBody());
-                }
-            }
-            catch (\Exception $e) {}
-
-            if (isset($plugin_json) && $plugin_json !== false) {
-                $filename = PACHNO_CACHE_PATH . $plugin_type . '_' . $plugin_json->key . '.zip';
-                $response = $client->get($plugin_json->download);
-                if ($response->getStatusCode() != 200)
-                {
-                    throw new framework\exceptions\ModuleDownloadException("", framework\exceptions\ModuleDownloadException::JSON_NOT_FOUND);
-                }
-                file_put_contents($filename, $response->getBody());
-                $module_zip = new \ZipArchive();
-                $module_zip->open($filename);
-                switch ($plugin_type) {
-                    case 'addon':
-                        $target_folder = PACHNO_MODULES_PATH;
-                        break;
-                    case 'theme':
-                        $target_folder = PACHNO_PATH . 'themes';
-                        break;
-                }
-                if (!is_writable($target_folder)) {
-                    throw new framework\exceptions\ModuleDownloadException("", framework\exceptions\ModuleDownloadException::READONLY_TARGET);
-                }
-                $module_zip->extractTo(realpath($target_folder));
-                $module_zip->close();
-            } else {
-                throw new framework\exceptions\ModuleDownloadException("", framework\exceptions\ModuleDownloadException::FILE_NOT_FOUND);
-            }
-        }
-
-        /**
-         * @param $module_key
-         * @throws framework\exceptions\ModuleDownloadException
-         */
-        public static function downloadModule($module_key)
-        {
-            self::downloadPlugin('addon', $module_key);
-        }
-
-        /**
-         * @param $module_key
-         * @throws framework\exceptions\ModuleDownloadException
-         */
-        public static function downloadTheme($theme_key)
-        {
-            self::downloadPlugin('theme', $theme_key);
         }
 
     }

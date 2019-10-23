@@ -39,25 +39,9 @@
          */
         protected $_commit_sha = '';
 
-        protected function _preSave($is_new)
-        {
-            parent::_preSave($is_new);
-            if ($is_new) {
-                $this->_commit_sha = $this->getCommit()->getRevision();
-            }
-        }
-
-        /**
-         * Get the commit
-         * @return Commit
-         */
-        public function getCommit()
-        {
-            return $this->_b2dbLazyLoad('_commit_id');
-        }
-
         /**
          * Set the commit this change applies to
+         *
          * @param Commit $commit
          */
         public function setCommit(Commit $commit)
@@ -76,11 +60,29 @@
 
         /**
          * Set the branch this change applies to
+         *
          * @param Branch $branch
          */
         public function setBranch(Branch $branch)
         {
             $this->_branch_id = $branch;
+        }
+
+        protected function _preSave($is_new)
+        {
+            parent::_preSave($is_new);
+            if ($is_new) {
+                $this->_commit_sha = $this->getCommit()->getRevision();
+            }
+        }
+
+        /**
+         * Get the commit
+         * @return Commit
+         */
+        public function getCommit()
+        {
+            return $this->_b2dbLazyLoad('_commit_id');
         }
 
     }

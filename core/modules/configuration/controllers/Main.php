@@ -2,10 +2,19 @@
 
     namespace pachno\core\modules\configuration\controllers;
 
-    use pachno\core\framework,
-        pachno\core\entities,
-        pachno\core\entities\tables,
-        GuzzleHttp\Client as GuzzleClient;
+    use Exception;
+    use InvalidArgumentException;
+    use pachno\core\entities;
+    use pachno\core\entities\CustomDatatype;
+    use pachno\core\entities\tables;
+    use pachno\core\entities\tables\Builds;
+    use pachno\core\entities\tables\Clients;
+    use pachno\core\entities\tables\Components;
+    use pachno\core\entities\tables\Editions;
+    use pachno\core\entities\tables\ListTypes;
+    use pachno\core\entities\tables\Milestones;
+    use pachno\core\framework;
+    use pachno\core\helpers\Pagination;
 
     class Main extends framework\Action
     {
@@ -23,8 +32,8 @@
         /**
          * Pre-execute function
          *
-         * @param framework\Request     $request
-         * @param string        $action
+         * @param framework\Request $request
+         * @param string $action
          */
         public function preExecute(framework\Request $request, $action)
         {
@@ -39,12 +48,16 @@
 
             $this->access_level = $this->getAccessLevel($request['section'], 'core');
 
-            if (!$request->isAjaxCall())
-            {
+            if (!$request->isAjaxCall()) {
                 $this->getResponse()->setPage('config');
                 framework\Context::loadLibrary('ui');
-                $this->getResponse()->addBreadcrumb(framework\Context::getI18n()->__('Configure %pachno_name', array('%pachno_name' => framework\Settings::getSiteHeaderName())), framework\Context::getRouting()->generate('configure'), $this->getResponse()->getPredefinedBreadcrumbLinks('configure'));
+                $this->getResponse()->addBreadcrumb(framework\Context::getI18n()->__('Configure %pachno_name', ['%pachno_name' => framework\Settings::getSiteHeaderName()]), framework\Context::getRouting()->generate('configure'), $this->getResponse()->getPredefinedBreadcrumbLinks('configure'));
             }
+        }
+
+        public function getAccessLevel($section, $module)
+        {
+            return framework\Settings::getAccessLevel($section, $module);
         }
 
         /**
@@ -67,25 +80,19 @@
         {
             $latest_version = framework\Context::getLatestAvailableVersionInformation();
 
-            if ($latest_version === null)
-            {
+            if ($latest_version === null) {
                 $this->getResponse()->setHttpStatus(400);
                 $uptodate = null;
                 $title = framework\Context::getI18n()->__('Failed to check for updates');
                 $message = framework\Context::getI18n()->__('The response from Pachno website was invalid');
-            }
-            else
-            {
+            } else {
                 $update_available = framework\Context::isUpdateAvailable($latest_version);
 
-                if ($update_available)
-                {
+                if ($update_available) {
                     $uptodate = false;
                     $title = framework\Context::getI18n()->__('Pachno is out of date');
                     $message = framework\Context::getI18n()->__('The latest version is %ver. Update now from pachno.com.', ['%ver' => $latest_version->nicever]);
-                }
-                else
-                {
+                } else {
                     $uptodate = true;
                     $title = framework\Context::getI18n()->__('Pachno is up to date');
                     $message = framework\Context::getI18n()->__('The latest version is %ver', ['%ver' => $latest_version->nicever]);
@@ -106,47 +113,44 @@
          */
         public function runSettings(framework\Request $request)
         {
-            if (framework\Context::getRequest()->isPost())
-            {
+            if (framework\Context::getRequest()->isPost()) {
                 $this->forward403unless($this->access_level == framework\Settings::ACCESS_FULL);
-                $settings = array(framework\Settings::SETTING_USER_DISPLAYNAME_FORMAT, framework\Settings::SETTING_ENABLE_GRAVATARS, framework\Settings::SETTING_IS_SINGLE_PROJECT_TRACKER,
+                $settings = [framework\Settings::SETTING_USER_DISPLAYNAME_FORMAT, framework\Settings::SETTING_ENABLE_GRAVATARS, framework\Settings::SETTING_IS_SINGLE_PROJECT_TRACKER,
                     framework\Settings::SETTING_REQUIRE_LOGIN, framework\Settings::SETTING_ALLOW_REGISTRATION, framework\Settings::SETTING_USER_GROUP,
                     framework\Settings::SETTING_RETURN_FROM_LOGIN, framework\Settings::SETTING_RETURN_FROM_LOGOUT,
                     framework\Settings::SETTING_REGISTRATION_DOMAIN_WHITELIST, framework\Settings::SETTING_SHOW_PROJECTS_OVERVIEW, framework\Settings::SETTING_KEEP_COMMENT_TRAIL_CLEAN,
                     framework\Settings::SETTING_SITE_NAME, framework\Settings::SETTING_SITE_NAME_HTML, framework\Settings::SETTING_DEFAULT_CHARSET, framework\Settings::SETTING_DEFAULT_LANGUAGE,
                     framework\Settings::SETTING_SERVER_TIMEZONE, framework\Settings::SETTING_HEADER_LINK,
                     framework\Settings::SETTING_MAINTENANCE_MESSAGE, framework\Settings::SETTING_MAINTENANCE_MODE, framework\Settings::SETTING_ELEVATED_LOGIN_DISABLED,
-                    framework\Settings::SETTING_NOTIFICATION_POLL_INTERVAL);
+                    framework\Settings::SETTING_NOTIFICATION_POLL_INTERVAL];
 
-                foreach ($settings as $setting)
-                {
-                    if (framework\Context::getRequest()->getParameter($setting) !== null)
-                    {
+                foreach ($settings as $setting) {
+                    if (framework\Context::getRequest()->getParameter($setting) !== null) {
                         $value = framework\Context::getRequest()->getParameter($setting);
-                        switch ($setting)
-                        {
+                        switch ($setting) {
                             case framework\Settings::SETTING_SITE_NAME:
                                 $value = framework\Context::getRequest()->getParameter($setting, null, false);
                                 break;
                             case framework\Settings::SETTING_DEFAULT_CHARSET:
                                 framework\Context::loadLibrary('common');
-                                if ($value && !pachno_check_syntax($value, "CHARSET"))
-                                {
+                                if ($value && !pachno_check_syntax($value, "CHARSET")) {
                                     $this->getResponse()->setHttpStatus(400);
-                                    return $this->renderJSON(array('error' => framework\Context::getI18n()->__('Please provide a valid setting for charset')));
+
+                                    return $this->renderJSON(['error' => framework\Context::getI18n()->__('Please provide a valid setting for charset')]);
                                 }
                                 break;
                             case framework\Settings::SETTING_NOTIFICATION_POLL_INTERVAL:
-                                if (!ctype_digit($value))
-                                {
+                                if (!ctype_digit($value)) {
                                     $this->getResponse()->setHttpStatus(400);
-                                    return $this->renderJSON(array('error' => framework\Context::getI18n()->__('Please provide a valid setting for notification poll interval')));
+
+                                    return $this->renderJSON(['error' => framework\Context::getI18n()->__('Please provide a valid setting for notification poll interval')]);
                                 }
                         }
                         framework\Settings::saveSetting($setting, $value);
                     }
                 }
-                return $this->renderJSON(array('title' => framework\Context::getI18n()->__('All settings saved')));
+
+                return $this->renderJSON(['title' => framework\Context::getI18n()->__('All settings saved')]);
             }
         }
 
@@ -161,21 +165,6 @@
             $this->archived_projects = entities\Project::getAllRootProjects(true);
         }
 
-        protected function getBuiltInIssueFields()
-        {
-            $i18n = framework\Context::getI18n();
-            $builtin_types = [];
-            $builtin_types[entities\Datatype::STATUS] = array('description' => $i18n->__('Status types'), 'key' => entities\Datatype::STATUS);
-            $builtin_types[entities\Datatype::RESOLUTION] = array('description' => $i18n->__('Resolution types'), 'key' => entities\Datatype::RESOLUTION);
-            $builtin_types[entities\Datatype::PRIORITY] = array('description' => $i18n->__('Priority levels'), 'key' => entities\Datatype::PRIORITY);
-            $builtin_types[entities\Datatype::SEVERITY] = array('description' => $i18n->__('Severity levels'), 'key' => entities\Datatype::SEVERITY);
-            $builtin_types[entities\Datatype::CATEGORY] = array('description' => $i18n->__('Categories'), 'key' => entities\Datatype::CATEGORY);
-            $builtin_types[entities\Datatype::REPRODUCABILITY] = array('description' => $i18n->__('Reproducability'), 'key' => entities\Datatype::REPRODUCABILITY);
-            $builtin_types[entities\Datatype::ACTIVITYTYPE] = array('description' => $i18n->__('Activity types'), 'key' => entities\Datatype::ACTIVITYTYPE);
-
-            return $builtin_types;
-        }
-
         /**
          * Configure issue fields
          *
@@ -184,7 +173,22 @@
         public function runConfigureIssuefields(framework\Request $request)
         {
             $this->builtin_types = $this->getBuiltInIssueFields();
-            $this->custom_types = entities\CustomDatatype::getAll();
+            $this->custom_types = CustomDatatype::getAll();
+        }
+
+        protected function getBuiltInIssueFields()
+        {
+            $i18n = framework\Context::getI18n();
+            $builtin_types = [];
+            $builtin_types[entities\Datatype::STATUS] = ['description' => $i18n->__('Status types'), 'key' => entities\Datatype::STATUS];
+            $builtin_types[entities\Datatype::RESOLUTION] = ['description' => $i18n->__('Resolution types'), 'key' => entities\Datatype::RESOLUTION];
+            $builtin_types[entities\Datatype::PRIORITY] = ['description' => $i18n->__('Priority levels'), 'key' => entities\Datatype::PRIORITY];
+            $builtin_types[entities\Datatype::SEVERITY] = ['description' => $i18n->__('Severity levels'), 'key' => entities\Datatype::SEVERITY];
+            $builtin_types[entities\Datatype::CATEGORY] = ['description' => $i18n->__('Categories'), 'key' => entities\Datatype::CATEGORY];
+            $builtin_types[entities\Datatype::REPRODUCABILITY] = ['description' => $i18n->__('Reproducability'), 'key' => entities\Datatype::REPRODUCABILITY];
+            $builtin_types[entities\Datatype::ACTIVITYTYPE] = ['description' => $i18n->__('Activity types'), 'key' => entities\Datatype::ACTIVITYTYPE];
+
+            return $builtin_types;
         }
 
         /**
@@ -224,6 +228,7 @@
 
             if (!$scheme instanceof entities\IssuetypeScheme) {
                 $this->getResponse()->setHttpStatus(400);
+
                 return $this->renderJSON(['error' => framework\Context::getI18n()->__('Please provide a valid name for the issue type')]);
             }
 
@@ -246,7 +251,7 @@
             $this->number_of_schemes = tables\IssuetypeSchemes::getTable()->getNumberOfSchemesInCurrentScope();
             $this->issue_types = entities\Issuetype::getAll();
             $this->icons = entities\Issuetype::getIcons();
-            $this->scheme = entities\IssuetypeScheme::getB2DBTable()->selectById((int) $request['scheme_id']);
+            $this->scheme = entities\IssuetypeScheme::getB2DBTable()->selectById((int)$request['scheme_id']);
 
 //                if ($this->mode == 'copy_scheme')
 //                {
@@ -299,7 +304,7 @@
             $scheme = tables\IssuetypeSchemes::getTable()->selectById($request['scheme_id']);
 
             $builtin_types = entities\DatatypeBase::getAvailableFields(true);
-            $custom_types = entities\CustomDatatype::getAll();
+            $custom_types = CustomDatatype::getAll();
             $visible_fields = $scheme->getVisibleFieldsForIssuetype($issue_type);
             $key = $request['key'];
             $item = (in_array($key, $builtin_types)) ? $key : $custom_types[$key];
@@ -322,17 +327,17 @@
             $issue_type = tables\IssueTypes::getTable()->selectById($request['issue_type_id']);
             $scheme = tables\IssuetypeSchemes::getTable()->selectById($request['scheme_id']);
 
-            if (!$issue_type instanceof entities\Issuetype || !$scheme instanceof entities\IssuetypeScheme)
-            {
+            if (!$issue_type instanceof entities\Issuetype || !$scheme instanceof entities\IssuetypeScheme) {
                 $this->getResponse()->setHttpStatus(400);
+
                 return $this->renderJSON(['error' => framework\Context::getI18n()->__('Please provide a valid issue type and scheme')]);
             }
 
             $scheme->clearAvailableFieldsForIssuetype($issue_type);
-            foreach ($request->getParameter('field', []) as $key => $details)
-            {
+            foreach ($request->getParameter('field', []) as $key => $details) {
                 $scheme->setFieldAvailableForIssuetype($issue_type, $key, $details);
             }
+
             return $this->renderJSON(['message' => framework\Context::getI18n()->__('Available choices updated')]);
         }
 
@@ -363,11 +368,13 @@
 
             if ($request->hasParameter('icon') && !$request['icon']) {
                 $this->getResponse()->setHttpStatus(400);
+
                 return $this->renderJSON(['error' => framework\Context::getI18n()->__('Please choose an icon')]);
             }
 
             if ($request->hasParameter('name') && !trim($request['name'])) {
                 $this->getResponse()->setHttpStatus(400);
+
                 return $this->renderJSON(['error' => framework\Context::getI18n()->__('Please pick a name')]);
             }
 
@@ -411,84 +418,80 @@
         public function runConfigureIssuetype(framework\Request $request)
         {
             $this->forward403unless($this->access_level == framework\Settings::ACCESS_FULL);
-            switch ($request['mode'])
-            {
+            switch ($request['mode']) {
                 case 'edit':
-                    if ($request['name'])
-                    {
+                    if ($request['name']) {
                         $issuetype = new entities\Issuetype();
                         $issuetype->setName($request['name']);
                         $issuetype->setIcon($request['icon']);
                         $issuetype->save();
-                        return $this->renderJSON(array('title' => framework\Context::getI18n()->__('Issue type created'), 'content' => $this->getComponentHTML('issuetype', array('type' => $issuetype))));
+
+                        return $this->renderJSON(['title' => framework\Context::getI18n()->__('Issue type created'), 'content' => $this->getComponentHTML('issuetype', ['type' => $issuetype])]);
                     }
                     $this->getResponse()->setHttpStatus(400);
-                    return $this->renderJSON(array('error' => framework\Context::getI18n()->__('Please provide a valid name for the issue type')));
+
+                    return $this->renderJSON(['error' => framework\Context::getI18n()->__('Please provide a valid name for the issue type')]);
                 case 'update':
-                    if (($issuetype = entities\Issuetype::getB2DBTable()->selectById($request['id'])) instanceof entities\Issuetype)
-                    {
-                        if ($this->scheme instanceof entities\IssuetypeScheme)
-                        {
+                    if (($issuetype = entities\Issuetype::getB2DBTable()->selectById($request['id'])) instanceof entities\Issuetype) {
+                        if ($this->scheme instanceof entities\IssuetypeScheme) {
                             $this->scheme->setIssuetypeRedirectedAfterReporting($issuetype, $request['redirect_after_reporting']);
                             $this->scheme->setIssuetypeReportable($issuetype, $request['reportable']);
-                            return $this->renderJSON(array('title' => framework\Context::getI18n()->__('The issue type details were updated'), 'description' => $issuetype->getDescription(), 'name' => $issuetype->getName()));
-                        }
-                        elseif ($request['name'])
-                        {
+
+                            return $this->renderJSON(['title' => framework\Context::getI18n()->__('The issue type details were updated'), 'description' => $issuetype->getDescription(), 'name' => $issuetype->getName()]);
+                        } elseif ($request['name']) {
                             $issuetype->setDescription($request['description']);
                             $issuetype->setName($request['name']);
                             $issuetype->setIcon($request['icon']);
                             $issuetype->save();
-                            return $this->renderJSON(array('title' => framework\Context::getI18n()->__('The issue type was updated'), 'description' => $issuetype->getDescription(), 'name' => $issuetype->getName()));
-                        }
-                        else
-                        {
+
+                            return $this->renderJSON(['title' => framework\Context::getI18n()->__('The issue type was updated'), 'description' => $issuetype->getDescription(), 'name' => $issuetype->getName()]);
+                        } else {
                             $this->getResponse()->setHttpStatus(400);
-                            return $this->renderJSON(array('error' => framework\Context::getI18n()->__('Please provide a valid name for the issue type')));
+
+                            return $this->renderJSON(['error' => framework\Context::getI18n()->__('Please provide a valid name for the issue type')]);
                         }
                     }
                     $this->getResponse()->setHttpStatus(400);
-                    return $this->renderJSON(array('error' => framework\Context::getI18n()->__('Please provide a valid issue type')));
+
+                    return $this->renderJSON(['error' => framework\Context::getI18n()->__('Please provide a valid issue type')]);
                 case 'updatechoices':
-                    if (($issuetype = entities\Issuetype::getB2DBTable()->selectById($request['id'])) instanceof entities\Issuetype)
-                    {
+                    if (($issuetype = entities\Issuetype::getB2DBTable()->selectById($request['id'])) instanceof entities\Issuetype) {
                         $this->scheme->clearAvailableFieldsForIssuetype($issuetype);
-                        foreach ($request->getParameter('field', array()) as $key => $details)
-                        {
+                        foreach ($request->getParameter('field', []) as $key => $details) {
                             $this->scheme->setFieldAvailableForIssuetype($issuetype, $key, $details);
                         }
-                        return $this->renderJSON(array('title' => framework\Context::getI18n()->__('Available choices updated')));
-                    }
-                    else
-                    {
+
+                        return $this->renderJSON(['title' => framework\Context::getI18n()->__('Available choices updated')]);
+                    } else {
                         $this->getResponse()->setHttpStatus(400);
-                        return $this->renderJSON(array('error' => framework\Context::getI18n()->__('Please provide a valid issue type')));
+
+                        return $this->renderJSON(['error' => framework\Context::getI18n()->__('Please provide a valid issue type')]);
                     }
                 case 'delete':
-                    if (($issuetype = entities\Issuetype::getB2DBTable()->selectById($request['id'])) instanceof entities\Issuetype)
-                    {
+                    if (($issuetype = entities\Issuetype::getB2DBTable()->selectById($request['id'])) instanceof entities\Issuetype) {
                         $issuetype->delete();
-                        return $this->renderJSON(array('message' => framework\Context::getI18n()->__('Issue type deleted')));
-                    }
-                    else
-                    {
+
+                        return $this->renderJSON(['message' => framework\Context::getI18n()->__('Issue type deleted')]);
+                    } else {
                         $this->getResponse()->setHttpStatus(400);
-                        return $this->renderJSON(array('error' => framework\Context::getI18n()->__('Please provide a valid issue type')));
+
+                        return $this->renderJSON(['error' => framework\Context::getI18n()->__('Please provide a valid issue type')]);
                     }
                 case 'toggletype':
-                    if (($issuetype = entities\Issuetype::getB2DBTable()->selectById($request['id'])) instanceof entities\Issuetype)
-                    {
-                        if ($this->scheme instanceof entities\IssuetypeScheme)
-                        {
+                    if (($issuetype = entities\Issuetype::getB2DBTable()->selectById($request['id'])) instanceof entities\Issuetype) {
+                        if ($this->scheme instanceof entities\IssuetypeScheme) {
                             $this->scheme->setIssuetypeEnabled($issuetype, ($request['state'] == 'enable'));
-                            return $this->renderJSON(array('issuetype_id' => $issuetype->getID()));
+
+                            return $this->renderJSON(['issuetype_id' => $issuetype->getID()]);
                         }
                     }
                     $this->getResponse()->setHttpStatus(400);
-                    return $this->renderJSON(array('error' => framework\Context::getI18n()->__('Please provide a valid action for this issue type / scheme')));
+
+                    return $this->renderJSON(['error' => framework\Context::getI18n()->__('Please provide a valid action for this issue type / scheme')]);
                 default:
                     $this->getResponse()->setHttpStatus(400);
-                    return $this->renderJSON(array('error' => framework\Context::getI18n()->__('Please provide a valid action for this issue type')));
+
+                    return $this->renderJSON(['error' => framework\Context::getI18n()->__('Please provide a valid action for this issue type')]);
             }
         }
 
@@ -515,37 +518,31 @@
             $this->forward403unless($this->access_level == framework\Settings::ACCESS_FULL);
             $types = entities\Datatype::getTypes();
 
-            switch ($request['mode'])
-            {
+            switch ($request['mode']) {
                 case 'saveorder':
                     $itemtype = $request['type'];
-                    if (array_key_exists($itemtype, $types))
-                    {
-                        tables\ListTypes::getTable()->saveOptionOrder($request[$itemtype . '_list'], $itemtype);
-                    }
-                    else
-                    {
-                        $customtype = entities\CustomDatatype::getByKey($request['type']);
+                    if (array_key_exists($itemtype, $types)) {
+                        ListTypes::getTable()->saveOptionOrder($request[$itemtype . '_list'], $itemtype);
+                    } else {
+                        $customtype = CustomDatatype::getByKey($request['type']);
                         tables\CustomFieldOptions::getTable()->saveOptionOrder($request[$itemtype . '_list'], $customtype->getID());
                     }
+
                     return $this->renderJSON('ok');
                     break;
                 case 'add':
-                    if ($request['name'])
-                    {
-                        if (array_key_exists($request['type'], $types))
-                        {
+                    if ($request['name']) {
+                        if (array_key_exists($request['type'], $types)) {
                             $type = $types[$request['type']];
                             $item = new $type();
                             $item->setName($request['name']);
                             $item->setItemdata($request['itemdata']);
                             $item->save();
-                        }
-                        else
-                        {
-                            $type = entities\CustomDatatype::getByKey($request['type']);
+                        } else {
+                            $type = CustomDatatype::getByKey($request['type']);
                             $item = $type->createNewOption($request['name'], $request['value'], $request['itemdata']);
                         }
+
                         return $this->renderJSON([
                             'title' => framework\Context::getI18n()->__('The option was added'),
                             'item' => $item->toJSON(),
@@ -553,16 +550,16 @@
                         ]);
                     }
                     $this->getResponse()->setHttpStatus(400);
-                    return $this->renderJSON(array('error' => framework\Context::getI18n()->__('Please provide a valid name')));
+
+                    return $this->renderJSON(['error' => framework\Context::getI18n()->__('Please provide a valid name')]);
                 case 'edit':
-                    if ($request['name'])
-                    {
+                    if ($request['name']) {
                         $type = $request['type'];
                         if (array_key_exists($type, $types)) {
                             $classname = $types[$type];
                             $item = $classname::getB2DBTable()->selectByID($request['id']);
                         } else {
-                            $customtype = entities\CustomDatatype::getByKey($type);
+                            $customtype = CustomDatatype::getByKey($type);
                             $item = entities\CustomDatatypeOption::getB2DBTable()->selectById($request['id']);
                         }
 
@@ -573,6 +570,7 @@
                                 $item->setValue($request['value']);
                             }
                             $item->save();
+
                             return $this->renderJSON([
                                 'title' => framework\Context::getI18n()->__('The option was updated'),
                                 'item' => $item->toJSON(),
@@ -580,28 +578,29 @@
                             ]);
                         } else {
                             $this->getResponse()->setHttpStatus(400);
+
                             return $this->renderJSON(['error' => framework\Context::getI18n()->__('Please provide a valid id')]);
                         }
                     }
                     $this->getResponse()->setHttpStatus(400);
+
                     return $this->renderJSON(['error' => framework\Context::getI18n()->__('Please provide a valid name')]);
                 case 'delete':
-                    if ($request->hasParameter('id'))
-                    {
-                        if (array_key_exists($request['type'], $types))
-                        {
+                    if ($request->hasParameter('id')) {
+                        if (array_key_exists($request['type'], $types)) {
                             $classname = $types[$request['type']];
                             $item = $classname::getB2DBTable()->rawDeleteById($request['id']);
-                            return $this->renderJSON(array('title' => $i18n->__('The option was deleted')));
-                        }
-                        else
-                        {
+
+                            return $this->renderJSON(['title' => $i18n->__('The option was deleted')]);
+                        } else {
                             tables\CustomFieldOptions::getTable()->rawDeleteById($request['id']);
-                            return $this->renderJSON(array('title' => $i18n->__('The option was deleted')));
+
+                            return $this->renderJSON(['title' => $i18n->__('The option was deleted')]);
                         }
                     }
                     $this->getResponse()->setHttpStatus(400);
-                    return $this->renderJSON(array('error' => $i18n->__('Invalid id or type')));
+
+                    return $this->renderJSON(['error' => $i18n->__('Invalid id or type')]);
                     break;
             }
         }
@@ -613,22 +612,19 @@
          */
         public function runConfigureIssuefieldsCustomTypeAction(framework\Request $request)
         {
-            switch ($request['mode'])
-            {
+            switch ($request['mode']) {
                 case 'add':
-                    if ($request['name'] != '')
-                    {
-                        try
-                        {
+                    if ($request['name'] != '') {
+                        try {
                             if (!$request['name']) {
-                                throw new \Exception($this->getI18n()->__('Please provide a name'));
+                                throw new Exception($this->getI18n()->__('Please provide a name'));
                             }
 
                             if (!$request['type']) {
-                                throw new \Exception($this->getI18n()->__('You have to pick the type of field you are adding'));
+                                throw new Exception($this->getI18n()->__('You have to pick the type of field you are adding'));
                             }
 
-                            $customtype = new entities\CustomDatatype();
+                            $customtype = new CustomDatatype();
                             $customtype->setName($request['name']);
                             $customtype->setType($request['type']);
                             $customtype->save();
@@ -637,43 +633,45 @@
                                 'item' => $customtype->toJSON(),
                                 'component' => $this->getComponentHTML('configuration/issuefield', ['type_key' => $customtype->getKey(), 'type' => $customtype])
                             ]);
-                        }
-                        catch (\Exception $e)
-                        {
+                        } catch (Exception $e) {
                             $this->getResponse()->setHttpStatus(400);
-                            return $this->renderJSON(array('error' => $e->getMessage() /* framework\Context::getI18n()->__('You need to provide a unique custom field name (key already exists)') */));
+
+                            return $this->renderJSON(['error' => $e->getMessage() /* framework\Context::getI18n()->__('You need to provide a unique custom field name (key already exists)') */]);
                         }
                     }
                     $this->getResponse()->setHttpStatus(400);
-                    return $this->renderJSON(array('error' => framework\Context::getI18n()->__('Please provide a valid name')));
+
+                    return $this->renderJSON(['error' => framework\Context::getI18n()->__('Please provide a valid name')]);
                     break;
                 case 'update':
-                    if ($request['name'] != '')
-                    {
-                        $customtype = entities\CustomDatatype::getByKey($request['type']);
-                        if ($customtype instanceof entities\CustomDatatype)
-                        {
+                    if ($request['name'] != '') {
+                        $customtype = CustomDatatype::getByKey($request['type']);
+                        if ($customtype instanceof CustomDatatype) {
                             // $customtype->setDescription($request['description']);
                             $customtype->setInstructions($request['instructions']);
                             $customtype->setName($request['name']);
                             $customtype->save();
-                            return $this->renderJSON(array('title' => framework\Context::getI18n()->__('The custom field was updated'), 'description' => $customtype->getDescription(), 'instructions' => $customtype->getInstructions(), 'name' => $customtype->getName()));
+
+                            return $this->renderJSON(['title' => framework\Context::getI18n()->__('The custom field was updated'), 'description' => $customtype->getDescription(), 'instructions' => $customtype->getInstructions(), 'name' => $customtype->getName()]);
                         }
                         $this->getResponse()->setHttpStatus(400);
-                        return $this->renderJSON(array('error' => framework\Context::getI18n()->__('You need to provide a custom field key that already exists')));
+
+                        return $this->renderJSON(['error' => framework\Context::getI18n()->__('You need to provide a custom field key that already exists')]);
                     }
                     $this->getResponse()->setHttpStatus(400);
-                    return $this->renderJSON(array('error' => framework\Context::getI18n()->__('Please provide a valid name')));
+
+                    return $this->renderJSON(['error' => framework\Context::getI18n()->__('Please provide a valid name')]);
                     break;
                 case 'delete':
-                    $customtype = entities\CustomDatatype::getByKey($request['type']);
-                    if ($customtype instanceof entities\CustomDatatype)
-                    {
+                    $customtype = CustomDatatype::getByKey($request['type']);
+                    if ($customtype instanceof CustomDatatype) {
                         $customtype->delete();
-                        return $this->renderJSON(array('title' => framework\Context::getI18n()->__('The custom field was deleted')));
+
+                        return $this->renderJSON(['title' => framework\Context::getI18n()->__('The custom field was deleted')]);
                     }
                     $this->getResponse()->setHttpStatus(400);
-                    return $this->renderJSON(array('error' => framework\Context::getI18n()->__('You need to provide a custom field key that already exists')));
+
+                    return $this->renderJSON(['error' => framework\Context::getI18n()->__('You need to provide a custom field key that already exists')]);
                     break;
             }
         }
@@ -703,40 +701,38 @@
         {
             $i18n = framework\Context::getI18n();
 
-            if (!framework\Context::getScope()->hasProjectsAvailable())
-            {
+            if (!framework\Context::getScope()->hasProjectsAvailable()) {
                 $this->getResponse()->setHttpStatus(400);
-                return $this->renderJSON(array("error" => $i18n->__("There are no more projects available in this instance")));
+
+                return $this->renderJSON(["error" => $i18n->__("There are no more projects available in this instance")]);
             }
-            if ($this->access_level == framework\Settings::ACCESS_FULL)
-            {
-                if (($p_name = $request['p_name']) && trim($p_name) != '')
-                {
-                    try
-                    {
+            if ($this->access_level == framework\Settings::ACCESS_FULL) {
+                if (($p_name = $request['p_name']) && trim($p_name) != '') {
+                    try {
                         $project = new entities\Project();
                         $project->setName($p_name);
                         $project->setWorkflowSchemeID($request['workflow_scheme_id']);
                         $project->setIssuetypeSchemeID($request['issuetype_scheme_id']);
                         $project->save();
-                        return $this->renderJSON(array('message' => $i18n->__('The project has been added'), 'content' => $this->getComponentHTML('projectbox', array('project' => $project, 'access_level' => $this->access_level)), 'total_count' => entities\Project::getProjectsCount(), 'more_available' => framework\Context::getScope()->hasProjectsAvailable()));
-                    }
-                    catch (\InvalidArgumentException $e)
-                    {
+
+                        return $this->renderJSON(['message' => $i18n->__('The project has been added'), 'content' => $this->getComponentHTML('projectbox', ['project' => $project, 'access_level' => $this->access_level]), 'total_count' => entities\Project::getProjectsCount(), 'more_available' => framework\Context::getScope()->hasProjectsAvailable()]);
+                    } catch (InvalidArgumentException $e) {
                         $this->getResponse()->setHttpStatus(400);
-                        return $this->renderJSON(array("error" => $i18n->__('A project with the same key already exists')));
-                    }
-                    catch (\Exception $e)
-                    {
+
+                        return $this->renderJSON(["error" => $i18n->__('A project with the same key already exists')]);
+                    } catch (Exception $e) {
                         $this->getResponse()->setHttpStatus(400);
-                        return $this->renderJSON(array("error" => $i18n->__('An error occurred: ' . $e->getMessage())));
+
+                        return $this->renderJSON(["error" => $i18n->__('An error occurred: ' . $e->getMessage())]);
                     }
                 }
                 $this->getResponse()->setHttpStatus(400);
-                return $this->renderJSON(array("error" => $i18n->__('Please specify a valid project name')));
+
+                return $this->renderJSON(["error" => $i18n->__('Please specify a valid project name')]);
             }
             $this->getResponse()->setHttpStatus(400);
-            return $this->renderJSON(array("error" => $i18n->__("You don't have access to add projects")));
+
+            return $this->renderJSON(["error" => $i18n->__("You don't have access to add projects")]);
         }
 
         /**
@@ -744,7 +740,7 @@
          */
         public function runGetUserEditForm(framework\Request $request)
         {
-            return $this->renderJSON(array("content" => $this->getComponentHTML('finduser_row_editable', array('user' => entities\User::getB2DBTable()->selectByID($request['user_id'])))));
+            return $this->renderJSON(["content" => $this->getComponentHTML('finduser_row_editable', ['user' => entities\User::getB2DBTable()->selectByID($request['user_id'])])]);
         }
 
         /**
@@ -756,54 +752,22 @@
         {
             $i18n = framework\Context::getI18n();
 
-            if ($this->access_level == framework\Settings::ACCESS_FULL)
-            {
-                try
-                {
+            if ($this->access_level == framework\Settings::ACCESS_FULL) {
+                try {
                     $theProject = entities\Project::getB2DBTable()->selectByID($request['project_id']);
                     $theProject->setDeleted();
                     $theProject->save();
-                    return $this->renderJSON(array('title' => $i18n->__('The project was deleted'), 'total_count' => entities\Project::getProjectsCount(), 'more_available' => framework\Context::getScope()->hasProjectsAvailable()));
-                }
-                catch (\Exception $e)
-                {
+
+                    return $this->renderJSON(['title' => $i18n->__('The project was deleted'), 'total_count' => entities\Project::getProjectsCount(), 'more_available' => framework\Context::getScope()->hasProjectsAvailable()]);
+                } catch (Exception $e) {
                     $this->getResponse()->setHttpStatus(400);
-                    return $this->renderJSON(array('error' => $i18n->__('An error occured') . ': ' . $e->getMessage()));
+
+                    return $this->renderJSON(['error' => $i18n->__('An error occured') . ': ' . $e->getMessage()]);
                 }
             }
             $this->getResponse()->setHttpStatus(400);
-            return $this->renderJSON(array("error" => $i18n->__("You don't have access to remove projects")));
-        }
 
-        /**
-         * Handle archive functiions
-         *
-         * @param bool $archived Status
-         * @param framework\Request $request The request object
-         */
-        protected function _setArchived($archived, framework\Request $request)
-        {
-            $i18n = framework\Context::getI18n();
-
-            if ($this->access_level == framework\Settings::ACCESS_FULL)
-            {
-                try
-                {
-                    $theProject = entities\Project::getB2DBTable()->selectByID($request['project_id']);
-                    $theProject->setArchived($archived);
-                    $theProject->save();
-
-                    $projectbox = $this->getComponentHTML('projectbox', array('project' => $theProject, 'access_level' => $this->access_level));
-                    return $this->renderJSON(array('message' => $i18n->__('Project successfully updated'), 'parent_id' => $theProject->getParentID(), 'box' => $projectbox));
-                }
-                catch (\Exception $e)
-                {
-                    $this->getResponse()->setHttpStatus(400);
-                    return $this->renderJSON(array('error' => $i18n->__('An error occured') . ': ' . $e->getMessage()));
-                }
-            }
-            $this->getResponse()->setHttpStatus(400);
-            return $this->renderJSON(array("error" => $i18n->__("You don't have access to archive projects")));
+            return $this->renderJSON(["error" => $i18n->__("You don't have access to remove projects")]);
         }
 
         /**
@@ -817,6 +781,36 @@
         }
 
         /**
+         * Handle archive functiions
+         *
+         * @param bool $archived Status
+         * @param framework\Request $request The request object
+         */
+        protected function _setArchived($archived, framework\Request $request)
+        {
+            $i18n = framework\Context::getI18n();
+
+            if ($this->access_level == framework\Settings::ACCESS_FULL) {
+                try {
+                    $theProject = entities\Project::getB2DBTable()->selectByID($request['project_id']);
+                    $theProject->setArchived($archived);
+                    $theProject->save();
+
+                    $projectbox = $this->getComponentHTML('projectbox', ['project' => $theProject, 'access_level' => $this->access_level]);
+
+                    return $this->renderJSON(['message' => $i18n->__('Project successfully updated'), 'parent_id' => $theProject->getParentID(), 'box' => $projectbox]);
+                } catch (Exception $e) {
+                    $this->getResponse()->setHttpStatus(400);
+
+                    return $this->renderJSON(['error' => $i18n->__('An error occured') . ': ' . $e->getMessage()]);
+                }
+            }
+            $this->getResponse()->setHttpStatus(400);
+
+            return $this->renderJSON(["error" => $i18n->__("You don't have access to archive projects")]);
+        }
+
+        /**
          * Unarchive
          *
          * @param framework\Request $request The request object
@@ -824,10 +818,10 @@
         public function runUnarchiveProject(framework\Request $request)
         {
             // Don't unarchive if we will have too many projects
-            if (!framework\Context::getScope()->hasProjectsAvailable())
-            {
+            if (!framework\Context::getScope()->hasProjectsAvailable()) {
                 $this->getResponse()->setHttpStatus(400);
-                return $this->renderJSON(array("error" => $this->getI18n()->__("There are no more projects available in this instance")));
+
+                return $this->renderJSON(["error" => $this->getI18n()->__("There are no more projects available in this instance")]);
             }
 
             return $this->_setArchived(false, $request);
@@ -842,25 +836,17 @@
         {
             $this->forward403unless($this->access_level == framework\Settings::ACCESS_FULL);
 
-            try
-            {
-                if ($request['mode'] == 'install' && file_exists(PACHNO_MODULES_PATH . $request['module_key'] . DS . ucfirst($request['module_key']) . '.php'))
-                {
-                    if (entities\Module::installModule($request['module_key']))
-                    {
-                        framework\Context::setMessage('module_message', framework\Context::getI18n()->__('The module "%module_name" was installed successfully', array('%module_name' => $request['module_key'])));
+            try {
+                if ($request['mode'] == 'install' && file_exists(PACHNO_MODULES_PATH . $request['module_key'] . DS . ucfirst($request['module_key']) . '.php')) {
+                    if (entities\Module::installModule($request['module_key'])) {
+                        framework\Context::setMessage('module_message', framework\Context::getI18n()->__('The module "%module_name" was installed successfully', ['%module_name' => $request['module_key']]));
+                    } else {
+                        framework\Context::setMessage('module_error', framework\Context::getI18n()->__('There was an error during the installation of the module "%module_name"', ['%module_name' => $request['module_key']]));
                     }
-                    else
-                    {
-                        framework\Context::setMessage('module_error', framework\Context::getI18n()->__('There was an error during the installation of the module "%module_name"', array('%module_name' => $request['module_key'])));
-                    }
-                }
-                else
-                {
+                } else {
                     $module = framework\Context::getModule($request['module_key']);
                     if (!$module->isCore())
-                        switch ($request['mode'])
-                        {
+                        switch ($request['mode']) {
                             case 'disable':
                                 if ($module->getType() !== framework\interfaces\ModuleInterface::MODULE_AUTH):
                                     $module->disable();
@@ -873,27 +859,22 @@
                                 break;
                             case 'uninstall':
                                 $module->uninstall();
-                                framework\Context::setMessage('module_message', framework\Context::getI18n()->__('The module "%module_name" was uninstalled successfully', array('%module_name' => $module->getName())));
+                                framework\Context::setMessage('module_message', framework\Context::getI18n()->__('The module "%module_name" was uninstalled successfully', ['%module_name' => $module->getName()]));
                                 break;
                             case 'update':
-                                try
-                                {
+                                try {
                                     $module->upgrade();
-                                    framework\Context::setMessage('module_message', framework\Context::getI18n()->__('The module "%module_name" was successfully upgraded and can now be used again', array('%module_name' => $module->getName())));
-                                }
-                                catch (\Exception $e)
-                                {
-                                    framework\Context::setMessage('module_error', framework\Context::getI18n()->__('The module "%module_name" was not successfully upgraded', array('%module_name' => $module->getName())));
+                                    framework\Context::setMessage('module_message', framework\Context::getI18n()->__('The module "%module_name" was successfully upgraded and can now be used again', ['%module_name' => $module->getName()]));
+                                } catch (Exception $e) {
+                                    framework\Context::setMessage('module_error', framework\Context::getI18n()->__('The module "%module_name" was not successfully upgraded', ['%module_name' => $module->getName()]));
                                     throw $e;
                                 }
                                 break;
                         }
                 }
-            }
-            catch (\Exception $e)
-            {
+            } catch (Exception $e) {
                 framework\Logging::log('Trying to run action ' . $request['mode'] . ' on module ' . $request['module_key'] . ' made an exception: ' . $e->getMessage(), framework\Logging::LEVEL_FATAL);
-                framework\Context::setMessage('module_error', framework\Context::getI18n()->__('This module (%module_name) does not exist', array('%module_name' => $request['module_key'])));
+                framework\Context::setMessage('module_error', framework\Context::getI18n()->__('This module (%module_name) does not exist', ['%module_name' => $request['module_key']]));
                 throw $e;
             }
             $this->forward(framework\Context::getRouting()->generate('configure_modules'));
@@ -938,6 +919,7 @@
          *
          * @param framework\Request $request
          * @Route(name="configuration_enable_theme", url="/configure/themes/:theme_key/enable/:csrf_token")
+         *
          * @CsrfProtected
          */
         public function runEnableTheme(framework\Request $request)
@@ -958,6 +940,7 @@
             } else {
                 framework\Context::setMessage('theme_error', $this->getI18n()->__('This theme does not exist'));
             }
+
             return $this->forward($this->getRouting()->generate('configuration_themes'));
         }
 
@@ -969,17 +952,13 @@
          */
         public function runDownloadThemeUpdate(framework\Request $request)
         {
-            try
-            {
+            try {
                 entities\Module::downloadTheme($request['theme_key']);
                 framework\Context::setMessage('theme_message', $this->getI18n()->__('The theme was updated'));
                 $url = $this->getRouting()->generate('configuration_themes');
-            }
-            catch (framework\exceptions\ModuleDownloadException $e)
-            {
+            } catch (framework\exceptions\ModuleDownloadException $e) {
                 $url = $this->getRouting()->generate('configuration_themes');
-                switch ($e->getCode())
-                {
+                switch ($e->getCode()) {
                     case framework\exceptions\ModuleDownloadException::JSON_NOT_FOUND:
                         framework\Context::setMessage('theme_error', $this->getI18n()->__('An error occured when trying to retrieve the theme update data'));
                         break;
@@ -987,12 +966,11 @@
                         framework\Context::setMessage('theme_error', $this->getI18n()->__('The theme update could not be downloaded'));
                         break;
                 }
-            }
-            catch (\Exception $e)
-            {
+            } catch (Exception $e) {
                 framework\Context::setMessage('module_error', $this->getI18n()->__('An error occured when trying to retrieve the theme'));
                 $url = $this->getRouting()->generate('configuration_themes');
             }
+
             return $this->forward($url);
         }
 
@@ -1004,16 +982,12 @@
          */
         public function runDownloadModuleUpdate(framework\Request $request)
         {
-            try
-            {
+            try {
                 entities\Module::downloadModule($request['module_key']);
-                $url = $this->getRouting()->generate('configuration_module_update', array('module_key' => $request['module_key']));
-            }
-            catch (framework\exceptions\ModuleDownloadException $e)
-            {
+                $url = $this->getRouting()->generate('configuration_module_update', ['module_key' => $request['module_key']]);
+            } catch (framework\exceptions\ModuleDownloadException $e) {
                 $url = $this->getRouting()->generate('configure_modules');
-                switch ($e->getCode())
-                {
+                switch ($e->getCode()) {
                     case framework\exceptions\ModuleDownloadException::JSON_NOT_FOUND:
                         framework\Context::setMessage('module_error', $this->getI18n()->__('An error occured when trying to retrieve the module data'));
                         break;
@@ -1021,12 +995,11 @@
                         framework\Context::setMessage('module_error', $this->getI18n()->__('The module could not be downloaded'));
                         break;
                 }
-            }
-            catch (\Exception $e)
-            {
+            } catch (Exception $e) {
                 framework\Context::setMessage('module_error', $this->getI18n()->__('An error occured when trying to retrieve the module'));
                 $url = $this->getRouting()->generate('configure_modules');
             }
+
             return $this->forward($url);
         }
 
@@ -1039,25 +1012,23 @@
         {
             $i18n = framework\Context::getI18n();
 
-            if ($this->access_level == framework\Settings::ACCESS_FULL)
-            {
-                return $this->renderJSON(array('content' => $this->getComponentHTML('configuration/permissionsblock', array('base_id' => $request['base_id'], 'permissions_list' => $request['permissions_list'], 'mode' => $request['mode'], 'target_id' => $request['target_id'], 'user_id' => $request['user_id'], 'team_id' => $request['team_id'], 'module' => $request['target_module'], 'access_level' => $this->access_level))));
+            if ($this->access_level == framework\Settings::ACCESS_FULL) {
+                return $this->renderJSON(['content' => $this->getComponentHTML('configuration/permissionsblock', ['base_id' => $request['base_id'], 'permissions_list' => $request['permissions_list'], 'mode' => $request['mode'], 'target_id' => $request['target_id'], 'user_id' => $request['user_id'], 'team_id' => $request['team_id'], 'module' => $request['target_module'], 'access_level' => $this->access_level])]);
             }
             $this->getResponse()->setHttpStatus(400);
-            return $this->renderJSON(array("error" => $i18n->__("You don't have access to modify permissions")));
+
+            return $this->renderJSON(["error" => $i18n->__("You don't have access to modify permissions")]);
         }
 
         public function runSetPermission(framework\Request $request)
         {
             $i18n = framework\Context::getI18n();
 
-            if ($this->access_level == framework\Settings::ACCESS_FULL)
-            {
+            if ($this->access_level == framework\Settings::ACCESS_FULL) {
                 $uid = 0;
                 $gid = 0;
                 $tid = 0;
-                switch ($request['target_type'])
-                {
+                switch ($request['target_type']) {
                     case 'user':
                         $uid = $request['item_id'];
                         break;
@@ -1069,8 +1040,7 @@
                         break;
                 }
 
-                switch ($request['mode'])
-                {
+                switch ($request['mode']) {
                     case 'allowed':
                         framework\Context::setPermission($request['key'], $request['target_id'], $request['target_module'], $uid, $gid, $tid, true);
                         break;
@@ -1081,10 +1051,12 @@
                         framework\Context::removePermission($request['key'], $request['target_id'], $request['target_module'], $uid, $gid, $tid, true, null, 0);
                         break;
                 }
-                return $this->renderJSON(array('content' => $this->getComponentHTML('configuration/permissionsinfoitem', array('key' => $request['key'], 'target_id' => $request['target_id'], 'type' => $request['target_type'], 'mode' => $request['template_mode'], 'item_id' => $request['item_id'], 'module' => $request['target_module'], 'access_level' => $this->access_level, 'in_json' => 1))));
+
+                return $this->renderJSON(['content' => $this->getComponentHTML('configuration/permissionsinfoitem', ['key' => $request['key'], 'target_id' => $request['target_id'], 'type' => $request['target_type'], 'mode' => $request['template_mode'], 'item_id' => $request['item_id'], 'module' => $request['target_module'], 'access_level' => $this->access_level, 'in_json' => 1])]);
             }
             $this->getResponse()->setHttpStatus(400);
-            return $this->renderJSON(array("error" => $i18n->__("You don't have access to modify permissions")));
+
+            return $this->renderJSON(["error" => $i18n->__("You don't have access to modify permissions")]);
         }
 
         /**
@@ -1096,42 +1068,29 @@
         {
             $this->forward403unless($this->access_level == framework\Settings::ACCESS_FULL);
 
-            try
-            {
+            try {
                 $module = framework\Context::getModule($request['config_module']);
-                if (!$module->isEnabled())
-                {
-                    throw new \Exception('disabled');
-                }
-                elseif (!$module->hasConfigSettings())
-                {
-                    throw new \Exception('module not configurable');
-                }
-                else
-                {
-                    if ($request->isPost() && $this->access_level == framework\Settings::ACCESS_FULL)
-                    {
-                        try
-                        {
+                if (!$module->isEnabled()) {
+                    throw new Exception('disabled');
+                } elseif (!$module->hasConfigSettings()) {
+                    throw new Exception('module not configurable');
+                } else {
+                    if ($request->isPost() && $this->access_level == framework\Settings::ACCESS_FULL) {
+                        try {
                             $module->postConfigSettings($request);
-                            if (!framework\Context::hasMessage('module_message'))
-                            {
+                            if (!framework\Context::hasMessage('module_message')) {
                                 framework\Context::setMessage('module_message', framework\Context::getI18n()->__('Settings saved successfully'));
                             }
-                        }
-                        catch (\Exception $e)
-                        {
+                        } catch (Exception $e) {
                             framework\Context::setMessage('module_error', $e->getMessage());
                         }
-                        $this->forward(framework\Context::getRouting()->generate('configure_module', array('config_module' => $request['config_module'])));
+                        $this->forward(framework\Context::getRouting()->generate('configure_module', ['config_module' => $request['config_module']]));
                     }
                     $this->module = $module;
                 }
-            }
-            catch (\Exception $e)
-            {
+            } catch (Exception $e) {
                 framework\Logging::log('Trying to configure module ' . $request['config_module'] . " which isn't configurable", 'main', framework\Logging::LEVEL_FATAL);
-                framework\Context::setMessage('module_error', framework\Context::getI18n()->__('The module "%module_name" is not configurable', array('%module_name' => $request['config_module'])));
+                framework\Context::setMessage('module_error', framework\Context::getI18n()->__('The module "%module_name" is not configurable', ['%module_name' => $request['config_module']]));
                 $this->forward(framework\Context::getRouting()->generate('configure_modules'));
             }
             $this->module_message = framework\Context::getMessageAndClear('module_message');
@@ -1147,41 +1106,35 @@
         public function runConfigureUploads(framework\Request $request)
         {
             $this->uploads_enabled = framework\Context::getScope()->isUploadsEnabled();
-            if ($this->uploads_enabled && $request->isPost())
-            {
+            if ($this->uploads_enabled && $request->isPost()) {
                 $this->forward403unless($this->access_level == framework\Settings::ACCESS_FULL);
-                if ($request['enable_uploads'])
-                {
+                if ($request['enable_uploads']) {
                     if (framework\Context::getScope()->isDefault()) {
-                        $settings = array('upload_restriction_mode', 'upload_extensions_list', 'upload_max_file_size', 'upload_storage', 'upload_localpath');
+                        $settings = ['upload_restriction_mode', 'upload_extensions_list', 'upload_max_file_size', 'upload_storage', 'upload_localpath'];
 
-                        if ($request['upload_storage'] == 'files' && (bool) $request['enable_uploads'])
-                        {
-                            if (!is_dir($request['upload_localpath']))
-                            {
+                        if ($request['upload_storage'] == 'files' && (bool)$request['enable_uploads']) {
+                            if (!is_dir($request['upload_localpath'])) {
                                 mkdir($request['upload_localpath'], 0744, true);
                             }
-                            if (!is_writable($request['upload_localpath']))
-                            {
+                            if (!is_writable($request['upload_localpath'])) {
                                 $this->getResponse()->setHttpStatus(400);
-                                return $this->renderJSON(array('error' => framework\Context::getI18n()->__("The upload path isn't writable")));
+
+                                return $this->renderJSON(['error' => framework\Context::getI18n()->__("The upload path isn't writable")]);
                             }
                         }
                     } else {
-                        $settings = array('upload_restriction_mode', 'upload_extensions_list', 'upload_max_file_size');
+                        $settings = ['upload_restriction_mode', 'upload_extensions_list', 'upload_max_file_size'];
                         framework\Settings::copyDefaultScopeSetting('upload_localpath');
                     }
 
-                    if (!is_numeric($request['upload_max_file_size']))
-                    {
+                    if (!is_numeric($request['upload_max_file_size'])) {
                         $this->getResponse()->setHttpStatus(400);
-                        return $this->renderJSON(array('error' => framework\Context::getI18n()->__("The maximum file size must be a number")));
+
+                        return $this->renderJSON(['error' => framework\Context::getI18n()->__("The maximum file size must be a number")]);
                     }
 
-                    foreach ($settings as $setting)
-                    {
-                        if (framework\Context::getRequest()->hasParameter($setting))
-                        {
+                    foreach ($settings as $setting) {
+                        if (framework\Context::getRequest()->hasParameter($setting)) {
                             framework\Settings::saveSetting($setting, framework\Context::getRequest()->getParameter($setting));
                         }
                     }
@@ -1191,18 +1144,16 @@
                 framework\Settings::saveSetting('upload_delivery_use_xsend', framework\Context::getRequest()->getParameter('upload_delivery_use_xsend'));
                 framework\Settings::saveSetting('enable_uploads', framework\Context::getRequest()->getParameter('enable_uploads'));
 
-                return $this->renderJSON(array('title' => framework\Context::getI18n()->__('All settings saved')));
+                return $this->renderJSON(['title' => framework\Context::getI18n()->__('All settings saved')]);
             }
         }
 
         public function runConfigureAuthentication(framework\Request $request)
         {
-            $modules = array();
+            $modules = [];
             $allmods = framework\Context::getModules();
-            foreach ($allmods as $mod)
-            {
-                if ($mod->getType() == framework\interfaces\ModuleInterface::MODULE_AUTH)
-                {
+            foreach ($allmods as $mod) {
+                if ($mod->getType() == framework\interfaces\ModuleInterface::MODULE_AUTH) {
                     $modules[] = $mod;
                 }
             }
@@ -1211,15 +1162,12 @@
 
         public function runSaveAuthentication(framework\Request $request)
         {
-            if (framework\Context::getRequest()->isPost())
-            {
+            if (framework\Context::getRequest()->isPost()) {
                 $this->forward403unless($this->access_level == framework\Settings::ACCESS_FULL);
-                $settings = array(framework\Settings::SETTING_AUTH_BACKEND, 'register_message', 'forgot_message', 'changepw_message', 'changedetails_message');
+                $settings = [framework\Settings::SETTING_AUTH_BACKEND, 'register_message', 'forgot_message', 'changepw_message', 'changedetails_message'];
 
-                foreach ($settings as $setting)
-                {
-                    if (framework\Context::getRequest()->getParameter($setting) !== null)
-                    {
+                foreach ($settings as $setting) {
+                    if (framework\Context::getRequest()->getParameter($setting) !== null) {
                         $value = framework\Context::getRequest()->getParameter($setting);
                         framework\Settings::saveSetting($setting, $value);
                     }
@@ -1247,155 +1195,121 @@
 
         public function runDeleteGroup(framework\Request $request)
         {
-            try
-            {
-                if (in_array($request['group_id'], framework\Settings::getDefaultGroupIDs()))
-                {
-                    throw new \Exception(framework\Context::getI18n()->__("You cannot delete the default groups"));
+            try {
+                if (in_array($request['group_id'], framework\Settings::getDefaultGroupIDs())) {
+                    throw new Exception(framework\Context::getI18n()->__("You cannot delete the default groups"));
                 }
 
-                try
-                {
+                try {
                     $group = entities\Group::getB2DBTable()->selectById($request['group_id']);
-                }
-                catch (\Exception $e)
-                {
+                } catch (Exception $e) {
 
                 }
-                if (!$group instanceof entities\Group)
-                {
-                    throw new \Exception(framework\Context::getI18n()->__("You cannot delete this group"));
+                if (!$group instanceof entities\Group) {
+                    throw new Exception(framework\Context::getI18n()->__("You cannot delete this group"));
                 }
-                if ($group->isDefaultUserGroup())
-                {
-                    throw new \Exception(framework\Context::getI18n()->__("You cannot delete the group for the default user"));
+                if ($group->isDefaultUserGroup()) {
+                    throw new Exception(framework\Context::getI18n()->__("You cannot delete the group for the default user"));
                 }
                 $group->delete();
-                return $this->renderJSON(array('success' => true, 'message' => framework\Context::getI18n()->__('The group was deleted')));
-            }
-            catch (\Exception $e)
-            {
+
+                return $this->renderJSON(['success' => true, 'message' => framework\Context::getI18n()->__('The group was deleted')]);
+            } catch (Exception $e) {
                 $this->getResponse()->setHttpStatus(400);
-                return $this->renderJSON(array('error' => $e->getMessage()));
+
+                return $this->renderJSON(['error' => $e->getMessage()]);
             }
         }
 
         public function runAddGroup(framework\Request $request)
         {
-            try
-            {
+            try {
                 $mode = $request['mode'];
-                if ($group_name = $request['group_name'])
-                {
-                    if ($mode == 'clone')
-                    {
-                        try
-                        {
+                if ($group_name = $request['group_name']) {
+                    if ($mode == 'clone') {
+                        try {
                             $old_group = entities\Group::getB2DBTable()->selectById($request['group_id']);
-                        }
-                        catch (\Exception $e)
-                        {
+                        } catch (Exception $e) {
 
                         }
-                        if (!$old_group instanceof entities\Group)
-                        {
-                            throw new \Exception(framework\Context::getI18n()->__("You cannot clone this group"));
+                        if (!$old_group instanceof entities\Group) {
+                            throw new Exception(framework\Context::getI18n()->__("You cannot clone this group"));
                         }
                     }
-                    if (entities\Group::doesGroupNameExist(trim($group_name)))
-                    {
-                        throw new \Exception(framework\Context::getI18n()->__("Please enter a group name that doesn't already exist"));
+                    if (entities\Group::doesGroupNameExist(trim($group_name))) {
+                        throw new Exception(framework\Context::getI18n()->__("Please enter a group name that doesn't already exist"));
                     }
                     $group = new entities\Group();
                     $group->setName($group_name);
                     $group->save();
-                    if ($mode == 'clone')
-                    {
-                        if ($request['clone_permissions'])
-                        {
+                    if ($mode == 'clone') {
+                        if ($request['clone_permissions']) {
                             tables\Permissions::getTable()->cloneGroupPermissions($old_group->getID(), $group->getID());
                         }
                         $message = framework\Context::getI18n()->__('The group was cloned');
-                    }
-                    else
-                    {
+                    } else {
                         $message = framework\Context::getI18n()->__('The group was added');
                     }
-                    return $this->renderJSON(array('message' => $message, 'content' => $this->getComponentHTML('configuration/groupbox', array('group' => $group))));
+
+                    return $this->renderJSON(['message' => $message, 'content' => $this->getComponentHTML('configuration/groupbox', ['group' => $group])]);
+                } else {
+                    throw new Exception(framework\Context::getI18n()->__('Please enter a group name'));
                 }
-                else
-                {
-                    throw new \Exception(framework\Context::getI18n()->__('Please enter a group name'));
-                }
-            }
-            catch (\Exception $e)
-            {
+            } catch (Exception $e) {
                 $this->getResponse()->setHttpStatus(400);
-                return $this->renderJSON(array('error' => $e->getMessage()));
+
+                return $this->renderJSON(['error' => $e->getMessage()]);
             }
         }
 
         public function runGetGroupMembers(framework\Request $request)
         {
-            try
-            {
-                $group = entities\Group::getB2DBTable()->selectById((int) $request['group_id']);
+            try {
+                $group = entities\Group::getB2DBTable()->selectById((int)$request['group_id']);
                 $users = $group->getMembers();
-                return $this->renderJSON(array('content' => $this->getComponentHTML('configuration/groupuserlist', array('users' => $users))));
-            }
-            catch (\Exception $e)
-            {
+
+                return $this->renderJSON(['content' => $this->getComponentHTML('configuration/groupuserlist', ['users' => $users])]);
+            } catch (Exception $e) {
                 $this->getResponse()->setHttpStatus(400);
-                return $this->renderJSON(array('error' => $e->getMessage()));
+
+                return $this->renderJSON(['error' => $e->getMessage()]);
             }
         }
 
         public function runDeleteUser(framework\Request $request)
         {
-            try
-            {
-                try
-                {
-                    $return_options = array();
+            try {
+                try {
+                    $return_options = [];
                     $user = entities\User::getB2DBTable()->selectByID($request['user_id']);
-                    if ($user->getGroup() instanceof entities\Group)
-                    {
-                        $return_options['update_groups'] = array('ids' => array(), 'membercounts' => array());
+                    if ($user->getGroup() instanceof entities\Group) {
+                        $return_options['update_groups'] = ['ids' => [], 'membercounts' => []];
                         $group_id = $user->getGroup()->getID();
                         $return_options['update_groups']['ids'][] = $group_id;
                         $return_options['update_groups']['membercounts'][$group_id] = $user->getGroup()->getNumberOfMembers();
                     }
-                    if (count($user->getTeams()))
-                    {
-                        $return_options['update_teams'] = array('ids' => array(), 'membercounts' => array());
-                        foreach ($user->getTeams() as $team)
-                        {
+                    if (count($user->getTeams())) {
+                        $return_options['update_teams'] = ['ids' => [], 'membercounts' => []];
+                        foreach ($user->getTeams() as $team) {
                             $team_id = $team->getID();
                             $return_options['update_teams']['ids'][] = $team_id;
                             $return_options['update_teams']['membercounts'][$team_id] = $team->getNumberOfMembers();
                         }
                     }
-                    if (in_array($user->getID(), array(1, framework\Settings::getDefaultUserID())))
-                    {
-                        throw new \Exception(framework\Context::getI18n()->__("You cannot delete this system user"));
+                    if (in_array($user->getID(), [1, framework\Settings::getDefaultUserID()])) {
+                        throw new Exception(framework\Context::getI18n()->__("You cannot delete this system user"));
                     }
-                }
-                catch (\Exception $e)
-                {
+                } catch (Exception $e) {
 
                 }
-                if (!$user instanceof entities\User)
-                {
-                    throw new \Exception(framework\Context::getI18n()->__("You cannot delete this user"));
+                if (!$user instanceof entities\User) {
+                    throw new Exception(framework\Context::getI18n()->__("You cannot delete this user"));
                 }
-                if (framework\Context::getScope()->isDefault())
-                {
+                if (framework\Context::getScope()->isDefault()) {
                     $user->markAsDeleted();
                     $user->save();
                     $return_options['message'] = framework\Context::getI18n()->__('The user was deleted');
-                }
-                else
-                {
+                } else {
                     $user->removeScope(framework\Context::getScope()->getID());
                     $return_options['message'] = framework\Context::getI18n()->__('The user has been removed from this scope');
                 }
@@ -1403,146 +1317,122 @@
                 $return_options['more_available'] = framework\Context::getScope()->hasUsersAvailable();
 
                 return $this->renderJSON($return_options);
-            }
-            catch (\Exception $e)
-            {
+            } catch (Exception $e) {
                 $this->getResponse()->setHttpStatus(400);
-                return $this->renderJSON(array('error' => $e->getMessage()));
+
+                return $this->renderJSON(['error' => $e->getMessage()]);
             }
         }
 
         public function runDeleteTeam(framework\Request $request)
         {
-            try
-            {
-                try
-                {
+            try {
+                try {
                     $team = entities\Team::getB2DBTable()->selectById($request['team_id']);
-                }
-                catch (\Exception $e)
-                {
+                } catch (Exception $e) {
 
                 }
-                if (!$team instanceof entities\Team)
-                {
-                    throw new \Exception(framework\Context::getI18n()->__("You cannot delete this team"));
+                if (!$team instanceof entities\Team) {
+                    throw new Exception(framework\Context::getI18n()->__("You cannot delete this team"));
                 }
                 $team->delete();
-                return $this->renderJSON(array('success' => true, 'message' => framework\Context::getI18n()->__('The team was deleted'), 'total_count' => entities\Team::countAll(), 'more_available' => framework\Context::getScope()->hasTeamsAvailable()));
-            }
-            catch (\Exception $e)
-            {
+
+                return $this->renderJSON(['success' => true, 'message' => framework\Context::getI18n()->__('The team was deleted'), 'total_count' => entities\Team::countAll(), 'more_available' => framework\Context::getScope()->hasTeamsAvailable()]);
+            } catch (Exception $e) {
                 $this->getResponse()->setHttpStatus(400);
-                return $this->renderJSON(array('error' => $e->getMessage()));
+
+                return $this->renderJSON(['error' => $e->getMessage()]);
             }
         }
 
         public function runAddTeam(framework\Request $request)
         {
-            try
-            {
+            try {
                 $mode = $request['mode'];
-                if ($team_name = $request['team_name'])
-                {
-                    if ($mode == 'clone')
-                    {
-                        try
-                        {
+                if ($team_name = $request['team_name']) {
+                    if ($mode == 'clone') {
+                        try {
                             $old_team = entities\Team::getB2DBTable()->selectById($request['team_id']);
-                        }
-                        catch (\Exception $e)
-                        {
+                        } catch (Exception $e) {
 
                         }
-                        if (!$old_team instanceof entities\Team)
-                        {
-                            throw new \Exception(framework\Context::getI18n()->__("You cannot clone this team"));
+                        if (!$old_team instanceof entities\Team) {
+                            throw new Exception(framework\Context::getI18n()->__("You cannot clone this team"));
                         }
                     }
-                    if (entities\Team::doesTeamNameExist(trim($team_name)))
-                    {
-                        throw new \Exception(framework\Context::getI18n()->__("Please enter a team name that doesn't already exist"));
+                    if (entities\Team::doesTeamNameExist(trim($team_name))) {
+                        throw new Exception(framework\Context::getI18n()->__("Please enter a team name that doesn't already exist"));
                     }
                     $team = new entities\Team();
                     $team->setName($team_name);
                     $team->save();
-                    if ($mode == 'clone')
-                    {
-                        if ($request['clone_permissions'])
-                        {
+                    if ($mode == 'clone') {
+                        if ($request['clone_permissions']) {
                             tables\Permissions::getTable()->cloneTeamPermissions($old_team->getID(), $team->getID());
                         }
-                        if ($request['clone_memberships'])
-                        {
+                        if ($request['clone_memberships']) {
                             tables\TeamMembers::getTable()->cloneTeamMemberships($old_team->getID(), $team->getID());
                         }
                         $message = framework\Context::getI18n()->__('The team was cloned');
-                    }
-                    else
-                    {
+                    } else {
                         $message = framework\Context::getI18n()->__('The team was added');
                     }
-                    return $this->renderJSON(array('message' => $message, 'content' => $this->getComponentHTML('configuration/teambox', array('team' => $team)), 'total_count' => entities\Team::countAll(), 'more_available' => framework\Context::getScope()->hasTeamsAvailable()));
+
+                    return $this->renderJSON(['message' => $message, 'content' => $this->getComponentHTML('configuration/teambox', ['team' => $team]), 'total_count' => entities\Team::countAll(), 'more_available' => framework\Context::getScope()->hasTeamsAvailable()]);
+                } else {
+                    throw new Exception(framework\Context::getI18n()->__('Please enter a team name'));
                 }
-                else
-                {
-                    throw new \Exception(framework\Context::getI18n()->__('Please enter a team name'));
-                }
-            }
-            catch (\Exception $e)
-            {
+            } catch (Exception $e) {
                 $this->getResponse()->setHttpStatus(400);
-                return $this->renderJSON(array('error' => $e->getMessage()));
+
+                return $this->renderJSON(['error' => $e->getMessage()]);
             }
         }
 
         public function runGetTeamMembers(framework\Request $request)
         {
-            try
-            {
-                $team = entities\Team::getB2DBTable()->selectById((int) $request['team_id']);
+            try {
+                $team = entities\Team::getB2DBTable()->selectById((int)$request['team_id']);
                 $users = $team->getMembers();
-                return $this->renderJSON(array('content' => $this->getComponentHTML('configuration/teamuserlist', compact('users', 'team'))));
-            }
-            catch (\Exception $e)
-            {
+
+                return $this->renderJSON(['content' => $this->getComponentHTML('configuration/teamuserlist', compact('users', 'team'))]);
+            } catch (Exception $e) {
                 $this->getResponse()->setHttpStatus(400);
-                return $this->renderJSON(array('error' => $e->getMessage()));
+
+                return $this->renderJSON(['error' => $e->getMessage()]);
             }
         }
 
         public function runRemoveTeamMember(framework\Request $request)
         {
-            try
-            {
-                $team = entities\Team::getB2DBTable()->selectById((int) $request['team_id']);
-                $user = entities\User::getB2DBTable()->selectByID((int) $request['user_id']);
+            try {
+                $team = entities\Team::getB2DBTable()->selectById((int)$request['team_id']);
+                $user = entities\User::getB2DBTable()->selectByID((int)$request['user_id']);
 
                 $team->removeMember($user);
-                return $this->renderJSON(array('update_teams' => array('ids' => array($team->getID()), 'membercounts' => array($team->getID() => $team->getNumberOfMembers()))));
-            }
-            catch (\Exception $e)
-            {
+
+                return $this->renderJSON(['update_teams' => ['ids' => [$team->getID()], 'membercounts' => [$team->getID() => $team->getNumberOfMembers()]]]);
+            } catch (Exception $e) {
                 $this->getResponse()->setHttpStatus(400);
-                return $this->renderJSON(array('error' => $e->getMessage()));
+
+                return $this->renderJSON(['error' => $e->getMessage()]);
             }
         }
 
         public function runAddTeamMember(framework\Request $request)
         {
-            try
-            {
-                $user_id = (int) $request['user_id'];
-                $team = entities\Team::getB2DBTable()->selectById((int) $request['team_id']);
+            try {
+                $user_id = (int)$request['user_id'];
+                $team = entities\Team::getB2DBTable()->selectById((int)$request['team_id']);
                 $user = entities\User::getB2DBTable()->selectByID($user_id);
 
                 $team->addMember($user);
-                return $this->renderJSON(array('teamlistitem' => $this->getComponentHTML('configuration/teamuserlistitem', compact('team', 'user_id', 'user')), 'update_teams' => array('ids' => array($team->getID()), 'membercounts' => array($team->getID() => $team->getNumberOfMembers()))));
-            }
-            catch (\Exception $e)
-            {
+
+                return $this->renderJSON(['teamlistitem' => $this->getComponentHTML('configuration/teamuserlistitem', compact('team', 'user_id', 'user')), 'update_teams' => ['ids' => [$team->getID()], 'membercounts' => [$team->getID() => $team->getNumberOfMembers()]]]);
+            } catch (Exception $e) {
                 $this->getResponse()->setHttpStatus(400);
-                return $this->renderJSON(array('error' => $e->getMessage()));
+
+                return $this->renderJSON(['error' => $e->getMessage()]);
             }
         }
 
@@ -1550,17 +1440,13 @@
         {
             $this->too_short = false;
             $findstring = $request['findstring'];
-            if (mb_strlen($findstring) >= 1)
-            {
+            if (mb_strlen($findstring) >= 1) {
                 $this->users = tables\Users::getTable()->findInConfig($findstring);
                 $this->total_results = count($this->users);
-            }
-            else
-            {
+            } else {
                 $this->too_short = true;
             }
-            switch ($findstring)
-            {
+            switch ($findstring) {
                 case 'unactivated':
                     $this->findstring = framework\Context::getI18n()->__('Unactivated users');
                     break;
@@ -1577,31 +1463,24 @@
 
         public function runAddUser(framework\Request $request)
         {
-            try
-            {
-                if (!framework\Context::getScope()->hasUsersAvailable())
-                {
-                    throw new \Exception($this->getI18n()->__('This instance of Pachno cannot add more users'));
+            try {
+                if (!framework\Context::getScope()->hasUsersAvailable()) {
+                    throw new Exception($this->getI18n()->__('This instance of Pachno cannot add more users'));
                 }
 
-                if ($username = trim($request['username']))
-                {
-                    if (!entities\User::isUsernameAvailable($username))
-                    {
-                        if ($request->getParameter('mode') == 'import')
-                        {
+                if ($username = trim($request['username'])) {
+                    if (!entities\User::isUsernameAvailable($username)) {
+                        if ($request->getParameter('mode') == 'import') {
                             $user = entities\User::getByUsername($username);
                             $user->addScope(framework\Context::getScope());
-                            return $this->renderJSON(array('imported' => true, 'message' => $this->getI18n()->__('The user was successfully added to this scope (pending user confirmation)')));
-                        }
-                        elseif (framework\Context::getScope()->isDefault())
-                        {
-                            throw new \Exception($this->getI18n()->__('This username already exists'));
-                        }
-                        else
-                        {
+
+                            return $this->renderJSON(['imported' => true, 'message' => $this->getI18n()->__('The user was successfully added to this scope (pending user confirmation)')]);
+                        } elseif (framework\Context::getScope()->isDefault()) {
+                            throw new Exception($this->getI18n()->__('This username already exists'));
+                        } else {
                             $this->getResponse()->setHttpStatus(400);
-                            return $this->renderJSON(array('allow_import' => true));
+
+                            return $this->renderJSON(['allow_import' => true]);
                         }
                     }
 
@@ -1612,265 +1491,214 @@
                     $user->setEmail($request->getParameter('email'));
                     $group_id = ($request->getParameter('group_id')) ? $request->getParameter('group_id') : framework\Settings::get(framework\Settings::SETTING_USER_GROUP);
                     $user->setGroup($group_id);
-                    if ($request->hasParameter('password') && !(empty($request['password']) && empty($request['password_repeat'])))
-                    {
-                        if (empty($request['password']) || $request['password'] != $request['password_repeat'])
-                        {
-                            throw new \Exception($this->getI18n()->__('Please enter the same password twice'));
+                    if ($request->hasParameter('password') && !(empty($request['password']) && empty($request['password_repeat']))) {
+                        if (empty($request['password']) || $request['password'] != $request['password_repeat']) {
+                            throw new Exception($this->getI18n()->__('Please enter the same password twice'));
                         }
                         $password = $request['password'];
                         $user->setPassword($password);
-                    }
-                    else
-                    {
+                    } else {
                         $password = entities\User::createPassword();
                         $user->setPassword($password);
                     }
                     $user->save();
-                    foreach ((array) $request['teams'] as $team_id)
-                    {
-                        $user->addToTeam(entities\Team::getB2DBTable()->selectById((int) $team_id));
+                    foreach ((array)$request['teams'] as $team_id) {
+                        $user->addToTeam(entities\Team::getB2DBTable()->selectById((int)$team_id));
                     }
-                    framework\Event::createNew('core', 'config.createuser.save', $user, array('password' => $password))->trigger();
-                }
-                else
-                {
-                    throw new \Exception($this->getI18n()->__('Please enter a username'));
+                    framework\Event::createNew('core', 'config.createuser.save', $user, ['password' => $password])->trigger();
+                } else {
+                    throw new Exception($this->getI18n()->__('Please enter a username'));
                 }
                 $this->getResponse()->setTemplate('configuration/findusers');
                 $this->too_short = false;
                 $this->created_user = true;
-                $this->users = array($user);
+                $this->users = [$user];
                 $this->total_results = 1;
-                $this->title = $this->getI18n()->__('User %username created', array('%username' => $username));
+                $this->title = $this->getI18n()->__('User %username created', ['%username' => $username]);
                 $this->total_count = entities\User::getUsersCount();
                 $this->more_available = framework\Context::getScope()->hasUsersAvailable();
-            }
-            catch (\Exception $e)
-            {
+            } catch (Exception $e) {
                 $this->getResponse()->setHttpStatus(400);
-                return $this->renderJSON(array('error' => $e->getMessage()));
+
+                return $this->renderJSON(['error' => $e->getMessage()]);
             }
         }
 
         public function runUpdateUser(framework\Request $request)
         {
-            try
-            {
+            try {
                 $user = entities\User::getB2DBTable()->selectByID($request['user_id']);
-                if ($user instanceof entities\User)
-                {
-                    if (!$user->isConfirmedMemberOfScope(framework\Context::getScope()))
-                    {
+                if ($user instanceof entities\User) {
+                    if (!$user->isConfirmedMemberOfScope(framework\Context::getScope())) {
                         $this->getResponse()->setHttpStatus(400);
-                        return $this->renderJSON(array('error' => $this->getI18n()->__('This user is not a confirmed member of this scope')));
+
+                        return $this->renderJSON(['error' => $this->getI18n()->__('This user is not a confirmed member of this scope')]);
                     }
-                    if (!empty($request['username']))
-                    {
+                    if (!empty($request['username'])) {
                         $testuser = entities\User::getByUsername($request['username']);
-                        if (!$testuser instanceof entities\User || $testuser->getID() == $user->getID())
-                        {
+                        if (!$testuser instanceof entities\User || $testuser->getID() == $user->getID()) {
                             $user->setUsername($request['username']);
-                        }
-                        else
-                        {
+                        } else {
                             $this->getResponse()->setHttpStatus(400);
-                            return $this->renderJSON(array('error' => $this->getI18n()->__('This username is already taken')));
+
+                            return $this->renderJSON(['error' => $this->getI18n()->__('This username is already taken')]);
                         }
                     }
                     $password_changed = false;
-                    if ($request['password_action'] == 'change' && $request['new_password_1'] && $request['new_password_2'])
-                    {
-                        if ($request['new_password_1'] == $request['new_password_2'])
-                        {
+                    if ($request['password_action'] == 'change' && $request['new_password_1'] && $request['new_password_2']) {
+                        if ($request['new_password_1'] == $request['new_password_2']) {
                             $user->setPassword($request['new_password_1']);
                             $password_changed = true;
-                        }
-                        else
-                        {
+                        } else {
                             $this->getResponse()->setHttpStatus(400);
-                            return $this->renderJSON(array('error' => $this->getI18n()->__('Please enter the new password twice')));
+
+                            return $this->renderJSON(['error' => $this->getI18n()->__('Please enter the new password twice')]);
                         }
-                    }
-                    elseif ($request['password_action'] == 'random')
-                    {
+                    } elseif ($request['password_action'] == 'random') {
                         $random_password = entities\User::createPassword();
                         $user->setPassword($random_password);
                         $password_changed = true;
                     }
-                    if (isset($request['realname']))
-                    {
+                    if (isset($request['realname'])) {
                         $user->setRealname($request['realname']);
                     }
-                    $return_options = array();
-                    try
-                    {
-                        if ($group = entities\Group::getB2DBTable()->selectById($request['group']))
-                        {
-                            if ($user->getGroupID() != $group->getID())
-                            {
-                                $groups = array($user->getGroupID(), $group->getID());
-                                $return_options['update_groups'] = array('ids' => array(), 'membercounts' => array());
+                    $return_options = [];
+                    try {
+                        if ($group = entities\Group::getB2DBTable()->selectById($request['group'])) {
+                            if ($user->getGroupID() != $group->getID()) {
+                                $groups = [$user->getGroupID(), $group->getID()];
+                                $return_options['update_groups'] = ['ids' => [], 'membercounts' => []];
                             }
                             $user->setGroup($group);
                         }
-                    }
-                    catch (\Exception $e)
-                    {
-                        throw new \Exception($this->getI18n()->__('Invalid user group'));
+                    } catch (Exception $e) {
+                        throw new Exception($this->getI18n()->__('Invalid user group'));
                     }
 
                     $existing_teams = array_keys($user->getTeams());
-                    $new_teams = array();
-                    $new_clients = array();
+                    $new_teams = [];
+                    $new_clients = [];
                     $user->clearTeams();
-                    try
-                    {
-                        foreach ($request->getParameter('teams', array()) as $team_id => $team)
-                        {
-                            if ($team = entities\Team::getB2DBTable()->selectById($team_id))
-                            {
+                    try {
+                        foreach ($request->getParameter('teams', []) as $team_id => $team) {
+                            if ($team = entities\Team::getB2DBTable()->selectById($team_id)) {
                                 $new_teams[] = $team_id;
                                 $user->addToTeam($team);
                             }
                         }
-                    }
-                    catch (\Exception $e)
-                    {
-                        throw new \Exception($this->getI18n()->__('One or more teams were invalid'));
+                    } catch (Exception $e) {
+                        throw new Exception($this->getI18n()->__('One or more teams were invalid'));
                     }
 
-                    try
-                    {
+                    try {
                         $user->clearClients();
-                        foreach ($request->getParameter('clients', array()) as $client_id => $client)
-                        {
-                            if ($client = entities\Client::getB2DBTable()->selectById($client_id))
-                            {
+                        foreach ($request->getParameter('clients', []) as $client_id => $client) {
+                            if ($client = entities\Client::getB2DBTable()->selectById($client_id)) {
                                 $new_clients[] = $client_id;
                                 $user->addToClient($client);
                             }
                         }
+                    } catch (Exception $e) {
+                        throw new Exception($this->getI18n()->__('One or more clients were invalid'));
                     }
-                    catch (\Exception $e)
-                    {
-                        throw new \Exception($this->getI18n()->__('One or more clients were invalid'));
-                    }
-                    if (isset($request['nickname']))
-                    {
+                    if (isset($request['nickname'])) {
                         $user->setBuddyname($request['nickname']);
                     }
-                    if (isset($request['email']))
-                    {
+                    if (isset($request['email'])) {
                         $user->setEmail($request['email']);
                     }
-                    if (isset($request['homepage']))
-                    {
+                    if (isset($request['homepage'])) {
                         $user->setHomepage($request['homepage']);
                     }
-                    if (framework\Context::getScope()->isDefault())
-                    {
-                        $user->setActivated((bool) $request['activated']);
-                        $user->setEnabled((bool) $request['enabled']);
+                    if (framework\Context::getScope()->isDefault()) {
+                        $user->setActivated((bool)$request['activated']);
+                        $user->setEnabled((bool)$request['enabled']);
                     }
                     $user->save();
-                    if (isset($groups))
-                    {
-                        foreach ($groups as $group_id)
-                        {
+                    if (isset($groups)) {
+                        foreach ($groups as $group_id) {
                             if (!$group_id)
                                 continue;
                             $return_options['update_groups']['ids'][] = $group_id;
                             $return_options['update_groups']['membercounts'][$group_id] = entities\Group::getB2DBTable()->selectById($group_id)->getNumberOfMembers();
                         }
                     }
-                    if ($new_teams != $existing_teams)
-                    {
+                    if ($new_teams != $existing_teams) {
                         $new_team_ids = array_diff($new_teams, $existing_teams);
                         $existing_team_ids = array_diff($existing_teams, $new_teams);
                         $teams_to_update = array_merge($new_team_ids, $existing_team_ids);
-                        $return_options['update_teams'] = array('ids' => array(), 'membercounts' => array());
-                        foreach ($teams_to_update as $team_id)
-                        {
+                        $return_options['update_teams'] = ['ids' => [], 'membercounts' => []];
+                        foreach ($teams_to_update as $team_id) {
                             $return_options['update_teams']['ids'][] = $team_id;
                             $return_options['update_teams']['membercounts'][$team_id] = entities\Team::getB2DBTable()->selectById($team_id)->getNumberOfMembers();
                         }
                     }
-                    $template_options = array('user' => $user);
-                    if (isset($random_password))
-                    {
+                    $template_options = ['user' => $user];
+                    if (isset($random_password)) {
                         $template_options['random_password'] = $random_password;
                     }
                     $return_options['content'] = $this->getComponentHTML('configuration/finduser_row', $template_options);
                     $return_options['title'] = $this->getI18n()->__('User updated!');
-                    if ($password_changed)
-                    {
+                    if ($password_changed) {
                         $return_options['message'] = $this->getI18n()->__('The password was changed');
                     }
+
                     return $this->renderJSON($return_options);
                 }
-            }
-            catch (\Exception $e)
-            {
+            } catch (Exception $e) {
                 $this->getResponse()->setHttpStatus(400);
-                return $this->renderJSON(array('error' => $this->getI18n()->__('This user could not be updated: %message', array('%message' => $e->getMessage()))));
+
+                return $this->renderJSON(['error' => $this->getI18n()->__('This user could not be updated: %message', ['%message' => $e->getMessage()])]);
             }
             $this->getResponse()->setHttpStatus(400);
-            return $this->renderJSON(array('error' => $this->getI18n()->__('This user could not be updated')));
+
+            return $this->renderJSON(['error' => $this->getI18n()->__('This user could not be updated')]);
         }
 
         public function runUpdateUserScopes(framework\Request $request)
         {
-            try
-            {
+            try {
                 if (!framework\Context::getScope()->isDefault())
-                    throw new \Exception('This operation is not allowed');
+                    throw new Exception('This operation is not allowed');
 
                 $user = entities\User::getB2DBTable()->selectByID($request['user_id']);
-                if ($user instanceof entities\User)
-                {
-                    $return_options = array('message' => $this->getI18n()->__("The user's scope access was successfully updated"));
-                    $scopes = $request->getParameter('scopes', array());
-                    if (count($scopes) && !(count($scopes) == 1 && array_key_exists(framework\Settings::getDefaultScopeID(), $scopes)))
-                    {
-                        foreach ($user->getScopes() as $scope_id => $scope)
-                        {
-                            if (!$scope->isDefault() && !array_key_exists($scope_id, $scopes))
-                            {
+                if ($user instanceof entities\User) {
+                    $return_options = ['message' => $this->getI18n()->__("The user's scope access was successfully updated")];
+                    $scopes = $request->getParameter('scopes', []);
+                    if (count($scopes) && !(count($scopes) == 1 && array_key_exists(framework\Settings::getDefaultScopeID(), $scopes))) {
+                        foreach ($user->getScopes() as $scope_id => $scope) {
+                            if (!$scope->isDefault() && !array_key_exists($scope_id, $scopes)) {
                                 $user->removeScope($scope_id);
                             }
                         }
-                        foreach ($scopes as $scope_id => $scope)
-                        {
-                            try
-                            {
-                                $scope = new entities\Scope((int) $scope_id);
+                        foreach ($scopes as $scope_id => $scope) {
+                            try {
+                                $scope = new entities\Scope((int)$scope_id);
                                 if ($user->isMemberOfScope($scope))
                                     continue;
 
                                 $user->addScope($scope);
-                            }
-                            catch (\Exception $e)
-                            {
+                            } catch (Exception $e) {
 
                             }
                         }
                     }
+
                     return $this->renderJSON($return_options);
                 }
-            }
-            catch (\Exception $e)
-            {
+            } catch (Exception $e) {
                 $this->getResponse()->setHttpStatus(400);
-                return $this->renderJSON(array('error' => $this->getI18n()->__('This user could not be updated: %message', array('%message' => $e->getMessage()))));
+
+                return $this->renderJSON(['error' => $this->getI18n()->__('This user could not be updated: %message', ['%message' => $e->getMessage()])]);
             }
             $this->getResponse()->setHttpStatus(400);
-            return $this->renderJSON(array('error' => $this->getI18n()->__('This user could not be updated')));
+
+            return $this->renderJSON(['error' => $this->getI18n()->__('This user could not be updated')]);
         }
 
         public function runGetPermissionsConfigurator(framework\Request $request)
         {
-            return $this->renderComponent('configuration/permissionsconfigurator', array('access_level' => $this->access_level, 'user_id' => $request->getParameter('user_id', 0), 'team_id' => $request->getParameter('team_id', 0), 'base_id' => $request->getParameter('base_id', 0)));
+            return $this->renderComponent('configuration/permissionsconfigurator', ['access_level' => $this->access_level, 'user_id' => $request->getParameter('user_id', 0), 'team_id' => $request->getParameter('team_id', 0), 'base_id' => $request->getParameter('base_id', 0)]);
         }
 
         public function runConfigureWorkflowSchemes(framework\Request $request)
@@ -1896,6 +1724,7 @@
                     $name = trim($request['name']);
                     if (!$name) {
                         $this->getResponse()->setHttpStatus(400);
+
                         return $this->renderJSON(['error' => $this->getI18n()->__('Please specify a name for this workflow')]);
                     }
                     $workflow->setName($name);
@@ -1905,18 +1734,21 @@
                     $description = trim($request['description']);
                     if (!$description) {
                         $this->getResponse()->setHttpStatus(400);
+
                         return $this->renderJSON(['error' => $this->getI18n()->__('Please specify a description for this workflow')]);
                     }
                     $workflow->setDescription($description);
                 }
 
                 $workflow->save();
+
                 return $this->renderJSON([
                     'item' => $workflow->toJSON(),
                     'component' => $this->getComponentHTML('configuration/workflow', ['workflow' => $workflow])
                 ]);
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 $this->getResponse()->setHttpStatus(400);
+
                 return $this->renderJSON(['error' => $e->getMessage()]);
             }
         }
@@ -1933,9 +1765,10 @@
                 $workflow_scheme->delete();
 
                 return $this->renderJSON(['message' => $this->getI18n()->__('The workflow scheme was deleted'), 'item' => $workflow_scheme->toJSON()]);
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
 
                 $this->getResponse()->setHttpStatus(400);
+
                 return $this->renderJSON(['error' => $e->getMessage()]);
             }
         }
@@ -1948,17 +1781,15 @@
                 } else {
                     $workflow_scheme = new entities\WorkflowScheme();
                 }
-                if (framework\Context::getScope()->isCustomWorkflowsEnabled())
-                {
+                if (framework\Context::getScope()->isCustomWorkflowsEnabled()) {
                     if (trim($request['name']) == '') {
-                        throw new \Exception($this->getI18n()->__('Please give the scheme a name'));
+                        throw new Exception($this->getI18n()->__('Please give the scheme a name'));
                     }
 
                     $workflow_scheme->setName(trim($request['name']));
                     $workflow_scheme->setDescription(trim($request['description']));
                     $workflow_scheme->save();
-                    foreach ($request->getParameter('workflow_id', array()) as $issue_type_id => $workflow_id)
-                    {
+                    foreach ($request->getParameter('workflow_id', []) as $issue_type_id => $workflow_id) {
                         $issue_type = entities\tables\Issuetypes::getTable()->selectById($issue_type_id);
                         if ($workflow_id) {
                             $workflow = entities\Workflow::getB2DBTable()->selectById($workflow_id);
@@ -1974,8 +1805,9 @@
                         'component' => $this->getComponentHTML('configuration/workflowscheme', ['scheme' => $workflow_scheme])
                     ]);
                 }
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 $this->getResponse()->setHttpStatus(400);
+
                 return $this->renderJSON(['error' => $e->getMessage()]);
             }
 //                if (framework\Context::getScope()->isCustomWorkflowsEnabled() && $this->mode == 'copy_scheme')
@@ -2037,16 +1869,12 @@
 //                    $this->workflow->delete();
 //                    return $this->renderJSON(array('success' => true, 'message' => $this->getI18n()->__('The workflow was deleted'), 'total_count' => entities\Workflow::getCustomWorkflowsCount(), 'more_available' => framework\Context::getScope()->hasCustomWorkflowsAvailable()));
 //                }
-            }
-            catch (\Exception $e)
-            {
-                if ($request->getRequestedFormat() == 'json')
-                {
+            } catch (Exception $e) {
+                if ($request->getRequestedFormat() == 'json') {
                     $this->getResponse()->setHttpStatus(400);
-                    return $this->renderJSON(array('success' => false, 'message' => $this->getI18n()->__('An error occured'), 'error' => $e->getMessage()));
-                }
-                else
-                {
+
+                    return $this->renderJSON(['success' => false, 'message' => $this->getI18n()->__('An error occured'), 'error' => $e->getMessage()]);
+                } else {
                     $this->error = $this->getI18n()->__('This workflow does not exist');
                 }
             }
@@ -2056,6 +1884,7 @@
         {
             $workflow = tables\Workflows::getTable()->selectById($request['workflow_id']);
             $step = tables\WorkflowSteps::getTable()->selectById($request['step_id']);
+
             return $this->renderJSON([
                 'content' => $this->getComponentHTML('configuration/editworkflowstep', ['step' => $step])
             ]);
@@ -2065,44 +1894,34 @@
         {
             $this->workflow = null;
             $this->step = null;
-            try
-            {
+            try {
                 $this->workflow = entities\Workflow::getB2DBTable()->selectById($request['workflow_id']);
-                if ($request['mode'] == 'edit' && !$request->hasParameter('step_id'))
-                {
+                if ($request['mode'] == 'edit' && !$request->hasParameter('step_id')) {
                     $this->step = new entities\WorkflowStep();
                     $this->step->setWorkflow($this->workflow);
-                }
-                else
-                {
+                } else {
                     $this->step = entities\WorkflowStep::getB2DBTable()->selectById($request['step_id']);
                 }
-                if ($request->isPost() && $request['mode'] == 'delete_outgoing_transitions')
-                {
+                if ($request->isPost() && $request['mode'] == 'delete_outgoing_transitions') {
                     $this->step->deleteOutgoingTransitions();
-                    $this->forward(framework\Context::getRouting()->generate('configure_workflow_steps', array('workflow_id' => $this->workflow->getID())));
+                    $this->forward(framework\Context::getRouting()->generate('configure_workflow_steps', ['workflow_id' => $this->workflow->getID()]));
                 }
-                if ($request->isPost() && $request['mode'] == 'delete' && !$this->step->hasIncomingTransitions())
-                {
+                if ($request->isPost() && $request['mode'] == 'delete' && !$this->step->hasIncomingTransitions()) {
                     $this->step->deleteOutgoingTransitions();
                     $this->step->delete();
-                    $this->forward(framework\Context::getRouting()->generate('configure_workflow_steps', array('workflow_id' => $this->workflow->getID())));
-                }
-                elseif ($request->isPost() && ($request->hasParameter('edit') || $request['mode'] == 'edit'))
-                {
+                    $this->forward(framework\Context::getRouting()->generate('configure_workflow_steps', ['workflow_id' => $this->workflow->getID()]));
+                } elseif ($request->isPost() && ($request->hasParameter('edit') || $request['mode'] == 'edit')) {
                     $this->step->setName($request['name']);
                     $this->step->setDescription($request['description']);
                     $this->step->setLinkedStatusID($request['status_id']);
-                    $this->step->setIsEditable((bool) $request['is_editable']);
-                    $this->step->setIsClosed((bool) ($request['state'] == entities\Issue::STATE_CLOSED));
+                    $this->step->setIsEditable((bool)$request['is_editable']);
+                    $this->step->setIsClosed((bool)($request['state'] == entities\Issue::STATE_CLOSED));
                     $this->step->save();
 
 
-                    $this->forward(framework\Context::getRouting()->generate('configure_workflow_step', array('workflow_id' => $this->workflow->getID(), 'step_id' => $this->step->getID())));
+                    $this->forward(framework\Context::getRouting()->generate('configure_workflow_step', ['workflow_id' => $this->workflow->getID(), 'step_id' => $this->step->getID()]));
                 }
-            }
-            catch (\Exception $e)
-            {
+            } catch (Exception $e) {
                 $this->error = $this->getI18n()->__('This workflow / step does not exist');
             }
         }
@@ -2116,190 +1935,163 @@
             $this->workflow = null;
             $this->transition = null;
 
-            try
-            {
-                $this->workflow = tables\Workflows::getTable()->selectById((int) $request['workflow_id']);
-                if ($request->hasParameter('transition_id'))
-                {
+            try {
+                $this->workflow = tables\Workflows::getTable()->selectById((int)$request['workflow_id']);
+                if ($request->hasParameter('transition_id')) {
                     $mode = $request['mode'];
-                    $this->transition = tables\WorkflowTransitions::getTable()->selectById((int) $request['transition_id']);
-                    if ($request->isPost())
-                    {
-                        if ($mode == 'edit')
-                        {
-                            if (!$this->transition->isInitialTransition())
-                            {
+                    $this->transition = tables\WorkflowTransitions::getTable()->selectById((int)$request['transition_id']);
+                    if ($request->isPost()) {
+                        if ($mode == 'edit') {
+                            if (!$this->transition->isInitialTransition()) {
                                 $this->transition->setName($request['transition_name']);
                                 $this->transition->setDescription($request['transition_description']);
-                                if ($request['template'])
-                                {
+                                if ($request['template']) {
                                     $this->transition->setTemplate($request['template']);
-                                }
-                                else
-                                {
+                                } else {
                                     $this->transition->setTemplate(null);
                                 }
                             }
-                            try
-                            {
-                                $step = tables\WorkflowSteps::getTable()->selectById((int) $request['outgoing_step_id']);
+                            try {
+                                $step = tables\WorkflowSteps::getTable()->selectById((int)$request['outgoing_step_id']);
                                 $this->transition->setOutgoingStep($step);
-                            }
-                            catch (\Exception $e)
-                            {
+                            } catch (Exception $e) {
 
                             }
                             $this->transition->save();
                             $transition = $this->transition;
                             $redirect_transition = true;
-                        }
-                        elseif ($mode == 'delete')
-                        {
+                        } elseif ($mode == 'delete') {
                             $this->transition->deleteTransition($request['direction'], $request['step_id']);
-                            $this->forward(framework\Context::getRouting()->generate('configure_workflow_step', array('workflow_id' => $this->workflow->getID(), 'step_id' => $request['step_id'])));
-                        }
-                        elseif ($mode == 'delete_action')
-                        {
-                            $this->action = tables\WorkflowTransitionActions::getTable()->selectById((int) $request['action_id']);
+                            $this->forward(framework\Context::getRouting()->generate('configure_workflow_step', ['workflow_id' => $this->workflow->getID(), 'step_id' => $request['step_id']]));
+                        } elseif ($mode == 'delete_action') {
+                            $this->action = tables\WorkflowTransitionActions::getTable()->selectById((int)$request['action_id']);
                             $this->action->delete();
-                            return $this->renderJSON(array('message' => $this->getI18n()->__('The action has been deleted')));
-                        }
-                        elseif ($mode == 'new_action')
-                        {
+
+                            return $this->renderJSON(['message' => $this->getI18n()->__('The action has been deleted')]);
+                        } elseif ($mode == 'new_action') {
                             $action = new entities\WorkflowTransitionAction();
                             $action->setActionType($request['action_type']);
                             $action->setTransition($this->transition);
                             $action->setWorkflow($this->workflow);
                             $action->setTargetValue('');
                             $action->save();
-                            return $this->renderJSON(array('content' => $this->getComponentHTML('configuration/workflowtransitionaction', array('action' => $action))));
-                        }
-                        elseif ($mode == 'update_action')
-                        {
-                            $this->action = tables\WorkflowTransitionActions::getTable()->selectById((int) $request['action_id']);
+
+                            return $this->renderJSON(['content' => $this->getComponentHTML('configuration/workflowtransitionaction', ['action' => $action])]);
+                        } elseif ($mode == 'update_action') {
+                            $this->action = tables\WorkflowTransitionActions::getTable()->selectById((int)$request['action_id']);
                             $this->action->setTargetValue($request['target_value']);
                             $this->action->save();
                             $text = $request['target_value'];
-                            switch ($this->action->getActionType())
-                            {
+                            switch ($this->action->getActionType()) {
                                 case entities\WorkflowTransitionAction::ACTION_ASSIGN_ISSUE:
-                                    if ($this->action->hasTargetValue())
-                                    {
+                                    if ($this->action->hasTargetValue()) {
                                         $target_details = explode('_', $this->action->getTargetValue());
-                                        $text = ($target_details[0] == 'user') ? entities\User::getB2DBTable()->selectById((int) $target_details[1])->getNameWithUsername() : entities\Team::getB2DBTable()->selectById((int) $target_details[1])->getName();
-                                    }
-                                    else
-                                    {
+                                        $text = ($target_details[0] == 'user') ? entities\User::getB2DBTable()->selectById((int)$target_details[1])->getNameWithUsername() : entities\Team::getB2DBTable()->selectById((int)$target_details[1])->getName();
+                                    } else {
                                         $text = $this->getI18n()->__('User specified during transition');
                                     }
                                     break;
                                 case entities\WorkflowTransitionAction::ACTION_SET_RESOLUTION:
-                                    $text = ($this->action->getTargetValue()) ? tables\ListTypes::getTable()->selectById((int) $this->action->getTargetValue())->getName() : $this->getI18n()->__('Resolution specified by user');
+                                    $text = ($this->action->getTargetValue()) ? ListTypes::getTable()->selectById((int)$this->action->getTargetValue())->getName() : $this->getI18n()->__('Resolution specified by user');
                                     break;
                                 case entities\WorkflowTransitionAction::ACTION_SET_REPRODUCABILITY:
-                                    $text = ($this->action->getTargetValue()) ? tables\ListTypes::getTable()->selectById((int) $this->action->getTargetValue())->getName() : $this->getI18n()->__('Reproducability specified by user');
+                                    $text = ($this->action->getTargetValue()) ? ListTypes::getTable()->selectById((int)$this->action->getTargetValue())->getName() : $this->getI18n()->__('Reproducability specified by user');
                                     break;
                                 case entities\WorkflowTransitionAction::ACTION_SET_STATUS:
-                                    $target = ($this->action->getTargetValue()) ? tables\ListTypes::getTable()->selectById((int) $this->action->getTargetValue()) : null;
-                                    $text = ($this->action->getTargetValue()) ? '<span class="status-badge" style="background-color: '.$target->getColor().'; color: '.$target->getTextColor().';">'.$target->getName().'</span>' : $this->getI18n()->__('Status provided by user');
+                                    $target = ($this->action->getTargetValue()) ? ListTypes::getTable()->selectById((int)$this->action->getTargetValue()) : null;
+                                    $text = ($this->action->getTargetValue()) ? '<span class="status-badge" style="background-color: ' . $target->getColor() . '; color: ' . $target->getTextColor() . ';">' . $target->getName() . '</span>' : $this->getI18n()->__('Status provided by user');
                                     break;
                                 case entities\WorkflowTransitionAction::ACTION_SET_PRIORITY:
-                                    $text = ($this->action->getTargetValue()) ? tables\ListTypes::getTable()->selectById((int) $this->action->getTargetValue())->getName() : $this->getI18n()->__('Priority specified by user');
+                                    $text = ($this->action->getTargetValue()) ? ListTypes::getTable()->selectById((int)$this->action->getTargetValue())->getName() : $this->getI18n()->__('Priority specified by user');
                                     break;
                                 case entities\WorkflowTransitionAction::ACTION_SET_MILESTONE:
-                                    $target = ($this->action->getTargetValue()) ? \pachno\core\entities\tables\ListTypes::getTable()->selectById((int) $this->action->getTargetValue()) : null;
+                                    $target = ($this->action->getTargetValue()) ? ListTypes::getTable()->selectById((int)$this->action->getTargetValue()) : null;
                                     $text = ($this->action->getTargetValue()) ? $target->getProject()->getName() . ' - ' . $target->getName() : $this->getI18n()->__('Milestone specified by user');
                                     break;
                                 case entities\WorkflowTransitionAction::CUSTOMFIELD_SET_PREFIX . $this->action->getCustomActionType():
-                                    switch (\pachno\core\entities\CustomDatatype::getByKey($this->action->getCustomActionType())->getType()) {
-                                        case \pachno\core\entities\CustomDatatype::INPUT_TEXTAREA_MAIN:
-                                        case \pachno\core\entities\CustomDatatype::INPUT_TEXTAREA_SMALL:
+                                    switch (CustomDatatype::getByKey($this->action->getCustomActionType())->getType()) {
+                                        case CustomDatatype::INPUT_TEXTAREA_MAIN:
+                                        case CustomDatatype::INPUT_TEXTAREA_SMALL:
                                             break;
-                                        case \pachno\core\entities\CustomDatatype::DATE_PICKER:
-                                        case \pachno\core\entities\CustomDatatype::DATETIME_PICKER:
-                                            return $this->renderJSON(array('content' => date('Y-m-d' . (\pachno\core\entities\CustomDatatype::getByKey($this->action->getCustomActionType())->getType() == \pachno\core\entities\CustomDatatype::DATETIME_PICKER ? ' H:i' : ''), (int) $text)));
+                                        case CustomDatatype::DATE_PICKER:
+                                        case CustomDatatype::DATETIME_PICKER:
+                                            return $this->renderJSON(['content' => date('Y-m-d' . (CustomDatatype::getByKey($this->action->getCustomActionType())->getType() == CustomDatatype::DATETIME_PICKER ? ' H:i' : ''), (int)$text)]);
                                             break;
-                                        case \pachno\core\entities\CustomDatatype::USER_CHOICE:
-                                            return $this->renderJSON(array('content' => $this->getComponentHTML('main/userdropdown', array('user' => $text))));
+                                        case CustomDatatype::USER_CHOICE:
+                                            return $this->renderJSON(['content' => $this->getComponentHTML('main/userdropdown', ['user' => $text])]);
                                             break;
-                                        case \pachno\core\entities\CustomDatatype::TEAM_CHOICE:
-                                            return $this->renderJSON(array('content' => $this->getComponentHTML('main/teamdropdown', array('team' => $text))));
+                                        case CustomDatatype::TEAM_CHOICE:
+                                            return $this->renderJSON(['content' => $this->getComponentHTML('main/teamdropdown', ['team' => $text])]);
                                             break;
-                                        case \pachno\core\entities\CustomDatatype::CLIENT_CHOICE:
+                                        case CustomDatatype::CLIENT_CHOICE:
                                             if (is_numeric($this->action->getTargetValue())) {
-                                                $text = ($this->action->getTargetValue()) ? \pachno\core\entities\tables\Clients::getTable()->selectById((int) $this->action->getTargetValue())->getName() : $this->getI18n()->__('Value provided by user');
+                                                $text = ($this->action->getTargetValue()) ? Clients::getTable()->selectById((int)$this->action->getTargetValue())->getName() : $this->getI18n()->__('Value provided by user');
                                             }
                                             break;
-                                        case \pachno\core\entities\CustomDatatype::RELEASES_CHOICE:
+                                        case CustomDatatype::RELEASES_CHOICE:
                                             if (is_numeric($this->action->getTargetValue())) {
-                                                $target = ($this->action->getTargetValue()) ? \pachno\core\entities\tables\Builds::getTable()->selectById((int) $this->action->getTargetValue()) : null;
+                                                $target = ($this->action->getTargetValue()) ? Builds::getTable()->selectById((int)$this->action->getTargetValue()) : null;
                                                 $text = ($this->action->getTargetValue()) ? $target->getProject()->getName() . ' - ' . $target->getName() : $this->getI18n()->__('Value provided by user');
                                             }
                                             break;
-                                        case \pachno\core\entities\CustomDatatype::COMPONENTS_CHOICE:
+                                        case CustomDatatype::COMPONENTS_CHOICE:
                                             if (is_numeric($this->action->getTargetValue())) {
-                                                $target = ($this->action->getTargetValue()) ? \pachno\core\entities\tables\Components::getTable()->selectById((int) $this->action->getTargetValue()) : null;
+                                                $target = ($this->action->getTargetValue()) ? Components::getTable()->selectById((int)$this->action->getTargetValue()) : null;
                                                 $text = ($this->action->getTargetValue()) ? $target->getProject()->getName() . ' - ' . $target->getName() : $this->getI18n()->__('Value provided by user');
                                             }
                                             break;
-                                        case \pachno\core\entities\CustomDatatype::EDITIONS_CHOICE:
+                                        case CustomDatatype::EDITIONS_CHOICE:
                                             if (is_numeric($this->action->getTargetValue())) {
-                                                $target = ($this->action->getTargetValue()) ? \pachno\core\entities\tables\Editions::getTable()->selectById((int) $this->action->getTargetValue()) : null;
+                                                $target = ($this->action->getTargetValue()) ? Editions::getTable()->selectById((int)$this->action->getTargetValue()) : null;
                                                 $text = ($this->action->getTargetValue()) ? $target->getProject()->getName() . ' - ' . $target->getName() : $this->getI18n()->__('Value provided by user');
                                             }
                                             break;
-                                        case \pachno\core\entities\CustomDatatype::MILESTONE_CHOICE:
+                                        case CustomDatatype::MILESTONE_CHOICE:
                                             if (is_numeric($this->action->getTargetValue())) {
-                                                $target = ($this->action->getTargetValue()) ? \pachno\core\entities\tables\Milestones::getTable()->selectById((int) $this->action->getTargetValue()) : null;
+                                                $target = ($this->action->getTargetValue()) ? Milestones::getTable()->selectById((int)$this->action->getTargetValue()) : null;
                                                 $text = ($this->action->getTargetValue()) ? $target->getProject()->getName() . ' - ' . $target->getName() : $this->getI18n()->__('Value provided by user');
                                             }
                                             break;
-                                        case \pachno\core\entities\CustomDatatype::STATUS_CHOICE:
+                                        case CustomDatatype::STATUS_CHOICE:
                                             if (is_numeric($this->action->getTargetValue())) {
-                                                $target = ($this->action->getTargetValue()) ? tables\ListTypes::getTable()->selectById((int) $this->action->getTargetValue()) : null;
-                                                $text = ($this->action->getTargetValue()) ? '<span class="status-badge" style="background-color: '.$target->getColor().'; color: '.$target->getTextColor().';">'.$target->getName().'</span>' : $this->getI18n()->__('Value provided by user');
+                                                $target = ($this->action->getTargetValue()) ? ListTypes::getTable()->selectById((int)$this->action->getTargetValue()) : null;
+                                                $text = ($this->action->getTargetValue()) ? '<span class="status-badge" style="background-color: ' . $target->getColor() . '; color: ' . $target->getTextColor() . ';">' . $target->getName() . '</span>' : $this->getI18n()->__('Value provided by user');
                                             }
                                             break;
-                                        case \pachno\core\entities\CustomDatatype::DROPDOWN_CHOICE_TEXT:
+                                        case CustomDatatype::DROPDOWN_CHOICE_TEXT:
                                         default:
                                             if (is_numeric($this->action->getTargetValue())) {
-                                                $text = ($this->action->getTargetValue()) ? tables\CustomFieldOptions::getTable()->selectById((int) $this->action->getTargetValue())->getName() : $this->getI18n()->__('Value provided by user');
+                                                $text = ($this->action->getTargetValue()) ? tables\CustomFieldOptions::getTable()->selectById((int)$this->action->getTargetValue())->getName() : $this->getI18n()->__('Value provided by user');
                                             }
                                             break;
                                     }
                                     break;
                             }
-                            return $this->renderJSON(array('content' => $text));
-                        }
-                        elseif ($mode == 'delete_validation_rule')
-                        {
-                            $this->rule = tables\WorkflowTransitionValidationRules::getTable()->selectById((int) $request['rule_id']);
+
+                            return $this->renderJSON(['content' => $text]);
+                        } elseif ($mode == 'delete_validation_rule') {
+                            $this->rule = tables\WorkflowTransitionValidationRules::getTable()->selectById((int)$request['rule_id']);
                             $this->rule->delete();
-                            return $this->renderJSON(array('message' => $this->getI18n()->__('The validation rule has been deleted')));
-                        }
-                        elseif ($mode == 'new_validation_rule')
-                        {
-                            if (!in_array($request['postorpre'], array('post', 'pre')))
-                            {
-                                throw new \InvalidArgumentException($this->getI18n()->__('Invalid transition definition'));
+
+                            return $this->renderJSON(['message' => $this->getI18n()->__('The validation rule has been deleted')]);
+                        } elseif ($mode == 'new_validation_rule') {
+                            if (!in_array($request['postorpre'], ['post', 'pre'])) {
+                                throw new InvalidArgumentException($this->getI18n()->__('Invalid transition definition'));
                             }
                             $rule = new entities\WorkflowTransitionValidationRule();
-                            if ($request['postorpre'] == 'post')
-                            {
-                                $exists = (bool) ($this->transition->hasPostValidationRule($request['rule']));
+                            if ($request['postorpre'] == 'post') {
+                                $exists = (bool)($this->transition->hasPostValidationRule($request['rule']));
                                 if (!$exists)
                                     $rule->setPost();
-                            }
-                            elseif ($request['postorpre'] == 'pre')
-                            {
-                                $exists = (bool) ($this->transition->hasPreValidationRule($request['rule']));
+                            } elseif ($request['postorpre'] == 'pre') {
+                                $exists = (bool)($this->transition->hasPreValidationRule($request['rule']));
                                 if (!$exists)
                                     $rule->setPre();
                             }
-                            if ($exists)
-                            {
+                            if ($exists) {
                                 $this->getResponse()->setHttpStatus(400);
-                                return $this->renderJSON(array('message' => $this->getI18n()->__('This validation rule already exist')));
+
+                                return $this->renderJSON(['message' => $this->getI18n()->__('This validation rule already exist')]);
                             }
                             $rule->setRule($request['rule']);
                             $rule->setRuleValue('');
@@ -2307,24 +2099,22 @@
                             $rule->setWorkflow($this->workflow);
                             $rule->save();
 
-                            return $this->renderJSON(array('content' => $this->getComponentHTML('configuration/workflowtransitionvalidationrule', array('rule' => $rule))));
-                        }
-                        elseif ($mode == 'update_validation_rule')
-                        {
-                            $rule = tables\WorkflowTransitionValidationRules::getTable()->selectById((int) $request['rule_id']);
+                            return $this->renderJSON(['content' => $this->getComponentHTML('configuration/workflowtransitionvalidationrule', ['rule' => $rule])]);
+                        } elseif ($mode == 'update_validation_rule') {
+                            $rule = tables\WorkflowTransitionValidationRules::getTable()->selectById((int)$request['rule_id']);
                             $text = null;
                             if ($rule->isCustom()) {
                                 switch ($rule->getCustomType()) {
-                                    case entities\CustomDatatype::RADIO_CHOICE:
-                                    case entities\CustomDatatype::DROPDOWN_CHOICE_TEXT:
-                                    case entities\CustomDatatype::TEAM_CHOICE:
-                                    case entities\CustomDatatype::STATUS_CHOICE:
-                                    case entities\CustomDatatype::MILESTONE_CHOICE:
-                                    case entities\CustomDatatype::CLIENT_CHOICE:
-                                    case entities\CustomDatatype::COMPONENTS_CHOICE:
-                                    case entities\CustomDatatype::EDITIONS_CHOICE:
-                                    case entities\CustomDatatype::RELEASES_CHOICE:
-                                        $rule->setRuleValue(join(',', $request['rule_value'] ?: array()));
+                                    case CustomDatatype::RADIO_CHOICE:
+                                    case CustomDatatype::DROPDOWN_CHOICE_TEXT:
+                                    case CustomDatatype::TEAM_CHOICE:
+                                    case CustomDatatype::STATUS_CHOICE:
+                                    case CustomDatatype::MILESTONE_CHOICE:
+                                    case CustomDatatype::CLIENT_CHOICE:
+                                    case CustomDatatype::COMPONENTS_CHOICE:
+                                    case CustomDatatype::EDITIONS_CHOICE:
+                                    case CustomDatatype::RELEASES_CHOICE:
+                                        $rule->setRuleValue(join(',', $request['rule_value'] ?: []));
                                         $text = ($rule->getRuleValue()) ? $rule->getRuleValueAsJoinedString() : $this->getI18n()->__('Any valid value');
                                         break;
                                 }
@@ -2340,33 +2130,26 @@
                                     case entities\WorkflowTransitionValidationRule::RULE_STATUS_VALID:
                                     case entities\WorkflowTransitionValidationRule::RULE_TEAM_MEMBERSHIP_VALID:
                                     case entities\WorkflowTransitionValidationRule::RULE_ISSUE_IN_MILESTONE_VALID:
-                                        $rule->setRuleValue(join(',', $request['rule_value'] ?: array()));
+                                        $rule->setRuleValue(join(',', $request['rule_value'] ?: []));
                                         $text = ($rule->getRuleValue()) ? $rule->getRuleValueAsJoinedString() : $this->getI18n()->__('Any valid value');
                                         break;
                                 }
                             }
                             $rule->save();
                             $this->rule = $rule;
-                            return $this->renderJSON(array('content' => $text));
+
+                            return $this->renderJSON(['content' => $text]);
                         }
                     }
-                }
-                elseif ($request->isPost() && $request->hasParameter('step_id'))
-                {
-                    $step = tables\WorkflowSteps::getTable()->selectById((int) $request['step_id']);
-                    if ($request['add_transition_type'] == 'existing' && $request->hasParameter('existing_transition_id'))
-                    {
-                        $transition = tables\WorkflowTransitions::getTable()->selectById((int) $request['existing_transition_id']);
+                } elseif ($request->isPost() && $request->hasParameter('step_id')) {
+                    $step = tables\WorkflowSteps::getTable()->selectById((int)$request['step_id']);
+                    if ($request['add_transition_type'] == 'existing' && $request->hasParameter('existing_transition_id')) {
+                        $transition = tables\WorkflowTransitions::getTable()->selectById((int)$request['existing_transition_id']);
                         $redirect_transition = false;
-                    }
-                    else
-                    {
-                        if ($request['transition_name'] && $request['outgoing_step_id'] && $request->hasParameter('template'))
-                        {
-                            if (($outgoing_step = tables\WorkflowSteps::getTable()->selectById((int) $request['outgoing_step_id'])) && $step instanceof entities\WorkflowStep)
-                            {
-                                if (!$request['template'] || array_key_exists($request['template'], entities\WorkflowTransition::getTemplates()))
-                                {
+                    } else {
+                        if ($request['transition_name'] && $request['outgoing_step_id'] && $request->hasParameter('template')) {
+                            if (($outgoing_step = tables\WorkflowSteps::getTable()->selectById((int)$request['outgoing_step_id'])) && $step instanceof entities\WorkflowStep) {
+                                if (!$request['template'] || array_key_exists($request['template'], entities\WorkflowTransition::getTemplates())) {
                                     $transition = new entities\WorkflowTransition();
                                     $transition->setWorkflow($this->workflow);
                                     $transition->setName($request['transition_name']);
@@ -2376,188 +2159,147 @@
                                     $transition->save();
                                     $step->addOutgoingTransition($transition);
                                     $redirect_transition = true;
+                                } else {
+                                    throw new InvalidArgumentException($this->getI18n()->__('Please select a valid template'));
                                 }
-                                else
-                                {
-                                    throw new \InvalidArgumentException($this->getI18n()->__('Please select a valid template'));
-                                }
+                            } else {
+                                throw new InvalidArgumentException($this->getI18n()->__('Please select a valid outgoing step'));
                             }
-                            else
-                            {
-                                throw new \InvalidArgumentException($this->getI18n()->__('Please select a valid outgoing step'));
-                            }
-                        }
-                        else
-                        {
-                            throw new \InvalidArgumentException($this->getI18n()->__('Please fill in all required fields'));
+                        } else {
+                            throw new InvalidArgumentException($this->getI18n()->__('Please fill in all required fields'));
                         }
                     }
                     $step->addOutgoingTransition($transition);
+                } else {
+                    throw new InvalidArgumentException('Invalid action');
                 }
-                else
-                {
-                    throw new \InvalidArgumentException('Invalid action');
-                }
-            }
-            catch (\InvalidArgumentException $e)
-            {
+            } catch (InvalidArgumentException $e) {
                 $this->error = $e->getMessage();
-            }
-            catch (\Exception $e)
-            {
+            } catch (Exception $e) {
                 $this->error = $this->getI18n()->__('This workflow / transition does not exist');
             }
-            if (isset($redirect_transition) && $redirect_transition)
-            {
-                $this->forward(framework\Context::getRouting()->generate('configure_workflow_transition', array('workflow_id' => $this->workflow->getID(), 'transition_id' => $transition->getID())));
+            if (isset($redirect_transition) && $redirect_transition) {
+                $this->forward(framework\Context::getRouting()->generate('configure_workflow_transition', ['workflow_id' => $this->workflow->getID(), 'transition_id' => $transition->getID()]));
+            } elseif (isset($redirect_transition)) {
+                $this->forward(framework\Context::getRouting()->generate('configure_workflow_steps', ['workflow_id' => $this->workflow->getID()]));
             }
-            elseif (isset($redirect_transition))
-            {
-                $this->forward(framework\Context::getRouting()->generate('configure_workflow_steps', array('workflow_id' => $this->workflow->getID())));
-            }
-        }
-
-        public function getAccessLevel($section, $module)
-        {
-            return framework\Settings::getAccessLevel($section, $module);
         }
 
         public function runAddClient(framework\Request $request)
         {
-            try
-            {
+            try {
                 $mode = $request['mode'];
-                if ($client_name = $request['client_name'])
-                {
-                    if (entities\Client::doesClientNameExist(trim($request['client_name'])))
-                    {
-                        throw new \Exception($this->getI18n()->__("Please enter a client name that doesn't already exist"));
+                if ($client_name = $request['client_name']) {
+                    if (entities\Client::doesClientNameExist(trim($request['client_name']))) {
+                        throw new Exception($this->getI18n()->__("Please enter a client name that doesn't already exist"));
                     }
                     $client = new entities\Client();
                     $client->setName($request['client_name']);
                     $client->save();
 
                     $message = $this->getI18n()->__('The client was added');
-                    return $this->renderJSON(array('message' => $message, 'content' => $this->getComponentHTML('configuration/clientbox', array('client' => $client))));
+
+                    return $this->renderJSON(['message' => $message, 'content' => $this->getComponentHTML('configuration/clientbox', ['client' => $client])]);
+                } else {
+                    throw new Exception($this->getI18n()->__('Please enter a client name'));
                 }
-                else
-                {
-                    throw new \Exception($this->getI18n()->__('Please enter a client name'));
-                }
-            }
-            catch (\Exception $e)
-            {
+            } catch (Exception $e) {
                 $this->getResponse()->setHttpStatus(400);
-                return $this->renderJSON(array('error' => $e->getMessage()));
+
+                return $this->renderJSON(['error' => $e->getMessage()]);
             }
         }
 
         public function runDeleteClient(framework\Request $request)
         {
-            try
-            {
-                try
-                {
+            try {
+                try {
                     $client = entities\Client::getB2DBTable()->selectById($request['client_id']);
-                }
-                catch (\Exception $e)
-                {
+                } catch (Exception $e) {
 
                 }
-                if (!$client instanceof entities\Client)
-                {
-                    throw new \Exception($this->getI18n()->__("You cannot delete this client"));
+                if (!$client instanceof entities\Client) {
+                    throw new Exception($this->getI18n()->__("You cannot delete this client"));
                 }
 
-                if (entities\Project::getAllByClientID($client->getID()) !== null)
-                {
-                    foreach (entities\Project::getAllByClientID($client->getID()) as $project)
-                    {
+                if (entities\Project::getAllByClientID($client->getID()) !== null) {
+                    foreach (entities\Project::getAllByClientID($client->getID()) as $project) {
                         $project->setClient(null);
                         $project->save();
                     }
                 }
 
                 $client->delete();
-                return $this->renderJSON(array('success' => true, 'message' => $this->getI18n()->__('The client was deleted')));
-            }
-            catch (\Exception $e)
-            {
+
+                return $this->renderJSON(['success' => true, 'message' => $this->getI18n()->__('The client was deleted')]);
+            } catch (Exception $e) {
                 $this->getResponse()->setHttpStatus(400);
-                return $this->renderJSON(array('error' => $e->getMessage()));
+
+                return $this->renderJSON(['error' => $e->getMessage()]);
             }
         }
 
         public function runGetClientMembers(framework\Request $request)
         {
-            try
-            {
-                $client = entities\Client::getB2DBTable()->selectById((int) $request['client_id']);
+            try {
+                $client = entities\Client::getB2DBTable()->selectById((int)$request['client_id']);
                 $users = $client->getMembers();
-                return $this->renderJSON(array('content' => $this->getComponentHTML('configuration/clientuserlist', compact('users', 'client'))));
-            }
-            catch (\Exception $e)
-            {
+
+                return $this->renderJSON(['content' => $this->getComponentHTML('configuration/clientuserlist', compact('users', 'client'))]);
+            } catch (Exception $e) {
                 $this->getResponse()->setHttpStatus(400);
-                return $this->renderJSON(array('error' => $e->getMessage()));
+
+                return $this->renderJSON(['error' => $e->getMessage()]);
             }
         }
 
         public function runRemoveClientMember(framework\Request $request)
         {
-            try
-            {
-                $client = tables\Clients::getTable()->selectById((int) $request['client_id']);
-                $user = entities\User::getB2DBTable()->selectByID((int) $request['user_id']);
+            try {
+                $client = Clients::getTable()->selectById((int)$request['client_id']);
+                $user = entities\User::getB2DBTable()->selectByID((int)$request['user_id']);
 
                 $client->removeMember($user);
-                return $this->renderJSON(array('update_clients' => array('ids' => array($client->getID()), 'membercounts' => array($client->getID() => $client->getNumberOfMembers()))));
-            }
-            catch (\Exception $e)
-            {
+
+                return $this->renderJSON(['update_clients' => ['ids' => [$client->getID()], 'membercounts' => [$client->getID() => $client->getNumberOfMembers()]]]);
+            } catch (Exception $e) {
                 $this->getResponse()->setHttpStatus(400);
-                return $this->renderJSON(array('error' => $e->getMessage()));
+
+                return $this->renderJSON(['error' => $e->getMessage()]);
             }
         }
 
         public function runAddClientMember(framework\Request $request)
         {
-            try
-            {
-                $user_id = (int) $request['user_id'];
-                $client = tables\Clients::getTable()->selectById((int) $request['client_id']);
+            try {
+                $user_id = (int)$request['user_id'];
+                $client = Clients::getTable()->selectById((int)$request['client_id']);
                 $user = entities\User::getB2DBTable()->selectByID($user_id);
 
                 $client->addMember($user);
-                return $this->renderJSON(array('clientlistitem' => $this->getComponentHTML('configuration/clientuserlistitem', compact('client', 'user_id', 'user')), 'update_clients' => array('ids' => array($client->getID()), 'membercounts' => array($client->getID() => $client->getNumberOfMembers()))));
-            }
-            catch (\Exception $e)
-            {
+
+                return $this->renderJSON(['clientlistitem' => $this->getComponentHTML('configuration/clientuserlistitem', compact('client', 'user_id', 'user')), 'update_clients' => ['ids' => [$client->getID()], 'membercounts' => [$client->getID() => $client->getNumberOfMembers()]]]);
+            } catch (Exception $e) {
                 $this->getResponse()->setHttpStatus(400);
-                return $this->renderJSON(array('error' => $e->getMessage()));
+
+                return $this->renderJSON(['error' => $e->getMessage()]);
             }
         }
 
         public function runEditClient(framework\Request $request)
         {
-            try
-            {
-                try
-                {
+            try {
+                try {
                     $client = entities\Client::getB2DBTable()->selectById($request['client_id']);
-                }
-                catch (\Exception $e)
-                {
+                } catch (Exception $e) {
 
                 }
-                if (!$client instanceof entities\Client)
-                {
-                    throw new \Exception($this->getI18n()->__("You cannot edit this client"));
+                if (!$client instanceof entities\Client) {
+                    throw new Exception($this->getI18n()->__("You cannot edit this client"));
                 }
 
-                if (entities\Client::doesClientNameExist(trim($request['client_name'])) && strtolower($request['client_name']) != strtolower($client->getName()))
-                {
-                    throw new \Exception($this->getI18n()->__("Please enter a client name that doesn't already exist"));
+                if (entities\Client::doesClientNameExist(trim($request['client_name'])) && strtolower($request['client_name']) != strtolower($client->getName())) {
+                    throw new Exception($this->getI18n()->__("Please enter a client name that doesn't already exist"));
                 }
 
                 $client->setName($request['client_name']);
@@ -2566,33 +2308,27 @@
                 $client->setTelephone($request['client_telephone']);
                 $client->setFax($request['client_fax']);
                 $client->save();
-                return $this->renderJSON(array('success' => true, 'content' => $this->getComponentHTML('configuration/clientbox', array('client' => $client)), 'message' => $this->getI18n()->__('The client was saved')));
-            }
-            catch (\Exception $e)
-            {
+
+                return $this->renderJSON(['success' => true, 'content' => $this->getComponentHTML('configuration/clientbox', ['client' => $client]), 'message' => $this->getI18n()->__('The client was saved')]);
+            } catch (Exception $e) {
                 $this->getResponse()->setHttpStatus(400);
-                return $this->renderJSON(array('error' => $e->getMessage()));
+
+                return $this->renderJSON(['error' => $e->getMessage()]);
             }
         }
 
         public function runConfigureScopes(framework\Request $request)
         {
-            if ($request->isPost())
-            {
+            if ($request->isPost()) {
                 $hostname = $request['hostname'];
-                $hostname = str_replace(array('http://', 'https://'), array('', ''), $hostname);
+                $hostname = str_replace(['http://', 'https://'], ['', ''], $hostname);
 
                 $scopename = $request['name'];
-                if (!$hostname || tables\Scopes::getTable()->getByHostname($hostname) instanceof entities\Scope)
-                {
+                if (!$hostname || tables\Scopes::getTable()->getByHostname($hostname) instanceof entities\Scope) {
                     $this->scope_hostname_error = true;
-                }
-                elseif (!$scopename)
-                {
+                } elseif (!$scopename) {
                     $this->scope_name_error = true;
-                }
-                else
-                {
+                } else {
                     $scope = new entities\Scope();
                     $scope->addHostname($hostname);
                     $scope->setName($scopename);
@@ -2604,7 +2340,7 @@
             $this->scope_deleted = framework\Context::getMessageAndClear('scope_deleted');
             $this->scope_saved = framework\Context::getMessageAndClear('scope_saved');
             $pagination_scopes = tables\Scopes::getTable()->getPaginationItems();
-            $pagination = new \pachno\core\helpers\Pagination($pagination_scopes, $this->getRouting()->generate('configure_scopes'), $request);
+            $pagination = new Pagination($pagination_scopes, $this->getRouting()->generate('configure_scopes'), $request);
             $this->scopes = tables\Scopes::getTable()->getByIds($pagination->getPageItems());
             $this->pagination = $pagination;
         }
@@ -2616,51 +2352,38 @@
             $this->modules = $modules;
             $this->scope_save_error = framework\Context::getMessageAndClear('scope_save_error');
 
-            if ($request->isPost())
-            {
-                try
-                {
-                    if ($request['scope_action'] == 'delete')
-                    {
-                        if (!$this->scope->isDefault())
-                        {
+            if ($request->isPost()) {
+                try {
+                    if ($request['scope_action'] == 'delete') {
+                        if (!$this->scope->isDefault()) {
                             $this->scope->delete();
                             framework\Context::setMessage('scope_deleted', true);
                             $this->forward(make_url('configure_scopes'));
-                        }
-                        else
-                        {
+                        } else {
                             $this->scope_save_error = $this->getI18n()->__('You cannot delete the default scope');
                         }
-                    }
-                    else
-                    {
-                        if (!$request['name'])
-                        {
-                            throw new \Exception($this->getI18n()->__('Please specify a scope name'));
+                    } else {
+                        if (!$request['name']) {
+                            throw new Exception($this->getI18n()->__('Please specify a scope name'));
                         }
                         $this->scope->setName($request['name']);
                         $this->scope->setDescription($request['description']);
-                        $this->scope->setCustomWorkflowsEnabled((bool) $request['custom_workflows_enabled']);
-                        $this->scope->setMaxWorkflowsLimit((int) $request['workflow_limit']);
-                        $this->scope->setUploadsEnabled((bool) $request['file_uploads_enabled']);
-                        $this->scope->setMaxUploadLimit((int) $request['upload_limit']);
-                        $this->scope->setMaxProjects((int) $request['project_limit']);
-                        $this->scope->setMaxUsers((int) $request['user_limit']);
-                        $this->scope->setMaxTeams((int) $request['team_limit']);
+                        $this->scope->setCustomWorkflowsEnabled((bool)$request['custom_workflows_enabled']);
+                        $this->scope->setMaxWorkflowsLimit((int)$request['workflow_limit']);
+                        $this->scope->setUploadsEnabled((bool)$request['file_uploads_enabled']);
+                        $this->scope->setMaxUploadLimit((int)$request['upload_limit']);
+                        $this->scope->setMaxProjects((int)$request['project_limit']);
+                        $this->scope->setMaxUsers((int)$request['user_limit']);
+                        $this->scope->setMaxTeams((int)$request['team_limit']);
                         $this->scope->save();
 
                         $enabled_modules = $request['module_enabled'];
                         $prev_scope = framework\Context::getScope();
-                        foreach ($enabled_modules as $module => $enabled)
-                        {
-                            if (!framework\Context::getModule($module)->isCore() && !$enabled && array_key_exists($module, $modules))
-                            {
+                        foreach ($enabled_modules as $module => $enabled) {
+                            if (!framework\Context::getModule($module)->isCore() && !$enabled && array_key_exists($module, $modules)) {
                                 $module = tables\Modules::getTable()->getModuleForScope($module, $this->scope->getID());
                                 $module->uninstall($this->scope->getID());
-                            }
-                            elseif (!framework\Context::getModule($module)->isCore() && $enabled && !array_key_exists($module, $modules))
-                            {
+                            } elseif (!framework\Context::getModule($module)->isCore() && $enabled && !array_key_exists($module, $modules)) {
                                 framework\Context::setScope($this->scope);
                                 entities\Module::installModule($module);
                                 framework\Context::setScope($prev_scope);
@@ -2669,9 +2392,7 @@
                         framework\Context::setMessage('scope_saved', true);
                         $this->forward(make_url('configure_scopes'));
                     }
-                }
-                catch (\Exception $e)
-                {
+                } catch (Exception $e) {
                     framework\Context::setMessage('scope_save_error', $e->getMessage());
                 }
             }
@@ -2679,56 +2400,44 @@
 
         public function runConfigureRole(framework\Request $request)
         {
-            try
-            {
+            try {
                 $role = new entities\Role($request['role_id']);
-            }
-            catch (\Exception $e)
-            {
+            } catch (Exception $e) {
                 $this->getResponse()->setHttpStatus(400);
-                return $this->renderJSON(array('error' => $this->getI18n()->__('This is not a valid role')));
+
+                return $this->renderJSON(['error' => $this->getI18n()->__('This is not a valid role')]);
             }
-            if ($role->isSystemRole())
-            {
+            if ($role->isSystemRole()) {
                 $access_level = $this->getAccessLevel($request['section'], 'core');
-            }
-            else
-            {
+            } else {
                 $access_level = ($this->getUser()->canManageProject($role->getProject())) ? framework\Settings::ACCESS_FULL : framework\Settings::ACCESS_READ;
             }
 
-            switch ($request['mode'])
-            {
+            switch ($request['mode']) {
                 case 'edit':
-                    if (!$access_level == framework\Settings::ACCESS_FULL)
-                    {
+                    if (!$access_level == framework\Settings::ACCESS_FULL) {
                         $this->getResponse()->setHttpStatus(400);
-                        return $this->renderJSON(array('error' => $this->getI18n()->__('You do not have access to edit these permissions')));
+
+                        return $this->renderJSON(['error' => $this->getI18n()->__('You do not have access to edit these permissions')]);
                     }
-                    if ($request->isPost())
-                    {
+                    if ($request->isPost()) {
                         $role->setName($request['name']);
                         $role->save();
-                        $new_permissions = array();
-                        foreach ($request['permissions'] ?: array() as $new_permission)
-                        {
+                        $new_permissions = [];
+                        foreach ($request['permissions'] ?: [] as $new_permission) {
                             $permission_details = explode(',', $new_permission);
-                            $new_permissions[$permission_details[2]] = array('module' => $permission_details[0], 'target_id' => $permission_details[1]);
+                            $new_permissions[$permission_details[2]] = ['module' => $permission_details[0], 'target_id' => $permission_details[1]];
                         }
-                        $existing_permissions = array();
-                        foreach ($role->getPermissions() as $existing_permission)
-                        {
-                            if (!array_key_exists($existing_permission->getPermission(), $new_permissions))
-                            {
+                        $existing_permissions = [];
+                        foreach ($role->getPermissions() as $existing_permission) {
+                            if (!array_key_exists($existing_permission->getPermission(), $new_permissions)) {
                                 $role->removePermission($existing_permission);
-                            }
-                            else {
+                            } else {
                                 $existing_permissions[$existing_permission->getPermission()] = $new_permissions[$existing_permission->getPermission()];
                                 unset($new_permissions[$existing_permission->getPermission()]);
                             }
                         }
-                        foreach ($new_permissions as $permission_key => $details)
-                        {
+                        foreach ($new_permissions as $permission_key => $details) {
                             $p = new entities\RolePermission();
                             $p->setModule($details['module']);
                             $p->setPermission($permission_key);
@@ -2737,8 +2446,7 @@
 
                             $role->addPermission($p);
                         }
-                        foreach ($existing_permissions as $permission_key => $details)
-                        {
+                        foreach ($existing_permissions as $permission_key => $details) {
                             $p = new entities\RolePermission();
                             $p->setModule($details['module']);
                             $p->setPermission($permission_key);
@@ -2750,45 +2458,45 @@
                         framework\Context::clearPermissionsCache();
 
                         framework\Context::cacheAllPermissions();
-                        return $this->renderJSON(array('message' => $this->getI18n()->__('Permissions updated'), 'permissions_count' => count($request['permissions']), 'role_name' => $role->getName()));
+
+                        return $this->renderJSON(['message' => $this->getI18n()->__('Permissions updated'), 'permissions_count' => count($request['permissions']), 'role_name' => $role->getName()]);
                     }
-                    return $this->renderComponent('configuration/rolepermissionsedit', array('role' => $role));
+
+                    return $this->renderComponent('configuration/rolepermissionsedit', ['role' => $role]);
                 case 'delete':
-                    if (!$access_level == framework\Settings::ACCESS_FULL || !$request->isPost())
-                    {
+                    if (!$access_level == framework\Settings::ACCESS_FULL || !$request->isPost()) {
                         $this->getResponse()->setHttpStatus(400);
-                        return $this->renderJSON(array('error' => $this->getI18n()->__('This role cannot be removed')));
+
+                        return $this->renderJSON(['error' => $this->getI18n()->__('This role cannot be removed')]);
                     }
                     $role->delete();
-                    return $this->renderJSON(array('message' => $this->getI18n()->__('Role deleted')));
+
+                    return $this->renderJSON(['message' => $this->getI18n()->__('Role deleted')]);
             }
         }
 
         public function runConfigureRoles(framework\Request $request)
         {
-            if ($request->isPost())
-            {
-                if (trim($request['role_name']) == '')
-                {
+            if ($request->isPost()) {
+                if (trim($request['role_name']) == '') {
                     $this->getResponse()->setHttpStatus(400);
-                    return $this->renderJSON(array('error' => $this->getI18n()->__('You have to specify a name for this role')));
+
+                    return $this->renderJSON(['error' => $this->getI18n()->__('You have to specify a name for this role')]);
                 }
                 $role = new entities\Role();
                 $role->setName($request['role_name']);
                 $role->save();
-                return $this->renderJSON(array('content' => $this->getComponentHTML('configuration/role', array('role' => $role))));
+
+                return $this->renderJSON(['content' => $this->getComponentHTML('configuration/role', ['role' => $role])]);
             }
             $this->roles = entities\Role::getAll();
         }
 
         public function runSiteIcons(framework\Request $request)
         {
-            if ($this->getAccessLevel($request['section'], 'core') == framework\Settings::ACCESS_FULL)
-            {
-                if ($request->isPost())
-                {
-                    switch ($request['small_icon_action'])
-                    {
+            if ($this->getAccessLevel($request['section'], 'core') == framework\Settings::ACCESS_FULL) {
+                if ($request->isPost()) {
+                    switch ($request['small_icon_action']) {
                         case 'upload_file':
                             $file = $request->handleUpload('small_icon');
                             framework\Settings::saveSetting(framework\Settings::SETTING_FAVICON_TYPE, framework\Settings::APPEARANCE_FAVICON_CUSTOM);
@@ -2798,8 +2506,7 @@
                             framework\Settings::saveSetting(framework\Settings::SETTING_FAVICON_TYPE, framework\Settings::APPEARANCE_FAVICON_THEME);
                             break;
                     }
-                    switch ($request['large_icon_action'])
-                    {
+                    switch ($request['large_icon_action']) {
                         case 'upload_file':
                             $file = $request->handleUpload('large_icon');
                             framework\Settings::saveSetting(framework\Settings::SETTING_HEADER_ICON_TYPE, framework\Settings::APPEARANCE_HEADER_CUSTOM);
@@ -2811,15 +2518,13 @@
                     }
                 }
                 $route = framework\Context::getRouting()->generate('configure_settings');
-                if ($request->isAjaxCall())
-                {
-                    return $this->renderJSON(array('forward' => $route));
-                }
-                else
-                {
+                if ($request->isAjaxCall()) {
+                    return $this->renderJSON(['forward' => $route]);
+                } else {
                     $this->forward($route);
                 }
             }
+
             return $this->forward403($this->getI18n()->__("You don't have access to perform this action"));
         }
 

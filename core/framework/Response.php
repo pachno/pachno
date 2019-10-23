@@ -2,15 +2,9 @@
 
     namespace pachno\core\framework;
 
-    /**
-     * Response class used in the MVC part of the framework
-     *
-     * @author Daniel Andre Eikeland <zegenie@zegeniestudios.net>
-     * @version 3.1
-     * @license http://opensource.org/licenses/MPL-2.0 Mozilla Public License 2.0 (MPL 2.0)
-     * @package pachno
-     * @subpackage mvc
-     */
+    use pachno\core\entities\Client;
+    use pachno\core\entities\Project;
+    use pachno\core\entities\Team;
 
     /**
      * Response class used in the MVC part of the framework
@@ -22,16 +16,25 @@
     {
 
         const DECORATE_NONE = 0;
+
         const DECORATE_HEADER = 1;
+
         const DECORATE_FOOTER = 2;
+
         const DECORATE_DEFAULT = 3;
+
         const DECORATE_CUSTOM = 4;
 
         const HTTP_STATUS_OK = 200;
+
         const HTTP_STATUS_FOUND = 302;
+
         const HTTP_STATUS_NOT_MODIFIED = 304;
+
         const HTTP_STATUS_BAD_REQUEST = 400;
+
         const HTTP_STATUS_FORBIDDEN = 403;
+
         const HTTP_STATUS_NOT_FOUND = 404;
 
         /**
@@ -60,7 +63,7 @@
          *
          * @var array
          */
-        protected $_headers = array();
+        protected $_headers = [];
 
         /**
          * @var string
@@ -72,7 +75,7 @@
          *
          * @var array
          */
-        protected $_javascripts = array(
+        protected $_javascripts = [
             'prototype',
             'builder',
             'effects',
@@ -83,21 +86,21 @@
             'scriptaculous',
             'slider',
             'tablekit'
-        );
+        ];
 
         /**
          * List of stylesheets
          *
          * @var array
          */
-        protected $_stylesheets = array();
+        protected $_stylesheets = [];
 
         /**
          * List of feeds
          *
          * @var array
          */
-        protected $_feeds = array();
+        protected $_feeds = [];
 
         /**
          * Current response status
@@ -154,6 +157,29 @@
          */
         protected $_project_menu_strip_visible = true;
 
+        /**
+         * Forward the user to a different url via meta tag
+         *
+         * @param string $url The url to forward to
+         */
+        static function metaForward($url)
+        {
+            print "<meta http-equiv=\"refresh\" content=\"0;URL={$url}\">";
+            exit();
+        }
+
+        /**
+         * Template escaping function without translation
+         *
+         * @param string $text the text to translate
+         *
+         * @return string
+         */
+        public static function escape($text)
+        {
+            return htmlentities($text, ENT_QUOTES, Context::getI18n()->getCharset());
+        }
+
         public function ajaxResponseText($code, $error)
         {
             if (Context::isDebugMode()) return true;
@@ -162,15 +188,58 @@
             $this->setContentType('application/json');
             $this->setHttpStatus($code);
             $this->renderHeaders();
-            echo json_encode(array('error' => $error));
+            echo json_encode(['error' => $error]);
             die();
+        }
+
+        public function cleanBuffer()
+        {
+            $ob_status = ob_get_status();
+            if (!empty($ob_status) && ((isset($ob_status['status']) && $ob_status['status'] != PHP_OUTPUT_HANDLER_END) || (isset($ob_status['flags']) && !($ob_status['flags'] & PHP_OUTPUT_HANDLER_END)))) {
+                ob_end_clean();
+            }
+        }
+
+        /**
+         * Render current headers
+         */
+        public function renderHeaders($disableCache = false)
+        {
+            header("HTTP/1.0 " . $this->_http_status);
+            if ($disableCache) {
+                /* headers to stop caching in browsers and proxies */
+                header("Expires: Mon, 26 Jul 1997 05:00:00 GMT"); // Date in the past
+                header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT"); // always modified
+                header("Cache-Control: no-cache, must-revalidate"); // HTTP/1.1
+                header("Pragma: no-cache"); // HTTP/1.0
+            }
+            if (Context::isDebugMode()) {
+                header("x-pachno-debugid: " . Context::getDebugID());
+                $session_time = Context::getSessionLoadTime();
+                $session_time = ($session_time >= 1) ? round($session_time, 2) . 's' : round($session_time * 1000, 1) . 'ms';
+                header("x-pachno-sessiontime: " . $session_time);
+                $load_time = Context::getLoadTime();
+                $calculated_load_time = $load_time - Context::getSessionLoadTime();
+                $load_time = ($load_time >= 1) ? round($load_time, 2) . 's' : round($load_time * 1000, 1) . 'ms';
+                $calculated_load_time = ($calculated_load_time >= 1) ? round($calculated_load_time, 2) . 's' : round($calculated_load_time * 1000, 1) . 'ms';
+                header("x-pachno-loadtime: " . $load_time);
+                header("x-pachno-calculatedtime: " . $calculated_load_time);
+            }
+            if (Context::isI18nInitialized()) {
+                header("Content-Type: " . $this->_content_type . "; charset=" . Context::getI18n()->getCharset());
+            } else {
+                header("Content-Type: " . $this->_content_type . "; charset=utf-8");
+            }
+
+            foreach ($this->_headers as $header) {
+                header($header);
+            }
         }
 
         public function setupResponseContentType($request_content_type)
         {
             $this->setDecoration(self::DECORATE_NONE);
-            switch ($request_content_type)
-            {
+            switch ($request_content_type) {
                 case 'xml':
                     $this->setContentType('application/xml');
                     break;
@@ -196,13 +265,14 @@
 
         }
 
-        public function cleanBuffer()
+        /**
+         * Return current template
+         *
+         * @return string
+         */
+        public function getTemplate()
         {
-            $ob_status = ob_get_status();
-            if (!empty($ob_status) && ((isset($ob_status['status'])&& $ob_status['status'] != PHP_OUTPUT_HANDLER_END)|| (isset($ob_status['flags'])&&!($ob_status['flags'] & PHP_OUTPUT_HANDLER_END))))
-            {
-                ob_end_clean();
-            }
+            return $this->_template;
         }
 
         /**
@@ -216,26 +286,6 @@
         }
 
         /**
-         * Return current template
-         *
-         * @return string
-         */
-        public function getTemplate()
-        {
-            return $this->_template;
-        }
-
-        /**
-         * Set the layout path
-         *
-         * @param string $layout_path The layout path
-         */
-        public function setLayoutPath($layout_path)
-        {
-            $this->_layout_path = $layout_path;
-        }
-
-        /**
          * Return current layout path
          *
          * @return string
@@ -246,13 +296,13 @@
         }
 
         /**
-         * Set which page we're on
+         * Set the layout path
          *
-         * @param string $page A unique page identifier
+         * @param string $layout_path The layout path
          */
-        public function setPage($page)
+        public function setLayoutPath($layout_path)
         {
-            $this->_page = $page;
+            $this->_layout_path = $layout_path;
         }
 
         /**
@@ -275,23 +325,12 @@
          */
         public function addBreadcrumb($breadcrumb, $url = null, $subitems = null, $class = null)
         {
-            if ($this->_breadcrumb === null)
-            {
-                $this->_breadcrumb = array();
+            if ($this->_breadcrumb === null) {
+                $this->_breadcrumb = [];
                 Context::populateBreadcrumbs();
             }
 
-            $this->_breadcrumb[] = array('title' => $breadcrumb, 'url' => $url, 'subitems' => $subitems, 'class' => $class);
-        }
-
-        /**
-         * Set the current title
-         *
-         * @param string $title The title
-         */
-        public function setTitle($title)
-        {
-            $this->_title = $title;
+            $this->_breadcrumb[] = ['title' => $breadcrumb, 'url' => $url, 'subitems' => $subitems, 'class' => $class];
         }
 
         /**
@@ -305,6 +344,16 @@
         }
 
         /**
+         * Set the current title
+         *
+         * @param string $title The title
+         */
+        public function setTitle($title)
+        {
+            $this->_title = $title;
+        }
+
+        /**
          * Check to see if a title is set
          *
          * @return boolean
@@ -315,16 +364,6 @@
         }
 
         /**
-         * Set the current page name
-         *
-         * @param string $page_name The page name
-         */
-        public function setPageName($page_name)
-        {
-            $this->page_name = $page_name;
-        }
-
-        /**
          * Get the current page name
          *
          * @return string
@@ -332,6 +371,16 @@
         public function getPageName()
         {
             return $this->page_name;
+        }
+
+        /**
+         * Set the current page name
+         *
+         * @param string $page_name The page name
+         */
+        public function setPageName($page_name)
+        {
+            $this->page_name = $page_name;
         }
 
         /**
@@ -355,28 +404,28 @@
         }
 
         /**
+         * Set which page we're on
+         *
+         * @param string $page A unique page identifier
+         */
+        public function setPage($page)
+        {
+            $this->_page = $page;
+        }
+
+        /**
          * Return the breadcrumb trail for the current page
          *
          * @return array
          */
         public function getBreadcrumbs()
         {
-            if (!is_array($this->_breadcrumb))
-            {
-                $this->_breadcrumb = array();
+            if (!is_array($this->_breadcrumb)) {
+                $this->_breadcrumb = [];
                 Context::populateBreadcrumbs();
             }
-            return $this->_breadcrumb;
-        }
 
-        /**
-         * Add a header
-         *
-         * @param string $header The header to add
-         */
-        public function addHeader($header)
-        {
-            $this->_headers[] = $header;
+            return $this->_breadcrumb;
         }
 
         /**
@@ -390,7 +439,7 @@
             if (!$priority) {
                 $this->_javascripts[$javascript] = $javascript;
             } else {
-                $this->_javascripts = array_merge(array($javascript => $javascript), $this->_javascripts);
+                $this->_javascripts = array_merge([$javascript => $javascript], $this->_javascripts);
             }
         }
 
@@ -405,7 +454,7 @@
             if (!$priority) {
                 $this->_stylesheets[$stylesheet] = $stylesheet;
             } else {
-                $this->_stylesheets = array_merge(array($stylesheet => $stylesheet), $this->_stylesheets);
+                $this->_stylesheets = array_merge([$stylesheet => $stylesheet], $this->_stylesheets);
             }
         }
 
@@ -428,8 +477,7 @@
             $if_modified_since = isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) ? $_SERVER['HTTP_IF_MODIFIED_SINCE'] : false;
             $if_none_match = isset($_SERVER['HTTP_IF_NONE_MATCH']) ? $_SERVER['HTTP_IF_NONE_MATCH'] : false;
             if ((($if_none_match && $if_none_match == $etag) || (!$if_none_match)) &&
-                ($if_modified_since && $if_modified_since == $last_modified_string))
-            {
+                ($if_modified_since && $if_modified_since == $last_modified_string)) {
                 return false;
             }
 
@@ -447,12 +495,9 @@
             Logging::log('Running header redirect function');
             $this->clearHeaders();
             $this->setHttpStatus($code);
-            if (Context::getRequest()->isAjaxCall() || Context::getRequest()->getRequestedFormat() == 'json')
-            {
+            if (Context::getRequest()->isAjaxCall() || Context::getRequest()->getRequestedFormat() == 'json') {
                 $this->renderHeaders();
-            }
-            else
-            {
+            } else {
                 $this->addHeader("Location: $url");
                 $this->renderHeaders();
             }
@@ -460,24 +505,22 @@
         }
 
         /**
-         * Forward the user to a different url via meta tag
-         *
-         * @param string $url The url to forward to
+         * Clear current headers
          */
-        static function metaForward($url)
+        public function clearHeaders()
         {
-            print "<meta http-equiv=\"refresh\" content=\"0;URL={$url}\">";
-            exit();
+            $this->_headers = [];
+
         }
 
         /**
-         * Set the HTTP status code
+         * Add a header
          *
-         * @param integer $code The code to set
+         * @param string $header The header to add
          */
-        public function setHttpStatus($code)
+        public function addHeader($header)
         {
-            $this->_http_status = $code;
+            $this->_headers[] = $header;
         }
 
         /**
@@ -488,6 +531,16 @@
         public function getHttpStatus()
         {
             return $this->_http_status;
+        }
+
+        /**
+         * Set the HTTP status code
+         *
+         * @param integer $code The code to set
+         */
+        public function setHttpStatus($code)
+        {
+            $this->_http_status = $code;
         }
 
         /**
@@ -510,6 +563,16 @@
         }
 
         /**
+         * Get the current decoration mode
+         *
+         * @return int
+         */
+        public function getDecoration()
+        {
+            return $this->_decoration;
+        }
+
+        /**
          * Set the decoration mode
          *
          * @param integer $mode The mode used (see class constants)
@@ -520,21 +583,10 @@
         public function setDecoration($mode, $params = null)
         {
             $this->_decoration = $mode;
-            if (is_array($params))
-            {
+            if (is_array($params)) {
                 if (array_key_exists('header', $params)) $this->_decor_header = $params['header'];
                 if (array_key_exists('footer', $params)) $this->_decor_footer = $params['footer'];
             }
-        }
-
-        /**
-         * Get the current decoration mode
-         *
-         * @return int
-         */
-        public function getDecoration()
-        {
-            return $this->_decoration;
         }
 
         /**
@@ -558,6 +610,21 @@
         }
 
         /**
+         * Sets a cookie on the client, default expiration when session end
+         *
+         * @param $key string the cookie key
+         * @param $value string the cookie value
+         *
+         * @return bool
+         */
+        public function setSessionCookie($key, $value)
+        {
+            $this->setCookie($key, $value, null);
+
+            return true;
+        }
+
+        /**
          * Sets a cookie on the client, default expiration is one day
          *
          * @param $key string the cookie key
@@ -571,20 +638,7 @@
             $expiration = ($expiration !== null) ? intval(NOW + $expiration) : null;
             $secure = Context::getScope()->isSecure();
             setcookie($key, $value, $expiration, Context::getWebroot(), null, $secure);
-            return true;
-        }
 
-        /**
-         * Sets a cookie on the client, default expiration when session end
-         *
-         * @param $key string the cookie key
-         * @param $value string the cookie value
-         *
-         * @return bool
-         */
-        public function setSessionCookie($key, $value)
-        {
-            $this->setCookie($key, $value, null);
             return true;
         }
 
@@ -598,47 +652,18 @@
         public function deleteCookie($key)
         {
             setcookie($key, '', NOW - 36000, (Context::getWebroot() != '/') ? Context::getWebroot() : '');
+
             return true;
         }
 
         /**
-         * Render current headers
+         * Return the current response content type
+         *
+         * @return string
          */
-        public function renderHeaders($disableCache = false)
+        public function getContentType()
         {
-            header("HTTP/1.0 ".$this->_http_status);
-            if ($disableCache) {
-              /* headers to stop caching in browsers and proxies */
-              header("Expires: Mon, 26 Jul 1997 05:00:00 GMT"); // Date in the past
-              header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT"); // always modified
-              header("Cache-Control: no-cache, must-revalidate"); // HTTP/1.1
-              header("Pragma: no-cache"); // HTTP/1.0
-            }
-            if (Context::isDebugMode()) {
-                header("x-pachno-debugid: ".Context::getDebugID());
-                $session_time = \pachno\core\framework\Context::getSessionLoadTime();
-                $session_time = ($session_time >= 1) ? round($session_time, 2) . 's' : round($session_time * 1000, 1) . 'ms';
-                header("x-pachno-sessiontime: ".$session_time);
-                $load_time = Context::getLoadTime();
-                $calculated_load_time = $load_time - \pachno\core\framework\Context::getSessionLoadTime();
-                $load_time = ($load_time >= 1) ? round($load_time, 2) . 's' : round($load_time * 1000, 1) . 'ms';
-                $calculated_load_time = ($calculated_load_time >= 1) ? round($calculated_load_time, 2) . 's' : round($calculated_load_time * 1000, 1) . 'ms';
-                header("x-pachno-loadtime: ".$load_time);
-                header("x-pachno-calculatedtime: ".$calculated_load_time);
-            }
-            if (Context::isI18nInitialized())
-            {
-                header("Content-Type: " . $this->_content_type . "; charset=" . Context::getI18n()->getCharset());
-            }
-            else
-            {
-                header("Content-Type: " . $this->_content_type . "; charset=utf-8");
-            }
-
-            foreach ($this->_headers as $header)
-            {
-                header($header);
-            }
+            return $this->_content_type;
         }
 
         /**
@@ -652,33 +677,6 @@
         }
 
         /**
-         * Return the current response content type
-         *
-         * @return string
-         */
-        public function getContentType()
-        {
-            return $this->_content_type;
-        }
-
-        protected function _splitLocalAndExternalResources($resources)
-        {
-            $external = array();
-            $local = array();
-
-            foreach ($resources as $resource)
-            {
-                if (strpos($resource, '://') !== false) {
-                    $external[] = $resource;
-                } else {
-                    $local[] = $resource;
-                }
-            }
-
-            return array($local, $external);
-        }
-
-        /**
          * Return all active javascripts
          *
          * @return array
@@ -686,6 +684,22 @@
         public function getJavascripts()
         {
             return $this->_splitLocalAndExternalResources($this->_javascripts);
+        }
+
+        protected function _splitLocalAndExternalResources($resources)
+        {
+            $external = [];
+            $local = [];
+
+            foreach ($resources as $resource) {
+                if (strpos($resource, '://') !== false) {
+                    $external[] = $resource;
+                } else {
+                    $local[] = $resource;
+                }
+            }
+
+            return [$local, $external];
         }
 
         /**
@@ -708,91 +722,71 @@
             return $this->_feeds;
         }
 
-        /**
-         * Clear current headers
-         */
-        public function clearHeaders()
-        {
-            $this->_headers = array();
-
-        }
-
         public function getPredefinedBreadcrumbLinks($type, $project = null)
         {
             $i18n = Context::getI18n();
-            $links = array();
-            switch ($type)
-            {
+            $links = [];
+            switch ($type) {
                 case 'main_links':
-                    $links[] = array('url' => Context::getRouting()->generate('home'), 'title' => $i18n->__('Frontpage'));
-                    $links[] = array('url' => Context::getRouting()->generate('dashboard'), 'title' => $i18n->__('Personal dashboard'));
-                    $links[] = array('title' => $i18n->__('Issues'));
-                    $links[] = array('title' => $i18n->__('Teams'));
-                    $links[] = array('title' => $i18n->__('Clients'));
-                    $links = Event::createNew('core', 'breadcrumb_main_links', null, array(), $links)->trigger()->getReturnList();
+                    $links[] = ['url' => Context::getRouting()->generate('home'), 'title' => $i18n->__('Frontpage')];
+                    $links[] = ['url' => Context::getRouting()->generate('dashboard'), 'title' => $i18n->__('Personal dashboard')];
+                    $links[] = ['title' => $i18n->__('Issues')];
+                    $links[] = ['title' => $i18n->__('Teams')];
+                    $links[] = ['title' => $i18n->__('Clients')];
+                    $links = Event::createNew('core', 'breadcrumb_main_links', null, [], $links)->trigger()->getReturnList();
 
-                    if (Context::getUser()->canAccessConfigurationPage())
-                    {
-                        $links[] = array('url' => make_url('configure'), 'title' => $i18n->__('Configure %sitename', array('%sitename' => Settings::getSiteHeaderName())));
+                    if (Context::getUser()->canAccessConfigurationPage()) {
+                        $links[] = ['url' => make_url('configure'), 'title' => $i18n->__('Configure %sitename', ['%sitename' => Settings::getSiteHeaderName()])];
                     }
-                    $links[] = array('url' => Context::getRouting()->generate('about'), 'title' => $i18n->__('About %sitename', array('%sitename' => Settings::getSiteHeaderName())));
-                    $links[] = array('url' => Context::getRouting()->generate('account'), 'title' => $i18n->__('Account details'));
+                    $links[] = ['url' => Context::getRouting()->generate('about'), 'title' => $i18n->__('About %sitename', ['%sitename' => Settings::getSiteHeaderName()])];
+                    $links[] = ['url' => Context::getRouting()->generate('account'), 'title' => $i18n->__('Account details')];
 
-                    $root_projects = array_merge(\pachno\core\entities\Project::getAllRootProjects(true), \pachno\core\entities\Project::getAllRootProjects(false));
+                    $root_projects = array_merge(Project::getAllRootProjects(true), Project::getAllRootProjects(false));
                     $first = true;
-                    foreach ($root_projects as $project)
-                    {
+                    foreach ($root_projects as $project) {
                         if (!$project->hasAccess())
                             continue;
-                        if ($first)
-                        {
+                        if ($first) {
                             $first = false;
-                            $links[] = array('separator' => true);
+                            $links[] = ['separator' => true];
                         }
-                        $links[] = array('url' => Context::getRouting()->generate('project_dashboard', array('project_key' => $project->getKey())), 'title' => $project->getName());
+                        $links[] = ['url' => Context::getRouting()->generate('project_dashboard', ['project_key' => $project->getKey()]), 'title' => $project->getName()];
                     }
 
                     break;
                 case 'project_summary':
-                    $links['project_dashboard'] = array('url' => Context::getRouting()->generate('project_dashboard', array('project_key' => $project->getKey())), 'title' => $i18n->__('Dashboard'));
-                    $links['project_releases'] = array('url' => Context::getRouting()->generate('project_releases', array('project_key' => $project->getKey())), 'title' => $i18n->__('Releases'));
-                    $links['project_roadmap'] = array('url' => Context::getRouting()->generate('project_roadmap', array('project_key' => $project->getKey())), 'title' => $i18n->__('Roadmap'));
-                    $links['project_team'] = array('url' => Context::getRouting()->generate('project_team', array('project_key' => $project->getKey())), 'title' => $i18n->__('Team overview'));
-                    $links['project_statistics'] = array('url' => Context::getRouting()->generate('project_statistics', array('project_key' => $project->getKey())), 'title' => $i18n->__('Statistics'));
-                    $links['project_timeline'] = array('url' => Context::getRouting()->generate('project_timeline', array('project_key' => $project->getKey())), 'title' => $i18n->__('Timeline'));
-                    $links['project_issues'] = array('url' => Context::getRouting()->generate('project_issues', array('project_key' => $project->getKey())), 'title' => $i18n->__('Issues'));
-                    $links = Event::createNew('core', 'breadcrumb_project_links', null, array(), $links)->trigger()->getReturnList();
-                    $links['project_release_center'] = array('url' => Context::getRouting()->generate('project_release_center', array('project_key' => $project->getKey())), 'title' => $i18n->__('Release center'));
-                    $links['project_settings'] = array('url' => Context::getRouting()->generate('project_settings', array('project_key' => $project->getKey())), 'title' => $i18n->__('Settings'));
+                    $links['project_dashboard'] = ['url' => Context::getRouting()->generate('project_dashboard', ['project_key' => $project->getKey()]), 'title' => $i18n->__('Dashboard')];
+                    $links['project_releases'] = ['url' => Context::getRouting()->generate('project_releases', ['project_key' => $project->getKey()]), 'title' => $i18n->__('Releases')];
+                    $links['project_roadmap'] = ['url' => Context::getRouting()->generate('project_roadmap', ['project_key' => $project->getKey()]), 'title' => $i18n->__('Roadmap')];
+                    $links['project_team'] = ['url' => Context::getRouting()->generate('project_team', ['project_key' => $project->getKey()]), 'title' => $i18n->__('Team overview')];
+                    $links['project_statistics'] = ['url' => Context::getRouting()->generate('project_statistics', ['project_key' => $project->getKey()]), 'title' => $i18n->__('Statistics')];
+                    $links['project_timeline'] = ['url' => Context::getRouting()->generate('project_timeline', ['project_key' => $project->getKey()]), 'title' => $i18n->__('Timeline')];
+                    $links['project_issues'] = ['url' => Context::getRouting()->generate('project_issues', ['project_key' => $project->getKey()]), 'title' => $i18n->__('Issues')];
+                    $links = Event::createNew('core', 'breadcrumb_project_links', null, [], $links)->trigger()->getReturnList();
+                    $links['project_release_center'] = ['url' => Context::getRouting()->generate('project_release_center', ['project_key' => $project->getKey()]), 'title' => $i18n->__('Release center')];
+                    $links['project_settings'] = ['url' => Context::getRouting()->generate('project_settings', ['project_key' => $project->getKey()]), 'title' => $i18n->__('Settings')];
                     break;
                 case 'client_list':
-                    foreach (\pachno\core\entities\Client::getAll() as $client)
-                    {
+                    foreach (Client::getAll() as $client) {
                         if ($client->hasAccess())
-                            $links[] = array('url' => Context::getRouting()->generate('client_dashboard', array('client_id' => $client->getID())), 'title' => $client->getName());
+                            $links[] = ['url' => Context::getRouting()->generate('client_dashboard', ['client_id' => $client->getID()]), 'title' => $client->getName()];
                     }
                     break;
                 case 'team_list':
-                    foreach (\pachno\core\entities\Team::getAll() as $team)
-                    {
+                    foreach (Team::getAll() as $team) {
                         if ($team->hasAccess())
-                            $links[] = array('url' => Context::getRouting()->generate('team_dashboard', array('team_id' => $team->getID())), 'title' => $team->getName());
+                            $links[] = ['url' => Context::getRouting()->generate('team_dashboard', ['team_id' => $team->getID()]), 'title' => $team->getName()];
                     }
                     break;
                 case 'configure':
                     $config_sections = Settings::getConfigSections($i18n);
-                    foreach ($config_sections as $key => $sections)
-                    {
-                        foreach ($sections as $section)
-                        {
-                            if ($key == Settings::CONFIGURATION_SECTION_MODULES)
-                            {
+                    foreach ($config_sections as $key => $sections) {
+                        foreach ($sections as $section) {
+                            if ($key == Settings::CONFIGURATION_SECTION_MODULES) {
                                 $url = (is_array($section['route'])) ? make_url($section['route'][0], $section['route'][1]) : make_url($section['route']);
-                                $links[] = array('url' => $url, 'title' => $section['description']);
-                            }
-                            else
-                            {
-                                $links[] = array('url' => make_url($section['route']), 'title' => $section['description']);
+                                $links[] = ['url' => $url, 'title' => $section['description']];
+                            } else {
+                                $links[] = ['url' => make_url($section['route']), 'title' => $section['description']];
                             }
                         }
                     }
@@ -805,18 +799,6 @@
         public function getAllHeaders()
         {
             return $this->_headers;
-        }
-
-        /**
-         * Template escaping function without translation
-         *
-         * @param string $text the text to translate
-         *
-         * @return string
-         */
-        public static function escape($text)
-        {
-            return htmlentities($text, ENT_QUOTES, \pachno\core\framework\Context::getI18n()->getCharset());
         }
 
     }

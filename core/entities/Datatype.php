@@ -3,6 +3,7 @@
     namespace pachno\core\entities;
 
     use pachno\core\framework;
+    use pachno\core\framework\Event;
 
     /**
      * Generic datatype class
@@ -29,49 +30,49 @@
          *
          */
         const STATUS = 'status';
-        
+
         /**
          * Item type priority
          *
          */
         const PRIORITY = 'priority';
-        
+
         /**
          * Item type reproducability
          *
          */
         const REPRODUCABILITY = 'reproducability';
-        
+
         /**
          * Item type resolution
          *
          */
         const RESOLUTION = 'resolution';
-        
+
         /**
          * Item type severity
          *
          */
         const SEVERITY = 'severity';
-        
+
         /**
          * Item type issue type
          *
          */
         const ISSUETYPE = 'issuetype';
-        
+
         /**
          * Item type category
          *
          */
         const CATEGORY = 'category';
-        
+
         /**
          * Item type project role
          *
          */
         const ROLE = 'role';
-        
+
         /**
          * Item type activity type
          *
@@ -88,15 +89,14 @@
             Status::loadFixtures($scope);
             Role::loadFixtures($scope);
             ActivityType::loadFixtures($scope);
-            foreach (self::getTypes() as $type => $class)
-            {
-                framework\Context::setPermission('set_datatype_'.$type, 0, 'core', 0, 0, 0, true, $scope->getID());
+            foreach (self::getTypes() as $type => $class) {
+                framework\Context::setPermission('set_datatype_' . $type, 0, 'core', 0, 0, 0, true, $scope->getID());
             }
         }
-        
+
         public static function getTypes()
         {
-            $types = array();
+            $types = [];
             $types[self::STATUS] = '\pachno\core\entities\Status';
             $types[self::PRIORITY] = '\pachno\core\entities\Priority';
             $types[self::CATEGORY] = '\pachno\core\entities\Category';
@@ -105,24 +105,15 @@
             $types[self::RESOLUTION] = '\pachno\core\entities\Resolution';
             $types[self::ACTIVITYTYPE] = '\pachno\core\entities\ActivityType';
 
-            $types = \pachno\core\framework\Event::createNew('core', 'Datatype::getTypes', null, array(), $types)->trigger()->getReturnList();
+            $types = Event::createNew('core', 'Datatype::getTypes', null, [], $types)->trigger()->getReturnList();
 
             return $types;
-        }
-
-        public function isBuiltin()
-        {
-            return true;
-        }
-        
-        public function canBeDeleted()
-        {
-            return true;
         }
 
         public static function has($item_id)
         {
             $items = static::getAll();
+
             return array_key_exists($item_id, $items);
         }
 
@@ -134,6 +125,16 @@
         public static function getAll()
         {
             return tables\ListTypes::getTable()->getAllByItemType(static::ITEMTYPE);
+        }
+
+        public function isBuiltin()
+        {
+            return true;
+        }
+
+        public function canBeDeleted()
+        {
+            return true;
         }
 
         public function getFontAwesomeIcon()

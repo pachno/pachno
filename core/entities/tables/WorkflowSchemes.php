@@ -3,11 +3,9 @@
     namespace pachno\core\entities\tables;
 
     use b2db\Query;
+    use b2db\QueryColumnSort;
     use pachno\core\entities\WorkflowScheme;
     use pachno\core\framework;
-    use b2db\Core,
-        b2db\Criteria,
-        b2db\Criterion;
 
     /**
      * Workflow schemes table
@@ -31,10 +29,15 @@
     {
 
         const B2DB_TABLE_VERSION = 1;
+
         const B2DBNAME = 'workflow_schemes';
+
         const ID = 'workflow_schemes.id';
+
         const SCOPE = 'workflow_schemes.scope';
+
         const NAME = 'workflow_schemes.name';
+
         const DESCRIPTION = 'workflow_schemes.description';
 
         public function getAll($scope = null)
@@ -42,7 +45,7 @@
             $scope = ($scope === null) ? framework\Context::getScope()->getID() : $scope;
             $query = $this->getQuery();
             $query->where(self::SCOPE, $scope);
-            $query->addOrderBy(self::ID, \b2db\QueryColumnSort::SORT_ASC);
+            $query->addOrderBy(self::ID, QueryColumnSort::SORT_ASC);
 
             $res = $this->select($query);
 
@@ -54,6 +57,7 @@
             $query = $this->getQuery();
             $query->where(self::SCOPE, framework\Context::getScope()->getID());
             $row = $this->rawSelectById($id, $query, false);
+
             return $row;
         }
 
@@ -64,6 +68,7 @@
             $query->where(self::SCOPE, $scope_id);
             $query->addOrderBy(self::ID);
             $row = $this->rawSelectOne($query);
+
             return ($row) ? $row->get('id') : 0;
         }
 

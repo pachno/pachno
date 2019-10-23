@@ -3,7 +3,6 @@
     namespace pachno\core\entities;
 
     use pachno\core\entities\common\IdentifiableScoped;
-    use pachno\core\framework;
 
     /**
      * Workflow class
@@ -27,7 +26,7 @@
     {
 
         protected static $_workflows = null;
-        
+
         protected static $_num_workflows = null;
 
         /**
@@ -57,7 +56,7 @@
         /**
          * This workflow's steps
          *
-         * @var array|\pachno\core\entities\WorkflowStep
+         * @var array|WorkflowStep
          * @Relates(class="\pachno\core\entities\WorkflowStep", collection=true, foreign_column="workflow_id")
          */
         protected $_steps = null;
@@ -67,7 +66,7 @@
         /**
          * The initial transition for incoming issues in this workflow
          *
-         * @var \pachno\core\entities\WorkflowTransition
+         * @var WorkflowTransition
          * @Column(type="integer", length=10)
          * @Relates(class="\pachno\core\entities\WorkflowTransition")
          */
@@ -76,15 +75,15 @@
         /**
          * This workflow's transitions
          *
-         * @var array|\pachno\core\entities\WorkflowTransition
+         * @var array|WorkflowTransition
          * @Relates(class="\pachno\core\entities\WorkflowTransition", collection=true, foreign_column="workflow_id")
          */
         protected $_transitions = null;
-        
+
         /**
          * This workflow's schemes
          *
-         * @var array|\pachno\core\entities\WorkflowTransition
+         * @var array|WorkflowTransition
          * @Relates(class="\pachno\core\entities\WorkflowScheme", collection=true, manytomany=true, joinclass="\pachno\core\entities\tables\WorkflowIssuetype")
          */
         protected $_schemes = null;
@@ -92,27 +91,6 @@
         protected $_num_schemes = null;
 
         protected $_is_copied = false;
-
-        protected function _postSave($is_new = false)
-        {
-            if ($is_new && !$this->_is_copied) {
-                $step = new WorkflowStep();
-                $step->setName('New');
-                $step->setWorkflow($this);
-                $step->save();
-                $transition = new WorkflowTransition();
-                $transition->setOutgoingStep($step);
-                $transition->setName('Issue created');
-                $transition->setWorkflow($this);
-                $transition->setDescription('This is the initial transition for issues using this workflow');
-                $transition->save();
-
-                $this->setInitialTransition($transition);
-                $this->save();
-
-                $this->_is_copied = false;
-            }
-        }
 
         public static function loadFixtures(Scope $scope)
         {
@@ -141,10 +119,14 @@
             return [$multi_team_workflow, $balanced_workflow, $simple_workflow];
         }
 
+        public static function getCustomWorkflowsCount()
+        {
+            return self::getWorkflowsCount() - 1;
+        }
+
         public static function getWorkflowsCount()
         {
-            if (self::$_num_workflows === null)
-            {
+            if (self::$_num_workflows === null) {
                 if (self::$_workflows !== null)
                     self::$_num_workflows = count(self::$_workflows);
                 else
@@ -154,11 +136,6 @@
             return self::$_num_workflows;
         }
 
-        public static function getCustomWorkflowsCount()
-        {
-            return self::getWorkflowsCount() - 1;
-        }
-        
         /**
          * Returns the workflows description
          *
@@ -186,86 +163,53 @@
          */
         public function isActive()
         {
-            return (bool) $this->_is_active;
-        }
-
-        protected function _populateTransitions()
-        {
-            if ($this->_transitions === null)
-            {
-                $this->_b2dbLazyLoad('_transitions');
-                if (array_key_exists($this->getInitialTransition()->getID(), $this->_transitions)) unset($this->_transitions[$this->getInitialTransition()->getID()]);
-            }
-        }
-        
-        /**
-         * Get all transitions in this workflow
-         *
-         * @return \pachno\core\entities\WorkflowTransition[]
-         */
-        public function getTransitions()
-        {
-            $this->_populateTransitions();
-            return $this->_transitions;
-        }
-
-        protected function _populateSteps()
-        {
-            if ($this->_steps === null)
-            {
-                $this->_b2dbLazyLoad('_steps');
-            }
-        }
-
-        /**
-         * Get all steps in this workflow
-         *
-         * @return WorkflowStep[] An array of \pachno\core\entities\WorkflowStep objects
-         */
-        public function getSteps()
-        {
-            $this->_populateSteps();
-            return $this->_steps;
+            return (bool)$this->_is_active;
         }
 
         /**
          * Get the first step in this workflow
          *
-         * @return \pachno\core\entities\WorkflowStep
+         * @return WorkflowStep
          */
         public function getFirstStep()
         {
             return $this->getInitialTransition()->getOutgoingStep();
         }
 
+        /**
+         * Return the workflow's initial transition
+         *
+         * @return WorkflowTransition
+         */
+        public function getInitialTransition()
+        {
+            return $this->_b2dbLazyLoad('_initial_transition_id');
+        }
+
         public function getNumberOfSteps()
         {
-            if ($this->_num_steps === null && $this->_steps !== null)
-            {
+            if ($this->_num_steps === null && $this->_steps !== null) {
                 $this->_num_steps = count($this->_steps);
-            }
-            elseif ($this->_num_steps === null)
-            {
+            } elseif ($this->_num_steps === null) {
                 $this->_num_steps = $this->_b2dbLazyCount('_steps');
             }
-            return (int) $this->_num_steps;
+
+            return (int)$this->_num_steps;
         }
 
         public function isInUse()
         {
-            return (bool) $this->getNumberOfSchemes();
+            return (bool)$this->getNumberOfSchemes();
         }
-        
+
         public function getNumberOfSchemes()
         {
-            if ($this->_num_schemes === null && $this->_schemes !== null)
-            {
+            if ($this->_num_schemes === null && $this->_schemes !== null) {
                 $this->_num_schemes = count($this->_schemes);
-            }
-            elseif ($this->_num_schemes === null)
-            {
+            } elseif ($this->_num_schemes === null) {
                 $this->_num_schemes = $this->_b2dbLazyCount('_schemes');
             }
+
             return $this->_num_schemes;
         }
 
@@ -291,15 +235,13 @@
             $new_workflow->setName($new_name);
             $new_workflow->setIsCopied(true);
             $new_workflow->save();
-            $step_mapper = array();
-            $transition_mapper = array();
-            foreach ($this->getSteps() as $key => $step)
-            {
+            $step_mapper = [];
+            $transition_mapper = [];
+            foreach ($this->getSteps() as $key => $step) {
                 $this->_steps[$key] = $step->copy($new_workflow);
                 $step_mapper[$key] = $this->_steps[$key]->getID();
             }
-            foreach ($this->getTransitions() as $key => $transition)
-            {
+            foreach ($this->getTransitions() as $key => $transition) {
                 $old_id = $transition->getID();
                 $this->_transitions[$key] = $transition->copy($new_workflow);
                 $transition_mapper[$old_id] = $this->_transitions[$key]->getID();
@@ -314,36 +256,70 @@
             $new_initial_transition->save();
             $new_workflow->setInitialTransition($new_initial_transition);
             $new_workflow->save();
-            
+
             return $new_workflow;
         }
 
-        public function moveIssueToMatchingWorkflowStep(\pachno\core\entities\Issue $issue)
+        /**
+         * Get all steps in this workflow
+         *
+         * @return WorkflowStep[] An array of \pachno\core\entities\WorkflowStep objects
+         */
+        public function getSteps()
+        {
+            $this->_populateSteps();
+
+            return $this->_steps;
+        }
+
+        protected function _populateSteps()
+        {
+            if ($this->_steps === null) {
+                $this->_b2dbLazyLoad('_steps');
+            }
+        }
+
+        /**
+         * Get all transitions in this workflow
+         *
+         * @return WorkflowTransition[]
+         */
+        public function getTransitions()
+        {
+            $this->_populateTransitions();
+
+            return $this->_transitions;
+        }
+
+        protected function _populateTransitions()
+        {
+            if ($this->_transitions === null) {
+                $this->_b2dbLazyLoad('_transitions');
+                if (array_key_exists($this->getInitialTransition()->getID(), $this->_transitions)) unset($this->_transitions[$this->getInitialTransition()->getID()]);
+            }
+        }
+
+        public function moveIssueToMatchingWorkflowStep(Issue $issue)
         {
             if (!$issue->isPropertyChanged('status') && !$issue->isPropertyChanged('resolution')) {
                 return false;
             }
-            
-            foreach ($this->getSteps() as $step)
-            {
-                if ($step->hasLinkedStatus() && $issue->getStatus() instanceof \pachno\core\entities\Status && $step->getLinkedStatusID() == $issue->getStatus()->getID())
-                {
+
+            foreach ($this->getSteps() as $step) {
+                if ($step->hasLinkedStatus() && $issue->getStatus() instanceof Status && $step->getLinkedStatusID() == $issue->getStatus()->getID()) {
                     $step->applyToIssue($issue);
+
                     return true;
                 }
             }
-            foreach ($this->getSteps() as $step)
-            {
-                if (!$step->hasLinkedStatus())
-                {
-                    foreach ($step->getIncomingTransitions() as $transition)
-                    {
-                        if ($transition->hasPostValidationRule(WorkflowTransitionValidationRule::RULE_STATUS_VALID))
-                        {
+            foreach ($this->getSteps() as $step) {
+                if (!$step->hasLinkedStatus()) {
+                    foreach ($step->getIncomingTransitions() as $transition) {
+                        if ($transition->hasPostValidationRule(WorkflowTransitionValidationRule::RULE_STATUS_VALID)) {
                             $rule = $transition->getPostValidationRule(WorkflowTransitionValidationRule::RULE_STATUS_VALID);
-                            if ($rule->isValid($issue))
-                            {
+                            if ($rule->isValid($issue)) {
                                 $step->applyToIssue($issue);
+
                                 return true;
                             }
                         }
@@ -353,7 +329,7 @@
 
             return false;
         }
-        
+
         /**
          * Return the items name
          *
@@ -374,17 +350,28 @@
             $this->_name = $name;
         }
 
-        /**
-         * Return the workflow's initial transition
-         *
-         * @return \pachno\core\entities\WorkflowTransition
-         */
-        public function getInitialTransition()
+        protected function _postSave($is_new = false)
         {
-            return $this->_b2dbLazyLoad('_initial_transition_id');
+            if ($is_new && !$this->_is_copied) {
+                $step = new WorkflowStep();
+                $step->setName('New');
+                $step->setWorkflow($this);
+                $step->save();
+                $transition = new WorkflowTransition();
+                $transition->setOutgoingStep($step);
+                $transition->setName('Issue created');
+                $transition->setWorkflow($this);
+                $transition->setDescription('This is the initial transition for issues using this workflow');
+                $transition->save();
+
+                $this->setInitialTransition($transition);
+                $this->save();
+
+                $this->_is_copied = false;
+            }
         }
 
-        public function setInitialTransition(\pachno\core\entities\WorkflowTransition $transition)
+        public function setInitialTransition(WorkflowTransition $transition)
         {
             $this->_initial_transition_id = $transition;
         }

@@ -2,9 +2,9 @@
 
     namespace pachno\core\entities\tables;
 
+    use b2db\QueryColumnSort;
     use pachno\core\entities\IssueCommit;
-    use \pachno\core\framework,
-        b2db\Criteria;
+    use pachno\core\framework;
 
     /**
      * Issue commits table
@@ -18,21 +18,22 @@
     {
 
         const B2DB_TABLE_VERSION = 2;
-        const B2DBNAME = 'issuecommits';
-        const ID = 'issuecommits.id';
-        const SCOPE = 'issuecommits.scope';
-        const ISSUE_NO = 'issuecommits.issue_no';
-        const COMMIT_ID = 'issuecommits.commit_id';
 
-        protected function setupIndexes()
-        {
-            $this->addIndex('commit', self::COMMIT_ID);
-            $this->addIndex('issue', self::ISSUE_NO);
-        }
+        const B2DBNAME = 'issuecommits';
+
+        const ID = 'issuecommits.id';
+
+        const SCOPE = 'issuecommits.scope';
+
+        const ISSUE_NO = 'issuecommits.issue_no';
+
+        const COMMIT_ID = 'issuecommits.commit_id';
 
         /**
          * Get all rows by commit ID
+         *
          * @param integer $id
+         *
          * @return IssueCommit[]
          */
         public function getByCommitID($id, $scope = null)
@@ -47,10 +48,12 @@
 
         /**
          * Get all rows by issue ID
+         *
          * @param integer $id
          * @param integer $scope
          * @param integer $limit
          * @param integer $offset
+         *
          * @return IssueCommit
          */
         public function getByIssueID($id, $limit = null, $offset = null, $scope = null)
@@ -59,7 +62,7 @@
             $query = $this->getQuery();
             $query->where(self::SCOPE, $scope);
             $query->where(self::ISSUE_NO, $id);
-            $query->addOrderBy(Commits::DATE, \b2db\QueryColumnSort::SORT_DESC);
+            $query->addOrderBy(Commits::DATE, QueryColumnSort::SORT_DESC);
 
             if ($limit !== null)
                 $query->setLimit($limit);
@@ -72,7 +75,9 @@
 
         /**
          * Count all rows by issue ID
+         *
          * @param integer $id
+         *
          * @return integer
          */
         public function countByIssueID($id, $scope = null)
@@ -83,6 +88,12 @@
             $query->where(self::ISSUE_NO, $id);
 
             return $this->count($query);
+        }
+
+        protected function setupIndexes()
+        {
+            $this->addIndex('commit', self::COMMIT_ID);
+            $this->addIndex('issue', self::ISSUE_NO);
         }
 
     }

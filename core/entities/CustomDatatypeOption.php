@@ -8,7 +8,7 @@
     class CustomDatatypeOption extends DatatypeBase
     {
 
-        protected static $_items = array();
+        protected static $_items = [];
 
         /**
          * This options value
@@ -17,7 +17,7 @@
          * @Column(type="string", length=200)
          */
         protected $_value = null;
-        
+
         /**
          * Custom field key value
          *
@@ -29,14 +29,14 @@
 
         /**
          * Return the options color (if applicable)
-         * 
+         *
          * @return string
          */
         public function getColor()
         {
             return $this->_itemdata;
         }
-        
+
         public function canBeDeleted()
         {
             return true;
@@ -44,7 +44,7 @@
 
         /**
          * Return the options icon (if applicable)
-         * 
+         *
          * @return string
          */
         public function getIcon()
@@ -75,18 +75,6 @@
             $this->_customfield_id = $customdatatype;
         }
 
-        /**
-         * @return CustomDatatype
-         */
-        public function getCustomdatatype(): CustomDatatype
-        {
-            if (!$this->_customfield_id instanceof CustomDatatype)
-            {
-                $this->_b2dbLazyLoad('_customfield_id');
-            }
-            return $this->_customfield_id;
-        }
-
         public function getType()
         {
             return parent::getItemtype();
@@ -95,6 +83,18 @@
         public function getFontAwesomeIcon()
         {
             return $this->getCustomdatatype()->getFontAwesomeIcon();
+        }
+
+        /**
+         * @return CustomDatatype
+         */
+        public function getCustomdatatype(): CustomDatatype
+        {
+            if (!$this->_customfield_id instanceof CustomDatatype) {
+                $this->_b2dbLazyLoad('_customfield_id');
+            }
+
+            return $this->_customfield_id;
         }
 
         public function getFontAwesomeIconStyle()

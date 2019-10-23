@@ -2,11 +2,11 @@
 
     namespace pachno\core\modules\auth_ldap;
 
-    use pachno\core\entities\UserSession;
-    use pachno\core\framework\interfaces\AuthenticationProvider;
-    use pachno\core\entities\Module;
+    use Exception;
     use pachno\core\entities\User;
+    use pachno\core\entities\UserSession;
     use pachno\core\framework;
+    use pachno\core\framework\interfaces\AuthenticationProvider;
     use pachno\core\framework\Request;
 
     /**
@@ -35,22 +35,6 @@
          */
         protected $_module;
 
-        /**
-         * @return Auth_ldap
-         */
-        public function getModule(): Auth_ldap
-        {
-            return $this->_module;
-        }
-
-        /**
-         * @param Auth_ldap $module
-         */
-        public function setModule(Auth_ldap $module)
-        {
-            $this->_module = $module;
-        }
-
         public function getAuthenticationMethod()
         {
             return AuthenticationProvider::AUTHENTICATION_TYPE_PASSWORD;
@@ -75,81 +59,88 @@
             return $this->_loginUser($username, $password, true);
         }
 
-
         /**
-         * Verify log-in credentials for previously logged-in user.
+         * Logs-in the user based on provided username and password, and
+         * retrieves the user entity.
+         *
+         * Initial logins are always verified against the LDAP directory, while
+         * subsequent ones are assumed to succeed automatically, since password
+         * will be in a hashed format that we cannot use for verification.
          *
          * @param string $username
-         *   Username  to log-in with.
+         *   Username to log-in with. Ignored if using HTTP integrated
+         *   authentication. This should be regular Pachno username, not the LDAP
+         *   one (the LDAP one will be looked-up based on this value).
          *
          * @param string $password
-         *   Password to log-in with.
+         *   Password to log-in with. Ignored if using HTTP integrated
+         *   authentication.
          *
-         * @param bool $is_elevated
+         * @param bool $initial_login
+         *   Specify login mode. If initial login is requested, we will test
+         *   username and password against the LDAP server, otherwise it is
+         *   assumed that login has been performed before successfully.
          *
-         * @return User|null
-         * @throws \Exception
-         * @return pachno\core\entities\User | null
-         *   User object associated with the login. If login verification has
-         *   failed, returns null.
+         * @return User | null
+         *   User entity if login was successful, null otherwise.
          */
-        public function verifyLogin($username, $password, $is_elevated = false)
+        protected function _loginUser($username, $password, $initial_login)
         {
-            return $this->_loginUser($username, $password, false);
-        }
+            // Retrieve LDAP user information.
+            $ldap_user_info = $this->getModule()->getLDAPUserInformation($username);
 
-
-        /**
-         * Logs out the user. No module-specific steps are taken for this
-         * module.
-         *
-         */
-        public function logout()
-        {
-            self::getResponse()->deleteCookie('username');
-            self::getResponse()->deleteCookie('password');
-            self::getResponse()->deleteCookie('elevated_password');
-        }
-
-        /**
-         * Token verification (unused)
-         */
-        public function verifyToken($username, $token, $is_elevated = false)
-        {
-        }
-
-
-        /**
-         * Automatic login, triggered if no credentials were supplied.
-         *
-         * LDAP authentication auto-login implementation is used in conjunction
-         * with HTTP integrated authentication.
-         *
-         * @return \pachno\core\entities\User | null
-         *   If HTTP integrated authentication is enabled, and appropriate
-         *   header is available in the request, runs login and returns user
-         *   entity if login was successful. Otherwise returns null.
-         *
-         * @param framework\Request $request
-         * @return User|null
-         * @throws \Exception Thrown if HTTP header has not been configured, and HTTP integrated
-         *   authentication has been enabled
-         */
-        public function doAutoLogin(framework\Request $request)
-        {
-            $user = null;
-
-            if ($this->getModule()->getSetting('integrated_auth'))
-            {
-                if (!isset($_SERVER[$this->getModule()->getSetting('integrated_auth_header')]))
-                {
-                    throw new \Exception(framework\Context::geti18n()->__('HTTP integrated authentication is enabled but the HTTP header has not been provided by the web server.'));
-                }
-
-                $user = $this->_loginUser($_SERVER[$this->getModule()->getSetting('integrated_auth_header')], "", true);
+            // If we could not locate user, return null to denote invalid login.
+            if (count($ldap_user_info) == 0) {
+                return null;
+            }
+            // Bail-out if we locate more than one user, something is wrong with
+            // either module settings, or LDAP structure itself.
+            elseif (count($ldap_user_info) > 1) {
+                framework\Logging::log("More than one user in LDAP directory has username '${username}'. Please verify integrity and structure of your LDAP installation.",
+                    'ldap', framework\Logging::LEVEL_FATAL);
+                throw new Exception(framework\Context::geti18n()->__('This user was found multiple times in the directory, please contact your administrator'));
             }
 
+            // Extract user information.
+            $ldap_user = $ldap_user_info[0];
+
+            // Perform authentication based on whether we are using integrated
+            // authentication or not.
+            if ($this->getModule()->getSetting('integrated_auth') == true && $initial_login === true) {
+                if (!isset($_SERVER[$this->getModule()->getSetting('integrated_auth_header')]) || $_SERVER[$this->getModule()->getSetting('integrated_auth_header')] != $username) {
+                    throw new Exception(framework\Context::geti18n()->__('HTTP authentication internal error.'));
+                }
+            } elseif ($initial_login === true) {
+                $login_result = $this->_verifyLDAPLogin($ldap_user['ldap_username'], $password);
+
+                if ($login_result === false) {
+                    return null;
+                }
+            }
+
+            // Create or update the existing user with up-to-date information.
+            list($user, $created) = $this->getModule()->createOrUpdateUser($ldap_user);
+
+            framework\Context::getResponse()->setCookie('username', $username);
+            framework\Context::getResponse()->setCookie('password', $user->getHashPassword());
+
             return $user;
+        }
+
+        /**
+         * @return Auth_ldap
+         */
+        public function getModule(): Auth_ldap
+        {
+            return $this->_module;
+        }
+
+        /**
+         * @param Auth_ldap $module
+         */
+        public function setModule(Auth_ldap $module)
+        {
+            $this->_module = $module;
         }
 
         /**
@@ -175,8 +166,7 @@
             // users. Do not reuse the control user connection.
             $connection = @ldap_connect($this->getModule()->getSetting('hostname'));
 
-            if ($connection !== false)
-            {
+            if ($connection !== false) {
                 // Default LDAP protocol version used is 2, ensure we are
                 // using version 3 instead.
                 ldap_set_option($connection, LDAP_OPT_PROTOCOL_VERSION, 3);
@@ -191,76 +181,74 @@
         }
 
         /**
-         * Logs-in the user based on provided username and password, and
-         * retrieves the user entity.
-         *
-         * Initial logins are always verified against the LDAP directory, while
-         * subsequent ones are assumed to succeed automatically, since password
-         * will be in a hashed format that we cannot use for verification.
+         * Verify log-in credentials for previously logged-in user.
          *
          * @param string $username
-         *   Username to log-in with. Ignored if using HTTP integrated
-         *   authentication. This should be regular Pachno username, not the LDAP
-         *   one (the LDAP one will be looked-up based on this value).
+         *   Username  to log-in with.
          *
          * @param string $password
-         *   Password to log-in with. Ignored if using HTTP integrated
-         *   authentication.
+         *   Password to log-in with.
          *
-         * @param bool $initial_login
-         *   Specify login mode. If initial login is requested, we will test
-         *   username and password against the LDAP server, otherwise it is
-         *   assumed that login has been performed before successfully.
+         * @param bool $is_elevated
          *
-         * @return \pachno\core\entities\User | null
-         *   User entity if login was successful, null otherwise.
+         * @return User|null
+         * @return pachno\core\entities\User | null
+         *   User object associated with the login. If login verification has
+         *   failed, returns null.
+         * @throws Exception
          */
-        protected function _loginUser($username, $password, $initial_login)
+        public function verifyLogin($username, $password, $is_elevated = false)
         {
-            // Retrieve LDAP user information.
-            $ldap_user_info = $this->getModule()->getLDAPUserInformation($username);
+            return $this->_loginUser($username, $password, false);
+        }
 
-            // If we could not locate user, return null to denote invalid login.
-            if (count($ldap_user_info) == 0)
-            {
-                return null;
-            }
-            // Bail-out if we locate more than one user, something is wrong with
-            // either module settings, or LDAP structure itself.
-            elseif (count($ldap_user_info) > 1)
-            {
-                framework\Logging::log("More than one user in LDAP directory has username '${username}'. Please verify integrity and structure of your LDAP installation.",
-                                       'ldap', framework\Logging::LEVEL_FATAL);
-                throw new \Exception(framework\Context::geti18n()->__('This user was found multiple times in the directory, please contact your administrator'));
-            }
+        /**
+         * Logs out the user. No module-specific steps are taken for this
+         * module.
+         *
+         */
+        public function logout()
+        {
+            self::getResponse()->deleteCookie('username');
+            self::getResponse()->deleteCookie('password');
+            self::getResponse()->deleteCookie('elevated_password');
+        }
 
-            // Extract user information.
-            $ldap_user = $ldap_user_info[0];
+        /**
+         * Token verification (unused)
+         */
+        public function verifyToken($username, $token, $is_elevated = false)
+        {
+        }
 
-            // Perform authentication based on whether we are using integrated
-            // authentication or not.
-            if ($this->getModule()->getSetting('integrated_auth') == true && $initial_login === true)
-            {
-                if (!isset($_SERVER[$this->getModule()->getSetting('integrated_auth_header')]) || $_SERVER[$this->getModule()->getSetting('integrated_auth_header')] != $username)
-                {
-                    throw new \Exception(framework\Context::geti18n()->__('HTTP authentication internal error.'));
+        /**
+         * Automatic login, triggered if no credentials were supplied.
+         *
+         * LDAP authentication auto-login implementation is used in conjunction
+         * with HTTP integrated authentication.
+         *
+         * @param framework\Request $request
+         *
+         * @return User | null
+         *   If HTTP integrated authentication is enabled, and appropriate
+         *   header is available in the request, runs login and returns user
+         *   entity if login was successful. Otherwise returns null.
+         *
+         * @return User|null
+         * @throws Exception Thrown if HTTP header has not been configured, and HTTP integrated
+         *   authentication has been enabled
+         */
+        public function doAutoLogin(framework\Request $request)
+        {
+            $user = null;
+
+            if ($this->getModule()->getSetting('integrated_auth')) {
+                if (!isset($_SERVER[$this->getModule()->getSetting('integrated_auth_header')])) {
+                    throw new Exception(framework\Context::geti18n()->__('HTTP integrated authentication is enabled but the HTTP header has not been provided by the web server.'));
                 }
+
+                $user = $this->_loginUser($_SERVER[$this->getModule()->getSetting('integrated_auth_header')], "", true);
             }
-            elseif ($initial_login === true)
-            {
-                $login_result = $this->_verifyLDAPLogin($ldap_user['ldap_username'], $password);
-
-                if ($login_result === false)
-                {
-                    return null;
-                }
-            }
-
-            // Create or update the existing user with up-to-date information.
-            list($user, $created) = $this->getModule()->createOrUpdateUser($ldap_user);
-
-            framework\Context::getResponse()->setCookie('username', $username);
-            framework\Context::getResponse()->setCookie('password', $user->getHashPassword());
 
             return $user;
         }

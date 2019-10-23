@@ -2,7 +2,8 @@
 
     namespace pachno\core\modules\livelink;
 
-    use Ramsey\Uuid\Uuid;
+    use DateTime;
+    use Exception;
     use pachno\core\entities\Branch;
     use pachno\core\entities\BranchCommit;
     use pachno\core\entities\Commit;
@@ -23,6 +24,8 @@
     use pachno\core\entities\tables\Users;
     use pachno\core\entities\User;
     use pachno\core\framework;
+    use pachno\core\framework\Event;
+    use Ramsey\Uuid\Uuid;
 
     /**
      * Pachno Live Link module
@@ -36,9 +39,13 @@
     {
 
         const SETTINGS_WORKFLOW_ACTIONS = 'workflow_actions_';
+
         const SETTINGS_PROJECT_CONNECTOR = 'connector_project_';
+
         const SETTINGS_PROJECT_LIVELINK_ENABLED = 'connector_livelink_enabled_project_';
+
         const SETTINGS_PROJECT_CONNECTOR_SECRET = 'connector_secret_project_';
+
         const NOTIFICATION_COMMIT_MENTIONED = 'commit_mentioned';
 
         /**
@@ -47,16 +54,6 @@
         protected $_connectors = [];
 
         protected $long_name = 'Pachno Live Link';
-
-        /**
-         * Return an instance of this module
-         *
-         * @return Livelink
-         */
-        public static function getModule()
-        {
-            return framework\Context::getModule('livelink');
-        }
 
         public function hasAccountSettings()
         {
@@ -75,23 +72,23 @@
 
         /**
          * @Listener(module='core', identifier='project_sidebar_links')
-         * @param \pachno\core\framework\Event $event
+         * @param Event $event
          */
-        public function listen_project_links(framework\Event $event)
+        public function listen_project_links(Event $event)
         {
             if (!$this->isEnabled()) {
                 return;
             }
 
             if (framework\Context::getUser()->hasProjectPageAccess('project_commits', framework\Context::getCurrentProject()))
-                $event->addToReturnList(array('url' => framework\Context::getRouting()->generate('livelink_project_commits', array('project_key' => framework\Context::getCurrentProject()->getKey())), 'title' => framework\Context::getI18n()->__('Commits')));
+                $event->addToReturnList(['url' => framework\Context::getRouting()->generate('livelink_project_commits', ['project_key' => framework\Context::getCurrentProject()->getKey()]), 'title' => framework\Context::getI18n()->__('Commits')]);
         }
 
         /**
          * @Listener(module='core', identifier='get_backdrop_partial')
-         * @param \pachno\core\framework\Event $event
+         * @param Event $event
          */
-        public function listen_get_backdrop_partial(framework\Event $event)
+        public function listen_get_backdrop_partial(Event $event)
         {
             $request = framework\Context::getRequest();
             $connector = $request['connector'];
@@ -99,8 +96,7 @@
             $options = ['connector' => $this->getConnector($connector)];
 
             if ($this->hasConnector($connector)) {
-                switch ($event->getSubject())
-                {
+                switch ($event->getSubject()) {
                     case 'livelink-import_project':
                         $template_name = $connector_module->getName() . "/import_project";
                         $options['project'] = null;
@@ -120,8 +116,7 @@
                         return;
                 }
 
-                foreach ($options as $key => $value)
-                {
+                foreach ($options as $key => $value) {
                     $event->addToReturnList($value, $key);
                 }
                 $event->setReturnValue($template_name);
@@ -130,10 +125,35 @@
         }
 
         /**
-         * @Listener(module='core', identifier='project/templates/projectheader/namelabel')
-         * @param framework\Event $event
+         * @param $key
+         *
+         * @return ConnectorProvider
          */
-        public function listen_projectHeaderNameLabel(framework\Event $event)
+        public function getConnectorModule($key)
+        {
+            return (isset($this->_connectors[$key])) ? $this->_connectors[$key] : null;
+        }
+
+        /**
+         * @param $key
+         *
+         * @return BaseConnector
+         */
+        public function getConnector($key)
+        {
+            return (isset($this->_connectors[$key])) ? $this->_connectors[$key]->getConnector() : null;
+        }
+
+        public function hasConnector($key)
+        {
+            return array_key_exists($key, $this->_connectors);
+        }
+
+        /**
+         * @Listener(module='core', identifier='project/templates/projectheader/namelabel')
+         * @param Event $event
+         */
+        public function listen_projectHeaderNameLabel(Event $event)
         {
             /** @var Project $project */
             $project = $event->getSubject();
@@ -145,10 +165,22 @@
         }
 
         /**
-         * @Listener(module='core', identifier='projectActions::configureProjectSettings::postSave')
-         * @param framework\Event $event
+         * @param Project $project
+         *
+         * @return bool
          */
-        public function listen_projectSettingsPostSave(framework\Event $event)
+        public function isLiveLinkEnabledForProject(Project $project)
+        {
+            $setting = $this->getSetting(Livelink::SETTINGS_PROJECT_LIVELINK_ENABLED . $project->getID());
+
+            return (bool)$setting;
+        }
+
+        /**
+         * @Listener(module='core', identifier='projectActions::configureProjectSettings::postSave')
+         * @param Event $event
+         */
+        public function listen_projectSettingsPostSave(Event $event)
         {
             if (!$this->isEnabled()) {
                 return;
@@ -160,6 +192,18 @@
             $request = $event->getParameter('request');
 
             $this->saveProjectLiveLinkSettings($project, $request);
+        }
+
+        public function saveProjectLiveLinkSettings(Project $project, framework\Request $request)
+        {
+            $connector = $this->getConnectorModule($request['connector']);
+
+            if ($connector instanceof ConnectorProvider) {
+                $secret = Uuid::uuid4()->toString();
+                $connector->saveProjectConnectorSettings($request, $project, $secret);
+                $this->saveSetting(self::SETTINGS_PROJECT_CONNECTOR . $project->getID(), $request['connector']);
+                $this->saveSetting(self::SETTINGS_PROJECT_CONNECTOR_SECRET . $project->getID(), $secret);
+            }
         }
 
         public function removeProjectLiveLinkSettings(Project $project)
@@ -175,18 +219,6 @@
             }
         }
 
-        public function saveProjectLiveLinkSettings(Project $project, framework\Request $request)
-        {
-            $connector = $this->getConnectorModule($request['connector']);
-
-            if ($connector instanceof ConnectorProvider) {
-                $secret = Uuid::uuid4()->toString();
-                $connector->saveProjectConnectorSettings($request, $project, $secret);
-                $this->saveSetting(self::SETTINGS_PROJECT_CONNECTOR . $project->getID(), $request['connector']);
-                $this->saveSetting(self::SETTINGS_PROJECT_CONNECTOR_SECRET . $project->getID(), $secret);
-            }
-        }
-
         public function getProjectConnector(Project $project)
         {
             return $this->getSetting(self::SETTINGS_PROJECT_CONNECTOR . $project->getID());
@@ -199,9 +231,9 @@
 
         /**
          * @Listener(module='core', identifier='project/editproject::above_content')
-         * @param framework\Event $event
+         * @param Event $event
          */
-        public function listen_project_template(framework\Event $event)
+        public function listen_project_template(Event $event)
         {
             if (!$this->isEnabled()) {
                 return;
@@ -225,11 +257,36 @@
 
         }
 
+        public function getCurrentPartialOptions()
+        {
+            $partial_options = ['key' => 'project_config'];
+            $request = framework\Context::getRequest();
+
+            if ($request->hasParameter('assignee_type')) {
+                $partial_options['assignee_type'] = $request['assignee_type'];
+            }
+            if ($request->hasParameter('assignee_id')) {
+                $partial_options['assignee_id'] = $request['assignee_id'];
+            }
+
+            return $partial_options;
+        }
+
+        /**
+         * Return an instance of this module
+         *
+         * @return Livelink
+         */
+        public static function getModule()
+        {
+            return framework\Context::getModule('livelink');
+        }
+
         /**
          * @Listener(module='core', identifier='project/editproject::additional_form_elements')
-         * @param framework\Event $event
+         * @param Event $event
          */
-        public function listen_project_template_additional_form_elements(framework\Event $event)
+        public function listen_project_template_additional_form_elements(Event $event)
         {
             if (!$this->isEnabled()) {
                 return;
@@ -252,49 +309,49 @@
 
         /**
          * @Listener(module='core', identifier='viewissue_before_tabs')
-         * @param framework\Event $event
+         * @param Event $event
          */
-        public function listen_viewissue_panel_tab(framework\Event $event)
+        public function listen_viewissue_panel_tab(Event $event)
         {
             if (!$this->getProjectConnector($event->getSubject()->getProject()))
                 return;
 
             $commits_count = IssueCommits::getTable()->countByIssueID($event->getSubject()->getID());
-            include_component('livelink/viewissue_activities_tab', array('count' => $commits_count));
+            include_component('livelink/viewissue_activities_tab', ['count' => $commits_count]);
         }
 
         /**
          * @Listener(module='core', identifier='viewissue_after_tabs')
-         * @param framework\Event $event
+         * @param Event $event
          */
-        public function listen_viewissue_panel(framework\Event $event)
+        public function listen_viewissue_panel(Event $event)
         {
             if (!$this->getProjectConnector($event->getSubject()->getProject()))
                 return;
 
             $commits = IssueCommits::getTable()->getByIssueID($event->getSubject()->getID());
             $commits_count = IssueCommits::getTable()->countByIssueID($event->getSubject()->getID());
-            include_component('livelink/viewissue_commits', array('issue' => $event->getSubject(), 'commits' => $commits, 'commits_count' => $commits_count, 'selected_project' => $event->getSubject()->getProject()));
+            include_component('livelink/viewissue_commits', ['issue' => $event->getSubject(), 'commits' => $commits, 'commits_count' => $commits_count, 'selected_project' => $event->getSubject()->getProject()]);
         }
 
         /**
          * @Listener(module='core', identifier='config_project_tabs_other')
-         * @param framework\Event $event
+         * @param Event $event
          */
-        public function listen_projectconfig_tab(framework\Event $event)
+        public function listen_projectconfig_tab(Event $event)
         {
             if (!$this->isEnabled()) {
                 return;
             }
 
-            include_component('livelink/projectconfig_tab', array('selected_tab' => $event->getParameter('selected_tab')));
+            include_component('livelink/projectconfig_tab', ['selected_tab' => $event->getParameter('selected_tab')]);
         }
 
         /**
          * @Listener(module='core', identifier='config_project_panes')
-         * @param framework\Event $event
+         * @param Event $event
          */
-        public function listen_projectconfig_panel(framework\Event $event)
+        public function listen_projectconfig_panel(Event $event)
         {
             if (!$this->isEnabled()) {
                 return;
@@ -322,29 +379,6 @@
         }
 
         /**
-         * @param $key
-         * @return BaseConnector
-         */
-        public function getConnector($key)
-        {
-            return (isset($this->_connectors[$key])) ? $this->_connectors[$key]->getConnector() : null;
-        }
-
-        /**
-         * @param $key
-         * @return ConnectorProvider
-         */
-        public function getConnectorModule($key)
-        {
-            return (isset($this->_connectors[$key])) ? $this->_connectors[$key] : null;
-        }
-
-        public function hasConnector($key)
-        {
-            return array_key_exists($key, $this->_connectors);
-        }
-
-        /**
          * @return ConnectorProvider[]
          */
         public function getConnectorModules()
@@ -354,83 +388,7 @@
 
         public function hasConnectors()
         {
-            return (bool) count($this->_connectors);
-        }
-
-        public function getCurrentPartialOptions()
-        {
-            $partial_options = ['key' => 'project_config'];
-            $request = framework\Context::getRequest();
-
-            if ($request->hasParameter('assignee_type')) {
-                $partial_options['assignee_type'] = $request['assignee_type'];
-            }
-            if ($request->hasParameter('assignee_id')) {
-                $partial_options['assignee_id'] = $request['assignee_id'];
-            }
-
-            return $partial_options;
-        }
-
-        /**
-         * Find author of commit, fallback is guest
-         * Some VCSes use a different format of storing the committer's name. Systems like bzr, git and hg use the format
-         * Joe Bloggs <me@example.com>, instead of a classic username. Therefore a user will be found via 4 queries:
-         * a) First we extract the email if there is one, and find a user with that email
-         * b) If one is not found - or if no email was specified, then instead test against the real name (using the name part if there was an email)
-         * c) the username or full name is checked against the friendly name field
-         * d) and if we still havent found one, then we check against the username
-         * e) and if we STILL havent found one, we use the guest user
-         *
-         * @param string $author
-         *
-         * @return User
-         */
-        public function getUserByCommitAuthor($author)
-        {
-            $user = Users::getTable()->getByEmail($author);
-
-            if (!$user instanceof User && preg_match("/(?<=<)(.*)(?=>)/", $author, $matches))
-            {
-                $email = $matches[0];
-
-                // a2)
-                $user = Users::getTable()->getByEmail($email);
-
-                if (!$user instanceof User)
-                {
-                    // Not found by email
-                    preg_match("/(?<=^)(.*)(?= <)/", $author, $matches);
-                    $author = $matches[0];
-                }
-            }
-
-            // b)
-            if (!$user instanceof User)
-                $user = Users::getTable()->getByRealname($author);
-
-            // c)
-            if (!$user instanceof User)
-                $user = Users::getTable()->getByBuddyname($author);
-
-            // d)
-            if (!$user instanceof User)
-                $user = Users::getTable()->getByUsername($author);
-
-            // e)
-            if (!$user instanceof User)
-                $user = framework\Settings::getDefaultUser();
-
-            return $user;
-        }
-
-        /**
-         * @param Project $project
-         * @return bool
-         */
-        public function isWorkflowActionsEnabledForProject(Project $project)
-        {
-            return (bool) $this->getSetting(self::SETTINGS_WORKFLOW_ACTIONS . $project->getID());
+            return (bool)count($this->_connectors);
         }
 
         /**
@@ -438,7 +396,7 @@
          * @param Branch $branch
          * @param $message
          * @param $author
-         * @param \DateTime $date
+         * @param DateTime $date
          * @param $previous_hash
          * @param $current_hash
          * @param $changes
@@ -447,7 +405,7 @@
          *
          * @return Commit
          */
-        public function processCommit(Project $project, Branch $branch, $message, $author, \DateTime $date, $previous_hash, $current_hash, $changes, $update_branch, $additional_data = [], $force = false)
+        public function processCommit(Project $project, Branch $branch, $message, $author, DateTime $date, $previous_hash, $current_hash, $changes, $update_branch, $additional_data = [], $force = false)
         {
             if ($project->isArchived())
                 return;
@@ -491,8 +449,7 @@
             $commit->setProject($project);
             $commit->setDate($date->getTimestamp());
 
-            if (!empty($additional_data))
-            {
+            if (!empty($additional_data)) {
                 $commit->setMiscData($additional_data);
             }
 
@@ -513,8 +470,7 @@
             framework\Logging::log('[' . $project->getKey() . '] Commit logged with revision ' . $commit->getRevision(), $this->getName());
 
             // Iterate over affected issues and update them.
-            foreach ($issues as $issue)
-            {
+            foreach ($issues as $issue) {
                 $commit_file = new IssueCommit();
                 $commit_file->setIssue($issue);
                 $commit_file->setCommit($commit);
@@ -522,22 +478,19 @@
 
                 if ($workflow_actions_enabled) {
                     // Process all commit-message transitions for an issue.
-                    foreach ($transitions[$issue->getFormattedIssueNo()] as $transition)
-                    {
-                        if ($this->getSetting(self::SETTINGS_WORKFLOW_ACTIONS . $project->getID(), 'vcs_integration'))
-                        {
+                    foreach ($transitions[$issue->getFormattedIssueNo()] as $transition) {
+                        if ($this->getSetting(self::SETTINGS_WORKFLOW_ACTIONS . $project->getID(), 'vcs_integration')) {
                             $this->applyWorkflowTransition($issue, $transition);
                         }
                     }
                 }
 
-                $issue->addSystemComment(framework\Context::getI18n()->__('This issue has been updated with the latest changes from the code repository.%commit_msg', array('%commit_msg' => '<div class="commit_main">' . $message . '</div>')), $user->getID(), 'vcs_integration');
+                $issue->addSystemComment(framework\Context::getI18n()->__('This issue has been updated with the latest changes from the code repository.%commit_msg', ['%commit_msg' => '<div class="commit_main">' . $message . '</div>']), $user->getID(), 'vcs_integration');
                 framework\Logging::log('[' . $project->getKey() . '] Updated issue ' . $issue->getFormattedIssueNo(), $this->getName());
             }
 
             // Create file links
-            foreach ($changes as $change)
-            {
+            foreach ($changes as $change) {
                 $commit_file = new CommitFile();
                 $commit_file->setAction($change['action']);
                 $commit_file->setPath($change['filename']);
@@ -562,7 +515,7 @@
                                 $diff->setCommitFile($commit_file);
                                 $diff->setDiff('@@' . $single_diff);
                                 $diff->save();
-                            } catch (\Exception $e) {
+                            } catch (Exception $e) {
                                 $diff->setDiff('');
                                 $diff->save();
                             }
@@ -572,9 +525,69 @@
             }
 //            die();
 
-            framework\Event::createNew('livelink', 'commit', $commit)->trigger();
+            Event::createNew('livelink', 'commit', $commit)->trigger();
 
             return $commit;
+        }
+
+        /**
+         * @param Project $project
+         *
+         * @return bool
+         */
+        public function isWorkflowActionsEnabledForProject(Project $project)
+        {
+            return (bool)$this->getSetting(self::SETTINGS_WORKFLOW_ACTIONS . $project->getID());
+        }
+
+        /**
+         * Find author of commit, fallback is guest
+         * Some VCSes use a different format of storing the committer's name. Systems like bzr, git and hg use the format
+         * Joe Bloggs <me@example.com>, instead of a classic username. Therefore a user will be found via 4 queries:
+         * a) First we extract the email if there is one, and find a user with that email
+         * b) If one is not found - or if no email was specified, then instead test against the real name (using the name part if there was an email)
+         * c) the username or full name is checked against the friendly name field
+         * d) and if we still havent found one, then we check against the username
+         * e) and if we STILL havent found one, we use the guest user
+         *
+         * @param string $author
+         *
+         * @return User
+         */
+        public function getUserByCommitAuthor($author)
+        {
+            $user = Users::getTable()->getByEmail($author);
+
+            if (!$user instanceof User && preg_match("/(?<=<)(.*)(?=>)/", $author, $matches)) {
+                $email = $matches[0];
+
+                // a2)
+                $user = Users::getTable()->getByEmail($email);
+
+                if (!$user instanceof User) {
+                    // Not found by email
+                    preg_match("/(?<=^)(.*)(?= <)/", $author, $matches);
+                    $author = $matches[0];
+                }
+            }
+
+            // b)
+            if (!$user instanceof User)
+                $user = Users::getTable()->getByRealname($author);
+
+            // c)
+            if (!$user instanceof User)
+                $user = Users::getTable()->getByBuddyname($author);
+
+            // d)
+            if (!$user instanceof User)
+                $user = Users::getTable()->getByUsername($author);
+
+            // e)
+            if (!$user instanceof User)
+                $user = framework\Settings::getDefaultUser();
+
+            return $user;
         }
 
         /**
@@ -635,17 +648,6 @@
             if ($module instanceof ConnectorProvider) {
                 return $this->getConnectorModule($connector)->importProject($project, $user);
             }
-        }
-
-        /**
-         * @param Project $project
-         * @return bool
-         */
-        public function isLiveLinkEnabledForProject(Project $project)
-        {
-            $setting = $this->getSetting(Livelink::SETTINGS_PROJECT_LIVELINK_ENABLED . $project->getID());
-
-            return (bool) $setting;
         }
 
         public function setLiveLinkEnabledForProject(Project $project, $enabled = true)

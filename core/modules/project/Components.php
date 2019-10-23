@@ -2,9 +2,12 @@
 
     namespace pachno\core\modules\project;
 
-    use pachno\core\framework,
-        pachno\core\entities,
-        pachno\core\entities\tables;
+    use pachno\core\entities;
+    use pachno\core\entities\Milestone;
+    use pachno\core\entities\Status;
+    use pachno\core\entities\tables;
+    use pachno\core\entities\tables\Issues;
+    use pachno\core\framework;
 
     /**
      * Project action components
@@ -25,10 +28,10 @@
 
         public function componentMilestoneVirtualStatusDetails()
         {
-            $this->statuses = \pachno\core\entities\Status::getAll();
-            $this->allowed_status_ids = isset($this->allowed_status_ids) ? $this->allowed_status_ids : array();
-            if ($this->milestone instanceof \pachno\core\entities\Milestone)
-                $this->status_details = \pachno\core\entities\tables\Issues::getTable()->getMilestoneDistributionDetails($this->milestone->getID(), $this->allowed_status_ids);
+            $this->statuses = Status::getAll();
+            $this->allowed_status_ids = isset($this->allowed_status_ids) ? $this->allowed_status_ids : [];
+            if ($this->milestone instanceof Milestone)
+                $this->status_details = Issues::getTable()->getMilestoneDistributionDetails($this->milestone->getID(), $this->allowed_status_ids);
         }
 
         public function componentRecentActivities()
@@ -50,9 +53,8 @@
 
         public function componentMilestone()
         {
-            if (!isset($this->milestone))
-            {
-                $this->milestone = new \pachno\core\entities\Milestone();
+            if (!isset($this->milestone)) {
+                $this->milestone = new Milestone();
                 $this->milestone->setProject($this->project);
             }
         }
@@ -80,13 +82,11 @@
 
         public function componentDashboardViewProjectTeam()
         {
-            $assignees = array();
-            foreach (framework\Context::getCurrentProject()->getAssignedUsers() as $user)
-            {
+            $assignees = [];
+            foreach (framework\Context::getCurrentProject()->getAssignedUsers() as $user) {
                 $assignees[] = $user;
             }
-            foreach (framework\Context::getCurrentProject()->getAssignedTeams() as $team)
-            {
+            foreach (framework\Context::getCurrentProject()->getAssignedTeams() as $team) {
                 $assignees[] = $team;
             }
             $this->assignees = $assignees;
@@ -110,8 +110,7 @@
 
         public function componentDashboardViewProjectStatistics()
         {
-            switch ($this->view->getType())
-            {
+            switch ($this->view->getType()) {
                 case entities\DashboardView::VIEW_PROJECT_STATISTICS_PRIORITY:
                     $counts = framework\Context::getCurrentProject()->getPriorityCount();
                     $items = entities\Priority::getAll();
@@ -144,7 +143,7 @@
                     break;
                 case entities\DashboardView::VIEW_PROJECT_STATISTICS_STATE:
                     $counts = framework\Context::getCurrentProject()->getStateCount();
-                    $items = array('open' => $this->getI18n()->__('Open'), 'closed' => $this->getI18n()->__('Closed'));
+                    $items = ['open' => $this->getI18n()->__('Open'), 'closed' => $this->getI18n()->__('Closed')];
                     $key = 'state';
                     break;
             }
@@ -176,15 +175,13 @@
         {
             $this->project = framework\Context::getCurrentProject();
             $builds = $this->project->getBuilds();
-            $active_builds = array();
+            $active_builds = [];
 
-            foreach ($this->project->getEditions() as $edition_id => $edition)
-            {
-                $active_builds[$edition_id] = array();
+            foreach ($this->project->getEditions() as $edition_id => $edition) {
+                $active_builds[$edition_id] = [];
             }
 
-            foreach ($builds as $build)
-            {
+            foreach ($builds as $build) {
                 if ($build->isReleased() && $build->hasFile())
                     $active_builds[$build->getEditionID()][] = $build;
             }
@@ -212,7 +209,7 @@
         public function componentProjectConfig()
         {
             $this->access_level = ($this->getUser()->canEditProjectDetails(framework\Context::getCurrentProject())) ? framework\Settings::ACCESS_FULL : framework\Settings::ACCESS_READ;
-            $this->statustypes = entities\Status::getAll();
+            $this->statustypes = Status::getAll();
             $this->selected_tab = isset($this->section) ? $this->section : 'info';
         }
 
@@ -223,7 +220,7 @@
 
         public function componentProjectSettings()
         {
-            $this->statustypes = entities\Status::getAll();
+            $this->statustypes = Status::getAll();
         }
 
         public function componentProjectEdition()
@@ -254,13 +251,11 @@
 
         public function componentBuild()
         {
-            if (!isset($this->build))
-            {
+            if (!isset($this->build)) {
                 $this->build = new entities\Build();
                 $this->build->setProject(framework\Context::getCurrentProject());
-                $this->build->setName(framework\Context::getI18n()->__('%project_name version 0.0.0', array('%project_name' => $this->project->getName())));
-                if (framework\Context::getRequest()->getParameter('edition_id') && $edition = entities\Edition::getB2DBTable()->selectById(framework\Context::getRequest()->getParameter('edition_id')))
-                {
+                $this->build->setName(framework\Context::getI18n()->__('%project_name version 0.0.0', ['%project_name' => $this->project->getName()]));
+                if (framework\Context::getRequest()->getParameter('edition_id') && $edition = entities\Edition::getB2DBTable()->selectById(framework\Context::getRequest()->getParameter('edition_id'))) {
                     $this->build->setEdition($edition);
                 }
             }

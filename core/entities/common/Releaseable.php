@@ -36,30 +36,10 @@
          * @Column(type="integer", length=10)
          */
         protected $_release_date = 0;
-        
-        /**
-         * Is the item released?
-         * 
-         * @return boolean
-         */
-        public function isReleased()
-        {
-            return $this->_isreleased;
-        }
-        
+
         public function setReleased($released = true)
         {
-            $this->_isreleased = (bool) $released;
-        }
-
-        /**
-         * Set the release date
-         *
-         * @param integer $release_date
-         */
-        public function setReleaseDate($release_date = null)
-        {
-            $this->_release_date = $release_date;
+            $this->_isreleased = (bool)$released;
         }
 
         /**
@@ -69,19 +49,9 @@
          */
         public function hasReleaseDate()
         {
-            return (bool) ($this->_release_date > 0);
+            return (bool)($this->_release_date > 0);
         }
 
-        /**
-         * Returns the release date
-         *
-         * @return integer
-         */
-        public function getReleaseDate()
-        {
-            return $this->_release_date;
-        }
-        
         /**
          * Returns the release date year
          *
@@ -91,7 +61,7 @@
         {
             return date("Y", $this->_release_date);
         }
-        
+
         /**
          * Returns the release date month
          *
@@ -111,7 +81,7 @@
         {
             return date("j", $this->_release_date);
         }
-        
+
         /**
          * Returns the release date hour
          *
@@ -121,7 +91,7 @@
         {
             return date("H", $this->_release_date);
         }
-        
+
         /**
          * Returns the release date minute
          *
@@ -131,7 +101,7 @@
         {
             return date("i", $this->_release_date);
         }
-        
+
         /**
          * Returns the release date AM/PM value
          *
@@ -141,18 +111,49 @@
         {
             return date("A", $this->_release_date);
         }
-        
+
         public function toJSON($detailed = true)
         {
-            $jsonArray = array(
+            $jsonArray = [
                 'id' => $this->getID(),
-        		'owner' => $this->hasOwner() ? $this->getOwner()->toJSON() : null
-            );
-            if($detailed) {
-        		$jsonArray['released'] = $this->isReleased();
-        		$jsonArray['release_date'] = $this->getReleaseDate();
+                'owner' => $this->hasOwner() ? $this->getOwner()->toJSON() : null
+            ];
+            if ($detailed) {
+                $jsonArray['released'] = $this->isReleased();
+                $jsonArray['release_date'] = $this->getReleaseDate();
             }
+
             return $jsonArray;
         }
-        
+
+        /**
+         * Is the item released?
+         *
+         * @return boolean
+         */
+        public function isReleased()
+        {
+            return $this->_isreleased;
+        }
+
+        /**
+         * Returns the release date
+         *
+         * @return integer
+         */
+        public function getReleaseDate()
+        {
+            return $this->_release_date;
+        }
+
+        /**
+         * Set the release date
+         *
+         * @param integer $release_date
+         */
+        public function setReleaseDate($release_date = null)
+        {
+            $this->_release_date = $release_date;
+        }
+
     }

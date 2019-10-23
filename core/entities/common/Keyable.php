@@ -29,18 +29,6 @@
          */
         protected $_key = null;
 
-        public static function getByKeyish($key)
-        {
-            foreach (static::getAll() as $item)
-            {
-                if ($item->getKey() == str_replace(array(' ', '/', "'"), array('', '', ''), mb_strtolower($key)))
-                {
-                    return $item;
-                }
-            }
-            return null;
-        }
-
         public static function getOrCreateByKeyish($scope, $key, $name)
         {
             $item = static::getByKeyish($key);
@@ -56,29 +44,41 @@
             return $item;
         }
 
-        protected function _generateKey()
+        public static function getByKeyish($key)
         {
-            if ($this->_key === null)
-                $this->_key = preg_replace("/[^\pL0-9]/iu", '', mb_strtolower($this->getName()));
+            foreach (static::getAll() as $item) {
+                if ($item->getKey() == str_replace([' ', '/', "'"], ['', '', ''], mb_strtolower($key))) {
+                    return $item;
+                }
+            }
+
+            return null;
         }
-        
+
+        public function toJSON($detailed = true)
+        {
+            return [
+                'id' => $this->getID(),
+                'key' => $this->getKey(),
+            ];
+        }
+
         public function getKey()
         {
             $this->_generateKey();
+
             return $this->_key;
-        }        
+        }
 
         public function setKey($key)
         {
             $this->_key = $key;
         }
-        
-        public function toJSON($detailed = true)
+
+        protected function _generateKey()
         {
-            return array(
-            		'id' => $this->getID(),
-            		'key' => $this->getKey(),
-            );
+            if ($this->_key === null)
+                $this->_key = preg_replace("/[^\pL0-9]/iu", '', mb_strtolower($this->getName()));
         }
 
     }

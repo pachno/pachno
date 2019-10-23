@@ -2,15 +2,8 @@
 
     namespace pachno\core\framework;
 
-    /**
-     * Cache class
-     *
-     * @author Daniel Andre Eikeland <zegenie@zegeniestudios.net>
-     * @version 3.1
-     * @license http://opensource.org/licenses/MPL-2.0 Mozilla Public License 2.0 (MPL 2.0)
-     * @package pachno
-     * @subpackage core
-     */
+    use Exception;
+    use pachno\core\entities\Scope;
 
     /**
      * Cache class
@@ -22,23 +15,34 @@
     {
 
         const KEY_SCOPES = '_scopes';
+
         const KEY_INTERNAL_MODULES = '_internal_modules';
+
         const KEY_CONFIGURATION = '_configuration';
+
         const KEY_ROUTES_CACHE = '_all_routes';
+
         const KEY_COMPONENT_OVERRIDE_MAP_CACHE = '_component_override_map';
+
         const KEY_ANNOTATION_LISTENERS_CACHE = '_annotation_listeners';
+
         const KEY_PERMISSIONS_CACHE = '_permissions';
+
         const KEY_MAIN_MENU_LINKS = '_mainmenu_links';
+
         const KEY_I18N = '_i18n_';
+
         const KEY_TEXTPARSER_ISSUE_REGEX = 'pachno\core\framework\helpers\TextParser::getIssueRegex';
 
         /**
          * Cache types APC, filesystem (default)
          */
         const TYPE_APC = 'apc';
+
         const TYPE_FILE = 'file';
 
         protected $_enabled = true;
+
         protected $_logging = false;
 
         /**
@@ -47,23 +51,21 @@
          * If no opcache present, it will fall back to caching into filesystem [file]
          */
         protected $_type;
+
         protected $_prefix;
 
         /**
          * container holding already loaded classes from filesystem so each cached file is loaded only once and later served from memory
          */
-        protected $loaded = array();
+        protected $loaded = [];
 
         public function __construct()
         {
-            if (Context::isCLI())
-            {
+            if (Context::isCLI()) {
                 $this->disable();
-            }
-            else
-            {
+            } else {
                 if (!file_exists(PACHNO_CACHE_PATH))
-                    if(!is_writable(dirname(PACHNO_CACHE_PATH))
+                    if (!is_writable(dirname(PACHNO_CACHE_PATH))
                         || !mkdir(PACHNO_CACHE_PATH))
                         throw new exceptions\CacheException('The cache directory is not writable', exceptions\CacheException::NO_FOLDER);
 
@@ -72,11 +74,9 @@
             }
         }
 
-        protected function getScopedKeyIfAppliccable($key, $prepend_scope)
+        public function disable()
         {
-            $scope_id = (Context::getScope() instanceof \pachno\core\entities\Scope) ? Context::getScope()->getID() : '';
-            $key = $this->_prefix . $key;
-            return ($prepend_scope) ? "{$key}.{$scope_id}" : $key;
+            $this->_enabled = false;
         }
 
         /**
@@ -94,8 +94,7 @@
 
             $success = false;
 
-            switch ($this->_type)
-            {
+            switch ($this->_type) {
                 case self::TYPE_APC:
                     $key = $this->getScopedKeyIfAppliccable($key, $prepend_scope);
                     $var = apc_fetch($key, $success);
@@ -105,7 +104,73 @@
                     $var = $this->fileGet($key, $prepend_scope);
                     $success = !empty($var);
             }
+
             return ($success) ? $var : null;
+        }
+
+        public function isEnabled()
+        {
+            return (Context::isCLI()) ? false : $this->_enabled;
+        }
+
+        protected function getScopedKeyIfAppliccable($key, $prepend_scope)
+        {
+            $scope_id = (Context::getScope() instanceof Scope) ? Context::getScope()->getID() : '';
+            $key = $this->_prefix . $key;
+
+            return ($prepend_scope) ? "{$key}.{$scope_id}" : $key;
+        }
+
+        public function fileGet($key, $prepend_scope = true)
+        {
+            if (!$this->isEnabled())
+                return null;
+
+            $key = $this->getScopedKeyIfAppliccable($key, $prepend_scope);
+            if (!$this->fileHas($key, $prepend_scope, true))
+                return null;
+
+            if (array_key_exists($key, $this->loaded)) {
+                return $this->loaded[$key];
+            }
+
+            $filename = $this->_getFilenameForKey($key);
+            if (!file_exists($filename))
+                throw new Exception("$filename - $key");
+            $this->loaded[$key] = unserialize(file_get_contents($filename));
+
+            return $this->loaded[$key];
+        }
+
+        public function fileHas($key, $prepend_scope = true, $scoped = false)
+        {
+            if (!$this->isEnabled())
+                return false;
+
+            $key = (!$scoped) ? $this->getScopedKeyIfAppliccable($key, $prepend_scope) : $key;
+            $filename = $this->_getFilenameForKey($key);
+
+            return (array_key_exists($key, $this->loaded) || file_exists($filename));
+        }
+
+        protected function _getFilenameForKey($key)
+        {
+            $key = $this->getKeyHash($key);
+
+            return PACHNO_CACHE_PATH . $key . '.cache';
+        }
+
+        /**
+         * Some keys have insuitable format for filepath, we must purify keys
+         * To prevent from accidentally filtering into two the same keys, we must also add hash calculated from original key
+         *
+         * @param string $key
+         */
+        protected function getKeyHash($key)
+        {
+            $key = preg_replace('/[^a-zA-Z0-9_\-]/', '-', $key);
+
+            return $key . '-' . substr(md5(serialize($key)), 0, 5);
         }
 
         /**
@@ -123,8 +188,7 @@
 
             $success = false;
 
-            switch ($this->_type)
-            {
+            switch ($this->_type) {
                 case self::TYPE_APC:
                     $key = $this->getScopedKeyIfAppliccable($key, $prepend_scope);
                     apc_fetch($key, $success);
@@ -142,8 +206,7 @@
             if (!$this->isEnabled())
                 return false;
 
-            switch ($this->_type)
-            {
+            switch ($this->_type) {
                 case self::TYPE_APC:
                     $key = $this->getScopedKeyIfAppliccable($key, $prepend_scope);
                     apc_store($key, $value);
@@ -155,45 +218,8 @@
 
             if ($this->_logging)
                 Logging::log('Caching value for key "' . $key . '"', 'cache');
+
             return true;
-        }
-
-        public function delete($key, $prepend_scope = true, $force = false)
-        {
-            if (!$force && !$this->isEnabled())
-                return false;
-
-            switch ($this->_type)
-            {
-                case self::TYPE_APC:
-                    $key = $this->getScopedKeyIfAppliccable($key, $prepend_scope);
-                    apc_delete($key);
-                    break;
-                case self::TYPE_FILE:
-                default:
-                    $this->fileDelete($key, $prepend_scope);
-            }
-        }
-
-        /**
-         * Some keys have insuitable format for filepath, we must purify keys
-         * To prevent from accidentally filtering into two the same keys, we must also add hash calculated from original key
-         * @param string $key
-         */
-        protected function getKeyHash($key)
-        {
-            $key = preg_replace('/[^a-zA-Z0-9_\-]/', '-', $key);
-            return $key . '-' . substr(md5(serialize($key)), 0, 5);
-        }
-
-        public function fileHas($key, $prepend_scope = true, $scoped = false)
-        {
-            if (!$this->isEnabled())
-                return false;
-
-            $key = (!$scoped) ? $this->getScopedKeyIfAppliccable($key, $prepend_scope) : $key;
-            $filename = $this->_getFilenameForKey($key);
-            return (array_key_exists($key, $this->loaded) || file_exists($filename));
         }
 
         public function fileAdd($key, $value, $prepend_scope = true)
@@ -210,6 +236,47 @@
             $this->loaded[$key] = $value;
         }
 
+        public function checkEnabled()
+        {
+            if ($this->_enabled) {
+                $this->_type = function_exists('apc_add') ? self::TYPE_APC : self::TYPE_FILE;
+            }
+        }
+
+        public function getCacheType()
+        {
+            return $this->_type;
+        }
+
+        public function setPrefix($prefix)
+        {
+            $this->_prefix = $prefix;
+        }
+
+        public function clearCacheKeys($keys)
+        {
+            foreach ($keys as $key) {
+                $this->delete($key);
+                $this->fileDelete($key);
+            }
+        }
+
+        public function delete($key, $prepend_scope = true, $force = false)
+        {
+            if (!$force && !$this->isEnabled())
+                return false;
+
+            switch ($this->_type) {
+                case self::TYPE_APC:
+                    $key = $this->getScopedKeyIfAppliccable($key, $prepend_scope);
+                    apc_delete($key);
+                    break;
+                case self::TYPE_FILE:
+                default:
+                    $this->fileDelete($key, $prepend_scope);
+            }
+        }
+
         public function fileDelete($key, $prepend_scope = true, $force = false)
         {
             if (!$force && !$this->isEnabled())
@@ -220,70 +287,6 @@
             if (file_exists($filename))
                 unlink($filename);
             unset($this->loaded[$key]);
-        }
-
-        public function fileGet($key, $prepend_scope = true)
-        {
-            if (!$this->isEnabled())
-                return null;
-
-            $key = $this->getScopedKeyIfAppliccable($key, $prepend_scope);
-            if (!$this->fileHas($key, $prepend_scope, true))
-                return null;
-
-            if (array_key_exists($key, $this->loaded))
-            {
-                return $this->loaded[$key];
-            }
-
-            $filename = $this->_getFilenameForKey($key);
-            if (!file_exists($filename))
-                throw new \Exception("$filename - $key");
-            $this->loaded[$key] = unserialize(file_get_contents($filename));
-            return $this->loaded[$key];
-        }
-
-        protected function _getFilenameForKey($key)
-        {
-            $key = $this->getKeyHash($key);
-            return PACHNO_CACHE_PATH . $key . '.cache';
-        }
-
-        public function checkEnabled()
-        {
-            if ($this->_enabled)
-            {
-                $this->_type = function_exists('apc_add') ? self::TYPE_APC : self::TYPE_FILE;
-            }
-        }
-
-        public function getCacheType()
-        {
-            return $this->_type;
-        }
-
-        public function isEnabled()
-        {
-            return (Context::isCLI()) ? false : $this->_enabled;
-        }
-
-        public function disable()
-        {
-            $this->_enabled = false;
-        }
-
-        public function setPrefix($prefix)
-        {
-            $this->_prefix = $prefix;
-        }
-
-        public function clearCacheKeys($keys)
-        {
-            foreach ($keys as $key)
-            {
-                $this->delete($key);
-                $this->fileDelete($key);
-            }
         }
 
     }

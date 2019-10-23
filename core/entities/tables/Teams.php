@@ -2,9 +2,10 @@
 
     namespace pachno\core\entities\tables;
 
+    use b2db\Criterion;
+    use b2db\QueryColumnSort;
     use pachno\core\entities\Team;
-    use pachno\core\framework,
-        b2db\Criteria;
+    use pachno\core\framework;
 
     /**
      * Teams table
@@ -31,10 +32,15 @@
     {
 
         const B2DB_TABLE_VERSION = 1;
+
         const B2DBNAME = 'teams';
+
         const ID = 'teams.id';
+
         const SCOPE = 'teams.scope';
+
         const NAME = 'teams.name';
+
         const ONDEMAND = 'teams.ondemand';
 
         public function getAll()
@@ -42,7 +48,7 @@
             $query = $this->getQuery();
             $query->where(self::SCOPE, framework\Context::getScope()->getID());
             $query->where(self::ONDEMAND, false);
-            $query->addOrderBy('teams.name', \b2db\QueryColumnSort::SORT_ASC);
+            $query->addOrderBy('teams.name', QueryColumnSort::SORT_ASC);
 
             return $this->select($query);
         }
@@ -53,7 +59,7 @@
             $query->where(self::NAME, $team_name);
             $query->where(self::SCOPE, framework\Context::getScope()->getID());
 
-            return (bool) $this->count($query);
+            return (bool)$this->count($query);
         }
 
         public function doesIDExist($id)
@@ -61,13 +67,14 @@
             $query = $this->getQuery();
             $query->where(self::ONDEMAND, false);
             $query->where(self::ID, $id);
+
             return $this->count($query);
         }
 
         public function quickfind($team_name)
         {
             $query = $this->getQuery();
-            $query->where(self::NAME, "%{$team_name}%", \b2db\Criterion::LIKE);
+            $query->where(self::NAME, "%{$team_name}%", Criterion::LIKE);
             $query->where(self::SCOPE, framework\Context::getScope()->getID());
             $query->where(self::ONDEMAND, false);
 
@@ -85,7 +92,7 @@
 
         protected function setupIndexes()
         {
-            $this->addIndex('scope_ondemand', array(self::SCOPE, self::ONDEMAND));
+            $this->addIndex('scope_ondemand', [self::SCOPE, self::ONDEMAND]);
         }
 
     }

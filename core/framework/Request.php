@@ -2,17 +2,9 @@
 
     namespace pachno\core\framework;
 
-    use \pachno\core\entities\File;
-
-    /**
-     * Request class, used for retrieving request information
-     *
-     * @author Daniel Andre Eikeland <zegenie@zegeniestudios.net>
-     * @version 3.1
-     * @license http://opensource.org/licenses/MPL-2.0 Mozilla Public License 2.0 (MPL 2.0)
-     * @package pachno
-     * @subpackage mvc
-     */
+    use ArrayAccess;
+    use Exception;
+    use pachno\core\entities\File;
 
     /**
      * Request class, used for retrieving request information
@@ -20,24 +12,63 @@
      * @package pachno
      * @subpackage mvc
      */
-    class Request implements \ArrayAccess
+    class Request implements ArrayAccess
     {
 
         const POST = 'POST';
+
         const GET = 'GET';
+
         const PUT = 'PUT';
+
         const DELETE = 'DELETE';
 
-        protected $_request_parameters = array();
-        protected $_post_parameters = array();
-        protected $_get_parameters = array();
-        protected $_files = array();
-        protected $_cookies = array();
+        protected $_request_parameters = [];
+
+        protected $_post_parameters = [];
+
+        protected $_get_parameters = [];
+
+        protected $_files = [];
+
+        protected $_cookies = [];
+
         protected $_querystring = null;
 
         protected $_hasfiles = false;
 
         protected $_is_ajax_call = false;
+
+        /**
+         * Sets up the request object and initializes and assigns the correct
+         * variables
+         */
+        public function __construct()
+        {
+            foreach ($_COOKIE as $key => $value) {
+                $this->_cookies[$key] = $value;
+            }
+            foreach ($_POST as $key => $value) {
+                $this->_post_parameters[$key] = $value;
+                $this->_request_parameters[$key] = $value;
+            }
+            foreach ($_GET as $key => $value) {
+                $this->_get_parameters[$key] = $value;
+                $this->_request_parameters[$key] = $value;
+            }
+            foreach ($_FILES as $key => $file) {
+                $this->_files[$key] = $file;
+                $this->_hasfiles = true;
+            }
+            $this->_is_ajax_call = (array_key_exists("HTTP_X_REQUESTED_WITH", $_SERVER) && mb_strtolower($_SERVER["HTTP_X_REQUESTED_WITH"]) == 'xmlhttprequest');
+
+            if (isset($_SESSION) && !array_key_exists('__upload_status', $_SESSION)) {
+                $_SESSION['__upload_status'] = [];
+            }
+
+            $this->_querystring = array_key_exists('QUERY_STRING', $_SERVER) ? $_SERVER['QUERY_STRING'] : '';
+
+        }
 
         /**
          * Handles an uploaded file, stores it to the correct folder, adds an entry
@@ -46,77 +77,61 @@
          * @param string $key The request parameter the file was sent as
          *
          * @return File The File object
-         * @throws \Exception
+         * @throws Exception
          */
         public function handleUpload($key)
         {
             $apc_exists = self::CanGetUploadStatus();
             if ($apc_exists && !array_key_exists($this->getParameter('APC_UPLOAD_PROGRESS'), $_SESSION['__upload_status'])) {
-                $_SESSION['__upload_status'][$this->getParameter('APC_UPLOAD_PROGRESS')] = array(
-                    'id'       => $this->getParameter('APC_UPLOAD_PROGRESS'),
+                $_SESSION['__upload_status'][$this->getParameter('APC_UPLOAD_PROGRESS')] = [
+                    'id' => $this->getParameter('APC_UPLOAD_PROGRESS'),
                     'finished' => false,
-                    'percent'  => 0,
-                    'total'    => 0,
+                    'percent' => 0,
+                    'total' => 0,
                     'complete' => 0
-                );
+                ];
             }
-            try
-            {
-                if ($this->getUploadedFile($key) !== null)
-                {
+            try {
+                if ($this->getUploadedFile($key) !== null) {
                     $thefile = $this->getUploadedFile($key);
-                    if (Settings::isUploadsEnabled())
-                    {
+                    if (Settings::isUploadsEnabled()) {
                         Logging::log('Uploads enabled');
-                        if ($thefile['error'] == UPLOAD_ERR_OK)
-                        {
+                        if ($thefile['error'] == UPLOAD_ERR_OK) {
                             Logging::log('No upload errors');
-                            if (filesize($thefile['tmp_name']) > Settings::getUploadsEffectiveMaxSize(true))
-                            {
-                                throw new \Exception(Context::getI18n()->__('You cannot upload files bigger than %max_size MB', array('%max_size' => Settings::getUploadsEffectiveMaxSize())));
+                            if (filesize($thefile['tmp_name']) > Settings::getUploadsEffectiveMaxSize(true)) {
+                                throw new Exception(Context::getI18n()->__('You cannot upload files bigger than %max_size MB', ['%max_size' => Settings::getUploadsEffectiveMaxSize()]));
                             }
                             Logging::log('Upload filesize ok');
                             $extension = mb_substr(basename($thefile['name']), mb_strrpos(basename($thefile['name']), '.'));
-                            if ($extension == '')
-                            {
+                            if ($extension == '') {
                                 Logging::log('OOps, could not determine upload filetype', 'main', Logging::LEVEL_WARNING_RISK);
                                 //throw new \Exception(Context::getI18n()->__('Could not determine filetype'));
-                            }
-                            else
-                            {
+                            } else {
                                 Logging::log('Checking uploaded file extension');
                                 $extension = mb_substr($extension, 1);
                                 $upload_extensions = Settings::getUploadsExtensionsList();
-                                if (Settings::getUploadsRestrictionMode() == 'blacklist')
-                                {
+                                if (Settings::getUploadsRestrictionMode() == 'blacklist') {
                                     Logging::log('... using blacklist');
-                                    foreach ($upload_extensions as $an_ext)
-                                    {
-                                        if (mb_strtolower(trim($extension)) == mb_strtolower(trim($an_ext)))
-                                        {
+                                    foreach ($upload_extensions as $an_ext) {
+                                        if (mb_strtolower(trim($extension)) == mb_strtolower(trim($an_ext))) {
                                             Logging::log('Upload extension not ok');
-                                            throw new \Exception(Context::getI18n()->__('This filetype is not allowed'));
+                                            throw new Exception(Context::getI18n()->__('This filetype is not allowed'));
                                         }
                                     }
                                     Logging::log('Upload extension ok');
-                                }
-                                else
-                                {
+                                } else {
                                     Logging::log('... using whitelist');
                                     $is_ok = false;
-                                    foreach ($upload_extensions as $an_ext)
-                                    {
-                                        if (mb_strtolower(trim($extension)) == mb_strtolower(trim($an_ext)))
-                                        {
+                                    foreach ($upload_extensions as $an_ext) {
+                                        if (mb_strtolower(trim($extension)) == mb_strtolower(trim($an_ext))) {
                                             Logging::log('Upload extension ok');
                                             $is_ok = true;
                                             break;
                                         }
                                     }
-                                    if (!$is_ok)
-                                    {
+                                    if (!$is_ok) {
                                         Logging::log('Upload extension not ok');
-                                        throw new \Exception(Context::getI18n()->__('This filetype is not allowed'));
+                                        throw new Exception(Context::getI18n()->__('This filetype is not allowed'));
                                     }
                                 }
                                 /*if (in_array(mb_strtolower(trim($extension)), array('php', 'asp')))
@@ -125,92 +140,74 @@
                                     throw new \Exception(Context::getI18n()->__('This filetype is not allowed'));
                                 }*/
                             }
-                            if (is_uploaded_file($thefile['tmp_name']))
-                            {
+                            if (is_uploaded_file($thefile['tmp_name'])) {
                                 Logging::log('Uploaded file is uploaded');
 
                                 $new_filename = Context::getUser()->getID() . '_' . NOW . '_' . basename($thefile['name']);
-                                if (Settings::getUploadStorage() == 'files')
-                                {
+                                if (Settings::getUploadStorage() == 'files') {
                                     $files_dir = Settings::getUploadsLocalpath();
-                                    $filename = $files_dir.$new_filename;
-                                }
-                                else
-                                {
+                                    $filename = $files_dir . $new_filename;
+                                } else {
                                     $filename = $thefile['tmp_name'];
                                 }
-                                Logging::log('Moving uploaded file to '.$filename);
-                                if (Settings::getUploadStorage() == 'files' && !move_uploaded_file($thefile['tmp_name'], $filename))
-                                {
+                                Logging::log('Moving uploaded file to ' . $filename);
+                                if (Settings::getUploadStorage() == 'files' && !move_uploaded_file($thefile['tmp_name'], $filename)) {
                                     Logging::log('Moving uploaded file failed!');
-                                    throw new \Exception(Context::getI18n()->__('An error occured when saving the file'));
-                                }
-                                else
-                                {
-                                    Logging::log('Upload complete and ok, storing upload status and returning filename '.$new_filename);
+                                    throw new Exception(Context::getI18n()->__('An error occured when saving the file'));
+                                } else {
+                                    Logging::log('Upload complete and ok, storing upload status and returning filename ' . $new_filename);
                                     $content_type = File::getMimeType($filename);
                                     $file = new File();
                                     $file->setRealFilename($new_filename);
                                     $file->setOriginalFilename(basename($thefile['name']));
                                     $file->setContentType($content_type);
-                                    $file->setDescription($this->getParameter($key.'_description'));
+                                    $file->setDescription($this->getParameter($key . '_description'));
                                     $file->setUploadedBy(Context::getUser());
-                                    if (Settings::getUploadStorage() == 'database')
-                                    {
+                                    if (Settings::getUploadStorage() == 'database') {
                                         $file->setContent(file_get_contents($filename));
                                     }
                                     $file->save();
-                                    if ($apc_exists)
-                                    {
-                                        $_SESSION['__upload_status'][$this->getParameter('APC_UPLOAD_PROGRESS')] = array(
-                                            'id'       => $this->getParameter('APC_UPLOAD_PROGRESS'),
+                                    if ($apc_exists) {
+                                        $_SESSION['__upload_status'][$this->getParameter('APC_UPLOAD_PROGRESS')] = [
+                                            'id' => $this->getParameter('APC_UPLOAD_PROGRESS'),
                                             'finished' => true,
-                                            'percent'  => 100,
-                                            'total'    => 0,
+                                            'percent' => 100,
+                                            'total' => 0,
                                             'complete' => 0,
-                                            'file_id'  => $file->getID()
-                                        );
+                                            'file_id' => $file->getID()
+                                        ];
                                     }
+
                                     return $file;
                                 }
-                            }
-                            else
-                            {
+                            } else {
                                 Logging::log('Uploaded file was not uploaded correctly');
-                                throw new \Exception(Context::getI18n()->__('The file was not uploaded correctly'));
+                                throw new Exception(Context::getI18n()->__('The file was not uploaded correctly'));
                             }
-                        }
-                        else
-                        {
-                            Logging::log('Upload error: '.$thefile['error']);
-                            switch ($thefile['error'])
-                            {
+                        } else {
+                            Logging::log('Upload error: ' . $thefile['error']);
+                            switch ($thefile['error']) {
                                 case UPLOAD_ERR_INI_SIZE:
                                 case UPLOAD_ERR_FORM_SIZE:
-                                    throw new \Exception(Context::getI18n()->__('You cannot upload files bigger than %max_size MB', array('%max_size' => Settings::getUploadsEffectiveMaxSize())));
+                                    throw new Exception(Context::getI18n()->__('You cannot upload files bigger than %max_size MB', ['%max_size' => Settings::getUploadsEffectiveMaxSize()]));
                                 case UPLOAD_ERR_PARTIAL:
-                                    throw new \Exception(Context::getI18n()->__('The upload was interrupted, please try again'));
+                                    throw new Exception(Context::getI18n()->__('The upload was interrupted, please try again'));
                                 case UPLOAD_ERR_NO_FILE:
-                                    throw new \Exception(Context::getI18n()->__('No file was uploaded'));
+                                    throw new Exception(Context::getI18n()->__('No file was uploaded'));
                                 default:
-                                    throw new \Exception(Context::getI18n()->__('An unhandled error occured') . ': ' . $thefile['error']);
+                                    throw new Exception(Context::getI18n()->__('An unhandled error occured') . ': ' . $thefile['error']);
                             }
                         }
-                    }
-                    else
-                    {
+                    } else {
                         Logging::log('Uploads not enabled');
-                        throw new \Exception(Context::getI18n()->__('Uploads are not enabled'));
+                        throw new Exception(Context::getI18n()->__('Uploads are not enabled'));
                     }
                 }
                 Logging::log('Could not find uploaded file' . $key);
-                throw new \Exception(Context::getI18n()->__('Could not find the uploaded file. Please make sure that it is not too big.'));
-            }
-            catch (\Exception $e)
-            {
-                Logging::log('Upload exception: '.$e->getMessage());
-                if ($apc_exists)
-                {
+                throw new Exception(Context::getI18n()->__('Could not find the uploaded file. Please make sure that it is not too big.'));
+            } catch (Exception $e) {
+                Logging::log('Upload exception: ' . $e->getMessage());
+                if ($apc_exists) {
                     $_SESSION['__upload_status'][$this->getParameter('APC_UPLOAD_PROGRESS')]['error'] = $e->getMessage();
                     $_SESSION['__upload_status'][$this->getParameter('APC_UPLOAD_PROGRESS')]['finished'] = true;
                     $_SESSION['__upload_status'][$this->getParameter('APC_UPLOAD_PROGRESS')]['percent'] = 100;
@@ -230,16 +227,91 @@
             return ini_get('apc.enabled') && ini_get('apc.rfc1867');
         }
 
+        /**
+         * Get a parameter from the request
+         *
+         * @param string $key The parameter you want to retrieve
+         * @param mixed $default_value The value to return if it doesn't exist
+         * @param boolean $sanitized Whether to sanitize strings or not
+         *
+         * @return mixed
+         */
+        public function getParameter($key, $default_value = null, $sanitized = true)
+        {
+            if (isset($this->_request_parameters[$key])) {
+                if ($sanitized && is_string($this->_request_parameters[$key])) {
+                    return $this->__sanitize_string($this->_request_parameters[$key]);
+                } elseif ($sanitized) {
+                    return $this->__sanitize_params($this->_request_parameters[$key]);
+                } else {
+                    return $this->_request_parameters[$key];
+                }
+            } else {
+                return $default_value;
+            }
+        }
+
+        /**
+         * Sanitize a string
+         *
+         * @param string $string The string to sanitize
+         *
+         * @return string the sanitized string
+         */
+        protected function __sanitize_string($string)
+        {
+            try {
+                $charset = (class_exists('\pachno\core\framework\Context')) ? Context::getI18n()->getCharset() : 'utf-8';
+            } catch (Exception $e) {
+                $charset = 'utf-8';
+            }
+
+            return htmlspecialchars($string, ENT_QUOTES, $charset);
+        }
+
+        /**
+         * Sanitizes a given parameter and returns it
+         *
+         * @param mixed $params
+         *
+         * @return mixed
+         */
+        protected function __sanitize_params($params)
+        {
+            if (is_array($params)) {
+                foreach ($params as $key => $param) {
+                    if (is_string($param)) {
+                        $params[$key] = $this->__sanitize_string($param);
+                    } elseif (is_array($param)) {
+                        $params[$key] = $this->__sanitize_params($param);
+                    }
+                }
+            } elseif (is_string($params)) {
+                $params = $this->__sanitize_string($params);
+            }
+
+            return $params;
+        }
+
+        public function getUploadedFile($key)
+        {
+            if (isset($this->_files[$key])) {
+                return $this->_files[$key];
+            }
+
+            return null;
+        }
+
         public function markUploadAsFinishedWithError($id, $error)
         {
-            $_SESSION['__upload_status'][$id] = array(
-                'id'       => $id,
+            $_SESSION['__upload_status'][$id] = [
+                'id' => $id,
                 'finished' => true,
-                'percent'  => 100,
-                'total'    => 0,
+                'percent' => 100,
+                'total' => 0,
                 'complete' => 0,
-                'error'    => $error
-            );
+                'error' => $error
+            ];
         }
 
         public function getUploadStatus($id)
@@ -247,31 +319,29 @@
             Logging::log('sanitizing id');
             // sanitize the ID value
             $id = preg_replace('/[^a-z0-9]/i', '', $id);
-            if (mb_strlen($id) == 0)
-            {
-                Logging::log('oops, invalid id '. $id);
+            if (mb_strlen($id) == 0) {
+                Logging::log('oops, invalid id ' . $id);
+
                 return;
             }
 
             // ensure the uploaded status data exists in the session
-            if (!array_key_exists($id, $_SESSION['__upload_status']))
-            {
-                Logging::log('upload with this id ' .$id. ' is not in progress yet');
-                $_SESSION['__upload_status'][$id] = array(
-                    'id'       => $id,
+            if (!array_key_exists($id, $_SESSION['__upload_status'])) {
+                Logging::log('upload with this id ' . $id . ' is not in progress yet');
+                $_SESSION['__upload_status'][$id] = [
+                    'id' => $id,
                     'finished' => false,
-                    'percent'  => 0,
-                    'total'    => 0,
+                    'percent' => 0,
+                    'total' => 0,
                     'complete' => 0
-                );
+                ];
             }
 
             // retrieve the data from the session so it can be updated and returned
             $ret = $_SESSION['__upload_status'][$id];
 
             // if we can't retrieve the status or the upload has finished just return
-            if (!self::CanGetUploadStatus() || $ret['finished'])
-            {
+            if (!self::CanGetUploadStatus() || $ret['finished']) {
                 Logging::log('upload either finished or we cant track it');
 //                $ret['finished'] = true;
 //                $ret['percent'] = 100;
@@ -284,15 +354,12 @@
 
             // false is returned if the data isn't found
             if ($status) {
-                $ret['finished'] = (bool) $status['done'];
-                $ret['total']    = $status['total'];
+                $ret['finished'] = (bool)$status['done'];
+                $ret['total'] = $status['total'];
                 $ret['complete'] = $status['current'];
-                if (array_key_exists('file_id', $ret))
-                {
+                if (array_key_exists('file_id', $ret)) {
                     $status['file_id'] = $ret['file_id'];
-                }
-                elseif (array_key_exists('error', $ret))
-                {
+                } elseif (array_key_exists('error', $ret)) {
                     $status['failed'] = true;
                     $status['error'] = $ret['error'];
                 }
@@ -308,84 +375,9 @@
             return $ret;
         }
 
-        /**
-         * Sanitizes a given parameter and returns it
-         *
-         * @param mixed $params
-         *
-         * @return mixed
-         */
-        protected function __sanitize_params($params)
-        {
-            if (is_array($params))
-            {
-                foreach ($params as $key => $param)
-                {
-                    if (is_string($param))
-                    {
-                        $params[$key] = $this->__sanitize_string($param);
-                    }
-                    elseif (is_array($param))
-                    {
-                        $params[$key] = $this->__sanitize_params($param);
-                    }
-                }
-            }
-            elseif (is_string($params))
-            {
-                $params = $this->__sanitize_string($params);
-            }
-            return $params;
-        }
-
-        /**
-         * Sets up the request object and initializes and assigns the correct
-         * variables
-         */
-        public function __construct()
-        {
-            foreach ($_COOKIE as $key => $value)
-            {
-                $this->_cookies[$key] = $value;
-            }
-            foreach ($_POST as $key => $value)
-            {
-                $this->_post_parameters[$key] = $value;
-                $this->_request_parameters[$key] = $value;
-            }
-            foreach ($_GET as $key => $value)
-            {
-                $this->_get_parameters[$key] = $value;
-                $this->_request_parameters[$key] = $value;
-            }
-            foreach ($_FILES as $key => $file)
-            {
-                $this->_files[$key] = $file;
-                $this->_hasfiles = true;
-            }
-            $this->_is_ajax_call = (array_key_exists("HTTP_X_REQUESTED_WITH", $_SERVER) && mb_strtolower($_SERVER["HTTP_X_REQUESTED_WITH"]) == 'xmlhttprequest');
-
-            if (isset($_SESSION) && !array_key_exists('__upload_status', $_SESSION))
-            {
-                $_SESSION['__upload_status'] = array();
-            }
-
-            $this->_querystring = array_key_exists('QUERY_STRING', $_SERVER) ? $_SERVER['QUERY_STRING'] : '';
-
-        }
-
         public function hasFileUploads()
         {
-            return (bool) $this->_hasfiles;
-        }
-
-        public function getUploadedFile($key)
-        {
-            if (isset($this->_files[$key]))
-            {
-                return $this->_files[$key];
-            }
-            return null;
+            return (bool)$this->_hasfiles;
         }
 
         public function getUploadedFiles()
@@ -405,54 +397,34 @@
          */
         public function getParameters()
         {
-            return array_diff_key($this->_request_parameters, array('url' => null));;
-        }
-
-        /**
-         * Get a parameter from the request
-         *
-         * @param string $key The parameter you want to retrieve
-         * @param mixed $default_value The value to return if it doesn't exist
-         * @param boolean $sanitized Whether to sanitize strings or not
-         *
-         * @return mixed
-         */
-        public function getParameter($key, $default_value = null, $sanitized = true)
-        {
-            if (isset($this->_request_parameters[$key]))
-            {
-                if ($sanitized && is_string($this->_request_parameters[$key]))
-                {
-                    return $this->__sanitize_string($this->_request_parameters[$key]);
-                }
-                elseif ($sanitized)
-                {
-                    return $this->__sanitize_params($this->_request_parameters[$key]);
-                }
-                else
-                {
-                    return $this->_request_parameters[$key];
-                }
-            }
-            else
-            {
-                return $default_value;
-            }
+            return array_diff_key($this->_request_parameters, ['url' => null]);;
         }
 
         /**
          * Retrieve an unsanitized request parameter
          *
-         * @see getParameter
-         *
          * @param string $key The parameter you want to retrieve
          * @param mixed $default_value [optional] The value to return if it doesn't exist
          *
          * @return mixed
+         * @see getParameter
+         *
          */
         public function getRawParameter($key, $default_value = null)
         {
             return $this->getParameter($key, $default_value, false);
+        }
+
+        /**
+         * Check to see if a cookie is set
+         *
+         * @param string $key The cookie to check for
+         *
+         * @return boolean
+         */
+        public function hasCookie($key)
+        {
+            return (bool)($this->getCookie($key) !== null);
         }
 
         /**
@@ -468,51 +440,9 @@
             return (isset($this->_cookies[$key])) ? $this->_cookies[$key] : $default_value;
         }
 
-        /**
-         * Check to see if a request parameter is set
-         *
-         * @param string $key The parameter to check for
-         *
-         * @return boolean
-         */
-        public function hasParameter($key)
+        public function isPut()
         {
-            return array_key_exists($key, $this->_request_parameters);
-        }
-
-        /**
-         * Check to see if a cookie is set
-         *
-         * @param string $key The cookie to check for
-         *
-         * @return boolean
-         */
-        public function hasCookie($key)
-        {
-            return (bool) ($this->getCookie($key) !== null);
-        }
-
-        /**
-         * Set a request parameter
-         *
-         * @param string $key The parameter to set
-         * @param mixed $value The value to set it too
-         */
-        public function setParameter($key, $value)
-        {
-            $this->_request_parameters[$key] = $value;
-        }
-
-        /**
-         * Get the current request method
-         *
-         * @return integer
-         */
-        public function getMethod()
-        {
-            if (in_array($_SERVER['REQUEST_METHOD'], [self::GET, self::POST, self::DELETE, self::PUT])) {
-                return $_SERVER['REQUEST_METHOD'];
-            }
+            return ($this->isMethod(self::PUT) || ($this->isPost() && mb_strtolower($this['_method'] == 'put')));
         }
 
         /**
@@ -527,14 +457,21 @@
             return ($this->getMethod() == $method) ? true : false;
         }
 
+        /**
+         * Get the current request method
+         *
+         * @return integer
+         */
+        public function getMethod()
+        {
+            if (in_array($_SERVER['REQUEST_METHOD'], [self::GET, self::POST, self::DELETE, self::PUT])) {
+                return $_SERVER['REQUEST_METHOD'];
+            }
+        }
+
         public function isPost()
         {
             return $this->isMethod(self::POST);
-        }
-
-        public function isPut()
-        {
-            return ($this->isMethod(self::PUT) || ($this->isPost() && mb_strtolower($this['_method'] == 'put')));
         }
 
         public function isDelete()
@@ -550,26 +487,6 @@
         public function isAjaxCall()
         {
             return $this->_is_ajax_call;
-        }
-
-        /**
-         * Sanitize a string
-         *
-         * @param string $string The string to sanitize
-         *
-         * @return string the sanitized string
-         */
-        protected function __sanitize_string($string)
-        {
-            try
-            {
-                $charset = (class_exists('\pachno\core\framework\Context')) ? Context::getI18n()->getCharset() : 'utf-8';
-            }
-            catch (\Exception $e)
-            {
-                $charset = 'utf-8';
-            }
-            return htmlspecialchars($string, ENT_QUOTES, $charset);
         }
 
         /**
@@ -594,6 +511,18 @@
             return $this->hasParameter($offset);
         }
 
+        /**
+         * Check to see if a request parameter is set
+         *
+         * @param string $key The parameter to check for
+         *
+         * @return boolean
+         */
+        public function hasParameter($key)
+        {
+            return array_key_exists($key, $this->_request_parameters);
+        }
+
         public function offsetGet($offset)
         {
             return $this->getParameter($offset);
@@ -602,6 +531,17 @@
         public function offsetSet($offset, $value)
         {
             $this->setParameter($offset, $value);
+        }
+
+        /**
+         * Set a request parameter
+         *
+         * @param string $key The parameter to set
+         * @param mixed $value The value to set it too
+         */
+        public function setParameter($key, $value)
+        {
+            $this->_request_parameters[$key] = $value;
         }
 
         public function offsetUnset($offset)

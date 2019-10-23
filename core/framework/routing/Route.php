@@ -2,13 +2,14 @@
 
     namespace pachno\core\framework\routing;
 
-    use b2db\Annotation;
     use b2db\AnnotationSet;
+    use Exception;
     use pachno\core\framework\Action;
     use pachno\core\framework\Context;
-    use pachno\core\framework\exceptions\RoutingException;
-    use pachno\core\framework\Logging;
+    use pachno\core\framework\exceptions\ActionNotFoundException;
     use pachno\core\framework\exceptions\InvalidRouteException;
+    use pachno\core\framework\exceptions\RoutingException;
+    use ReflectionMethod;
 
     /**
      * Route class for individual routes
@@ -44,42 +45,6 @@
 
         protected $generated_method;
 
-        /**
-         * Create a route object from an @Route annotation
-         *
-         * @param string $module_name
-         * @param string $controller
-         * @param string $route_name_prefix
-         * @param string $route_url_prefix
-         * @param \ReflectionMethod $method
-         * @param AnnotationSet $annotationSet
-         *
-         * @return self
-         */
-        public static function fromAnnotation($module_name, $controller, $route_name_prefix, $route_url_prefix, \ReflectionMethod $method, AnnotationSet $annotationSet)
-        {
-            if (strpos($method->name, 'run') !== 0) {
-                throw new InvalidRouteException('A @Route annotation can only be used on methods prefixed with "run"');
-            }
-
-            $route_annotation = $annotationSet->getAnnotation('Route');
-            $actionName = substr($method->name, 3);
-            $action = $controller . '::' . $actionName;
-            $name = $route_name_prefix . (($route_annotation->hasProperty('name')) ? $route_annotation->getProperty('name') : strtolower($actionName));
-            $url = rtrim($route_url_prefix . $route_annotation->getProperty('url'), '/');
-            $parameters = ($annotationSet->hasAnnotation('Parameters')) ? $annotationSet->getAnnotation('Parameters')->getProperties() : [];
-
-            $route = new self($name, $module_name, $action, $url, $parameters);
-            $route->setIsCsrfProtected($annotationSet->hasAnnotation('CsrfProtected'));
-            $route->setIsAnonymous($annotationSet->hasAnnotation('AnonymousRoute'));
-            $route->setAllowedMethods($route_annotation->getProperty('methods', []));
-            if ($annotationSet->hasAnnotation('AuthenticationMethod')) {
-                $route->setAuthenticationMethod($annotationSet->getAnnotation('AuthenticationMethod'));
-            }
-
-            return $route;
-        }
-
         public function __construct($name, $module_name, $module_action, $url = null, $parameters = [], $allowed_methods = [])
         {
             $this->name = $name;
@@ -98,38 +63,6 @@
             if ($this->url !== null) {
                 $this->generateRegex();
             }
-        }
-
-        /**
-         * @return mixed
-         */
-        public function getName()
-        {
-            return $this->name;
-        }
-
-        /**
-         * @param mixed $name
-         */
-        public function setName($name): void
-        {
-            $this->name = $name;
-        }
-
-        /**
-         * @return mixed
-         */
-        public function getUrl()
-        {
-            return $this->url;
-        }
-
-        /**
-         * @param mixed $url
-         */
-        public function setUrl($url): void
-        {
-            $this->url = $url;
         }
 
         protected function generateRegex()
@@ -184,6 +117,74 @@
         }
 
         /**
+         * Create a route object from an @Route annotation
+         *
+         * @param string $module_name
+         * @param string $controller
+         * @param string $route_name_prefix
+         * @param string $route_url_prefix
+         * @param ReflectionMethod $method
+         * @param AnnotationSet $annotationSet
+         *
+         * @return self
+         */
+        public static function fromAnnotation($module_name, $controller, $route_name_prefix, $route_url_prefix, ReflectionMethod $method, AnnotationSet $annotationSet)
+        {
+            if (strpos($method->name, 'run') !== 0) {
+                throw new InvalidRouteException('A @Route annotation can only be used on methods prefixed with "run"');
+            }
+
+            $route_annotation = $annotationSet->getAnnotation('Route');
+            $actionName = substr($method->name, 3);
+            $action = $controller . '::' . $actionName;
+            $name = $route_name_prefix . (($route_annotation->hasProperty('name')) ? $route_annotation->getProperty('name') : strtolower($actionName));
+            $url = rtrim($route_url_prefix . $route_annotation->getProperty('url'), '/');
+            $parameters = ($annotationSet->hasAnnotation('Parameters')) ? $annotationSet->getAnnotation('Parameters')->getProperties() : [];
+
+            $route = new self($name, $module_name, $action, $url, $parameters);
+            $route->setIsCsrfProtected($annotationSet->hasAnnotation('CsrfProtected'));
+            $route->setIsAnonymous($annotationSet->hasAnnotation('AnonymousRoute'));
+            $route->setAllowedMethods($route_annotation->getProperty('methods', []));
+            if ($annotationSet->hasAnnotation('AuthenticationMethod')) {
+                $route->setAuthenticationMethod($annotationSet->getAnnotation('AuthenticationMethod'));
+            }
+
+            return $route;
+        }
+
+        /**
+         * @param bool $is_csrf_protected
+         */
+        public function setIsCsrfProtected(bool $is_csrf_protected): void
+        {
+            $this->is_csrf_protected = $is_csrf_protected;
+        }
+
+        /**
+         * @param bool $is_anonymous
+         */
+        public function setIsAnonymous(bool $is_anonymous): void
+        {
+            $this->is_anonymous = $is_anonymous;
+        }
+
+        /**
+         * @return mixed
+         */
+        public function getUrl()
+        {
+            return $this->url;
+        }
+
+        /**
+         * @param mixed $url
+         */
+        public function setUrl($url): void
+        {
+            $this->url = $url;
+        }
+
+        /**
          * @return mixed
          */
         public function getRegex()
@@ -208,43 +209,11 @@
         }
 
         /**
-         * @param bool $is_csrf_protected
-         */
-        public function setIsCsrfProtected(bool $is_csrf_protected): void
-        {
-            $this->is_csrf_protected = $is_csrf_protected;
-        }
-
-        /**
          * @return bool
          */
         public function isAnonymous(): bool
         {
             return $this->is_anonymous;
-        }
-
-        /**
-         * @param bool $is_anonymous
-         */
-        public function setIsAnonymous(bool $is_anonymous): void
-        {
-            $this->is_anonymous = $is_anonymous;
-        }
-
-        /**
-         * @return mixed
-         */
-        public function getModuleName()
-        {
-            return $this->module_name;
-        }
-
-        /**
-         * @param mixed $module_name
-         */
-        public function setModuleName($module_name): void
-        {
-            $this->module_name = $module_name;
         }
 
         /**
@@ -284,22 +253,6 @@
         }
 
         /**
-         * @return mixed
-         */
-        public function getModuleAction()
-        {
-            return $this->module_action;
-        }
-
-        /**
-         * @param mixed $module_action
-         */
-        public function setModuleAction($module_action): void
-        {
-            $this->module_action = $module_action;
-        }
-
-        /**
          * @return bool
          */
         public function isOverridden(): bool
@@ -313,22 +266,6 @@
         public function setIsOverridden(bool $is_overridden): void
         {
             $this->is_overridden = $is_overridden;
-        }
-
-        /**
-         * @return array
-         */
-        public function getParameters(): array
-        {
-            return $this->parameters;
-        }
-
-        /**
-         * @param array $parameters
-         */
-        public function setParameters(array $parameters): void
-        {
-            $this->parameters = $parameters;
         }
 
         public function setParameter(string $key, $value): void
@@ -346,23 +283,6 @@
         public function getParameterNames()
         {
             return $this->names;
-        }
-
-        protected function isMethodAllowed($method)
-        {
-            if (empty($this->allowed_methods)) {
-                return true;
-            }
-
-            if (!is_array($this->allowed_methods)) {
-                var_dump($this->allowed_methods);
-                die();
-            }
-            if (in_array('*', $this->allowed_methods)) {
-                return true;
-            }
-
-            return in_array($method, $this->allowed_methods);
         }
 
         /**
@@ -436,7 +356,41 @@
             }
 
             $this->matched_parameters = $out;
+
             return true;
+        }
+
+        protected function isMethodAllowed($method)
+        {
+            if (empty($this->allowed_methods)) {
+                return true;
+            }
+
+            if (!is_array($this->allowed_methods)) {
+                var_dump($this->allowed_methods);
+                die();
+            }
+            if (in_array('*', $this->allowed_methods)) {
+                return true;
+            }
+
+            return in_array($method, $this->allowed_methods);
+        }
+
+        /**
+         * @return array
+         */
+        public function getParameters(): array
+        {
+            return $this->parameters;
+        }
+
+        /**
+         * @param array $parameters
+         */
+        public function setParameters(array $parameters): void
+        {
+            $this->parameters = $parameters;
         }
 
         public function toJSON()
@@ -448,9 +402,52 @@
             ];
         }
 
-        public function getNamespacedAction()
+        /**
+         * @return mixed
+         */
+        public function getName()
         {
-            return (stripos($this->getModuleAction(), '::') !== false) ? explode('::', $this->getModuleAction()) : ['Main', $this->getModuleAction()];
+            return $this->name;
+        }
+
+        /**
+         * @param mixed $name
+         */
+        public function setName($name): void
+        {
+            $this->name = $name;
+        }
+
+        /**
+         * @return mixed
+         */
+        public function getModuleName()
+        {
+            return $this->module_name;
+        }
+
+        /**
+         * @param mixed $module_name
+         */
+        public function setModuleName($module_name): void
+        {
+            $this->module_name = $module_name;
+        }
+
+        /**
+         * @return mixed
+         */
+        public function getModuleAction()
+        {
+            return $this->module_action;
+        }
+
+        /**
+         * @param mixed $module_action
+         */
+        public function setModuleAction($module_action): void
+        {
+            $this->module_action = $module_action;
         }
 
         /**
@@ -461,16 +458,16 @@
             if (!Context::isInternalModule($this->getModuleName())) {
                 if (is_dir(PACHNO_MODULES_PATH . $this->getModuleName())) {
                     if (!file_exists(PACHNO_MODULES_PATH . $this->getModuleName() . DS . 'controllers' . DS . 'Main.php')) {
-                        throw new \pachno\core\framework\exceptions\ActionNotFoundException(
+                        throw new ActionNotFoundException(
                             'The `' . $this->getModuleName() . '` module is missing a `/controllers/Main.php` controller, containing the module its initial actions.'
                         );
                     }
                 } else {
-                    throw new \Exception('Cannot load the ' . $this->getModuleName() . ' module');
+                    throw new Exception('Cannot load the ' . $this->getModuleName() . ' module');
                 }
-                $controllerClassNamespace = "\\pachno\\modules\\".$this->getModuleName().'\\controllers\\';
+                $controllerClassNamespace = "\\pachno\\modules\\" . $this->getModuleName() . '\\controllers\\';
             } else {
-                $controllerClassNamespace = "\\pachno\\core\\modules\\".$this->getModuleName().'\\controllers\\';
+                $controllerClassNamespace = "\\pachno\\core\\modules\\" . $this->getModuleName() . '\\controllers\\';
             }
 
             /**
@@ -490,14 +487,20 @@
             $controllerClass = $controllerClassNamespace . $controller;
             $actionMethod = $action;
 
-            if (class_exists($controllerClass) && is_callable($controllerClass, 'run'.ucfirst($actionMethod))) {
+            if (class_exists($controllerClass) && is_callable($controllerClass, 'run' . ucfirst($actionMethod))) {
                 $controllerObject = new $controllerClass();
             } else {
-                throw new \Exception('The `' . $action . '` controller action is not callable');
+                throw new Exception('The `' . $action . '` controller action is not callable');
             }
 
-            $this->generated_method = 'run'.$actionMethod;
+            $this->generated_method = 'run' . $actionMethod;
+
             return $controllerObject;
+        }
+
+        public function getNamespacedAction()
+        {
+            return (stripos($this->getModuleAction(), '::') !== false) ? explode('::', $this->getModuleAction()) : ['Main', $this->getModuleAction()];
         }
 
         public function getModuleActionMethod()

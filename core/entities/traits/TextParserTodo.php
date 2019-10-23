@@ -1,8 +1,8 @@
 <?php
 
     namespace pachno\core\entities\traits;
+
     use pachno\core\framework\Context;
-    use pachno\core\helpers\TextParser;
 
     /**
      * Trait for looking up files that are not linked
@@ -16,6 +16,11 @@
         protected $todo_regex = '(\[(?P<closed>x)?\] )(?P<text>.*?)';
 
         protected $todos = [];
+
+        public function getTodos()
+        {
+            return $this->todos;
+        }
 
         protected function _parse_todo($matches)
         {
@@ -35,11 +40,6 @@
         protected function getTodoRegex()
         {
             return $this->todo_regex;
-        }
-
-        public function getTodos()
-        {
-            return $this->todos;
         }
 
     }

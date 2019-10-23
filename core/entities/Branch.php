@@ -2,8 +2,6 @@
 
     namespace pachno\core\entities;
 
-    use pachno\core\modules\livelink\Livelink;
-
     /**
      * Branch class
      *
@@ -32,7 +30,7 @@
 
         /**
          * Project
-         * @var \pachno\core\entities\Commit
+         * @var Commit
          * @Relates(class="\pachno\core\entities\Commit")
          * @Column(type="integer")
          */
@@ -40,7 +38,7 @@
 
         /**
          * Project
-         * @var \pachno\core\entities\Project
+         * @var Project
          * @Relates(class="\pachno\core\entities\Project")
          * @Column(type="integer", name="project_id")
          */
@@ -99,16 +97,6 @@
         /**
          * Get the latest commit for this branch
          *
-         * @return Commit
-         */
-        public function getLatestCommit()
-        {
-            return $this->_b2dbLazyLoad('_latest_commit_id');
-        }
-
-        /**
-         * Get the latest commit for this branch
-         *
          * @return int
          */
         public function getLatestCommitId()
@@ -148,6 +136,16 @@
             }
 
             return $this->_commits;
+        }
+
+        /**
+         * Get the latest commit for this branch
+         *
+         * @return Commit
+         */
+        public function getLatestCommit()
+        {
+            return $this->_b2dbLazyLoad('_latest_commit_id');
         }
 
         /**

@@ -2,14 +2,13 @@
 
     namespace pachno\core\modules\livelink\controllers;
 
+    use Exception;
     use pachno\core\entities\Project;
     use pachno\core\entities\tables\CommitFiles;
     use pachno\core\entities\tables\Commits;
     use pachno\core\entities\tables\IssueCommits;
     use pachno\core\entities\tables\Projects;
-    use pachno\core\framework,
-        Github\Client as GithubClient,
-        Github\Exception\RuntimeException as GithubException;
+    use pachno\core\framework;
     use pachno\core\modules\livelink\Livelink;
 
     /**
@@ -29,17 +28,10 @@
         }
 
         /**
-         * @return Livelink
-         */
-        protected function getModule()
-        {
-            return framework\Context::getModule('livelink');
-        }
-
-        /**
          * @Route(name="livelink_webhook", url="/livelink/hooks/:project_id/:secret")
          *
          * @param framework\Request $request
+         *
          * @return bool
          */
         public function runWebhook(framework\Request $request)
@@ -51,6 +43,7 @@
 
             if (!$project instanceof Project) {
                 $this->getResponse()->setHttpStatus(404);
+
                 return $this->renderJSON(['error' => 'Project not found']);
             }
 
@@ -58,24 +51,35 @@
 
             if ($secret != $this->getModule()->getProjectSecret($project)) {
                 $this->getResponse()->setHttpStatus(400);
+
                 return $this->renderJSON(['error' => 'Invalid secret']);
             }
 
             $connector = $this->getModule()->getProjectConnector($project);
+
             return $this->getModule()->getConnectorModule($connector)->webhook($request, $project);
+        }
+
+        /**
+         * @return Livelink
+         */
+        protected function getModule()
+        {
+            return framework\Context::getModule('livelink');
         }
 
         /**
          * @Route(name="get_project_connector_template", url="/livelink/project/:project_id", methods="GET")
          *
          * @param framework\Request $request
+         *
          * @return bool
          */
         public function runGetProjectConnectorTemplate(framework\Request $request)
         {
             $project = Projects::getTable()->selectById($request['project_id']);
             if (!$project instanceof Project) {
-                throw new \Exception('Invalid project id');
+                throw new Exception('Invalid project id');
             }
 
             $options = [
@@ -92,21 +96,23 @@
          * @Route(name="livelink_remove_project_connector", url="/livelink/project/:project_id", methods="POST")
          *
          * @param framework\Request $request
+         *
          * @return bool
          */
         public function runRemoveProjectLivelinkConnector(framework\Request $request)
         {
             $project = Projects::getTable()->selectById($request['project_id']);
             if (!$project instanceof Project) {
-                throw new \Exception('Invalid project id');
+                throw new Exception('Invalid project id');
             }
 
             try {
                 $this->getModule()->removeProjectLiveLinkSettings($project);
 
                 return $this->renderJSON(['removed' => 'ok']);
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 $this->getResponse()->setHttpStatus(400);
+
                 return $this->renderJSON(['error' => framework\Context::getI18n()->__($e->getMessage())]);
             }
         }
@@ -115,6 +121,7 @@
          * @Route(name="configure_livelink_connector", url="/livelink/connector/:connector")
          *
          * @param framework\Request $request
+         *
          * @return bool
          */
         public function runConfigureLivelinkConnector(framework\Request $request)
@@ -125,8 +132,9 @@
                 $connector_module = $livelink->getConnectorModule($connector);
 
                 return $this->renderJSON($connector_module->postConnectorSettings($request));
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 $this->getResponse()->setHttpStatus(400);
+
                 return $this->renderJSON(['error' => framework\Context::getI18n()->__($e->getMessage())]);
             }
         }
@@ -135,6 +143,7 @@
          * @Route(name="disconnect_livelink_connector", url="/livelink/disconnect")
          *
          * @param framework\Request $request
+         *
          * @return bool
          */
         public function runDisconnectLivelinkConnector(framework\Request $request)
@@ -145,8 +154,9 @@
                 $connector_module = $livelink->getConnectorModule($connector);
 
                 return $this->renderJSON($connector_module->removeConnectorSettings($request));
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 $this->getResponse()->setHttpStatus(400);
+
                 return $this->renderJSON(['error' => framework\Context::getI18n()->__($e->getMessage())]);
             }
         }

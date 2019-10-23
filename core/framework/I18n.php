@@ -2,19 +2,10 @@
 
     namespace pachno\core\framework;
 
-    use DateTime,
-        DateTimeZone,
-        DOMDocument;
-
-    /**
-     * I18n class
-     *
-     * @author Daniel Andre Eikeland <zegenie@zegeniestudios.net>
-     * @version 3.1
-     * @license http://opensource.org/licenses/MPL-2.0 Mozilla Public License 2.0 (MPL 2.0)
-     * @package pachno
-     * @subpackage core
-     */
+    use DateTime;
+    use DateTimeZone;
+    use DOMDocument;
+    use Exception;
 
     /**
      * I18n class
@@ -27,20 +18,38 @@
 
         protected $_strings = null;
 
-        protected $_missing_strings = array();
+        protected $_missing_strings = [];
 
         protected $_language = null;
 
         protected $_charset = 'utf-8';
 
-        protected $_datetime_formats = array();
+        protected $_datetime_formats = [];
+
+        public function __construct($language)
+        {
+            if (!file_exists($this->getStringsFilename($language))) {
+                Logging::log('Selected language not available, trying "en_US" as a last attempt', 'i18n', Logging::LEVEL_NOTICE);
+                $this->_language = 'en_US';
+                if (!file_exists($this->getStringsFilename($this->_language))) {
+                    throw new Exception('The selected language is not available');
+                }
+            }
+            $this->_language = $language;
+        }
+
+        public function getStringsFilename($language = null)
+        {
+            $language = ($language === null) ? $this->_language : $language;
+
+            return PACHNO_PATH . 'i18n' . DS . $language . DS . 'strings.xlf';
+        }
 
         public static function getTimezones()
         {
-            $offsets = $options = array();
+            $offsets = $options = [];
             $now = new DateTime();
-            foreach (DateTimeZone::listIdentifiers() as $tz)
-            {
+            foreach (DateTimeZone::listIdentifiers() as $tz) {
                 $now->setTimezone(new DateTimeZone($tz));
                 $offsets[] = $offset = $now->getOffset();
                 $hours = intval($offset / 3600);
@@ -52,85 +61,122 @@
             }
 
             array_multisort($offsets, $options);
+
             return $options;
         }
 
-        public function __construct($language)
+        public static function getLanguages()
         {
-            if (!file_exists($this->getStringsFilename($language)))
-            {
-                Logging::log('Selected language not available, trying "en_US" as a last attempt', 'i18n', Logging::LEVEL_NOTICE);
-                $this->_language = 'en_US';
-                if (!file_exists($this->getStringsFilename($this->_language)))
-                {
-                    throw new \Exception('The selected language is not available');
+            $retarr = [];
+            $cp_handle = opendir(PACHNO_PATH . 'i18n');
+            while ($classfile = readdir($cp_handle)) {
+                if (mb_strstr($classfile, '.') == '' && file_exists(PACHNO_PATH . 'i18n/' . $classfile . '/language')) {
+                    $retarr[$classfile] = file_get_contents(PACHNO_PATH . 'i18n/' . $classfile . '/language');
                 }
             }
-            $this->_language = $language;
+
+            return $retarr;
         }
 
-        public function getStringsFilename($language = null)
+        public function setLanguage($language)
         {
-            $language = ($language === null) ? $this->_language : $language;
-            return PACHNO_PATH . 'i18n' . DS . $language . DS . 'strings.xlf';
+            if ($language != $this->_language) {
+                $this->_language = $language;
+                $this->initialize();
+            }
         }
 
         public function initialize()
         {
             $filename = PACHNO_PATH . 'i18n' . DS . $this->_language . DS . 'initialize.inc.php';
-            if (file_exists($filename))
-            {
+            if (file_exists($filename)) {
                 Logging::log("Initiating with file '{$filename}", 'i18n');
                 include $filename;
                 Logging::log("Done Initiating", 'i18n');
             }
-            if ($this->_strings === null)
-            {
-                if (Context::getCache()->fileHas(Cache::KEY_I18N . 'strings_' . $this->_language, false))
-                {
+            if ($this->_strings === null) {
+                if (Context::getCache()->fileHas(Cache::KEY_I18N . 'strings_' . $this->_language, false)) {
                     Logging::log('Trying cached strings');
                     $strings = Context::getCache()->fileGet(Cache::KEY_I18N . 'strings_' . $this->_language, false);
                     $this->_strings = (is_array($strings)) ? $strings : null;
                 }
-                if ($this->_strings === null)
-                {
+                if ($this->_strings === null) {
                     Logging::log('No usable cached strings available');
                     $this->loadStrings();
-                    foreach (array_keys(Context::getModules()) as $module_name)
-                    {
+                    foreach (array_keys(Context::getModules()) as $module_name) {
                         $this->loadStrings($module_name);
                     }
-                    if (is_array($this->_strings))
-                    {
+                    if (is_array($this->_strings)) {
                         Context::getCache()->fileAdd(Cache::KEY_I18N . 'strings_' . $this->_language, $this->_strings, false);
                     }
                 }
             }
         }
 
-        public function setLanguage($language)
+        protected function loadStrings($module = null)
         {
-            if ($language != $this->_language)
-            {
-                $this->_language = $language;
-                $this->initialize();
+            if ($this->_strings === null) $this->_strings = [];
+            $filename = '';
+            if ($module !== null) {
+                if (file_exists(PACHNO_PATH . 'i18n' . DS . $this->_language . DS . "{$module}.xlf")) {
+                    $filename = PACHNO_PATH . 'i18n' . DS . $this->_language . DS . "{$module}.xlf";
+                } elseif (file_exists(PACHNO_MODULES_PATH . $module . DS . 'i18n' . DS . $this->_language . DS . "{$module}.xlf")) {
+                    $filename = PACHNO_MODULES_PATH . $module . DS . 'i18n' . DS . $this->_language . DS . "{$module}.xlf";
+                } else {
+                    $filename = PACHNO_MODULES_PATH . $module . DS . 'i18n' . DS . $this->_language . DS . "strings.xlf";
+                }
+            } else {
+                $filename = $this->getStringsFilename();
+            }
+
+            if (file_exists($filename)) {
+                Logging::log("Loading strings from file '{$filename}", 'i18n');
+                $xliff_dom = new DOMDocument();
+                $xliff_dom->loadXML(file_get_contents($filename));
+                $trans_units = $xliff_dom->getElementsByTagName('trans-unit');
+                foreach ($trans_units as $trans_unit) {
+                    $source_tag = $trans_unit->getElementsByTagName('source');
+                    $target_tag = $trans_unit->getElementsByTagName('target');
+                    if (is_object($source_tag) && is_object($source_tag->item(0)) && is_object($target_tag) && is_object($target_tag->item(0))) {
+                        $this->addString($source_tag->item(0)->nodeValue, $target_tag->item(0)->nodeValue);
+                    }
+                }
+                Logging::log("Done loading strings from file", 'i18n');
+            } else {
+                $message = 'Could not find language file ' . $filename;
+                Logging::log($message, 'i18n', Logging::LEVEL_NOTICE);
             }
         }
 
-        public function setCharset($charset)
+        public function addString($key, $translation)
         {
-            $this->_charset = $charset;
+            $this->_strings[$key] = $this->__e($translation);
         }
 
-        public function getCurrentLanguage()
+        public function __e($text, $replacements = [])
         {
-            return $this->_language;
+            return htmlentities($this->applyTextReplacements($text, $replacements), ENT_QUOTES, $this->getCharset());
+        }
+
+        protected function applyTextReplacements($text, $replacements)
+        {
+            if (!empty($replacements)) {
+                $text = str_replace(array_keys($replacements), array_values($replacements), $text);
+            }
+
+            return $text;
         }
 
         public function getCharset()
         {
             if (Context::isInstallmode()) return $this->_charset;
+
             return (Settings::get('charset') != '') ? Settings::get('charset') : $this->_charset;
+        }
+
+        public function setCharset($charset)
+        {
+            $this->_charset = $charset;
         }
 
         public function getLangCharset()
@@ -143,125 +189,46 @@
             $this->loadStrings($module);
         }
 
-        protected function loadStrings($module = null)
-        {
-            if ($this->_strings === null) $this->_strings = array();
-            $filename = '';
-            if ($module !== null)
-            {
-                if (file_exists(PACHNO_PATH . 'i18n' . DS . $this->_language . DS . "{$module}.xlf"))
-                {
-                    $filename = PACHNO_PATH . 'i18n' . DS . $this->_language . DS . "{$module}.xlf";
-                }
-                else if (file_exists(PACHNO_MODULES_PATH . $module . DS . 'i18n' . DS . $this->_language . DS . "{$module}.xlf"))
-                {
-                    $filename = PACHNO_MODULES_PATH . $module . DS . 'i18n' . DS . $this->_language . DS . "{$module}.xlf";
-                }
-                else
-                {
-                    $filename = PACHNO_MODULES_PATH . $module . DS . 'i18n' . DS . $this->_language . DS . "strings.xlf";
-                }
-            }
-            else
-            {
-                $filename = $this->getStringsFilename();
-            }
-
-            if (file_exists($filename))
-            {
-                Logging::log("Loading strings from file '{$filename}", 'i18n');
-                $xliff_dom = new DOMDocument();
-                $xliff_dom->loadXML(file_get_contents($filename));
-                $trans_units = $xliff_dom->getElementsByTagName('trans-unit');
-                foreach ($trans_units as $trans_unit)
-                {
-                    $source_tag = $trans_unit->getElementsByTagName('source');
-                    $target_tag = $trans_unit->getElementsByTagName('target');
-                    if (is_object($source_tag) && is_object($source_tag->item(0)) && is_object($target_tag) && is_object($target_tag->item(0)))
-                    {
-                        $this->addString($source_tag->item(0)->nodeValue, $target_tag->item(0)->nodeValue);
-                    }
-                }
-                Logging::log("Done loading strings from file", 'i18n');
-            }
-            else
-            {
-                $message = 'Could not find language file ' . $filename;
-                Logging::log($message, 'i18n', Logging::LEVEL_NOTICE);
-            }
-        }
-
-        public function __e($text, $replacements = array())
-        {
-            return htmlentities($this->applyTextReplacements($text, $replacements), ENT_QUOTES, $this->getCharset());
-        }
-
-        public function addString($key, $translation)
-        {
-            $this->_strings[$key] = $this->__e($translation);
-        }
-
         public function addStrings($strings)
         {
-            if (is_array($strings))
-            {
-                foreach ($strings as $key => $translation)
-                {
+            if (is_array($strings)) {
+                foreach ($strings as $key => $translation) {
                     $this->addString($key, $translation);
                 }
             }
         }
 
-        public static function getLanguages()
-        {
-            $retarr = array();
-            $cp_handle = opendir(PACHNO_PATH . 'i18n');
-            while ($classfile = readdir($cp_handle))
-            {
-                if (mb_strstr($classfile, '.') == '' && file_exists(PACHNO_PATH . 'i18n/' . $classfile . '/language'))
-                {
-                    $retarr[$classfile] = file_get_contents(PACHNO_PATH . 'i18n/' . $classfile . '/language');
-                }
-            }
-
-            return $retarr;
-        }
-
         public function hasTranslatedTemplate($template, $is_component = false)
         {
-            if (mb_strpos($template, '/'))
-            {
+            if (mb_strpos($template, '/')) {
                 $templateinfo = explode('/', $template);
                 $module = $templateinfo[0];
                 $templatefile = ($is_component) ? '_' . $templateinfo[1] . '.inc.php' : $templateinfo[1] . '.' . Context::getRequest()->getRequestedFormat() . '.php';
-            }
-            else
-            {
+            } else {
                 $module = Context::getRouting()->getCurrentRoute()->getModuleName();
                 $templatefile = ($is_component) ? '_' . $template . '.inc.php' : $template . '.' . Context::getRequest()->getRequestedFormat() . '.php';
             }
-            if (file_exists(PACHNO_MODULES_PATH . $module . DS . 'i18n' . DS . $this->_language . DS . 'templates' . DS . $templatefile))
-            {
+            if (file_exists(PACHNO_MODULES_PATH . $module . DS . 'i18n' . DS . $this->_language . DS . 'templates' . DS . $templatefile)) {
                 return PACHNO_MODULES_PATH . $module . DS . 'i18n' . DS . $this->_language . DS . 'templates' . DS . $templatefile;
-            }
-            elseif (file_exists(PACHNO_PATH . 'i18n' . DS . $this->getCurrentLanguage() . DS . 'templates' . DS . $module . DS . $templatefile))
-            {
+            } elseif (file_exists(PACHNO_PATH . 'i18n' . DS . $this->getCurrentLanguage() . DS . 'templates' . DS . $module . DS . $templatefile)) {
                 return PACHNO_PATH . 'i18n' . DS . $this->getCurrentLanguage() . DS . 'templates' . DS . $module . DS . $templatefile;
             }
+
             return false;
         }
 
-        public function __($text, $replacements = array(), $html_decode = false)
+        public function getCurrentLanguage()
         {
-            if (isset($this->_strings[$text]))
-            {
+            return $this->_language;
+        }
+
+        public function __($text, $replacements = [], $html_decode = false)
+        {
+            if (isset($this->_strings[$text])) {
                 $retstring = $this->_strings[$text];
-            }
-            else
-            {
+            } else {
                 $retstring = $this->__e($text);
-                if (Context::isDebugMode())
-                {
+                if (Context::isDebugMode()) {
                     Logging::log('The text "' . $text . '" does not exist in list of translated strings.', 'i18n');
                     $this->_missing_strings[$text] = true;
                 }
@@ -276,16 +243,6 @@
             return $retstring;
         }
 
-        protected function applyTextReplacements($text, $replacements)
-        {
-            if (!empty($replacements))
-            {
-                $text = str_replace(array_keys($replacements), array_values($replacements), $text);
-            }
-
-            return $text;
-        }
-
         /**
          * Set local date and time formats
          *
@@ -294,10 +251,188 @@
          */
         public function setDateTimeFormats($formats)
         {
-            if(is_array($formats))
-            {
+            if (is_array($formats)) {
                 $this->_datetime_formats = $formats;
             }
+        }
+
+        /**
+         * Returns a formatted string of the given timestamp
+         *
+         * @param integer $tstamp the timestamp to format
+         * @param integer $format [optional] the format
+         * @param boolean $skipusertimestamp ignore user timestamp
+         * @param boolean $skiptimestamp ignore rebasing timestamp
+         *
+         * @return int|string
+         */
+        public function formatTime($tstamp, $format = 0, $skipusertimestamp = false, $skiptimestamp = false)
+        {
+            $tzoffset = 0;
+            // offset the timestamp properly
+            if (!$skiptimestamp) {
+                $tzoffset = self::getTimezoneOffset($skipusertimestamp);
+                $tstamp += $tzoffset;
+            }
+
+            switch ($format) {
+                case 1:
+                    $tstring = strftime($this->getDateTimeFormat(1), $tstamp);
+                    break;
+                case 2:
+                    $tstring = strftime($this->getDateTimeFormat(2), $tstamp);
+                    break;
+                case 3:
+                    $tstring = strftime($this->getDateTimeFormat(3), $tstamp);
+                    break;
+                case 4:
+                    $tstring = strftime($this->getDateTimeFormat(4), $tstamp);
+                    break;
+                case 5:
+                    $tstring = strftime($this->getDateTimeFormat(5), $tstamp);
+                    break;
+                case 6:
+                    $tstring = strftime($this->getDateTimeFormat(6), $tstamp);
+                    break;
+                case 7:
+                    $tstring = strftime($this->getDateTimeFormat(7), $tstamp);
+                    break;
+                case 8:
+                    $tstring = strftime($this->getDateTimeFormat(8), $tstamp);
+                    break;
+                case 9:
+                    $tstring = strftime($this->getDateTimeFormat(9), $tstamp);
+                    break;
+                case 10:
+                    $tstring = strftime($this->getDateTimeFormat(10), $tstamp);
+                    break;
+                case 11:
+                    $tstring = strftime($this->getDateTimeFormat(9), $tstamp);
+                    break;
+                case 12:
+                    $tstring = '';
+                    $days = day_delta($tstamp, $tzoffset);
+                    if ($days == 0) {
+                        $tstring .= __('Today') . ', ';
+                    } elseif ($days == -1) {
+                        $tstring .= __('Yesterday') . ', ';
+                    } elseif ($days == 1) {
+                        $tstring .= __('Tomorrow') . ', ';
+                    } else {
+                        $tstring .= strftime($this->getDateTimeFormat(12) . ', ', $tstamp);
+                    }
+                    $tstring .= strftime($this->getDateTimeFormat(14), $tstamp);
+                    break;
+                case 13:
+                    $tstring = '';
+                    $days = day_delta($tstamp, $tzoffset);
+                    if ($days == 0) {
+                        //$tstring .= __('Today') . ', ';
+                    } elseif ($days == -1) {
+                        $tstring .= __('Yesterday') . ', ';
+                    } elseif ($days == 1) {
+                        $tstring .= __('Tomorrow') . ', ';
+                    } else {
+                        $tstring .= strftime($this->getDateTimeFormat(12) . ', ', $tstamp);
+                    }
+                    $tstring .= strftime($this->getDateTimeFormat(14), $tstamp);
+                    break;
+                case 14:
+                    $tstring = '';
+                    $days = day_delta($tstamp, $tzoffset);
+                    if ($days == 0) {
+                        $tstring .= __('Today');
+                    } elseif ($days == -1) {
+                        $tstring .= __('Yesterday');
+                    } elseif ($days == 1) {
+                        $tstring .= __('Tomorrow');
+                    } else {
+                        $tstring .= strftime($this->getDateTimeFormat(12), $tstamp);
+                    }
+                    break;
+                case 15:
+                    $tstring = strftime($this->getDateTimeFormat(11), $tstamp);
+                    break;
+                case 16:
+                    $tstring = strftime($this->getDateTimeFormat(12), $tstamp);
+                    break;
+                case 17:
+                    $tstring = strftime($this->getDateTimeFormat(13), $tstamp);
+                    break;
+                case 18:
+                    $tstring = strftime($this->getDateTimeFormat(16), $tstamp);
+                    break;
+                case 19:
+                    $tstring = strftime($this->getDateTimeFormat(14), $tstamp);
+                    break;
+                case 20:
+                    $tstring = '';
+                    $days = day_delta($tstamp, $tzoffset);
+                    if ($days == 0) {
+                        $tstring .= __('Today') . ' (' . strftime('%H:%M', $tstamp) . ')';
+                    } elseif ($days == -1) {
+                        $tstring .= __('Yesterday') . ' (' . strftime('%H:%M', $tstamp) . ')';
+                    } elseif ($days == 1) {
+                        $tstring .= __('Tomorrow') . ' (' . strftime('%H:%M', $tstamp) . ')';
+                    } else {
+                        $tstring .= strftime($this->getDateTimeFormat(15), $tstamp);
+                    }
+                    break;
+                case 21:
+                    $tstring = strftime('%a, %d %b %Y %H:%M:%S ', $tstamp);
+
+                    return ($tstring);
+                    break;
+                case 22:
+                    $tstring = strftime($this->getDateTimeFormat(15), $tstamp);
+                    break;
+                case 23:
+                    $tstring = '';
+                    $days = day_delta($tstamp, $tzoffset);
+                    if ($days == 0) {
+                        $tstring .= __('Today');
+                    } elseif ($days == -1) {
+                        $tstring .= __('Yesterday');
+                    } elseif ($days == 1) {
+                        $tstring .= __('Tomorrow');
+                    } else {
+                        $tstring .= strftime($this->getDateTimeFormat(15), $tstamp);
+                    }
+                    break;
+                case 24:
+                    $tstring = strftime($this->getDateTimeFormat(18), $tstamp);
+                    break;
+                case 25:
+                    $tstring = '';
+                    $days = day_delta($tstamp, $tzoffset);
+                    if ($days == 0) {
+                        $tstring .= __('Today') . ' (' . strftime('%H:%M', $tstamp) . ')';
+                    } elseif ($days == -1) {
+                        $tstring .= __('Yesterday') . ' (' . strftime('%H:%M', $tstamp) . ')';
+                    } elseif ($days == 1) {
+                        $tstring .= __('Tomorrow') . ' (' . strftime('%H:%M', $tstamp) . ')';
+                    } else {
+                        $tstring .= strftime($this->getDateTimeFormat(10), $tstamp);
+                    }
+                    break;
+                default:
+                    return $tstamp;
+            }
+
+            return utf8_encode($tstring);
+        }
+
+        public static function getTimezoneOffset($skipusertimestamp = false)
+        {
+            // offset the timestamp properly
+            if (!$skipusertimestamp) {
+                $tz = Context::getUser()->getTimezone();
+                $tstamp = $tz->getOffset(new DateTime(null, Settings::getServerTimezone()));
+            } else {
+                $tstamp = Settings::getServerTimezone()->getOffset(new DateTime('GMT'));
+            }
+
+            return $tstamp;
         }
 
         /**
@@ -311,12 +446,10 @@
          */
         public function getDateTimeFormat($id)
         {
-            if(array_key_exists($id, $this->_datetime_formats))
-            {
-                 return $this->_datetime_formats[$id];
+            if (array_key_exists($id, $this->_datetime_formats)) {
+                return $this->_datetime_formats[$id];
             }
-            switch ($id)
-            {
+            switch ($id) {
                 case 1 : // 14:45 - Thu Dec 30, 2010
                     $format = '%H:%M - %a %b %d, %Y';
                     break;
@@ -374,215 +507,29 @@
                 default : // local server setting
                     $format = '%c';
             }
+
             return $format;
         }
 
         /**
-         * Returns a formatted string of the given timestamp
+         * Returns an ISO-8859-1 encoded string if UTF-8 encoded and current charset not UTF-8
          *
-         * @param integer $tstamp the timestamp to format
-         * @param integer $format [optional] the format
-         * @param boolean $skipusertimestamp ignore user timestamp
-         * @param boolean $skiptimestamp ignore rebasing timestamp
+         * @param string $str the encode string
+         * @param boolean $htmlentities [optional] whether to convert applicable characters to HTML entities
          *
-         * @return int|string
+         * @return string
          */
-        public function formatTime($tstamp, $format = 0, $skipusertimestamp = false, $skiptimestamp = false)
+        public function decodeUTF8($str, $htmlentities = false)
         {
-            $tzoffset = 0;
-            // offset the timestamp properly
-            if (!$skiptimestamp)
-            {
-                $tzoffset = self::getTimezoneOffset($skipusertimestamp);
-                $tstamp += $tzoffset;
+            if ($this->isUTF8($str) && !mb_stristr($this->getCharset(), 'UTF-8')) {
+                $str = utf8_decode($str);
             }
 
-            switch ($format)
-            {
-                case 1:
-                    $tstring = strftime($this->getDateTimeFormat(1), $tstamp);
-                    break;
-                case 2:
-                    $tstring = strftime($this->getDateTimeFormat(2), $tstamp);
-                    break;
-                case 3:
-                    $tstring = strftime($this->getDateTimeFormat(3), $tstamp);
-                    break;
-                case 4:
-                    $tstring = strftime($this->getDateTimeFormat(4), $tstamp);
-                    break;
-                case 5:
-                    $tstring = strftime($this->getDateTimeFormat(5), $tstamp);
-                    break;
-                case 6:
-                    $tstring = strftime($this->getDateTimeFormat(6), $tstamp);
-                    break;
-                case 7:
-                    $tstring = strftime($this->getDateTimeFormat(7), $tstamp);
-                    break;
-                case 8:
-                    $tstring = strftime($this->getDateTimeFormat(8), $tstamp);
-                    break;
-                case 9:
-                    $tstring = strftime($this->getDateTimeFormat(9), $tstamp);
-                    break;
-                case 10:
-                    $tstring = strftime($this->getDateTimeFormat(10), $tstamp);
-                    break;
-                case 11:
-                    $tstring = strftime($this->getDateTimeFormat(9), $tstamp);
-                    break;
-                case 12:
-                    $tstring = '';
-                    $days = day_delta($tstamp, $tzoffset);
-                    if ($days == 0)
-                    {
-                        $tstring .= __('Today') . ', ';
-                    }
-                    elseif ($days == -1)
-                    {
-                        $tstring .= __('Yesterday') . ', ';
-                    }
-                    elseif ($days == 1)
-                    {
-                        $tstring .= __('Tomorrow') . ', ';
-                    }
-                    else
-                    {
-                        $tstring .= strftime($this->getDateTimeFormat(12) . ', ', $tstamp);
-                    }
-                    $tstring .= strftime($this->getDateTimeFormat(14), $tstamp);
-                    break;
-                case 13:
-                    $tstring = '';
-                    $days = day_delta($tstamp, $tzoffset);
-                    if ($days == 0)
-                    {
-                        //$tstring .= __('Today') . ', ';
-                    }
-                    elseif ($days == -1)
-                    {
-                        $tstring .= __('Yesterday') . ', ';
-                    }
-                    elseif ($days == 1)
-                    {
-                        $tstring .= __('Tomorrow') . ', ';
-                    }
-                    else
-                    {
-                        $tstring .= strftime($this->getDateTimeFormat(12) . ', ', $tstamp);
-                    }
-                    $tstring .= strftime($this->getDateTimeFormat(14), $tstamp);
-                    break;
-                case 14:
-                    $tstring = '';
-                    $days = day_delta($tstamp, $tzoffset);
-                    if ($days == 0)
-                    {
-                        $tstring .= __('Today');
-                    }
-                    elseif ($days == -1)
-                    {
-                        $tstring .= __('Yesterday');
-                    }
-                    elseif ($days == 1)
-                    {
-                        $tstring .= __('Tomorrow');
-                    }
-                    else
-                    {
-                        $tstring .= strftime($this->getDateTimeFormat(12), $tstamp);
-                    }
-                    break;
-                case 15:
-                    $tstring = strftime($this->getDateTimeFormat(11), $tstamp);
-                    break;
-                case 16:
-                    $tstring = strftime($this->getDateTimeFormat(12), $tstamp);
-                    break;
-                case 17:
-                    $tstring = strftime($this->getDateTimeFormat(13), $tstamp);
-                    break;
-                case 18:
-                    $tstring = strftime($this->getDateTimeFormat(16), $tstamp);
-                    break;
-                case 19:
-                    $tstring = strftime($this->getDateTimeFormat(14), $tstamp);
-                    break;
-                case 20:
-                    $tstring = '';
-                    $days = day_delta($tstamp, $tzoffset);
-                    if ($days == 0)
-                    {
-                        $tstring .= __('Today') . ' (' . strftime('%H:%M', $tstamp) . ')';
-                    }
-                    elseif ($days == -1)
-                    {
-                        $tstring .= __('Yesterday') . ' (' . strftime('%H:%M', $tstamp) . ')';
-                    }
-                    elseif ($days == 1)
-                    {
-                        $tstring .= __('Tomorrow') . ' (' . strftime('%H:%M', $tstamp) . ')';
-                    }
-                    else
-                    {
-                        $tstring .= strftime($this->getDateTimeFormat(15), $tstamp);
-                    }
-                    break;
-                case 21:
-                    $tstring = strftime('%a, %d %b %Y %H:%M:%S ', $tstamp);
-                    return ($tstring);
-                    break;
-                case 22:
-                    $tstring = strftime($this->getDateTimeFormat(15), $tstamp);
-                    break;
-                case 23:
-                    $tstring = '';
-                    $days = day_delta($tstamp, $tzoffset);
-                    if ($days == 0)
-                    {
-                        $tstring .= __('Today');
-                    }
-                    elseif ($days == -1)
-                    {
-                        $tstring .= __('Yesterday');
-                    }
-                    elseif ($days == 1)
-                    {
-                        $tstring .= __('Tomorrow');
-                    }
-                    else
-                    {
-                        $tstring .= strftime($this->getDateTimeFormat(15), $tstamp);
-                    }
-                    break;
-                case 24:
-                    $tstring = strftime($this->getDateTimeFormat(18), $tstamp);
-                    break;
-                case 25:
-                    $tstring = '';
-                    $days = day_delta($tstamp, $tzoffset);
-                    if ($days == 0)
-                    {
-                        $tstring .= __('Today') . ' (' . strftime('%H:%M', $tstamp) . ')';
-                    }
-                    elseif ($days == -1)
-                    {
-                        $tstring .= __('Yesterday') . ' (' . strftime('%H:%M', $tstamp) . ')';
-                    }
-                    elseif ($days == 1)
-                    {
-                        $tstring .= __('Tomorrow') . ' (' . strftime('%H:%M', $tstamp) . ')';
-                    }
-                    else
-                    {
-                        $tstring .= strftime($this->getDateTimeFormat(10), $tstamp);
-                    }
-                    break;
-                default:
-                    return $tstamp;
+            if ($htmlentities) {
+                $str = htmlentities($str, ENT_NOQUOTES + ENT_IGNORE, $this->getCharset());
             }
-            return utf8_encode($tstring);
+
+            return $str;
         }
 
         /**
@@ -607,28 +554,6 @@
         }
 
         /**
-         * Returns an ISO-8859-1 encoded string if UTF-8 encoded and current charset not UTF-8
-         *
-         * @param string $str the encode string
-         * @param boolean $htmlentities [optional] whether to convert applicable characters to HTML entities
-         *
-         * @return string
-         */
-        public function decodeUTF8($str, $htmlentities = false)
-        {
-            if ($this->isUTF8($str) && !mb_stristr($this->getCharset(), 'UTF-8'))
-            {
-                $str = utf8_decode($str);
-            }
-
-            if ($htmlentities)
-            {
-                $str = htmlentities($str, ENT_NOQUOTES+ENT_IGNORE, $this->getCharset());
-            }
-            return $str;
-        }
-
-        /**
          * The opposite of custom function "\pachno\core\framework\Context::getI18n()->decodeUTF8".
          *
          * @param string $str the encode string
@@ -638,32 +563,15 @@
          */
         public function encodeUTF8($str, $htmlentities = false)
         {
-            if ($htmlentities)
-            {
-                $str = html_entity_decode($str, ENT_NOQUOTES+ENT_IGNORE, $this->getCharset());
+            if ($htmlentities) {
+                $str = html_entity_decode($str, ENT_NOQUOTES + ENT_IGNORE, $this->getCharset());
             }
 
-            if (! $this->isUTF8($str) && !mb_stristr($this->getCharset(), 'UTF-8'))
-            {
+            if (!$this->isUTF8($str) && !mb_stristr($this->getCharset(), 'UTF-8')) {
                 $str = utf8_encode($str);
             }
 
             return $str;
-        }
-
-        public static function getTimezoneOffset($skipusertimestamp = false)
-        {
-            // offset the timestamp properly
-            if (!$skipusertimestamp)
-            {
-                $tz = Context::getUser()->getTimezone();
-                $tstamp = $tz->getOffset(new DateTime(null, Settings::getServerTimezone()));
-            }
-            else
-            {
-                $tstamp = Settings::getServerTimezone()->getOffset(new DateTime('GMT'));
-            }
-            return $tstamp;
         }
 
     }

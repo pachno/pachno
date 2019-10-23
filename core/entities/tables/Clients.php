@@ -2,8 +2,9 @@
 
     namespace pachno\core\entities\tables;
 
-    use pachno\core\framework,
-        b2db\Criteria;
+    use b2db\Criterion;
+    use b2db\QueryColumnSort;
+    use pachno\core\framework;
 
     /**
      * Clients table
@@ -28,23 +29,30 @@
     {
 
         const B2DB_TABLE_VERSION = 1;
+
         const B2DBNAME = 'clients';
+
         const ID = 'clients.id';
+
         const SCOPE = 'clients.scope';
+
         const NAME = 'clients.name';
+
         const WEBSITE = 'clients.website';
+
         const EMAIL = 'clients.email';
+
         const TELEPHONE = 'clients.telephone';
+
         const FAX = 'clients.fax';
 
         public function getAll($limit = null)
         {
             $query = $this->getQuery();
             $query->where(self::SCOPE, framework\Context::getScope()->getID());
-            $query->addOrderBy('clients.name', \b2db\QueryColumnSort::SORT_ASC);
+            $query->addOrderBy('clients.name', QueryColumnSort::SORT_ASC);
 
-            if (isset($limit))
-            {
+            if (isset($limit)) {
                 $query->setLimit($limit);
             }
 
@@ -57,13 +65,13 @@
             $query->where(self::NAME, $client_name);
             $query->where(self::SCOPE, framework\Context::getScope()->getID());
 
-            return (bool) $this->count($query);
+            return (bool)$this->count($query);
         }
 
         public function quickfind($client_name)
         {
             $query = $this->getQuery();
-            $query->where(self::NAME, "%{$client_name}%", \b2db\Criterion::LIKE);
+            $query->where(self::NAME, "%{$client_name}%", Criterion::LIKE);
             $query->where(self::SCOPE, framework\Context::getScope()->getID());
 
             return $this->select($query);

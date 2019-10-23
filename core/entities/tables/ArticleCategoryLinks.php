@@ -3,10 +3,9 @@
     namespace pachno\core\entities\tables;
 
     use b2db\Insertion;
+    use b2db\QueryColumnSort;
     use b2db\Table;
-    use pachno\core\framework,
-        pachno\core\entities\tables\ScopedTable,
-        b2db\Criteria;
+    use pachno\core\framework;
 
     /**
      * @Table(name="articlecategories")
@@ -16,10 +15,15 @@
     {
 
         const B2DB_TABLE_VERSION = 1;
+
         const B2DBNAME = 'articlecategories';
+
         const ID = 'articlecategories.id';
+
         const ARTICLE_ID = 'articlecategories.article_id';
+
         const CATEGORY_ID = 'articlecategories.category_id';
+
 //        const ARTICLE_NAME = 'articlecategories.article_name';
 //        const ARTICLE_IS_CATEGORY = 'articlecategories.article_is_category';
 //        const CATEGORY_NAME = 'articlecategories.category_name';
@@ -56,7 +60,7 @@
             $query = $this->getQuery();
             $query->where(self::ARTICLE_NAME, $article_name);
             $query->where(self::SCOPE, framework\Context::getScope()->getID());
-            $query->addOrderBy(self::CATEGORY_NAME, \b2db\QueryColumnSort::SORT_ASC);
+            $query->addOrderBy(self::CATEGORY_NAME, QueryColumnSort::SORT_ASC);
             $res = $this->rawSelect($query);
 
             return $res;
@@ -68,7 +72,7 @@
             $query->where(self::CATEGORY_NAME, $category_name);
             $query->where(self::ARTICLE_IS_CATEGORY, false);
             $query->where(self::SCOPE, framework\Context::getScope()->getID());
-            $query->addOrderBy(self::ARTICLE_NAME, \b2db\QueryColumnSort::SORT_ASC);
+            $query->addOrderBy(self::ARTICLE_NAME, QueryColumnSort::SORT_ASC);
             $res = $this->rawSelect($query);
 
             return $res;
@@ -80,7 +84,7 @@
             $query->where(self::CATEGORY_NAME, $category_name);
             $query->where(self::ARTICLE_IS_CATEGORY, true);
             $query->where(self::SCOPE, framework\Context::getScope()->getID());
-            $query->addOrderBy(self::CATEGORY_NAME, \b2db\QueryColumnSort::SORT_ASC);
+            $query->addOrderBy(self::CATEGORY_NAME, QueryColumnSort::SORT_ASC);
             $res = $this->rawSelect($query);
 
             return $res;
@@ -88,7 +92,7 @@
 
         protected function migrateData(Table $old_table)
         {
-            
+
         }
 
     }

@@ -2,12 +2,7 @@
 
     namespace pachno\core\entities;
 
-    use pachno\core\framework;
-    use pachno\core\entities\common\IdentifiableScoped,
-        \pachno\core\entities\Project,
-        \pachno\core\entities\User,
-        \pachno\core\entities\Team,
-        \pachno\core\entities\Client;
+    use pachno\core\entities\common\IdentifiableScoped;
 
     /**
      * Dashboard class
@@ -31,14 +26,14 @@
     {
 
         /**
-         * @var \pachno\core\entities\User
+         * @var User
          * @Column(type="integer", length=10)
          * @Relates(class="\pachno\core\entities\User")
          */
         protected $_user_id;
 
         /**
-         * @var \pachno\core\entities\Project
+         * @var Project
          * @Column(type="integer", length=10)
          * @Relates(class="\pachno\core\entities\Project")
          */
@@ -62,7 +57,7 @@
         /**
          * Returns the associated user
          *
-         * @return \pachno\core\entities\User
+         * @return User
          */
         public function getUser()
         {
@@ -74,18 +69,10 @@
             $this->_user_id = $user;
         }
 
-        protected function _preSave($is_new)
-        {
-            parent::_preSave($is_new);
-            if ($is_new) {
-                $this->_created_at = NOW;
-            }
-        }
-
         /**
          * Returns the associated project
          *
-         * @return \pachno\core\entities\Project
+         * @return Project
          */
         public function getProject()
         {
@@ -127,6 +114,14 @@
         public function setCompletedAt($completed_at)
         {
             $this->_completed_at = $completed_at;
+        }
+
+        protected function _preSave($is_new)
+        {
+            parent::_preSave($is_new);
+            if ($is_new) {
+                $this->_created_at = NOW;
+            }
         }
 
     }

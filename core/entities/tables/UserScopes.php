@@ -2,12 +2,13 @@
 
     namespace pachno\core\entities\tables;
 
+    use b2db\Criterion;
     use b2db\Insertion;
     use b2db\Update;
+    use Exception;
+    use pachno\core\entities\Group;
+    use pachno\core\entities\User;
     use pachno\core\framework;
-    use b2db\Core,
-        b2db\Criteria,
-        b2db\Criterion;
 
     /**
      * User scopes table
@@ -30,29 +31,21 @@
     class UserScopes extends ScopedTable
     {
 
-        protected $_scope_confirmed_cache = [];
-
         const B2DB_TABLE_VERSION = 1;
+
         const B2DBNAME = 'userscopes';
+
         const ID = 'userscopes.id';
+
         const SCOPE = 'userscopes.scope';
+
         const USER_ID = 'userscopes.user_id';
+
         const GROUP_ID = 'userscopes.group_id';
+
         const CONFIRMED = 'userscopes.confirmed';
 
-        protected function initialize()
-        {
-            parent::setup(self::B2DBNAME, self::ID);
-            parent::addBoolean(self::CONFIRMED);
-            parent::addForeignKeyColumn(self::USER_ID, Users::getTable(), Users::ID);
-            parent::addForeignKeyColumn(self::GROUP_ID, Groups::getTable(), Groups::ID);
-        }
-
-        protected function setupIndexes()
-        {
-            $this->addIndex('uid_scope', array(self::USER_ID, self::SCOPE));
-            $this->addIndex('groupid_scope', array(self::GROUP_ID, self::SCOPE));
-        }
+        protected $_scope_confirmed_cache = [];
 
         public function countUsers()
         {
@@ -101,13 +94,14 @@
             $query = $this->getQuery();
             $query->where(self::SCOPE, framework\Context::getScope()->getID());
             $query->where(self::USER_ID, $user_id);
+
             return $this->count($query);
         }
 
         public function clearUserScopes($user_id)
         {
             $query = $this->getQuery();
-            $query->where(self::SCOPE, \pachno\core\framework\Settings::getDefaultScopeID(), \b2db\Criterion::NOT_EQUALS);
+            $query->where(self::SCOPE, \pachno\core\framework\Settings::getDefaultScopeID(), Criterion::NOT_EQUALS);
             $query->where(self::USER_ID, $user_id);
             $this->rawDelete($query);
         }
@@ -127,7 +121,7 @@
 
         public function updateUserScopeGroup($user_id, $scope_id, $group_id)
         {
-            $group_id = ($group_id instanceof \pachno\core\entities\Group) ? $group_id->getID() : (int) $group_id;
+            $group_id = ($group_id instanceof Group) ? $group_id->getID() : (int)$group_id;
             $query = $this->getQuery();
             $update = new Update();
 
@@ -146,7 +140,7 @@
             $query->where(self::SCOPE, $scope_id);
             $row = $this->rawSelectOne($query);
 
-            return ($row) ? (int) $row->get(self::GROUP_ID) : null;
+            return ($row) ? (int)$row->get(self::GROUP_ID) : null;
         }
 
         public function getUserConfirmedByScope($user_id, $scope_id)
@@ -164,7 +158,7 @@
             $query->where(self::SCOPE, $scope_id);
             $row = $this->rawSelectOne($query);
 
-            $value = ($row) ? (boolean) $row->get(self::CONFIRMED) : false;
+            $value = ($row) ? (boolean)$row->get(self::CONFIRMED) : false;
             $this->_scope_confirmed_cache[$scope_id][$user_id] = $value;
 
             return $value;
@@ -177,7 +171,7 @@
             $query->where(self::SCOPE, $scope_id);
             $row = $this->rawSelectOne($query);
 
-            return ($row) ? array('confirmed' => (boolean) $row->get(self::CONFIRMED), 'group_id' => $row->get(self::GROUP_ID)) : null;
+            return ($row) ? ['confirmed' => (boolean)$row->get(self::CONFIRMED), 'group_id' => $row->get(self::GROUP_ID)] : null;
         }
 
         public function getScopeDetailsByUser($user_id)
@@ -185,25 +179,19 @@
             $query = $this->getQuery();
             $query->where(self::USER_ID, $user_id);
 
-            $scope_details = array();
+            $scope_details = [];
 
-            if ($res = $this->rawSelect($query))
-            {
-                while ($row = $res->getNextRow())
-                {
-                    $scope_details[$row->get(self::SCOPE)] = array('confirmed' => (boolean) $row->get(self::CONFIRMED), 'group_id' => $row->get(self::GROUP_ID), 'internal_id' => $row->get(self::ID));
+            if ($res = $this->rawSelect($query)) {
+                while ($row = $res->getNextRow()) {
+                    $scope_details[$row->get(self::SCOPE)] = ['confirmed' => (boolean)$row->get(self::CONFIRMED), 'group_id' => $row->get(self::GROUP_ID), 'internal_id' => $row->get(self::ID)];
                 }
             }
             if (count($scope_details)) {
                 $scopes = Scopes::getTable()->getByIds(array_keys($scope_details));
-                foreach ($scope_details as $id => $detail)
-                {
-                    if (array_key_exists($id, $scopes))
-                    {
+                foreach ($scope_details as $id => $detail) {
+                    if (array_key_exists($id, $scopes)) {
                         $scope_details[$id]['scope'] = $scopes[$id];
-                    }
-                    else
-                    {
+                    } else {
                         $this->rawDeleteById($detail['internal_id']);
                         unset($scope_details[$id]);
                     }
@@ -225,17 +213,14 @@
             $query->where(self::SCOPE, framework\Context::getScope()->getID());
             $query->where(self::GROUP_ID, $group_id);
 
-            $users = array();
-            if ($res = $this->rawSelect($query))
-            {
-                while ($row = $res->getNextRow())
-                {
-                    try
-                    {
-                        $user_id = (int) $row->get(self::USER_ID);
-                        $users[$user_id] = new \pachno\core\entities\User($user_id);
+            $users = [];
+            if ($res = $this->rawSelect($query)) {
+                while ($row = $res->getNextRow()) {
+                    try {
+                        $user_id = (int)$row->get(self::USER_ID);
+                        $users[$user_id] = new User($user_id);
+                    } catch (Exception $e) {
                     }
-                    catch (\Exception $e) {}
                 }
             }
 
@@ -248,7 +233,22 @@
             $query->where(self::SCOPE, framework\Context::getScope()->getID());
             $query->where(self::GROUP_ID, $group_id);
             $query->where(self::CONFIRMED, true);
+
             return $this->count($query);
+        }
+
+        protected function initialize()
+        {
+            parent::setup(self::B2DBNAME, self::ID);
+            parent::addBoolean(self::CONFIRMED);
+            parent::addForeignKeyColumn(self::USER_ID, Users::getTable(), Users::ID);
+            parent::addForeignKeyColumn(self::GROUP_ID, Groups::getTable(), Groups::ID);
+        }
+
+        protected function setupIndexes()
+        {
+            $this->addIndex('uid_scope', [self::USER_ID, self::SCOPE]);
+            $this->addIndex('groupid_scope', [self::GROUP_ID, self::SCOPE]);
         }
 
     }

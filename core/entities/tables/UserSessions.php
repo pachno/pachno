@@ -3,10 +3,6 @@
     namespace pachno\core\entities\tables;
 
     use b2db\Table;
-    use pachno\core\framework;
-    use b2db\Core,
-        b2db\Criteria,
-        b2db\Criterion;
 
     /**
      * Userstate table
@@ -31,6 +27,7 @@
     {
 
         const B2DB_TABLE_VERSION = 1;
+
         const B2DBNAME = 'usersession';
 
     }

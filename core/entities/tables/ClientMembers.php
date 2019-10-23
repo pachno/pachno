@@ -27,36 +27,32 @@
     {
 
         const B2DB_TABLE_VERSION = 1;
+
         const B2DBNAME = 'clientmembers';
+
         const ID = 'clientmembers.id';
+
         const SCOPE = 'clientmembers.scope';
+
         const UID = 'clientmembers.uid';
+
         const CID = 'clientmembers.cid';
-        
-        protected function initialize()
-        {
-            parent::setup(self::B2DBNAME, self::ID);
-            parent::addForeignKeyColumn(self::UID, Users::getTable());
-            parent::addForeignKeyColumn(self::CID, Clients::getTable());
-        }
 
         public function getUIDsForClientID($client_id)
         {
             $query = $this->getQuery();
             $query->where(self::CID, $client_id);
 
-            $uids = array();
-            if ($res = $this->rawSelect($query))
-            {
-                while ($row = $res->getNextRow())
-                {
+            $uids = [];
+            if ($res = $this->rawSelect($query)) {
+                while ($row = $res->getNextRow()) {
                     $uids[$row->get(self::UID)] = $row->get(self::UID);
                 }
             }
 
             return $uids;
         }
-        
+
         public function clearClientsByUserID($user_id)
         {
             $query = $this->getQuery();
@@ -77,17 +73,14 @@
         {
             $query = $this->getQuery();
             $query->where(self::CID, $cloned_client_id);
-            $memberships_to_add = array();
-            if ($res = $this->rawSelect($query))
-            {
-                while ($row = $res->getNextRow())
-                {
+            $memberships_to_add = [];
+            if ($res = $this->rawSelect($query)) {
+                while ($row = $res->getNextRow()) {
                     $memberships_to_add[] = $row->get(self::UID);
                 }
             }
 
-            foreach ($memberships_to_add as $uid)
-            {
+            foreach ($memberships_to_add as $uid) {
                 $insertion = new Insertion();
                 $insertion->add(self::UID, $uid);
                 $insertion->add(self::CID, $new_client_id);
@@ -100,6 +93,7 @@
         {
             $query = $this->getQuery();
             $query->where(self::UID, $user_id);
+
             return $this->rawSelect($query);
         }
 
@@ -111,7 +105,7 @@
             $insertion->add(self::UID, $user_id);
             $this->rawInsert($insertion);
         }
-        
+
         public function removeUserFromClient($user_id, $client_id)
         {
             $query = $this->getQuery();
@@ -120,13 +114,20 @@
             $query->where(self::UID, $user_id);
             $this->rawDelete($query);
         }
-        
+
         public function removeUsersFromClient($client_id)
         {
             $query = $this->getQuery();
             $query->where(self::SCOPE, framework\Context::getScope()->getID());
             $query->where(self::CID, $client_id);
             $this->rawDelete($query);
+        }
+
+        protected function initialize()
+        {
+            parent::setup(self::B2DBNAME, self::ID);
+            parent::addForeignKeyColumn(self::UID, Users::getTable());
+            parent::addForeignKeyColumn(self::CID, Clients::getTable());
         }
 
     }

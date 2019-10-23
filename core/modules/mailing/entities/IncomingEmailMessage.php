@@ -6,9 +6,13 @@
     {
 
         protected $connection;
+
         protected $messageNumber;
+
         protected $bodyHTML = '';
+
         protected $bodyPlain = '';
+
         protected $attachments;
 
         public function __construct($connection, $messageNumber)
@@ -21,84 +25,64 @@
         {
             $structure = imap_fetchstructure($this->connection, $this->messageNumber);
 
-            if (!$structure)
-            {
+            if (!$structure) {
                 return false;
-            }
-            else
-            {
-                if (property_exists($structure, "parts"))
-                {
+            } else {
+                if (property_exists($structure, "parts")) {
                     $this->recurse($structure->parts);
                 } else {
                     $this->recurse([$structure]);
                 }
+
                 return true;
             }
         }
 
         public function recurse($messageParts, $prefix = '', $index = 1, $fullPrefix = true)
         {
-            foreach ($messageParts as $part)
-            {
+            foreach ($messageParts as $part) {
                 $partNumber = $prefix . $index;
 
-                if ($part->type == 0)
-                {
-                    if ($part->subtype == 'PLAIN')
-                    {
+                if ($part->type == 0) {
+                    if ($part->subtype == 'PLAIN') {
                         $this->bodyPlain .= $this->getPart($partNumber, $part->encoding);
-                    }
-                    else
-                    {
+                    } else {
                         $this->bodyHTML .= $this->getPart($partNumber, $part->encoding);
                     }
-                }
-                elseif ($part->type == 2)
-                {
-                    $msg = new \pachno\core\entities\IncomingEmailMessage($this->connection, $this->messageNumber);
+                } elseif ($part->type == 2) {
+                    $msg = new IncomingEmailMessage($this->connection, $this->messageNumber);
                     $msg->recurse($part->parts, $partNumber . '.', 0, false);
-                    $this->attachments[] = array(
+                    $this->attachments[] = [
                         'type' => $part->type,
                         'subtype' => $part->subtype,
                         'filename' => '',
                         'data' => $msg,
                         'inline' => false,
-                    );
-                }
-                elseif (isset($part->parts))
-                {
-                    if ($fullPrefix)
-                    {
+                    ];
+                } elseif (isset($part->parts)) {
+                    if ($fullPrefix) {
                         $this->recurse($part->parts, $prefix . $index . '.');
-                    }
-                    else
-                    {
+                    } else {
                         $this->recurse($part->parts, $prefix);
                     }
-                }
-                elseif ($part->type > 2)
-                {
-                    if (isset($part->id))
-                    {
-                        $id = str_replace(array('<', '>'), '', $part->id);
-                        $this->attachments[$id] = array(
+                } elseif ($part->type > 2) {
+                    if (isset($part->id)) {
+                        $id = str_replace(['<', '>'], '', $part->id);
+                        $this->attachments[$id] = [
                             'type' => $part->type,
                             'subtype' => $part->subtype,
                             'filename' => $this->getFilenameFromPart($part),
                             'data' => $this->getPart($partNumber, $part->encoding),
                             'inline' => true,
-                        );
-                    }
-                    else
-                    {
-                        $this->attachments[] = array(
+                        ];
+                    } else {
+                        $this->attachments[] = [
                             'type' => $part->type,
                             'subtype' => $part->subtype,
                             'filename' => $this->getFilenameFromPart($part),
                             'data' => $this->getPart($partNumber, $part->encoding),
                             'inline' => false,
-                        );
+                        ];
                     }
                 }
 
@@ -109,14 +93,19 @@
         function getPart($partNumber, $encoding)
         {
             $data = imap_fetchbody($this->connection, $this->messageNumber, $partNumber);
-            switch ($encoding)
-            {
-                case 0: return $data; // 7BIT
-                case 1: return $data; // 8BIT
-                case 2: return $data; // BINARY
-                case 3: return base64_decode($data); // BASE64
-                case 4: return quoted_printable_decode($data); // QUOTED_PRINTABLE
-                case 5: return $data; // OTHER
+            switch ($encoding) {
+                case 0:
+                    return $data; // 7BIT
+                case 1:
+                    return $data; // 8BIT
+                case 2:
+                    return $data; // BINARY
+                case 3:
+                    return base64_decode($data); // BASE64
+                case 4:
+                    return quoted_printable_decode($data); // QUOTED_PRINTABLE
+                case 5:
+                    return $data; // OTHER
             }
         }
 
@@ -124,23 +113,17 @@
         {
             $filename = '';
 
-            if ($part->ifdparameters)
-            {
-                foreach ($part->dparameters as $object)
-                {
-                    if (strtolower($object->attribute) == 'filename')
-                    {
+            if ($part->ifdparameters) {
+                foreach ($part->dparameters as $object) {
+                    if (strtolower($object->attribute) == 'filename') {
                         $filename = $object->value;
                     }
                 }
             }
 
-            if (!$filename && $part->ifparameters)
-            {
-                foreach ($part->parameters as $object)
-                {
-                    if (strtolower($object->attribute) == 'name')
-                    {
+            if (!$filename && $part->ifparameters) {
+                foreach ($part->parameters as $object) {
+                    if (strtolower($object->attribute) == 'name') {
                         $filename = $object->value;
                     }
                 }
@@ -171,7 +154,7 @@
 
         public function hasAttachments()
         {
-            return (bool) count($this->attachments);
+            return (bool)count($this->attachments);
         }
 
     }

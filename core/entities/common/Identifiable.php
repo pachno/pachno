@@ -33,13 +33,25 @@
         protected $_id;
 
         /**
+         * Create a JSON representation of this Entity.
+         *
+         * @param bool $detailed [optional] Include detailed information or not. (default false)
+         *
+         * @return array
+         */
+        public function toJSON($detailed = true)
+        {
+            return ['id' => $this->getID()];
+        }
+
+        /**
          * Return the items id
          *
          * @return integer
          */
         public function getID()
         {
-            return (int) $this->_id;
+            return (int)$this->_id;
         }
 
         /**
@@ -49,18 +61,7 @@
          */
         public function setID($id)
         {
-            $this->_id = (int) $id;
-        }
-
-        /**
-         * Create a JSON representation of this Entity.
-         * 
-         * @param bool $detailed [optional] Include detailed information or not. (default false)
-         * @return array
-         */
-        public function toJSON($detailed = true)
-        {
-            return array('id' => $this->getID());
+            $this->_id = (int)$id;
         }
 
     }

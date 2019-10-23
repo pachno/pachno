@@ -2,6 +2,8 @@
 
     namespace pachno\core\entities\common;
 
+    use pachno\core\entities\Issue;
+
     /**
      * Timeable item class
      *
@@ -16,11 +18,21 @@
          *
          * @var array
          */
-        protected static $units = array('months', 'weeks', 'days', 'hours', 'minutes');
+        protected static $units = ['months', 'weeks', 'days', 'hours', 'minutes'];
 
         public static function getUnits()
         {
             return self::$units;
+        }
+
+        /**
+         * Get time units with points filled with 0.
+         *
+         * @return array
+         */
+        public static function getZeroedUnitsWithPoints()
+        {
+            return array_fill_keys(self::getUnitsWithPoints(), 0);
         }
 
         /**
@@ -34,16 +46,6 @@
             $units[] = 'points';
 
             return $units;
-        }
-
-        /**
-         * Get time units with points filled with 0.
-         *
-         * @return array
-         */
-        public static function getZeroedUnitsWithPoints()
-        {
-            return array_fill_keys(self::getUnitsWithPoints(), 0);
         }
 
         /**
@@ -88,35 +90,29 @@
          */
         public static function formatTimeableLog($time, $previous_value, $current_value, $append_minutes = false, $subtract_hours = false)
         {
-            if (! $append_minutes && ! $subtract_hours) return $time;
+            if (!$append_minutes && !$subtract_hours) return $time;
 
             $old_time = unserialize($previous_value);
             $new_time = unserialize($current_value);
 
-            if ($append_minutes)
-            {
-                if (isset($old_time['hours']) && isset($old_time['minutes']))
-                {
-                    $old_time['hours'] += (int) floor($old_time['minutes'] / 60);
+            if ($append_minutes) {
+                if (isset($old_time['hours']) && isset($old_time['minutes'])) {
+                    $old_time['hours'] += (int)floor($old_time['minutes'] / 60);
                 }
-                if (isset($new_time['hours']) && isset($new_time['minutes']))
-                {
-                    $new_time['hours'] += (int) floor($new_time['minutes'] / 60);
+                if (isset($new_time['hours']) && isset($new_time['minutes'])) {
+                    $new_time['hours'] += (int)floor($new_time['minutes'] / 60);
                 }
             }
-            if ($subtract_hours)
-            {
-                if (isset($old_time['minutes']))
-                {
+            if ($subtract_hours) {
+                if (isset($old_time['minutes'])) {
                     $old_time['minutes'] = $old_time['minutes'] % 60;
                 }
-                if (isset($new_time['minutes']))
-                {
+                if (isset($new_time['minutes'])) {
                     $new_time['minutes'] = $new_time['minutes'] % 60;
                 }
             }
 
-            return \pachno\core\entities\Issue::getFormattedTime($old_time) . ' &rArr; ' . \pachno\core\entities\Issue::getFormattedTime($new_time);
+            return Issue::getFormattedTime($old_time) . ' &rArr; ' . Issue::getFormattedTime($new_time);
         }
 
     }

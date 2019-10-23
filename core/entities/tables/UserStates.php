@@ -3,9 +3,6 @@
     namespace pachno\core\entities\tables;
 
     use pachno\core\framework;
-    use b2db\Core,
-        b2db\Criteria,
-        b2db\Criterion;
 
     /**
      * Userstate table
@@ -30,15 +27,25 @@
     {
 
         const B2DB_TABLE_VERSION = 1;
+
         const B2DBNAME = 'userstate';
+
         const ID = 'userstate.id';
+
         const SCOPE = 'userstate.scope';
+
         const NAME = 'userstate.name';
+
         const UNAVAILABLE = 'userstate.is_unavailable';
+
         const BUSY = 'userstate.is_busy';
+
         const ONLINE = 'userstate.is_online';
+
         const MEETING = 'userstate.is_in_meeting';
+
         const COLOR = 'userstate.itemdata';
+
         const ABSENT = 'userstate.is_absent';
 
         public function getAll()
@@ -48,5 +55,5 @@
 
             return $this->select($query);
         }
-        
+
     }

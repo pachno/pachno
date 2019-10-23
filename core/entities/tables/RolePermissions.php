@@ -2,9 +2,6 @@
 
     namespace pachno\core\entities\tables;
 
-    use b2db\Core,
-        b2db\Criteria,
-        b2db\Criterion;
     use b2db\Insertion;
 
     /**
@@ -30,18 +27,20 @@
     {
 
         const B2DB_TABLE_VERSION = 1;
-        const B2DBNAME = 'rolepermissions';
-        const ID = 'rolepermissions.id';
-        const SCOPE = 'rolepermissions.scope';
-        const ROLE_ID = 'rolepermissions.role_id';
-        const PERMISSION = 'rolepermissions.permission';
-        const MODULE = 'rolepermissions.module';
-        const TARGET_ID = 'rolepermissions.target_id';
 
-        protected function setupIndexes()
-        {
-            $this->addIndex('role_id', self::ROLE_ID);
-        }
+        const B2DBNAME = 'rolepermissions';
+
+        const ID = 'rolepermissions.id';
+
+        const SCOPE = 'rolepermissions.scope';
+
+        const ROLE_ID = 'rolepermissions.role_id';
+
+        const PERMISSION = 'rolepermissions.permission';
+
+        const MODULE = 'rolepermissions.module';
+
+        const TARGET_ID = 'rolepermissions.target_id';
 
         public function clearPermissionsForRole($role_id)
         {
@@ -59,6 +58,11 @@
             $insertion->add(self::TARGET_ID, $target_id);
 
             $this->rawInsert($insertion);
+        }
+
+        protected function setupIndexes()
+        {
+            $this->addIndex('role_id', self::ROLE_ID);
         }
 
     }

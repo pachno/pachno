@@ -2,8 +2,11 @@
 
     namespace pachno\core\modules\configuration;
 
-    use pachno\core\framework,
-        pachno\core\entities;
+    use Exception;
+    use Net_Http_Client;
+    use pachno\core\entities;
+    use pachno\core\framework;
+    use pachno\core\framework\I18n;
 
     class Components extends framework\ActionComponent
     {
@@ -20,15 +23,14 @@
 
         public function componentOnlineModules()
         {
-            try
-            {
-                $client = new \Net_Http_Client();
+            try {
+                $client = new Net_Http_Client();
                 $client->get('https://pachno.com/addons.json');
                 $json_modules = json_decode($client->getBody());
+            } catch (Exception $e) {
             }
-            catch (\Exception $e) {}
 
-            $modules = array();
+            $modules = [];
             if (isset($json_modules) && isset($json_modules->featured)) {
                 foreach ($json_modules->featured as $key => $module) {
                     if (!framework\Context::isModuleLoaded($module->key))
@@ -41,15 +43,14 @@
 
         public function componentOnlineThemes()
         {
-            try
-            {
-                $client = new \Net_Http_Client();
+            try {
+                $client = new Net_Http_Client();
                 $client->get('https://pachno.com/themes.json');
                 $json_themes = json_decode($client->getBody());
+            } catch (Exception $e) {
             }
-            catch (\Exception $e) {}
 
-            $themes = array();
+            $themes = [];
             $existing_themes = framework\Context::getThemes();
             if (isset($json_themes) && isset($json_themes->featured)) {
                 foreach ($json_themes->featured as $key => $theme) {
@@ -69,8 +70,8 @@
 
         public function componentLanguageSettings()
         {
-            $this->languages = framework\I18n::getLanguages();
-            $this->timezones = \pachno\core\framework\I18n::getTimezones();
+            $this->languages = I18n::getLanguages();
+            $this->timezones = I18n::getTimezones();
         }
 
         public function componentOffline()
@@ -81,14 +82,14 @@
         public function componentSidebar()
         {
             $config_sections = framework\Settings::getConfigSections(framework\Context::getI18n());
-            $breadcrumblinks = array();
+            $breadcrumblinks = [];
             foreach ($config_sections as $key => $sections) {
                 foreach ($sections as $section) {
                     if ($key == framework\Settings::CONFIGURATION_SECTION_MODULES) {
                         $url = (is_array($section['route'])) ? make_url($section['route'][0], $section['route'][1]) : make_url($section['route']);
-                        $breadcrumblinks[] = array('url' => $url, 'title' => $section['description']);
+                        $breadcrumblinks[] = ['url' => $url, 'title' => $section['description']];
                     } else {
-                        $breadcrumblinks[] = array('url' => make_url($section['route']), 'title' => $section['description']);
+                        $breadcrumblinks[] = ['url' => make_url($section['route']), 'title' => $section['description']];
                     }
                 }
             }
@@ -138,14 +139,13 @@
             $this->access_level = framework\Settings::getAccessLevel(framework\Settings::CONFIGURATION_SECTION_ISSUEFIELDS);
 
             if (array_key_exists($this->type, $types)) {
-                $this->items = call_user_func(array($types[$this->type], 'getAll'));
+                $this->items = call_user_func([$types[$this->type], 'getAll']);
                 $this->showitems = true;
             } elseif (!in_array($this->type, entities\DatatypeBase::getAvailableFields(true))) {
                 $customtype = entities\CustomDatatype::getByKey($this->type);
                 $this->showitems = $customtype->hasCustomOptions();
                 $this->iscustom = true;
-                if ($this->showitems)
-                {
+                if ($this->showitems) {
                     $this->items = $customtype->getOptions();
                 }
                 $this->customtype = $customtype;
@@ -186,8 +186,7 @@
 
         public function componentPermissionsinfo()
         {
-            switch ($this->mode)
-            {
+            switch ($this->mode) {
                 case 'datatype':
 
                     break;
@@ -199,32 +198,27 @@
 
         }
 
+        public function componentPermissionsblock()
+        {
+            if (!is_array($this->permissions_list)) {
+                $this->permissions_list = $this->_getPermissionListFromKey($this->permissions_list);
+            }
+        }
+
         protected function _getPermissionListFromKey($key, $permissions = null)
         {
-            if ($permissions === null)
-            {
+            if ($permissions === null) {
                 $permissions = framework\Context::getAvailablePermissions();
             }
-            foreach ($permissions as $pkey => $permission)
-            {
-                if ($pkey == $key)
-                {
-                    return (array_key_exists('details', $permission)) ? $permission['details'] : array();
-                }
-                elseif (array_key_exists('details', $permission) && count($permission['details']) > 0 && ($plist = $this->_getPermissionListFromKey($key, $permission['details'])))
-                {
+            foreach ($permissions as $pkey => $permission) {
+                if ($pkey == $key) {
+                    return (array_key_exists('details', $permission)) ? $permission['details'] : [];
+                } elseif (array_key_exists('details', $permission) && count($permission['details']) > 0 && ($plist = $this->_getPermissionListFromKey($key, $permission['details']))) {
                     return $plist;
                 }
             }
-            return array();
-        }
 
-        public function componentPermissionsblock()
-        {
-            if (!is_array($this->permissions_list))
-            {
-                $this->permissions_list = $this->_getPermissionListFromKey($this->permissions_list);
-            }
+            return [];
         }
 
         public function componentPermissionsConfigurator()
@@ -237,16 +231,13 @@
 
         public function componentWorkflowtransitionaction()
         {
-            $available_assignees_users = array();
-            foreach (framework\Context::getUser()->getTeams() as $team)
-            {
-                foreach ($team->getMembers() as $user)
-                {
+            $available_assignees_users = [];
+            foreach (framework\Context::getUser()->getTeams() as $team) {
+                foreach ($team->getMembers() as $user) {
                     $available_assignees_users[$user->getID()] = $user;
                 }
             }
-            foreach (framework\Context::getUser()->getFriends() as $user)
-            {
+            foreach (framework\Context::getUser()->getFriends() as $user) {
                 $available_assignees_users[$user->getID()] = $user;
             }
             $this->available_assignees_teams = entities\Team::getAll();

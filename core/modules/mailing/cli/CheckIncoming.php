@@ -2,6 +2,8 @@
 
     namespace pachno\core\modules\mailing\cli;
 
+    use pachno\core\framework\cli\Command;
+
     /**
      * CLI command class, main -> help
      *
@@ -18,8 +20,36 @@
      * @package pachno
      * @subpackage mailing
      */
-    class CheckIncoming extends \pachno\core\framework\cli\Command
+    class CheckIncoming extends Command
     {
+
+        public function do_execute()
+        {
+            $this->cliEcho("Checking for emails ... \n", 'white', 'bold');
+            $limit = $this->getProvidedArgument('limit', 25);
+            $accounts = $this->getModule()->getIncomingEmailAccounts();
+
+            if (count($accounts)) {
+                $this->cliEcho("\n");
+                foreach ($accounts as $account) {
+                    $account->connect();
+                    $unread_count = $account->getUnreadCount();
+                    $this->cliEcho("[" . $account->getProject()->getKey() . " (" . $account->getName() . ")] Processing ({$unread_count} unprocessed)\n");
+                    if ($unread_count > 0) {
+                        $this->cliEcho("[" . $account->getProject()->getKey() . " (" . $account->getName() . ")] Will process up to {$limit} emails from this account\n");
+                        $this->getModule()->processIncomingEmailAccount($account, $limit);
+                        $this->cliEcho("[" . $account->getProject()->getKey() . " (" . $account->getName() . ")] Processed " . $account->getNumberOfEmailsLastFetched() . " emails\n");
+                    } else {
+                        $this->cliEcho("[" . $account->getProject()->getKey() . " (" . $account->getName() . ")] Nothing to do for this account\n");
+                    }
+                    $account->disconnect();
+                    $this->cliEcho("\n");
+                }
+            } else {
+                $this->cliEcho("No incoming email accounts configured!\n");
+            }
+            $this->cliEcho("Done!\n");
+        }
 
         protected function _setup()
         {
@@ -28,41 +58,6 @@
             $this->addOptionalArgument('status', "Set to 'yes' to only show if there are mails waiting to be processed");
             $this->addOptionalArgument('limit', "Specify a limit to only process a certain number of emails (default 25)");
             $this->setScoped();
-        }
-
-        public function do_execute()
-        {
-            $this->cliEcho("Checking for emails ... \n", 'white', 'bold');
-            $limit = $this->getProvidedArgument('limit', 25);
-            $accounts = $this->getModule()->getIncomingEmailAccounts();
-
-            if (count($accounts))
-            {
-                $this->cliEcho("\n");
-                foreach ($accounts as $account)
-                {
-                    $account->connect();
-                    $unread_count = $account->getUnreadCount();
-                    $this->cliEcho("[".$account->getProject()->getKey()." (" . $account->getName() . ")] Processing ({$unread_count} unprocessed)\n");
-                    if ($unread_count > 0)
-                    {
-                        $this->cliEcho("[".$account->getProject()->getKey()." (" . $account->getName() . ")] Will process up to {$limit} emails from this account\n");
-                        $this->getModule()->processIncomingEmailAccount($account, $limit);
-                        $this->cliEcho("[".$account->getProject()->getKey()." (" . $account->getName() . ")] Processed ".$account->getNumberOfEmailsLastFetched()." emails\n");
-                    }
-                    else
-                    {
-                        $this->cliEcho("[".$account->getProject()->getKey()." (" . $account->getName() . ")] Nothing to do for this account\n");
-                    }
-                    $account->disconnect();
-                    $this->cliEcho("\n");
-                }
-            }
-            else
-            {
-                $this->cliEcho("No incoming email accounts configured!\n");
-            }
-            $this->cliEcho("Done!\n");
         }
 
     }

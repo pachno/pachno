@@ -2,10 +2,12 @@
 
     namespace pachno\core\entities;
 
+    use b2db\Row;
+    use Exception;
     use pachno\core\entities\traits\Commentable;
+    use pachno\core\framework\Context;
     use pachno\core\helpers\Diffable;
-    use pachno\core\helpers\TextParser,
-        pachno\modules\vcs_integration\Vcs_integration;
+    use pachno\core\helpers\TextParser;
     use pachno\core\modules\livelink\Livelink;
 
     /**
@@ -37,7 +39,7 @@
 
         /**
          * Previous commit
-         * @var \pachno\core\entities\Commit
+         * @var Commit
          * @Relates(class="\pachno\core\entities\Commit")
          * @Column(type="integer")
          */
@@ -107,9 +109,9 @@
 
         /**
          * Project
-         * @var \pachno\core\entities\Project
+         * @var Project
          * @Relates(class="\pachno\core\entities\Project")
-         *  @Column(type="integer", name="project_id")
+         * @Column(type="integer", name="project_id")
          */
         protected $_project = null;
 
@@ -127,69 +129,6 @@
 
         protected $_lines_added;
 
-        public function _addNotifications()
-        {
-            $parser = new TextParser($this->_log);
-            $parser->setOption('plain', true);
-            $parser->doParse();
-            foreach ($parser->getMentions() as $user)
-            {
-                if (!$this->getAuthor() || ($this->getAuthor() instanceof User && $user->getID() == $this->getAuthor()->getID()) || (!$this->getAuthor() instanceof User && $user->getID() == $this->getAuthor()))
-                    continue;
-
-                $notification = new Notification();
-                $notification->setTarget($this);
-                $notification->setTriggeredByUser($this->getAuthor());
-                $notification->setUser($user);
-                $notification->setNotificationType(Livelink::NOTIFICATION_COMMIT_MENTIONED);
-                $notification->setModuleName('livelink');
-                $notification->save();
-            }
-        }
-
-        protected function _preSave($is_new)
-        {
-            if ($is_new)
-            {
-                if (!$this->_date) {
-                    $this->_date = NOW;
-                }
-
-                $log_item = new LogItem();
-                $log_item->setChangeType(LogItem::ACTION_COMMIT_CREATED);
-                $log_item->setTarget($this->getID());
-                $log_item->setTargetType(LogItem::TYPE_COMMIT);
-                $log_item->setProject($this->getProject());
-                $log_item->setTime($this->getDate());
-                $log_item->setUser($this->getAuthor()->getID());
-                $log_item->save();
-            }
-        }
-
-        protected function _postSave($is_new)
-        {
-            if ($is_new)
-            {
-                $this->_addNotifications();
-            }
-        }
-
-        protected function _construct(\b2db\Row $row, $foreign_key = null)
-        {
-            parent::_construct($row, $foreign_key);
-            $this->_num_comments = tables\Comments::getTable()->getPreloadedCommentCount(Comment::TYPE_COMMIT, $this->_id);
-        }
-
-        /**
-         * Get the commit log for this commit
-         * 
-         * @return string
-         */
-        public function getLog()
-        {
-            return trim($this->_log);
-        }
-
         public function getTitle()
         {
             $lines = explode("\n", $this->getLog());
@@ -200,12 +139,33 @@
             return $title;
         }
 
+        /**
+         * Get the commit log for this commit
+         *
+         * @return string
+         */
+        public function getLog()
+        {
+            return trim($this->_log);
+        }
+
+        /**
+         * Set a new log for the commit. This will not affect the issues which are affected
+         *
+         * @param string $log
+         */
+        public function setLog($log)
+        {
+            $this->_log = $log;
+        }
+
         public function getMessage()
         {
             $lines = explode("\n", $this->getLog());
 
             if (count($lines) > 1) {
                 array_shift($lines);
+
                 return implode("\n", $lines);
             }
 
@@ -214,6 +174,11 @@
             }
 
             return '';
+        }
+
+        public function getRevisionString()
+        {
+            return (!is_numeric($this->getRevision())) ? mb_substr($this->getRevision(), 0, 7) : $this->getRevision();
         }
 
         /**
@@ -226,9 +191,9 @@
             return $this->_new_rev;
         }
 
-        public function getRevisionString()
+        public function getPreviousRevisionString()
         {
-            return (!is_numeric($this->getRevision())) ? mb_substr($this->getRevision(), 0, 7) : $this->getRevision();
+            return (!is_numeric($this->getPreviousRevision())) ? mb_substr($this->getPreviousRevision(), 0, 7) : $this->getPreviousRevision();
         }
 
         /**
@@ -239,31 +204,6 @@
         public function getPreviousRevision()
         {
             return $this->_old_rev;
-        }
-
-        public function getPreviousRevisionString()
-        {
-            return (!is_numeric($this->getPreviousRevision())) ? mb_substr($this->getPreviousRevision(), 0, 7) : $this->getPreviousRevision();
-        }
-
-        /**
-         * Get the author of this commit
-         *
-         * @return User
-         */
-        public function getAuthor()
-        {
-            return $this->_author;
-        }
-
-        /**
-         * Get the POSIX timestamp of this comment
-         *
-         * @return integer
-         */
-        public function getDate()
-        {
-            return $this->_date;
         }
 
         /**
@@ -277,17 +217,6 @@
         }
 
         /**
-         * Get an array of CommitFiles affected by this commit
-         *
-         * @return CommitFile[]
-         */
-        public function getFiles()
-        {
-            $this->_populateAffectedFiles();
-            return $this->_files;
-        }
-
-        /**
          * Get an array of BranchCommit objects affected by this commit
          *
          * @return Branch[]
@@ -295,7 +224,25 @@
         public function getBranches()
         {
             $this->_populateAffectedBranches();
+
             return $this->_branches;
+        }
+
+        private function _populateAffectedBranches()
+        {
+            if ($this->_branch_commits === null) {
+                $this->_branch_commits = $this->_b2dbLazyLoad('_branch_commits');
+                $this->_branches = [];
+                foreach ($this->_branch_commits as $branch_commit) {
+                    $branch = $branch_commit->getBranch();
+                    $this->_branches[$branch->getID()] = $branch;
+                }
+            }
+        }
+
+        public function hasIssues()
+        {
+            return (bool)count($this->getIssues());
         }
 
         /**
@@ -306,42 +253,22 @@
         public function getIssues()
         {
             $this->_populateAffectedIssues();
+
             return $this->_issues;
         }
 
-        public function hasIssues()
+        private function _populateAffectedIssues()
         {
-            return (bool) count($this->getIssues());
-        }
-
-        /**
-         * Set a new commit author
-         *
-         * @param User $user
-         */
-        public function setAuthor(User $user)
-        {
-            $this->_author = $user;
-        }
-
-        /**
-         * Set a new date for the commit
-         *
-         * @param integer $date
-         */
-        public function setDate($date)
-        {
-            $this->_date = $date;
-        }
-
-        /**
-         * Set a new log for the commit. This will not affect the issues which are affected
-         *
-         * @param string $log
-         */
-        public function setLog($log)
-        {
-            $this->_log = $log;
+            if ($this->_issues === null) {
+                $issue_commits = tables\IssueCommits::getTable()->getByCommitID($this->_id);
+                $issues = [];
+                foreach ($issue_commits as $issue_commit) {
+                    if ($issue_commit->getIssue() instanceof Issue) {
+                        $issues[$issue_commit->getIssue()->getId()] = $issue_commit->getIssue();
+                    }
+                }
+                $this->_issues = $issues;
+            }
         }
 
         /**
@@ -398,87 +325,26 @@
         }
 
         /**
-         * Set the project this commit applies to
-         *
-         * @param Project $project
-         */
-        public function setProject(Project $project)
-        {
-            $this->_project = $project;
-        }
-
-        /**
-         * Get the project this commit applies to
-         *
-         * @return Project
-         */
-        public function getProject()
-        {
-            return $this->_b2dbLazyLoad('_project');
-        }
-
-        private function _populateAffectedFiles()
-        {
-            if ($this->_files === null)
-            {
-                $this->_files = $this->_b2dbLazyLoad('_files');
-                uasort($this->_files, function ($file_1, $file_2) {
-                    /** @var CommitFile $file_1 */
-                    /** @var CommitFile $file_2 */
-                    return strnatcasecmp($file_1->getPath(), $file_2->getPath());
-                });
-            }
-        }
-
-        private function _populateAffectedBranches()
-        {
-            if ($this->_branch_commits === null)
-            {
-                $this->_branch_commits = $this->_b2dbLazyLoad('_branch_commits');
-                $this->_branches = [];
-                foreach ($this->_branch_commits as $branch_commit) {
-                    $branch = $branch_commit->getBranch();
-                    $this->_branches[$branch->getID()] = $branch;
-                }
-            }
-        }
-
-        private function _populateAffectedIssues()
-        {
-            if ($this->_issues === null)
-            {
-                $issue_commits = tables\IssueCommits::getTable()->getByCommitID($this->_id);
-                $issues = array();
-                foreach ($issue_commits as $issue_commit) {
-                    if ($issue_commit->getIssue() instanceof Issue) {
-                        $issues[$issue_commit->getIssue()->getId()] = $issue_commit->getIssue();
-                    }
-                }
-                $this->_issues = $issues;
-            }
-        }
-
-        /**
          * Get Gitlab url for merge request bz provided id
          *
-         * @param  integer $merge_request_id
+         * @param integer $merge_request_id
+         *
          * @return string
          *
-         * @throws \Exception
+         * @throws Exception
          */
         public function getGitlabUrlForMergeRequestID($merge_request_id)
         {
-            $base_url = \pachno\core\framework\Context::getModule('vcs_integration')->getSetting('browser_url_' . $this->getProject()->getID());
+            $base_url = Context::getModule('vcs_integration')->getSetting('browser_url_' . $this->getProject()->getID());
             $misc_data_array = $this->getMiscDataArray();
             $reposname = null;
 
-            if (array_key_exists('gitlab_repos_ns', $misc_data_array))
-            {
+            if (array_key_exists('gitlab_repos_ns', $misc_data_array)) {
                 $reposname = $misc_data_array['gitlab_repos_ns'];
-                $base_url = rtrim($base_url, '/').'/'.$reposname;
+                $base_url = rtrim($base_url, '/') . '/' . $reposname;
             }
 
-            return $base_url.'/merge_requests/'.$merge_request_id;
+            return $base_url . '/merge_requests/' . $merge_request_id;
         }
 
         public function isImported()
@@ -489,19 +355,6 @@
         public function setIsImported($is_imported = true)
         {
             $this->_is_imported = $is_imported;
-        }
-
-        protected function dirToArray(&$dirs) {
-
-            $result = [];
-
-            while (count($dirs))
-            {
-                $dir = array_shift($dirs);
-                $result[$dir] = $this->dirToArray($dirs);
-            }
-
-            return $result;
         }
 
         public function getStructure()
@@ -527,6 +380,43 @@
         }
 
         /**
+         * Get an array of CommitFiles affected by this commit
+         *
+         * @return CommitFile[]
+         */
+        public function getFiles()
+        {
+            $this->_populateAffectedFiles();
+
+            return $this->_files;
+        }
+
+        private function _populateAffectedFiles()
+        {
+            if ($this->_files === null) {
+                $this->_files = $this->_b2dbLazyLoad('_files');
+                uasort($this->_files, function ($file_1, $file_2) {
+                    /** @var CommitFile $file_1 */
+                    /** @var CommitFile $file_2 */
+                    return strnatcasecmp($file_1->getPath(), $file_2->getPath());
+                });
+            }
+        }
+
+        protected function dirToArray(&$dirs)
+        {
+
+            $result = [];
+
+            while (count($dirs)) {
+                $dir = array_shift($dirs);
+                $result[$dir] = $this->dirToArray($dirs);
+            }
+
+            return $result;
+        }
+
+        /**
          * @return int
          */
         public function getLinesRemoved()
@@ -537,6 +427,7 @@
                     $this->_lines_removed += $file->getLinesRemoved();
                 }
             }
+
             return $this->_lines_removed;
         }
 
@@ -551,7 +442,118 @@
                     $this->_lines_added += $file->getLinesAdded();
                 }
             }
+
             return $this->_lines_added;
+        }
+
+        protected function _preSave($is_new)
+        {
+            if ($is_new) {
+                if (!$this->_date) {
+                    $this->_date = NOW;
+                }
+
+                $log_item = new LogItem();
+                $log_item->setChangeType(LogItem::ACTION_COMMIT_CREATED);
+                $log_item->setTarget($this->getID());
+                $log_item->setTargetType(LogItem::TYPE_COMMIT);
+                $log_item->setProject($this->getProject());
+                $log_item->setTime($this->getDate());
+                $log_item->setUser($this->getAuthor()->getID());
+                $log_item->save();
+            }
+        }
+
+        /**
+         * Get the project this commit applies to
+         *
+         * @return Project
+         */
+        public function getProject()
+        {
+            return $this->_b2dbLazyLoad('_project');
+        }
+
+        /**
+         * Set the project this commit applies to
+         *
+         * @param Project $project
+         */
+        public function setProject(Project $project)
+        {
+            $this->_project = $project;
+        }
+
+        /**
+         * Get the POSIX timestamp of this comment
+         *
+         * @return integer
+         */
+        public function getDate()
+        {
+            return $this->_date;
+        }
+
+        /**
+         * Set a new date for the commit
+         *
+         * @param integer $date
+         */
+        public function setDate($date)
+        {
+            $this->_date = $date;
+        }
+
+        /**
+         * Get the author of this commit
+         *
+         * @return User
+         */
+        public function getAuthor()
+        {
+            return $this->_author;
+        }
+
+        /**
+         * Set a new commit author
+         *
+         * @param User $user
+         */
+        public function setAuthor(User $user)
+        {
+            $this->_author = $user;
+        }
+
+        protected function _postSave($is_new)
+        {
+            if ($is_new) {
+                $this->_addNotifications();
+            }
+        }
+
+        public function _addNotifications()
+        {
+            $parser = new TextParser($this->_log);
+            $parser->setOption('plain', true);
+            $parser->doParse();
+            foreach ($parser->getMentions() as $user) {
+                if (!$this->getAuthor() || ($this->getAuthor() instanceof User && $user->getID() == $this->getAuthor()->getID()) || (!$this->getAuthor() instanceof User && $user->getID() == $this->getAuthor()))
+                    continue;
+
+                $notification = new Notification();
+                $notification->setTarget($this);
+                $notification->setTriggeredByUser($this->getAuthor());
+                $notification->setUser($user);
+                $notification->setNotificationType(Livelink::NOTIFICATION_COMMIT_MENTIONED);
+                $notification->setModuleName('livelink');
+                $notification->save();
+            }
+        }
+
+        protected function _construct(Row $row, $foreign_key = null)
+        {
+            parent::_construct($row, $foreign_key);
+            $this->_num_comments = tables\Comments::getTable()->getPreloadedCommentCount(Comment::TYPE_COMMIT, $this->_id);
         }
 
     }

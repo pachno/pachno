@@ -4,10 +4,9 @@
 
     use b2db\Insertion;
     use b2db\Update;
+    use pachno\core\entities\WorkflowStep;
+    use pachno\core\entities\WorkflowTransition;
     use pachno\core\framework;
-    use b2db\Core,
-        b2db\Criteria,
-        b2db\Criterion;
 
     /**
      * Workflow step transitions table
@@ -31,27 +30,22 @@
     {
 
         const B2DB_TABLE_VERSION = 1;
+
         const B2DBNAME = 'workflow_step_transitions';
+
         const ID = 'workflow_step_transitions.id';
+
         const SCOPE = 'workflow_step_transitions.scope';
+
         const FROM_STEP_ID = 'workflow_step_transitions.from_step_id';
+
         const TRANSITION_ID = 'workflow_step_transitions.transition_id';
+
         const WORKFLOW_ID = 'workflow_step_transitions.workflow_id';
 
-        protected function initialize()
+        public function countByStepID($step_id)
         {
-            parent::setup(self::B2DBNAME, self::ID);
-            parent::addForeignKeyColumn(self::WORKFLOW_ID, Workflows::getTable(), Workflows::ID);
-            parent::addForeignKeyColumn(self::FROM_STEP_ID, WorkflowSteps::getTable(), WorkflowSteps::ID);
-            parent::addForeignKeyColumn(self::TRANSITION_ID, WorkflowTransitions::getTable(), WorkflowTransitions::ID);
-        }
-
-        protected function _deleteByTypeID($type, $id)
-        {
-            $query = $this->getQuery();
-            $query->where(self::SCOPE, framework\Context::getScope()->getID());
-            $query->where((($type == 'step') ? self::FROM_STEP_ID : self::TRANSITION_ID), $id);
-            return $this->rawDelete($query);
+            return $this->_countByTypeID('step', $step_id);
         }
 
         protected function _countByTypeID($type, $id)
@@ -59,7 +53,13 @@
             $query = $this->getQuery();
             $query->where(self::SCOPE, framework\Context::getScope()->getID());
             $query->where((($type == 'step') ? self::FROM_STEP_ID : self::TRANSITION_ID), $id);
+
             return $this->count($query);
+        }
+
+        public function getByStepID($step_id)
+        {
+            return $this->_getByTypeID('step', $step_id);
         }
 
         protected function _getByTypeID($type, $id)
@@ -69,33 +69,18 @@
             $query->where((($type == 'step') ? self::FROM_STEP_ID : self::TRANSITION_ID), $id);
             $query->join(WorkflowTransitions::getTable(), WorkflowTransitions::ID, self::TRANSITION_ID);
 
-            $return_array = array();
-            if ($res = $this->rawSelect($query, false))
-            {
-                while ($row = $res->getNextRow())
-                {
-                    if ($type == 'step')
-                    {
-                        $return_array[$row->get(self::TRANSITION_ID)] = new \pachno\core\entities\WorkflowTransition($row->get(self::TRANSITION_ID));
-                    }
-                    else
-                    {
-                        $return_array[$row->get(self::FROM_STEP_ID)] = new \pachno\core\entities\WorkflowStep($row->get(self::FROM_STEP_ID));
+            $return_array = [];
+            if ($res = $this->rawSelect($query, false)) {
+                while ($row = $res->getNextRow()) {
+                    if ($type == 'step') {
+                        $return_array[$row->get(self::TRANSITION_ID)] = new WorkflowTransition($row->get(self::TRANSITION_ID));
+                    } else {
+                        $return_array[$row->get(self::FROM_STEP_ID)] = new WorkflowStep($row->get(self::FROM_STEP_ID));
                     }
                 }
             }
 
             return $return_array;
-        }
-
-        public function countByStepID($step_id)
-        {
-            return $this->_countByTypeID('step', $step_id);
-        }
-
-        public function getByStepID($step_id)
-        {
-            return $this->_getByTypeID('step', $step_id);
         }
 
         public function countByTransitionID($transition_id)
@@ -117,17 +102,15 @@
             $insertion->add(self::WORKFLOW_ID, $workflow_id);
             $this->rawInsert($insertion);
         }
-        
+
         public function copyByWorkflowIDs($old_workflow_id, $new_workflow_id)
         {
             $query = $this->getQuery();
             $query->where(self::SCOPE, framework\Context::getScope()->getID());
             $query->where(self::WORKFLOW_ID, $old_workflow_id);
-            
-            if ($res = $this->rawSelect($query))
-            {
-                while ($row = $res->getNextRow())
-                {
+
+            if ($res = $this->rawSelect($query)) {
+                while ($row = $res->getNextRow()) {
                     $insertion = new Insertion();
                     $insertion->add(self::FROM_STEP_ID, $row->get(self::FROM_STEP_ID));
                     $insertion->add(self::SCOPE, $row->get(self::SCOPE));
@@ -143,6 +126,15 @@
             $this->_deleteByTypeID('transition', $transition_id);
         }
 
+        protected function _deleteByTypeID($type, $id)
+        {
+            $query = $this->getQuery();
+            $query->where(self::SCOPE, framework\Context::getScope()->getID());
+            $query->where((($type == 'step') ? self::FROM_STEP_ID : self::TRANSITION_ID), $id);
+
+            return $this->rawDelete($query);
+        }
+
         public function deleteByStepID($step_id)
         {
             $this->_deleteByTypeID('step', $step_id);
@@ -154,13 +146,13 @@
             $query->where(self::SCOPE, framework\Context::getScope()->getID());
             $query->where(self::TRANSITION_ID, $transition_id);
             $query->where(self::FROM_STEP_ID, $step_id);
+
             return $this->rawDelete($query);
         }
 
         public function reMapStepIDsByWorkflowID($workflow_id, $mapper_array)
         {
-            foreach ($mapper_array as $old_step_id => $new_step_id)
-            {
+            foreach ($mapper_array as $old_step_id => $new_step_id) {
                 $query = $this->getQuery();
                 $update = new Update();
 
@@ -172,11 +164,10 @@
                 $this->rawUpdate($update, $query);
             }
         }
-        
+
         public function reMapTransitionIDsByWorkflowID($workflow_id, $mapper_array)
         {
-            foreach ($mapper_array as $old_transition_id => $new_transition_id)
-            {
+            foreach ($mapper_array as $old_transition_id => $new_transition_id) {
                 $query = $this->getQuery();
                 $update = new Update();
 
@@ -189,9 +180,17 @@
             }
         }
 
+        protected function initialize()
+        {
+            parent::setup(self::B2DBNAME, self::ID);
+            parent::addForeignKeyColumn(self::WORKFLOW_ID, Workflows::getTable(), Workflows::ID);
+            parent::addForeignKeyColumn(self::FROM_STEP_ID, WorkflowSteps::getTable(), WorkflowSteps::ID);
+            parent::addForeignKeyColumn(self::TRANSITION_ID, WorkflowTransitions::getTable(), WorkflowTransitions::ID);
+        }
+
         protected function setupIndexes()
         {
-            $this->addIndex('scope_fromstepid', array(self::SCOPE, self::FROM_STEP_ID));
+            $this->addIndex('scope_fromstepid', [self::SCOPE, self::FROM_STEP_ID]);
         }
 
     }

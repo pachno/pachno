@@ -14,13 +14,12 @@
         protected static $_items = null;
 
         protected $_key = null;
-        
+
         protected $_itemtype = Datatype::RESOLUTION;
 
         public static function loadFixtures(Scope $scope)
         {
-            foreach (array("CAN'T REPRODUCE", "WON'T FIX", "NOT AN ISSUE", "POSTPONED", "RESOLVED", "CAN'T FIX", "DUPLICATE") as $name)
-            {
+            foreach (["CAN'T REPRODUCE", "WON'T FIX", "NOT AN ISSUE", "POSTPONED", "RESOLVED", "CAN'T FIX", "DUPLICATE"] as $name) {
                 $resolution = new Resolution();
                 $resolution->setName($name);
                 $resolution->setItemdata('');

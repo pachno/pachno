@@ -2,9 +2,9 @@
 
     namespace pachno\core\entities\tables;
 
+    use b2db\Criterion;
     use b2db\Insertion;
-    use pachno\core\framework,
-        b2db\Criteria;
+    use pachno\core\framework;
 
     /**
      * Team members table
@@ -28,63 +28,51 @@
     {
 
         const B2DB_TABLE_VERSION = 1;
-        const B2DBNAME = 'teammembers';
-        const ID = 'teammembers.id';
-        const SCOPE = 'teammembers.scope';
-        const UID = 'teammembers.uid';
-        const TID = 'teammembers.tid';
-        
-        protected function initialize()
-        {
-            parent::setup(self::B2DBNAME, self::ID);
-            parent::addForeignKeyColumn(self::UID, Users::getTable());
-            parent::addForeignKeyColumn(self::TID, Teams::getTable());
-        }
 
-        protected function setupIndexes()
-        {
-            $this->addIndex('scope_uid', array(self::UID, self::SCOPE));
-        }
+        const B2DBNAME = 'teammembers';
+
+        const ID = 'teammembers.id';
+
+        const SCOPE = 'teammembers.scope';
+
+        const UID = 'teammembers.uid';
+
+        const TID = 'teammembers.tid';
 
         public function getUIDsForTeamID($team_id)
         {
             $query = $this->getQuery();
             $query->where(self::TID, $team_id);
 
-            $uids = array();
-            if ($res = $this->rawSelect($query))
-            {
-                while ($row = $res->getNextRow())
-                {
+            $uids = [];
+            if ($res = $this->rawSelect($query)) {
+                while ($row = $res->getNextRow()) {
                     $uids[$row->get(self::UID)] = $row->get(self::UID);
                 }
             }
 
             return $uids;
         }
-        
+
         public function clearTeamsByUserID($user_id)
         {
-            $team_ids = array();
-            
+            $team_ids = [];
+
             $query = $this->getQuery();
             $query->where(self::UID, $user_id);
             $query->join(Teams::getTable(), Teams::ID, self::TID);
             $query->where(Teams::ONDEMAND, false);
-            
-            if ($res = $this->rawSelect($query))
-            {
-                while ($row = $res->getNextRow())
-                {
+
+            if ($res = $this->rawSelect($query)) {
+                while ($row = $res->getNextRow()) {
                     $team_ids[$row->get(self::TID)] = true;
                 }
             }
-            
-            if (!empty($team_ids))
-            {
+
+            if (!empty($team_ids)) {
                 $query = $this->getQuery();
                 $query->where(self::UID, $user_id);
-                $query->where(self::TID, array_keys($team_ids), \b2db\Criterion::IN);
+                $query->where(self::TID, array_keys($team_ids), Criterion::IN);
                 $res = $this->rawDelete($query);
             }
         }
@@ -102,17 +90,14 @@
         {
             $query = $this->getQuery();
             $query->where(self::TID, $cloned_team_id);
-            $memberships_to_add = array();
-            if ($res = $this->rawSelect($query))
-            {
-                while ($row = $res->getNextRow())
-                {
+            $memberships_to_add = [];
+            if ($res = $this->rawSelect($query)) {
+                while ($row = $res->getNextRow()) {
                     $memberships_to_add[] = $row->get(self::UID);
                 }
             }
 
-            foreach ($memberships_to_add as $uid)
-            {
+            foreach ($memberships_to_add as $uid) {
                 $insertion = new Insertion();
                 $insertion->add(self::UID, $uid);
                 $insertion->add(self::TID, $new_team_id);
@@ -120,7 +105,7 @@
                 $this->rawInsert($insertion);
             }
         }
-        
+
         public function addUserToTeam($user_id, $team_id)
         {
             $insertion = new Insertion();
@@ -129,7 +114,7 @@
             $insertion->add(self::UID, $user_id);
             $this->rawInsert($insertion);
         }
-        
+
         public function removeUserFromTeam($user_id, $team_id)
         {
             $query = $this->getQuery();
@@ -138,7 +123,7 @@
             $query->where(self::UID, $user_id);
             $this->rawDelete($query);
         }
-        
+
         public function removeUsersFromTeam($team_id)
         {
             $query = $this->getQuery();
@@ -146,5 +131,17 @@
             $query->where(self::TID, $team_id);
             $this->rawDelete($query);
         }
-        
+
+        protected function initialize()
+        {
+            parent::setup(self::B2DBNAME, self::ID);
+            parent::addForeignKeyColumn(self::UID, Users::getTable());
+            parent::addForeignKeyColumn(self::TID, Teams::getTable());
+        }
+
+        protected function setupIndexes()
+        {
+            $this->addIndex('scope_uid', [self::UID, self::SCOPE]);
+        }
+
     }

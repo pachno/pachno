@@ -16,9 +16,13 @@
     {
 
         const ACTION_ADDED = 'A';
+
         const ACTION_UPDATED = 'U';
+
         const ACTION_MODIFIED = 'M';
+
         const ACTION_DELETED = 'D';
+
         const ACTION_RENAMED = 'R';
 
         /**
@@ -64,21 +68,22 @@
         protected $_lines_added;
 
         /**
-         * Get the file path
-         * @return string
-         */
-        public function getPath()
-        {
-            return $this->_file_name;
-        }
-
-        /**
          * Get the file action
          * @return string
          */
         public function getAction()
         {
             return $this->_action;
+        }
+
+        /**
+         * Set the action applied (M/A/D)
+         *
+         * @param string $action
+         */
+        public function setAction($action)
+        {
+            $this->_action = $action;
         }
 
         /**
@@ -92,6 +97,7 @@
 
         /**
          * Set the file path
+         *
          * @param string $path
          */
         public function setPath($path)
@@ -110,26 +116,13 @@
         }
 
         /**
-         * Set the action applied (M/A/D)
-         * @param string $action
-         */
-        public function setAction($action)
-        {
-            $this->_action = $action;
-        }
-
-        /**
          * Set the commit this change applies to
+         *
          * @param Commit $commit
          */
         public function setCommit(Commit $commit)
         {
             $this->_commit_id = $commit;
-        }
-
-        protected function getExtension()
-        {
-            return substr(strrchr($this->getPath(), '.'), 1);
         }
 
         public function getFontAwesomeIcon()
@@ -168,9 +161,28 @@
             }
         }
 
+        protected function getExtension()
+        {
+            return substr(strrchr($this->getPath(), '.'), 1);
+        }
+
+        /**
+         * Get the file path
+         * @return string
+         */
+        public function getPath()
+        {
+            return $this->_file_name;
+        }
+
         public function getFontAwesomeIconStyle()
         {
             return 'far';
+        }
+
+        public function getCommitFileDiffs()
+        {
+            return $this->getDiffs();
         }
 
         /**
@@ -179,11 +191,6 @@
         public function getDiffs()
         {
             return $this->_b2dbLazyLoad('_commit_file_diffs');
-        }
-
-        public function getCommitFileDiffs()
-        {
-            return $this->getDiffs();
         }
 
         /**
@@ -213,6 +220,7 @@
                     $this->_lines_removed += $diff->getLinesRemoved();
                 }
             }
+
             return $this->_lines_removed;
         }
 
@@ -227,6 +235,7 @@
                     $this->_lines_added += $diff->getLinesAdded();
                 }
             }
+
             return $this->_lines_added;
         }
 

@@ -27,14 +27,24 @@
     {
 
         const TYPE_BUG = 'bug_report';
+
         const TYPE_DOCUMENTATION = 'documentation_request';
+
         const TYPE_SUPPORT = 'support_request';
+
         const TYPE_FEATURE = 'feature_request';
+
         const TYPE_ENHANCEMENT = 'enhancement';
+
         const TYPE_EPIC = 'epic';
+
         const TYPE_USER_STORY = 'developer_report';
+
         const TYPE_TASK = 'task';
+
         const TYPE_IDEA = 'idea';
+
+        static $_issuetypes = null;
 
         /**
          * The name of the object
@@ -61,8 +71,6 @@
          * @Column(type="text")
          */
         protected $_description;
-
-        static $_issuetypes = null;
 
         public static function loadFixtures(Scope $scope)
         {
@@ -127,6 +135,11 @@
             return [$bug_report->getID(), $feature_request->getID(), $enhancement->getID(), $task->getID(), $user_story->getID(), $idea->getID(), $epic->getID()];
         }
 
+        public function setIsTask($val = true)
+        {
+            $this->_task = (bool)$val;
+        }
+
         public static function getDefaultItems($scope)
         {
             $bug_report = static::getOrCreateByKeyish($scope, 'bugreport', 'Bug report');
@@ -147,10 +160,10 @@
          */
         public static function getAll()
         {
-            if (self::$_issuetypes === null)
-            {
+            if (self::$_issuetypes === null) {
                 self::$_issuetypes = self::getB2DBTable()->getAll();
             }
+
             return self::$_issuetypes;
         }
 
@@ -162,7 +175,7 @@
         public static function getIcons()
         {
             $i18n = framework\Context::getI18n();
-            $icons = array();
+            $icons = [];
             $icons['bug_report'] = $i18n->__('Bug report');
             $icons['documentation_request'] = $i18n->__('Documentation request');
             $icons['enhancement'] = $i18n->__('Enhancement');
@@ -176,39 +189,14 @@
             return $icons;
         }
 
-        /**
-         * Returns whether or not this issue type is the default for promoting tasks to issues
-         *
-         * @return boolean
-         */
-        public function isTask()
-        {
-            return (bool) $this->_task;
-        }
-
-        public function setIsTask($val = true)
-        {
-            $this->_task = (bool) $val;
-        }
-
-        public function getType()
-        {
-            return $this->_icon;
-        }
-
         public function setType($type)
         {
             $this->_icon = $type;
         }
 
-        public function getIcon()
+        public function getFontAwesomeIcon()
         {
-            return $this->getType();
-        }
-
-        public function setIcon($icon)
-        {
-            $this->setType($icon);
+            return self::getFontAwesomeIconFromIcon($this->getType());
         }
 
         public static function getFontAwesomeIconFromIcon($icon)
@@ -237,30 +225,29 @@
             }
         }
 
-        public function getFontAwesomeIcon()
+        public function getType()
         {
-            return self::getFontAwesomeIconFromIcon($this->getType());
+            return $this->_icon;
         }
 
-        public function getDescription()
+        public function isAssociatedWithAnySchemes()
         {
-            return $this->_description;
+            return (bool)tables\IssuetypeSchemeLink::getTable()->countByIssuetypeID($this->getID());
         }
 
-        public function setDescription($description)
+        public function toJSON($detailed = true)
         {
-            $this->_description = $description;
-        }
+            $json = [
+                'id' => $this->getID(),
+                'key' => $this->getKey(),
+                'name' => $this->getName(),
+                'icon' => $this->getIcon(),
+                'type' => $this->getType(),
+                'is_task' => $this->isTask(),
+                'description' => $this->getDescription()
+            ];
 
-        protected function _preDelete()
-        {
-            tables\IssuetypeSchemeLink::getTable()->deleteByIssuetypeID($this->getID());
-            tables\VisibleIssueTypes::getTable()->deleteByIssuetypeID($this->getID());
-        }
-
-        protected function _postSave($is_new)
-        {
-            framework\Context::getCache()->delete(framework\Cache::KEY_TEXTPARSER_ISSUE_REGEX);
+            return $json;
         }
 
         /**
@@ -284,24 +271,45 @@
             $this->_generateKey();
         }
 
-        public function isAssociatedWithAnySchemes()
+        public function getIcon()
         {
-            return (bool) tables\IssuetypeSchemeLink::getTable()->countByIssuetypeID($this->getID());
+            return $this->getType();
         }
-        
-        public function toJSON($detailed = true)
-        {
-            $json = array(
-                'id' => $this->getID(),
-                'key' => $this->getKey(),
-                'name' => $this->getName(),
-                'icon' => $this->getIcon(),
-                'type' => $this->getType(),
-                'is_task' => $this->isTask(),
-                'description' => $this->getDescription()
-            );
 
-            return $json;
+        public function setIcon($icon)
+        {
+            $this->setType($icon);
+        }
+
+        /**
+         * Returns whether or not this issue type is the default for promoting tasks to issues
+         *
+         * @return boolean
+         */
+        public function isTask()
+        {
+            return (bool)$this->_task;
+        }
+
+        public function getDescription()
+        {
+            return $this->_description;
+        }
+
+        public function setDescription($description)
+        {
+            $this->_description = $description;
+        }
+
+        protected function _preDelete()
+        {
+            tables\IssuetypeSchemeLink::getTable()->deleteByIssuetypeID($this->getID());
+            tables\VisibleIssueTypes::getTable()->deleteByIssuetypeID($this->getID());
+        }
+
+        protected function _postSave($is_new)
+        {
+            framework\Context::getCache()->delete(framework\Cache::KEY_TEXTPARSER_ISSUE_REGEX);
         }
 
     }

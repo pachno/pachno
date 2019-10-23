@@ -42,6 +42,8 @@ configure_project_find_assignee:
     route: '/configure/project/:project_id/find/assignee/by/*'
     module: project
     action: findAssignee
+    methods:
+      - POST
     parameters: [ ]
     csrf_enabled: false
 

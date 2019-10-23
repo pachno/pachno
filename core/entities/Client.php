@@ -2,6 +2,7 @@
 
     namespace pachno\core\entities;
 
+    use Exception;
     use pachno\core\entities\common\IdentifiableScoped;
     use pachno\core\framework;
 
@@ -25,6 +26,8 @@
      */
     class Client extends IdentifiableScoped
     {
+
+        protected static $_clients = null;
 
         protected $_members = null;
 
@@ -73,12 +76,10 @@
         /**
          * List of client's dashboards
          *
-         * @var array|\pachno\core\entities\Dashboard
+         * @var array|Dashboard
          * @Relates(class="\pachno\core\entities\Dashboard", collection=true, foreign_column="client_id", orderby="name")
          */
         protected $_dashboards = null;
-
-        protected static $_clients = null;
 
         public static function doesClientNameExist($client_name)
         {
@@ -90,14 +91,14 @@
          */
         public static function getAll()
         {
-            if (self::$_clients === null)
-            {
+            if (self::$_clients === null) {
                 self::$_clients = tables\Clients::getTable()->getAll();
             }
+
             return self::$_clients;
         }
 
-        public static function loadFixtures(\pachno\core\entities\Scope $scope)
+        public static function loadFixtures(Scope $scope)
         {
 
         }
@@ -118,36 +119,6 @@
         }
 
         /**
-         * Get the client's email address
-         *
-         * @return string
-         */
-        public function getEmail()
-        {
-            return $this->_email;
-        }
-
-        /**
-         * Get the client's telephone number
-         *
-         * @return integer
-         */
-        public function getTelephone()
-        {
-            return $this->_telephone;
-        }
-
-        /**
-         * Get the client's fax number
-         *
-         * @return integer
-         */
-        public function getFax()
-        {
-            return $this->_fax;
-        }
-
-        /**
          * Set the client's website
          *
          * @param string
@@ -155,6 +126,16 @@
         public function setWebsite($website)
         {
             $this->_website = $website;
+        }
+
+        /**
+         * Get the client's email address
+         *
+         * @return string
+         */
+        public function getEmail()
+        {
+            return $this->_email;
         }
 
         /**
@@ -168,6 +149,16 @@
         }
 
         /**
+         * Get the client's telephone number
+         *
+         * @return integer
+         */
+        public function getTelephone()
+        {
+            return $this->_telephone;
+        }
+
+        /**
          * Set the client's telephone number
          *
          * @param integer
@@ -175,6 +166,16 @@
         public function setTelephone($telephone)
         {
             $this->_telephone = $telephone;
+        }
+
+        /**
+         * Get the client's fax number
+         *
+         * @return integer
+         */
+        public function getFax()
+        {
+            return $this->_fax;
         }
 
         /**
@@ -190,11 +191,11 @@
         /**
          * Adds a user to the client
          *
-         * @param \pachno\core\entities\User $user
+         * @param User $user
          */
-        public function addMember(\pachno\core\entities\User $user)
+        public function addMember(User $user)
         {
-            if (!$user->getID()) throw new \Exception('Cannot add user object to client until the object is saved');
+            if (!$user->getID()) throw new Exception('Cannot add user object to client until the object is saved');
 
             tables\ClientMembers::getTable()->addUserToClient($user->getID(), $this->getID());
 
@@ -204,43 +205,32 @@
 
         public function getMembers()
         {
-            if ($this->_members === null)
-            {
-                $this->_members = array();
-                foreach (tables\ClientMembers::getTable()->getUIDsForClientID($this->getID()) as $uid)
-                {
-                    $this->_members[$uid] = \pachno\core\entities\User::getB2DBTable()->selectById($uid);
+            if ($this->_members === null) {
+                $this->_members = [];
+                foreach (tables\ClientMembers::getTable()->getUIDsForClientID($this->getID()) as $uid) {
+                    $this->_members[$uid] = User::getB2DBTable()->selectById($uid);
                 }
             }
+
             return $this->_members;
         }
 
-        public function removeMember(\pachno\core\entities\User $user)
+        public function removeMember(User $user)
         {
-            if ($this->_members !== null)
-            {
+            if ($this->_members !== null) {
                 unset($this->_members[$user->getID()]);
             }
-            if ($this->_num_members !== null)
-            {
+            if ($this->_num_members !== null) {
                 $this->_num_members--;
             }
             tables\ClientMembers::getTable()->removeUserFromClient($user->getID(), $this->getID());
         }
 
-        protected function _preDelete()
-        {
-            tables\ClientMembers::getTable()->removeUsersFromClient($this->getID());
-        }
-
         public function getNumberOfMembers()
         {
-            if ($this->_members !== null)
-            {
+            if ($this->_members !== null) {
                 return count($this->_members);
-            }
-            elseif ($this->_num_members === null)
-            {
+            } elseif ($this->_num_members === null) {
                 $this->_num_members = tables\ClientMembers::getTable()->getNumberOfMembersByClientID($this->getID());
             }
 
@@ -249,7 +239,7 @@
 
         public function hasAccess()
         {
-            return (bool) (framework\Context::getUser()->hasPageAccess('clientlist') || framework\Context::getUser()->isMemberOfClient($this));
+            return (bool)(framework\Context::getUser()->hasPageAccess('clientlist') || framework\Context::getUser()->isMemberOfClient($this));
         }
 
         /**
@@ -275,11 +265,12 @@
         /**
          * Returns an array of client dashboards
          *
-         * @return \pachno\core\entities\Dashboard[]
+         * @return Dashboard[]
          */
         public function getDashboards()
         {
             $this->_b2dbLazyLoad('_dashboards');
+
             return $this->_dashboards;
         }
 
@@ -293,8 +284,7 @@
             $active_projects = [];
             $archived_projects = [];
 
-            foreach ($projects as $project_id => $project)
-            {
+            foreach ($projects as $project_id => $project) {
                 if ($project->isArchived()) {
                     $archived_projects[$project_id] = $project;
                 } else {
@@ -303,6 +293,11 @@
             }
 
             return [$active_projects, $archived_projects];
+        }
+
+        protected function _preDelete()
+        {
+            tables\ClientMembers::getTable()->removeUsersFromClient($this->getID());
         }
 
     }

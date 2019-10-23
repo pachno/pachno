@@ -2,10 +2,8 @@
 
     namespace pachno\core\entities\tables;
 
+    use b2db\Criterion;
     use pachno\core\framework;
-    use b2db\Core,
-        b2db\Criteria,
-        b2db\Criterion;
 
     /**
      * Issue types table
@@ -30,18 +28,26 @@
     {
 
         const B2DB_TABLE_VERSION = 2;
+
         const B2DBNAME = 'issuetypes';
+
         const ID = 'issuetypes.id';
+
         const SCOPE = 'issuetypes.scope';
+
         const NAME = 'issuetypes.name';
+
         const DESCRIPTION = 'issuetypes.description';
+
         const ICON = 'issuetypes.icon';
+
         const TASK = 'issuetypes.task';
 
         public function getAll()
         {
             $query = $this->getQuery();
             $query->where(self::SCOPE, framework\Context::getScope()->getID());
+
             return $this->select($query);
         }
 
@@ -49,7 +55,7 @@
         {
             $query = $this->getQuery();
             $query->where(self::SCOPE, framework\Context::getScope()->getID());
-            $query->where(self::ID, $ids, \b2db\Criterion::IN);
+            $query->where(self::ID, $ids, Criterion::IN);
             $query->indexBy(self::ID);
 
             return $this->select($query);
@@ -62,7 +68,7 @@
             $query->addSelectionColumn(self::ID, 'id');
             $res = $this->rawSelect($query);
 
-            $ids = array();
+            $ids = [];
             if ($res) {
                 while ($row = $res->getNextRow()) {
                     $id = $row->get('id');
@@ -80,11 +86,9 @@
             $query->where(self::SCOPE, framework\Context::getScope()->getID());
             $res = $this->rawSelect($query);
 
-            $retarr = array();
-            if ($res)
-            {
-                while ($row = $res->getNextRow())
-                {
+            $retarr = [];
+            if ($res) {
+                while ($row = $res->getNextRow()) {
                     $retarr[] = $row->get(self::ID);
                 }
             }

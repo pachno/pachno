@@ -4,6 +4,7 @@
 
     use pachno\core\entities\common\QaLeadable;
     use pachno\core\framework;
+    use pachno\core\framework\Event;
 
     /**
      * Class used for components
@@ -25,7 +26,7 @@
      */
     class Component extends QaLeadable
     {
-        
+
         /**
          * The name of the object
          *
@@ -42,47 +43,32 @@
          * @Relates(class="\pachno\core\entities\Project")
          */
         protected $_project = null;
-        
-        protected function _postSave($is_new)
-        {
-            if ($is_new)
-            {
-                framework\Context::setPermission("canseecomponent", $this->getID(), "core", 0, framework\Context::getUser()->getGroup()->getID(), 0, true);
-                \pachno\core\framework\Event::createNew('core', 'Component::createNew', $this)->trigger();
-            }
-        }
-        
-        /**
-         * Returns the parent project
-         *
-         * @return \pachno\core\entities\Project
-         */
-        public function getProject()
-        {
-            return $this->_b2dbLazyLoad('_project');
-        }
-        
-        public function setProject($project)
-        {
-            $this->_project = $project;
-        }
-        
-        protected function _preDelete()
-        {
-            tables\IssueAffectsComponent::getTable()->deleteByComponentID($this->getID());
-            tables\EditionComponents::getTable()->deleteByComponentID($this->getID());
-        }
-        
+
         /**
          * Whether or not the current user can access the component
-         * 
+         *
          * @return boolean
          */
         public function hasAccess()
         {
             return ($this->getProject()->canSeeAllComponents() || framework\Context::getUser()->hasPermission('canseecomponent', $this->getID()));
         }
-        
+
+        /**
+         * Returns the parent project
+         *
+         * @return Project
+         */
+        public function getProject()
+        {
+            return $this->_b2dbLazyLoad('_project');
+        }
+
+        public function setProject($project)
+        {
+            $this->_project = $project;
+        }
+
         /**
          * Return the items name
          *
@@ -101,6 +87,20 @@
         public function setName($name)
         {
             $this->_name = $name;
+        }
+
+        protected function _postSave($is_new)
+        {
+            if ($is_new) {
+                framework\Context::setPermission("canseecomponent", $this->getID(), "core", 0, framework\Context::getUser()->getGroup()->getID(), 0, true);
+                Event::createNew('core', 'Component::createNew', $this)->trigger();
+            }
+        }
+
+        protected function _preDelete()
+        {
+            tables\IssueAffectsComponent::getTable()->deleteByComponentID($this->getID());
+            tables\EditionComponents::getTable()->deleteByComponentID($this->getID());
         }
 
     }

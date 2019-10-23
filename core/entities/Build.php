@@ -40,7 +40,7 @@
         /**
          * This builds edition
          *
-         * @var \pachno\core\entities\Edition
+         * @var Edition
          * @Column(type="integer", length=10)
          * @Relates(class="\pachno\core\entities\Edition")
          */
@@ -49,7 +49,7 @@
         /**
          * This builds project
          *
-         * @var \pachno\core\entities\Project
+         * @var Project
          * @Column(type="integer", length=10)
          * @Relates(class="\pachno\core\entities\Project")
          */
@@ -58,7 +58,7 @@
         /**
          * This builds milestone, if any
          *
-         * @var \pachno\core\entities\Milestone
+         * @var Milestone
          * @Column(type="integer", length=10)
          * @Relates(class="\pachno\core\entities\Milestone")
          */
@@ -75,7 +75,7 @@
         /**
          * An attached file, if exists
          *
-         * @var \pachno\core\entities\File
+         * @var File
          * @Column(type="integer", length=10)
          * @Relates(class="\pachno\core\entities\File")
          */
@@ -139,33 +139,17 @@
          */
         protected $_num_issues = null;
 
-        public function generateLogItems()
+        public static function listen_pachno_core_entities_File_hasAccess(framework\Event $event)
         {
-            $log_item = LogItems::getTable()->getByTargetAndChangeAndType($this->getID(), LogItem::ACTION_BUILD_RELEASED);
-            if ($this->_release_date) {
-                if (!$log_item instanceof LogItem) {
-                    $log_item = new LogItem();
-                    $log_item->setTargetType(LogItem::TYPE_BUILD);
-                    $log_item->setTarget($this->getID());
-                    $log_item->setChangeType(LogItem::ACTION_BUILD_RELEASED);
-                    $log_item->setProject($this->getProject()->getID());
+            $file = $event->getSubject();
+            $builds = self::getB2DBTable()->getByFileID($file->getID());
+            foreach ($builds as $build) {
+                if ($build->hasAccess()) {
+                    $event->setReturnValue(true);
+                    $event->setProcessed();
+                    break;
                 }
-                $log_item->setTime($this->_release_date);
-                $log_item->save();
-            } elseif ($log_item instanceof LogItem) {
-                $log_item->delete();
             }
-        }
-
-        protected function _postSave($is_new)
-        {
-            if ($is_new)
-            {
-                framework\Context::setPermission("canseebuild", $this->getID(), "core", 0, framework\Context::getUser()->getGroup()->getID(), 0, true);
-                framework\Event::createNew('core', 'pachno\core\entities\Build::_postSave', $this)->trigger();
-            }
-
-            $this->generateLogItems();
         }
 
         /**
@@ -179,52 +163,35 @@
         }
 
         /**
-         * Returns the edition
+         * Returns the complete version number
          *
-         * @return \pachno\core\entities\Edition
+         * @return string
          */
-        public function getEdition()
+        public function getVersion()
         {
-            return $this->_b2dbLazyLoad('_edition');
+            $versions = [$this->_version_major, $this->_version_minor];
+
+            if ($this->_version_revision != 0) $versions[] = $this->_version_revision;
+
+            return join('.', $versions);
         }
 
         public function getEditionID()
         {
-            return ($this->_edition instanceof \pachno\core\entities\Edition) ? $this->_edition->getID() : (int) $this->_edition;
-        }
-
-        public function setEdition(\pachno\core\entities\Edition $edition)
-        {
-            $this->_edition = $edition;
-        }
-
-        /**
-         * Returns the project
-         *
-         * @return \pachno\core\entities\Project
-         */
-        public function getProject()
-        {
-            $this->_b2dbLazyLoad('_project');
-            return $this->_project;
-        }
-
-        public function setProject(\pachno\core\entities\Project $project)
-        {
-            $this->_project = $project;
+            return ($this->_edition instanceof Edition) ? $this->_edition->getID() : (int)$this->_edition;
         }
 
         /**
          * Returns the milestone
          *
-         * @return \pachno\core\entities\Milestone
+         * @return Milestone
          */
         public function getMilestone()
         {
             return $this->_b2dbLazyLoad('_milestone');
         }
 
-        public function setMilestone(\pachno\core\entities\Milestone $milestone)
+        public function setMilestone(Milestone $milestone)
         {
             $this->_milestone = $milestone;
         }
@@ -246,7 +213,17 @@
          */
         public function isEditionBuild()
         {
-            return (bool) $this->_edition;
+            return (bool)$this->_edition;
+        }
+
+        /**
+         * Returns the parent object
+         *
+         * @return ReleaseableItem
+         */
+        public function getParent()
+        {
+            return ($this->isProjectBuild()) ? $this->getProject() : $this->getEdition();
         }
 
         /**
@@ -260,21 +237,18 @@
         }
 
         /**
-         * Returns the parent object
+         * Returns the edition
          *
-         * @return \pachno\core\entities\ReleaseableItem
+         * @return Edition
          */
-        public function getParent()
+        public function getEdition()
         {
-            return ($this->isProjectBuild()) ? $this->getProject() : $this->getEdition();
+            return $this->_b2dbLazyLoad('_edition');
         }
 
-        /**
-         * Delete this build
-         */
-        protected function _preDelete()
+        public function setEdition(Edition $edition)
         {
-            tables\IssueAffectsBuild::getTable()->deleteByBuildID($this->getID());
+            $this->_edition = $edition;
         }
 
         /**
@@ -284,25 +258,15 @@
          */
         public function hasAccess()
         {
-            return (($this->getProject() instanceof \pachno\core\entities\Project && $this->getProject()->canSeeAllBuilds()) || framework\Context::getUser()->hasPermission('canseebuild', $this->getID()));
-        }
-
-        /**
-         * Return the file associated with this build, if any
-         *
-         * @return \pachno\core\entities\File
-         */
-        public function getFile()
-        {
-            return $this->_b2dbLazyLoad('_file_id');
+            return (($this->getProject() instanceof Project && $this->getProject()->canSeeAllBuilds()) || framework\Context::getUser()->hasPermission('canseebuild', $this->getID()));
         }
 
         /**
          * Set the file associated with this build
          *
-         * @param \pachno\core\entities\File $file
+         * @param File $file
          */
-        public function setFile(\pachno\core\entities\File $file)
+        public function setFile(File $file)
         {
             $this->_file_id = $file;
         }
@@ -319,7 +283,17 @@
          */
         public function hasFile()
         {
-            return (bool) ($this->getFile() instanceof \pachno\core\entities\File);
+            return (bool)($this->getFile() instanceof File);
+        }
+
+        /**
+         * Return the file associated with this build, if any
+         *
+         * @return File
+         */
+        public function getFile()
+        {
+            return $this->_b2dbLazyLoad('_file_id');
         }
 
         /**
@@ -349,7 +323,7 @@
          */
         public function hasFileURL()
         {
-            return (bool) ($this->_file_url != '');
+            return (bool)($this->_file_url != '');
         }
 
         /**
@@ -359,105 +333,12 @@
          */
         public function hasDownload()
         {
-            return (bool) ($this->getFile() instanceof \pachno\core\entities\File || $this->_file_url != '');
+            return (bool)($this->getFile() instanceof File || $this->_file_url != '');
         }
 
         public function isArchived()
         {
             return $this->isLocked();
-        }
-
-        public function isActive()
-        {
-            return !$this->isLocked();
-        }
-
-        /**
-         * Returns the complete version number
-         *
-         * @return string
-         */
-        public function getVersion()
-        {
-            $versions = array($this->_version_major, $this->_version_minor);
-
-            if ($this->_version_revision != 0) $versions[] = $this->_version_revision;
-
-            return join('.', $versions);
-        }
-
-        /**
-         * Set the version
-         *
-         * @param integer $ver_mj Major version number
-         * @param integer $ver_mn Minor version number
-         * @param integer $ver_rev Version revision
-         */
-        public function setVersion($ver_mj, $ver_mn, $ver_rev)
-        {
-            $this->_version_major = ($ver_mj) ? $ver_mj : 0;
-            $this->_version_minor = ($ver_mn) ? $ver_mn : 0;
-            $this->_version_revision = ($ver_rev) ? $ver_rev : 0;
-        }
-
-        /**
-         * Set the major version number
-         *
-         * @param $ver_mj
-         */
-        public function setVersionMajor($ver_mj)
-        {
-            $this->_version_major = ($ver_mj) ? $ver_mj : 0;
-        }
-
-        /**
-         * Set the minor version number
-         *
-         * @param $ver_mn
-         */
-        public function setVersionMinor($ver_mn)
-        {
-            $this->_version_minor = ($ver_mn) ? $ver_mn : 0;
-        }
-
-        /**
-         * Set the version revision number
-         *
-         * @param $ver_rev
-         */
-        public function setVersionRevision($ver_rev)
-        {
-            $this->_version_revision = ($ver_rev) ? $ver_rev : 0;
-        }
-
-        /**
-         * Returns the major version number
-         *
-         * @return integer
-         */
-        public function getVersionMajor()
-        {
-            return $this->_version_major;
-        }
-
-        /**
-         * Returns the minor version number
-         *
-         * @return integer
-         */
-        public function getVersionMinor()
-        {
-            return $this->_version_minor;
-        }
-
-        /**
-         * Returns revision number
-         *
-         * @return mixed
-         */
-        public function getVersionRevision()
-        {
-            return $this->_version_revision;
         }
 
         /**
@@ -478,7 +359,86 @@
          */
         public function setLocked($locked = true)
         {
-            $this->_locked = (bool) $locked;
+            $this->_locked = (bool)$locked;
+        }
+
+        public function isActive()
+        {
+            return !$this->isLocked();
+        }
+
+        /**
+         * Set the version
+         *
+         * @param integer $ver_mj Major version number
+         * @param integer $ver_mn Minor version number
+         * @param integer $ver_rev Version revision
+         */
+        public function setVersion($ver_mj, $ver_mn, $ver_rev)
+        {
+            $this->_version_major = ($ver_mj) ? $ver_mj : 0;
+            $this->_version_minor = ($ver_mn) ? $ver_mn : 0;
+            $this->_version_revision = ($ver_rev) ? $ver_rev : 0;
+        }
+
+        /**
+         * Returns the major version number
+         *
+         * @return integer
+         */
+        public function getVersionMajor()
+        {
+            return $this->_version_major;
+        }
+
+        /**
+         * Set the major version number
+         *
+         * @param $ver_mj
+         */
+        public function setVersionMajor($ver_mj)
+        {
+            $this->_version_major = ($ver_mj) ? $ver_mj : 0;
+        }
+
+        /**
+         * Returns the minor version number
+         *
+         * @return integer
+         */
+        public function getVersionMinor()
+        {
+            return $this->_version_minor;
+        }
+
+        /**
+         * Set the minor version number
+         *
+         * @param $ver_mn
+         */
+        public function setVersionMinor($ver_mn)
+        {
+            $this->_version_minor = ($ver_mn) ? $ver_mn : 0;
+        }
+
+        /**
+         * Returns revision number
+         *
+         * @return mixed
+         */
+        public function getVersionRevision()
+        {
+            return $this->_version_revision;
+        }
+
+        /**
+         * Set the version revision number
+         *
+         * @param $ver_rev
+         */
+        public function setVersionRevision($ver_rev)
+        {
+            $this->_version_revision = ($ver_rev) ? $ver_rev : 0;
         }
 
         /**
@@ -501,54 +461,90 @@
             $this->_name = $name;
         }
 
-        public static function listen_pachno_core_entities_File_hasAccess(framework\Event $event)
-        {
-            $file = $event->getSubject();
-            $builds = self::getB2DBTable()->getByFileID($file->getID());
-            foreach ($builds as $build)
-            {
-                if ($build->hasAccess())
-                {
-                    $event->setReturnValue(true);
-                    $event->setProcessed();
-                    break;
-                }
-            }
-        }
-
-        protected function _populateIssueCounts()
-        {
-            if ($this->_num_issues === null)
-            {
-                list($this->_num_issues, $this->_num_issues_closed) = tables\IssueAffectsBuild::getTable()->getCountsForBuild($this->getID());
-            }
-        }
-
-        public function getNumberOfAffectedIssues()
-        {
-            $this->_populateIssueCounts();
-            return $this->_num_issues;
-        }
-
-        public function getNumberOfClosedIssues()
-        {
-            $this->_populateIssueCounts();
-            return $this->_num_issues_closed;
-        }
-
         public function getPercentComplete()
         {
-            if ($this->getNumberOfAffectedIssues() == 0)
-            {
+            if ($this->getNumberOfAffectedIssues() == 0) {
                 $pct = 0;
-            }
-            else
-            {
+            } else {
                 $multiplier = 100 / $this->getNumberOfAffectedIssues();
                 $pct = $this->getNumberOfClosedIssues() * $multiplier;
             }
 
             return $pct;
+        }
+
+        public function getNumberOfAffectedIssues()
+        {
+            $this->_populateIssueCounts();
+
+            return $this->_num_issues;
+        }
+
+        protected function _populateIssueCounts()
+        {
+            if ($this->_num_issues === null) {
+                list($this->_num_issues, $this->_num_issues_closed) = tables\IssueAffectsBuild::getTable()->getCountsForBuild($this->getID());
+            }
+        }
+
+        public function getNumberOfClosedIssues()
+        {
+            $this->_populateIssueCounts();
+
+            return $this->_num_issues_closed;
+        }
+
+        protected function _postSave($is_new)
+        {
+            if ($is_new) {
+                framework\Context::setPermission("canseebuild", $this->getID(), "core", 0, framework\Context::getUser()->getGroup()->getID(), 0, true);
+                framework\Event::createNew('core', 'pachno\core\entities\Build::_postSave', $this)->trigger();
+            }
+
+            $this->generateLogItems();
+        }
+
+        public function generateLogItems()
+        {
+            $log_item = LogItems::getTable()->getByTargetAndChangeAndType($this->getID(), LogItem::ACTION_BUILD_RELEASED);
+            if ($this->_release_date) {
+                if (!$log_item instanceof LogItem) {
+                    $log_item = new LogItem();
+                    $log_item->setTargetType(LogItem::TYPE_BUILD);
+                    $log_item->setTarget($this->getID());
+                    $log_item->setChangeType(LogItem::ACTION_BUILD_RELEASED);
+                    $log_item->setProject($this->getProject()->getID());
+                }
+                $log_item->setTime($this->_release_date);
+                $log_item->save();
+            } elseif ($log_item instanceof LogItem) {
+                $log_item->delete();
+            }
+        }
+
+        /**
+         * Returns the project
+         *
+         * @return Project
+         */
+        public function getProject()
+        {
+            $this->_b2dbLazyLoad('_project');
+
+            return $this->_project;
+        }
+
+        public function setProject(Project $project)
+        {
+            $this->_project = $project;
+        }
+
+        /**
+         * Delete this build
+         */
+        protected function _preDelete()
+        {
+            tables\IssueAffectsBuild::getTable()->deleteByBuildID($this->getID());
         }
 
     }

@@ -2,12 +2,13 @@
 
     namespace pachno\core\entities;
 
-    use pachno\core\entities\Article,
-        pachno\core\entities\User;
+    use b2db\Row;
+    use pachno\core\entities\common\IdentifiableScoped;
+
     /**
      * @Table(name="\pachno\core\entities\tables\ArticleHistory")
      */
-    class ArticleRevision extends \pachno\core\entities\common\IdentifiableScoped
+    class ArticleRevision extends IdentifiableScoped
     {
         /**
          * Name of the article.
@@ -20,7 +21,7 @@
         /**
          * Article associated with the revision.
          *
-         * @var \pachno\core\entities\Article
+         * @var Article
          */
         protected $_article = null;
 
@@ -67,7 +68,7 @@
         /**
          * Author associated with the revision.
          *
-         * @var \pachno\core\entities\User
+         * @var User
          * @Column(type="integer", length=10)
          * @Relates(class="\pachno\core\entities\User")
          *
@@ -75,12 +76,46 @@
         protected $_author;
 
         /**
+         * Returns URL pointing to author contributions.
+         *
+         * @param User $author
+         *   Author for which to generate contributions URL. If set to 0,
+         *   returns contribution URL for install-time system fixtures. If set
+         *   to null, returns contributions URL for all users.
+         * @param string $project_namespace
+         *   Project namespace for which the URL should be generated.
+         *
+         * @return string
+         *   URL pointing to author contributions. If passed-in $author is
+         *   invalid (not a User instance, not 0, and not null), returns null.
+         */
+        public static function getAuthorContributionsURL($author = null, $project_namespace = "")
+        {
+            $base_url = make_url('publish_article', ['article_name' => "Special:{$project_namespace}Contributions"]);
+
+            if ($author instanceof User) {
+                return "{$base_url}?user={$author->getUsername()}";
+            } elseif (is_numeric($author) && $author == 0) {
+                return "{$base_url}?user=";
+            } elseif ($author === null) {
+                return "{$base_url}";
+            } else {
+                return null;
+            }
+        }
+
+        /**
          * Article revision constructor.
          *
-         * @param \b2db\Row $row
+         * @param Row $row
          */
-        public function _construct(\b2db\Row $row, $foreign_key = null)
+        public function _construct(Row $row, $foreign_key = null)
         {
+        }
+
+        public function getName()
+        {
+            return $this->getArticleName();
         }
 
         /**
@@ -91,11 +126,6 @@
         public function getArticleName()
         {
             return $this->_article_name;
-        }
-
-        public function getName()
-        {
-            return $this->getArticleName();
         }
 
         /**
@@ -131,18 +161,6 @@
             return $this->_reason;
         }
 
-
-        /**
-         * Returns revision number.
-         *
-         *
-         * @return int
-         */
-        public function getRevision()
-        {
-            return $this->_revision;
-        }
-
         /**
          * Returns date of change.
          *
@@ -153,17 +171,6 @@
         {
             return $this->_date;
         }
-
-        /**
-         * Returns revision author.
-         *
-         * @return \pachno\core\entities\User
-         */
-        public function getAuthor()
-        {
-            return $this->_b2dbLazyLoad('_author');
-        }
-
 
         /**
          * Returns author name with username. This method is essentially a light
@@ -179,12 +186,9 @@
         {
             $author = $this->getAuthor();
 
-            if ($author instanceof User)
-            {
+            if ($author instanceof User) {
                 return $author->getNameWithUsername();
-            }
-            elseif (is_numeric($author) && $author == 0)
-            {
+            } elseif (is_numeric($author) && $author == 0) {
                 return "none (fixtures)";
             }
 
@@ -192,57 +196,29 @@
         }
 
         /**
+         * Returns revision author.
+         *
+         * @return User
+         */
+        public function getAuthor()
+        {
+            return $this->_b2dbLazyLoad('_author');
+        }
+
+        /**
          * Returns article associated with the revision.
          *
          *
-         * @return \pachno\core\entities\Article
+         * @return Article
          */
         public function getArticle()
         {
             // Small caching optimisation for fetching the article.
-            if ($this->_article === null)
-            {
-                $this->_article = \pachno\core\entities\Article::getByName($this->getArticleName());
+            if ($this->_article === null) {
+                $this->_article = Article::getByName($this->getArticleName());
             }
 
             return $this->_article;
-        }
-
-
-        /**
-         * Returns URL pointing to author contributions.
-         *
-         * @param \pachno\core\entities\User $author
-         *   Author for which to generate contributions URL. If set to 0,
-         *   returns contribution URL for install-time system fixtures. If set
-         *   to null, returns contributions URL for all users.
-         * @param string $project_namespace
-         *   Project namespace for which the URL should be generated.
-         *
-         * @return string
-         *   URL pointing to author contributions. If passed-in $author is
-         *   invalid (not a User instance, not 0, and not null), returns null.
-         */
-        public static function getAuthorContributionsURL($author=null, $project_namespace="")
-        {
-            $base_url = make_url('publish_article', ['article_name' => "Special:{$project_namespace}Contributions"]);
-
-            if ($author instanceof User)
-            {
-                return "{$base_url}?user={$author->getUsername()}";
-            }
-            elseif (is_numeric($author) && $author == 0)
-            {
-                return "{$base_url}?user=";
-            }
-            elseif ($author === null)
-            {
-                return "{$base_url}";
-            }
-            else
-            {
-                return null;
-            }
         }
 
         /**
@@ -254,7 +230,18 @@
         public function getRevisionURL()
         {
             return make_url('publish_article_revision', ['article_name' => $this->getArticleName(),
-                                                         'revision' => $this->getRevision()]);
+                'revision' => $this->getRevision()]);
+        }
+
+        /**
+         * Returns revision number.
+         *
+         *
+         * @return int
+         */
+        public function getRevision()
+        {
+            return $this->_revision;
         }
 
         /**
@@ -277,14 +264,11 @@
          */
         public function getDiffURL()
         {
-            if ($this->getRevision() > 1)
-            {
+            if ($this->getRevision() > 1) {
                 return make_url('publish_article_diff', ['article_name' => $this->getArticleName(),
-                                                         'from_revision' => $this->getRevision()-1,
-                                                         'to_revision' => $this->getRevision()]);
-            }
-            else
-            {
+                    'from_revision' => $this->getRevision() - 1,
+                    'to_revision' => $this->getRevision()]);
+            } else {
                 return null;
             }
         }

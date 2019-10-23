@@ -2,17 +2,8 @@
 
     namespace pachno\core\framework;
 
+    use Exception;
     use pachno\core\framework\interfaces\ModuleInterface;
-
-    /**
-     * Core module class
-     *
-     * @author Daniel Andre Eikeland <zegenie@zegeniestudios.net>
-     * @version 3.1
-     * @license http://opensource.org/licenses/MPL-2.0 Mozilla Public License 2.0 (MPL 2.0)
-     * @package pachno
-     * @subpackage mvc
-     */
 
     /**
      * Core module class
@@ -24,21 +15,22 @@
     {
 
         protected $name;
+
         protected $_longname;
+
         protected $_description;
+
         protected $_availablepermissions = [];
+
         protected $_has_config_settings = false;
+
         protected $_module_config_title = '';
+
         protected $_module_config_description = '';
 
         public function __construct($name)
         {
             $this->name = $name;
-        }
-
-        public function getName()
-        {
-            return $this->name;
         }
 
         public function getLongName()
@@ -73,7 +65,7 @@
 
         public function addAvailablePermission($permission_name, $description, $target = 0)
         {
-            $this->_availablepermissions[$permission_name] = array('description' => $description, 'target_id' => $target);
+            $this->_availablepermissions[$permission_name] = ['description' => $description, 'target_id' => $target];
         }
 
         public function getAvailablePermissions()
@@ -113,12 +105,18 @@
          * @param mixed $value The value to store
          * @param int $scope A scope id (or 0 to apply to all scopes)
          * @param int $uid A user id to save settings for
-         * @throws \Exception
+         *
+         * @throws Exception
          */
         public function saveSetting($name, $value, $uid = 0, $scope = null)
         {
             $scope = ($scope === null) ? Context::getScope()->getID() : $scope;
             Settings::saveSetting($name, $value, $this->getName(), $scope, $uid);
+        }
+
+        public function getName()
+        {
+            return $this->name;
         }
 
         public function getSetting($name, $uid = 0)
@@ -136,10 +134,16 @@
             return false;
         }
 
-        public function initialize() {}
+        public function initialize()
+        {
+        }
 
-        public function getAccountSettingsLogo() {}
+        public function getAccountSettingsLogo()
+        {
+        }
 
-        public function getAccountSettingsName() {}
+        public function getAccountSettingsName()
+        {
+        }
 
     }

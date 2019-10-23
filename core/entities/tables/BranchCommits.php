@@ -2,11 +2,9 @@
 
     namespace pachno\core\entities\tables;
 
+    use b2db\Criterion;
     use pachno\core\entities\Branch;
     use pachno\core\entities\Commit;
-    use pachno\core\entities\IssueCommit;
-    use \pachno\core\framework,
-        b2db\Criteria;
 
     /**
      * Branch commits table
@@ -20,18 +18,18 @@
     {
 
         const B2DB_TABLE_VERSION = 2;
-        const B2DBNAME = 'branchcommits';
-        const ID = 'branchcommits.id';
-        const SCOPE = 'branchcommits.scope';
-        const BRANCH_ID = 'branchcommits.branch_id';
-        const COMMIT_ID = 'branchcommits.commit_id';
-        const COMMIT_SHA = 'branchcommits.commit_sha';
 
-        protected function setupIndexes()
-        {
-            $this->addIndex('commit', self::COMMIT_ID);
-            $this->addIndex('branch', self::BRANCH_ID);
-        }
+        const B2DBNAME = 'branchcommits';
+
+        const ID = 'branchcommits.id';
+
+        const SCOPE = 'branchcommits.scope';
+
+        const BRANCH_ID = 'branchcommits.branch_id';
+
+        const COMMIT_ID = 'branchcommits.commit_id';
+
+        const COMMIT_SHA = 'branchcommits.commit_sha';
 
         public function hasBranchCommitSha(Branch $branch, $commit_sha)
         {
@@ -39,16 +37,22 @@
             $query->where('branchcommits.branch_id', $branch->getID());
             $query->where('branchcommits.commit_sha', $commit_sha);
 
-            return (bool) $this->count($query);
+            return (bool)$this->count($query);
         }
 
         public function hasCommitInDifferentBranch(Commit $commit, Branch $branch)
         {
             $query = $this->getQuery();
-            $query->where('branchcommits.branch_id', $branch->getID(), \b2db\Criterion::NOT_EQUALS);
+            $query->where('branchcommits.branch_id', $branch->getID(), Criterion::NOT_EQUALS);
             $query->where('branchcommits.commit_id', $commit->getID());
 
-            return (bool) $this->count($query);
+            return (bool)$this->count($query);
+        }
+
+        protected function setupIndexes()
+        {
+            $this->addIndex('commit', self::COMMIT_ID);
+            $this->addIndex('branch', self::BRANCH_ID);
         }
 
     }

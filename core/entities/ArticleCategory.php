@@ -2,13 +2,12 @@
 
     namespace pachno\core\entities;
 
-    use pachno\core\entities\Project;
-    use \pachno\core\framework;
+    use pachno\core\entities\common\IdentifiableScoped;
 
     /**
      * @Table(name="\pachno\core\entities\tables\ArticleCategories")
      */
-    class ArticleCategory extends \pachno\core\entities\common\IdentifiableScoped
+    class ArticleCategory extends IdentifiableScoped
     {
 
         /**
@@ -30,7 +29,7 @@
         /**
          * Related project
          *
-         * @var \pachno\core\entities\Project
+         * @var Project
          * @Column(type="integer", length=10)
          * @Relates(class="\pachno\core\entities\Project")
          */
@@ -64,14 +63,14 @@
             $this->_name = $name;
         }
 
+        public function hasDescription()
+        {
+            return (bool)($this->getDescription() != '');
+        }
+
         public function getDescription()
         {
             return $this->_description;
-        }
-
-        public function hasDescription()
-        {
-            return (bool) ($this->getDescription() != '');
         }
 
         public function setDescription($description)

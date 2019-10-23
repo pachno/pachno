@@ -2,6 +2,7 @@
 
     namespace pachno\core\entities\common;
 
+    use pachno\core\entities\Scope;
     use pachno\core\framework;
 
     /**
@@ -33,31 +34,26 @@
         protected $_scope;
 
         /**
-         * Set the scope this item is in
-         *
-         * @param \pachno\core\entities\Scope $scope
-         */
-        public function setScope($scope)
-        {
-            $this->_scope = $scope;
-        }
-
-        /**
          * Retrieve the scope this item is in
          *
-         * @return \pachno\core\entities\Scope
+         * @return Scope
          */
         public function getScope()
         {
-            if (!$this->_scope instanceof \pachno\core\entities\Scope)
+            if (!$this->_scope instanceof Scope)
                 $this->_b2dbLazyLoad('_scope');
 
             return $this->_scope;
         }
 
-        protected function getCurrentScope()
+        /**
+         * Set the scope this item is in
+         *
+         * @param Scope $scope
+         */
+        public function setScope($scope)
         {
-            return framework\Context::getScope();
+            $this->_scope = $scope;
         }
 
         protected function getCurrentScopeID()
@@ -69,6 +65,11 @@
         {
             if ($is_new && $this->_scope === null)
                 $this->_scope = $this->getCurrentScope();
+        }
+
+        protected function getCurrentScope()
+        {
+            return framework\Context::getScope();
         }
 
     }

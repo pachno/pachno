@@ -4,8 +4,15 @@
 
     use b2db\Criteria;
     use b2db\Insertion;
-    use pachno\core\framework;
+    use pachno\core\entities\common\Identifiable;
+    use pachno\core\entities\Group;
     use pachno\core\entities\Project;
+    use pachno\core\entities\Role;
+    use pachno\core\entities\RolePermission;
+    use pachno\core\entities\Scope;
+    use pachno\core\entities\Team;
+    use pachno\core\entities\User;
+    use pachno\core\framework;
 
     /**
      * Permissions table
@@ -21,35 +28,28 @@
     {
 
         const B2DB_TABLE_VERSION = 2;
-        const B2DBNAME = 'permissions';
-        const ID = 'permissions.id';
-        const SCOPE = 'permissions.scope';
-        const PERMISSION_TYPE = 'permissions.permission_type';
-        const TARGET_ID = 'permissions.target_id';
-        const UID = 'permissions.uid';
-        const GID = 'permissions.gid';
-        const TID = 'permissions.tid';
-        const ALLOWED = 'permissions.allowed';
-        const MODULE = 'permissions.module';
-        const ROLE_ID = 'permissions.role_id';
 
-        protected function initialize()
-        {
-            parent::setup(self::B2DBNAME, self::ID);
-            parent::addVarchar(self::PERMISSION_TYPE, 100);
-            parent::addVarchar(self::TARGET_ID, 200, 0);
-            parent::addBoolean(self::ALLOWED);
-            parent::addVarchar(self::MODULE, 50);
-            parent::addForeignKeyColumn(self::UID, Users::getTable());
-            parent::addForeignKeyColumn(self::GID, Groups::getTable());
-            parent::addForeignKeyColumn(self::TID, Teams::getTable());
-            parent::addForeignKeyColumn(self::ROLE_ID, ListTypes::getTable());
-        }
-        
-        protected function setupIndexes()
-        {
-            $this->addIndex('scope', array(self::SCOPE));
-        }
+        const B2DBNAME = 'permissions';
+
+        const ID = 'permissions.id';
+
+        const SCOPE = 'permissions.scope';
+
+        const PERMISSION_TYPE = 'permissions.permission_type';
+
+        const TARGET_ID = 'permissions.target_id';
+
+        const UID = 'permissions.uid';
+
+        const GID = 'permissions.gid';
+
+        const TID = 'permissions.tid';
+
+        const ALLOWED = 'permissions.allowed';
+
+        const MODULE = 'permissions.module';
+
+        const ROLE_ID = 'permissions.role_id';
 
         public function getAll($scope_id = null)
         {
@@ -57,9 +57,10 @@
             $query = $this->getQuery();
             $query->where(self::SCOPE, $scope_id);
             $res = $this->rawSelect($query, 'none');
+
             return $res;
         }
-        
+
         public function removeSavedPermission($uid, $gid, $tid, $module, $permission_type, $target_id, $scope, $role_id = null)
         {
             $query = $this->getQuery();
@@ -70,11 +71,10 @@
             $query->where(self::PERMISSION_TYPE, $permission_type);
             $query->where(self::TARGET_ID, $target_id);
             $query->where(self::SCOPE, $scope);
-            if ($role_id !== null)
-            {
+            if ($role_id !== null) {
                 $query->where(self::ROLE_ID, $role_id);
             }
-            
+
             $res = $this->rawDelete($query);
         }
 
@@ -84,44 +84,20 @@
             $query->where(self::UID, $uid);
             $query->where(self::GID, $gid);
             $query->where(self::TID, $tid);
-            if ($target_id == 0)
-            {
+            if ($target_id == 0) {
                 $query->where(self::TARGET_ID, $target_id);
-            }
-            else
-            {
+            } else {
                 $criteria = new Criteria();
                 $criteria->where(self::TARGET_ID, $target_id);
                 $criteria->or(self::TARGET_ID, 0);
                 $query->and($criteria);
             }
             $query->where(self::SCOPE, framework\Context::getScope()->getID());
-            if ($role_id !== null)
-            {
+            if ($role_id !== null) {
                 $query->where(self::ROLE_ID, $role_id);
             }
 
             $res = $this->rawDelete($query);
-        }
-
-        public function setPermission($uid, $gid, $tid, $allowed, $module, $permission_type, $target_id, $scope, $role_id = null)
-        {
-            $insertion = new Insertion();
-            $insertion->add(self::UID, (int) $uid);
-            $insertion->add(self::GID, (int) $gid);
-            $insertion->add(self::TID, (int) $tid);
-            $insertion->add(self::ALLOWED, $allowed);
-            $insertion->add(self::MODULE, $module);
-            $insertion->add(self::PERMISSION_TYPE, $permission_type);
-            $insertion->add(self::TARGET_ID, $target_id);
-            $insertion->add(self::SCOPE, $scope);
-            if ($role_id !== null)
-            {
-                $insertion->add(self::ROLE_ID, $role_id);
-            }
-            
-            $res = $this->rawInsert($insertion);
-            return $res->getInsertID();
         }
 
         public function deleteModulePermissions($module_name, $scope)
@@ -149,7 +125,7 @@
             $query->where(self::SCOPE, $scope);
             $query->addGroupBy(self::UID);
 
-            return (int) $this->count($query);
+            return (int)$this->count($query);
         }
 
         /**
@@ -189,7 +165,7 @@
             $this->rawDelete($query);
         }
 
-        public function loadFixtures(\pachno\core\entities\Scope $scope, $admin_group_id, $guest_group_id)
+        public function loadFixtures(Scope $scope, $admin_group_id, $guest_group_id)
         {
             $scope_id = $scope->getID();
 
@@ -246,12 +222,27 @@
             $this->setPermission(0, $admin_group_id, 0, true, 'core', 'page_teamlist_access', 0, $scope_id);
         }
 
-        public function cloneGroupPermissions($cloned_group_id, $new_group_id)
+        public function setPermission($uid, $gid, $tid, $allowed, $module, $permission_type, $target_id, $scope, $role_id = null)
         {
-            return $this->_clonePermissions($cloned_group_id, $new_group_id, 'group');
+            $insertion = new Insertion();
+            $insertion->add(self::UID, (int)$uid);
+            $insertion->add(self::GID, (int)$gid);
+            $insertion->add(self::TID, (int)$tid);
+            $insertion->add(self::ALLOWED, $allowed);
+            $insertion->add(self::MODULE, $module);
+            $insertion->add(self::PERMISSION_TYPE, $permission_type);
+            $insertion->add(self::TARGET_ID, $target_id);
+            $insertion->add(self::SCOPE, $scope);
+            if ($role_id !== null) {
+                $insertion->add(self::ROLE_ID, $role_id);
+            }
+
+            $res = $this->rawInsert($insertion);
+
+            return $res->getInsertID();
         }
 
-        public function cloneTeamPermissions($cloned_group_id, $new_group_id)
+        public function cloneGroupPermissions($cloned_group_id, $new_group_id)
         {
             return $this->_clonePermissions($cloned_group_id, $new_group_id, 'group');
         }
@@ -259,8 +250,7 @@
         protected function _clonePermissions($cloned_id, $new_id, $mode)
         {
             $query = $this->getQuery();
-            switch ($mode)
-            {
+            switch ($mode) {
                 case 'group':
                     $mode = self::GID;
                     break;
@@ -269,17 +259,14 @@
                     break;
             }
             $query->where($mode, $cloned_id);
-            $permissions_to_add = array();
-            if ($res = $this->rawSelect($query))
-            {
-                while ($row = $res->getNextRow())
-                {
-                    $permissions_to_add[] = array('target_id' => $row->get(self::TARGET_ID), 'permission_type' => $row->get(self::PERMISSION_TYPE), 'allowed' => $row->get(self::ALLOWED), 'module' => $row->get(self::MODULE));
+            $permissions_to_add = [];
+            if ($res = $this->rawSelect($query)) {
+                while ($row = $res->getNextRow()) {
+                    $permissions_to_add[] = ['target_id' => $row->get(self::TARGET_ID), 'permission_type' => $row->get(self::PERMISSION_TYPE), 'allowed' => $row->get(self::ALLOWED), 'module' => $row->get(self::MODULE)];
                 }
             }
 
-            foreach ($permissions_to_add as $permission)
-            {
+            foreach ($permissions_to_add as $permission) {
                 $insertion = new Insertion();
                 $insertion->add(self::SCOPE, framework\Context::getScope()->getID());
                 $insertion->add(self::PERMISSION_TYPE, $permission['permission_type']);
@@ -291,6 +278,11 @@
             }
         }
 
+        public function cloneTeamPermissions($cloned_group_id, $new_group_id)
+        {
+            return $this->_clonePermissions($cloned_group_id, $new_group_id, 'group');
+        }
+
         /**
          * Adds permission for the specified role to permission table based on
          * user and group role memberships in projects.
@@ -298,7 +290,7 @@
          * @param role Role to which permission should be granted.
          * @param rolepermission Role permission to grant.
          */
-        public function addRolePermission(\pachno\core\entities\Role $role, \pachno\core\entities\RolePermission $rolepermission)
+        public function addRolePermission(Role $role, RolePermission $rolepermission)
         {
             // NOTE: When updating this method, make sure to update both user
             // and team-specific code. They are reperatitive, but kept separate
@@ -308,12 +300,11 @@
             $assigned_users = ProjectAssignedUsers::getTable()->getAssignmentsByRoleID($role->getID());
 
             // Iterate over assignments.
-            foreach ($assigned_users as $assigned_user)
-            {
+            foreach ($assigned_users as $assigned_user) {
                 // Extract project entity.
                 $project_id = $assigned_user->get(ProjectAssignedUsers::PROJECT_ID);
-                $projects = Project::getAllByIDs(array($project_id));
-                if ( ! isset($projects[$project_id])) {
+                $projects = Project::getAllByIDs([$project_id]);
+                if (!isset($projects[$project_id])) {
                     continue;
                 }
                 $project = $projects[$project_id];
@@ -338,8 +329,7 @@
                 $res = $this->rawSelect($query, 'none');
 
                 // If permission does not exist, add it.
-                if (!$res)
-                {
+                if (!$res) {
                     $insertion = new Insertion();
                     $insertion->add(self::SCOPE, $scope_id);
                     $insertion->add(self::PERMISSION_TYPE, $permission_type);
@@ -356,11 +346,10 @@
             $assigned_teams = ProjectAssignedTeams::getTable()->getAssignmentsByRoleID($role->getID());
 
             // Iterate over assignments.
-            foreach ($assigned_teams as $assigned_team)
-            {
+            foreach ($assigned_teams as $assigned_team) {
                 // Extract project entity.
                 $project_id = $assigned_team->get(ProjectAssignedTeams::PROJECT_ID);
-                $project = Project::getAllByIDs(array($project_id))[$project_id];
+                $project = Project::getAllByIDs([$project_id])[$project_id];
 
                 // Determine values that need to be inserted.
                 $target_id = $rolepermission->getExpandedTargetIDForProject($project);
@@ -382,8 +371,7 @@
                 $res = $this->rawSelect($query, 'none');
 
                 // If permission does not exist, add it.
-                if (!$res)
-                {
+                if (!$res) {
                     $insertion = new Insertion();
                     $insertion->add(self::SCOPE, $scope_id);
                     $insertion->add(self::PERMISSION_TYPE, $permission_type);
@@ -404,33 +392,28 @@
             $query->where(self::TARGET_ID, $target_id);
             $query->where(self::MODULE, $module);
 
-            $permissions = array();
-            if ($res = $this->rawSelect($query))
-            {
-                while ($row = $res->getNextRow())
-                {
+            $permissions = [];
+            if ($res = $this->rawSelect($query)) {
+                while ($row = $res->getNextRow()) {
                     $target = null;
-                    if ($uid = $row->get(self::UID))
-                    {
-                        $target = \pachno\core\entities\User::getB2DBTable()->selectById($uid);
+                    if ($uid = $row->get(self::UID)) {
+                        $target = User::getB2DBTable()->selectById($uid);
                     }
-                    if ($tid = $row->get(self::TID))
-                    {
-                        $target = \pachno\core\entities\Team::getB2DBTable()->selectById($tid);
+                    if ($tid = $row->get(self::TID)) {
+                        $target = Team::getB2DBTable()->selectById($tid);
                     }
-                    if ($gid = $row->get(self::GID))
-                    {
-                        $target = \pachno\core\entities\Group::getB2DBTable()->selectById($gid);
+                    if ($gid = $row->get(self::GID)) {
+                        $target = Group::getB2DBTable()->selectById($gid);
                     }
-                    if ($target instanceof \pachno\core\entities\common\Identifiable)
-                    {
-                        $permissions[] = array('target' => $target, 'allowed' => (boolean) $row->get(self::ALLOWED), 'user_id' => $row->get(self::UID), 'team_id' => $row->get(self::TID), 'group_id' => $row->get(self::GID));
+                    if ($target instanceof Identifiable) {
+                        $permissions[] = ['target' => $target, 'allowed' => (boolean)$row->get(self::ALLOWED), 'user_id' => $row->get(self::UID), 'team_id' => $row->get(self::TID), 'group_id' => $row->get(self::GID)];
                     }
                 }
             }
+
             return $permissions;
         }
-        
+
         public function deleteByPermissionTargetIDAndModule($permission, $target_id, $module = 'core')
         {
             $query = $this->getQuery();
@@ -438,6 +421,24 @@
             $query->where(self::TARGET_ID, $target_id);
             $query->where(self::MODULE, $module);
             $this->rawDelete($query);
+        }
+
+        protected function initialize()
+        {
+            parent::setup(self::B2DBNAME, self::ID);
+            parent::addVarchar(self::PERMISSION_TYPE, 100);
+            parent::addVarchar(self::TARGET_ID, 200, 0);
+            parent::addBoolean(self::ALLOWED);
+            parent::addVarchar(self::MODULE, 50);
+            parent::addForeignKeyColumn(self::UID, Users::getTable());
+            parent::addForeignKeyColumn(self::GID, Groups::getTable());
+            parent::addForeignKeyColumn(self::TID, Teams::getTable());
+            parent::addForeignKeyColumn(self::ROLE_ID, ListTypes::getTable());
+        }
+
+        protected function setupIndexes()
+        {
+            $this->addIndex('scope', [self::SCOPE]);
         }
 
     }

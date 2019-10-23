@@ -2,7 +2,7 @@
 
     namespace pachno\core\entities\tables;
 
-    use pachno\core\entities\tables\ScopedTable;
+    use pachno\core\entities\BoardColumn;
 
     /**
      * Agile board columns table
@@ -20,8 +20,8 @@
      * @package pachno
      * @subpackage tables
      *
-     * @method \pachno\core\entities\tables\BoardColumns getTable() Retrieves an instance of this table
-     * @method \pachno\core\entities\BoardColumn selectById(integer $id) Retrieves an agile board
+     * @method BoardColumns getTable() Retrieves an instance of this table
+     * @method BoardColumn selectById(integer $id) Retrieves an agile board
      *
      * @Table(name="agileboard_columns")
      * @Entity(class="\pachno\core\entities\BoardColumn")

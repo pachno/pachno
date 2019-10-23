@@ -2,6 +2,7 @@
 
     namespace pachno\core\entities;
 
+    use Exception;
     use pachno\core\entities\common\IdentifiableScoped;
     use pachno\core\framework\Settings;
 
@@ -43,7 +44,7 @@
         /**
          * Projects using this workflow scheme
          *
-         * @var array|\pachno\core\entities\Project
+         * @var array|Project
          * @Relates(class="\pachno\core\entities\Project", collection=true, foreign_column="workflow_scheme_id")
          */
         protected $_projects = null;
@@ -56,14 +57,6 @@
          */
         protected $_description = null;
 
-        protected static function _populateSchemes()
-        {
-            if (self::$_schemes === null)
-            {
-                self::$_schemes = tables\WorkflowSchemes::getTable()->getAll();
-            }
-        }
-        
         /**
          * Return all workflow schemes in the system
          *
@@ -72,10 +65,18 @@
         public static function getAll()
         {
             self::_populateSchemes();
+
             return self::$_schemes;
         }
-        
-        public static function loadFixtures(\pachno\core\entities\Scope $scope)
+
+        protected static function _populateSchemes()
+        {
+            if (self::$_schemes === null) {
+                self::$_schemes = tables\WorkflowSchemes::getTable()->getAll();
+            }
+        }
+
+        public static function loadFixtures(Scope $scope)
         {
             $multi_team_workflow_scheme = new WorkflowScheme();
             $multi_team_workflow_scheme->setScope($scope);
@@ -101,11 +102,6 @@
             return [$multi_team_workflow_scheme, $balanced_workflow_scheme, $simple_workflow_scheme];
         }
 
-        protected function _preDelete()
-        {
-            tables\WorkflowIssuetype::getTable()->deleteByWorkflowSchemeID($this->getID());
-        }
-
         /**
          * Returns the workflows description
          *
@@ -115,7 +111,7 @@
         {
             return $this->_description;
         }
-        
+
         /**
          * Set the workflows description
          *
@@ -126,38 +122,37 @@
             $this->_description = $description;
         }
 
+        public function getNumberOfAssociatedWorkflows()
+        {
+            if ($this->_num_issuetype_workflows === null && $this->_issuetype_workflows !== null) {
+                $this->_num_issuetype_workflows = count($this->_issuetype_workflows);
+            } elseif ($this->_num_issuetype_workflows === null) {
+                $this->_num_issuetype_workflows = tables\WorkflowIssuetype::getTable()->countByWorkflowSchemeID($this->getID());
+            }
+
+            return $this->_num_issuetype_workflows;
+        }
+
+        public function hasWorkflowAssociatedWithIssuetype(Issuetype $issuetype)
+        {
+            $this->_populateAssociatedWorkflows();
+
+            return array_key_exists($issuetype->getID(), $this->_issuetype_workflows);
+        }
+
         protected function _populateAssociatedWorkflows()
         {
-            if ($this->_issuetype_workflows === null)
-            {
+            if ($this->_issuetype_workflows === null) {
                 $this->_issuetype_workflows = tables\WorkflowIssuetype::getTable()->getByWorkflowSchemeID($this->getID());
             }
         }
 
-        public function getNumberOfAssociatedWorkflows()
-        {
-            if ($this->_num_issuetype_workflows === null && $this->_issuetype_workflows !== null)
-            {
-                $this->_num_issuetype_workflows = count($this->_issuetype_workflows);
-            }
-            elseif ($this->_num_issuetype_workflows === null)
-            {
-                $this->_num_issuetype_workflows = tables\WorkflowIssuetype::getTable()->countByWorkflowSchemeID($this->getID());
-            }
-            return $this->_num_issuetype_workflows;
-        }
-
-        public function hasWorkflowAssociatedWithIssuetype(\pachno\core\entities\Issuetype $issuetype)
-        {
-            $this->_populateAssociatedWorkflows();
-            return array_key_exists($issuetype->getID(), $this->_issuetype_workflows);
-        }
-        
-        public function associateIssuetypeWithWorkflow(\pachno\core\entities\Issuetype $issuetype, \pachno\core\entities\Workflow $workflow)
+        public function associateIssuetypeWithWorkflow(Issuetype $issuetype, Workflow $workflow)
         {
             tables\WorkflowIssuetype::getTable()->setWorkflowIDforIssuetypeIDwithSchemeID($workflow->getID(), $issuetype->getID(), $this->getID());
         }
-        public function unassociateIssuetype(\pachno\core\entities\Issuetype $issuetype)
+
+        public function unassociateIssuetype(Issuetype $issuetype)
         {
             tables\WorkflowIssuetype::getTable()->setWorkflowIDforIssuetypeIDwithSchemeID(null, $issuetype->getID(), $this->getID());
         }
@@ -167,31 +162,30 @@
          *
          * @return Workflow The associated workflow for this issue type
          */
-        public function getWorkflowForIssuetype(\pachno\core\entities\Issuetype $issuetype)
+        public function getWorkflowForIssuetype(Issuetype $issuetype)
         {
             $this->_populateAssociatedWorkflows();
-            if (array_key_exists($issuetype->getID(), $this->_issuetype_workflows))
-            {
+            if (array_key_exists($issuetype->getID(), $this->_issuetype_workflows)) {
                 return $this->_issuetype_workflows[$issuetype->getID()];
             }
 
-            throw new \Exception('This issue type is missing workflow settings');
+            throw new Exception('This issue type is missing workflow settings');
         }
 
         public function isInUse()
         {
-            return (bool) $this->getNumberOfProjects();
+            return (bool)$this->getNumberOfProjects();
         }
-        
+
         public function getNumberOfProjects()
         {
-            if ($this->_projects === null)
-            {
+            if ($this->_projects === null) {
                 return $this->_b2dbLazyCount('_projects');
             }
+
             return count($this->_projects);
         }
-        
+
         /**
          * Return the items name
          *
@@ -210,6 +204,11 @@
         public function setName($name)
         {
             $this->_name = $name;
+        }
+
+        protected function _preDelete()
+        {
+            tables\WorkflowIssuetype::getTable()->deleteByWorkflowSchemeID($this->getID());
         }
 
     }

@@ -7,11 +7,6 @@
     abstract class BaseConnector
     {
 
-        protected function getI18n()
-        {
-            return Context::getI18n();
-        }
-
         abstract public function getName();
 
         abstract public function getLogo();
@@ -25,5 +20,10 @@
         abstract public function doesSupportLinkIssues();
 
         abstract public function isConfigured();
+
+        protected function getI18n()
+        {
+            return Context::getI18n();
+        }
 
     }

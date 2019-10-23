@@ -71,16 +71,6 @@
             $this->_role = $role;
         }
 
-        public function hasTargetID()
-        {
-            return (bool) ($this->_target_id);
-        }
-
-        public function getReplacedTargetID(\pachno\core\entities\Project $project)
-        {
-            return str_replace('%project_key%', $project->getKey(), $this->_target_id);
-        }
-
         /**
          * Returns expanded target ID specific to passed-in project. Some role
          * permissions may consist out of parametrised string, in which case the
@@ -101,18 +91,25 @@
         {
             // If we have explicit target ID, probably need to do some string
             // replacements.
-            if ($this->hasTargetID())
-            {
+            if ($this->hasTargetID()) {
                 return $this->getReplacedTargetID($project);
-            }
-            // If this is targeting a specific project, return its ID.
-            else if ($project instanceof Project)
-            {
+            } // If this is targeting a specific project, return its ID.
+            elseif ($project instanceof Project) {
                 return $project->getID();
             }
 
             // Otherwise assume global target.
             return 0;
+        }
+
+        public function hasTargetID()
+        {
+            return (bool)($this->_target_id);
+        }
+
+        public function getReplacedTargetID(Project $project)
+        {
+            return str_replace('%project_key%', $project->getKey(), $this->_target_id);
         }
 
     }

@@ -1,21 +1,9 @@
 <?php /** @noinspection DisconnectedForeachInstructionInspection */
 
-namespace pachno\core\modules\main\cli;
-
-    /**
-     * CLI command class, main -> fix_files
-     *
-     * @author Daniel Andre Eikeland <zegenie@zegeniestudios.net>
-     * @version 3.1
-     * @license http://opensource.org/licenses/MPL-2.0 Mozilla Public License 2.0 (MPL 2.0)
-     * @package pachno
-     * @subpackage core
-     */
+    namespace pachno\core\modules\main\cli;
 
     use pachno\core\entities\Article;
-    use pachno\core\entities\File;
     use pachno\core\entities\tables\Articles;
-    use pachno\core\entities\tables\Files;
     use pachno\core\entities\tables\Modules;
     use pachno\core\entities\tables\Projects;
     use pachno\core\entities\tables\Scopes;
@@ -23,6 +11,7 @@ namespace pachno\core\modules\main\cli;
     use pachno\core\entities\tables\Users;
     use pachno\core\entities\tables\UserSessions;
     use pachno\core\framework\cli\Command;
+    use pachno\core\framework\Context;
     use pachno\core\modules\main\cli\entities\tbg;
 
     /**
@@ -31,13 +20,62 @@ namespace pachno\core\modules\main\cli;
      * @package pachno
      * @subpackage core
      */
-    class Migrate extends \pachno\core\framework\cli\Command
+    class Migrate extends Command
     {
 
-        protected function _setup()
+        public function do_execute()
         {
-            $this->_command_name = 'migrate';
-            $this->_description = "Migrate data from TBG -> Pachno";
+            if (Context::isInstallmode()) {
+                $this->cliEcho("Pachno is not installed\n", 'red');
+
+                return;
+            }
+
+            $this->cliEcho("Migrating users\n");
+            Users::getTable()->upgrade(tbg\tables\Users::getTable());
+            UserSessions::getTable()->upgrade(tbg\tables\UserSessions::getTable());
+            $this->cliEcho("\n");
+
+            Articles::getTable()->upgrade(tbg\tables\Articles::getTable());
+            $projects = Projects::getTable()->getAll(true);
+            $cc = 1;
+            foreach ($projects as $project) {
+                $this->cliEcho('Migrating project ');
+                $this->cliEcho('[' . $project->getID() . '] ', Command::COLOR_GREEN, Command::STYLE_BOLD);
+                $this->cliEcho($project->getName(), Command::COLOR_WHITE, Command::STYLE_BOLD);
+                $this->cliEcho(" ({$cc}/" . count($projects) . ")\n");
+                $cc++;
+
+                if ($project->isDeleted()) {
+                    $this->cliEcho("Skipping project (deleted)\n");
+                    continue;
+                }
+
+                if ($project->getKey() == '') {
+                    $this->cliEcho("Skipping project (missing key)\n");
+                    continue;
+                }
+                $articles = Articles::getTable()->getLegacyArticles($project, null, false);
+                $this->migrateArticles($articles, $project->getID(), $project->getKey());
+            }
+
+            $scopes = Scopes::getTable()->selectAll();
+            $cc = 1;
+            foreach ($scopes as $scope) {
+                $this->cliEcho('Migrating scope ');
+                $this->cliEcho('[' . $scope->getID() . '] ', Command::COLOR_MAGENTA, Command::STYLE_BOLD);
+                $this->cliEcho($scope->getName(), Command::COLOR_WHITE, Command::STYLE_BOLD);
+                $this->cliEcho(" ({$cc}/" . count($scopes) . ")\n");
+
+                $articles = Articles::getTable()->getLegacyArticles(null, $scope, false);
+                $this->migrateArticles($articles);
+                $cc += 1;
+            }
+
+            $this->cliEcho("Migrating settings\n");
+            Settings::getTable()->migrateSettings();
+
+            Modules::getTable()->removeModuleByName('vcs_integration', true);
         }
 
         /**
@@ -106,58 +144,10 @@ namespace pachno\core\modules\main\cli;
             $this->cliEcho("\n");
         }
 
-        public function do_execute()
+        protected function _setup()
         {
-            if (\pachno\core\framework\Context::isInstallmode()) {
-                $this->cliEcho("Pachno is not installed\n", 'red');
-                return;
-            }
-
-            $this->cliEcho("Migrating users\n");
-            Users::getTable()->upgrade(tbg\tables\Users::getTable());
-            UserSessions::getTable()->upgrade(tbg\tables\UserSessions::getTable());
-            $this->cliEcho("\n");
-
-            Articles::getTable()->upgrade(tbg\tables\Articles::getTable());
-            $projects = Projects::getTable()->getAll(true);
-            $cc = 1;
-            foreach ($projects as $project) {
-                $this->cliEcho('Migrating project ');
-                $this->cliEcho('[' . $project->getID() . '] ', Command::COLOR_GREEN, Command::STYLE_BOLD);
-                $this->cliEcho($project->getName(), Command::COLOR_WHITE, Command::STYLE_BOLD);
-                $this->cliEcho(" ({$cc}/" . count($projects) . ")\n");
-                $cc++;
-
-                if ($project->isDeleted()) {
-                    $this->cliEcho("Skipping project (deleted)\n");
-                    continue;
-                }
-
-                if ($project->getKey() == '') {
-                    $this->cliEcho("Skipping project (missing key)\n");
-                    continue;
-                }
-                $articles = Articles::getTable()->getLegacyArticles($project, null, false);
-                $this->migrateArticles($articles, $project->getID(), $project->getKey());
-            }
-
-            $scopes = Scopes::getTable()->selectAll();
-            $cc = 1;
-            foreach ($scopes as $scope) {
-                $this->cliEcho('Migrating scope ');
-                $this->cliEcho('[' . $scope->getID() . '] ', Command::COLOR_MAGENTA, Command::STYLE_BOLD);
-                $this->cliEcho($scope->getName(), Command::COLOR_WHITE, Command::STYLE_BOLD);
-                $this->cliEcho(" ({$cc}/" . count($scopes) . ")\n");
-
-                $articles = Articles::getTable()->getLegacyArticles(null, $scope, false);
-                $this->migrateArticles($articles);
-                $cc += 1;
-            }
-
-            $this->cliEcho("Migrating settings\n");
-            Settings::getTable()->migrateSettings();
-
-            Modules::getTable()->removeModuleByName('vcs_integration', true);
+            $this->_command_name = 'migrate';
+            $this->_description = "Migrate data from TBG -> Pachno";
         }
 
     }

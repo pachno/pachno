@@ -54,7 +54,7 @@
         /**
          * Who the notification is for
          *
-         * @var \pachno\core\entities\User
+         * @var User
          * @Column(type="integer", length=10)
          * @Relates(class="\pachno\core\entities\User")
          */
@@ -62,22 +62,14 @@
 
         /**
          * Creates the token from the one-time-use application password for subsequent authentication.
-         * 
+         *
          * @param string $application_password
+         *
          * @return string A SHA-256 Hash of the password
          */
         public static function createToken($application_password)
         {
             return password_hash($application_password, PASSWORD_DEFAULT);
-        }
-        
-        protected function _preSave($is_new)
-        {
-            parent::_preSave($is_new);
-            if ($is_new)
-            {
-                $this->_created_at = NOW;
-            }
         }
 
         /**
@@ -104,17 +96,7 @@
          * Returns a hash of the user password
          *
          * @return string
-         */
-        public function getHashPassword()
-        {
-            return $this->_password;
-        }
-
-        /**
-         * Returns a hash of the user password
-         *
          * @see \pachno\core\entities\ApplicationPassword::getHashPassword
-         * @return string
          */
         public function getPassword()
         {
@@ -129,6 +111,16 @@
         public function setPassword($newpassword)
         {
             $this->_password = password_hash($newpassword, PASSWORD_DEFAULT);
+        }
+
+        /**
+         * Returns a hash of the user password
+         *
+         * @return string
+         */
+        public function getHashPassword()
+        {
+            return $this->_password;
         }
 
         public function getCreatedAt()
@@ -146,14 +138,14 @@
             return $this->_last_used_at;
         }
 
-        public function isUsed()
-        {
-            return (bool) $this->_last_used_at;
-        }
-
         public function setLastUsedAt($last_used_at)
         {
             $this->_last_used_at = $last_used_at;
+        }
+
+        public function isUsed()
+        {
+            return (bool)$this->_last_used_at;
         }
 
         public function verify()
@@ -178,6 +170,14 @@
         public function setUser($uid)
         {
             $this->_user_id = $uid;
+        }
+
+        protected function _preSave($is_new)
+        {
+            parent::_preSave($is_new);
+            if ($is_new) {
+                $this->_created_at = NOW;
+            }
         }
 
     }

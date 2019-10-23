@@ -61,13 +61,6 @@
          */
         protected $_value;
 
-        protected function _preSave($is_new = false)
-        {
-            $this->_updated_at = time();
-
-            Settings::getTable()->preventDuplicate($this);
-        }
-
         /**
          * @return string
          */
@@ -106,15 +99,8 @@
         public function getUserId(): int
         {
             $user = $this->getUser();
-            return ($user instanceof User) ? $user->getID() : (int) $user;
-        }
 
-        /**
-         * @return User
-         */
-        public function getUser(): ?User
-        {
-            return $this->_b2dbLazyload('_user_id');
+            return ($user instanceof User) ? $user->getID() : (int)$user;
         }
 
         /**
@@ -126,16 +112,19 @@
         }
 
         /**
+         * @return User
+         */
+        public function getUser(): ?User
+        {
+            return $this->_b2dbLazyload('_user_id');
+        }
+
+        /**
          * @return string
          */
         public function getModuleKey(): string
         {
             return $this->_module_key;
-        }
-
-        public function getModule(): ?Module
-        {
-            return ($this->_module_key !== 'core') ? Context::getModule($this->_module_key) : null;
         }
 
         /**
@@ -146,12 +135,17 @@
             $this->_module_key = $module_key;
         }
 
+        public function getModule(): ?Module
+        {
+            return ($this->_module_key !== 'core') ? Context::getModule($this->_module_key) : null;
+        }
+
         /**
          * @return string
          */
         public function getValue()
         {
-            return (is_numeric($this->_value)) ? (int) $this->_value : $this->_value;
+            return (is_numeric($this->_value)) ? (int)$this->_value : $this->_value;
         }
 
         /**
@@ -160,6 +154,13 @@
         public function setValue(string $value)
         {
             $this->_value = $value;
+        }
+
+        protected function _preSave($is_new = false)
+        {
+            $this->_updated_at = time();
+
+            Settings::getTable()->preventDuplicate($this);
         }
 
     }

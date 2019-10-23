@@ -2,17 +2,17 @@
 
     namespace pachno\core\modules\main\cli;
 
+    use b2db\AnnotationSet;
+    use b2db\Core;
+    use Exception;
+    use pachno\core\entities\Module;
+    use pachno\core\entities\Scope;
     use pachno\core\framework\cli\Command;
-
-    /**
-     * CLI command class, main -> install
-     *
-     * @author Daniel Andre Eikeland <zegenie@zegeniestudios.net>
-     * @version 3.1
-     * @license http://opensource.org/licenses/MPL-2.0 Mozilla Public License 2.0 (MPL 2.0)
-     * @package pachno
-     * @subpackage core
-     */
+    use pachno\core\framework\Context;
+    use pachno\core\framework\Settings;
+    use ReflectionClass;
+    use Spyc;
+    use const PACHNO_CONFIGURATION_PATH;
 
     /**
      * CLI command class, main -> install
@@ -20,23 +20,10 @@
      * @package pachno
      * @subpackage core
      */
-    class Install extends \pachno\core\framework\cli\Command
+    class Install extends Command
     {
 
         protected $connect_mode = false;
-
-        protected function _setup()
-        {
-            $this->_command_name = 'install';
-            $this->_description = "Run the installation routine";
-            $this->_b2db_config_file = \PACHNO_CONFIGURATION_PATH . "b2db.yml";
-            $this->addOptionalArgument('accept_license', 'Set to "yes" to auto-accept license');
-            $this->addOptionalArgument('url_subdir', 'Specify URL subdirectory');
-            $this->addOptionalArgument('use_existing_db_info', 'Set to "yes" to use existing db information if available');
-            $this->addOptionalArgument('enable_all_modules', 'Set to "yes" to install all modules');
-            $this->addOptionalArgument('setup_htaccess', 'Set to "yes" to autoconfigure .htaccess file');
-            $this->addOptionalArgument('only_connect', 'Set to "yes" to connect to existing database and only generate configuration files');
-        }
 
         public function do_execute()
         {
@@ -53,6 +40,7 @@
                 $this->cliEcho(PACHNO_PATH . 'installed', Command::COLOR_WHITE, Command::STYLE_BOLD);
                 $this->cliEcho(' and try again.');
                 $this->cliEcho("\n");
+
                 return;
             }
             $this->cliEcho("\nWelcome to the \"Pachno\" installation wizard!\n", Command::COLOR_WHITE, Command::STYLE_BOLD);
@@ -82,14 +70,14 @@
                 if ($this->getProvidedArgument('accept_license') != 'yes') {
                     $this->cliEcho("Before you can continue the installation, you need to confirm that you \nagree to be bound by the terms in this license.\n\n");
                     $this->cliEcho("Do you agree to be bound by the terms in the MPL 2.0 license?\n(type \"yes\" to agree, anything else aborts the installation): ");
-                    if (!$this->askToAccept()) throw new \Exception($this->cliEcho('You need to accept the license to continue', 'red', Command::STYLE_BOLD));
+                    if (!$this->askToAccept()) throw new Exception($this->cliEcho('You need to accept the license to continue', 'red', Command::STYLE_BOLD));
                 } else {
                     $this->cliEcho('You have accepted the license', 'yellow', Command::STYLE_BOLD);
                     $this->cliEcho("\n\n");
                 }
 
-                $not_well = array();
-                if (!is_writable(\PACHNO_CONFIGURATION_PATH)) {
+                $not_well = [];
+                if (!is_writable(PACHNO_CONFIGURATION_PATH)) {
                     $not_well[] = 'b2db_perm';
                 }
                 if (!is_writable(PACHNO_PATH)) {
@@ -103,7 +91,7 @@
                             case 'b2db_perm':
                                 $this->cliEcho("Could not write to the B2DB directory\n", 'red', Command::STYLE_BOLD);
                                 $this->cliEcho('The folder ');
-                                $this->cliEcho(\PACHNO_CONFIGURATION_PATH, Command::COLOR_WHITE, Command::STYLE_BOLD);
+                                $this->cliEcho(PACHNO_CONFIGURATION_PATH, Command::COLOR_WHITE, Command::STYLE_BOLD);
                                 $this->cliEcho(' folder needs to be writable');
                                 break;
                             case 'root':
@@ -113,7 +101,7 @@
                         }
                     }
 
-                    throw new \Exception("\n\nYou need to correct the above errors before the installation can continue.");
+                    throw new Exception("\n\nYou need to correct the above errors before the installation can continue.");
                 } else {
                     $this->cliEcho("Step 1 - database information\n");
                     if (file_exists($this->_b2db_config_file)) {
@@ -134,15 +122,15 @@
                     if (!$use_existing_db_info) {
                         $this->cliEcho("Pachno uses a database to store information. To be able to connect\nto your database, Pachno needs some information, such as\ndatabase type, username, password, etc.\n\n");
                         $this->cliEcho("Please select what kind of database you are installing Pachno on:\n");
-                        $db_types = array();
-                        foreach (\b2db\Core::getDrivers() as $db_type => $db_desc) {
+                        $db_types = [];
+                        foreach (Core::getDrivers() as $db_type => $db_desc) {
                             $db_types[] = $db_type;
                             $this->cliEcho(count($db_types) . ': ' . $db_desc . "\n", Command::COLOR_WHITE, Command::STYLE_BOLD);
                         }
                         do {
                             $this->cliEcho('Enter the corresponding number for the database (1-' . count($db_types) . '): ');
                             $db_selection = $this->getInput();
-                            if (!isset($db_types[((int)$db_selection - 1)])) throw new \Exception($db_selection . ' is not a valid database type selection');
+                            if (!isset($db_types[((int)$db_selection - 1)])) throw new Exception($db_selection . ' is not a valid database type selection');
                             $db_type = $db_types[((int)$db_selection - 1)];
                             $this->cliEcho("Selected database type: ");
                             $this->cliEcho($db_type . "\n\n");
@@ -178,45 +166,45 @@
                             $e_ok = $this->askToDecline();
                         } while (!$e_ok);
                         try {
-                            \b2db\Core::setHostname($db_hostname);
-                            \b2db\Core::setUsername($db_username);
-                            \b2db\Core::setPassword($db_password);
-                            \b2db\Core::setDriver($db_type);
-                            \b2db\Core::setTablePrefix('pachno_');
+                            Core::setHostname($db_hostname);
+                            Core::setUsername($db_username);
+                            Core::setPassword($db_password);
+                            Core::setDriver($db_type);
+                            Core::setTablePrefix('pachno_');
 
-                            \b2db\Core::doConnect();
+                            Core::doConnect();
                             if ($this->connect_mode) {
                                 $this->cliEcho("\nConnecting to existing database.\n", Command::COLOR_WHITE, Command::STYLE_BOLD);
                             } else {
-                                \b2db\Core::createDatabase($db_name);
+                                Core::createDatabase($db_name);
                             }
-                            \b2db\Core::setDatabaseName($db_name);
-                            \b2db\Core::doConnect();
-                        } catch (\Exception $e) {
-                            throw new \Exception("Could not connect to the database:\n" . $e->getMessage());
+                            Core::setDatabaseName($db_name);
+                            Core::doConnect();
+                        } catch (Exception $e) {
+                            throw new Exception("Could not connect to the database:\n" . $e->getMessage());
                         }
-                        \b2db\Core::setDatabaseName($db_name);
+                        Core::setDatabaseName($db_name);
                         $this->cliEcho("\nSuccessfully connected to the database.\n", Command::COLOR_GREEN);
                         $this->cliEcho("Press ENTER to continue ... ");
                         $this->pressEnterToContinue();
                         $this->cliEcho("\n");
                         $this->cliEcho("Saving database connection information ... ", Command::COLOR_WHITE, Command::STYLE_BOLD);
                         $this->cliEcho("\n");
-                        \b2db\Core::saveConnectionParameters($this->_b2db_config_file);
+                        Core::saveConnectionParameters($this->_b2db_config_file);
                         $this->cliEcho("Successfully saved database connection information.\n", Command::COLOR_GREEN);
                         $this->cliEcho("\n");
                     } else {
-                        $b2db_config = \Spyc::YAMLLoad($this->_b2db_config_file);
+                        $b2db_config = Spyc::YAMLLoad($this->_b2db_config_file);
 
                         if (!array_key_exists("b2db", $b2db_config)) {
-                            throw new \Exception("Could not find database configuration in file " . $this->_b2db_config_file);
+                            throw new Exception("Could not find database configuration in file " . $this->_b2db_config_file);
                         }
 
                         try {
-                            \b2db\Core::initialize($b2db_config["b2db"], \pachno\core\framework\Context::getCache());
-                            \b2db\Core::doConnect();
-                        } catch (\Exception $e) {
-                            throw new \Exception("Could not connect to the database:\n" .
+                            Core::initialize($b2db_config["b2db"], Context::getCache());
+                            Core::doConnect();
+                        } catch (Exception $e) {
+                            throw new Exception("Could not connect to the database:\n" .
                                 $e->getMessage() . "\nPlease check your configuration file " .
                                 $this->_b2db_config_file);
                         }
@@ -310,19 +298,19 @@
                     } else {
                         $this->cliEcho("Creating tables ...\n", Command::COLOR_WHITE, Command::STYLE_BOLD);
                         $b2db_entities_path = PACHNO_CORE_PATH . 'entities' . DS . 'tables' . DS;
-                        $tables_created = array();
+                        $tables_created = [];
                         foreach (scandir($b2db_entities_path) as $tablefile) {
-                            if (in_array($tablefile, array('.', '..')))
+                            if (in_array($tablefile, ['.', '..']))
                                 continue;
 
                             if (($tablename = mb_substr($tablefile, 0, mb_strpos($tablefile, '.'))) != '') {
                                 $tablename = "\\pachno\\core\\entities\\tables\\{$tablename}";
-                                $reflection = new \ReflectionClass($tablename);
+                                $reflection = new ReflectionClass($tablename);
                                 $docblock = $reflection->getDocComment();
-                                $annotationset = new \b2db\AnnotationSet($docblock);
+                                $annotationset = new AnnotationSet($docblock);
                                 if ($annotationset->hasAnnotation('Table')) {
-                                    \b2db\Core::getTable($tablename)->create();
-                                    \b2db\Core::getTable($tablename)->createIndexes();
+                                    Core::getTable($tablename)->create();
+                                    Core::getTable($tablename)->createIndexes();
                                     $tables_created[] = $tablename;
                                 }
                             }
@@ -331,14 +319,14 @@
                         $this->cliEcho("\n");
                         $this->cliEcho("All tables successfully created...\n\n", Command::COLOR_GREEN, Command::STYLE_BOLD);
                         $this->cliEcho("Setting up initial scope... \n", Command::COLOR_WHITE, Command::STYLE_BOLD);
-                        \pachno\core\framework\Context::reinitializeI18n('en_US');
-                        $scope = new \pachno\core\entities\Scope();
+                        Context::reinitializeI18n('en_US');
+                        $scope = new Scope();
                         $scope->setName('The default scope');
                         $scope->addHostname('*');
                         $scope->setEnabled();
-                        \pachno\core\framework\Context::setScope($scope);
+                        Context::setScope($scope);
                         $scope->save();
-                        \pachno\core\framework\Settings::saveSetting('language', 'en_US');
+                        Settings::saveSetting('language', 'en_US');
                         $this->cliEcho("Initial scope setup successfully... \n\n", Command::COLOR_GREEN, Command::STYLE_BOLD);
 
                     }
@@ -348,9 +336,9 @@
                             $this->cliEcho("Skipping module installation ...\n", Command::COLOR_WHITE, Command::STYLE_BOLD);
                         } else {
                             $this->cliEcho("Setting up modules... \n", Command::COLOR_WHITE, Command::STYLE_BOLD);
-                            foreach (array('publish', 'mailing', 'vcs_integration') as $module) {
+                            foreach (['publish', 'mailing', 'vcs_integration'] as $module) {
                                 $this->cliEcho("Installing {$module}... \n");
-                                \pachno\core\entities\Module::installModule($module);
+                                Module::installModule($module);
                             }
 
                             $this->cliEcho("\n");
@@ -359,7 +347,7 @@
                         }
 
                         $this->cliEcho("Finishing installation... \n", Command::COLOR_WHITE, Command::STYLE_BOLD);
-                        $installed_string = \pachno\core\framework\Settings::getVersion() . ', installed ' . date('d.m.Y H:i');
+                        $installed_string = Settings::getVersion() . ', installed ' . date('d.m.Y H:i');
 
                         if ((file_exists(PACHNO_PATH . 'installed') && !is_writable(PACHNO_PATH . 'installed')) ||
                             (!file_exists(PACHNO_PATH . 'installed') && !is_writable(PACHNO_PATH))) {
@@ -385,17 +373,30 @@
                         $this->cliEcho("The default username is ") . $this->cliEcho('Administrator') . $this->cliEcho(' and the password is ') . $this->cliEcho('admin');
                         $this->cliEcho("\n\nFor support, please visit ") . $this->cliEcho('https://pachno.com/', 'blue', 'underline');
                         $this->cliEcho("\n");
-                    } catch (\Exception $e) {
-                        throw new \Exception("Could not install the $module module:\n" . $e->getMessage());
+                    } catch (Exception $e) {
+                        throw new Exception("Could not install the $module module:\n" . $e->getMessage());
                     }
 
                 }
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 $this->cliEcho("\n\nThe installation was interrupted\n", 'red');
                 $this->cliEcho($e->getMessage() . "\n");
             }
 
-                $this->cliEcho("\n");
-            }
-
+            $this->cliEcho("\n");
         }
+
+        protected function _setup()
+        {
+            $this->_command_name = 'install';
+            $this->_description = "Run the installation routine";
+            $this->_b2db_config_file = PACHNO_CONFIGURATION_PATH . "b2db.yml";
+            $this->addOptionalArgument('accept_license', 'Set to "yes" to auto-accept license');
+            $this->addOptionalArgument('url_subdir', 'Specify URL subdirectory');
+            $this->addOptionalArgument('use_existing_db_info', 'Set to "yes" to use existing db information if available');
+            $this->addOptionalArgument('enable_all_modules', 'Set to "yes" to install all modules');
+            $this->addOptionalArgument('setup_htaccess', 'Set to "yes" to autoconfigure .htaccess file');
+            $this->addOptionalArgument('only_connect', 'Set to "yes" to connect to existing database and only generate configuration files');
+        }
+
+    }

@@ -12,12 +12,12 @@
         const ITEMTYPE = Datatype::STATUS;
 
         protected static $_items = null;
-        
+
         protected $_itemtype = Datatype::STATUS;
-        
+
         public static function loadFixtures(Scope $scope)
         {
-            $statuses = array();
+            $statuses = [];
             $statuses['New'] = '#FFFFFF';
             $statuses['Investigating'] = '#C2F533';
             $statuses['Confirmed'] = '#FF55AA';
@@ -31,8 +31,7 @@
             $statuses['Done'] = '#77DD33';
             $statuses['Fixed'] = '#55CC55';
 
-            foreach ($statuses as $name => $itemdata)
-            {
+            foreach ($statuses as $name => $itemdata) {
                 $status = new Status();
                 $status->setName($name);
                 $status->setItemdata($itemdata);
@@ -41,14 +40,14 @@
             }
         }
 
-        public function hasLinkedWorkflowStep()
-        {
-            return (bool) tables\WorkflowSteps::getTable()->countByStatusID($this->getID());
-        }
-        
         public function canBeDeleted()
         {
             return !$this->hasLinkedWorkflowStep();
         }
-        
+
+        public function hasLinkedWorkflowStep()
+        {
+            return (bool)tables\WorkflowSteps::getTable()->countByStatusID($this->getID());
+        }
+
     }

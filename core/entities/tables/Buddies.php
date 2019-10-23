@@ -27,18 +27,16 @@
     {
 
         const B2DB_TABLE_VERSION = 1;
-        const B2DBNAME = 'buddies';
-        const ID = 'buddies.id';
-        const SCOPE = 'buddies.scope';
-        const UID = 'buddies.uid';
-        const BID = 'buddies.bid';
 
-        protected function initialize()
-        {
-            parent::setup(self::B2DBNAME, self::ID);
-            parent::addForeignKeyColumn(self::UID, Users::getTable(), Users::ID);
-            parent::addForeignKeyColumn(self::BID, Users::getTable(), Users::ID);
-        }
+        const B2DBNAME = 'buddies';
+
+        const ID = 'buddies.id';
+
+        const SCOPE = 'buddies.scope';
+
+        const UID = 'buddies.uid';
+
+        const BID = 'buddies.bid';
 
         public function addFriend($user_id, $friend_id)
         {
@@ -55,11 +53,9 @@
             $query->where(self::UID, $user_id);
             $query->where(self::SCOPE, framework\Context::getScope()->getID());
 
-            $friends = array();
-            if ($res = $this->rawSelect($query, false))
-            {
-                while ($row = $res->getNextRow())
-                {
+            $friends = [];
+            if ($res = $this->rawSelect($query, false)) {
+                while ($row = $res->getNextRow()) {
                     $friends[] = $row->get(self::BID);
                 }
             }
@@ -74,6 +70,13 @@
             $query->where(self::BID, $friend_id);
             $query->where(self::SCOPE, framework\Context::getScope()->getID());
             $this->rawDelete($query);
+        }
+
+        protected function initialize()
+        {
+            parent::setup(self::B2DBNAME, self::ID);
+            parent::addForeignKeyColumn(self::UID, Users::getTable(), Users::ID);
+            parent::addForeignKeyColumn(self::BID, Users::getTable(), Users::ID);
         }
 
     }

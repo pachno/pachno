@@ -27,9 +27,13 @@
     {
 
         const B2DB_TABLE_VERSION = 1;
+
         const B2DBNAME = 'groups';
+
         const ID = 'groups.id';
+
         const NAME = 'groups.name';
+
         const SCOPE = 'groups.scope';
 
         public function getAll($scope = null)
@@ -37,9 +41,9 @@
             $scope = ($scope === null) ? framework\Context::getScope()->getID() : $scope;
             $query = $this->getQuery();
             $query->where(self::SCOPE, $scope);
-            
+
             $res = $this->select($query);
-            
+
             return $res;
         }
 
@@ -49,7 +53,7 @@
             $query->where(self::NAME, $group_name);
             $query->where(self::SCOPE, framework\Context::getScope()->getID());
 
-            return (bool) $this->count($query);
+            return (bool)$this->count($query);
         }
-        
+
     }

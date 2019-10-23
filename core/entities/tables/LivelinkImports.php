@@ -4,10 +4,6 @@
 
     use pachno\core\entities\LivelinkImport;
     use pachno\core\entities\Project;
-    use pachno\core\framework;
-    use b2db\Core,
-        b2db\Criteria,
-        b2db\Criterion;
 
     /**
      * LiveLink imports table
@@ -31,7 +27,9 @@
     {
 
         const B2DB_TABLE_VERSION = 1;
+
         const B2DBNAME = 'livelink_imports';
+
         const SCOPE = 'livelink_imports.scope';
 
         /**
@@ -52,7 +50,7 @@
             $query->where('livelink_imports.completed_at', 0);
             $query->where('livelink_imports.project_id', $project->getID());
 
-            return (bool) $this->count($query);
+            return (bool)$this->count($query);
         }
 
     }

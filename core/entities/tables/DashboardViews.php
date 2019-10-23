@@ -3,8 +3,7 @@
     namespace pachno\core\entities\tables;
 
     use b2db\Insertion;
-    use pachno\core\framework,
-        pachno\core\entities\tables\ScopedTable;
+    use pachno\core\framework;
 
     /**
      * User dashboard views table
@@ -29,23 +28,34 @@
     {
 
         const B2DB_TABLE_VERSION = 2;
+
         const B2DBNAME = 'dashboard_views';
+
         const ID = 'dashboard_views.id';
+
         const NAME = 'dashboard_views.name';
+
         const VIEW = 'dashboard_views.view';
+
         const TID = 'dashboard_views.tid';
+
         const PID = 'dashboard_views.pid';
+
         const TARGET_TYPE = 'dashboard_views.target_type';
+
         const SCOPE = 'dashboard_views.scope';
+
         const TYPE_USER = 1;
+
         const TYPE_PROJECT = 2;
+
         const TYPE_TEAM = 3;
+
         const TYPE_CLIENT = 4;
 
         public function addView($target_id, $target_type, $view)
         {
-            if ($view['type'])
-            {
+            if ($view['type']) {
                 $view_id = (array_key_exists('id', $view)) ? $view['id'] : 0;
                 $insertion = new Insertion();
                 $insertion->add(self::TID, $target_id);

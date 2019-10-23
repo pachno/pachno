@@ -2,11 +2,10 @@
 
     namespace pachno\core\entities\tables;
 
+    use b2db\Table;
     use b2db\Update;
+    use pachno\core\entities\CustomDatatype;
     use pachno\core\framework;
-    use b2db\Core,
-        b2db\Criteria,
-        b2db\Criterion;
 
     /**
      * Custom field options table
@@ -33,13 +32,21 @@
     {
 
         const B2DB_TABLE_VERSION = 2;
+
         const B2DBNAME = 'customfieldoptions';
+
         const ID = 'customfieldoptions.id';
+
         const NAME = 'customfieldoptions.name';
+
         const ITEMDATA = 'customfieldoptions.itemdata';
+
         const OPTION_VALUE = 'customfieldoptions.value';
+
         const SORT_ORDER = 'customfieldoptions.sort_order';
+
         const CUSTOMFIELD_ID = 'customfieldoptions.customfield_id';
+
         const SCOPE = 'customfieldoptions.scope';
 
         public function getByValueAndCustomfieldID($value, $customfield_id)
@@ -61,41 +68,9 @@
             $this->rawDelete($query);
         }
 
-        protected function migrateData(\b2db\Table $old_table)
-        {
-            switch ($old_table->getVersion())
-            {
-                case 1:
-                    if ($res = $old_table->rawSelectAll())
-                    {
-                        $customdatatypes_table = \pachno\core\entities\CustomDatatype::getB2DBTable();
-                        $query = $customdatatypes_table->getQuery();
-                        $query->indexBy(CustomFields::FIELD_KEY);
-                        $customfields = $customdatatypes_table->select($query);
-                        while ($row = $res->getNextRow())
-                        {
-                            $key = $row->get('customfieldoptions.customfield_key');
-                            $customfield = (array_key_exists($key, $customfields)) ? $customfields[$key] : null;
-                            if ($customfield instanceof \pachno\core\entities\CustomDatatype)
-                            {
-                                $update = new Update();
-                                $update->add(self::CUSTOMFIELD_ID, $customfield->getID());
-                                $this->rawUpdateById($update, $row->get(self::ID));
-                            }
-                            else
-                            {
-                                $this->rawDeleteById($row->get(self::ID));
-                            }
-                        }
-                    }
-                    break;
-            }
-        }
-
         public function saveOptionOrder($options, $customfield_id)
         {
-            foreach ($options as $key => $option_id)
-            {
+            foreach ($options as $key => $option_id) {
                 $query = $this->getQuery();
                 $update = new Update();
                 $update->add(self::SORT_ORDER, $key + 1);
@@ -103,6 +78,31 @@
                 $query->where(self::CUSTOMFIELD_ID, $customfield_id);
                 $query->where(self::SCOPE, framework\Context::getScope()->getID());
                 $this->rawUpdate($update, $query);
+            }
+        }
+
+        protected function migrateData(Table $old_table)
+        {
+            switch ($old_table->getVersion()) {
+                case 1:
+                    if ($res = $old_table->rawSelectAll()) {
+                        $customdatatypes_table = CustomDatatype::getB2DBTable();
+                        $query = $customdatatypes_table->getQuery();
+                        $query->indexBy(CustomFields::FIELD_KEY);
+                        $customfields = $customdatatypes_table->select($query);
+                        while ($row = $res->getNextRow()) {
+                            $key = $row->get('customfieldoptions.customfield_key');
+                            $customfield = (array_key_exists($key, $customfields)) ? $customfields[$key] : null;
+                            if ($customfield instanceof CustomDatatype) {
+                                $update = new Update();
+                                $update->add(self::CUSTOMFIELD_ID, $customfield->getID());
+                                $this->rawUpdateById($update, $row->get(self::ID));
+                            } else {
+                                $this->rawDeleteById($row->get(self::ID));
+                            }
+                        }
+                    }
+                    break;
             }
         }
 

@@ -2,7 +2,7 @@
 
     namespace pachno\core\entities\tables;
 
-    use \pachno\core\framework;
+    use pachno\core\framework;
 
     /**
      * Commit files table
@@ -16,20 +16,22 @@
     {
 
         const B2DB_TABLE_VERSION = 2;
-        const B2DBNAME = 'commitfiles';
-        const ID = 'commitfiles.id';
-        const SCOPE = 'commitfiles.scope';
-        const COMMIT_ID = 'commitfiles.commit_id';
-        const FILE_NAME = 'commitfiles.file_name';
-        const ACTION = 'commitfiles.action';
 
-        protected function setupIndexes()
-        {
-            $this->addIndex('commit', self::COMMIT_ID);
-        }
+        const B2DBNAME = 'commitfiles';
+
+        const ID = 'commitfiles.id';
+
+        const SCOPE = 'commitfiles.scope';
+
+        const COMMIT_ID = 'commitfiles.commit_id';
+
+        const FILE_NAME = 'commitfiles.file_name';
+
+        const ACTION = 'commitfiles.action';
 
         /**
          * Get all affected files by commit
+         *
          * @param integer $id
          */
         public function getByCommitID($id, $scope = null)
@@ -40,6 +42,11 @@
             $query->where(self::COMMIT_ID, $id);
 
             return $this->select($query);
+        }
+
+        protected function setupIndexes()
+        {
+            $this->addIndex('commit', self::COMMIT_ID);
         }
 
     }

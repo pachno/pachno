@@ -52,7 +52,7 @@
         /**
          * Who the notification is for
          *
-         * @var \pachno\core\entities\User
+         * @var User
          * @Column(type="integer", length=10)
          * @Relates(class="\pachno\core\entities\User")
          */
@@ -98,6 +98,26 @@
             $this->_name = $name;
         }
 
+        public function getUser()
+        {
+            return $this->_b2dbLazyLoad('_user_id');
+        }
+
+        public function setUser($uid)
+        {
+            $this->_user_id = $uid;
+        }
+
+        public function isOff()
+        {
+            return !(bool)$this->isOn();
+        }
+
+        public function isOn()
+        {
+            return (bool)$this->getValue();
+        }
+
         public function getValue()
         {
             return $this->_value;
@@ -109,26 +129,6 @@
             if ($value === false) $value = 0;
 
             $this->_value = $value;
-        }
-
-        public function getUser()
-        {
-            return $this->_b2dbLazyLoad('_user_id');
-        }
-
-        public function setUser($uid)
-        {
-            $this->_user_id = $uid;
-        }
-
-        public function isOn()
-        {
-            return (bool) $this->getValue();
-        }
-
-        public function isOff()
-        {
-            return !(bool) $this->isOn();
         }
 
     }

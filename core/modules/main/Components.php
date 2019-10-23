@@ -2,11 +2,12 @@
 
     namespace pachno\core\modules\main;
 
+    use Exception;
+    use pachno\core\entities;
     use pachno\core\entities\Comment;
-    use pachno\core\entities\LogItem;
-    use pachno\core\framework,
-        pachno\core\entities,
-        pachno\core\entities\tables;
+    use pachno\core\entities\tables;
+    use pachno\core\framework;
+    use pachno\core\framework\Event;
     use pachno\core\framework\interfaces\AuthenticationProvider;
     use PragmaRX\Google2FA\Google2FA;
 
@@ -41,53 +42,42 @@
             }
         }
 
+        public function componentUserdropdown_Inline()
+        {
+            $this->componentUserdropdown();
+        }
+
         public function componentUserdropdown()
         {
             framework\Logging::log('user dropdown component');
             $this->rnd_no = rand();
-            try
-            {
-                if (!$this->user instanceof entities\User)
-                {
+            try {
+                if (!$this->user instanceof entities\User) {
                     framework\Logging::log('loading user object in dropdown');
-                    if (is_numeric($this->user))
-                    {
+                    if (is_numeric($this->user)) {
                         $this->user = tables\Users::getTable()->getByUserId($this->user);
-                    }
-                    else
-                    {
+                    } else {
                         $this->user = tables\Users::getTable()->getByUsername($this->user);
                     }
                     framework\Logging::log('done (loading user object in dropdown)');
                 }
-            }
-            catch (\Exception $e)
-            {
+            } catch (Exception $e) {
 
             }
             $this->show_avatar = (isset($this->show_avatar)) ? $this->show_avatar : true;
             framework\Logging::log('done (user dropdown component)');
         }
 
-        public function componentUserdropdown_Inline()
-        {
-            $this->componentUserdropdown();
-        }
-
         public function componentClientusers()
         {
-            try
-            {
-                if (!$this->client instanceof entities\Client)
-                {
+            try {
+                if (!$this->client instanceof entities\Client) {
                     framework\Logging::log('loading user object in dropdown');
                     $this->client = entities\Client::getB2DBTable()->selectById($this->client);
                     framework\Logging::log('done (loading user object in dropdown)');
                 }
                 $this->clientusers = $this->client->getMembers();
-            }
-            catch (\Exception $e)
-            {
+            } catch (Exception $e) {
 
             }
         }
@@ -96,18 +86,14 @@
         {
             framework\Logging::log('team dropdown component');
             $this->rnd_no = rand();
-            try
-            {
+            try {
                 $this->team = (isset($this->team)) ? $this->team : null;
-                if (!$this->team instanceof entities\Team)
-                {
+                if (!$this->team instanceof entities\Team) {
                     framework\Logging::log('loading team object in dropdown');
                     $this->team = entities\Team::getB2DBTable()->selectById($this->team);
                     framework\Logging::log('done (loading team object in dropdown)');
                 }
-            }
-            catch (\Exception $e)
-            {
+            } catch (Exception $e) {
 
             }
             framework\Logging::log('done (team dropdown component)');
@@ -134,11 +120,15 @@
             $this->friends = framework\Context::getUser()->getFriends();
         }
 
+        public function componentViewIssueFields()
+        {
+            $this->setupVariables();
+        }
+
         protected function setupVariables()
         {
             $i18n = framework\Context::getI18n();
-            if ($this->issue instanceof entities\Issue)
-            {
+            if ($this->issue instanceof entities\Issue) {
                 $this->project = $this->issue->getProject();
                 $this->statuses = ($this->project->useStrictWorkflowMode()) ? $this->project->getAvailableStatuses() : $this->issue->getAvailableStatuses();
                 $this->issuetypes = $this->project->getIssuetypeScheme()->getIssuetypes();
@@ -174,15 +164,14 @@
                     $fields_list['severity']['choices'] = entities\Severity::getAll();
                 }
 
-                $fields_list['milestone'] = ['title' => $i18n->__('Targetted for'), 'fa_icon' => 'list-alt', 'fa_style' => 'far', 'choices' => [], 'visible' => $this->issue->isMilestoneVisible(), 'value' => (($this->issue->getMilestone() instanceof entities\Milestone) ? $this->issue->getMilestone()->getId() : 0), 'icon' => true, 'icon_name' => 'icon_milestones.png', 'change_tip' => $i18n->__('Click to change which milestone this issue is targetted for'), 'change_header' => $i18n->__('Set issue target / milestone'), 'clear' => $i18n->__('Set as not targetted'), 'select' => $i18n->__('%set_as_not_targetted or click to set a new target milestone', ['%set_as_not_targetted' => '']), 'url' => true, 'current_url' => (($this->issue->getMilestone() instanceof entities\Milestone) ? $this->getRouting()->generate('project_roadmap', ['project_key' => $this->issue->getProject()->getKey()]).'#roadmap_milestone_'.$this->issue->getMilestone()->getID() : '')];
+                $fields_list['milestone'] = ['title' => $i18n->__('Targetted for'), 'fa_icon' => 'list-alt', 'fa_style' => 'far', 'choices' => [], 'visible' => $this->issue->isMilestoneVisible(), 'value' => (($this->issue->getMilestone() instanceof entities\Milestone) ? $this->issue->getMilestone()->getId() : 0), 'icon' => true, 'icon_name' => 'icon_milestones.png', 'change_tip' => $i18n->__('Click to change which milestone this issue is targetted for'), 'change_header' => $i18n->__('Set issue target / milestone'), 'clear' => $i18n->__('Set as not targetted'), 'select' => $i18n->__('%set_as_not_targetted or click to set a new target milestone', ['%set_as_not_targetted' => '']), 'url' => true, 'current_url' => (($this->issue->getMilestone() instanceof entities\Milestone) ? $this->getRouting()->generate('project_roadmap', ['project_key' => $this->issue->getProject()->getKey()]) . '#roadmap_milestone_' . $this->issue->getMilestone()->getID() : '')];
 
                 if ($this->issue->isUpdateable() && $this->issue->canEditMilestone()) {
                     $fields_list['milestone']['choices'] = $this->project->getMilestonesForIssues();
                 }
 
                 $customfields_list = [];
-                foreach (entities\CustomDatatype::getAll() as $key => $customdatatype)
-                {
+                foreach (entities\CustomDatatype::getAll() as $key => $customdatatype) {
                     $customvalue = $this->issue->getCustomField($key);
                     $customfields_list[$key] = ['type' => $customdatatype->getType(),
                         'title' => $i18n->__($customdatatype->getDescription()),
@@ -208,13 +197,11 @@
                     }
                 }
                 $this->customfields_list = $customfields_list;
-                $this->editions = ($this->issue->getProject()->isEditionsEnabled()) ? $this->issue->getEditions() : array();
-                $this->components = ($this->issue->getProject()->isComponentsEnabled()) ? $this->issue->getComponents() : array();
-                $this->builds = ($this->issue->getProject()->isBuildsEnabled()) ? $this->issue->getBuilds() : array();
+                $this->editions = ($this->issue->getProject()->isEditionsEnabled()) ? $this->issue->getEditions() : [];
+                $this->components = ($this->issue->getProject()->isComponentsEnabled()) ? $this->issue->getComponents() : [];
+                $this->builds = ($this->issue->getProject()->isBuildsEnabled()) ? $this->issue->getBuilds() : [];
                 $this->affected_count = count($this->editions) + count($this->components) + count($this->builds);
-            }
-            else
-            {
+            } else {
                 $fields_list = [];
                 $fields_list['category'] = ['choices' => entities\Category::getAll()];
                 $fields_list['resolution'] = ['choices' => entities\Resolution::getAll()];
@@ -238,27 +225,18 @@
             }
 
             $this->fields_list = $fields_list;
-            if (isset($this->transition) && $this->transition->hasAction(entities\WorkflowTransitionAction::ACTION_ASSIGN_ISSUE))
-            {
-                $available_assignees = array();
-                foreach (framework\Context::getUser()->getTeams() as $team)
-                {
-                    foreach ($team->getMembers() as $user)
-                    {
+            if (isset($this->transition) && $this->transition->hasAction(entities\WorkflowTransitionAction::ACTION_ASSIGN_ISSUE)) {
+                $available_assignees = [];
+                foreach (framework\Context::getUser()->getTeams() as $team) {
+                    foreach ($team->getMembers() as $user) {
                         $available_assignees[$user->getID()] = $user->getNameWithUsername();
                     }
                 }
-                foreach (framework\Context::getUser()->getFriends() as $user)
-                {
+                foreach (framework\Context::getUser()->getFriends() as $user) {
                     $available_assignees[$user->getID()] = $user->getNameWithUsername();
                 }
                 $this->available_assignees = $available_assignees;
             }
-        }
-
-        public function componentViewIssueFields()
-        {
-            $this->setupVariables();
         }
 
         public function componentIssuemaincustomfields()
@@ -274,7 +252,7 @@
         public function componentHideableInfoBoxModal()
         {
             if (!isset($this->options))
-                $this->options = array();
+                $this->options = [];
             if (!isset($this->button_label))
                 $this->button_label = $this->getI18n()->__('Hide');
             $this->show_box = framework\Settings::isInfoBoxVisible($this->key);
@@ -282,8 +260,7 @@
 
         public function componentUploader()
         {
-            switch ($this->mode)
-            {
+            switch ($this->mode) {
                 case 'issue':
                     $this->issue = entities\Issue::getB2DBTable()->selectById($this->issue_id);
                     break;
@@ -299,8 +276,7 @@
 
         public function componentDynamicUploader()
         {
-            switch (true)
-            {
+            switch (true) {
                 case isset($this->issue):
                     $this->target = $this->issue;
                     $this->existing_files = array_reverse($this->issue->getFiles());
@@ -318,16 +294,15 @@
 
         public function componentStandarduploader()
         {
-            switch ($this->mode)
-            {
+            switch ($this->mode) {
                 case 'issue':
-                    $this->form_action = make_url('issue_upload', array('issue_id' => $this->issue->getID()));
-                    $this->poller_url = make_url('issue_upload_status', array('issue_id' => $this->issue->getID()));
+                    $this->form_action = make_url('issue_upload', ['issue_id' => $this->issue->getID()]);
+                    $this->poller_url = make_url('issue_upload_status', ['issue_id' => $this->issue->getID()]);
                     $this->existing_files = array_reverse($this->issue->getFiles());
                     break;
                 case 'article':
-                    $this->form_action = make_url('article_upload', array('article_name' => $this->article->getName()));
-                    $this->poller_url = make_url('article_upload_status', array('article_name' => $this->article->getName()));
+                    $this->form_action = make_url('article_upload', ['article_name' => $this->article->getName()]);
+                    $this->poller_url = make_url('article_upload_status', ['article_name' => $this->article->getName()]);
                     $this->existing_files = array_reverse($this->article->getFiles());
                     break;
                 default:
@@ -339,12 +314,9 @@
 
         public function componentAttachedfile()
         {
-            if ($this->mode == 'issue' && !isset($this->issue))
-            {
+            if ($this->mode == 'issue' && !isset($this->issue)) {
                 $this->issue = entities\Issue::getB2DBTable()->selectById($this->issue_id);
-            }
-            elseif ($this->mode == 'article' && !isset($this->article))
-            {
+            } elseif ($this->mode == 'article' && !isset($this->article)) {
                 $this->article = entities\Article::getByName($this->article_name);
             }
             $this->file_id = $this->file->getID();
@@ -352,7 +324,7 @@
 
         public function componentUpdateissueproperties()
         {
-            $this->issue = $this->issue ? : null;
+            $this->issue = $this->issue ?: null;
             $this->setupVariables();
         }
 
@@ -363,15 +335,12 @@
 
         public function componentNotifications()
         {
-            $this->filter_first_notification = ! is_null($this->first_notification_id) && is_numeric($this->first_notification_id);
+            $this->filter_first_notification = !is_null($this->first_notification_id) && is_numeric($this->first_notification_id);
             $notifications = $this->getUser()->getNotifications($this->first_notification_id, $this->last_notification_id);
-            if ($this->filter_first_notification)
-            {
+            if ($this->filter_first_notification) {
                 $this->notifications = $notifications;
-            }
-            else
-            {
-                $this->notifications = count($notifications) ? array_slice($notifications, 0, 25) : array();
+            } else {
+                $this->notifications = count($notifications) ? array_slice($notifications, 0, 25) : [];
             }
             $this->num_unread = $this->getUser()->getNumberOfUnreadNotifications();
             $this->num_read = $this->getUser()->getNumberOfReadNotifications();
@@ -382,12 +351,9 @@
         {
             $this->return_notification = true;
 
-            if ($this->notification->isShown())
-            {
+            if ($this->notification->isShown()) {
                 $this->return_notification = false;
-            }
-            else
-            {
+            } else {
                 $this->notification->showOnce();
                 $this->notification->save();
             }
@@ -426,7 +392,8 @@
             if ($this->comment->getTargetType() == Comment::TYPE_ISSUE) {
                 try {
                     $this->issue = entities\Issue::getB2DBTable()->selectById($this->comment->getTargetID());
-                } catch (\Exception $e) { }
+                } catch (Exception $e) {
+                }
             }
         }
 
@@ -438,9 +405,9 @@
 
         public function componentIssueaffected()
         {
-            $this->editions = ($this->issue->getProject()->isEditionsEnabled()) ? $this->issue->getEditions() : array();
-            $this->components = ($this->issue->getProject()->isComponentsEnabled()) ? $this->issue->getComponents() : array();
-            $this->builds = ($this->issue->getProject()->isBuildsEnabled()) ? $this->issue->getBuilds() : array();
+            $this->editions = ($this->issue->getProject()->isEditionsEnabled()) ? $this->issue->getEditions() : [];
+            $this->components = ($this->issue->getProject()->isComponentsEnabled()) ? $this->issue->getComponents() : [];
+            $this->builds = ($this->issue->getProject()->isBuildsEnabled()) ? $this->issue->getBuilds() : [];
             $this->statuses = entities\Status::getAll();
             $this->count = count($this->editions) + count($this->components) + count($this->builds);
         }
@@ -474,28 +441,21 @@
                 $this->referer = framework\Context::getRouting()->generate('dashboard');
             endif;
 
-            try
-            {
+            try {
                 $this->loginintro = null;
                 $this->registrationintro = null;
                 $this->loginintro = tables\Articles::getTable()->getArticleByName('LoginIntro');
                 $this->registrationintro = tables\Articles::getTable()->getArticleByName('RegistrationIntro');
-            }
-            catch (\Exception $e)
-            {
+            } catch (Exception $e) {
 
             }
 
-            if (framework\Settings::isLoginRequired())
-            {
+            if (framework\Settings::isLoginRequired()) {
                 $authentication_backend = framework\Settings::getAuthenticationBackend();
-                if ($authentication_backend->getAuthenticationMethod() == AuthenticationProvider::AUTHENTICATION_TYPE_TOKEN)
-                {
+                if ($authentication_backend->getAuthenticationMethod() == AuthenticationProvider::AUTHENTICATION_TYPE_TOKEN) {
                     framework\Context::getResponse()->deleteCookie('username');
                     framework\Context::getResponse()->deleteCookie('session_token');
-                }
-                else
-                {
+                } else {
                     framework\Context::getResponse()->deleteCookie('username');
                     framework\Context::getResponse()->deleteCookie('password');
                 }
@@ -529,8 +489,7 @@
 
         public function componentDashboardview()
         {
-            if ($this->view->hasJS())
-            {
+            if ($this->view->hasJS()) {
                 foreach ($this->view->getJS() as $js)
                     $this->getResponse()->addJavascript($js);
             }
@@ -540,45 +499,6 @@
         {
             $this->views = entities\DashboardView::getAvailableViews($this->target_type);
             $this->dashboardViews = entities\DashboardView::getViews($this->tid, $this->target_type);
-        }
-
-        protected function _setupReportIssueProperties()
-        {
-            $this->locked_issuetype = $this->locked_issuetype ? : null;
-            $this->selected_issuetype = $this->selected_issuetype ? : null;
-            $this->selected_edition = $this->selected_edition ? : null;
-            $this->selected_build = $this->selected_build ? : null;
-            $this->selected_milestone = $this->selected_milestone ? : null;
-            $this->parent_issue = $this->parent_issue ? : null;
-            $this->selected_component = $this->selected_component ? : null;
-            $this->selected_category = $this->selected_category ? : null;
-            $this->selected_status = $this->selected_status ? : null;
-            $this->selected_resolution = $this->selected_resolution ? : null;
-            $this->selected_priority = $this->selected_priority ? : null;
-            $this->selected_reproducability = $this->selected_reproducability ? : null;
-            $this->selected_severity = $this->selected_severity ? : null;
-            $this->selected_estimated_time = $this->selected_estimated_time ? : null;
-            $this->selected_spent_time = $this->selected_spent_time ? : null;
-            $this->selected_percent_complete = $this->selected_percent_complete ? : null;
-            $this->selected_pain_bug_type = $this->selected_pain_bug_type ? : null;
-            $this->selected_pain_likelihood = $this->selected_pain_likelihood ? : null;
-            $this->selected_pain_effect = $this->selected_pain_effect ? : null;
-            $selected_customdatatype = $this->selected_customdatatype ? : array();
-            foreach (entities\CustomDatatype::getAll() as $customdatatype)
-            {
-                $selected_customdatatype[$customdatatype->getKey()] = isset($selected_customdatatype[$customdatatype->getKey()]) ? $selected_customdatatype[$customdatatype->getKey()] : null;
-            }
-            $this->selected_customdatatype = $selected_customdatatype;
-            $this->issuetype_id = $this->issuetype_id ? : null;
-            $this->issue = $this->issue ? : null;
-            $this->categories = entities\Category::getAll();
-            $this->severities = entities\Severity::getAll();
-            $this->priorities = entities\Priority::getAll();
-            $this->reproducabilities = entities\Reproducability::getAll();
-            $this->resolutions = entities\Resolution::getAll();
-            $this->statuses = entities\Status::getAll();
-            $this->milestones = framework\Context::getCurrentProject()->getMilestonesForIssues();
-            $this->al_items = array();
         }
 
         public function componentReportIssue()
@@ -592,6 +512,44 @@
             $dummyissue = new entities\Issue();
             $dummyissue->setProject(framework\Context::getCurrentProject());
             $this->canupload = (framework\Settings::isUploadsEnabled() && $dummyissue->canAttachFiles());
+        }
+
+        protected function _setupReportIssueProperties()
+        {
+            $this->locked_issuetype = $this->locked_issuetype ?: null;
+            $this->selected_issuetype = $this->selected_issuetype ?: null;
+            $this->selected_edition = $this->selected_edition ?: null;
+            $this->selected_build = $this->selected_build ?: null;
+            $this->selected_milestone = $this->selected_milestone ?: null;
+            $this->parent_issue = $this->parent_issue ?: null;
+            $this->selected_component = $this->selected_component ?: null;
+            $this->selected_category = $this->selected_category ?: null;
+            $this->selected_status = $this->selected_status ?: null;
+            $this->selected_resolution = $this->selected_resolution ?: null;
+            $this->selected_priority = $this->selected_priority ?: null;
+            $this->selected_reproducability = $this->selected_reproducability ?: null;
+            $this->selected_severity = $this->selected_severity ?: null;
+            $this->selected_estimated_time = $this->selected_estimated_time ?: null;
+            $this->selected_spent_time = $this->selected_spent_time ?: null;
+            $this->selected_percent_complete = $this->selected_percent_complete ?: null;
+            $this->selected_pain_bug_type = $this->selected_pain_bug_type ?: null;
+            $this->selected_pain_likelihood = $this->selected_pain_likelihood ?: null;
+            $this->selected_pain_effect = $this->selected_pain_effect ?: null;
+            $selected_customdatatype = $this->selected_customdatatype ?: [];
+            foreach (entities\CustomDatatype::getAll() as $customdatatype) {
+                $selected_customdatatype[$customdatatype->getKey()] = isset($selected_customdatatype[$customdatatype->getKey()]) ? $selected_customdatatype[$customdatatype->getKey()] : null;
+            }
+            $this->selected_customdatatype = $selected_customdatatype;
+            $this->issuetype_id = $this->issuetype_id ?: null;
+            $this->issue = $this->issue ?: null;
+            $this->categories = entities\Category::getAll();
+            $this->severities = entities\Severity::getAll();
+            $this->priorities = entities\Priority::getAll();
+            $this->reproducabilities = entities\Reproducability::getAll();
+            $this->resolutions = entities\Resolution::getAll();
+            $this->statuses = entities\Status::getAll();
+            $this->milestones = framework\Context::getCurrentProject()->getMilestonesForIssues();
+            $this->al_items = [];
         }
 
         public function componentReportIssueContainer()
@@ -613,10 +571,8 @@
         {
             $al_items = $this->issue->getAccessList();
 
-            foreach ($al_items as $k => $item)
-            {
-                if ($item['target'] instanceof entities\User && $item['target']->getID() == $this->getUser()->getID())
-                {
+            foreach ($al_items as $k => $item) {
+                if ($item['target'] instanceof entities\User && $item['target']->getID() == $this->getUser()->getID()) {
                     unset($al_items[$k]);
                 }
             }
@@ -662,11 +618,11 @@
             $routing = $this->getRouting();
             $i18n = $this->getI18n();
             framework\Context::loadLibrary('ui');
-            $links = array(
-                array('url' => $routing->generate('project_open_issues', array('project_key' => '%project_key%')), 'text' => $i18n->__('Issues')),
-                array('url' => $routing->generate('project_roadmap', array('project_key' => '%project_key%')), 'text' => $i18n->__('Roadmap')),
-            );
-            $event = \pachno\core\framework\Event::createNew('core', 'main\Components::DashboardViewUserProjects::links', null, array(), $links);
+            $links = [
+                ['url' => $routing->generate('project_open_issues', ['project_key' => '%project_key%']), 'text' => $i18n->__('Issues')],
+                ['url' => $routing->generate('project_roadmap', ['project_key' => '%project_key%']), 'text' => $i18n->__('Roadmap')],
+            ];
+            $event = Event::createNew('core', 'main\Components::DashboardViewUserProjects::links', null, [], $links);
             $event->trigger();
             $this->links = $event->getReturnList();
         }
@@ -678,9 +634,8 @@
 
         public function componentIssueEstimator()
         {
-            $times = array();
-            switch ($this->field)
-            {
+            $times = [];
+            switch ($this->field) {
                 case 'estimated_time':
                     $times['months'] = $this->issue->getEstimatedMonths();
                     $times['weeks'] = $this->issue->getEstimatedWeeks();

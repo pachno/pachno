@@ -16,6 +16,7 @@
     {
 
         const AUTHENTICATION_TYPE_PASSWORD = 'authenticate_password';
+
         const AUTHENTICATION_TYPE_TOKEN = 'authenticate_token';
 
         function getAuthenticationMethod();
@@ -50,6 +51,7 @@
 
         /**
          * @param Request $request
+         *
          * @return User|null
          */
         function doExplicitLogin(Request $request);

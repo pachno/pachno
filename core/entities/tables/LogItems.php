@@ -2,14 +2,15 @@
 
     namespace pachno\core\entities\tables;
 
+    use b2db\Criteria;
+    use b2db\Criterion;
     use b2db\Query;
+    use b2db\QueryColumnSort;
+    use b2db\Table;
     use b2db\Update;
     use pachno\core\entities\LogItem;
     use pachno\core\entities\Scope;
     use pachno\core\framework;
-    use b2db\Core,
-        b2db\Criteria,
-        b2db\Criterion;
 
     /**
      * Log table
@@ -28,16 +29,27 @@
         const B2DB_TABLE_VERSION = 3;
 
         const B2DBNAME = 'log';
+
         const ID = 'log.id';
+
         const SCOPE = 'log.scope';
+
         const TARGET = 'log.target';
+
         const TARGET_TYPE = 'log.target_type';
+
         const CHANGE_TYPE = 'log.change_type';
+
         const PREVIOUS_VALUE = 'log.previous_value';
+
         const CURRENT_VALUE = 'log.current_value';
+
         const TEXT = 'log.text';
+
         const TIME = 'log.time';
+
         const UID = 'log.uid';
+
         const COMMENT_ID = 'log.comment_id';
 
         /**
@@ -50,7 +62,22 @@
             $query = $this->getQuery();
             $query->where(self::TARGET, $issue_id);
             $query->where(self::TARGET_TYPE, LogItem::TYPE_ISSUE);
-            $query->addOrderBy(self::TIME, \b2db\QueryColumnSort::SORT_ASC);
+            $query->addOrderBy(self::TIME, QueryColumnSort::SORT_ASC);
+
+            return $this->select($query);
+        }
+
+        /**
+         * @param $user_id
+         * @param int $limit
+         * @param int $offset
+         *
+         * @return LogItem[]
+         */
+        public function getByUserID($user_id, $limit = null, $offset = null)
+        {
+            $query = $this->getQueryWithCriteriaForProjectOrUser($limit, $offset, null, $user_id);
+
             return $this->select($query);
         }
 
@@ -83,23 +110,9 @@
                 $query->setOffset($offset);
             }
 
-            $query->addOrderBy(self::TIME, \b2db\QueryColumnSort::SORT_DESC);
+            $query->addOrderBy(self::TIME, QueryColumnSort::SORT_DESC);
 
             return $query;
-        }
-
-        /**
-         * @param $user_id
-         * @param int $limit
-         * @param int $offset
-         *
-         * @return LogItem[]
-         */
-        public function getByUserID($user_id, $limit = null, $offset = null)
-        {
-            $query = $this->getQueryWithCriteriaForProjectOrUser($limit, $offset, null, $user_id);
-
-            return $this->select($query);
         }
 
         /**
@@ -112,25 +125,26 @@
         public function getByProjectID($project_id, $limit = 50, $offset = null)
         {
             $query = $this->getQueryWithCriteriaForProjectOrUser($limit, $offset, $project_id);
+
             return $this->select($query);
         }
 
         public function getImportantByProjectID($project_id, $limit = 50, $offset = null)
         {
             $query = $this->getQueryWithCriteriaForProjectOrUser($limit, $offset, $project_id);
-            $query->where(self::CHANGE_TYPE, array(LogItem::ACTION_ISSUE_CREATED, LogItem::ACTION_ISSUE_CLOSE), Criterion::IN);
+            $query->where(self::CHANGE_TYPE, [LogItem::ACTION_ISSUE_CREATED, LogItem::ACTION_ISSUE_CLOSE], Criterion::IN);
+
             return $this->select($query);
         }
 
         public function getLast15IssueCountsByProjectID($project_id)
         {
-            $retarr = array();
+            $retarr = [];
 
-            for ($cc = 15; $cc >= 0; $cc--)
-            {
+            for ($cc = 15; $cc >= 0; $cc--) {
                 $query = $this->getQuery();
-                $query->join(Issues::getTable(), Issues::ID, self::TARGET, array(array(Issues::PROJECT_ID, $project_id), array(Issues::DELETED, false)));
-                $query->where(self::CHANGE_TYPE, array(LogItem::ACTION_ISSUE_CREATED, LogItem::ACTION_ISSUE_CLOSE), Criterion::IN);
+                $query->join(Issues::getTable(), Issues::ID, self::TARGET, [[Issues::PROJECT_ID, $project_id], [Issues::DELETED, false]]);
+                $query->where(self::CHANGE_TYPE, [LogItem::ACTION_ISSUE_CREATED, LogItem::ACTION_ISSUE_CLOSE], Criterion::IN);
                 $query->where(self::TARGET_TYPE, LogItem::TYPE_ISSUE);
                 $query->where(Issues::DELETED, false);
                 $query->where('log.project_id', $project_id);
@@ -138,8 +152,8 @@
                 $query->where(self::TIME, NOW - (86400 * ($cc + 1)), Criterion::GREATER_THAN_EQUAL);
                 $query->where(self::TIME, NOW - (86400 * $cc), Criterion::LESS_THAN_EQUAL);
 
-                $closed_count = array();
-                $open_count = array();
+                $closed_count = [];
+                $open_count = [];
                 if ($res = $this->rawSelect($query)) {
                     while ($row = $res->getNextRow()) {
                         if ($row[self::CHANGE_TYPE] == LogItem::ACTION_ISSUE_CLOSE) {
@@ -152,21 +166,41 @@
                 $retarr[0][$cc] = count($closed_count);
                 $retarr[1][$cc] = count($open_count);
             }
+
             return $retarr;
+        }
+
+        /**
+         * @param $target
+         * @param $change
+         * @param $target_type
+         *
+         * @return LogItem
+         */
+        public function getByTargetAndChangeAndType($target, $change, $target_type = null)
+        {
+            $query = $this->getQuery();
+            $query->where(self::SCOPE, framework\Context::getScope()->getID());
+            $query->where(self::TARGET, $target);
+            if ($target_type !== null) {
+                $query->where(self::TARGET_TYPE, $target_type);
+            }
+            $query->where(self::CHANGE_TYPE, $change);
+
+            return $this->selectOne($query);
         }
 
         protected function setupIndexes()
         {
-            $this->addIndex('commentid', array(self::COMMENT_ID));
-            $this->addIndex('targettype_time', array(self::TARGET_TYPE, self::TIME));
-            $this->addIndex('targettype_changetype', array(self::TARGET_TYPE, self::CHANGE_TYPE));
-            $this->addIndex('target_uid_commentid_scope', array(self::TARGET, self::UID, self::COMMENT_ID, self::SCOPE));
+            $this->addIndex('commentid', [self::COMMENT_ID]);
+            $this->addIndex('targettype_time', [self::TARGET_TYPE, self::TIME]);
+            $this->addIndex('targettype_changetype', [self::TARGET_TYPE, self::CHANGE_TYPE]);
+            $this->addIndex('target_uid_commentid_scope', [self::TARGET, self::UID, self::COMMENT_ID, self::SCOPE]);
         }
 
-        protected function migrateData(\b2db\Table $old_table)
+        protected function migrateData(Table $old_table)
         {
-            switch ($old_table::B2DB_TABLE_VERSION)
-            {
+            switch ($old_table::B2DB_TABLE_VERSION) {
                 case 2:
                     $query = $this->getQuery();
                     $query->setIsDistinct();
@@ -215,26 +249,6 @@
                     framework\Context::setScope($current_scope);
                     break;
             }
-        }
-
-        /**
-         * @param $target
-         * @param $change
-         * @param $target_type
-         *
-         * @return LogItem
-         */
-        public function getByTargetAndChangeAndType($target, $change, $target_type = null)
-        {
-            $query = $this->getQuery();
-            $query->where(self::SCOPE, framework\Context::getScope()->getID());
-            $query->where(self::TARGET, $target);
-            if ($target_type !== null) {
-                $query->where(self::TARGET_TYPE, $target_type);
-            }
-            $query->where(self::CHANGE_TYPE, $change);
-
-            return $this->selectOne($query);
         }
 
     }

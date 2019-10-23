@@ -2,12 +2,12 @@
 
     namespace pachno\core\modules\publish;
 
-    use pachno\core\framework,
-        pachno\core\entities\tables\Users,
-        pachno\core\helpers\Pagination,
-        pachno\core\entities\Article,
-        pachno\core\entities\tables\Articles,
-        pachno\core\entities\tables\ArticleHistory;
+    use pachno\core\entities\Article;
+    use pachno\core\entities\tables\ArticleHistory;
+    use pachno\core\entities\tables\Articles;
+    use pachno\core\entities\tables\Users;
+    use pachno\core\framework;
+    use pachno\core\helpers\Pagination;
 
     /**
      * @property Article $article
@@ -22,7 +22,7 @@
 
         public function componentWhatlinkshere()
         {
-            $this->whatlinkshere = ($this->article instanceof Article) ? $this->article->getLinkingArticles() : array();
+            $this->whatlinkshere = ($this->article instanceof Article) ? $this->article->getLinkingArticles() : [];
         }
 
         public function componentTools()
@@ -45,25 +45,20 @@
 
         public function componentSettings()
         {
-            $articles = array();
-            $categories = array();
+            $articles = [];
+            $categories = [];
             $_path_handle = opendir(PACHNO_CORE_PATH . 'modules' . DS . 'publish' . DS . 'fixtures' . DS);
-            while ($article_name = readdir($_path_handle))
-            {
-                if (mb_strpos($article_name, '.') === false)
-                {
-                    if (mb_strpos($article_name, '%3A') !== false)
-                    {
+            while ($article_name = readdir($_path_handle)) {
+                if (mb_strpos($article_name, '.') === false) {
+                    if (mb_strpos($article_name, '%3A') !== false) {
                         $article_elements = explode('%3A', $article_name);
                         $category = array_shift($article_elements);
                         $categories[mb_strtolower($category)] = $category;
-                    }
-                    else
-                    {
+                    } else {
                         $category = '';
                     }
 
-                    $articles[$article_name] = array('exists' => Article::doesArticleExist(urldecode($article_name)), 'category' => mb_strtolower($category));
+                    $articles[$article_name] = ['exists' => Article::doesArticleExist(urldecode($article_name)), 'category' => mb_strtolower($category)];
                 }
             }
             ksort($articles, SORT_STRING);
@@ -73,7 +68,7 @@
 
         public function componentLeftmenu()
         {
-            $this->show_article_options = (bool) ($this->article instanceof Article);
+            $this->show_article_options = (bool)($this->article instanceof Article);
             $this->links_target_id = (framework\Context::isProjectContext()) ? framework\Context::getCurrentProject()->getID() : 0;
             $this->links = framework\Context::getModule('publish')->getMenuItems($this->links_target_id);
         }
@@ -83,16 +78,13 @@
             $top_level_articles = Articles::getTable()->getManualSidebarArticles($this->article->getProject());
             $parents = [];
             $article = $this->article;
-            do
-            {
+            do {
                 $parent = $article->getParentArticle();
-                if ($parent instanceof Article)
-                {
+                if ($parent instanceof Article) {
                     $parents[$parent->getId()] = $parent->getId();
                     $article = $parent;
                 }
-            }
-            while ($parent instanceof Article);
+            } while ($parent instanceof Article);
 
             $this->main_article = $article;
             $this->parents = $parents;
@@ -152,28 +144,20 @@
             $username = $request->getParameter('user');
 
             // Determine full username and whether the user is invalid or not.
-            if ($username === "")
-            {
+            if ($username === "") {
                 $invalid_user = false;
                 $user = null;
                 $user_full_name = null;
-            }
-            elseif ($username === null)
-            {
+            } elseif ($username === null) {
                 $invalid_user = false;
                 $user = null;
                 $user_full_name = null;
-            }
-            else
-            {
+            } else {
                 $user = Users::getTable()->getByUsername($username);
-                if ($user === null)
-                {
+                if ($user === null) {
                     $invalid_user = true;
                     $user_full_name = null;
-                }
-                else
-                {
+                } else {
                     $invalid_user = false;
                     $user_full_name = $user->getNameWithUsername();
                 }

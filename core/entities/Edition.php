@@ -4,6 +4,7 @@
 
     use pachno\core\entities\common\QaLeadable;
     use pachno\core\framework;
+    use pachno\core\framework\Event;
 
     /**
      * Edition class
@@ -37,7 +38,7 @@
         /**
          * The project
          *
-         * @var \pachno\core\entities\Project
+         * @var Project
          * @Column(type="integer", length=10)
          * @Relates(class="\pachno\core\entities\Project")
          */
@@ -46,7 +47,7 @@
         /**
          * Editions components
          *
-         * @var array|\pachno\core\entities\Component
+         * @var array|Component
          * @Relates(class="\pachno\core\entities\Component", collection=true, manytomany=true, joinclass="\pachno\core\entities\tables\EditionComponents")
          */
         protected $_components;
@@ -54,7 +55,7 @@
         /**
          * Edition builds
          *
-         * @var array|\pachno\core\entities\Build
+         * @var array|Build
          * @Relates(class="\pachno\core\entities\Build", collection=true, foreign_column="edition")
          */
         protected $_builds;
@@ -81,13 +82,30 @@
          */
         protected $_locked;
 
-        protected function _postSave($is_new)
+        /**
+         * Whether or not this edition has a component enabled
+         *
+         * @param Component|integer $component The component to check for
+         *
+         * @return boolean
+         */
+        public function hasComponent($component)
         {
-            if ($is_new)
-            {
-                framework\Context::setPermission("canseeedition", $this->getID(), "core", 0, framework\Context::getUser()->getGroup()->getID(), 0, true);
-                \pachno\core\framework\Event::createNew('core', 'Edition::createNew', $this)->trigger();
-            }
+            $component_id = ($component instanceof Component) ? $component->getID() : $component;
+
+            return array_key_exists($component_id, $this->getComponents());
+        }
+
+        /**
+         * Returns an array with all components
+         *
+         * @return Component[]
+         */
+        public function getComponents()
+        {
+            $this->_populateComponents();
+
+            return $this->_components;
         }
 
         /**
@@ -97,34 +115,9 @@
          */
         protected function _populateComponents()
         {
-            if ($this->_components === null)
-            {
+            if ($this->_components === null) {
                 $this->_b2dbLazyLoad('_components');
             }
-        }
-
-        /**
-         * Returns an array with all components
-         *
-         * @return \pachno\core\entities\Component[]
-         */
-        public function getComponents()
-        {
-            $this->_populateComponents();
-            return $this->_components;
-        }
-
-        /**
-         * Whether or not this edition has a component enabled
-         *
-         * @param \pachno\core\entities\Component|integer $component The component to check for
-         *
-         * @return boolean
-         */
-        public function hasComponent($component)
-        {
-            $component_id = ($component instanceof \pachno\core\entities\Component) ? $component->getID() : $component;
-            return array_key_exists($component_id, $this->getComponents());
         }
 
         /**
@@ -134,29 +127,7 @@
          */
         public function hasDescription()
         {
-            return (bool) $this->getDescription();
-        }
-
-        /**
-         * Adds an existing component to the edition
-         *
-         * @param \pachno\core\entities\Component|integer $component
-         */
-        public function addComponent($component)
-        {
-            $component_id = ($component instanceof \pachno\core\entities\Component) ? $component->getID() : $component;
-            return tables\EditionComponents::getTable()->addEditionComponent($this->getID(), $component_id);
-        }
-
-        /**
-         * Removes an existing component from the edition
-         *
-         * @param \pachno\core\entities\Component|integer $component
-         */
-        public function removeComponent($component)
-        {
-            $component_id = ($component instanceof \pachno\core\entities\Component) ? $component->getID() : $component;
-            tables\EditionComponents::getTable()->removeEditionComponent($this->getID(), $component_id);
+            return (bool)$this->getDescription();
         }
 
         /**
@@ -167,6 +138,39 @@
         public function getDescription()
         {
             return $this->_description;
+        }
+
+        /**
+         * Set the edition description
+         *
+         * @param string $description
+         */
+        public function setDescription($description)
+        {
+            $this->_description = $description;
+        }
+
+        /**
+         * Adds an existing component to the edition
+         *
+         * @param Component|integer $component
+         */
+        public function addComponent($component)
+        {
+            $component_id = ($component instanceof Component) ? $component->getID() : $component;
+
+            return tables\EditionComponents::getTable()->addEditionComponent($this->getID(), $component_id);
+        }
+
+        /**
+         * Removes an existing component from the edition
+         *
+         * @param Component|integer $component
+         */
+        public function removeComponent($component)
+        {
+            $component_id = ($component instanceof Component) ? $component->getID() : $component;
+            tables\EditionComponents::getTable()->removeEditionComponent($this->getID(), $component_id);
         }
 
         /**
@@ -184,17 +188,38 @@
          *
          * @param integer $c_id
          *
-         * @return \pachno\core\entities\Component
+         * @return Component
          */
         public function getComponent($c_id)
         {
             $this->_populateComponents();
-            if (array_key_exists($c_id, $this->_components))
-            {
+            if (array_key_exists($c_id, $this->_components)) {
                 return $this->_components[$c_id];
             }
 
             return null;
+        }
+
+        public function getReleasedBuilds()
+        {
+            $builds = $this->getBuilds();
+            foreach ($builds as $id => $build) {
+                if (!$build->isReleased()) unset($builds[$id]);
+            }
+
+            return $builds;
+        }
+
+        /**
+         * Returns an array with all builds
+         *
+         * @return Build[]
+         */
+        public function getBuilds()
+        {
+            $this->_populateBuilds();
+
+            return $this->_builds;
         }
 
         /**
@@ -204,57 +229,9 @@
          */
         protected function _populateBuilds()
         {
-            if ($this->_builds === null)
-            {
+            if ($this->_builds === null) {
                 $this->_b2dbLazyLoad('_builds');
             }
-        }
-
-        /**
-         * Returns an array with all builds
-         *
-         * @return \pachno\core\entities\Build[]
-         */
-        public function getBuilds()
-        {
-            $this->_populateBuilds();
-            return $this->_builds;
-        }
-
-        public function getReleasedBuilds()
-        {
-            $builds = $this->getBuilds();
-            foreach ($builds as $id => $build)
-            {
-                if (!$build->isReleased()) unset($builds[$id]);
-            }
-
-            return $builds;
-        }
-
-        /**
-         * Returns the parent project
-         *
-         * @return \pachno\core\entities\Project
-         */
-        public function getProject()
-        {
-            return $this->_b2dbLazyLoad('_project');
-        }
-
-        public function setProject($project)
-        {
-            $this->_project = $project;
-        }
-
-        /**
-         * Set the edition description
-         *
-         * @param string $description
-         */
-        public function setDescription($description)
-        {
-            $this->_description = $description;
         }
 
         /**
@@ -267,11 +244,6 @@
             $this->_doc_url = $doc_url;
         }
 
-        protected function _preDelete()
-        {
-            tables\EditionComponents::getTable()->deleteByEditionID($this->getID());
-        }
-
         /**
          * Whether or not the current user can access the edition
          *
@@ -280,6 +252,21 @@
         public function hasAccess()
         {
             return ($this->getProject()->canSeeAllEditions() || framework\Context::getUser()->hasPermission('canseeedition', $this->getID()));
+        }
+
+        /**
+         * Returns the parent project
+         *
+         * @return Project
+         */
+        public function getProject()
+        {
+            return $this->_b2dbLazyLoad('_project');
+        }
+
+        public function setProject($project)
+        {
+            $this->_project = $project;
         }
 
         /**
@@ -300,7 +287,7 @@
          */
         public function setLocked($locked = true)
         {
-            $this->_locked = (bool) $locked;
+            $this->_locked = (bool)$locked;
         }
 
         /**
@@ -321,6 +308,19 @@
         public function setName($name)
         {
             $this->_name = $name;
+        }
+
+        protected function _postSave($is_new)
+        {
+            if ($is_new) {
+                framework\Context::setPermission("canseeedition", $this->getID(), "core", 0, framework\Context::getUser()->getGroup()->getID(), 0, true);
+                Event::createNew('core', 'Edition::createNew', $this)->trigger();
+            }
+        }
+
+        protected function _preDelete()
+        {
+            tables\EditionComponents::getTable()->deleteByEditionID($this->getID());
         }
 
     }

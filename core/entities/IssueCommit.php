@@ -2,9 +2,6 @@
 
     namespace pachno\core\entities;
 
-    use \pachno\core\entities\Issue,
-        pachno\modules\vcs_integration\entities\tables\IssueLinks;
-
     /**
      * Issue to Commit link class, vcs_integration
      *
@@ -42,6 +39,25 @@
          */
         protected $_commit = null;
 
+        /**
+         * Get the issue for this link
+         * @return Issue
+         */
+        public function getIssue()
+        {
+            return $this->_b2dbLazyLoad('_issue');
+        }
+
+        /**
+         * Set the issue in this link
+         *
+         * @param Issue $issue
+         */
+        public function setIssue(Issue $issue)
+        {
+            $this->_issue = $issue;
+        }
+
         protected function _preSave($is_new)
         {
             parent::_preSave($is_new);
@@ -59,15 +75,6 @@
         }
 
         /**
-         * Get the issue for this link
-         * @return Issue
-         */
-        public function getIssue()
-        {
-            return $this->_b2dbLazyLoad('_issue');
-        }
-
-        /**
          * Get the commit with this link
          * @return Commit
          */
@@ -77,16 +84,8 @@
         }
 
         /**
-         * Set the issue in this link
-         * @param \pachno\core\entities\Issue $issue
-         */
-        public function setIssue(\pachno\core\entities\Issue $issue)
-        {
-            $this->_issue = $issue;
-        }
-
-        /**
          * Set the commit in this link
+         *
          * @param Commit $commit
          */
         public function setCommit(Commit $commit)

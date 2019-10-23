@@ -15,16 +15,6 @@
     class Components extends framework\ActionComponent
     {
 
-        /**
-         * Return an instance of this module
-         *
-         * @return Livelink
-         */
-        protected function getModule()
-        {
-            return framework\Context::getModule('livelink');
-        }
-
         public function componentProjectConfig_template()
         {
             if ($this->project->getID()) {
@@ -36,6 +26,16 @@
                 }
                 $this->module = $this->getModule();
             }
+        }
+
+        /**
+         * Return an instance of this module
+         *
+         * @return Livelink
+         */
+        protected function getModule()
+        {
+            return framework\Context::getModule('livelink');
         }
 
         public function componentTree()

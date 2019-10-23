@@ -1,19 +1,20 @@
 <?php
 
-namespace pachno\core\modules\debugger\controllers;
+    namespace pachno\core\modules\debugger\controllers;
 
-use pachno\core\framework;
+    use pachno\core\framework;
+    use pachno\core\framework\Response;
 
-/**
- * actions for the debugger module
- */
-class Main extends framework\Action
-{
-
-    public function runIndex(framework\Request $request)
+    /**
+     * actions for the debugger module
+     */
+    class Main extends framework\Action
     {
-        $this->getResponse()->setDecoration(\pachno\core\framework\Response::DECORATE_NONE);
-        $this->pachno_summary = framework\Context::getDebugData($request['debug_id']);
-    }
 
-}
+        public function runIndex(framework\Request $request)
+        {
+            $this->getResponse()->setDecoration(Response::DECORATE_NONE);
+            $this->pachno_summary = framework\Context::getDebugData($request['debug_id']);
+        }
+
+    }

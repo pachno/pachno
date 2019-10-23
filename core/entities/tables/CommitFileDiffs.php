@@ -14,8 +14,11 @@
     {
 
         const B2DB_TABLE_VERSION = 2;
+
         const B2DBNAME = 'commitfile_diffs';
+
         const ID = 'commitfile_diffs.id';
+
         const SCOPE = 'commitfile_diffs.scope';
 
     }

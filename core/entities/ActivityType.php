@@ -13,13 +13,12 @@
         protected static $_items = null;
 
         protected $_key = null;
-        
+
         protected $_itemtype = Datatype::ACTIVITYTYPE;
 
         public static function loadFixtures(Scope $scope)
         {
-            foreach (array("Investigation", "Documentation", "Development", "Testing", "Deployment") as $name)
-            {
+            foreach (["Investigation", "Documentation", "Development", "Testing", "Deployment"] as $name) {
                 $activitytype = new ActivityType();
                 $activitytype->setName($name);
                 $activitytype->setItemdata('');

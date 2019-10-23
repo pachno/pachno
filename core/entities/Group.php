@@ -3,7 +3,7 @@
     namespace pachno\core\entities;
 
     use pachno\core\entities\common\IdentifiableScoped;
-    use pachno\core\framework;
+    use pachno\core\framework\Settings;
 
     /**
      * Group class
@@ -47,59 +47,45 @@
 
         public static function getAll()
         {
-            if (self::$_groups === null)
-            {
+            if (self::$_groups === null) {
                 self::$_groups = tables\Groups::getTable()->getAll();
             }
+
             return self::$_groups;
         }
 
-        protected function _postSave($is_new)
-        {
-            if ($is_new)
-            {
-                if (self::$_groups !== null)
-                {
-                    self::$_groups[$this->getID()] = $this;
-                }
-            }
-        }
-
-        public static function loadFixtures(\pachno\core\entities\Scope $scope)
+        public static function loadFixtures(Scope $scope)
         {
             $scope_id = $scope->getID();
 
-            $admin_group = new \pachno\core\entities\Group();
+            $admin_group = new Group();
             $admin_group->setName('Administrators');
             $admin_group->setScope($scope);
             $admin_group->save();
-            \pachno\core\framework\Settings::saveSetting('admingroup', $admin_group->getID(), 'core', $scope_id);
+            Settings::saveSetting('admingroup', $admin_group->getID(), 'core', $scope_id);
 
-            $user_group = new \pachno\core\entities\Group();
+            $user_group = new Group();
             $user_group->setName('Regular users');
             $user_group->setScope($scope);
             $user_group->save();
-            \pachno\core\framework\Settings::saveSetting('defaultgroup', $user_group->getID(), 'core', $scope_id);
+            Settings::saveSetting('defaultgroup', $user_group->getID(), 'core', $scope_id);
 
-            $guest_group = new \pachno\core\entities\Group();
+            $guest_group = new Group();
             $guest_group->setName('Guests');
             $guest_group->setScope($scope);
             $guest_group->save();
 
             // Set up initial users, and their permissions
-            if ($scope->isDefault())
-            {
-                list($guestuser_id, $adminuser_id) = \pachno\core\entities\User::loadFixtures($scope, $admin_group, $user_group, $guest_group);
+            if ($scope->isDefault()) {
+                list($guestuser_id, $adminuser_id) = User::loadFixtures($scope, $admin_group, $user_group, $guest_group);
                 tables\UserScopes::getTable()->addUserToScope($guestuser_id, $scope->getID(), $guest_group->getID(), true);
                 tables\UserScopes::getTable()->addUserToScope($adminuser_id, $scope->getID(), $admin_group->getID(), true);
-            }
-            else
-            {
-                $default_scope_id = \pachno\core\framework\Settings::getDefaultScopeID();
-                $default_user_id = (int) \pachno\core\framework\Settings::get(\pachno\core\framework\Settings::SETTING_DEFAULT_USER_ID, 'core', $default_scope_id);
+            } else {
+                $default_scope_id = Settings::getDefaultScopeID();
+                $default_user_id = (int)Settings::get(Settings::SETTING_DEFAULT_USER_ID, 'core', $default_scope_id);
                 tables\UserScopes::getTable()->addUserToScope($default_user_id, $scope->getID(), $user_group->getID(), true);
                 tables\UserScopes::getTable()->addUserToScope(1, $scope->getID(), $admin_group->getID());
-                \pachno\core\framework\Settings::saveSetting(\pachno\core\framework\Settings::SETTING_DEFAULT_USER_ID, $default_user_id, 'core', $scope->getID());
+                Settings::saveSetting(Settings::SETTING_DEFAULT_USER_ID, $default_user_id, 'core', $scope->getID());
             }
             tables\Permissions::getTable()->loadFixtures($scope, $admin_group->getID(), $guest_group->getID());
         }
@@ -126,12 +112,7 @@
 
         public function isDefaultUserGroup()
         {
-            return (bool) (\pachno\core\framework\Settings::getDefaultUser()->getGroupID() == $this->getID());
-        }
-
-        protected function _preDelete()
-        {
-            tables\UserScopes::getTable()->clearUserGroups($this->getID());
+            return (bool)(Settings::getDefaultUser()->getGroupID() == $this->getID());
         }
 
         /**
@@ -141,37 +122,46 @@
          */
         public function getMembers()
         {
-            if ($this->_members === null)
-            {
+            if ($this->_members === null) {
                 $this->_members = tables\UserScopes::getTable()->getUsersByGroupID($this->getID());
             }
+
             return $this->_members;
         }
 
         public function getNumberOfMembers()
         {
-            if ($this->_members !== null)
-            {
+            if ($this->_members !== null) {
                 return count($this->_members);
-            }
-            elseif ($this->_num_members === null)
-            {
+            } elseif ($this->_num_members === null) {
                 $this->_num_members = tables\UserScopes::getTable()->countUsersByGroupID($this->getID());
             }
 
             return $this->_num_members;
         }
 
-        public function removeMember(\pachno\core\entities\User $user)
+        public function removeMember(User $user)
         {
-            if ($this->_members !== null)
-            {
+            if ($this->_members !== null) {
                 unset($this->_members[$user->getID()]);
             }
-            if ($this->_num_members !== null)
-            {
+            if ($this->_num_members !== null) {
                 $this->_num_members--;
             }
+        }
+
+        protected function _postSave($is_new)
+        {
+            if ($is_new) {
+                if (self::$_groups !== null) {
+                    self::$_groups[$this->getID()] = $this;
+                }
+            }
+        }
+
+        protected function _preDelete()
+        {
+            tables\UserScopes::getTable()->clearUserGroups($this->getID());
         }
 
     }

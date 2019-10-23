@@ -3,7 +3,9 @@
     namespace pachno\core\entities\tables;
 
     use b2db\Criteria;
+    use b2db\Criterion;
     use b2db\Insertion;
+    use b2db\Query;
     use b2db\Row;
     use b2db\Table;
     use b2db\Update;
@@ -34,15 +36,25 @@
     {
 
         const B2DB_TABLE_VERSION = 2;
+
         const B2DBNAME = 'files';
+
         const ID = 'files.id';
+
         const SCOPE = 'files.scope';
+
         const UID = 'files.uid';
+
         const UPLOADED_AT = 'files.uploaded_at';
+
         const REAL_FILENAME = 'files.real_filename';
+
         const ORIGINAL_FILENAME = 'files.original_filename';
+
         const CONTENT_TYPE = 'files.content_type';
+
         const CONTENT = 'files.content';
+
         const DESCRIPTION = 'files.description';
 
         public function saveFile($real_filename, $original_filename, $content_type, $description = null, $content = null)
@@ -54,12 +66,10 @@
             $insertion->add(self::ORIGINAL_FILENAME, $original_filename);
             $insertion->add(self::CONTENT_TYPE, $content_type);
             $insertion->add(self::SCOPE, framework\Context::getScope()->getID());
-            if ($description !== null)
-            {
+            if ($description !== null) {
                 $insertion->add(self::DESCRIPTION, $description);
             }
-            if ($content !== null)
-            {
+            if ($content !== null) {
                 $insertion->add(self::CONTENT, $content);
             }
             $res = $this->rawInsert($insertion);
@@ -67,21 +77,11 @@
             return $res->getInsertID();
         }
 
-        protected function migrateData(Table $old_table)
-        {
-            switch ($old_table::B2DB_TABLE_VERSION) {
-                case 1:
-                    foreach ($this->selectAll() as $file) {
-                        $file->save();
-                    }
-            }
-        }
-
         public function getAllContentFiles()
         {
             $query = $this->getQuery();
             $query->where(self::CONTENT, null, Criteria::DB_IS_NOT_NULL);
-            $query->where(self::CONTENT, '', \b2db\Criterion::NOT_EQUALS);
+            $query->where(self::CONTENT, '', Criterion::NOT_EQUALS);
 
             return $this->select($query);
         }
@@ -122,6 +122,7 @@
             $query = $this->getQuery();
             $query->where(self::SCOPE, framework\Context::getScope()->getID());
             $row = $this->rawSelectById($id, $query, false);
+
             return $row;
         }
 
@@ -137,9 +138,10 @@
         {
             $query = $this->getQuery();
             $query->where(self::SCOPE, $scope_id);
-            $query->addSelectionColumn('files.size', 'totalsize', \b2db\Query::DB_SUM);
+            $query->addSelectionColumn('files.size', 'totalsize', Query::DB_SUM);
 
             $result = $this->rawSelectOne($query);
+
             return $result['totalsize'];
         }
 
@@ -179,6 +181,16 @@
                 while ($row = $res->getNextRow()) {
                     $fixRow($row);
                 }
+            }
+        }
+
+        protected function migrateData(Table $old_table)
+        {
+            switch ($old_table::B2DB_TABLE_VERSION) {
+                case 1:
+                    foreach ($this->selectAll() as $file) {
+                        $file->save();
+                    }
             }
         }
 

@@ -2,15 +2,7 @@
 
     namespace pachno\core\framework;
 
-    /**
-     * The Pachno event class
-     *
-     * @author Daniel Andre Eikeland <zegenie@zegeniestudios.net>
-     * @version 3.1
-     * @license http://opensource.org/licenses/MPL-2.0 Mozilla Public License 2.0 (MPL 2.0)
-     * @package pachno
-     * @subpackage core
-     */
+    use Exception;
 
     /**
      * The Pachno event class
@@ -26,7 +18,7 @@
          *
          * @var array
          */
-        protected static $_registeredlisteners = array();
+        protected static $_registeredlisteners = [];
 
         protected $_module = null;
 
@@ -40,7 +32,25 @@
 
         protected $_return_list = null;
 
-        protected $_parameters = array();
+        protected $_parameters = [];
+
+        /**
+         * Create a new event
+         *
+         * @param string $module
+         * @param string $identifier
+         * @param mixed $subject
+         * @param array $parameters
+         * @param array $initial_list
+         */
+        public function __construct($module, $identifier, $subject = null, $parameters = [], $initial_list = [])
+        {
+            $this->_module = $module;
+            $this->_identifier = $identifier;
+            $this->_subject = $subject;
+            $this->_parameters = $parameters;
+            $this->_return_list = $initial_list;
+        }
 
         /**
          * Register a listener for a spesified trigger
@@ -62,12 +72,9 @@
          */
         public static function clearListeners($module, $identifier = null)
         {
-            if ($identifier !== null)
-            {
-                self::$_registeredlisteners[$module][$identifier] = array();
-            }
-            elseif (isset(self::$_registeredlisteners[$module]))
-            {
+            if ($identifier !== null) {
+                self::$_registeredlisteners[$module][$identifier] = [];
+            } elseif (isset(self::$_registeredlisteners[$module])) {
                 unset(self::$_registeredlisteners[$module]);
             }
         }
@@ -82,60 +89,11 @@
          */
         public static function isAnyoneListening($module, $identifier)
         {
-            if (isset(self::$_registeredlisteners[$module]) && isset(self::$_registeredlisteners[$module][$identifier]) && !empty(self::$_registeredlisteners[$module][$identifier]))
-            {
+            if (isset(self::$_registeredlisteners[$module]) && isset(self::$_registeredlisteners[$module][$identifier]) && !empty(self::$_registeredlisteners[$module][$identifier])) {
                 return true;
-            }
-            else
-            {
+            } else {
                 return false;
             }
-        }
-
-        /**
-         * Invoke a trigger
-         *
-         * @param Event $event The event that is triggered
-         * @param boolean $return_when_processed (optional) whether to return when processed or continue
-         *
-         * @return mixed
-         */
-        protected static function _trigger(Event $event, $return_when_processed = false)
-        {
-            $module = $event->getModule();
-            $identifier = $event->getIdentifier();
-            
-            Logging::log("Triggering $module - $identifier");
-            if (isset(self::$_registeredlisteners[$module][$identifier]))
-            {
-                foreach (self::$_registeredlisteners[$module][$identifier] as $trigger)
-                {
-                    try
-                    {
-                        $cb_string = (is_array($trigger)) ? get_class($trigger[0]).'::'.$trigger[1] : $trigger;
-                        if (is_object($cb_string)) {
-                            Logging::log('Running anonymous callback function');
-                        } else {
-                            Logging::log('Running callback function '.$cb_string);
-                        }
-                        $retval = call_user_func($trigger, $event);
-                        if ($return_when_processed && $event->isProcessed())
-                        {
-                            return true;
-                        }
-                        if (is_object($cb_string)) {
-                            Logging::log('done (Running anonymous callback function)');
-                        } else {
-                            Logging::log('done (Running callback function '.$cb_string.')');
-                        }
-                    }
-                    catch (\Exception $e)
-                    {
-                        throw $e;
-                    }
-                }
-            }
-            Logging::log("done (Triggering $module - $identifier)");
         }
 
         /**
@@ -149,48 +107,11 @@
          *
          * @return Event
          */
-        public static function createNew($module, $identifier, $subject = null, $parameters = array(), $initial_list = array())
+        public static function createNew($module, $identifier, $subject = null, $parameters = [], $initial_list = [])
         {
             $event = new Event($module, $identifier, $subject, $parameters, $initial_list);
+
             return $event;
-        }
-
-        /**
-         * Create a new event
-         *
-         * @param string $module
-         * @param string $identifier
-         * @param mixed $subject
-         * @param array $parameters
-         * @param array $initial_list
-         */
-        public function __construct($module, $identifier, $subject = null, $parameters = array(), $initial_list = array())
-        {
-            $this->_module = $module;
-            $this->_identifier = $identifier;
-            $this->_subject = $subject;
-            $this->_parameters = $parameters;
-            $this->_return_list = $initial_list;
-        }
-
-        /**
-         * Return the event module
-         *
-         * @return string
-         */
-        public function getModule()
-        {
-            return $this->_module;
-        }
-
-        /**
-         * Return the event identifier
-         *
-         * @return string
-         */
-        public function getIdentifier()
-        {
-            return $this->_identifier;
         }
 
         /**
@@ -234,8 +155,7 @@
          */
         public function trigger($parameters = null)
         {
-            if ($parameters !== null)
-            {
+            if ($parameters !== null) {
                 $this->_parameters = $parameters;
             }
             self::_trigger($this, false);
@@ -244,31 +164,63 @@
         }
 
         /**
-         * Invoke a trigger and return as soon as it is processed
+         * Invoke a trigger
          *
-         * @param array $parameters [optional] Parameters to pass to the registered listeners
+         * @param Event $event The event that is triggered
+         * @param boolean $return_when_processed (optional) whether to return when processed or continue
          *
-         * @return Event
+         * @return mixed
          */
-        public function triggerUntilProcessed($parameters = null)
+        protected static function _trigger(Event $event, $return_when_processed = false)
         {
-            if ($parameters !== null)
-            {
-                $this->_parameters = $parameters;
-            }
-            self::_trigger($this, true);
+            $module = $event->getModule();
+            $identifier = $event->getIdentifier();
 
-            return $this;
+            Logging::log("Triggering $module - $identifier");
+            if (isset(self::$_registeredlisteners[$module][$identifier])) {
+                foreach (self::$_registeredlisteners[$module][$identifier] as $trigger) {
+                    try {
+                        $cb_string = (is_array($trigger)) ? get_class($trigger[0]) . '::' . $trigger[1] : $trigger;
+                        if (is_object($cb_string)) {
+                            Logging::log('Running anonymous callback function');
+                        } else {
+                            Logging::log('Running callback function ' . $cb_string);
+                        }
+                        $retval = call_user_func($trigger, $event);
+                        if ($return_when_processed && $event->isProcessed()) {
+                            return true;
+                        }
+                        if (is_object($cb_string)) {
+                            Logging::log('done (Running anonymous callback function)');
+                        } else {
+                            Logging::log('done (Running callback function ' . $cb_string . ')');
+                        }
+                    } catch (Exception $e) {
+                        throw $e;
+                    }
+                }
+            }
+            Logging::log("done (Triggering $module - $identifier)");
         }
 
         /**
-         * Mark the event as processed / unprocessed
+         * Return the event module
          *
-         * @param boolean $val
+         * @return string
          */
-        public function setProcessed($val = true)
+        public function getModule()
         {
-            $this->_processed = $val;
+            return $this->_module;
+        }
+
+        /**
+         * Return the event identifier
+         *
+         * @return string
+         */
+        public function getIdentifier()
+        {
+            return $this->_identifier;
         }
 
         /**
@@ -282,13 +234,30 @@
         }
 
         /**
-         * Set the event return value
+         * Mark the event as processed / unprocessed
          *
-         * @param mixed $val
+         * @param boolean $val
          */
-        public function setReturnValue($val)
+        public function setProcessed($val = true)
         {
-            $this->_return_value = $val;
+            $this->_processed = $val;
+        }
+
+        /**
+         * Invoke a trigger and return as soon as it is processed
+         *
+         * @param array $parameters [optional] Parameters to pass to the registered listeners
+         *
+         * @return Event
+         */
+        public function triggerUntilProcessed($parameters = null)
+        {
+            if ($parameters !== null) {
+                $this->_parameters = $parameters;
+            }
+            self::_trigger($this, true);
+
+            return $this;
         }
 
         /**
@@ -299,6 +268,16 @@
         public function getReturnValue()
         {
             return $this->_return_value;
+        }
+
+        /**
+         * Set the event return value
+         *
+         * @param mixed $val
+         */
+        public function setReturnValue($val)
+        {
+            $this->_return_value = $val;
         }
 
         /**
@@ -343,7 +322,7 @@
          */
         public function hasReturnListValue($key)
         {
-            return (bool) (is_array($this->_return_list) && array_key_exists($key, $this->_return_list));
+            return (bool)(is_array($this->_return_list) && array_key_exists($key, $this->_return_list));
         }
 
     }

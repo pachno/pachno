@@ -3,6 +3,7 @@
     namespace pachno\core\entities;
 
     use pachno\core\entities\common\Keyable;
+    use pachno\core\framework\Settings;
 
     /**
      * Generic datatype class
@@ -57,6 +58,69 @@
          */
         protected $_sort_order = null;
 
+        public static function getAvailableFields($builtin_only = false)
+        {
+            $builtin_types = ['shortname', 'description', 'reproduction_steps', 'status', 'category', 'resolution', 'priority', 'reproducability', 'percent_complete', 'severity', 'owned_by', 'assignee', 'edition', 'build', 'component', 'estimated_time', 'spent_time', 'milestone', 'user_pain', 'votes'];
+
+            if ($builtin_only) return $builtin_types;
+
+            $customtypes = CustomDatatype::getAll();
+            $types = array_merge($builtin_types, array_keys($customtypes));
+
+            return $types;
+        }
+
+        /**
+         * Invoked when trying to print the object
+         *
+         * @return string
+         */
+        public function __toString()
+        {
+            return $this->_name;
+        }
+
+        public function getItemtype()
+        {
+            return $this->_itemtype;
+        }
+
+        public function setItemtype($itemtype)
+        {
+            $this->_itemtype = $itemtype;
+        }
+
+        public function canUserSet(User $user)
+        {
+            $retval = $user->hasPermission($this->getPermissionsKey(), $this->getID(), 'core');
+            $retval = ($retval === null) ? $user->hasPermission($this->getPermissionsKey(), 0, 'core') : $retval;
+
+            return ($retval !== null) ? $retval : Settings::isPermissive();
+        }
+
+        public function getPermissionsKey()
+        {
+            return 'set_datatype_' . $this->_itemtype;
+        }
+
+        public function setOrder($order)
+        {
+            $this->_sort_order = $order;
+        }
+
+        public function toJSON($detailed = true)
+        {
+            return [
+                'id' => $this->getID(),
+                'name' => $this->getName(),
+                'key' => $this->getKey(),
+                'itemdata' => $this->getItemdata(),
+                'itemtype' => $this->_itemtype,
+                'builtin' => $this->isBuiltin(),
+                'sort_order' => $this->getOrder()
+            ];
+        }
+
         /**
          * Return the items name
          *
@@ -98,75 +162,12 @@
             $this->_itemdata = $itemdata;
         }
 
-        /**
-         * Invoked when trying to print the object
-         *
-         * @return string
-         */
-        public function __toString()
-        {
-            return $this->_name;
-        }
-
-        public function getItemtype()
-        {
-            return $this->_itemtype;
-        }
-
-        public function setItemtype($itemtype)
-        {
-            $this->_itemtype = $itemtype;
-        }
-
-        public static function getAvailableFields($builtin_only = false)
-        {
-            $builtin_types = array('shortname', 'description', 'reproduction_steps', 'status', 'category', 'resolution', 'priority', 'reproducability', 'percent_complete', 'severity', 'owned_by', 'assignee', 'edition', 'build', 'component', 'estimated_time', 'spent_time', 'milestone', 'user_pain', 'votes');
-
-            if ($builtin_only) return $builtin_types;
-
-            $customtypes = CustomDatatype::getAll();
-            $types = array_merge($builtin_types, array_keys($customtypes));
-
-            return $types;
-        }
-
-        public function getPermissionsKey()
-        {
-            return 'set_datatype_' . $this->_itemtype;
-        }
-
-        public function canUserSet(\pachno\core\entities\User $user)
-        {
-            $retval = $user->hasPermission($this->getPermissionsKey(), $this->getID(), 'core');
-            $retval = ($retval === null) ? $user->hasPermission($this->getPermissionsKey(), 0, 'core') : $retval;
-
-            return ($retval !== null) ? $retval : \pachno\core\framework\Settings::isPermissive();
-        }
-
-        public function setOrder($order)
-        {
-            $this->_sort_order = $order;
-        }
+        abstract function isBuiltin();
 
         public function getOrder()
         {
-            return (int) $this->_sort_order;
+            return (int)$this->_sort_order;
         }
-
-        public function toJSON($detailed = true)
-        {
-            return array(
-                    'id' => $this->getID(),
-                    'name' => $this->getName(),
-                    'key' => $this->getKey(),
-                    'itemdata' => $this->getItemdata(),
-                    'itemtype' => $this->_itemtype,
-                    'builtin' => $this->isBuiltin(),
-                    'sort_order' => $this->getOrder()
-            );
-        }
-
-        abstract function isBuiltin();
 
         abstract function getFontAwesomeIcon();
 

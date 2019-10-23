@@ -3,8 +3,10 @@
     namespace pachno\core\entities\tables;
 
     use b2db\Criteria;
+    use b2db\Table;
     use b2db\Update;
-    use pachno\core\entities\tables\ScopedTable;
+    use pachno\core\entities\AgileBoard;
+    use pachno\core\modules\installation\upgrade_413\AgileBoardsTable;
 
     /**
      * Agile boards table
@@ -22,8 +24,8 @@
      * @package pachno
      * @subpackage tables
      *
-     * @method static \pachno\core\entities\tables\AgileBoards getTable() Retrieves an instance of this table
-     * @method \pachno\core\entities\AgileBoard selectById(integer $id) Retrieves an agile board
+     * @method static AgileBoards getTable() Retrieves an instance of this table
+     * @method AgileBoard selectById(integer $id) Retrieves an agile board
      *
      * @Table(name="agileboards")
      * @Entity(class="\pachno\core\entities\AgileBoard")
@@ -49,12 +51,11 @@
             return $this->select($query);
         }
 
-        protected function migrateData(\b2db\Table $old_table)
+        protected function migrateData(Table $old_table)
         {
-            if ($old_table instanceof \pachno\core\modules\installation\upgrade_413\AgileBoardsTable)
-            {
+            if ($old_table instanceof AgileBoardsTable) {
                 $update = new Update();
-                $update->add('agileboards.issue_field_values', serialize(array()));
+                $update->add('agileboards.issue_field_values', serialize([]));
 
                 $this->rawUpdate($update);
             }

@@ -2,16 +2,9 @@
 
     namespace pachno\core\framework;
 
-    /**
-     * Action class used in the MVC part of the framework
-     *
-     * @author Daniel Andre Eikeland <zegenie@zegeniestudios.net>
-     * @version 3.1
-     * @license http://opensource.org/licenses/MPL-2.0 Mozilla Public License 2.0 (MPL 2.0)
-     * @package pachno
-     * @subpackage mvc
-     */
+    use Exception;
     use pachno\core\entities\User;
+    use pachno\core\framework\exceptions\ActionNotAllowedException;
 
     /**
      * Action class used in the MVC part of the framework
@@ -23,11 +16,17 @@
     {
 
         const AUTHENTICATION_METHOD_CORE = 'core';
+
         const AUTHENTICATION_METHOD_DUMMY = 'dummy';
+
         const AUTHENTICATION_METHOD_CLI = 'cli';
+
         const AUTHENTICATION_METHOD_RSS_KEY = 'rss_key';
+
         const AUTHENTICATION_METHOD_APPLICATION_PASSWORD = 'application_password';
+
         const AUTHENTICATION_METHOD_ELEVATED = 'elevated';
+
         const AUTHENTICATION_METHOD_BASIC = 'basic';
 
         /**
@@ -56,27 +55,9 @@
         }
 
         /**
-         * Forward the user to a specified url
-         *
-         * @param string $url The URL to forward to
-         * @param integer $code [optional] HTTP status code
-         */
-        public function forward($url, $code = Response::HTTP_STATUS_OK)
-        {
-            if (Context::getRequest()->isAjaxCall() || Context::getRequest()->getRequestedFormat() == 'json')
-            {
-                $this->getResponse()->ajaxResponseText($code, Context::getMessageAndClear('forward'));
-            }
-            Logging::log("Forwarding to url {$url}");
-
-            Logging::log('Triggering header redirect function');
-            $this->getResponse()->headerRedirect($url, $code);
-        }
-
-        /**
          * Function that is executed before any actions in an action class
          *
-         * @param \pachno\core\framework\Request $request The request object
+         * @param Request $request The request object
          * @param string $action The action that is being triggered
          */
         public function preExecute(Request $request, $action)
@@ -93,11 +74,10 @@
         {
             $actionName = 'run' . ucfirst($redirect_to);
             $this->getResponse()->setTemplate(mb_strtolower($redirect_to) . '.' . Context::getRequest()->getRequestedFormat() . '.php');
-            if (method_exists($this, $actionName))
-            {
+            if (method_exists($this, $actionName)) {
                 return $this->$actionName(Context::getRequest());
             }
-            throw new exceptions\ActionNotFoundException("The action \"{$actionName}\" does not exist in ".get_class($this));
+            throw new exceptions\ActionNotFoundException("The action \"{$actionName}\" does not exist in " . get_class($this));
         }
 
         /**
@@ -110,70 +90,8 @@
         public function renderText($text)
         {
             echo $text;
+
             return true;
-        }
-
-        /**
-         * Renders JSON output, also takes care of setting the correct headers
-         *
-         * @param mixed $text An array, or text, to serve as json
-         *
-         * @return boolean
-         */
-        public function renderJSON($text = array())
-        {
-            $this->getResponse()->setContentType('application/json');
-            $this->getResponse()->setDecoration(Response::DECORATE_NONE);
-
-            if (is_array($text) && array_key_exists('error', $text)) $this->getResponse()->setHttpStatus(Response::HTTP_STATUS_BAD_REQUEST);
-
-            if (is_array($text))
-                array_walk_recursive($text , function(&$item) { $item = iconv('UTF-8', 'UTF-8//IGNORE', $item); });
-            else
-                $text = iconv('UTF-8', 'UTF-8//IGNORE', $text);
-
-            echo json_encode($text);
-            return true;
-        }
-
-        /**
-         * Return the response object
-         *
-         * @return \pachno\core\framework\Response
-         */
-        protected function getResponse()
-        {
-            return Context::getResponse();
-        }
-
-        /**
-         * Return the routing object
-         *
-         * @return \pachno\core\framework\Routing
-         */
-        protected function getRouting()
-        {
-            return Context::getRouting();
-        }
-
-        /**
-         * Return the i18n object
-         *
-         * @return \pachno\core\framework\I18n
-         */
-        protected function getI18n()
-        {
-            return Context::getI18n();
-        }
-
-        /**
-         * Return the current logged in user
-         *
-         * @return \pachno\core\entities\User
-         */
-        protected function getUser()
-        {
-            return Context::getUser();
         }
 
         /**
@@ -183,14 +101,14 @@
          */
         public function return404($message = null)
         {
-            if (Context::getRequest()->isAjaxCall() || Context::getRequest()->getRequestedFormat() == 'json')
-            {
+            if (Context::getRequest()->isAjaxCall() || Context::getRequest()->getRequestedFormat() == 'json') {
                 $this->getResponse()->ajaxResponseText(Response::HTTP_STATUS_NOT_FOUND, $message);
             }
 
             $this->message = $message;
             $this->getResponse()->setHttpStatus(Response::HTTP_STATUS_NOT_FOUND);
             $this->getResponse()->setTemplate('main/notfound');
+
             return false;
         }
 
@@ -212,8 +130,7 @@
          */
         public function return400($message = null)
         {
-            if (Context::getRequest()->isAjaxCall() || Context::getRequest()->getRequestedFormat() == 'json')
-            {
+            if (Context::getRequest()->isAjaxCall() || Context::getRequest()->getRequestedFormat() == 'json') {
                 $this->getResponse()->ajaxResponseText(Response::HTTP_STATUS_BAD_REQUEST, $message);
             }
 
@@ -243,53 +160,52 @@
          */
         public function forward403unless($condition, $message = null)
         {
-            if (!$condition)
-            {
+            if (!$condition) {
                 $message = ($message === null) ? Context::getI18n()->__("You are either not allowed to access this page or don't have access to perform this action") : $message;
-                if (Context::getUser()->isGuest())
-                {
+                if (Context::getUser()->isGuest()) {
                     Context::setMessage('login_message_err', htmlentities($message));
                     Context::setMessage('login_force_redirect', true);
                     Context::setMessage('login_referer', Context::getRouting()->generate(Context::getRouting()->getCurrentRoute()->getName(), Context::getRequest()->getParameters()));
                     $this->forward(Context::getRouting()->generate('login_page'), Response::HTTP_STATUS_FORBIDDEN);
-                }
-                elseif (Context::getRequest()->isAjaxCall())
-                {
+                } elseif (Context::getRequest()->isAjaxCall()) {
                     $this->getResponse()->setHttpStatus(Response::HTTP_STATUS_FORBIDDEN);
-                    throw new \Exception($message);
-                }
-                else
-                {
-                    throw new \pachno\core\framework\exceptions\ActionNotAllowedException($message);
+                    throw new Exception($message);
+                } else {
+                    throw new ActionNotAllowedException($message);
                 }
             }
+        }
+
+        /**
+         * Forward the user to a specified url
+         *
+         * @param string $url The URL to forward to
+         * @param integer $code [optional] HTTP status code
+         */
+        public function forward($url, $code = Response::HTTP_STATUS_OK)
+        {
+            if (Context::getRequest()->isAjaxCall() || Context::getRequest()->getRequestedFormat() == 'json') {
+                $this->getResponse()->ajaxResponseText($code, Context::getMessageAndClear('forward'));
+            }
+            Logging::log("Forwarding to url {$url}");
+
+            Logging::log('Triggering header redirect function');
+            $this->getResponse()->headerRedirect($url, $code);
+        }
+
+        /**
+         * Return the response object
+         *
+         * @return Response
+         */
+        protected function getResponse()
+        {
+            return Context::getResponse();
         }
 
         public function forward403if($condition, $message = null)
         {
             $this->forward403unless(!$condition, $message);
-        }
-
-        /**
-         * Verify that the specified user has a valid membership in the current scope
-         *
-         * @param User $user
-         * @return bool
-         */
-        protected function verifyScopeMembership(User $user)
-        {
-            if (!Context::getScope()->isDefault() && !$user->isGuest() && !$user->isConfirmedMemberOfScope(Context::getScope()))
-            {
-                $route = self::getRouting()->generate('add_scope');
-                if (Context::getRequest()->isAjaxCall())
-                {
-                    return $this->renderJSON(array('forward' => $route));
-                }
-                else
-                {
-                    $this->getResponse()->headerRedirect($route);
-                }
-            }
         }
 
         /**
@@ -300,9 +216,10 @@
          *
          * @return boolean
          */
-        public function renderComponent($template, $params = array())
+        public function renderComponent($template, $params = [])
         {
             echo ActionComponent::includeComponent($template, $params);
+
             return true;
         }
 
@@ -314,15 +231,9 @@
          *
          * @return boolean
          */
-        public static function returnComponentHTML($template, $params = array())
+        public function getComponentHTML($template, $params = [])
         {
-            $current_content = ob_get_clean();
-            (Context::isCLI()) ? ob_start() : ob_start('mb_output_handler');
-            echo ActionComponent::includeComponent($template, $params);
-            $component_content = ob_get_clean();
-            (Context::isCLI()) ? ob_start() : ob_start('mb_output_handler');
-            echo $current_content;
-            return $component_content;
+            return self::returnComponentHTML($template, $params);
         }
 
         /**
@@ -333,9 +244,91 @@
          *
          * @return boolean
          */
-        public function getComponentHTML($template, $params = array())
+        public static function returnComponentHTML($template, $params = [])
         {
-            return self::returnComponentHTML($template, $params);
+            $current_content = ob_get_clean();
+            (Context::isCLI()) ? ob_start() : ob_start('mb_output_handler');
+            echo ActionComponent::includeComponent($template, $params);
+            $component_content = ob_get_clean();
+            (Context::isCLI()) ? ob_start() : ob_start('mb_output_handler');
+            echo $current_content;
+
+            return $component_content;
+        }
+
+        /**
+         * Return the i18n object
+         *
+         * @return I18n
+         */
+        protected function getI18n()
+        {
+            return Context::getI18n();
+        }
+
+        /**
+         * Return the current logged in user
+         *
+         * @return User
+         */
+        protected function getUser()
+        {
+            return Context::getUser();
+        }
+
+        /**
+         * Verify that the specified user has a valid membership in the current scope
+         *
+         * @param User $user
+         *
+         * @return bool
+         */
+        protected function verifyScopeMembership(User $user)
+        {
+            if (!Context::getScope()->isDefault() && !$user->isGuest() && !$user->isConfirmedMemberOfScope(Context::getScope())) {
+                $route = self::getRouting()->generate('add_scope');
+                if (Context::getRequest()->isAjaxCall()) {
+                    return $this->renderJSON(['forward' => $route]);
+                } else {
+                    $this->getResponse()->headerRedirect($route);
+                }
+            }
+        }
+
+        /**
+         * Return the routing object
+         *
+         * @return Routing
+         */
+        protected function getRouting()
+        {
+            return Context::getRouting();
+        }
+
+        /**
+         * Renders JSON output, also takes care of setting the correct headers
+         *
+         * @param mixed $text An array, or text, to serve as json
+         *
+         * @return boolean
+         */
+        public function renderJSON($text = [])
+        {
+            $this->getResponse()->setContentType('application/json');
+            $this->getResponse()->setDecoration(Response::DECORATE_NONE);
+
+            if (is_array($text) && array_key_exists('error', $text)) $this->getResponse()->setHttpStatus(Response::HTTP_STATUS_BAD_REQUEST);
+
+            if (is_array($text))
+                array_walk_recursive($text, function (&$item) {
+                    $item = iconv('UTF-8', 'UTF-8//IGNORE', $item);
+                });
+            else
+                $text = iconv('UTF-8', 'UTF-8//IGNORE', $text);
+
+            echo json_encode($text);
+
+            return true;
         }
 
     }

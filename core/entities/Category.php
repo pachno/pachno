@@ -16,13 +16,12 @@
 
         public static function loadFixtures(Scope $scope)
         {
-            $categories = array('General' => '', 'Security' => '', 'User interface' => '');
+            $categories = ['General' => '', 'Security' => '', 'User interface' => ''];
             $categories['General'] = '#FFFFFF';
             $categories['Security'] = '#C2F533';
             $categories['User interface'] = '#55CC55';
 
-            foreach ($categories as $name => $color)
-            {
+            foreach ($categories as $name => $color) {
                 $category = new Category();
                 $category->setName($name);
                 $category->setColor($color);
@@ -35,6 +34,7 @@
          * Whether or not the current or target user can access the category
          *
          * @param null $target_user
+         *
          * @return boolean
          */
         public function hasAccess($target_user = null)

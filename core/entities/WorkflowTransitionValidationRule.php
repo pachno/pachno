@@ -2,6 +2,7 @@
 
     namespace pachno\core\entities;
 
+    use Exception;
     use pachno\core\entities\common\Identifiable;
     use pachno\core\entities\common\IdentifiableScoped;
     use pachno\core\entities\tables\Builds;
@@ -12,6 +13,7 @@
     use pachno\core\entities\tables\Milestones;
     use pachno\core\entities\tables\Teams;
     use pachno\core\framework;
+    use pachno\core\framework\Event;
 
     /**
      * Workflow transition validation rule class
@@ -35,11 +37,17 @@
     {
 
         const RULE_MAX_ASSIGNED_ISSUES = 'max_assigned_issues';
+
         const RULE_STATUS_VALID = 'valid_status';
+
         const RULE_RESOLUTION_VALID = 'valid_resolution';
+
         const RULE_REPRODUCABILITY_VALID = 'valid_reproducability';
+
         const RULE_PRIORITY_VALID = 'valid_priority';
+
         const RULE_TEAM_MEMBERSHIP_VALID = 'valid_team';
+
         const RULE_ISSUE_IN_MILESTONE_VALID = 'valid_in_milestone';
 
         const CUSTOMFIELD_VALIDATE_PREFIX = 'customfield_validate_';
@@ -79,13 +87,13 @@
 
         public static function getAvailablePreValidationRules()
         {
-            $initial_list = array();
+            $initial_list = [];
             $i18n = framework\Context::getI18n();
             $initial_list[self::RULE_MAX_ASSIGNED_ISSUES] = $i18n->__('Max number of assigned issues');
             $initial_list[self::RULE_TEAM_MEMBERSHIP_VALID] = $i18n->__('User must be member of a certain team');
             $initial_list[self::RULE_ISSUE_IN_MILESTONE_VALID] = $i18n->__('Issue must be in milestone');
 
-            $event = new \pachno\core\framework\Event('core', 'WorkflowTransitionValidationRule::getAvailablePreValidationRules', null, array(), $initial_list);
+            $event = new Event('core', 'WorkflowTransitionValidationRule::getAvailablePreValidationRules', null, [], $initial_list);
             $event->trigger();
 
             return $event->getReturnList();
@@ -93,19 +101,18 @@
 
         public static function getAvailablePostValidationRules()
         {
-            $initial_list = array();
+            $initial_list = [];
             $i18n = framework\Context::getI18n();
             $initial_list[self::RULE_PRIORITY_VALID] = $i18n->__('Validate specified priority');
             $initial_list[self::RULE_REPRODUCABILITY_VALID] = $i18n->__('Validate specified reproducability');
             $initial_list[self::RULE_RESOLUTION_VALID] = $i18n->__('Validate specified resolution');
             $initial_list[self::RULE_STATUS_VALID] = $i18n->__('Validate specified status');
-            foreach (CustomDatatype::getAll() as $key => $details)
-            {
-                $initial_list[self::CUSTOMFIELD_VALIDATE_PREFIX . $key] = $i18n->__('Validate specified %key', array('%key' => $key));
+            foreach (CustomDatatype::getAll() as $key => $details) {
+                $initial_list[self::CUSTOMFIELD_VALIDATE_PREFIX . $key] = $i18n->__('Validate specified %key', ['%key' => $key]);
             }
             $initial_list[self::RULE_TEAM_MEMBERSHIP_VALID] = $i18n->__('Validate team membership of assignee');
 
-            $event = new \pachno\core\framework\Event('core', 'WorkflowTransitionValidationRule::getAvailablePostValidationRules', null, array(), $initial_list);
+            $event = new Event('core', 'WorkflowTransitionValidationRule::getAvailablePostValidationRules', null, [], $initial_list);
             $event->trigger();
 
             return $event->getReturnList();
@@ -156,12 +163,7 @@
 
         public function isPre()
         {
-            return (bool) ($this->_pre_or_post == 'pre');
-        }
-
-        public function isPost()
-        {
-            return (bool) ($this->_pre_or_post == 'post');
+            return (bool)($this->_pre_or_post == 'pre');
         }
 
         public function setRule($rule)
@@ -169,141 +171,40 @@
             $this->_name = $rule;
         }
 
-        public function getRule()
-        {
-            return $this->_name;
-        }
-
         public function getName()
         {
             return $this->_name;
         }
 
-        public function setRuleValue($rule_value)
+        public function getRuleOptions()
         {
-            $this->_rule_value = $rule_value;
+            if ($this->getRule() == WorkflowTransitionValidationRule::RULE_STATUS_VALID) {
+                $options = Status::getAll();
+            } elseif ($this->getRule() == WorkflowTransitionValidationRule::RULE_PRIORITY_VALID) {
+                $options = Priority::getAll();
+            } elseif ($this->getRule() == WorkflowTransitionValidationRule::RULE_RESOLUTION_VALID) {
+                $options = Resolution::getAll();
+            } elseif ($this->getRule() == WorkflowTransitionValidationRule::RULE_REPRODUCABILITY_VALID) {
+                $options = Reproducability::getAll();
+            } elseif ($this->getRule() == WorkflowTransitionValidationRule::RULE_TEAM_MEMBERSHIP_VALID) {
+                $options = Team::getAll();
+            } elseif ($this->getRule() == WorkflowTransitionValidationRule::RULE_ISSUE_IN_MILESTONE_VALID) {
+                $options = Milestone::getB2DBTable()->selectAll();
+            } elseif ($this->isCustom()) {
+                $options = $this->getCustomField()->getOptions();
+            }
+
+            return $options;
         }
 
-        public function getRuleValue()
+        public function getRule()
         {
-            return $this->_rule_value;
-        }
-
-        public function getRuleValueAsJoinedString()
-        {
-            $is_core = in_array($this->_name, array(self::RULE_STATUS_VALID, self::RULE_RESOLUTION_VALID, self::RULE_REPRODUCABILITY_VALID, self::RULE_PRIORITY_VALID, self::RULE_TEAM_MEMBERSHIP_VALID, self::RULE_ISSUE_IN_MILESTONE_VALID));
-            $is_custom = $this->isCustom();
-            $customtype = $this->getCustomType();
-
-            if ($this->_name == self::RULE_STATUS_VALID)
-            {
-                $fieldname = '\pachno\core\entities\Status';
-            }
-            elseif ($this->_name == self::RULE_RESOLUTION_VALID)
-            {
-                $fieldname = '\pachno\core\entities\Resolution';
-            }
-            elseif ($this->_name == self::RULE_REPRODUCABILITY_VALID)
-            {
-                $fieldname = '\pachno\core\entities\Reproducability';
-            }
-            elseif ($this->_name == self::RULE_PRIORITY_VALID)
-            {
-                $fieldname = '\pachno\core\entities\Priority';
-            }
-            elseif ($this->_name == self::RULE_TEAM_MEMBERSHIP_VALID)
-            {
-                $fieldname = '\pachno\core\entities\Team';
-            }
-            elseif ($this->_name == self::RULE_ISSUE_IN_MILESTONE_VALID)
-            {
-                $fieldname = '\pachno\core\entities\Milestone';
-            }
-
-            if ($is_core || $is_custom)
-            {
-                $values = explode(',', $this->getRuleValue());
-                if ($is_custom)
-                {
-                    $custom_field_key = substr($this->_name, strlen(self::CUSTOMFIELD_VALIDATE_PREFIX) - 1);
-                    $custom_field = tables\CustomFields::getTable()->getByKey($custom_field_key);
-                }
-                $return_values = array();
-                foreach ($values as $value)
-                {
-                    try
-                    {
-                        if ($is_core)
-                        {
-                            $field = $fieldname::getB2DBTable()->selectByID((int) $value);
-                        }
-                        elseif ($is_custom)
-                        {
-                            switch ($customtype) {
-                                case CustomDatatype::RADIO_CHOICE:
-                                case CustomDatatype::DROPDOWN_CHOICE_TEXT:
-                                    $field = tables\CustomFieldOptions::getTable()->selectById((int) $value);
-                                    break;
-                                case CustomDatatype::TEAM_CHOICE:
-                                    $field = Teams::getTable()->selectById((int) $value);
-                                    break;
-                                case CustomDatatype::STATUS_CHOICE:
-                                    $field = ListTypes::getTable()->selectById((int) $value);
-                                    break;
-                                case CustomDatatype::MILESTONE_CHOICE:
-                                    $field = Milestones::getTable()->selectById((int) $value);
-                                    break;
-                                case CustomDatatype::CLIENT_CHOICE:
-                                    $field = Clients::getTable()->selectById((int) $value);
-                                    break;
-                                case CustomDatatype::COMPONENTS_CHOICE:
-                                    $field = Components::getTable()->selectById((int) $value);
-                                    break;
-                                case CustomDatatype::EDITIONS_CHOICE:
-                                    $field = Editions::getTable()->selectById((int) $value);
-                                    break;
-                                case CustomDatatype::RELEASES_CHOICE:
-                                    $field = Builds::getTable()->selectById((int) $value);
-                                    break;
-                            }
-                        }
-                        if ($field instanceof \pachno\core\entities\common\Identifiable)
-                        {
-                            if ($field instanceof Milestone || $field instanceof Component || $field instanceof Edition || $field instanceof Build) {
-                                $return_values[] = $field->getProject()->getName() . ' - ' . $field->getName();
-                            } elseif ($field instanceof Status) {
-                                $return_values[] = '<span class="status-badge" style="background-color: '.$field->getColor().'; color: '.$field->getTextColor().';">'.$field->getName().'</span>';
-                            } else {
-                                $return_values[] = $field->getName();
-                            }
-                        }
-                    }
-                    catch (\Exception $e) {}
-                }
-                return join(' / ', $return_values);
-            }
-            else
-            {
-                $event = new \pachno\core\framework\Event('core', 'WorkflowTransitionValidationRule::getRuleValueAsJoinedString', $this);
-                $event->triggerUntilProcessed();
-
-                return $event->getReturnValue();
-            }
+            return $this->_name;
         }
 
         public function isCustom()
         {
-            return (bool) (strpos($this->_name, self::CUSTOMFIELD_VALIDATE_PREFIX) !== false);
-        }
-
-        /**
-         * Returns the identifier key for the customfield used in the validation rule
-         *
-         * @return string
-         */
-        public function getCustomFieldname()
-        {
-            return substr($this->_name, strlen(self::CUSTOMFIELD_VALIDATE_PREFIX));
+            return (bool)(strpos($this->_name, self::CUSTOMFIELD_VALIDATE_PREFIX) !== false);
         }
 
         /**
@@ -317,115 +218,92 @@
         }
 
         /**
-         * Returns the custom type for the custom field object used in the validation rule
-         * 
+         * Returns the identifier key for the customfield used in the validation rule
+         *
          * @return string
          */
-        public function getCustomType()
+        public function getCustomFieldname()
         {
-            return ($this->isCustom()) ? $this->getCustomField()->getType() : '';
-        }
-
-        public function getRuleOptions()
-        {
-            if ($this->getRule() == \pachno\core\entities\WorkflowTransitionValidationRule::RULE_STATUS_VALID) {
-                $options = \pachno\core\entities\Status::getAll();
-            } elseif ($this->getRule() == \pachno\core\entities\WorkflowTransitionValidationRule::RULE_PRIORITY_VALID) {
-                $options = \pachno\core\entities\Priority::getAll();
-            } elseif ($this->getRule() == \pachno\core\entities\WorkflowTransitionValidationRule::RULE_RESOLUTION_VALID) {
-                $options = \pachno\core\entities\Resolution::getAll();
-            } elseif ($this->getRule() == \pachno\core\entities\WorkflowTransitionValidationRule::RULE_REPRODUCABILITY_VALID) {
-                $options = \pachno\core\entities\Reproducability::getAll();
-            } elseif ($this->getRule() == \pachno\core\entities\WorkflowTransitionValidationRule::RULE_TEAM_MEMBERSHIP_VALID) {
-                $options = \pachno\core\entities\Team::getAll();
-            } elseif ($this->getRule() == \pachno\core\entities\WorkflowTransitionValidationRule::RULE_ISSUE_IN_MILESTONE_VALID) {
-                $options = \pachno\core\entities\Milestone::getB2DBTable()->selectAll();
-            } elseif ($this->isCustom()) {
-                $options = $this->getCustomField()->getOptions();
-            }
-
-            return $options;
+            return substr($this->_name, strlen(self::CUSTOMFIELD_VALIDATE_PREFIX));
         }
 
         public function isValueValid($value)
         {
-            $is_core = in_array($this->_name, array(self::RULE_STATUS_VALID, self::RULE_RESOLUTION_VALID, self::RULE_REPRODUCABILITY_VALID, self::RULE_PRIORITY_VALID, self::RULE_TEAM_MEMBERSHIP_VALID, self::RULE_ISSUE_IN_MILESTONE_VALID));
+            $is_core = in_array($this->_name, [self::RULE_STATUS_VALID, self::RULE_RESOLUTION_VALID, self::RULE_REPRODUCABILITY_VALID, self::RULE_PRIORITY_VALID, self::RULE_TEAM_MEMBERSHIP_VALID, self::RULE_ISSUE_IN_MILESTONE_VALID]);
             $is_custom = $this->isCustom();
 
-            if ($is_core || $is_custom)
-            {
+            if ($is_core || $is_custom) {
                 $value = (is_object($value)) ? $value->getID() : $value;
-                return ($this->getRuleValue()) ? in_array($value, explode(',', $this->getRuleValue())) : (bool) $value;
-            }
-            else
-            {
-                $event = new \pachno\core\framework\Event('core', 'WorkflowTransitionValidationRule::isValueValid', $this);
+
+                return ($this->getRuleValue()) ? in_array($value, explode(',', $this->getRuleValue())) : (bool)$value;
+            } else {
+                $event = new Event('core', 'WorkflowTransitionValidationRule::isValueValid', $this);
                 $event->setReturnValue(false);
-                $event->triggerUntilProcessed(array('value' => $value));
+                $event->triggerUntilProcessed(['value' => $value]);
 
                 return $event->getReturnValue();
             }
         }
 
+        public function getRuleValue()
+        {
+            return $this->_rule_value;
+        }
+
+        public function setRuleValue($rule_value)
+        {
+            $this->_rule_value = $rule_value;
+        }
+
         public function isValid($input)
         {
-            switch ($this->_name)
-            {
+            switch ($this->_name) {
                 case self::RULE_MAX_ASSIGNED_ISSUES:
-                    $num_issues = (int) $this->getRuleValue();
-                    return ($num_issues) ? (bool) (count(framework\Context::getUser()->getUserAssignedIssues()) < $num_issues) : true;
+                    $num_issues = (int)$this->getRuleValue();
+
+                    return ($num_issues) ? (bool)(count(framework\Context::getUser()->getUserAssignedIssues()) < $num_issues) : true;
                     break;
                 case self::RULE_TEAM_MEMBERSHIP_VALID:
                     $valid_items = explode(',', $this->getRuleValue());
-                    $teams = \pachno\core\entities\Team::getAll();
-                    if ($this->isPost())
-                    {
-                        if ($input instanceof \pachno\core\entities\Issue)
-                        {
+                    $teams = Team::getAll();
+                    if ($this->isPost()) {
+                        if ($input instanceof Issue) {
                             $assignee = $input->getAssignee();
                         }
                     }
-                    if (! isset($assignee))
-                    {
+                    if (!isset($assignee)) {
                         $assignee = framework\Context::getUser();
                     }
-                    if ($assignee instanceof \pachno\core\entities\User)
-                    {
+                    if ($assignee instanceof User) {
                         if (count($valid_items) == 1 && reset($valid_items) == '') return true;
 
-                        foreach ($valid_items as $team_id)
-                        {
+                        foreach ($valid_items as $team_id) {
                             if ($assignee->isMemberOfTeam($teams[$team_id]))
                                 return true;
                         }
-                    }
-                    elseif ($assignee instanceof \pachno\core\entities\Team)
-                    {
-                        foreach ($valid_items as $team_id)
-                        {
+                    } elseif ($assignee instanceof Team) {
+                        foreach ($valid_items as $team_id) {
                             if ($assignee->getID() == $team_id)
                                 return true;
                         }
                     }
+
                     return false;
                 case self::RULE_ISSUE_IN_MILESTONE_VALID:
                     $valid_items = explode(',', $this->getRuleValue());
-                    if ($input instanceof \pachno\core\entities\Issue)
-                    {
+                    if ($input instanceof Issue) {
                         $issue = $input;
+                    } elseif ($input->hasParameter('issue_id')) {
+                        $issue = Issue::getB2DBTable()->selectByID((int)$input->getParameter('issue_id'));
                     }
-                    else if ($input->hasParameter('issue_id'))
-                    {
-                        $issue = \pachno\core\entities\Issue::getB2DBTable()->selectByID((int) $input->getParameter('issue_id'));
-                    }
-                    if (isset($issue) && $issue instanceof \pachno\core\entities\Issue)
-                    {
-                        if (!$issue->getMilestone() instanceof \pachno\core\entities\Milestone) return false;
+                    if (isset($issue) && $issue instanceof Issue) {
+                        if (!$issue->getMilestone() instanceof Milestone) return false;
 
                         if (count($valid_items) == 1 && reset($valid_items) == '') return true;
 
                         return in_array($issue->getMilestone()->getID(), $valid_items);
                     }
+
                     return false;
                 case self::RULE_STATUS_VALID:
                 case self::RULE_PRIORITY_VALID:
@@ -446,11 +324,11 @@
                         $fieldname = 'Priority';
                         $fieldname_small = 'priority';
                     } else {
-                        throw new framework\exceptions\ConfigurationException(framework\Context::getI18n()->__('Invalid workflow validation rule: %rule_name', array('%rule_name' => $this->_name)));
+                        throw new framework\exceptions\ConfigurationException(framework\Context::getI18n()->__('Invalid workflow validation rule: %rule_name', ['%rule_name' => $this->_name]));
                     }
 
                     if (!$this->getRuleValue()) {
-                        if ($input instanceof \pachno\core\entities\Issue) {
+                        if ($input instanceof Issue) {
                             $getter = "get{$fieldname}";
 
                             if (is_object($input->$getter())) {
@@ -463,11 +341,11 @@
                         }
                     } else {
                         foreach ($valid_items as $item) {
-                            if ($input instanceof \pachno\core\entities\Issue) {
+                            if ($input instanceof Issue) {
                                 $type = "\\pachno\\core\\entities\\{$fieldname}";
                                 $getter = "get{$fieldname}";
 
-                                if (is_object($input->$getter()) && $type::getB2DBTable()->selectByID((int) $item)->getID() == $input->$getter()->getID()) {
+                                if (is_object($input->$getter()) && $type::getB2DBTable()->selectByID((int)$item)->getID() == $input->$getter()->getID()) {
                                     $valid = true;
                                     break;
                                 }
@@ -479,6 +357,7 @@
                             }
                         }
                     }
+
                     return $valid;
                     break;
                 default:
@@ -494,7 +373,7 @@
                             case CustomDatatype::EDITIONS_CHOICE:
                             case CustomDatatype::RELEASES_CHOICE:
                                 $valid_items = explode(',', $this->getRuleValue());
-                                if ($input instanceof \pachno\core\entities\Issue) {
+                                if ($input instanceof Issue) {
                                     $value = $input->getCustomField($this->getCustomFieldname());
                                 } elseif ($input instanceof framework\Request) {
                                     $value = $input->getParameter($this->getCustomFieldname() . "_id");
@@ -524,13 +403,28 @@
                                 break;
                         }
                     } else {
-                        $event = new \pachno\core\framework\Event('core', 'WorkflowTransitionValidationRule::isValid', $this);
+                        $event = new Event('core', 'WorkflowTransitionValidationRule::isValid', $this);
                         $event->setReturnValue(false);
-                        $event->triggerUntilProcessed(array('input' => $input));
+                        $event->triggerUntilProcessed(['input' => $input]);
 
                         return $event->getReturnValue();
                     }
             }
+        }
+
+        public function isPost()
+        {
+            return (bool)($this->_pre_or_post == 'post');
+        }
+
+        /**
+         * Returns the custom type for the custom field object used in the validation rule
+         *
+         * @return string
+         */
+        public function getCustomType()
+        {
+            return ($this->isCustom()) ? $this->getCustomField()->getType() : '';
         }
 
         public function toJSON($detailed = true)
@@ -539,6 +433,88 @@
                 'name' => $this->getRule(),
                 'values' => $this->getRuleValueAsJoinedString()
             ];
+        }
+
+        public function getRuleValueAsJoinedString()
+        {
+            $is_core = in_array($this->_name, [self::RULE_STATUS_VALID, self::RULE_RESOLUTION_VALID, self::RULE_REPRODUCABILITY_VALID, self::RULE_PRIORITY_VALID, self::RULE_TEAM_MEMBERSHIP_VALID, self::RULE_ISSUE_IN_MILESTONE_VALID]);
+            $is_custom = $this->isCustom();
+            $customtype = $this->getCustomType();
+
+            if ($this->_name == self::RULE_STATUS_VALID) {
+                $fieldname = '\pachno\core\entities\Status';
+            } elseif ($this->_name == self::RULE_RESOLUTION_VALID) {
+                $fieldname = '\pachno\core\entities\Resolution';
+            } elseif ($this->_name == self::RULE_REPRODUCABILITY_VALID) {
+                $fieldname = '\pachno\core\entities\Reproducability';
+            } elseif ($this->_name == self::RULE_PRIORITY_VALID) {
+                $fieldname = '\pachno\core\entities\Priority';
+            } elseif ($this->_name == self::RULE_TEAM_MEMBERSHIP_VALID) {
+                $fieldname = '\pachno\core\entities\Team';
+            } elseif ($this->_name == self::RULE_ISSUE_IN_MILESTONE_VALID) {
+                $fieldname = '\pachno\core\entities\Milestone';
+            }
+
+            if ($is_core || $is_custom) {
+                $values = explode(',', $this->getRuleValue());
+                if ($is_custom) {
+                    $custom_field_key = substr($this->_name, strlen(self::CUSTOMFIELD_VALIDATE_PREFIX) - 1);
+                    $custom_field = tables\CustomFields::getTable()->getByKey($custom_field_key);
+                }
+                $return_values = [];
+                foreach ($values as $value) {
+                    try {
+                        if ($is_core) {
+                            $field = $fieldname::getB2DBTable()->selectByID((int)$value);
+                        } elseif ($is_custom) {
+                            switch ($customtype) {
+                                case CustomDatatype::RADIO_CHOICE:
+                                case CustomDatatype::DROPDOWN_CHOICE_TEXT:
+                                    $field = tables\CustomFieldOptions::getTable()->selectById((int)$value);
+                                    break;
+                                case CustomDatatype::TEAM_CHOICE:
+                                    $field = Teams::getTable()->selectById((int)$value);
+                                    break;
+                                case CustomDatatype::STATUS_CHOICE:
+                                    $field = ListTypes::getTable()->selectById((int)$value);
+                                    break;
+                                case CustomDatatype::MILESTONE_CHOICE:
+                                    $field = Milestones::getTable()->selectById((int)$value);
+                                    break;
+                                case CustomDatatype::CLIENT_CHOICE:
+                                    $field = Clients::getTable()->selectById((int)$value);
+                                    break;
+                                case CustomDatatype::COMPONENTS_CHOICE:
+                                    $field = Components::getTable()->selectById((int)$value);
+                                    break;
+                                case CustomDatatype::EDITIONS_CHOICE:
+                                    $field = Editions::getTable()->selectById((int)$value);
+                                    break;
+                                case CustomDatatype::RELEASES_CHOICE:
+                                    $field = Builds::getTable()->selectById((int)$value);
+                                    break;
+                            }
+                        }
+                        if ($field instanceof Identifiable) {
+                            if ($field instanceof Milestone || $field instanceof Component || $field instanceof Edition || $field instanceof Build) {
+                                $return_values[] = $field->getProject()->getName() . ' - ' . $field->getName();
+                            } elseif ($field instanceof Status) {
+                                $return_values[] = '<span class="status-badge" style="background-color: ' . $field->getColor() . '; color: ' . $field->getTextColor() . ';">' . $field->getName() . '</span>';
+                            } else {
+                                $return_values[] = $field->getName();
+                            }
+                        }
+                    } catch (Exception $e) {
+                    }
+                }
+
+                return join(' / ', $return_values);
+            } else {
+                $event = new Event('core', 'WorkflowTransitionValidationRule::getRuleValueAsJoinedString', $this);
+                $event->triggerUntilProcessed();
+
+                return $event->getReturnValue();
+            }
         }
 
     }

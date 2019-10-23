@@ -42,7 +42,7 @@
         protected $_description;
 
         /**
-         * @var \pachno\core\entities\AgileBoard
+         * @var AgileBoard
          * @Column(type="integer", length=10)
          * @Relates(class="\pachno\core\entities\AgileBoard")
          */
@@ -72,7 +72,7 @@
          * @var array
          * @Column(type="serializable", length=500)
          */
-        protected $_status_ids = array();
+        protected $_status_ids = [];
 
         public function getName()
         {
@@ -84,29 +84,19 @@
             $this->_name = $name;
         }
 
+        public function hasDescription()
+        {
+            return (bool)($this->getDescription() != '');
+        }
+
         public function getDescription()
         {
             return $this->_description;
         }
 
-        public function hasDescription()
-        {
-            return (bool) ($this->getDescription() != '');
-        }
-
         public function setDescription($description)
         {
             $this->_description = $description;
-        }
-
-        /**
-         * Returns the associated project
-         *
-         * @return \pachno\core\entities\AgileBoard
-         */
-        public function getBoard()
-        {
-            return $this->_b2dbLazyLoad('_board_id');
         }
 
         public function setBoard($board)
@@ -119,14 +109,14 @@
             return $this->_max_workitems;
         }
 
-        function getMinWorkitems()
-        {
-            return $this->_min_workitems;
-        }
-
         function setMaxWorkitems($max_workitems)
         {
             $this->_max_workitems = $max_workitems;
+        }
+
+        function getMinWorkitems()
+        {
+            return $this->_min_workitems;
         }
 
         function setMinWorkitems($min_workitems)
@@ -144,19 +134,14 @@
             $this->_sort_order = $sort_order;
         }
 
-        public function getStatusIds()
-        {
-            return $this->_status_ids;
-        }
-
         public function hasStatusId($status_id)
         {
             return in_array($status_id, $this->getStatusIds());
         }
 
-        public function hasStatusIds()
+        public function getStatusIds()
         {
-            return (count($this->getStatusIds()) > 0);
+            return $this->_status_ids;
         }
 
         public function setStatusIds($status_ids)
@@ -164,24 +149,38 @@
             $this->_status_ids = $status_ids;
         }
 
+        public function hasStatusIds()
+        {
+            return (count($this->getStatusIds()) > 0);
+        }
+
         public function isStatusIdTaken($status_id)
         {
-            foreach ($this->getBoard()->getColumns() as $column)
-            {
+            foreach ($this->getBoard()->getColumns() as $column) {
                 if ($column->getID() != $this->getID() && $column->hasStatusId($status_id)) return true;
             }
 
             return false;
         }
 
-        public function hasIssue(\pachno\core\entities\Issue $issue)
+        /**
+         * Returns the associated project
+         *
+         * @return AgileBoard
+         */
+        public function getBoard()
+        {
+            return $this->_b2dbLazyLoad('_board_id');
+        }
+
+        public function hasIssue(Issue $issue)
         {
             return in_array($issue->getStatus()->getID(), $this->getStatusIds());
         }
 
         public function getColumnOrRandomID()
         {
-            return ($this->getID()) ? $this->getID() : md5(rand(0,1000000));
+            return ($this->getID()) ? $this->getID() : md5(rand(0, 1000000));
         }
 
     }

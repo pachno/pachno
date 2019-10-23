@@ -3,6 +3,7 @@
     namespace pachno\core\entities\tables;
 
     use b2db\Insertion;
+    use b2db\Row;
 
     /**
      * Scopes table
@@ -26,25 +27,16 @@
     {
 
         const B2DB_TABLE_VERSION = 1;
+
         const B2DBNAME = 'scopehostnames';
+
         const ID = 'scopehostnames.id';
+
         const SCOPE_ID = 'scopehostnames.scope_id';
+
         const SCOPE = 'scopehostnames.scope_id';
+
         const HOSTNAME = 'scopehostnames.hostname';
-
-        protected function initialize()
-        {
-            parent::setup(self::B2DBNAME, self::ID);
-            parent::addVarchar(self::HOSTNAME, 200, '');
-        }
-
-        public function addHostnameToScope($hostname, $scope_id)
-        {
-            $insertion = new Insertion();
-            $insertion->add(self::HOSTNAME, $hostname);
-            $insertion->add(self::SCOPE_ID, $scope_id);
-            $res = $this->rawInsert($insertion);
-        }
 
         public function removeHostnameFromScope($hostname, $scope_id)
         {
@@ -59,10 +51,17 @@
             $query = $this->getQuery();
             $query->where(self::SCOPE_ID, $scope_id);
             $res = $this->rawDelete($query);
-            foreach ($hostnames as $hostname)
-            {
+            foreach ($hostnames as $hostname) {
                 $this->addHostnameToScope($hostname, $scope_id);
             }
+        }
+
+        public function addHostnameToScope($hostname, $scope_id)
+        {
+            $insertion = new Insertion();
+            $insertion->add(self::HOSTNAME, $hostname);
+            $insertion->add(self::SCOPE_ID, $scope_id);
+            $res = $this->rawInsert($insertion);
         }
 
         public function getHostnamesForScope($scope_id)
@@ -70,11 +69,9 @@
             $query = $this->getQuery();
             $query->where(self::SCOPE_ID, $scope_id);
 
-            $hostnames = array();
-            if ($res = $this->rawSelect($query))
-            {
-                while ($row = $res->getNextRow())
-                {
+            $hostnames = [];
+            if ($res = $this->rawSelect($query)) {
+                while ($row = $res->getNextRow()) {
                     $hostnames[$row->get(self::ID)] = $row->get(self::HOSTNAME);
                 }
             }
@@ -89,7 +86,7 @@
 
             $row = $this->rawSelectOne($query);
 
-            return ($row instanceof \b2db\Row) ? (int) $row->get(self::SCOPE_ID) : null;
+            return ($row instanceof Row) ? (int)$row->get(self::SCOPE_ID) : null;
         }
 
         public function addIndexes()
@@ -99,8 +96,14 @@
 
         protected function setupIndexes()
         {
-            $this->addIndex('id_hostname', array(self::ID, self::HOSTNAME));
-            $this->addIndex('scopeid_hostname', array(self::SCOPE_ID, self::HOSTNAME));
+            $this->addIndex('id_hostname', [self::ID, self::HOSTNAME]);
+            $this->addIndex('scopeid_hostname', [self::SCOPE_ID, self::HOSTNAME]);
+        }
+
+        protected function initialize()
+        {
+            parent::setup(self::B2DBNAME, self::ID);
+            parent::addVarchar(self::HOSTNAME, 200, '');
         }
 
     }

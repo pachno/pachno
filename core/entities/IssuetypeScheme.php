@@ -34,7 +34,7 @@
          */
         protected $_name;
 
-        protected $_visiblefields = array();
+        protected $_visiblefields = [];
 
         /**
          * Issue type details
@@ -48,7 +48,7 @@
          * @var integer
          */
         protected $_number_of_projects = null;
-        
+
         /**
          * The issuetype description
          *
@@ -57,19 +57,6 @@
          */
         protected $_description = null;
 
-        protected static function _populateSchemes()
-        {
-            if (self::$_schemes === null)
-            {
-                self::$_schemes = tables\IssuetypeSchemes::getTable()->getAll();
-            }
-        }
-
-        protected function _postSave($is_new)
-        {
-            framework\Context::getCache()->delete(framework\Cache::KEY_TEXTPARSER_ISSUE_REGEX);
-        }
-        
         /**
          * Return all issuetypes in the system
          *
@@ -78,9 +65,17 @@
         public static function getAll()
         {
             self::_populateSchemes();
+
             return self::$_schemes;
         }
-        
+
+        protected static function _populateSchemes()
+        {
+            if (self::$_schemes === null) {
+                self::$_schemes = tables\IssuetypeSchemes::getTable()->getAll();
+            }
+        }
+
         public static function loadFixtures(Scope $scope)
         {
             $full_range_scheme = new IssuetypeScheme();
@@ -144,7 +139,7 @@
 
             return [$full_range_scheme, $balanced_scheme, $balanced_agile_scheme, $simple_scheme];
         }
-        
+
         /**
          * Returns the issuetypes description
          *
@@ -154,7 +149,7 @@
         {
             return $this->_description;
         }
-        
+
         /**
          * Set the issuetypes description
          *
@@ -165,60 +160,49 @@
             $this->_description = $description;
         }
 
-        protected function _populateAssociatedIssuetypes()
-        {
-            if ($this->_issuetypedetails === null)
-            {
-                $this->_issuetypedetails = tables\IssuetypeSchemeLink::getTable()->getByIssuetypeSchemeID($this->getID());
-            }
-        }
-        
-        public function setIssuetypeEnabled(Issuetype $issuetype, $enabled = true)
-        {
-            if ($enabled)
-            {
-                if (!$this->isSchemeAssociatedWithIssuetype($issuetype))
-                {
-                    tables\IssuetypeSchemeLink::getTable()->associateIssuetypeWithScheme($issuetype->getID(), $this->getID());
-                }
-            }
-            else
-            {
-                tables\IssuetypeSchemeLink::getTable()->unAssociateIssuetypeWithScheme($issuetype->getID(), $this->getID());
-            }
-            $this->_issuetypedetails = null;
-        }
-        
         public function setIssuetypeDisabled(Issuetype $issuetype)
         {
             $this->setIssuetypeEnabled($issuetype, false);
         }
 
+        public function setIssuetypeEnabled(Issuetype $issuetype, $enabled = true)
+        {
+            if ($enabled) {
+                if (!$this->isSchemeAssociatedWithIssuetype($issuetype)) {
+                    tables\IssuetypeSchemeLink::getTable()->associateIssuetypeWithScheme($issuetype->getID(), $this->getID());
+                }
+            } else {
+                tables\IssuetypeSchemeLink::getTable()->unAssociateIssuetypeWithScheme($issuetype->getID(), $this->getID());
+            }
+            $this->_issuetypedetails = null;
+        }
+
         public function isSchemeAssociatedWithIssuetype(Issuetype $issuetype)
         {
             $this->_populateAssociatedIssuetypes();
+
             return array_key_exists($issuetype->getID(), $this->_issuetypedetails);
         }
-        
-        public function isIssuetypeReportable(Issuetype $issuetype)
+
+        protected function _populateAssociatedIssuetypes()
         {
-            $this->_populateAssociatedIssuetypes();
-            if (!$this->isSchemeAssociatedWithIssuetype($issuetype)) return false;
-            return (bool) $this->_issuetypedetails[$issuetype->getID()]['reportable'];
+            if ($this->_issuetypedetails === null) {
+                $this->_issuetypedetails = tables\IssuetypeSchemeLink::getTable()->getByIssuetypeSchemeID($this->getID());
+            }
         }
 
         public function isIssuetypeRedirectedAfterReporting(Issuetype $issuetype)
         {
             $this->_populateAssociatedIssuetypes();
             if (!$this->isSchemeAssociatedWithIssuetype($issuetype)) return false;
-            return (bool) $this->_issuetypedetails[$issuetype->getID()]['redirect'];
+
+            return (bool)$this->_issuetypedetails[$issuetype->getID()]['redirect'];
         }
-        
+
         public function setIssuetypeRedirectedAfterReporting(Issuetype $issuetype, $val = true)
         {
             tables\IssuetypeSchemeLink::getTable()->setIssuetypeRedirectedAfterReportingForScheme($issuetype->getID(), $this->getID(), $val);
-            if (array_key_exists($issuetype->getID(), $this->_visiblefields))
-            {
+            if (array_key_exists($issuetype->getID(), $this->_visiblefields)) {
                 $this->_visiblefields[$issuetype->getID()]['redirect'] = $val;
             }
         }
@@ -226,10 +210,20 @@
         public function setIssuetypeReportable(Issuetype $issuetype, $val = true)
         {
             tables\IssuetypeSchemeLink::getTable()->setIssuetypeReportableForScheme($issuetype->getID(), $this->getID(), $val);
-            if (array_key_exists($issuetype->getID(), $this->_visiblefields))
-            {
+            if (array_key_exists($issuetype->getID(), $this->_visiblefields)) {
                 $this->_visiblefields[$issuetype->getID()]['reportable'] = $val;
             }
+        }
+
+        public function getReportableIssuetypes()
+        {
+            $issuetypes = $this->getIssuetypes();
+            foreach ($issuetypes as $key => $issuetype) {
+                if ($this->isIssuetypeReportable($issuetype)) continue;
+                unset($issuetypes[$key]);
+            }
+
+            return $issuetypes;
         }
 
         /**
@@ -240,82 +234,73 @@
         public function getIssuetypes()
         {
             $this->_populateAssociatedIssuetypes();
-            $retarr = array();
-            foreach ($this->_issuetypedetails as $key => $details)
-            {
+            $retarr = [];
+            foreach ($this->_issuetypedetails as $key => $details) {
                 $retarr[$key] = $details['issuetype'];
             }
+
             return $retarr;
         }
 
-        public function getReportableIssuetypes()
+        public function isIssuetypeReportable(Issuetype $issuetype)
         {
-            $issuetypes = $this->getIssuetypes();
-            foreach ($issuetypes as $key => $issuetype)
-            {
-                if ($this->isIssuetypeReportable($issuetype)) continue;
-                unset($issuetypes[$key]);
-            }
-            return $issuetypes;
-        }
-        
-        protected function _preDelete()
-        {
-            tables\IssueFields::getTable()->deleteByIssuetypeSchemeID($this->getID());
-            tables\IssuetypeSchemeLink::getTable()->deleteByIssuetypeSchemeID($this->getID());
-            tables\Projects::getTable()->updateByIssuetypeSchemeID($this->getID());
-        }
+            $this->_populateAssociatedIssuetypes();
+            if (!$this->isSchemeAssociatedWithIssuetype($issuetype)) return false;
 
-        protected function _populateVisibleFieldsForIssuetype(Issuetype $issuetype)
-        {
-            if (!array_key_exists($issuetype->getID(), $this->_visiblefields))
-            {
-                $this->_visiblefields[$issuetype->getID()] = tables\IssueFields::getTable()->getSchemeVisibleFieldsArrayByIssuetypeID($this->getID(), $issuetype->getID());
-            }
+            return (bool)$this->_issuetypedetails[$issuetype->getID()]['reportable'];
         }
 
         public function getVisibleFields()
         {
-            $fields = array();
+            $fields = [];
             $types = $this->getIssuetypes();
             foreach ($types as $type) {
                 $this->_populateVisibleFieldsForIssuetype($type);
                 $fields = array_merge($fields, $this->_visiblefields[$type->getID()]);
             }
             ksort($fields);
+
             return $fields;
+        }
+
+        protected function _populateVisibleFieldsForIssuetype(Issuetype $issuetype)
+        {
+            if (!array_key_exists($issuetype->getID(), $this->_visiblefields)) {
+                $this->_visiblefields[$issuetype->getID()] = tables\IssueFields::getTable()->getSchemeVisibleFieldsArrayByIssuetypeID($this->getID(), $issuetype->getID());
+            }
         }
 
         public function getVisibleFieldsForIssuetype(Issuetype $issuetype)
         {
             $this->_populateVisibleFieldsForIssuetype($issuetype);
+
             return $this->_visiblefields[$issuetype->getID()];
         }
-        
+
         public function clearAvailableFieldsForIssuetype(Issuetype $issuetype)
         {
             tables\IssueFields::getTable()->deleteBySchemeIDandIssuetypeID($this->getID(), $issuetype->getID());
         }
 
-        public function setFieldAvailableForIssuetype(Issuetype $issuetype, $key, $details = array())
+        public function setFieldAvailableForIssuetype(Issuetype $issuetype, $key, $details = [])
         {
             tables\IssueFields::getTable()->addFieldAndDetailsBySchemeIDandIssuetypeID($this->getID(), $issuetype->getID(), $key, $details);
         }
-        
+
         public function isInUse()
         {
-            if ($this->_number_of_projects === null)
-            {
+            if ($this->_number_of_projects === null) {
                 $this->_number_of_projects = tables\Projects::getTable()->countByIssuetypeSchemeID($this->getID());
             }
-            return (bool) $this->_number_of_projects;
+
+            return (bool)$this->_number_of_projects;
         }
-        
+
         public function getNumberOfProjects()
         {
-            return (int) $this->_number_of_projects;
+            return (int)$this->_number_of_projects;
         }
-        
+
         /**
          * Return the items name
          *
@@ -334,6 +319,18 @@
         public function setName($name)
         {
             $this->_name = $name;
+        }
+
+        protected function _postSave($is_new)
+        {
+            framework\Context::getCache()->delete(framework\Cache::KEY_TEXTPARSER_ISSUE_REGEX);
+        }
+
+        protected function _preDelete()
+        {
+            tables\IssueFields::getTable()->deleteByIssuetypeSchemeID($this->getID());
+            tables\IssuetypeSchemeLink::getTable()->deleteByIssuetypeSchemeID($this->getID());
+            tables\Projects::getTable()->updateByIssuetypeSchemeID($this->getID());
         }
 
     }

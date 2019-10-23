@@ -2,15 +2,18 @@
 
     namespace pachno\core\entities;
 
-    use pachno\core\entities\tables\IncomingEmailAccounts;
+    use Exception;
+    use pachno\core\entities\common\IdentifiableScoped;
+    use pachno\core\framework\Context;
 
     /**
      * @Table(name="\pachno\core\entities\tables\IncomingEmailAccounts")
      */
-    class IncomingEmailAccount extends \pachno\core\entities\common\IdentifiableScoped
+    class IncomingEmailAccount extends IdentifiableScoped
     {
 
         const SERVER_IMAP = 0;
+
         const SERVER_POP3 = 1;
 
         /**
@@ -72,17 +75,18 @@
          * @Column(type="string", length=200)
          */
         protected $_password;
+
         protected $_connection;
 
         /**
-         * @var \pachno\core\entities\Project
+         * @var Project
          * @Column(type="integer", length=10)
          * @Relates(class="\pachno\core\entities\Project")
          */
         protected $_project;
 
         /**
-         * @var \pachno\core\entities\Issuetype
+         * @var Issuetype
          * @Column(type="integer", length=10)
          * @Relates(class="\pachno\core\entities\Issuetype")
          */
@@ -128,34 +132,14 @@
             $this->_name = $name;
         }
 
-        public function getServer()
-        {
-            return $this->_server;
-        }
-
-        public function setServer($server)
-        {
-            $this->_server = $server;
-        }
-
-        public function getFoldername()
-        {
-            return $this->_folder;
-        }
-
         public function setFoldername($folder)
         {
             $this->_folder = $folder;
         }
 
-        public function getPort()
+        public function isImap()
         {
-            return $this->_port;
-        }
-
-        public function setPort($port)
-        {
-            $this->_port = $port;
+            return (bool)$this->getServerType() == self::SERVER_IMAP;
         }
 
         public function getServerType()
@@ -168,19 +152,9 @@
             $this->_server_type = $server_type;
         }
 
-        public function isImap()
-        {
-            return (bool) $this->getServerType() == self::SERVER_IMAP;
-        }
-
         public function isPop3()
         {
-            return (bool) $this->getServerType() == self::SERVER_POP3;
-        }
-
-        public function usesSSL()
-        {
-            return (bool) $this->_ssl;
+            return (bool)$this->getServerType() == self::SERVER_POP3;
         }
 
         public function setSSL($ssl)
@@ -188,44 +162,9 @@
             $this->_ssl = $ssl;
         }
 
-        public function doesKeepEmails()
-        {
-            return (bool) $this->_keep_email;
-        }
-
         public function setKeepEmails($keep_emails)
         {
             $this->_keep_email = $keep_emails;
-        }
-
-        public function getUsername()
-        {
-            return $this->_username;
-        }
-
-        public function setUsername($username)
-        {
-            $this->_username = $username;
-        }
-
-        public function getPassword()
-        {
-            return $this->_password;
-        }
-
-        public function setPassword($password)
-        {
-            $this->_password = $password;
-        }
-
-        public function setProject($project)
-        {
-            $this->_project = $project;
-        }
-
-        public function setIssuetype($issuetype)
-        {
-            $this->_issuetype = $issuetype;
         }
 
         public function setPreferHtml($preferHtml)
@@ -259,58 +198,20 @@
         }
 
         /**
-         * Retrieve the imap connection string for this account
-         *
-         * @return string
-         */
-        public function getConnectionString()
-        {
-            $conn_string = "{" . $this->getServer() . ":" . $this->getPort() . "/";
-            $conn_string .= ($this->getServerType() == self::SERVER_IMAP) ? "imap" : "pop3";
-
-            if ($this->usesSSL())
-                $conn_string .= "/ssl";
-            if ($this->doesIgnoreCertificateValidation())
-                $conn_string .= "/novalidate-cert";
-
-            $conn_string .= "}";
-            $conn_string .= ($this->getFoldername() == '') ? "INBOX" : $this->getFoldername();
-
-            return $conn_string;
-        }
-
-        /**
-         * Create an imap connection for this account
-         */
-        public function connect()
-        {
-            if ($this->_connection === null)
-            {
-                $options = array();
-                if ($this->usesPlaintextAuthentication())
-                    $options['DISABLE_AUTHENTICATOR'] = 'GSSAPI';
-
-                $this->_connection = imap_open($this->getConnectionString(), $this->getUsername(), $this->getPassword(), 0, 0, $options);
-            }
-            if (!is_resource($this->_connection))
-            {
-                $error = imap_last_error();
-                $error = ($error === false) ? \pachno\core\framework\Context::getI18n()->__('No error message provided') : $error;
-                throw new \Exception(\pachno\core\framework\Context::getI18n()->__('Could not connect to the specified email server(%connection_string): %error_message', array('%connection_string' => $this->getConnectionString(), '%error_message' => $error)));
-            }
-        }
-
-        /**
          * Disconnects this account from the imap resource         *
          */
         public function disconnect()
         {
-            if (!$this->doesKeepEmails())
-            {
+            if (!$this->doesKeepEmails()) {
                 imap_expunge($this->_connection);
             }
             imap_close($this->_connection);
             $this->_connection = null;
+        }
+
+        public function doesKeepEmails()
+        {
+            return (bool)$this->_keep_email;
         }
 
         /**
@@ -332,14 +233,111 @@
         {
             $this->connect();
             $uids = imap_search($this->_connection, 'UNSEEN');
-            if ($uids)
-            {
+            if ($uids) {
                 return imap_fetch_overview($this->_connection, join(",", $uids), 0);
+            } else {
+                return [];
             }
-            else
-            {
-                return array();
+        }
+
+        /**
+         * Create an imap connection for this account
+         */
+        public function connect()
+        {
+            if ($this->_connection === null) {
+                $options = [];
+                if ($this->usesPlaintextAuthentication())
+                    $options['DISABLE_AUTHENTICATOR'] = 'GSSAPI';
+
+                $this->_connection = imap_open($this->getConnectionString(), $this->getUsername(), $this->getPassword(), 0, 0, $options);
             }
+            if (!is_resource($this->_connection)) {
+                $error = imap_last_error();
+                $error = ($error === false) ? Context::getI18n()->__('No error message provided') : $error;
+                throw new Exception(Context::getI18n()->__('Could not connect to the specified email server(%connection_string): %error_message', ['%connection_string' => $this->getConnectionString(), '%error_message' => $error]));
+            }
+        }
+
+        public function usesPlaintextAuthentication()
+        {
+            return $this->_plaintext_authentication;
+        }
+
+        /**
+         * Retrieve the imap connection string for this account
+         *
+         * @return string
+         */
+        public function getConnectionString()
+        {
+            $conn_string = "{" . $this->getServer() . ":" . $this->getPort() . "/";
+            $conn_string .= ($this->getServerType() == self::SERVER_IMAP) ? "imap" : "pop3";
+
+            if ($this->usesSSL())
+                $conn_string .= "/ssl";
+            if ($this->doesIgnoreCertificateValidation())
+                $conn_string .= "/novalidate-cert";
+
+            $conn_string .= "}";
+            $conn_string .= ($this->getFoldername() == '') ? "INBOX" : $this->getFoldername();
+
+            return $conn_string;
+        }
+
+        public function getServer()
+        {
+            return $this->_server;
+        }
+
+        public function setServer($server)
+        {
+            $this->_server = $server;
+        }
+
+        public function getPort()
+        {
+            return $this->_port;
+        }
+
+        public function setPort($port)
+        {
+            $this->_port = $port;
+        }
+
+        public function usesSSL()
+        {
+            return (bool)$this->_ssl;
+        }
+
+        public function doesIgnoreCertificateValidation()
+        {
+            return $this->_ignore_certificate_validation;
+        }
+
+        public function getFoldername()
+        {
+            return $this->_folder;
+        }
+
+        public function getUsername()
+        {
+            return $this->_username;
+        }
+
+        public function setUsername($username)
+        {
+            $this->_username = $username;
+        }
+
+        public function getPassword()
+        {
+            return $this->_password;
+        }
+
+        public function setPassword($password)
+        {
+            $this->_password = $password;
         }
 
         /**
@@ -348,16 +346,17 @@
          * Sets the message for deletion when chosen to do not keep emails
          *
          * @param stdObject $email
-         * @return \pachno\core\entities\IncomingEmailMessage the message
+         *
+         * @return IncomingEmailMessage the message
          */
         public function getMessage($email)
         {
             $message = new IncomingEmailMessage($this->_connection, $email->msgno);
             $is_structure = $message->fetch();
-            if ($is_structure && !$this->doesKeepEmails())
-            {
+            if ($is_structure && !$this->doesKeepEmails()) {
                 imap_delete($this->_connection, $email->msgno);
             }
+
             return $message;
         }
 
@@ -370,33 +369,45 @@
         {
             $this->connect();
             $result = imap_search($this->_connection, "UNSEEN");
+
             return ($result !== false) ? count($result) : 0;
         }
 
         /**
          * Returns the project associated with this account
          *
-         * @return \pachno\core\entities\Project
+         * @return Project
          */
         public function getProject()
         {
             return $this->_b2dbLazyLoad('_project');
         }
 
+        public function setProject($project)
+        {
+            $this->_project = $project;
+        }
+
+        public function getIssuetypeID()
+        {
+            $issuetype = $this->getIssuetype();
+
+            return ($issuetype instanceof Issuetype) ? $issuetype->getID() : null;
+        }
+
         /**
          * Returns the issuetype associated with this account
          *
-         * @return \pachno\core\entities\Issuetype
+         * @return Issuetype
          */
         public function getIssuetype()
         {
             return $this->_b2dbLazyLoad('_issuetype');
         }
 
-        public function getIssuetypeID()
+        public function setIssuetype($issuetype)
         {
-            $issuetype = $this->getIssuetype();
-            return ($issuetype instanceof \pachno\core\entities\Issuetype) ? $issuetype->getID() : null;
+            $this->_issuetype = $issuetype;
         }
 
         public function setIgnoreCertificateValidation($value = true)
@@ -404,19 +415,9 @@
             $this->_ignore_certificate_validation = $value;
         }
 
-        public function doesIgnoreCertificateValidation()
-        {
-            return $this->_ignore_certificate_validation;
-        }
-
         public function setUsePlaintextAuthentication($value = true)
         {
             $this->_plaintext_authentication = $value;
-        }
-
-        public function usesPlaintextAuthentication()
-        {
-            return $this->_plaintext_authentication;
         }
 
         public function doesUsePlaintextAuthentication()

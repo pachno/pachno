@@ -2,17 +2,9 @@
 
     namespace pachno\core\modules\main\cli;
 
+    use Exception;
     use pachno\core\framework;
-
-    /**
-     * CLI command class, main -> license
-     *
-     * @author Daniel Andre Eikeland <zegenie@zegeniestudios.net>
-     * @version 3.1
-     * @license http://opensource.org/licenses/MPL-2.0 Mozilla Public License 2.0 (MPL 2.0)
-     * @package pachno
-     * @subpackage core
-     */
+    use pachno\core\framework\cli\Command;
 
     /**
      * CLI command class, main -> clear-cache
@@ -20,14 +12,8 @@
      * @package pachno
      * @subpackage core
      */
-    class Upgrade extends \pachno\core\framework\cli\Command
+    class Upgrade extends Command
     {
-
-        protected function _setup()
-        {
-            $this->_command_name = 'upgrade';
-            $this->_description = "Upgrades the installation to the current version.";
-        }
 
         public function do_execute()
         {
@@ -42,6 +28,7 @@
             if (!$upgrade_available) {
                 $this->cliEcho('No upgrade necessary!', 'green');
                 $this->cliEcho("\n");
+
                 return;
             } else {
                 try {
@@ -54,7 +41,7 @@
                     } else {
                         $this->cliEcho("Upgrade failed!\n", 'red');
                     }
-                } catch (\Exception $e) {
+                } catch (Exception $e) {
                     $this->cliEcho("\n");
                     $this->cliEcho("\n---------------------\n");
                     $this->cliEcho("An error occured during the upgrade:\n", 'red', 'bold');
@@ -62,6 +49,12 @@
                     $this->cliEcho("---------------------\n");
                 }
             }
+        }
+
+        protected function _setup()
+        {
+            $this->_command_name = 'upgrade';
+            $this->_description = "Upgrades the installation to the current version.";
         }
 
     }

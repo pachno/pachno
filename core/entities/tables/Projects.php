@@ -2,13 +2,14 @@
 
     namespace pachno\core\entities\tables;
 
+    use b2db\Criteria;
+    use b2db\Criterion;
     use b2db\Query;
+    use b2db\QueryColumnSort;
     use b2db\Update;
+    use pachno\core\entities\IssuetypeScheme;
     use pachno\core\entities\Project;
     use pachno\core\framework;
-    use b2db\Core,
-        b2db\Criteria,
-        b2db\Criterion;
 
     /**
      * Projects table
@@ -37,72 +38,103 @@
     {
 
         const B2DB_TABLE_VERSION = 3;
-        const B2DBNAME = 'projects';
-        const ID = 'projects.id';
-        const SCOPE = 'projects.scope';
-        const NAME = 'projects.name';
-        const KEY = 'projects.key';
-        const PREFIX = 'projects.prefix';
-        const USE_PREFIX = 'projects.use_prefix';
-        const USE_SCRUM = 'projects.use_scrum';
-        const HOMEPAGE = 'projects.homepage';
-        const OWNER_USER = 'projects.owner_user';
-        const OWNER_TEAM = 'projects.owner_team';
-        const LEADER_TEAM = 'projects.leader_team';
-        const LEADER_USER = 'projects.leader_user';
-        const CLIENT = 'projects.client';
-        const DESCRIPTION = 'projects.description';
-        const DOC_URL = 'projects.doc_url';
-        const WIKI_URL = 'projects.wiki_url';
-        const RELEASED = 'projects.isreleased';
-        const PLANNED_RELEASED = 'projects.isplannedreleased';
-        const RELEASE_DATE = 'projects.release_date';
-        const ENABLE_BUILDS = 'projects.enable_builds';
-        const ENABLE_EDITIONS = 'projects.enable_editions';
-        const ENABLE_COMPONENTS = 'projects.enable_components';
-        const SHOW_IN_SUMMARY = 'projects.show_in_summary';
-        const SUMMARY_DISPLAY = 'projects.summary_display';
-        const HAS_DOWNLOADS = 'projects.has_downloads';
-        const QA = 'projects.qa_responsible';
-        const QA_TYPE = 'projects.qa_responsible_type';
-        const LOCKED = 'projects.locked';
-        const ISSUES_LOCK_TYPE = 'projects.issues_lock_type';
-        const DELETED = 'projects.deleted';
-        const SMALL_ICON = 'projects.small_icon';
-        const LARGE_ICON = 'projects.large_icon';
-        const ALLOW_CHANGING_WITHOUT_WORKING = 'projects.allow_freelancing';
-        const WORKFLOW_SCHEME_ID = 'projects.workflow_scheme_id';
-        const ISSUETYPE_SCHEME_ID = 'projects.issuetype_scheme_id';
-        const AUTOASSIGN = 'projects.autoassign';
-        const PARENT_PROJECT_ID = 'projects.parent';
-        const ARCHIVED = 'projects.archived';
 
-        protected function setupIndexes()
-        {
-            $this->addIndex('scope', self::SCOPE);
-            $this->addIndex('scope_name', array(self::SCOPE, self::NAME));
-            $this->addIndex('workflow_scheme_id', self::WORKFLOW_SCHEME_ID);
-            $this->addIndex('issuetype_scheme_id', self::ISSUETYPE_SCHEME_ID);
-            $this->addIndex('parent', self::PARENT_PROJECT_ID);
-            $this->addIndex('parent_scope', array(self::PARENT_PROJECT_ID, self::SCOPE));
-        }
+        const B2DBNAME = 'projects';
+
+        const ID = 'projects.id';
+
+        const SCOPE = 'projects.scope';
+
+        const NAME = 'projects.name';
+
+        const KEY = 'projects.key';
+
+        const PREFIX = 'projects.prefix';
+
+        const USE_PREFIX = 'projects.use_prefix';
+
+        const USE_SCRUM = 'projects.use_scrum';
+
+        const HOMEPAGE = 'projects.homepage';
+
+        const OWNER_USER = 'projects.owner_user';
+
+        const OWNER_TEAM = 'projects.owner_team';
+
+        const LEADER_TEAM = 'projects.leader_team';
+
+        const LEADER_USER = 'projects.leader_user';
+
+        const CLIENT = 'projects.client';
+
+        const DESCRIPTION = 'projects.description';
+
+        const DOC_URL = 'projects.doc_url';
+
+        const WIKI_URL = 'projects.wiki_url';
+
+        const RELEASED = 'projects.isreleased';
+
+        const PLANNED_RELEASED = 'projects.isplannedreleased';
+
+        const RELEASE_DATE = 'projects.release_date';
+
+        const ENABLE_BUILDS = 'projects.enable_builds';
+
+        const ENABLE_EDITIONS = 'projects.enable_editions';
+
+        const ENABLE_COMPONENTS = 'projects.enable_components';
+
+        const SHOW_IN_SUMMARY = 'projects.show_in_summary';
+
+        const SUMMARY_DISPLAY = 'projects.summary_display';
+
+        const HAS_DOWNLOADS = 'projects.has_downloads';
+
+        const QA = 'projects.qa_responsible';
+
+        const QA_TYPE = 'projects.qa_responsible_type';
+
+        const LOCKED = 'projects.locked';
+
+        const ISSUES_LOCK_TYPE = 'projects.issues_lock_type';
+
+        const DELETED = 'projects.deleted';
+
+        const SMALL_ICON = 'projects.small_icon';
+
+        const LARGE_ICON = 'projects.large_icon';
+
+        const ALLOW_CHANGING_WITHOUT_WORKING = 'projects.allow_freelancing';
+
+        const WORKFLOW_SCHEME_ID = 'projects.workflow_scheme_id';
+
+        const ISSUETYPE_SCHEME_ID = 'projects.issuetype_scheme_id';
+
+        const AUTOASSIGN = 'projects.autoassign';
+
+        const PARENT_PROJECT_ID = 'projects.parent';
+
+        const ARCHIVED = 'projects.archived';
 
         public function getByPrefix($prefix)
         {
             $query = $this->getQuery();
             $query->where(self::PREFIX, $prefix);
             $query->where(self::SCOPE, framework\Context::getScope()->getID());
+
             return $this->selectOne($query);
         }
 
         /**
          * @param bool $all_scopes
+         *
          * @return Project[]
          */
         public function getAll($all_scopes = false): array
         {
             $query = $this->getQuery();
-            $query->addOrderBy(self::NAME, \b2db\QueryColumnSort::SORT_ASC);
+            $query->addOrderBy(self::NAME, QueryColumnSort::SORT_ASC);
             if (!$all_scopes) {
                 $query->where(self::SCOPE, framework\Context::getScope()->getID());
             }
@@ -114,24 +146,23 @@
         public function getAllIncludingDeleted()
         {
             $query = $this->getQuery();
-            $query->addOrderBy(self::NAME, \b2db\QueryColumnSort::SORT_ASC);
+            $query->addOrderBy(self::NAME, QueryColumnSort::SORT_ASC);
             $query->where(self::SCOPE, framework\Context::getScope()->getID());
             $res = $this->select($query, false);
+
             return $res;
         }
 
         public function getByID($id, $scoped = true)
         {
-            if ($scoped)
-            {
+            if ($scoped) {
                 $query = $this->getQuery();
                 $query->where(self::SCOPE, framework\Context::getScope()->getID());
                 $row = $this->rawSelectById($id, $query, false);
-            }
-            else
-            {
+            } else {
                 $row = $this->rawSelectById($id);
             }
+
             return $row;
         }
 
@@ -141,6 +172,7 @@
             $query->where(self::SCOPE, framework\Context::getScope()->getID());
             $query->where(self::CLIENT, $id);
             $row = $this->rawSelect($query, false);
+
             return $row;
         }
 
@@ -152,6 +184,7 @@
             $query->where(self::DELETED, false);
 
             $res = $this->select($query, false);
+
             return $res;
         }
 
@@ -162,8 +195,8 @@
             $query->where(self::SCOPE, framework\Context::getScope()->getID());
 
             $criteria = new Criteria();
-            $criteria->where(self::NAME, "%{$projectname}%", \b2db\Criterion::LIKE);
-            $criteria->or(self::KEY, strtolower("%{$projectname}%"), \b2db\Criterion::LIKE);
+            $criteria->where(self::NAME, "%{$projectname}%", Criterion::LIKE);
+            $criteria->or(self::KEY, strtolower("%{$projectname}%"), Criterion::LIKE);
             $query->and($criteria);
 
             return $this->select($query);
@@ -174,8 +207,9 @@
             $query = $this->getQuery();
             $query->where(self::SCOPE, framework\Context::getScope()->getID());
             $query->where(self::KEY, $key);
-            $query->where(self::KEY, '', \b2db\Criterion::NOT_EQUALS);
+            $query->where(self::KEY, '', Criterion::NOT_EQUALS);
             $row = $this->rawSelectOne($query, false);
+
             return $row;
         }
 
@@ -187,7 +221,7 @@
             $query->where(self::DELETED, false);
             $query->where(self::ARCHIVED, false);
 
-            return (int) $this->count($query);
+            return (int)$this->count($query);
         }
 
         public function countByWorkflowSchemeID($scheme_id)
@@ -231,9 +265,8 @@
 
         public function updateByIssuetypeSchemeID($scheme_id)
         {
-            $schemes = \pachno\core\entities\IssuetypeScheme::getAll();
-            foreach ($schemes as $default_scheme_id => $scheme)
-            {
+            $schemes = IssuetypeScheme::getAll();
+            foreach ($schemes as $default_scheme_id => $scheme) {
                 break;
             }
 
@@ -277,6 +310,16 @@
             }
 
             return $file_ids;
+        }
+
+        protected function setupIndexes()
+        {
+            $this->addIndex('scope', self::SCOPE);
+            $this->addIndex('scope_name', [self::SCOPE, self::NAME]);
+            $this->addIndex('workflow_scheme_id', self::WORKFLOW_SCHEME_ID);
+            $this->addIndex('issuetype_scheme_id', self::ISSUETYPE_SCHEME_ID);
+            $this->addIndex('parent', self::PARENT_PROJECT_ID);
+            $this->addIndex('parent_scope', [self::PARENT_PROJECT_ID, self::SCOPE]);
         }
 
     }

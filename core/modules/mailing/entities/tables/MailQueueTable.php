@@ -2,11 +2,11 @@
 
     namespace pachno\core\entities\tables;
 
+    use b2db\Criterion;
     use b2db\Insertion;
-    use pachno\core\framework,
-        pachno\core\entities\tables\ScopedTable,
-        b2db\Criteria,
-        Swift_Message;
+    use b2db\QueryColumnSort;
+    use pachno\core\framework;
+    use Swift_Message;
 
     /**
      * @Table(name="mailing_queue")
@@ -15,26 +15,24 @@
     {
 
         const B2DB_TABLE_VERSION = 1;
-        const B2DBNAME = 'mailing_queue';
-        const ID = 'mailing_queue.id';
-        const MESSAGE = 'mailing_queue.headers';
-        const DATE = 'mailing_queue.date';
-        const SCOPE = 'mailing_queue.scope';
-        const SUBJECT = 'mailing_queue.subject';
-        const FROM = 'mailing_queue.from';
-        const TO = 'mailing_queue.to';
-        const MESSAGE_HTML = 'mailing_queue.part';
 
-        protected function initialize()
-        {
-            parent::setup(self::B2DBNAME, self::ID);
-            parent::addVarchar(self::SUBJECT, 255);
-            parent::addVarchar(self::FROM, 255);
-            parent::addText(self::TO);
-            parent::addText(self::MESSAGE);
-            parent::addText(self::MESSAGE_HTML);
-            parent::addInteger(self::DATE, 10);
-        }
+        const B2DBNAME = 'mailing_queue';
+
+        const ID = 'mailing_queue.id';
+
+        const MESSAGE = 'mailing_queue.headers';
+
+        const DATE = 'mailing_queue.date';
+
+        const SCOPE = 'mailing_queue.scope';
+
+        const SUBJECT = 'mailing_queue.subject';
+
+        const FROM = 'mailing_queue.from';
+
+        const TO = 'mailing_queue.to';
+
+        const MESSAGE_HTML = 'mailing_queue.part';
 
         public function addMailToQueue(Swift_Message $mail)
         {
@@ -56,19 +54,16 @@
         {
             $query = $this->getQuery();
             $query->where(self::SCOPE, framework\Context::getScope()->getID());
-            if ($limit !== null)
-            {
+            if ($limit !== null) {
                 $query->setLimit($limit);
             }
-            $query->addOrderBy(self::DATE, \b2db\QueryColumnSort::SORT_ASC);
+            $query->addOrderBy(self::DATE, QueryColumnSort::SORT_ASC);
 
-            $messages = array();
+            $messages = [];
             $res = $this->rawSelect($query);
 
-            if ($res)
-            {
-                while ($row = $res->getNextRow())
-                {
+            if ($res) {
+                while ($row = $res->getNextRow()) {
                     require_once PACHNO_VENDOR_PATH . 'swiftmailer' . DS . 'swiftmailer' . DS . 'lib' . DS . 'swift_required.php';
                     $message = Swift_Message::newInstance();
                     $message->setSubject($row->get(self::SUBJECT));
@@ -87,10 +82,21 @@
         public function deleteProcessedMessages($ids)
         {
             $query = $this->getQuery();
-            $query->where(self::ID, (array) $ids, \b2db\Criterion::IN);
+            $query->where(self::ID, (array)$ids, Criterion::IN);
             $query->where(self::SCOPE, framework\Context::getScope()->getID());
 
             $res = $this->rawDelete($query);
+        }
+
+        protected function initialize()
+        {
+            parent::setup(self::B2DBNAME, self::ID);
+            parent::addVarchar(self::SUBJECT, 255);
+            parent::addVarchar(self::FROM, 255);
+            parent::addText(self::TO);
+            parent::addText(self::MESSAGE);
+            parent::addText(self::MESSAGE_HTML);
+            parent::addInteger(self::DATE, 10);
         }
 
     }

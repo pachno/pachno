@@ -2,6 +2,12 @@
 
     namespace pachno\core\entities;
 
+    use b2db\Row;
+    use Exception;
+    use pachno\core\entities\tables\Builds;
+    use pachno\core\entities\tables\Components;
+    use pachno\core\entities\tables\Editions;
+    use pachno\core\entities\tables\Milestones;
     use pachno\core\framework;
 
     /**
@@ -11,20 +17,35 @@
     {
 
         const DROPDOWN_CHOICE_TEXT = 1;
+
         const INPUT_TEXT = 2;
+
         const INPUT_TEXTAREA_MAIN = 3;
+
         const INPUT_TEXTAREA_SMALL = 4;
+
         const RADIO_CHOICE = 5;
+
         const RELEASES_CHOICE = 8;
+
         const COMPONENTS_CHOICE = 10;
+
         const EDITIONS_CHOICE = 12;
+
         const STATUS_CHOICE = 13;
+
         const USER_CHOICE = 14;
+
         const TEAM_CHOICE = 15;
+
         const CALCULATED_FIELD = 18;
+
         const DATE_PICKER = 19;
+
         const MILESTONE_CHOICE = 20;
+
         const CLIENT_CHOICE = 21;
+
         const DATETIME_PICKER = 22;
 
         protected static $_types = null;
@@ -53,6 +74,16 @@
          */
         protected $_instructions = null;
 
+        public static function getByFieldType($type)
+        {
+            $return_fields = [];
+            foreach (self::getAll() as $field) {
+                if ($field->getType() == $type) $return_fields[$field->getID()] = $field;
+            }
+
+            return $return_fields;
+        }
+
         /**
          * Returns all custom types available
          *
@@ -60,29 +91,17 @@
          */
         public static function getAll()
         {
-            if (self::$_types === null)
-            {
+            if (self::$_types === null) {
                 self::$_types = tables\CustomFields::getTable()->getAll();
             }
+
             return self::$_types;
-        }
-
-        public static function getByFieldType($type)
-        {
-            $return_fields = array();
-            foreach (self::getAll() as $field)
-            {
-                if ($field->getType() == $type) $return_fields[$field->getID()] = $field;
-            }
-
-            return $return_fields;
         }
 
         public static function getByFieldTypes($types)
         {
-            $return_fields = array();
-            foreach (self::getAll() as $field)
-            {
+            $return_fields = [];
+            foreach (self::getAll() as $field) {
                 if (in_array($field->getType(), $types)) $return_fields[$field->getID()] = $field;
             }
 
@@ -91,13 +110,146 @@
 
         public static function getAllExceptTypes($types)
         {
-            $return_fields = array();
-            foreach (self::getAll() as $field)
-            {
+            $return_fields = [];
+            foreach (self::getAll() as $field) {
                 if (!in_array($field->getType(), $types)) $return_fields[$field->getID()] = $field;
             }
 
             return $return_fields;
+        }
+
+        public static function doesKeyExist($key)
+        {
+            return array_key_exists($key, self::getAll());
+        }
+
+        /**
+         * Get a custom type by its key
+         *
+         * @param string $key
+         *
+         * @return CustomDatatype
+         */
+        public static function getByKey($key)
+        {
+            foreach (self::getAll() as $field) {
+                if ($field->getKey() == $key) return $field;
+            }
+
+            return null;
+        }
+
+        public static function getInternalChoiceFieldsAsArray()
+        {
+            return [self::RELEASES_CHOICE, self::COMPONENTS_CHOICE, self::MILESTONE_CHOICE,
+                self::EDITIONS_CHOICE, self::STATUS_CHOICE, self::USER_CHOICE, self::TEAM_CHOICE, self::CLIENT_CHOICE];
+        }
+
+        /**
+         * Constructor
+         *
+         * @param B2DBrow $row [optional] A B2DBrow to use
+         */
+        public function _construct(Row $row, $foreign_key = null)
+        {
+            $this->_description = $this->_description ?: $this->_name;
+        }
+
+        public function createNewOption($name, $value, $itemdata = null)
+        {
+            if ($this->getType() == self::CALCULATED_FIELD) {
+                // Only allow one option/formula for the calculated field
+                $opts = $this->getOptions();
+                foreach ($opts as $option) {
+                    $option->delete();
+                }
+            }
+
+            $option = new CustomDatatypeOption();
+            $option->setName($name);
+            $option->setKey($this->getKey());
+            $option->setValue($value);
+            $option->setItemdata($itemdata);
+            $option->setCustomdatatype($this->_id);
+            $option->save();
+
+            // In order to set permissions correctly the item type has to be the same
+            // as the option id not the item field. set the opton id with the newly generated
+            // option ID and save again
+            $option->setItemtype($option->getID());
+            $option->save();
+            $this->_options = null;
+
+            return $option;
+        }
+
+        public function getType()
+        {
+            return $this->_itemtype;
+        }
+
+        public function getOptions()
+        {
+            $this->_populateOptions();
+
+            return $this->_options;
+        }
+
+        protected function _populateOptions()
+        {
+            if ($this->_options === null) {
+                if ($this->hasCustomOptions()) {
+                    $this->_b2dbLazyLoad('_options');
+                } else {
+                    switch ($this->getType()) {
+                        case self::RELEASES_CHOICE:
+                            $this->_options = (framework\Context::isProjectContext()) ? framework\Context::getCurrentProject()->getBuilds() : Builds::getTable()->selectAll();
+                            break;
+                        case self::COMPONENTS_CHOICE:
+                            $this->_options = (framework\Context::isProjectContext()) ? framework\Context::getCurrentProject()->getComponents() : Components::getTable()->selectAll();
+                            break;
+                        case self::EDITIONS_CHOICE:
+                            $this->_options = (framework\Context::isProjectContext()) ? framework\Context::getCurrentProject()->getEditions() : Editions::getTable()->selectAll();
+                            break;
+                        case self::MILESTONE_CHOICE:
+                            $this->_options = (framework\Context::isProjectContext()) ? framework\Context::getCurrentProject()->getMilestonesForIssues() : Milestones::getTable()->selectAll();
+                            break;
+                        case self::STATUS_CHOICE:
+                            $this->_options = Status::getAll();
+                            break;
+                    }
+                }
+            }
+        }
+
+        public function hasCustomOptions()
+        {
+            return (bool)in_array($this->getType(), self::getCustomChoiceFieldsAsArray());
+        }
+
+        public static function getCustomChoiceFieldsAsArray()
+        {
+            return [self::DROPDOWN_CHOICE_TEXT,
+                self::RADIO_CHOICE,
+                self::CALCULATED_FIELD
+            ];
+        }
+
+        public function setType($type)
+        {
+            $this->_itemtype = $type;
+        }
+
+        /**
+         * Return the description for this custom type
+         *
+         * @return string
+         */
+        public function getTypeDescription()
+        {
+            $types = self::getFieldTypes();
+
+            return $types[$this->_itemtype]['title'] ?? 'INVALID TYPE';
         }
 
         public static function getFieldTypes()
@@ -125,186 +277,15 @@
 
         }
 
-        protected function _preSave($is_new)
+        public function hasPredefinedOptions()
         {
-            parent::_preSave($is_new);
-            if ($is_new)
-            {
-                if (!$this->_description) {
-                    $this->_description = $this->_name;
-                }
-                if (!$this->_itemdata) {
-                    $this->_itemdata = $this->_name;
-                }
-                $this->_generateKey();
-                if (!$this->_key) {
-                    throw new \Exception(framework\Context::getI18n()->__('This field is not valid'));
-                }
-
-                if (array_key_exists($this->_key, self::getAll()))
-                {
-                    throw new \Exception(framework\Context::getI18n()->__('This field key already exists'));
-                }
-            }
-        }
-
-        protected function _preDelete()
-        {
-            tables\CustomFieldOptions::getTable()->deleteCustomFieldOptions($this->getID());
-            tables\IssueFields::getTable()->deleteByIssueFieldKey($this->getKey());
-        }
-
-        public static function doesKeyExist($key)
-        {
-            return array_key_exists($key, self::getAll());
-        }
-
-        /**
-         * Get a custom type by its key
-         *
-         * @param string $key
-         *
-         * @return \pachno\core\entities\CustomDatatype
-         */
-        public static function getByKey($key)
-        {
-            foreach (self::getAll() as $field)
-            {
-                if ($field->getKey() == $key) return $field;
-            }
-            return null;
-        }
-
-        public static function getCustomChoiceFieldsAsArray()
-        {
-            return array(self::DROPDOWN_CHOICE_TEXT,
-                        self::RADIO_CHOICE,
-                        self::CALCULATED_FIELD
-            );
+            return (bool)in_array($this->getType(), self::getChoiceFieldsAsArray());
         }
 
         public static function getChoiceFieldsAsArray()
         {
-            return array(self::DROPDOWN_CHOICE_TEXT, self::RADIO_CHOICE, self::RELEASES_CHOICE, self::COMPONENTS_CHOICE,
-                        self::EDITIONS_CHOICE, self::STATUS_CHOICE, self::USER_CHOICE, self::TEAM_CHOICE, self::CLIENT_CHOICE, self::MILESTONE_CHOICE);
-        }
-
-        public static function getInternalChoiceFieldsAsArray()
-        {
-            return array(self::RELEASES_CHOICE, self::COMPONENTS_CHOICE, self::MILESTONE_CHOICE,
-                        self::EDITIONS_CHOICE, self::STATUS_CHOICE, self::USER_CHOICE, self::TEAM_CHOICE, self::CLIENT_CHOICE);
-        }
-
-        /**
-         * Constructor
-         *
-         * @param B2DBrow $row [optional] A B2DBrow to use
-         */
-        public function _construct(\b2db\Row $row, $foreign_key = null)
-        {
-            $this->_description = $this->_description ?: $this->_name;
-        }
-
-        protected function _populateOptions()
-        {
-            if ($this->_options === null)
-            {
-                if ($this->hasCustomOptions()) {
-                    $this->_b2dbLazyLoad('_options');
-                } else {
-                    switch ($this->getType()) {
-                        case self::RELEASES_CHOICE:
-                            $this->_options = (framework\Context::isProjectContext()) ? framework\Context::getCurrentProject()->getBuilds() : \pachno\core\entities\tables\Builds::getTable()->selectAll();
-                            break;
-                        case self::COMPONENTS_CHOICE:
-                            $this->_options = (framework\Context::isProjectContext()) ? framework\Context::getCurrentProject()->getComponents() : \pachno\core\entities\tables\Components::getTable()->selectAll();
-                            break;
-                        case self::EDITIONS_CHOICE:
-                            $this->_options = (framework\Context::isProjectContext()) ? framework\Context::getCurrentProject()->getEditions() : \pachno\core\entities\tables\Editions::getTable()->selectAll();
-                            break;
-                        case self::MILESTONE_CHOICE:
-                            $this->_options = (framework\Context::isProjectContext()) ? framework\Context::getCurrentProject()->getMilestonesForIssues() : \pachno\core\entities\tables\Milestones::getTable()->selectAll();
-                            break;
-                        case self::STATUS_CHOICE:
-                            $this->_options = \pachno\core\entities\Status::getAll();
-                            break;
-                    }
-                }
-            }
-        }
-
-        public function getOptions()
-        {
-            $this->_populateOptions();
-            return $this->_options;
-        }
-
-        public function createNewOption($name, $value, $itemdata = null)
-        {
-            if ($this->getType() == self::CALCULATED_FIELD) {
-                // Only allow one option/formula for the calculated field
-                $opts = $this->getOptions();
-                foreach ($opts as $option) {
-                    $option->delete();
-                }
-            }
-
-            $option = new CustomDatatypeOption();
-            $option->setName($name);
-            $option->setKey($this->getKey());
-            $option->setValue($value);
-            $option->setItemdata($itemdata);
-            $option->setCustomdatatype($this->_id);
-            $option->save();
-
-            // In order to set permissions correctly the item type has to be the same
-            // as the option id not the item field. set the opton id with the newly generated
-            // option ID and save again
-            $option->setItemtype($option->getID());
-            $option->save();
-            $this->_options = null;
-            return $option;
-        }
-
-        /**
-         * Return this custom types key
-         *
-         * @return string
-         */
-        public function getKey()
-        {
-            return $this->_key;
-        }
-
-        public function getType()
-        {
-            return $this->_itemtype;
-        }
-
-        public function setType($type)
-        {
-            $this->_itemtype = $type;
-        }
-
-        /**
-         * Return the description for this custom type
-         *
-         * @return string
-         */
-        public function getTypeDescription()
-        {
-            $types = self::getFieldTypes();
-            return $types[$this->_itemtype]['title'] ?? 'INVALID TYPE';
-        }
-
-        public function hasCustomOptions()
-        {
-            return (bool) in_array($this->getType(), self::getCustomChoiceFieldsAsArray());
-        }
-
-        public function hasPredefinedOptions()
-        {
-            return (bool) in_array($this->getType(), self::getChoiceFieldsAsArray());
+            return [self::DROPDOWN_CHOICE_TEXT, self::RADIO_CHOICE, self::RELEASES_CHOICE, self::COMPONENTS_CHOICE,
+                self::EDITIONS_CHOICE, self::STATUS_CHOICE, self::USER_CHOICE, self::TEAM_CHOICE, self::CLIENT_CHOICE, self::MILESTONE_CHOICE];
         }
 
         /**
@@ -350,7 +331,7 @@
          */
         public function hasInstructions()
         {
-            return (bool) $this->_instructions;
+            return (bool)$this->_instructions;
         }
 
         /**
@@ -386,6 +367,7 @@
                 case self::CALCULATED_FIELD:
                     return false;
             }
+
             return true;
         }
 
@@ -400,6 +382,7 @@
                 case self::CALCULATED_FIELD:
                     return false;
             }
+
             return true;
         }
 
@@ -422,6 +405,43 @@
                 default:
                     return 'fas';
             }
+        }
+
+        protected function _preSave($is_new)
+        {
+            parent::_preSave($is_new);
+            if ($is_new) {
+                if (!$this->_description) {
+                    $this->_description = $this->_name;
+                }
+                if (!$this->_itemdata) {
+                    $this->_itemdata = $this->_name;
+                }
+                $this->_generateKey();
+                if (!$this->_key) {
+                    throw new Exception(framework\Context::getI18n()->__('This field is not valid'));
+                }
+
+                if (array_key_exists($this->_key, self::getAll())) {
+                    throw new Exception(framework\Context::getI18n()->__('This field key already exists'));
+                }
+            }
+        }
+
+        protected function _preDelete()
+        {
+            tables\CustomFieldOptions::getTable()->deleteCustomFieldOptions($this->getID());
+            tables\IssueFields::getTable()->deleteByIssueFieldKey($this->getKey());
+        }
+
+        /**
+         * Return this custom types key
+         *
+         * @return string
+         */
+        public function getKey()
+        {
+            return $this->_key;
         }
 
     }

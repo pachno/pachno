@@ -2,15 +2,19 @@
 
     namespace pachno\core\modules\mailing;
 
+    use pachno\core\entities\tables\Articles;
+    use pachno\core\framework\ActionComponent;
+    use pachno\core\framework\Context;
+
     /**
      * Main action components
      */
-    class Components extends \pachno\core\framework\ActionComponent
+    class Components extends ActionComponent
     {
 
         public function componentForgotPasswordPane()
         {
-            $this->forgottenintro = \pachno\core\entities\tables\Articles::getTable()->getArticleByName('ForgottenPasswordIntro');
+            $this->forgottenintro = Articles::getTable()->getArticleByName('ForgottenPasswordIntro');
         }
 
         public function componentForgotPasswordLink()
@@ -47,7 +51,7 @@
 
         public function componentEditIncomingEmailAccount()
         {
-            $this->project = \pachno\core\framework\Context::getCurrentProject();
+            $this->project = Context::getCurrentProject();
         }
 
     }

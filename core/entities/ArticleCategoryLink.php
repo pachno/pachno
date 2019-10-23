@@ -2,20 +2,18 @@
 
     namespace pachno\core\entities;
 
-    use pachno\core\entities\Article;
-    use \pachno\core\framework;
-    use pachno\core\entities\ArticleCategory;
+    use pachno\core\entities\common\IdentifiableScoped;
 
     /**
      * @Table(name="\pachno\core\entities\tables\ArticleCategories")
      */
-    class ArticleCategoryLink extends \pachno\core\entities\common\IdentifiableScoped
+    class ArticleCategoryLink extends IdentifiableScoped
     {
 
         /**
          * The original article
          *
-         * @var \pachno\core\entities\Article
+         * @var Article
          * @Column(type="integer", length=10)
          * @Relates(class="\pachno\core\entities\Article")
          */
@@ -24,7 +22,7 @@
         /**
          * The category
          *
-         * @var \pachno\core\entities\ArticleCategory
+         * @var ArticleCategory
          * @Column(type="integer", length=10)
          * @Relates(class="\pachno\core\entities\Category")
          */

@@ -3,8 +3,7 @@
     namespace pachno\core\entities\tables;
 
     use b2db\Insertion;
-    use pachno\core\framework,
-        pachno\core\entities\tables\ScopedTable;
+    use pachno\core\framework;
 
     /**
      * @Table(name="articlelinks")
@@ -14,18 +13,16 @@
     {
 
         const B2DB_TABLE_VERSION = 1;
-        const B2DBNAME = 'articlelinks';
-        const ID = 'articlelinks.id';
-        const ARTICLE_NAME = 'articlelinks.article_name';
-        const LINK_ARTICLE_NAME = 'articlelinks.link_article_name';
-        const SCOPE = 'articlelinks.scope';
 
-        protected function initialize()
-        {
-            parent::setup(self::B2DBNAME, self::ID);
-            parent::addVarchar(self::ARTICLE_NAME, 300);
-            parent::addVarchar(self::LINK_ARTICLE_NAME, 300);
-        }
+        const B2DBNAME = 'articlelinks';
+
+        const ID = 'articlelinks.id';
+
+        const ARTICLE_NAME = 'articlelinks.article_name';
+
+        const LINK_ARTICLE_NAME = 'articlelinks.link_article_name';
+
+        const SCOPE = 'articlelinks.scope';
 
         public function deleteLinksByArticle($article_name)
         {
@@ -71,11 +68,9 @@
             $query->where(self::SCOPE, framework\Context::getScope()->getID());
             $query->setIsDistinct();
 
-            $names = array();
-            if ($res = $this->rawSelect($query))
-            {
-                while ($row = $res->getNextRow())
-                {
+            $names = [];
+            if ($res = $this->rawSelect($query)) {
+                while ($row = $res->getNextRow()) {
                     $article_name = $row->get(self::ARTICLE_NAME);
                     $names[$article_name] = $article_name;
                 }
@@ -91,17 +86,22 @@
             $query->where(self::SCOPE, framework\Context::getScope()->getID());
             $query->setIsDistinct();
 
-            $names = array();
-            if ($res = $this->rawSelect($query))
-            {
-                while ($row = $res->getNextRow())
-                {
+            $names = [];
+            if ($res = $this->rawSelect($query)) {
+                while ($row = $res->getNextRow()) {
                     $article_name = $row->get(self::LINK_ARTICLE_NAME);
                     $names[$article_name] = $article_name;
                 }
             }
 
             return $names;
+        }
+
+        protected function initialize()
+        {
+            parent::setup(self::B2DBNAME, self::ID);
+            parent::addVarchar(self::ARTICLE_NAME, 300);
+            parent::addVarchar(self::LINK_ARTICLE_NAME, 300);
         }
 
     }

@@ -8,9 +8,6 @@
     use pachno\core\entities\Workflow;
     use pachno\core\entities\WorkflowScheme;
     use pachno\core\framework;
-    use b2db\Core,
-        b2db\Criteria,
-        b2db\Criterion;
 
     /**
      * Link table between workflow and issue type
@@ -34,25 +31,22 @@
     {
 
         const B2DB_TABLE_VERSION = 1;
-        const B2DBNAME = 'workflow_issuetype';
-        const ID = 'workflow_issuetype.id';
-        const SCOPE = 'workflow_issuetype.scope';
-        const WORKFLOW_SCHEME_ID = 'workflow_issuetype.workflow_scheme_id';
-        const WORKFLOW_ID = 'workflow_issuetype.workflow_id';
-        const ISSUETYPE_ID = 'workflow_issuetype.issutype_id';
 
-        protected function initialize()
-        {
-            parent::setup(self::B2DBNAME, self::ID);
-            parent::addForeignKeyColumn(self::WORKFLOW_ID, Workflows::getTable());
-            parent::addForeignKeyColumn(self::WORKFLOW_SCHEME_ID, WorkflowSchemes::getTable());
-            parent::addForeignKeyColumn(self::ISSUETYPE_ID, IssueTypes::getTable());
-        }
+        const B2DBNAME = 'workflow_issuetype';
+
+        const ID = 'workflow_issuetype.id';
+
+        const SCOPE = 'workflow_issuetype.scope';
+
+        const WORKFLOW_SCHEME_ID = 'workflow_issuetype.workflow_scheme_id';
+
+        const WORKFLOW_ID = 'workflow_issuetype.workflow_id';
+
+        const ISSUETYPE_ID = 'workflow_issuetype.issutype_id';
 
         public function loadFixtures(Scope $scope, Workflow $workflow, WorkflowScheme $workflowScheme)
         {
-            foreach (IssueTypes::getTable()->getAllIDsByScopeID($scope->getID()) as $issuetype_id)
-            {
+            foreach (IssueTypes::getTable()->getAllIDsByScopeID($scope->getID()) as $issuetype_id) {
                 $insertion = new Insertion();
                 $insertion->add(self::SCOPE, $scope->getID());
                 $insertion->add(self::WORKFLOW_ID, $workflow->getID());
@@ -61,28 +55,22 @@
                 $this->rawInsert($insertion);
             }
         }
-        
+
         public function setWorkflowIDforIssuetypeIDwithSchemeID($workflow_id, $issuetype_id, $scheme_id)
         {
             $query = $this->getQuery();
             $query->where(self::SCOPE, framework\Context::getScope()->getID());
             $query->where(self::WORKFLOW_SCHEME_ID, $scheme_id);
             $query->where(self::ISSUETYPE_ID, $issuetype_id);
-            if ($res = $this->rawSelect($query))
-            {
-                if ($workflow_id)
-                {
+            if ($res = $this->rawSelect($query)) {
+                if ($workflow_id) {
                     $update = new Update();
                     $update->add(self::WORKFLOW_ID, $workflow_id);
                     $this->rawUpdate($update, $query);
-                }
-                else
-                {
+                } else {
                     $this->rawDelete($query);
                 }
-            }
-            elseif ($workflow_id)
-            {
+            } elseif ($workflow_id) {
                 $insertion = new Insertion();
                 $insertion->add(self::SCOPE, framework\Context::getScope()->getID());
                 $insertion->add(self::WORKFLOW_ID, $workflow_id);
@@ -127,16 +115,22 @@
             $query->where(self::WORKFLOW_SCHEME_ID, $workflow_scheme_id);
             $query->where(self::SCOPE, framework\Context::getScope()->getID());
 
-            $return_array = array();
-            if ($res = $this->rawSelect($query))
-            {
-                while ($row = $res->getNextRow())
-                {
-                    $return_array[$row->get(self::ISSUETYPE_ID)] = new \pachno\core\entities\Workflow($row->get(self::WORKFLOW_ID), $row);
+            $return_array = [];
+            if ($res = $this->rawSelect($query)) {
+                while ($row = $res->getNextRow()) {
+                    $return_array[$row->get(self::ISSUETYPE_ID)] = new Workflow($row->get(self::WORKFLOW_ID), $row);
                 }
             }
 
             return $return_array;
+        }
+
+        protected function initialize()
+        {
+            parent::setup(self::B2DBNAME, self::ID);
+            parent::addForeignKeyColumn(self::WORKFLOW_ID, Workflows::getTable());
+            parent::addForeignKeyColumn(self::WORKFLOW_SCHEME_ID, WorkflowSchemes::getTable());
+            parent::addForeignKeyColumn(self::ISSUETYPE_ID, IssueTypes::getTable());
         }
 
     }

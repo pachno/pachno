@@ -2,8 +2,10 @@
 
     namespace pachno\core\entities;
 
-    use pachno\core\entities\common\IdentifiableScoped,
-        pachno\core\entities\tables\ArticleFiles;
+    use pachno\core\entities\common\IdentifiableScoped;
+    use pachno\core\entities\tables\ArticleFiles;
+    use pachno\core\framework\Event;
+    use pachno\core\framework\Settings;
 
     /**
      * @Table(name="\pachno\core\entities\tables\Files")
@@ -67,22 +69,14 @@
             return ArticleFiles::getTable()->getByArticleID($article_id);
         }
 
-        public static function getImageContentTypes()
-        {
-            return array('image/png', 'image/jpeg', 'image/jpg', 'image/bmp', 'image/gif');
-        }
-
         public static function getMimeType($filename)
         {
             $content_type = null;
-            if (function_exists('finfo_open'))
-            {
+            if (function_exists('finfo_open')) {
                 $finfo = finfo_open(FILEINFO_MIME_TYPE); // return mime type ala mimetype extension
                 $content_type = finfo_file($finfo, $filename);
                 finfo_close($finfo);
-            }
-            elseif (function_exists('mime_content_type'))
-            {
+            } elseif (function_exists('mime_content_type')) {
                 $content_type = mime_content_type($filename);
             }
 
@@ -104,6 +98,11 @@
             return in_array($this->_content_type, self::getImageContentTypes());
         }
 
+        public static function getImageContentTypes()
+        {
+            return ['image/png', 'image/jpeg', 'image/jpg', 'image/bmp', 'image/gif'];
+        }
+
         public function getUploadedBy()
         {
             return $this->_b2dbLazyLoad('_uid');
@@ -122,16 +121,6 @@
         public function setUploadedAt($uploaded_at)
         {
             $this->_uploaded_at = $uploaded_at;
-        }
-
-        public function getRealFilename()
-        {
-            return $this->_real_filename;
-        }
-
-        public function setRealFilename($real_filename)
-        {
-            $this->_real_filename = $real_filename;
         }
 
         public function getOriginalFilename()
@@ -164,29 +153,13 @@
             $this->_content = $content;
         }
 
-        public function getFullpath()
+        public function getReadableFilesize()
         {
-            return \pachno\core\framework\Settings::getUploadsLocalpath() . $this->getRealFilename();
-        }
-
-        public function doesFileExistOnDisk()
-        {
-            return file_exists($this->getFullpath());
-        }
-
-        protected function _preDelete()
-        {
-            if ($this->doesFileExistOnDisk())
-            {
-                unlink($this->getFullpath());
-            }
-        }
-
-        protected function _preSave($is_new)
-        {
-            parent::_preSave($is_new);
-            if ($this->doesFileExistOnDisk()) {
-                $this->_size = filesize($this->getFullpath());
+            $size = $this->getSize();
+            if ($size > 1024 * 1024) {
+                return round(($size * 100 / (1024 * 1024)) / 100, 2) . 'MB';
+            } else {
+                return round(($size * 100 / 1024) / 100, 2) . 'KB';
             }
         }
 
@@ -195,27 +168,14 @@
             return $this->_size;
         }
 
-        public function getReadableFilesize()
+        public function hasDescription()
         {
-            $size = $this->getSize();
-            if ($size > 1024 * 1024)
-            {
-                return round(($size * 100 / (1024 * 1024)) / 100, 2) . 'MB';
-            }
-            else
-            {
-                return round(($size * 100 / 1024) / 100, 2) . 'KB';
-            }
+            return (bool)($this->getDescription() != '');
         }
 
         public function getDescription()
         {
             return $this->_description;
-        }
-
-        public function hasDescription()
-        {
-            return (bool) ($this->getDescription() != '');
         }
 
         public function setDescription($description)
@@ -225,9 +185,8 @@
 
         public function move($target_path)
         {
-            if (\pachno\core\framework\Settings::getUploadStorage() == 'files')
-            {
-                rename($this->getFullpath(), \pachno\core\framework\Settings::getUploadsLocalpath() . $target_path);
+            if (Settings::getUploadStorage() == 'files') {
+                rename($this->getFullpath(), Settings::getUploadsLocalpath() . $target_path);
             }
             $this->setRealFilename($target_path);
             $this->save();
@@ -237,18 +196,52 @@
         {
             $issue_ids = tables\IssueFiles::getTable()->getIssuesByFileID($this->getID());
 
-            foreach ($issue_ids as $issue_id)
-            {
-                $issue = new \pachno\core\entities\Issue($issue_id);
+            foreach ($issue_ids as $issue_id) {
+                $issue = new Issue($issue_id);
                 if ($issue->hasAccess())
                     return true;
             }
 
-            $event = \pachno\core\framework\Event::createNew('core', 'pachno\core\entities\File::hasAccess', $this);
+            $event = Event::createNew('core', 'pachno\core\entities\File::hasAccess', $this);
             $event->setReturnValue(false);
             $event->triggerUntilProcessed();
 
             return $event->getReturnValue();
+        }
+
+        protected function _preDelete()
+        {
+            if ($this->doesFileExistOnDisk()) {
+                unlink($this->getFullpath());
+            }
+        }
+
+        public function doesFileExistOnDisk()
+        {
+            return file_exists($this->getFullpath());
+        }
+
+        public function getFullpath()
+        {
+            return Settings::getUploadsLocalpath() . $this->getRealFilename();
+        }
+
+        public function getRealFilename()
+        {
+            return $this->_real_filename;
+        }
+
+        public function setRealFilename($real_filename)
+        {
+            $this->_real_filename = $real_filename;
+        }
+
+        protected function _preSave($is_new)
+        {
+            parent::_preSave($is_new);
+            if ($this->doesFileExistOnDisk()) {
+                $this->_size = filesize($this->getFullpath());
+            }
         }
 
     }

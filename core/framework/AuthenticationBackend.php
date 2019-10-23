@@ -2,16 +2,6 @@
 
     namespace pachno\core\framework;
 
-    /**
-     * Parameter holder class used in the MVC part of the framework for \pachno\core\entities\Action and \pachno\core\entities\ActionComponent
-     *
-     * @author Daniel Andre Eikeland <zegenie@zegeniestudios.net>
-     * @version 3.1
-     * @license http://opensource.org/licenses/MPL-2.0 Mozilla Public License 2.0 (MPL 2.0)
-     * @package pachno
-     * @subpackage mvc
-     */
-
     use pachno\core\entities\tables\Users;
     use pachno\core\entities\User;
     use pachno\core\entities\UserSession;
@@ -51,6 +41,7 @@
 
             if (!$user instanceof User) {
                 Context::logout();
+
                 return;
             }
 
@@ -101,14 +92,13 @@
 
             $user = Users::getTable()->getByUsername($username);
 
-            if (!$user instanceof User)
-            {
+            if (!$user instanceof User) {
                 Context::logout();
+
                 return;
             }
 
-            if (!$user->hasPassword($password))
-            {
+            if (!$user->hasPassword($password)) {
                 $user = null;
             }
 
@@ -119,17 +109,15 @@
          * @param User $user
          * @param UserSession $token
          * @param bool $session_only
+         *
          * @return mixed|void
          */
         function persistTokenSession(User $user, UserSession $token, $session_only)
         {
-            if ($session_only)
-            {
+            if ($session_only) {
                 Context::getResponse()->setSessionCookie('username', $user->getUsername());
                 Context::getResponse()->setSessionCookie('session_token', $token->getToken());
-            }
-            else
-            {
+            } else {
                 Context::getResponse()->setCookie('username', $user->getUsername());
                 Context::getResponse()->setCookie('session_token', $token->getToken());
             }
@@ -137,13 +125,10 @@
 
         function persistPasswordSession(User $user, $password, $session_only)
         {
-            if ($session_only)
-            {
+            if ($session_only) {
                 Context::getResponse()->setSessionCookie('username', $user->getUsername());
                 Context::getResponse()->setSessionCookie('password', $password);
-            }
-            else
-            {
+            } else {
                 Context::getResponse()->setCookie('username', $user->getUsername());
                 Context::getResponse()->setCookie('password', $password);
             }

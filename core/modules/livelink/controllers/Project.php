@@ -7,12 +7,12 @@
     use pachno\core\entities\Commit;
     use pachno\core\entities\tables\Branches;
     use pachno\core\entities\tables\Comments;
-    use pachno\core\entities\tables\Commits,
-        pachno\core\framework,
-        pachno\core\helpers\ProjectActions,
-        pachno\core\modules\livelink\Livelink;
+    use pachno\core\entities\tables\Commits;
     use pachno\core\entities\tables\IssueCommits;
     use pachno\core\entities\tables\Issues;
+    use pachno\core\framework;
+    use pachno\core\helpers\ProjectActions;
+    use pachno\core\modules\livelink\Livelink;
 
     /**
      * Main controller for the livelink module
@@ -24,17 +24,10 @@
     {
 
         /**
-         * @return Livelink
-         */
-        protected function getModule()
-        {
-            return framework\Context::getModule('livelink');
-        }
-
-        /**
          * @Route(name="livelink_project_commits_post", url="/:project_key/commits", methods="POST")
          *
          * @param framework\Request $request
+         *
          * @return bool
          */
         public function runPostProjectCommits(framework\Request $request)
@@ -69,6 +62,7 @@
          * @Route(name="livelink_project_commits", url="/:project_key/commits", methods="GET")
          *
          * @param framework\Request $request
+         *
          * @return bool
          */
         public function runProjectCommits(framework\Request $request)
@@ -81,9 +75,18 @@
         }
 
         /**
+         * @return Livelink
+         */
+        protected function getModule()
+        {
+            return framework\Context::getModule('livelink');
+        }
+
+        /**
          * @Route(name="livelink_project_commit_import", url="/:project_key/commits/:commit_hash/import/*", methods="GET")
          *
          * @param framework\Request $request
+         *
          * @return bool
          */
         public function runProjectImportCommit(framework\Request $request)
@@ -117,6 +120,7 @@
          * @Route(name="livelink_project_commit", url="/:project_key/commits/:commit_hash/*", methods="GET")
          *
          * @param framework\Request $request
+         *
          * @return bool
          */
         public function runProjectCommit(framework\Request $request)
@@ -142,6 +146,7 @@
          * @Route(name="livelink_project_commits_more", url="/:project_key/commits/more")
          *
          * @param framework\Request $request
+         *
          * @return bool
          */
         public function runProjectCommitsMore(framework\Request $request)
@@ -170,13 +175,14 @@
                 $last_commit_hash = $from_commit_ref ?? '';
             }
 
-            return $this->renderJSON(array('content' => $this->getComponentHTML('livelink/projectcommits', ['commits' => $this->commits, 'selected_project' => $this->selected_project]), 'last_commit' => $last_commit_hash));
+            return $this->renderJSON(['content' => $this->getComponentHTML('livelink/projectcommits', ['commits' => $this->commits, 'selected_project' => $this->selected_project]), 'last_commit' => $last_commit_hash]);
         }
 
         /**
          * @Route(name="livelink_project_issue_commits_more", url="/:project_key/issues/:issue_no/commits/more", methods="POST")
          *
          * @param framework\Request $request
+         *
          * @return bool
          */
         public function runProjectIssueCommitsMore(framework\Request $request)
@@ -184,7 +190,7 @@
             $issue = Issues::getTable()->getByProjectIDAndIssueNo($this->selected_project->getID(), $request['issue_no']);
             $links = IssueCommits::getTable()->getByIssueID($issue->getID(), $request->getParameter('limit', 0), $request->getParameter('offset', 0));
 
-            return $this->renderJSON(array('content' => $this->getComponentHTML('livelink/issuecommits', ["projectId" => $this->selected_project->getID(), "links" => $links])));
+            return $this->renderJSON(['content' => $this->getComponentHTML('livelink/issuecommits', ["projectId" => $this->selected_project->getID(), "links" => $links])]);
         }
 
     }

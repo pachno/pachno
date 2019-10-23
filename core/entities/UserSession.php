@@ -2,8 +2,8 @@
 
     namespace pachno\core\entities;
 
-    use Ramsey\Uuid\Uuid;
     use pachno\core\entities\common\Identifiable;
+    use Ramsey\Uuid\Uuid;
 
     /**
      * User state class
@@ -75,23 +75,11 @@
         /**
          * Who the session is for
          *
-         * @var \pachno\core\entities\User
+         * @var User
          * @Column(type="integer", length=10)
          * @Relates(class="\pachno\core\entities\User")
          */
         protected $_user_id;
-
-        protected function _preSave($is_new = false)
-        {
-            if ($is_new)
-            {
-                $this->_token = Uuid::uuid4()->toString();
-                $this->_created_at = time();
-
-                // Set session token to expire after 30 days
-                $this->_expires_at = $this->_created_at + (86400 * 30);
-            }
-        }
 
         public function setUser(User $user)
         {
@@ -106,7 +94,7 @@
         /**
          * Returns the associated user
          *
-         * @return \pachno\core\entities\User
+         * @return User
          */
         public function getUser()
         {
@@ -223,6 +211,17 @@
         public function setExpiresAt($expires_at)
         {
             $this->_expires_at = $expires_at;
+        }
+
+        protected function _preSave($is_new = false)
+        {
+            if ($is_new) {
+                $this->_token = Uuid::uuid4()->toString();
+                $this->_created_at = time();
+
+                // Set session token to expire after 30 days
+                $this->_expires_at = $this->_created_at + (86400 * 30);
+            }
         }
 
     }

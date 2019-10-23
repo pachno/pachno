@@ -2,6 +2,9 @@
 
     namespace pachno\core\entities\common;
 
+    use pachno\core\entities\Team;
+    use pachno\core\entities\User;
+
     /**
      * Ownable item class
      *
@@ -24,7 +27,7 @@
         /**
          * The project owner if team
          *
-         * @var \pachno\core\entities\Team
+         * @var Team
          * @Column(type="integer", length=10)
          * @Relates(class="\pachno\core\entities\Team")
          */
@@ -33,34 +36,15 @@
         /**
          * The project owner if user
          *
-         * @var \pachno\core\entities\User
+         * @var User
          * @Column(type="integer", length=10)
          * @Relates(class="\pachno\core\entities\User")
          */
         protected $_owner_user;
 
-        public function getOwner()
-        {
-            $this->_b2dbLazyLoad('_owner_team');
-            $this->_b2dbLazyLoad('_owner_user');
-
-            if ($this->_owner_team instanceof \pachno\core\entities\Team) {
-                return $this->_owner_team;
-            } elseif ($this->_owner_user instanceof \pachno\core\entities\User) {
-                return $this->_owner_user;
-            } else {
-                return null;
-            }
-        }
-
-        public function hasOwner()
-        {
-            return (bool) ($this->getOwner() instanceof \pachno\core\entities\common\Identifiable);
-        }
-
         public function setOwner(Identifiable $owner)
         {
-            if ($owner instanceof \pachno\core\entities\Team) {
+            if ($owner instanceof Team) {
                 $this->_owner_user = null;
                 $this->_owner_team = $owner;
             } else {
@@ -74,14 +58,34 @@
             $this->_owner_team = null;
             $this->_owner_user = null;
         }
-        
+
         public function toJSON($detailed = true)
         {
-            $jsonArray = array(
+            $jsonArray = [
                 'id' => $this->getID(),
-        		'owner' => $this->hasOwner() ? $this->getOwner()->toJSON() : null
-            );
+                'owner' => $this->hasOwner() ? $this->getOwner()->toJSON() : null
+            ];
+
             return $jsonArray;
+        }
+
+        public function hasOwner()
+        {
+            return (bool)($this->getOwner() instanceof Identifiable);
+        }
+
+        public function getOwner()
+        {
+            $this->_b2dbLazyLoad('_owner_team');
+            $this->_b2dbLazyLoad('_owner_user');
+
+            if ($this->_owner_team instanceof Team) {
+                return $this->_owner_team;
+            } elseif ($this->_owner_user instanceof User) {
+                return $this->_owner_user;
+            } else {
+                return null;
+            }
         }
 
     }

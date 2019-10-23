@@ -27,12 +27,19 @@
     {
 
         const B2DB_TABLE_VERSION = 1;
+
         const B2DBNAME = 'workflow_transition_actions';
+
         const ID = 'workflow_transition_actions.id';
+
         const SCOPE = 'workflow_transition_actions.scope';
+
         const ACTION_TYPE = 'workflow_transition_actions.action_type';
+
         const TRANSITION_ID = 'workflow_transition_actions.transition_id';
+
         const WORKFLOW_ID = 'workflow_transition_actions.workflow_id';
+
         const TARGET_VALUE = 'workflow_transition_actions.target_value';
 
         public function getByTransitionID($transition_id)
@@ -40,12 +47,13 @@
             $query = $this->getQuery();
             $query->where(self::SCOPE, framework\Context::getScope()->getID());
             $query->where(self::TRANSITION_ID, $transition_id);
+
             return $this->select($query);
         }
 
         protected function setupIndexes()
         {
-            $this->addIndex('scope_transitionid', array(self::SCOPE, self::TRANSITION_ID));
+            $this->addIndex('scope_transitionid', [self::SCOPE, self::TRANSITION_ID]);
         }
 
     }

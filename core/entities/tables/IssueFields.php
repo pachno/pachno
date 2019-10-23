@@ -29,36 +29,28 @@
     {
 
         const B2DB_TABLE_VERSION = 2;
+
         const B2DBNAME = 'issuefields';
+
         const ID = 'issuefields.id';
+
         const SCOPE = 'issuefields.scope';
+
         const ADDITIONAL = 'issuefields.is_additional';
+
         const ISSUETYPE_ID = 'issuefields.issuetype_id';
+
         const ISSUETYPE_SCHEME_ID = 'issuefields.issuetype_scheme_id';
+
         const FIELD_KEY = 'issuefields.field_key';
+
         const REPORTABLE = 'issuefields.is_reportable';
+
         const REQUIRED = 'issuefields.required';
-
-        protected function initialize()
-        {
-            parent::setup(self::B2DBNAME, self::ID);
-            parent::addVarchar(self::FIELD_KEY, 100);
-            parent::addBoolean(self::REQUIRED);
-            parent::addBoolean(self::REPORTABLE);
-            parent::addBoolean(self::ADDITIONAL);
-            parent::addForeignKeyColumn(self::ISSUETYPE_ID, IssueTypes::getTable(), IssueTypes::ID);
-            parent::addForeignKeyColumn(self::ISSUETYPE_SCHEME_ID, IssuetypeSchemes::getTable(), IssuetypeSchemes::ID);
-        }
-
-        protected function setupIndexes()
-        {
-            $this->addIndex('scope_issuetypescheme_issuetype', array(self::SCOPE, self::ISSUETYPE_SCHEME_ID, self::ISSUETYPE_ID));
-        }
 
         public static function getFieldDescription($key)
         {
-            switch ($key)
-            {
+            switch ($key) {
                 case 'description':
                     return framework\Context::getI18n()->__('Issue description');
                     break;
@@ -103,8 +95,7 @@
 
         public static function getFieldFontAwesomeImageStyle($key)
         {
-            switch ($key)
-            {
+            switch ($key) {
                 default:
                     return 'fas';
                     break;
@@ -113,8 +104,7 @@
 
         public static function getFieldFontAwesomeImage($key)
         {
-            switch ($key)
-            {
+            switch ($key) {
                 case 'description':
                 case 'reproduction_steps':
                     return 'align-left';
@@ -146,21 +136,32 @@
         public function getSchemeVisibleFieldsArrayByIssuetypeID($scheme_id, $issuetype_id)
         {
             $res = $this->getBySchemeIDandIssuetypeID($scheme_id, $issuetype_id);
-            $retval = array();
-            if ($res)
-            {
-                while ($row = $res->getNextRow())
-                {
-                    $retval[$row->get(IssueFields::FIELD_KEY)] = array(
+            $retval = [];
+            if ($res) {
+                while ($row = $res->getNextRow()) {
+                    $retval[$row->get(IssueFields::FIELD_KEY)] = [
                         'label' => $row->get(CustomFields::FIELD_DESCRIPTION),
                         'required' => (bool)$row->get(IssueFields::REQUIRED),
                         'reportable' => (bool)$row->get(IssueFields::REPORTABLE),
                         'additional' => (bool)$row->get(IssueFields::ADDITIONAL),
                         'type' => $row->get(CustomFields::FIELD_TYPE) ? $row->get(CustomFields::FIELD_TYPE) : 'builtin',
-                    );
+                    ];
                 }
             }
+
             return $retval;
+        }
+
+        public function getBySchemeIDandIssuetypeID($scheme_id, $issuetype_id)
+        {
+            $query = $this->getQuery();
+            $query->join(CustomFields::getTable(), CustomFields::FIELD_KEY, self::FIELD_KEY);
+            $query->where(self::ISSUETYPE_SCHEME_ID, $scheme_id);
+            $query->where(self::ISSUETYPE_ID, $issuetype_id);
+            $query->where(self::SCOPE, framework\Context::getScope()->getID());
+            $res = $this->rawSelect($query, false);
+
+            return $res;
         }
 
         public function deleteBySchemeIDandIssuetypeID($scheme_id, $issuetype_id)
@@ -177,10 +178,8 @@
             $query = $this->getQuery();
             $query->where(self::SCOPE, framework\Context::getScope()->getID());
             $query->where(self::ISSUETYPE_SCHEME_ID, $from_scheme_id);
-            if ($res = $this->rawSelect($query))
-            {
-                while ($row = $res->getNextRow())
-                {
+            if ($res = $this->rawSelect($query)) {
+                while ($row = $res->getNextRow()) {
                     $insertion = new Insertion();
                     $insertion->add(self::SCOPE, framework\Context::getScope()->getID());
                     $insertion->add(self::ISSUETYPE_SCHEME_ID, $to_scheme_id);
@@ -200,28 +199,15 @@
             $insertion->add(self::ISSUETYPE_SCHEME_ID, $scheme_id);
             $insertion->add(self::ISSUETYPE_ID, $issuetype_id);
             $insertion->add(self::FIELD_KEY, $key);
-            if (array_key_exists('reportable', $details))
-            {
+            if (array_key_exists('reportable', $details)) {
                 $insertion->add(self::REPORTABLE, true);
             }
-            if (array_key_exists('required', $details))
-            {
+            if (array_key_exists('required', $details)) {
                 $insertion->add(self::REQUIRED, true);
             }
 
             $insertion->add(self::SCOPE, framework\Context::getScope()->getID());
             $this->rawInsert($insertion);
-        }
-
-        public function getBySchemeIDandIssuetypeID($scheme_id, $issuetype_id)
-        {
-            $query = $this->getQuery();
-            $query->join(CustomFields::getTable(), CustomFields::FIELD_KEY, self::FIELD_KEY);
-            $query->where(self::ISSUETYPE_SCHEME_ID, $scheme_id);
-            $query->where(self::ISSUETYPE_ID, $issuetype_id);
-            $query->where(self::SCOPE, framework\Context::getScope()->getID());
-            $res = $this->rawSelect($query, false);
-            return $res;
         }
 
         public function deleteByIssuetypeSchemeID($scheme_id)
@@ -450,6 +436,22 @@
                 }
             }
 
+        }
+
+        protected function initialize()
+        {
+            parent::setup(self::B2DBNAME, self::ID);
+            parent::addVarchar(self::FIELD_KEY, 100);
+            parent::addBoolean(self::REQUIRED);
+            parent::addBoolean(self::REPORTABLE);
+            parent::addBoolean(self::ADDITIONAL);
+            parent::addForeignKeyColumn(self::ISSUETYPE_ID, IssueTypes::getTable(), IssueTypes::ID);
+            parent::addForeignKeyColumn(self::ISSUETYPE_SCHEME_ID, IssuetypeSchemes::getTable(), IssuetypeSchemes::ID);
+        }
+
+        protected function setupIndexes()
+        {
+            $this->addIndex('scope_issuetypescheme_issuetype', [self::SCOPE, self::ISSUETYPE_SCHEME_ID, self::ISSUETYPE_ID]);
         }
 
     }

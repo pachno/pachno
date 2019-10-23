@@ -2,10 +2,8 @@
 
     namespace pachno\core\entities\tables;
 
+    use b2db\QueryColumnSort;
     use pachno\core\framework;
-    use b2db\Core,
-        b2db\Criteria,
-        b2db\Criterion;
 
     /**
      * Workflows table
@@ -30,11 +28,17 @@
     {
 
         const B2DB_TABLE_VERSION = 2;
+
         const B2DBNAME = 'workflows';
+
         const ID = 'workflows.id';
+
         const SCOPE = 'workflows.scope';
+
         const NAME = 'workflows.name';
+
         const DESCRIPTION = 'workflows.description';
+
         const IS_ACTIVE = 'workflows.is_active';
 
         public function getAll($scope_id = null)
@@ -43,7 +47,7 @@
             $scope_id = (is_object($scope_id)) ? $scope_id->getID() : $scope_id;
             $query = $this->getQuery();
             $query->where(self::SCOPE, $scope_id);
-            $query->addOrderBy(self::ID, \b2db\QueryColumnSort::SORT_ASC);
+            $query->addOrderBy(self::ID, QueryColumnSort::SORT_ASC);
 
             return $this->select($query);
         }
@@ -53,6 +57,7 @@
             $query = $this->getQuery();
             $query->where(self::SCOPE, framework\Context::getScope()->getID());
             $row = $this->rawSelectById($id, $query, false);
+
             return $row;
         }
 
@@ -72,6 +77,7 @@
             $query->where(self::SCOPE, $scope_id);
             $query->addOrderBy(self::ID);
             $row = $this->rawSelectOne($query);
+
             return ($row) ? $row->get('id') : 0;
         }
 

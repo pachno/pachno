@@ -3,10 +3,8 @@
     namespace pachno\core\entities\tables;
 
     use b2db\Insertion;
-    use pachno\core\entities\tables\Articles;
-    use pachno\core\framework,
-        pachno\core\entities\tables\ScopedTable;
     use pachno\core\entities\tables\tables;
+    use pachno\core\framework;
 
     /**
      * User articles table
@@ -30,35 +28,31 @@
     {
 
         const B2DB_TABLE_VERSION = 1;
-        const B2DBNAME = 'userarticles';
-        const ID = 'userarticles.id';
-        const SCOPE = 'userarticles.scope';
-        const ARTICLE = 'userarticles.article';
-        const UID = 'userarticles.uid';
 
-        protected function initialize()
-        {
-            parent::setup(self::B2DBNAME, self::ID);
-            parent::addForeignKeyColumn(self::ARTICLE, Articles::getTable(), Articles::ID);
-            parent::addForeignKeyColumn(self::UID, \pachno\core\entities\tables\Users::getTable(), \pachno\core\entities\tables\Users::ID);
-        }
+        const B2DBNAME = 'userarticles';
+
+        const ID = 'userarticles.id';
+
+        const SCOPE = 'userarticles.scope';
+
+        const ARTICLE = 'userarticles.article';
+
+        const UID = 'userarticles.uid';
 
         public function _setupIndexes()
         {
-            $this->_addIndex('uid_scope', array(self::UID, self::SCOPE));
+            $this->_addIndex('uid_scope', [self::UID, self::SCOPE]);
         }
 
         public function getUserIDsByArticleID($article_id)
         {
-            $uids = array();
+            $uids = [];
             $query = $this->getQuery();
 
             $query->where(self::ARTICLE, $article_id);
 
-            if ($res = $this->rawSelect($query))
-            {
-                while ($row = $res->getNextRow())
-                {
+            if ($res = $this->rawSelect($query)) {
+                while ($row = $res->getNextRow()) {
                     $uid = $row->get(self::UID);
                     $uids[$uid] = $uid;
                 }
@@ -72,15 +66,12 @@
             $old_watchers = $this->getUserIDsByIssueID($from_article_id);
             $new_watchers = $this->getUserIDsByIssueID($to_article_id);
 
-            if (count($old_watchers))
-            {
+            if (count($old_watchers)) {
                 $insertion = new Insertion();
                 $insertion->add(self::ARTICLE, $to_article_id);
                 $insertion->add(self::SCOPE, framework\Context::getScope()->getID());
-                foreach ($old_watchers as $uid)
-                {
-                    if (!in_array($uid, $new_watchers))
-                    {
+                foreach ($old_watchers as $uid) {
+                    if (!in_array($uid, $new_watchers)) {
                         $insertion->add(self::UID, $uid);
                         $this->rawInsert($insertion);
                     }
@@ -97,6 +88,7 @@
             $query->where(Articles::DELETED, 0);
 
             $res = $this->select($query);
+
             return $res;
         }
 
@@ -117,6 +109,7 @@
             $query->where(self::UID, $user_id);
 
             $this->rawDelete($query);
+
             return true;
         }
 
@@ -127,6 +120,13 @@
             $query->where(self::UID, $user_id);
 
             return $this->count($query);
+        }
+
+        protected function initialize()
+        {
+            parent::setup(self::B2DBNAME, self::ID);
+            parent::addForeignKeyColumn(self::ARTICLE, Articles::getTable(), Articles::ID);
+            parent::addForeignKeyColumn(self::UID, Users::getTable(), Users::ID);
         }
 
     }

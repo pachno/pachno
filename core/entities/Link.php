@@ -4,11 +4,8 @@
 
     use pachno\core\entities\common\IdentifiableScoped;
     use pachno\core\entities\tables\Links;
-    use pachno\core\entities\traits\TextParserTodo;
-    use pachno\core\helpers\MentionableProvider;
     use pachno\core\framework;
     use pachno\core\helpers\TextParser;
-    use pachno\core\modules\publish;
 
     /**
      * Class used for comments
@@ -40,7 +37,7 @@
         /**
          * Who created the link
          *
-         * @var \pachno\core\entities\User
+         * @var User
          * @Column(type="integer", length=10, name="uid")
          * @Relates(class="\pachno\core\entities\User")
          */
@@ -52,7 +49,7 @@
         protected $_target_id;
 
         /**
-         * @var \pachno\core\entities\common\IdentifiableScoped
+         * @var IdentifiableScoped
          */
         protected $_target;
 
@@ -75,17 +72,6 @@
          * @Column(type="integer", length=10)
          */
         protected $_link_order = 0;
-
-        protected function _preSave($is_new)
-        {
-            parent::_preSave($is_new);
-
-            if ($is_new) {
-                if (!$this->_link_order) {
-                    $this->_link_order = Links::getTable()->getNextOrder($this->_target_type, $this->_target_id, $this->_scope);
-                }
-            }
-        }
 
         /**
          * @return User
@@ -159,9 +145,12 @@
             return $this->_description;
         }
 
-        public function hasDescription()
+        /**
+         * @param mixed $description
+         */
+        public function setDescription($description)
         {
-            return (bool) $this->_description != '';
+            $this->_description = $description;
         }
 
         public function getParsedDescription()
@@ -169,12 +158,14 @@
             return TextParser::parseText($this->_description, false, null, ['embedded' => true]);
         }
 
-        /**
-         * @param mixed $description
-         */
-        public function setDescription($description)
+        public function isSeparator()
         {
-            $this->_description = $description;
+            return (!$this->hasUrl() && !$this->hasDescription());
+        }
+
+        public function hasUrl()
+        {
+            return (bool)$this->getUrl();
         }
 
         /**
@@ -185,19 +176,17 @@
             return $this->_url;
         }
 
-        public function hasUrl()
+        /**
+         * @param mixed $url
+         */
+        public function setUrl($url)
         {
-            return (bool) $this->getUrl();
+            $this->_url = $url;
         }
 
-        public function isInternalLink()
+        public function hasDescription()
         {
-            return ($this->hasUrl() && mb_substr($this->getUrl(), 0, 1) == '@');
-        }
-
-        public function isSeparator()
-        {
-            return (!$this->hasUrl() && !$this->hasDescription());
+            return (bool)$this->_description != '';
         }
 
         public function getFinalUrl()
@@ -209,12 +198,9 @@
             }
         }
 
-        /**
-         * @param mixed $url
-         */
-        public function setUrl($url)
+        public function isInternalLink()
         {
-            $this->_url = $url;
+            return ($this->hasUrl() && mb_substr($this->getUrl(), 0, 1) == '@');
         }
 
         /**
@@ -231,6 +217,17 @@
         public function setLinkOrder($link_order)
         {
             $this->_link_order = $link_order;
+        }
+
+        protected function _preSave($is_new)
+        {
+            parent::_preSave($is_new);
+
+            if ($is_new) {
+                if (!$this->_link_order) {
+                    $this->_link_order = Links::getTable()->getNextOrder($this->_target_type, $this->_target_id, $this->_scope);
+                }
+            }
         }
 
     }

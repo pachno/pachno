@@ -2,11 +2,10 @@
 
     namespace pachno\core\entities\tables;
 
+    use b2db\Criterion;
+    use b2db\QueryColumnSort;
     use pachno\core\entities\Component;
     use pachno\core\framework;
-    use b2db\Core,
-        b2db\Criteria,
-        b2db\Criterion;
 
     /**
      * Components table
@@ -34,15 +33,25 @@
     {
 
         const B2DB_TABLE_VERSION = 2;
+
         const B2DBNAME = 'components';
+
         const ID = 'components.id';
+
         const SCOPE = 'components.scope';
+
         const NAME = 'components.name';
+
         const VERSION_MAJOR = 'components.version_major';
+
         const VERSION_MINOR = 'components.version_minor';
+
         const VERSION_REVISION = 'components.version_revision';
+
         const PROJECT = 'components.project';
+
         const LEAD_BY = 'components.leader';
+
         const LEAD_TYPE = 'components.leader_type';
 
         public function preloadComponents($component_ids)
@@ -51,7 +60,7 @@
                 return;
 
             $query = $this->getQuery();
-            $query->where(self::ID, $component_ids, \b2db\Criterion::IN);
+            $query->where(self::ID, $component_ids, Criterion::IN);
             $this->select($query);
         }
 
@@ -60,16 +69,18 @@
             $query = $this->getQuery();
             $query->where(self::PROJECT, $project_id);
             $res = $this->rawSelect($query, false);
+
             return $res;
         }
 
         public function getByIDs($ids)
         {
-            if (empty($ids)) return array();
+            if (empty($ids)) return [];
 
             $query = $this->getQuery();
             $query->where(self::SCOPE, framework\Context::getScope()->getID());
-            $query->where(self::ID, $ids, \b2db\Criterion::IN);
+            $query->where(self::ID, $ids, Criterion::IN);
+
             return $this->select($query);
         }
 
@@ -79,8 +90,8 @@
 
             $query->join(Projects::getTable(), Projects::ID, self::PROJECT);
             $query->where(self::SCOPE, framework\Context::getScope()->getID());
-            $query->addOrderBy(Projects::NAME, \b2db\QueryColumnSort::SORT_ASC);
-            $query->addOrderBy(self::NAME, \b2db\QueryColumnSort::SORT_ASC);
+            $query->addOrderBy(Projects::NAME, QueryColumnSort::SORT_ASC);
+            $query->addOrderBy(self::NAME, QueryColumnSort::SORT_ASC);
 
             return $this->select($query);
         }

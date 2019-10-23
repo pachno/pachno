@@ -1,57 +1,58 @@
 <?php
 
-namespace pachno\core\modules\auth_ldap\cli;
-use pachno\core\framework;
+    namespace pachno\core\modules\auth_ldap\cli;
 
-/**
- * Implementation of CLI command for testing LDAP module connection and
- * configuration.
- *
- * @author Branko Majic <branko@majic.rs>
- * @version 4.2
- * @license http://opensource.org/licenses/MPL-2.0 Mozilla Public License 2.0 (MPL 2.0)
- * @package pachno
- * @subpackage auth_ldap
- */
-
-
-/**
- * CLI command for testing LDAP module connection and configuration.
- *
- * @package pachno
- * @subpackage auth_ldap
- */
-class Test extends \pachno\core\framework\cli\Command
-{
-    const ERROR = 1;
+    use pachno\core\framework;
+    use pachno\core\framework\cli\Command;
 
     /**
-     * Sets-up the command name and description.
-     */
-    protected function _setup()
-    {
-        $this->_command_name = 'test';
-        $this->_description = 'Tests LDAP configuration and connectivity. WARNING: HTTP Integrated Authentication and availability of currently logged-in user cannot be tested in CLI!';
-    }
-
-    /**
-     * Executes the command.
+     * Implementation of CLI command for testing LDAP module connection and
+     * configuration.
      *
+     * @author Branko Majic <branko@majic.rs>
+     * @version 4.2
+     * @license http://opensource.org/licenses/MPL-2.0 Mozilla Public License 2.0 (MPL 2.0)
+     * @package pachno
+     * @subpackage auth_ldap
      */
-    public function do_execute()
+
+
+    /**
+     * CLI command for testing LDAP module connection and configuration.
+     *
+     * @package pachno
+     * @subpackage auth_ldap
+     */
+    class Test extends Command
     {
-        $i18n = framework\Context::getI18n();
+        const ERROR = 1;
 
-        $result = framework\Context::getModule('auth_ldap')->testConnection();
-
-        if ($result['success'] === false)
+        /**
+         * Executes the command.
+         *
+         */
+        public function do_execute()
         {
-            $this->cliEcho($result['summary'] . ': ' . $result['details'], 'red');
+            $i18n = framework\Context::getI18n();
+
+            $result = framework\Context::getModule('auth_ldap')->testConnection();
+
+            if ($result['success'] === false) {
+                $this->cliEcho($result['summary'] . ': ' . $result['details'], 'red');
+                $this->cliEcho("\n");
+                exit(self::ERROR);
+            }
+
+            $this->cliEcho($result['summary']);
             $this->cliEcho("\n");
-            exit(self::ERROR);
         }
 
-        $this->cliEcho($result['summary']);
-        $this->cliEcho("\n");
+        /**
+         * Sets-up the command name and description.
+         */
+        protected function _setup()
+        {
+            $this->_command_name = 'test';
+            $this->_description = 'Tests LDAP configuration and connectivity. WARNING: HTTP Integrated Authentication and availability of currently logged-in user cannot be tested in CLI!';
+        }
     }
-}

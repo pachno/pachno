@@ -2,9 +2,12 @@
 
     namespace pachno\core\helpers;
 
-    use pachno\core\framework,
-        pachno\core\entities,
-        pachno\core\entities\tables;
+    use Exception;
+    use pachno\core\entities;
+    use pachno\core\entities\tables;
+    use pachno\core\framework;
+    use pachno\core\framework\Event;
+    use pachno\core\framework\Request;
 
     /**
      * actions for the project module
@@ -19,10 +22,10 @@
         /**
          * Pre-execute function
          *
-         * @param framework\Request $request
+         * @param Request $request
          * @param string $action
          */
-        public function preExecute(framework\Request $request, $action)
+        public function preExecute(Request $request, $action)
         {
             $project_id = $request['project_id'];
             $project_key = $request['project_key'];
@@ -36,8 +39,7 @@
                         $this->selected_project = entities\Project::getB2DBTable()->selectById($project_id);
                     elseif ($project_key)
                         $this->selected_project = entities\Project::getByKey($project_key);
-                }
-                catch (\Exception $e) {
+                } catch (Exception $e) {
                 }
             }
 
@@ -48,26 +50,19 @@
             $this->project_key = $this->selected_project->getKey();
         }
 
-        protected function _checkProjectPageAccess($page)
-        {
-            return framework\Context::getUser()->hasProjectPageAccess($page, $this->selected_project);
-        }
-
         /**
          * View an issue
          *
-         * @param \pachno\core\framework\Request $request
+         * @param Request $request
          */
-        public function runViewIssue(framework\Request $request)
+        public function runViewIssue(Request $request)
         {
             framework\Logging::log('Loading issue');
 
             $issue = $this->_getIssueFromRequest($request);
 
-            if ($issue instanceof entities\Issue)
-            {
-                if (!array_key_exists('viewissue_list', $_SESSION) || !is_array($_SESSION['viewissue_list']))
-                {
+            if ($issue instanceof entities\Issue) {
+                if (!array_key_exists('viewissue_list', $_SESSION) || !is_array($_SESSION['viewissue_list'])) {
                     $_SESSION['viewissue_list'] = [];
                 }
 
@@ -84,64 +79,47 @@
 
                 framework\Context::getUser()->setNotificationSetting(framework\Settings::SETTINGS_USER_NOTIFY_ITEM_ONCE . '_issue_' . $issue->getID(), false)->save();
 
-                \pachno\core\framework\Event::createNew('core', 'viewissue', $issue)->trigger();
+                Event::createNew('core', 'viewissue', $issue)->trigger();
             }
 
             $message = framework\Context::getMessageAndClear('issue_saved');
             $uploaded = framework\Context::getMessageAndClear('issue_file_uploaded');
 
-            if (framework\Context::hasMessage('issue_deleted_shown') && (is_null($issue) || ($issue instanceof entities\Issue && $issue->isDeleted())))
-            {
+            if (framework\Context::hasMessage('issue_deleted_shown') && (is_null($issue) || ($issue instanceof entities\Issue && $issue->isDeleted()))) {
                 $request_referer = ($request['referer'] ?: isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : null);
 
-                if ($request_referer)
-                {
+                if ($request_referer) {
                     return $this->forward($request_referer);
                 }
-            }
-            elseif (framework\Context::hasMessage('issue_deleted'))
-            {
+            } elseif (framework\Context::hasMessage('issue_deleted')) {
                 $this->issue_deleted = framework\Context::getMessageAndClear('issue_deleted');
                 framework\Context::setMessage('issue_deleted_shown', true);
-            }
-            elseif ($message == true)
-            {
+            } elseif ($message == true) {
                 $this->issue_saved = true;
-            }
-            elseif ($uploaded == true)
-            {
+            } elseif ($uploaded == true) {
                 $this->issue_file_uploaded = true;
-            }
-            elseif (framework\Context::hasMessage('issue_error'))
-            {
+            } elseif (framework\Context::hasMessage('issue_error')) {
                 $this->error = framework\Context::getMessageAndClear('issue_error');
-            }
-            elseif (framework\Context::hasMessage('issue_message'))
-            {
+            } elseif (framework\Context::hasMessage('issue_message')) {
                 $this->issue_message = framework\Context::getMessageAndClear('issue_message');
             }
 
             $this->issue = $issue;
             $this->issuetypes = $this->issue->getProject()->getIssuetypeScheme()->getIssuetypes();
-            $event = \pachno\core\framework\Event::createNew('core', 'viewissue', $issue)->trigger();
+            $event = Event::createNew('core', 'viewissue', $issue)->trigger();
             $this->listenViewIssuePostError($event);
         }
 
-        protected function _getIssueFromRequest(framework\Request $request)
+        protected function _getIssueFromRequest(Request $request)
         {
             $issue = null;
-            if ($issue_no = framework\Context::getRequest()->getParameter('issue_no'))
-            {
+            if ($issue_no = framework\Context::getRequest()->getParameter('issue_no')) {
                 $issue = entities\Issue::getIssueFromLink($issue_no);
-                if ($issue instanceof entities\Issue)
-                {
-                    if (!$this->selected_project instanceof entities\Project || $issue->getProjectID() != $this->selected_project->getID())
-                    {
+                if ($issue instanceof entities\Issue) {
+                    if (!$this->selected_project instanceof entities\Project || $issue->getProjectID() != $this->selected_project->getID()) {
                         $issue = null;
                     }
-                }
-                else
-                {
+                } else {
                     framework\Logging::log("Issue no [$issue_no] not a valid issue no", 'main', framework\Logging::LEVEL_WARNING_RISK);
                 }
             }
@@ -152,23 +130,31 @@
             return $issue;
         }
 
+        public function listenViewIssuePostError(Event $event)
+        {
+            if (framework\Context::hasMessage('comment_error')) {
+                $this->comment_error = true;
+                $this->error = framework\Context::getMessageAndClear('comment_error');
+                $this->comment_error_body = framework\Context::getMessageAndClear('comment_error_body');
+            }
+        }
+
         /**
          * Go to the next/previous open issue
          *
-         * @param \pachno\core\framework\Request $request
+         * @param Request $request
          */
-        public function runNavigateIssue(framework\Request $request)
+        public function runNavigateIssue(Request $request)
         {
             $issue = $this->_getIssueFromRequest($request);
 
-            if (!$issue instanceof entities\Issue)
-            {
+            if (!$issue instanceof entities\Issue) {
                 $this->getResponse()->setTemplate('viewissue');
+
                 return;
             }
 
-            do
-            {
+            do {
                 if ($issue->getMilestone() instanceof entities\Milestone) {
                     if ($request['direction'] == 'next') {
                         $found_issue = tables\Issues::getTable()->getNextIssueFromIssueMilestoneOrderAndMilestoneID($issue->getMilestoneOrder(), $issue->getMilestone()->getID(), $request['mode'] == 'open');
@@ -184,28 +170,19 @@
                 }
                 if (is_null($found_issue))
                     break;
-            }
-            while ($found_issue instanceof entities\Issue && !$found_issue->hasAccess());
+            } while ($found_issue instanceof entities\Issue && !$found_issue->hasAccess());
 
-            if ($found_issue instanceof entities\Issue)
-            {
-                $this->forward(framework\Context::getRouting()->generate('viewissue', array('project_key' => $found_issue->getProject()->getKey(), 'issue_no' => $found_issue->getFormattedIssueNo())));
-            }
-            else
-            {
+            if ($found_issue instanceof entities\Issue) {
+                $this->forward(framework\Context::getRouting()->generate('viewissue', ['project_key' => $found_issue->getProject()->getKey(), 'issue_no' => $found_issue->getFormattedIssueNo()]));
+            } else {
                 framework\Context::setMessage('issue_message', $this->getI18n()->__('There are no more issues in that direction.'));
-                $this->forward(framework\Context::getRouting()->generate('viewissue', array('project_key' => $issue->getProject()->getKey(), 'issue_no' => $issue->getFormattedIssueNo())));
+                $this->forward(framework\Context::getRouting()->generate('viewissue', ['project_key' => $issue->getProject()->getKey(), 'issue_no' => $issue->getFormattedIssueNo()]));
             }
         }
 
-        public function listenViewIssuePostError(\pachno\core\framework\Event $event)
+        protected function _checkProjectPageAccess($page)
         {
-            if (framework\Context::hasMessage('comment_error'))
-            {
-                $this->comment_error = true;
-                $this->error = framework\Context::getMessageAndClear('comment_error');
-                $this->comment_error_body = framework\Context::getMessageAndClear('comment_error_body');
-            }
+            return framework\Context::getUser()->hasProjectPageAccess($page, $this->selected_project);
         }
 
 

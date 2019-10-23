@@ -2,6 +2,8 @@
 
     namespace pachno\core\entities\common;
 
+    use pachno\core\framework\Event;
+
     /**
      * A class with event container storage for extending objects via events
      *
@@ -26,11 +28,11 @@
          *
          * @var array
          */
-        protected $_storage = array();
+        protected $_storage = [];
 
         public function _store($module, $name, $value)
         {
-            if (!isset($this->_storage[$module])) $this->_storage[$module] = array();
+            if (!isset($this->_storage[$module])) $this->_storage[$module] = [];
             $this->_storage[$module][$name] = $value;
         }
 
@@ -52,7 +54,7 @@
 
         public function __call($name, $arguments)
         {
-            $event = \pachno\core\framework\Event::createNew('core', get_called_class().'::__'.$name, $this, $arguments);
+            $event = Event::createNew('core', get_called_class() . '::__' . $name, $this, $arguments);
             $event->triggerUntilProcessed();
 
             return $event->getReturnValue();

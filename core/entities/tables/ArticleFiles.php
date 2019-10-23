@@ -3,10 +3,10 @@
     namespace pachno\core\entities\tables;
 
     use b2db\Insertion;
-    use pachno\core\framework,
-        pachno\core\entities\tables\ScopedTable,
-        pachno\core\entities\traits\FileLink;
-    use pachno\core\entities\tables\Articles;
+    use Exception;
+    use pachno\core\entities\File;
+    use pachno\core\entities\traits\FileLink;
+    use pachno\core\framework;
 
     /**
      * Articles <-> Files table
@@ -32,22 +32,20 @@
         use FileLink;
 
         const B2DB_TABLE_VERSION = 1;
-        const B2DBNAME = 'articlefiles';
-        const ID = 'articlefiles.id';
-        const SCOPE = 'articlefiles.scope';
-        const UID = 'articlefiles.uid';
-        const ATTACHED_AT = 'articlefiles.attached_at';
-        const FILE_ID = 'articlefiles.file_id';
-        const ARTICLE_ID = 'articlefiles.article_id';
 
-        protected function initialize()
-        {
-            parent::setup(self::B2DBNAME, self::ID);
-            parent::addForeignKeyColumn(self::UID, \pachno\core\entities\tables\Users::getTable(), \pachno\core\entities\tables\Users::ID);
-            parent::addForeignKeyColumn(self::ARTICLE_ID, Articles::getTable(), Articles::ID);
-            parent::addForeignKeyColumn(self::FILE_ID, \pachno\core\entities\tables\Files::getTable(), \pachno\core\entities\tables\Files::ID);
-            parent::addInteger(self::ATTACHED_AT, 10);
-        }
+        const B2DBNAME = 'articlefiles';
+
+        const ID = 'articlefiles.id';
+
+        const SCOPE = 'articlefiles.scope';
+
+        const UID = 'articlefiles.uid';
+
+        const ATTACHED_AT = 'articlefiles.attached_at';
+
+        const FILE_ID = 'articlefiles.file_id';
+
+        const ARTICLE_ID = 'articlefiles.article_id';
 
         public function addByArticleIDandFileID($article_id, $file_id, $insert = true)
         {
@@ -55,9 +53,8 @@
             $query->where(self::ARTICLE_ID, $article_id);
             $query->where(self::FILE_ID, $file_id);
             $query->where(self::SCOPE, framework\Context::getScope()->getID());
-            if ($this->count($query) == 0)
-            {
-                if (! $insert) return true;
+            if ($this->count($query) == 0) {
+                if (!$insert) return true;
 
                 $insertion = new Insertion();
                 $insertion->add(self::SCOPE, framework\Context::getScope()->getID());
@@ -75,20 +72,15 @@
             $query->where(self::SCOPE, framework\Context::getScope()->getID());
             $res = $this->rawSelect($query);
 
-            $ret_arr = array();
+            $ret_arr = [];
 
-            if ($res)
-            {
-                while ($row = $res->getNextRow())
-                {
-                    try
-                    {
-                        $file = new \pachno\core\entities\File($row->get(\pachno\core\entities\tables\Files::ID), $row);
+            if ($res) {
+                while ($row = $res->getNextRow()) {
+                    try {
+                        $file = new File($row->get(Files::ID), $row);
                         $file->setUploadedAt($row->get(self::ATTACHED_AT));
-                        $ret_arr[$row->get(\pachno\core\entities\tables\Files::ID)] = $file;
-                    }
-                    catch (\Exception $e)
-                    {
+                        $ret_arr[$row->get(Files::ID)] = $file;
+                    } catch (Exception $e) {
                         $this->rawDeleteById($row->get(self::ID));
                     }
                 }
@@ -103,10 +95,10 @@
             $query->where(self::ARTICLE_ID, $article_id);
             $query->where(self::FILE_ID, $file_id);
             $query->where(self::SCOPE, framework\Context::getScope()->getID());
-            if ($res = $this->rawSelectOne($query))
-            {
+            if ($res = $this->rawSelectOne($query)) {
                 $this->rawDelete($query);
             }
+
             return $res;
         }
 
@@ -124,16 +116,24 @@
             $query->where(self::FILE_ID, $file_id);
             $query->where(self::SCOPE, framework\Context::getScope()->getID());
 
-            $article_ids = array();
-            if ($res = $this->rawSelect($query))
-            {
-                while ($row = $res->getNextRow())
-                {
+            $article_ids = [];
+            if ($res = $this->rawSelect($query)) {
+                while ($row = $res->getNextRow()) {
                     $a_id = $row->get(self::ARTICLE_ID);
                     $article_ids[$a_id] = $a_id;
                 }
             }
+
             return $article_ids;
+        }
+
+        protected function initialize()
+        {
+            parent::setup(self::B2DBNAME, self::ID);
+            parent::addForeignKeyColumn(self::UID, Users::getTable(), Users::ID);
+            parent::addForeignKeyColumn(self::ARTICLE_ID, Articles::getTable(), Articles::ID);
+            parent::addForeignKeyColumn(self::FILE_ID, Files::getTable(), Files::ID);
+            parent::addInteger(self::ATTACHED_AT, 10);
         }
 
     }
