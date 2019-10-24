@@ -34,6 +34,9 @@
         <div id="tab_developers_pane" class="configuration-content centered" <?php if ($selected_tab != 'developers'): ?> style="display: none;"<?php endif; ?>>
             <?php include_component('project/projectdevelopers', array('access_level' => $access_level, 'project' => $selected_project)); ?>
         </div>
+        <div id="tab_client_pane" class="configuration-content centered" <?php if ($selected_tab != 'client'): ?> style="display: none;"<?php endif; ?>>
+            <?php include_component('project/settings_project_client', array('access_level' => $access_level, 'project' => $selected_project)); ?>
+        </div>
         <div id="tab_other_pane" class="configuration-content centered" <?php if ($selected_tab != 'other'): ?> style="display: none;"<?php endif; ?>>
             <?php include_component('project/projectother', array('access_level' => $access_level, 'project' => $selected_project)); ?>
         </div>

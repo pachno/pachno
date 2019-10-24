@@ -36,6 +36,11 @@
                     <span class="name"><?= __('Roles and access'); ?></span>
                 </a>
                 <div class="list-item separator"></div>
+                <a id="tab_client" href="javascript:void(0);" onclick="Pachno.Main.Helpers.tabSwitcher('tab_client', 'project_config_menu');return false;" class="list-item <?php if ($selected_tab == 'client') echo 'selected'; ?>">
+                    <?= fa_image_tag('user-tie', ['class' => 'icon']); ?>
+                    <span class="name"><?= __('Client'); ?></span>
+                </a>
+                <div class="list-item separator"></div>
                 <a id="tab_hierarchy" href="javascript:void(0);" onclick="Pachno.Main.Helpers.tabSwitcher('tab_hierarchy', 'project_config_menu');return false;" class="list-item <?php if ($selected_tab == 'hierarchy') echo 'selected'; ?>">
                     <?= fa_image_tag('boxes', ['class' => 'icon']); ?>
                     <span class="name"><?= __('Editions and components'); ?></span>
