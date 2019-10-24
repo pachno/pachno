@@ -18,7 +18,8 @@ define(['pachno/tools', 'pachno/index', 'domReady', 'jquery', 'mention'],
                     jQuery(this).closest('.sidebar').toggleClass('collapsed');
                 });
 
-                jQuery('body').on('blur', 'form[data-interactive-form] input', function () {
+                jQuery('body').on('blur', 'form[data-interactive-form] input, form[data-interactive-form] textarea', function () {
+                    console.log(this);
                     const $form = jQuery(this).parents('form');
 
                     $form.submit();

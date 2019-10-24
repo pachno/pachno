@@ -5,17 +5,24 @@
  */
 
 ?>
-<h3>
-    <span><?= __('Project team'); ?></span>
-    <?php if ($access_level == \pachno\core\framework\Settings::ACCESS_FULL): ?>
-        <button class="button secondary" onclick="Pachno.Main.Helpers.Backdrop.show('<?php echo make_url('get_partial_for_backdrop', ['key' => 'project_add_people', 'project_id' => $project->getID()]); ?>');">
-            <?= fa_image_tag('user-plus', ['class' => 'icon']); ?>
-            <span class="name"><?= __('Add people'); ?></span>
-        </button>
-    <?php endif; ?>
-</h3>
-<div class="helper-text">
-    <?= __('The project owner has total control over this project and can edit information, settings, and anything about it'); ?>
+<div class="form-container">
+    <div class="form-row">
+        <h3>
+            <span><?= __('Project team'); ?></span>
+            <?php if ($access_level == \pachno\core\framework\Settings::ACCESS_FULL): ?>
+                <button class="button secondary" onclick="Pachno.Main.Helpers.Backdrop.show('<?php echo make_url('get_partial_for_backdrop', ['key' => 'project_add_people', 'project_id' => $project->getID()]); ?>');">
+                    <?= fa_image_tag('user-plus', ['class' => 'icon']); ?>
+                    <span class="name"><?= __('Add people'); ?></span>
+                </button>
+            <?php endif; ?>
+        </h3>
+        <div class="helper-text">
+            <div class="image-container"><?= image_tag('/unthemed/onboarding_project_team_icon.png', [], true); ?></div>
+            <span class="description">
+                <?= __('Invite team members to collaborate on the project. Assign roles to make sure everyone has access to the project, and to let everyone else know who is involved.'); ?>
+            </span>
+        </div>
+    </div>
 </div>
 <div id="project_team_list" class="flexible-table">
     <div class="row header">

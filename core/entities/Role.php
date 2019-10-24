@@ -114,7 +114,7 @@
         /**
          * Returns all project roles available
          *
-         * @return array
+         * @return Role[]
          */
         public static function getAll()
         {
@@ -122,9 +122,27 @@
         }
 
         /**
+         * Returns all project roles available
+         *
+         * @return Role[]
+         */
+        public static function getGlobalRoles()
+        {
+            $roles = self::getAll();
+            $global_roles = [];
+            foreach ($roles as $id => $role) {
+                if ($role->isSystemRole()) {
+                    $global_roles[$id] = $role;
+                }
+            }
+
+            return $global_roles;
+        }
+
+        /**
          * Returns all project roles available for a specific project
          *
-         * @return array
+         * @return Role[]
          */
         public static function getByProjectID($project_id)
         {
@@ -133,7 +151,7 @@
 
         public function isSystemRole()
         {
-            return !(bool)$this->getItemdata();
+            return (bool) !$this->getItemdata();
         }
 
         /**

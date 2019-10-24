@@ -147,6 +147,15 @@
             return $this->selectOne($query);
         }
 
+        public function isEmailAvailable($email)
+        {
+            $query = $this->getQuery();
+            $query->where(self::EMAIL, strtolower($email), Criterion::EQUALS, '', '', Query::DB_LOWER);
+            $query->where(self::DELETED, false);
+
+            return !(bool)$this->count($query);
+        }
+
         public function isUsernameAvailable($username)
         {
             $query = $this->getQuery();
@@ -198,9 +207,12 @@
          * @param string $details
          * @param int $limit
          *
+         * @param bool $return_empty
+         *
          * @return User[]
+         * @throws \b2db\Exception
          */
-        public function getByDetails($details, $limit = null)
+        public function getByDetails($details, $limit = null, $return_empty = false)
         {
             $query = $this->getQuery();
             $query->where(self::DELETED, false);
@@ -213,7 +225,8 @@
             if ($limit) {
                 $query->setLimit($limit);
             }
-            if (!$res = $this->select($query)) {
+            $res = $this->select($query);
+            if (!$res && !$return_empty) {
                 $query = $this->getQuery();
                 $query->where(self::DELETED, false);
                 $query->where(self::UNAME, "%$details%", Criterion::LIKE);

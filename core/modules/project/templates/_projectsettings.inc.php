@@ -3,11 +3,13 @@
 /** @var \pachno\core\entities\Project $project */
 
 ?>
-<h1><?= __('Project settings'); ?></h1>
 <div class="form-container">
     <?php if ($access_level == \pachno\core\framework\Settings::ACCESS_FULL): ?>
-    <form accept-charset="<?php echo \pachno\core\framework\Context::getI18n()->getCharset(); ?>" action="<?php echo make_url('configure_project_settings', array('project_id' => $project->getID())); ?>" method="post" onsubmit="Pachno.Project.submitAdvancedSettings('<?php echo make_url('configure_project_settings', array('project_id' => $project->getID())); ?>'); return false;" id="project_settings">
+    <form accept-charset="<?php echo \pachno\core\framework\Context::getI18n()->getCharset(); ?>" action="<?php echo make_url('configure_project_settings', array('project_id' => $project->getID())); ?>" method="post" onsubmit="Pachno.Project.submitAdvancedSettings('<?php echo make_url('configure_project_settings', array('project_id' => $project->getID())); ?>'); return false;" data-interactive-form>
     <?php endif; ?>
+        <div class="form-row">
+            <h3><?= __('Project settings'); ?></h3>
+        </div>
         <div class="form-row">
             <label for="enable_builds_yes"><?php echo __('Enable releases'); ?></label>
             <div class="fancy-label-select">

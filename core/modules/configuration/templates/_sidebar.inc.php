@@ -4,7 +4,7 @@
         <div class="header">
             <span class="name"><?= \pachno\core\framework\Settings::getConfigSectionHeader(pachno\core\framework\Context::getI18n(), $category); ?></span>
             <?php if ($category == \pachno\core\framework\Settings::CONFIGURATION_SECTION_MODULES): ?>
-                <a href="<?= make_url('configure_modules'); ?>" class="link-container"><span class="link"><?= fa_image_tag('cog'); ?></span></a>
+                <a href="<?= make_url('configure_modules'); ?>" class="icon"><span class="link"><?= fa_image_tag('cog'); ?></span></a>
             <?php endif; ?>
         </div>
         <?php foreach ($config_info as $section => $info): ?>
@@ -14,7 +14,6 @@
             <?php else: ?>
                 <?php $url = make_url($info['route']); ?>
             <?php endif;?>
-            <?php if ($is_selected) $pachno_response->addBreadcrumb($info['description'], $url); ?>
             <a href="<?= $url; ?>" class="list-item<?php if ($is_selected): ?> selected<?php endif; ?>">
                 <?php if (isset($info['fa_icon'])): ?>
                     <?php $style = (isset($info['fa_color'])) ? 'color: ' . $info['fa_color'] : ''; ?>

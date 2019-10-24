@@ -18,7 +18,10 @@
                 </div>
             </h1>
             <div class="helper-text">
-                <?php echo __("Roles are applied when assigning users or teams to a project, granting them access to specific parts of the project or giving users access to update and edit information. Updating permissions in this list will add or remove permissions for all users and / or team members with that role, on all assigned projects. Removing a role removes all permissions granted by that role for all users and teams. Read more about roles and permissions in the %online_documentation", array('%online_documentation' => link_tag('https://projects.pachno.com/pachno/docs/RolesAndPermissions', '<b>'.__('online documentation').'</b>'))); ?>
+                <div class="image-container"><?= image_tag('/unthemed/onboarding_configure_roles_icon.png', [], true); ?></div>
+                <span class="description">
+                    <?php echo __("Roles are great for defining permission groups that can be granted to specific projects, or give users access to update and edit information around Pachno. Read about roles and permissions in the %online_documentation to learn more about how to create, apply and manage roles.", array('%online_documentation' => link_tag('https://projects.pachno.com/pachno/docs/RolesAndPermissions', '<b>'.__('online documentation').'</b>'))); ?>
+                </span>
             </div>
             <h3>
                 <span><?php echo __('Globally available roles'); ?></span>

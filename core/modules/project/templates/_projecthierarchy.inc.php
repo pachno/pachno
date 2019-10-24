@@ -14,6 +14,10 @@
 </div>
 <div id="project-hierarchy-menu_panes">
     <div id="tab_project_editions_pane" style="<?php if ($selected_tab != 'editions') echo 'display: none;'; ?>">
+        <div class="helper-text">
+            <div class="image-container"><?= image_tag('/unthemed/onboarding_project_editions_icon.png', [], true); ?></div>
+            <span class="description"><?= __('Use editions when you have variations of a project or product which include different components. This lets you keep track of the different editions without setting up multiple projects.') ;?></span>
+        </div>
         <div class="configurable-components-container" id="project-editions-list-container">
             <div class="configurable-components-list-container">
                 <h3>
@@ -43,6 +47,10 @@
         </div>
     </div>
     <div id="tab_project_components_pane" style="<?php if ($selected_tab != 'components') echo 'display: none;'; ?>">
+        <div class="helper-text">
+            <div class="image-container"><?= image_tag('/unthemed/onboarding_project_components_icon.png', [], true); ?></div>
+            <span class="description"><?= __('Components are a great way to split a project into parts, to separate and keep track of different parts of the project individually.') ;?></span>
+        </div>
         <div class="configurable-components-container">
             <div class="configurable-components-list-container">
                 <h3>

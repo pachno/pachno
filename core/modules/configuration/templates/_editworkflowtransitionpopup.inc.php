@@ -56,11 +56,12 @@
                                 <?php if ($transition === $workflow->getInitialTransition()): ?>
                                     <span class="status-badge"><?= fa_image_tag('edit'); ?><span><?php echo __("Issue is created"); ?></span></span>
                                 <?php endif; ?>
-                            <?php foreach ($transition->getIncomingSteps() as $step): ?>
-                                <span class="status-badge" style="background-color: <?php echo $step->getLinkedStatus()->getColor(); ?>; color: <?php echo $step->getLinkedStatus()->getTextColor(); ?>;">
-                                    <span class="value"><?php echo $step->getLinkedStatus()->getName(); ?></span>
-                                </span>
-                            <?php endforeach; ?>
+                                <?php foreach ($transition->getIncomingSteps() as $step): ?>
+                                    <?php if (!$step->getLinkedStatus() instanceof Status) continue; ?>
+                                    <span class="status-badge" style="background-color: <?php echo $step->getLinkedStatus()->getColor(); ?>; color: <?php echo $step->getLinkedStatus()->getTextColor(); ?>;">
+                                        <span class="value"><?php echo $step->getLinkedStatus()->getName(); ?></span>
+                                    </span>
+                                <?php endforeach; ?>
                             </div>
                             <div class="current-transition">
                                 <span class="icon"><?= fa_image_tag('arrow-right'); ?></span>

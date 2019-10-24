@@ -10,9 +10,13 @@
     display: flex;
     flex: 0 0 auto;
 
-    &:hover {
+    & + .row.header {
+      margin-top: 1em;
+    }
+
+    &:not(.disabled):hover {
       .column {
-        &:not(.invisible):not(.header) {
+        &:not(.invisible):not(.header):not(.disabled) {
           background-color: #F1F1F1;
 
           .button.secondary {
@@ -29,6 +33,12 @@
     &.selected {
       .column:not(.invisible) {
         background-color: #F1F1CA;
+      }
+    }
+
+    &.disabled {
+      .column {
+        color: #888;
       }
     }
 
@@ -93,6 +103,10 @@
 
     &.invisible {
       border-bottom-color: transparent;
+    }
+
+    &.disabled {
+      color: #888;
     }
 
     &.list {

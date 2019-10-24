@@ -556,6 +556,29 @@
             }
         }
 
+        public static function getIcons()
+        {
+            return [
+                '/unthemed/mono/project-icon-generic.png',
+                '/unthemed/mono/project-icon-code.png',
+                '/unthemed/mono/project-icon-cd.png',
+                '/unthemed/mono/project-icon-servicedesk.png',
+                '/unthemed/mono/project-icon-phone-1.png',
+                '/unthemed/mono/project-icon-page.png',
+                '/unthemed/mono/project-icon-help.png',
+                '/unthemed/mono/project-icon-db-build.png',
+                '/unthemed/mono/project-icon-globe-map.png',
+                '/unthemed/mono/project-icon-checklist.png',
+                '/unthemed/project-icon-picture.png',
+                '/unthemed/project-icon-globe-hand.png',
+                '/unthemed/project-icon-phone-1.png',
+                '/unthemed/project-icon-phone-2.png',
+                '/unthemed/project-icon-cloud-heart.png',
+                '/unthemed/project-icon-webpage.png',
+                '/unthemed/project-icon-person-computer.png',
+            ];
+        }
+
         /**
          * Whether or not the current or target user can access the project
          *
@@ -2762,7 +2785,7 @@
 
         public function getLargeIconName()
         {
-            return ($this->hasLargeIcon()) ? framework\Context::getRouting()->generate('showfile', ['id' => $this->getLargeIcon()->getID()]) : '/unthemed/mono/generic-project.png';
+            return ($this->hasLargeIcon()) ? framework\Context::getRouting()->generate('showfile', ['id' => $this->getLargeIcon()->getID()]) : '/unthemed/mono/project-icon-generic.png';
         }
 
         public function hasLargeIcon()
@@ -2785,7 +2808,7 @@
 
         public function getSmallIconName()
         {
-            return ($this->hasSmallIcon()) ? framework\Context::getRouting()->generate('showfile', ['id' => $this->getSmallIcon()->getID()]) : 'icon_project.png';
+            return $this->getLargeIconName();
         }
 
         public function hasSmallIcon()
@@ -2800,7 +2823,7 @@
          */
         public function getSmallIcon()
         {
-            return $this->_b2dbLazyLoad('_small_icon');
+            return $this->getLargeIcon();
         }
 
         public function setSmallIcon(File $icon)

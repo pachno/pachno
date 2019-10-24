@@ -16,6 +16,12 @@
     use pachno\core\framework;
     use pachno\core\helpers\Pagination;
 
+    /**
+     * Main controller for settings
+     *
+     * @Routes(name_prefix="configure_", url_prefix="/configure")
+     * @package pachno\core\modules\configuration\controllers
+     */
     class Main extends framework\Action
     {
 
@@ -109,9 +115,12 @@
         /**
          * Configure general and server settings
          *
+         * @Route(name="settings", url="/settings")
+         * @Parameters(config_module="core", section=12)
+         *
          * @param framework\Request $request The request object
          */
-        public function runSettings(framework\Request $request)
+        public function runConfigureSettings(framework\Request $request)
         {
             if (framework\Context::getRequest()->isPost()) {
                 $this->forward403unless($this->access_level == framework\Settings::ACCESS_FULL);
@@ -342,7 +351,7 @@
         }
 
         /**
-         * @Route(name="configure_add_issuetype", url="/configure/issuetypes", methods="POST")
+         * @Route(name="add_issuetype", url="/issuetypes", methods="POST")
          *
          * @param framework\Request $request
          */
@@ -352,7 +361,7 @@
         }
 
         /**
-         * @Route(name="configure_edit_issuetype", url="/configure/issuetypes/:issuetype_id")
+         * @Route(name="edit_issuetype", url="/issuetypes/:issuetype_id")
          *
          * @param framework\Request $request
          */

@@ -27,6 +27,14 @@
                     <?= fa_image_tag('list-alt', ['class' => 'icon'], 'far'); ?>
                     <span class="name"><?= __('Settings'); ?></span>
                 </a>
+                <a id="tab_developers" href="javascript:void(0);" onclick="Pachno.Main.Helpers.tabSwitcher('tab_developers', 'project_config_menu');return false;" class="list-item <?php if ($selected_tab == 'developers') echo 'selected'; ?>">
+                    <?= fa_image_tag('users', ['class' => 'icon']); ?>
+                    <span class="name"><?= __('People'); ?></span>
+                </a>
+                <a id="tab_permissions" href="javascript:void(0);" onclick="Pachno.Main.Helpers.tabSwitcher('tab_permissions', 'project_config_menu');return false;" class="list-item <?php if ($selected_tab == 'permissions') echo 'selected'; ?>">
+                    <?= fa_image_tag('user-shield', ['class' => 'icon']); ?>
+                    <span class="name"><?= __('Roles and access'); ?></span>
+                </a>
                 <div class="list-item separator"></div>
                 <a id="tab_hierarchy" href="javascript:void(0);" onclick="Pachno.Main.Helpers.tabSwitcher('tab_hierarchy', 'project_config_menu');return false;" class="list-item <?php if ($selected_tab == 'hierarchy') echo 'selected'; ?>">
                     <?= fa_image_tag('boxes', ['class' => 'icon']); ?>
@@ -36,24 +44,11 @@
                     <?= fa_image_tag('edit', ['class' => 'icon'], 'far'); ?>
                     <span class="name"><?= __('Issues and workflow'); ?></span>
                 </a>
-                <div class="list-item separator"></div>
-                <a id="tab_developers" href="javascript:void(0);" onclick="Pachno.Main.Helpers.tabSwitcher('tab_developers', 'project_config_menu');return false;" class="list-item <?php if ($selected_tab == 'developers') echo 'selected'; ?>">
-                    <?= fa_image_tag('users', ['class' => 'icon']); ?>
-                    <span class="name"><?= __('People'); ?></span>
-                </a>
                 <a id="tab_links" href="javascript:void(0);" onclick="Pachno.Main.Helpers.tabSwitcher('tab_links', 'project_config_menu');return false;" class="list-item <?php if ($selected_tab == 'links') echo 'selected'; ?>">
                     <?= fa_image_tag('link', ['class' => 'icon']); ?>
                     <span class="name"><?= __('Links'); ?></span>
                 </a>
-                <a id="tab_icons" href="javascript:void(0);" onclick="Pachno.Main.Helpers.tabSwitcher('tab_icons', 'project_config_menu');return false;" class="list-item <?php if ($selected_tab == 'icons') echo 'selected'; ?>">
-                    <?= fa_image_tag('image', ['class' => 'icon']); ?>
-                    <span class="name"><?= __('Icons'); ?></span>
-                </a>
                 <div class="list-item separator"></div>
-                <a id="tab_permissions" href="javascript:void(0);" onclick="Pachno.Main.Helpers.tabSwitcher('tab_permissions', 'project_config_menu');return false;" class="list-item <?php if ($selected_tab == 'permissions') echo 'selected'; ?>">
-                    <?= fa_image_tag('user-shield', ['class' => 'icon']); ?>
-                    <span class="name"><?= __('Security'); ?></span>
-                </a>
                 <?php \pachno\core\framework\Event::createNew('core', 'config_project_tabs_other')->trigger(array('selected_tab' => $selected_tab)); ?>
             </div>
         <?php else: ?>

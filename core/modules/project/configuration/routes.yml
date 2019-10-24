@@ -51,6 +51,8 @@ configure_project_add_assignee:
     route: '/configure/project/:project_id/add/:assignee_type/:assignee_id/*'
     module: project
     action: assignToProject
+    methods:
+      - POST
     parameters:
       config_module: core
       section: 10

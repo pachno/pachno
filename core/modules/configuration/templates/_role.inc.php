@@ -1,6 +1,14 @@
 <?php if ($role instanceof \pachno\core\entities\Role): ?>
-    <div class="row" id="role_<?php echo $role->getID(); ?>_container">
-        <div class="column name-container"><strong id="role_<?php echo $role->getID(); ?>_name"><?php echo $role->getName(); ?></strong></div>
+    <div class="row tooltip-container" id="role_<?php echo $role->getID(); ?>_container">
+        <div class="column name-container">
+            <?php if (isset($global)): ?>
+                <div class="tooltip">
+                    <?= __('This global role applies to any user with this role on all projects'); ?>
+                </div>
+                <?= fa_image_tag('globe', ['class' => 'icon']); ?>
+            <?php endif; ?>
+            <span class="name"><?php echo $role->getName(); ?></span>
+        </div>
         <div class="column numeric">
             <span class="count-badge"><?= fa_image_tag('user'); ?><span><?= $role->getNumberOfRoleUsers(); ?></span></span>
         </div>

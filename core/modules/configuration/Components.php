@@ -82,18 +82,15 @@
         public function componentSidebar()
         {
             $config_sections = framework\Settings::getConfigSections(framework\Context::getI18n());
-            $breadcrumblinks = [];
+            $selected_category = 'general';
             foreach ($config_sections as $key => $sections) {
-                foreach ($sections as $section) {
-                    if ($key == framework\Settings::CONFIGURATION_SECTION_MODULES) {
-                        $url = (is_array($section['route'])) ? make_url($section['route'][0], $section['route'][1]) : make_url($section['route']);
-                        $breadcrumblinks[] = ['url' => $url, 'title' => $section['description']];
-                    } else {
-                        $breadcrumblinks[] = ['url' => make_url($section['route']), 'title' => $section['description']];
+                foreach ($sections as $section_key => $section) {
+                    if ($section_key == $this->selected_section) {
+                        $selected_category = $key;
                     }
                 }
             }
-            $this->breadcrumblinks = $breadcrumblinks;
+            $this->selected_category = $selected_category;
 
             $this->config_sections = $config_sections;
             if ($this->selected_section == framework\Settings::CONFIGURATION_SECTION_MODULES) {

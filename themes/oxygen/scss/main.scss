@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,300i,400,400i,600,600i|Fira+Mono:400,500,700&subset=cyrillic,cyrillic-ext,latin-ext');
+@import 'variables.scss';
 
 /* General styles */
 body, td, th {
@@ -986,65 +987,57 @@ input[type=checkbox].semi-checked {
 }
 
 .popup_message {
-  margin: 0 0 0 -375px;
+  margin: 0 auto;
   position: fixed;
-  top: 20px;
-  left: 50%;
-  width: 750px;
-  padding: 5px !important;
+  bottom: 30px;
+  width: auto;
+  max-width: 700px;
+  padding: 10px 20px;
   box-sizing: border-box;
+  display: flex;
+  flex-direction: row;
   font-size: 1em;
-  color: #000;
-  border: 1px solid rgba(100, 100, 100, 0.3);
-  cursor: pointer;
-  text-align: center;
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.23), 0 10px 40px rgba(0, 0, 0, 0.19) !important;
-}
+  color: #FFF;
+  border: none;
+  box-shadow: 0 -6px 12px rgba(0, 0, 0, 0.23);
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(50, 50, 50, .9);
+  border-radius: .2em;
+  align-items: center;
 
-.dismiss_me {
-  position: absolute;
-  top: 5px;
-  right: 5px;
-  color: rgb(170, 170, 170);
-  text-align: right;
-  font-size: 0.8em;
-  line-height: 1;
-  padding: 0;
-  margin: 0;
-}
+  .message-content {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    padding-right: 2em;
 
-.popup_message .messagetitle {
-  font-weight: 400;
-  color: #555;
-  display: block;
-}
+    .title {
+      width: 100%;
+      flex: 0 0 auto;
+      font-weight: 400;
+    }
 
-.popup_message.failure {
-  z-index: 200001;
-  background-color: #FFE2E2;
-  border: 1px solid rgba(66, 19, 19, 0.45);
-}
+    .message {
+      font-weight: 400;
+      width: 100%;
+      flex: 0 0 auto;
+    }
+  }
 
-.popup_message.failure .dismiss_me {
-  color: rgb(184, 134, 134);
-}
+  .dismiss_me {
+    flex: 0 0 auto;
+    font-weight: 600;
+    color: #B6aC6D;
+    padding: .3em .8em;
+    border-radius: .2em;
 
-.popup_message.failure .messagetitle {
-  color: #691717;
-}
-
-.popup_message.success {
-  z-index: 200000;
-  background-color: #DEEFDE;
-  border: 1px solid rgba(30, 69, 24, 0.45);
-}
-
-.popup_message.success .dismiss_me {
-  color: rgb(154, 184, 134);
-}
-
-.popup_message.success .messagetitle {
-  color: #23642B;
+    &:hover {
+      background-color: rgba(255, 255, 255, .15);
+      color: #ccc17a;
+      cursor: pointer;
+    }
+  }
 }
 
 /* end slidedowns */

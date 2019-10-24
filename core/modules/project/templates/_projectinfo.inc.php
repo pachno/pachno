@@ -6,11 +6,13 @@
  */
 
 ?>
-<h1><?= __('Project details'); ?></h1>
 <div class="form-container">
     <?php use pachno\core\modules\publish\Publish;if ($access_level == \pachno\core\framework\Settings::ACCESS_FULL): ?>
-        <form accept-charset="<?php echo \pachno\core\framework\Context::getI18n()->getCharset(); ?>" action="<?php echo make_url('configure_project_settings', array('project_id' => $project->getID())); ?>" method="post" id="project_info" onsubmit="Pachno.Project.submitInfo('<?php echo make_url('configure_project_settings', array('project_id' => $project->getID())); ?>'); return false;">
+        <form accept-charset="<?php echo \pachno\core\framework\Context::getI18n()->getCharset(); ?>" action="<?php echo make_url('configure_project_settings', array('project_id' => $project->getID())); ?>" method="post" id="project_info" onsubmit="Pachno.Project.submitInfo('<?php echo make_url('configure_project_settings', array('project_id' => $project->getID())); ?>'); return false;" data-interactive-form>
     <?php endif; ?>
+        <div class="form-row">
+            <h3><?= __('Project details'); ?></h3>
+        </div>
         <div class="form-row">
             <label for="project_name_input"><?= __('Project name'); ?></label>
             <?php if ($access_level == \pachno\core\framework\Settings::ACCESS_FULL): ?>
@@ -28,6 +30,16 @@
                 <?= $project->getKey(); ?>
             <?php endif; ?>
             <div class="helper-text"><?= __('This is a part of all urls referring to this project'); ?></div>
+        </div>
+        <div class="form-row">
+            <label><?php echo __('Project icon'); ?></label>
+            <div class="image-container">
+                <?php echo image_tag($project->getLargeIconName(), [], true); ?>
+            </div>
+            <button class="button secondary" onclick="Pachno.Main.Helpers.Backdrop.show('<?php echo make_url('get_partial_for_backdrop', array('key' => 'project_icons', 'project_id' => $project->getId())); ?>');return false;">
+                <?= fa_image_tag('image', ['class' => 'icon']); ?>
+                <span class="name"><?php echo __('Change project icon'); ?></span>
+            </button>
         </div>
         <div class="form-row">
             <?php if ($access_level == \pachno\core\framework\Settings::ACCESS_FULL): ?>

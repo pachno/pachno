@@ -6,12 +6,18 @@
  */
 
 ?>
-<h1><?= __('Project links'); ?></h1>
 <div class="form-container">
     <?php use pachno\core\framework\Settings;
     use pachno\core\modules\publish\Publish;if ($access_level == Settings::ACCESS_FULL): ?>
-        <form accept-charset="<?php echo \pachno\core\framework\Context::getI18n()->getCharset(); ?>" action="<?php echo make_url('configure_project_settings', array('project_id' => $project->getID())); ?>" method="post" id="project_info" onsubmit="Pachno.Project.submitLinks('<?php echo make_url('configure_project_settings', array('project_id' => $project->getID())); ?>'); return false;">
+        <form accept-charset="<?php echo \pachno\core\framework\Context::getI18n()->getCharset(); ?>" action="<?php echo make_url('configure_project_settings', array('project_id' => $project->getID())); ?>" method="post" id="project_links" onsubmit="Pachno.Project.submitLinks('<?php echo make_url('configure_project_settings', array('project_id' => $project->getID())); ?>'); return false;" data-interactive-form>
     <?php endif; ?>
+        <div class="form-row">
+            <h3><?= __('Project links'); ?></h3>
+        </div>
+        <div class="helper-text">
+            <div class="image-container"><?= image_tag('/unthemed/onboarding_project_links_icon.png', [], true); ?></div>
+            <span class="description"><?= __('Project links lets you specify links to various resources related to the project. These links are shown in project overviews, info boxes and more.') ;?></span>
+        </div>
         <div class="form-row">
             <?php if ($access_level == Settings::ACCESS_FULL): ?>
                 <input type="text" name="homepage" id="homepage" value="<?php echo $project->getHomepage(); ?>" style="width: 100%;">

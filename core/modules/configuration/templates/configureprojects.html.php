@@ -10,7 +10,8 @@
         <div class="configuration-content">
             <h1><?php echo __('Configure projects'); ?></h1>
             <div class="helper-text">
-                <?php echo __('More information about projects, editions, builds and components is available from the %wiki_help_section.', array('%wiki_help_section' => link_tag(\pachno\core\modules\publish\Publish::getArticleLink('Category:Help'), '<b>' . __('Wiki help section') . '</b>'))); ?>
+                <div class="image-container"><?= image_tag('/unthemed/onboarding_configuration_projects_icon.png', [], true); ?></div>
+                <span class="description"><?php echo __('More information about projects, editions, builds and components is available from the %wiki_help_section.', array('%wiki_help_section' => link_tag(\pachno\core\modules\publish\Publish::getArticleLink('Category:Help'), '<b>' . __('Wiki help section') . '</b>'))); ?></span>
             </div>
             <?php if (framework\Context::getScope()->getMaxProjects()): ?>
                 <div class="message-box type-info">

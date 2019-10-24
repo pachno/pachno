@@ -1,7 +1,7 @@
 <?php \pachno\core\framework\Context::loadLibrary('ui'); ?>
 <div id="project_box_<?= $project->getID();?>" class="row">
     <div class="column info-icons">
-        <?= image_tag($project->getSmallIconName(), array('class' => 'icon-large', 'alt' => '[i]'), $project->hasSmallIcon()); ?>
+        <?= image_tag($project->getSmallIconName(), ['class' => 'icon-large', 'alt' => '[i]'], $project->hasSmallIcon()); ?>
     </div>
     <div class="column smaller">
         <?php if ($project->usePrefix()): ?>
@@ -12,14 +12,14 @@
         <?php if ($project->isArchived()): ?>
             <span class="status-badge"><span class="name"><?= __('ARCHIVED'); ?> </span></span>
         <?php endif; ?>
-        <?= link_tag(make_url('project_dashboard', array('project_key' => $project->getKey())), $project->getName()); ?>&nbsp;<span class="project_key" style="position: relative;">(<div class="tooltip leftie"><?= __('This is the project key, used in most places when accessing the project'); ?></div><?= $project->getKey(); ?>)</span>
+        <?= link_tag(make_url('project_dashboard', ['project_key' => $project->getKey()]), $project->getName()); ?>&nbsp;<span class="project_key" style="position: relative;">(<div class="tooltip leftie"><?= __('This is the project key, used in most places when accessing the project'); ?></div><?= $project->getKey(); ?>)</span>
     </div>
     <div class="column">
         <?php if ($project->getOwner() != null): ?>
             <?php if ($project->getOwner() instanceof \pachno\core\entities\User): ?>
-                <?= include_component('main/userdropdown', array('user' => $project->getOwner())); ?>
+                <?= include_component('main/userdropdown', ['user' => $project->getOwner(), 'size' => 'small']); ?>
             <?php elseif ($project->getOwner() instanceof \pachno\core\entities\Team): ?>
-                <?= include_component('main/teamdropdown', array('team' => $project->getOwner())); ?>
+                <?= include_component('main/teamdropdown', ['team' => $project->getOwner()]); ?>
             <?php endif; ?>
         <?php else: ?>
             <div style="color: #AAA; padding: 2px; width: auto;"><?= __('None'); ?></div>

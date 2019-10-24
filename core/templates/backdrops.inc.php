@@ -1,9 +1,9 @@
-<div class="almost_not_transparent shadowed popup_message failure" onclick="Pachno.Main.Helpers.Message.clear();" style="display: none;" id="pachno_failuremessage">
-    <div style="padding: 10px 0 10px 0;">
-        <div class="dismiss_me"><?php echo __('Click this message to dismiss it'); ?></div>
-        <span class="messagetitle" id="pachno_failuremessage_title"></span>
-        <span id="pachno_failuremessage_content"></span>
+<div class="popup_message failure" onclick="Pachno.Main.Helpers.Message.clear();" style="display: none;" id="pachno_failuremessage">
+    <div class="message-content">
+        <span class="title" id="pachno_failuremessage_title"></span>
+        <span class="message" id="pachno_failuremessage_content"></span>
     </div>
+    <div class="dismiss_me"><?php echo __('Okay'); ?></div>
 </div>
 <div class="tutorial-message" id="tutorial-message" style="display: none;" data-disable-url="<?php echo make_url('disable_tutorial'); ?>">
     <div id="tutorial-message-container"></div>
@@ -14,12 +14,12 @@
     <br style="clear: both;">
     <div class="tutorial-status"><span id="tutorial-current-step"></span> of <span id="tutorial-total-steps"></span></div>
 </div>
-<div class="almost_not_transparent shadowed popup_message success" onclick="Pachno.Main.Helpers.Message.clear();" style="display: none;" id="pachno_successmessage">
-    <div style="padding: 10px 0 10px 0;">
-        <div class="dismiss_me"><?php echo __('Click this message to dismiss it'); ?></div>
-        <span class="messagetitle" id="pachno_successmessage_title"></span>
-        <span id="pachno_successmessage_content"></span>
+<div class="popup_message success" onclick="Pachno.Main.Helpers.Message.clear();" style="display: none;" id="pachno_successmessage">
+    <div class="message-content">
+        <span class="title" id="pachno_successmessage_title"></span>
+        <span class="message" id="pachno_successmessage_content"></span>
     </div>
+    <div class="dismiss_me"><?php echo __('Okay'); ?></div>
 </div>
 <div id="fullpage_backdrop" class="fullpage_backdrop" style="display: none;">
     <div id="fullpage_backdrop_indicator">

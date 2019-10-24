@@ -76,15 +76,6 @@ configure_project_delete:
       section: 10
     csrf_enabled: false
 
-configure_settings:
-    route: /configure/settings
-    module: configuration
-    action: settings
-    parameters:
-      config_module: core
-      section: 12
-    csrf_enabled: false
-
 configure_scopes:
     route: /configure/scopes
     module: configuration

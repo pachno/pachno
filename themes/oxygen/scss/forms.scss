@@ -162,6 +162,43 @@
       }
     }
 
+    .image-grid {
+      label {
+        margin: .5em;
+        padding: .75em 1em;
+        display: inline-block;
+        box-sizing: border-box;
+        background-color: transparent;
+        border-radius: .5em;
+        border: 1px solid transparent;
+
+        &:hover {
+          background-color: rgba(100, 100, 100, .1);
+        }
+
+        img {
+          width: 40px;
+          height: 40px;
+        }
+      }
+
+      input {
+        display: none;
+      }
+
+      input:checked + label {
+        border-color: $theme-primary;
+      }
+    }
+
+    .image-container {
+      padding: .5em 1.5em .5em .5em;
+
+      img {
+        max-width: 40px;
+      }
+    }
+
     > .list-mode {
       width: 100%;
     }

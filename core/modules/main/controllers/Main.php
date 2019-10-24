@@ -2807,6 +2807,44 @@
         }
 
         /**
+         * Find users and show selection box
+         *
+         * @Route(name="invite_users_find", url="/invite/find", methods="POST")
+         *
+         * @param framework\Request $request The request object
+         */
+        public function runFindInviteUsers(framework\Request $request)
+        {
+            $this->message = false;
+
+            $find_by = trim($request['find_by']);
+            if ($find_by) {
+                $this->registered = !tables\Users::getTable()->isEmailAvailable($find_by);
+            } else {
+                $this->message = true;
+            }
+        }
+
+        /**
+         * Find users and show selection box
+         *
+         * @Route(name="invite_users", url="/invite/invite", methods="POST")
+         *
+         * @param framework\Request $request The request object
+         */
+        public function runInviteUsers(framework\Request $request)
+        {
+            $this->message = false;
+
+            $find_by = trim($request['find_by']);
+            if ($find_by) {
+                $this->registered = !tables\Users::getTable()->isEmailAvailable($find_by);
+            } else {
+                $this->message = true;
+            }
+        }
+
+        /**
          * Partial backdrop loader
          *
          * @Route(name="get_partial_for_backdrop", url="/get/partials/:key/*")
@@ -2927,6 +2965,10 @@
                     case 'project_add_people':
                         $template_name = 'project/projectaddpeople';
                         $options['project'] = Projects::getTable()->selectById($request['project_id']);
+                        $options['invite'] = ($request->getParameter('invite') == 1);
+                        break;
+                    case 'invite_users':
+                        $template_name = 'main/inviteusers';
                         break;
                     case 'permissions':
                         $options['key'] = $request['permission_key'];

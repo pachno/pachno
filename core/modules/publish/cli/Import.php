@@ -9,16 +9,6 @@
     /**
      * CLI command class, publish -> import
      *
-     * @author Daniel Andre Eikeland <zegenie@zegeniestudios.net>
-     * @version 3.1
-     * @license http://opensource.org/licenses/MPL-2.0 Mozilla Public License 2.0 (MPL 2.0)
-     * @package pachno
-     * @subpackage publish
-     */
-
-    /**
-     * CLI command class, publish -> import
-     *
      * @package pachno
      * @subpackage publish
      */

@@ -669,12 +669,17 @@
         {
             $this->message = false;
 
-            if ($request['find_by']) {
+            $find_by = trim($request['find_by']);
+            if ($find_by) {
                 $this->selected_project = entities\Project::getB2DBTable()->selectById($request['project_id']);
-                $this->users = tables\Users::getTable()->getByDetails($request['find_by'], 10);
-                $this->teams = tables\Teams::getTable()->quickfind($request['find_by']);
-                $this->global_roles = entities\Role::getAll();
+                $this->users = tables\Users::getTable()->getByDetails($find_by, 10, true);
+                $this->teams = tables\Teams::getTable()->quickfind($find_by);
+                $this->global_roles = entities\Role::getGlobalRoles();
                 $this->project_roles = entities\Role::getByProjectID($this->selected_project->getID());
+
+                if (filter_var($find_by, FILTER_VALIDATE_EMAIL) == $find_by) {
+                    $this->email = $find_by;
+                }
             } else {
                 $this->message = true;
             }
@@ -687,8 +692,6 @@
          */
         public function runAssignToProject(framework\Request $request)
         {
-            $this->forward403unless($request->isPost());
-
             if ($this->getUser()->canEditProjectDetails($this->selected_project)) {
                 $assignee_type = $request['assignee_type'];
                 $assignee_id = $request['assignee_id'];

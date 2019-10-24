@@ -10,7 +10,8 @@
             <div class="form-container">
                 <h1><?= __('Configure settings'); ?></h1>
                 <div class="helper-text">
-                    <p><?= __("These are all the different settings defining most of the behaviour of Pachno. Changing any of these settings will apply globally and immediately, without the need to log out and back in, reboot or anything to that effect."); ?></p>
+                    <div class="image-container"><?= image_tag('/unthemed/onboarding_configuration_settings_icon.png', [], true); ?></div>
+                    <span class="description"><?= __("These settings configure various features in Pachno. Keep in mind that changing any of these settings will apply globally and immediately. There is no need to log out and back in."); ?></span>
                 </div>
                 <?php if ($access_level == \pachno\core\framework\Settings::ACCESS_FULL): ?>
                     <form accept-charset="<?= \pachno\core\framework\Context::getI18n()->getCharset(); ?>" action="<?= make_url('configure_settings'); ?>" method="post" onsubmit="Pachno.Main.Helpers.formSubmit('<?= make_url('configure_settings'); ?>', 'config_settings'); return false;" id="config_settings">
