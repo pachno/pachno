@@ -1154,7 +1154,7 @@
             $config_sections['general'][self::CONFIGURATION_SECTION_MODULES] = ['route' => 'configure_modules', 'description' => $i18n->__('Manage modules'), 'fa_style' => 'fas', 'fa_icon' => 'puzzle-piece', 'details' => $i18n->__('Manage Pachno extensions from this section. New modules are installed from here.'), 'module' => 'core'];
 
             $config_sections['security'][self::CONFIGURATION_SECTION_AUTHENTICATION] = ['route' => 'configure_authentication', 'description' => $i18n->__('Authentication'), 'fa_style' => 'fas', 'fa_icon' => 'lock', 'details' => $i18n->__('Configure the authentication method in this section')];
-            $config_sections['security'][self::CONFIGURATION_SECTION_ROLES] = ['route' => 'configure_roles', 'description' => $i18n->__('Roles'), 'fa_style' => 'fas', 'fa_icon' => 'user-md', 'details' => $i18n->__('Configure roles in this section')];
+            $config_sections['security'][self::CONFIGURATION_SECTION_ROLES] = ['route' => 'configure_roles', 'description' => $i18n->__('Roles'), 'fa_style' => 'fas', 'fa_icon' => 'user-tie', 'details' => $i18n->__('Configure roles in this section')];
 
             $config_sections['projects'][self::CONFIGURATION_SECTION_PROJECTS] = ['route' => 'configure_projects', 'description' => $i18n->__('Projects'), 'fa_style' => 'fas', 'fa_icon' => 'code', 'details' => $i18n->__('Set up all projects in this configuration section.')];
             $config_sections['projects'][self::CONFIGURATION_SECTION_IMPORT] = ['route' => 'import_home', 'description' => $i18n->__('Import data'), 'fa_style' => 'fas', 'fa_icon' => 'download', 'details' => $i18n->__('Import data from CSV files and other sources.')];

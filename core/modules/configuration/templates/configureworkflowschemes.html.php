@@ -13,10 +13,11 @@
     <div class="configuration-container">
         <div class="configuration-content">
             <h1><?php echo __('Configure workflow schemes'); ?></h1>
-            <div class="helper-text">
-                <p>
-                    <?php echo __('Workflow schemes links issue types to workflows. You can read more about how the workflow in Pachno works and is set up in %link_to_wiki_workflow.', array('%link_to_wiki_workflow' => link_tag(\pachno\core\modules\publish\Publish::getArticleLink('Workflow'), 'Workflow'))); ?>
-                </p>
+            <div class="helper-text centered">
+                <div class="image-container"><?= image_tag('/unthemed/onboarding_configuration_workflow_schemes_icon.png', [], true); ?></div>
+                <span class="description">
+                    <?php echo __('Workflow schemes links issue types to workflows. You can read more about how workflow schemes work and are set up in %link_to_wiki_workflow.', array('%link_to_wiki_workflow' => link_tag(\pachno\core\modules\publish\Publish::getArticleLink('Workflow'), 'Workflow'))); ?>
+                </span>
             </div>
             <h3>
                 <span><?php echo __('Existing workflow schemes'); ?></span>

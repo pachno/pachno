@@ -4,8 +4,11 @@
     <div class="configuration-container">
         <div class="configuration-content">
             <h1><?php echo __('Configure issue types'); ?></h1>
-            <div class="helper-text">
-                <p><?php echo __('Issue types let you categorize and group requests based. You can read more about how issue types and schemes in Pachno works and is set up in the %online_documentation', array('%online_documentation' => link_tag('https://projects.pachno.com/pachno/docs/IssuetypeScheme', __('online documentation')))); ?></p>
+            <div class="helper-text centered">
+                <div class="image-container"><?= image_tag('/unthemed/onboarding_configuration_issue_types_icon.png', [], true); ?></div>
+                <span class="description">
+                    <?php echo __('Issue types let you categorize requests into different groups, and specify additional fields per issue type. Read more about how issue types works and is set up in the %online_documentation', array('%online_documentation' => link_tag('https://projects.pachno.com/pachno/docs/IssuetypeScheme', __('online documentation')))); ?>
+                </span>
             </div>
             <h3>
                 <span><?php echo __('Existing issue types'); ?></span>

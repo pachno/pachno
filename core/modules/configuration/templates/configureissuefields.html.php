@@ -7,8 +7,11 @@
     <div class="configuration-container" id="config_issuefields">
         <div class="configuration-content centered">
             <h1><?php echo __('Configure issue fields'); ?></h1>
-            <div class="helper-text">
-                <p><?php echo __('Edit built-in and custom issue fields and values here. Remember that the issue fields visibility (in the issue view or during reporting) is decided by the %issuetype_scheme in use by the project.', array('%issuetype_scheme' => link_tag(make_url('configure_issuetypes_schemes'), __('Issuetype scheme')))); ?></p>
+            <div class="helper-text centered">
+                <div class="image-container"><?= image_tag('/unthemed/onboarding_configuration_issue_fields_icon.png', [], true); ?></div>
+                <span class="description">
+                    <?php echo __('Add, remove and edit available issue fields and their valid values. Field visibility (such as in the issue view or during reporting) is decided by the %issuetype_scheme in use by the project.', array('%issuetype_scheme' => link_tag(make_url('configure_issuetypes_schemes'), __('Issuetype scheme')))); ?>
+                </span>
             </div>
             <div class="configurable-components-container" id="issue-fields-configuration-container">
                 <div class="configurable-components-list-container">

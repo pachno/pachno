@@ -4,9 +4,11 @@
     <div class="configuration-container" id="configure-scopes-container">
         <div class="configuration-content">
             <h1><?php echo __('Configure scopes'); ?></h1>
-            <div class="helper-text">
-                <p><?php echo __('Pachno scopes are self-contained environments within the same Pachno installation, set up to be initialized when Pachno is accessed via different hostnames.'); ?></p>
-                <p><?php echo __('The default scope (which is created during the first installation) is used for all hostnames where there is no other scope defined. Read more about scopes in %ConfigureScopes.', array('%ConfigureScopes' => link_Tag(make_url('publish_article', array('article_name' => 'ConfigureScopes')), 'ConfigureScopes'))); ?></p>
+            <div class="helper-text centered">
+                <div class="image-container"><?= image_tag('/unthemed/onboarding_configuration_scopes_icon.png', [], true); ?></div>
+                <span class="description">
+                    <?php echo __('Pachno scopes are self-contained environments within the same Pachno installation, set up to be initialized when Pachno is accessed via different hostnames. Read more about scopes in %ConfigureScopes.', ['%ConfigureScopes' => link_tag(\pachno\core\modules\publish\Publish::getArticleLink('ConfigureScopes'), 'ConfigureScopes')]); ?>
+                </span>
             </div>
             <?php if (isset($scope_deleted)): ?>
                 <div class="greenbox" style="margin: 0 0 5px 0; font-size: 14px;">

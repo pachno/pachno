@@ -8,6 +8,10 @@
     align-items: center;
     box-sizing: border-box;
 
+    &.centered {
+      max-width: 750px;
+    }
+
     .image-container {
       flex: 0 0 60px;
       box-sizing: border-box;
@@ -26,6 +30,6 @@
 
     a,
     a:hover {
-      margin: 0 .35em;
+      font-weight: 600;
     }
   }

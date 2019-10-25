@@ -10,11 +10,11 @@
     <div class="configuration-container">
         <div class="configuration-content">
             <h1><?php echo __('Configure workflows'); ?></h1>
-            <div class="helper-text">
-                <p>
-                    <?php echo __('Workflow lets you define the lifecycle of an issue. You can define steps, transitions and more, that makes an issue move through its defined lifecycle.'); ?>
-                    <?php echo __('You can read more about how the workflow in Pachno works and is set up in %link_to_wiki_workflow.', array('%link_to_wiki_workflow' => link_tag(\pachno\core\modules\publish\Publish::getArticleLink('Workflow'), 'Workflow'))); ?>
-                </p>
+            <div class="helper-text centered">
+                <div class="image-container"><?= image_tag('/unthemed/onboarding_configuration_workflows_icon.png', [], true); ?></div>
+                <span class="description">
+                    <?php echo __('Workflows lets you define the lifecycle of an issue: steps, transitions, lifecycle events and more. Read more about how workflows are set up in %link_to_wiki_workflow.', array('%link_to_wiki_workflow' => link_tag(\pachno\core\modules\publish\Publish::getArticleLink('Workflow'), 'Workflow'))); ?>
+                </span>
             </div>
             <h3>
                 <span><?php echo __('Existing workflows'); ?></span>

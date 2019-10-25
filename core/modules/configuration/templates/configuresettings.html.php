@@ -7,8 +7,8 @@
     <?php include_component('configuration/sidebar', ['selected_section' => \pachno\core\framework\Settings::CONFIGURATION_SECTION_SETTINGS]); ?>
     <div class="configuration-container">
         <div class="configuration-content centered">
+            <h1><?= __('Configure settings'); ?></h1>
             <div class="form-container">
-                <h1><?= __('Configure settings'); ?></h1>
                 <div class="helper-text">
                     <div class="image-container"><?= image_tag('/unthemed/onboarding_configuration_settings_icon.png', [], true); ?></div>
                     <span class="description"><?= __("These settings configure various features in Pachno. Keep in mind that changing any of these settings will apply globally and immediately. There is no need to log out and back in."); ?></span>
@@ -43,8 +43,8 @@
                 <?php if ($access_level == \pachno\core\framework\Settings::ACCESS_FULL): ?>
                     <div class="form-row submit-container">
                         <button type="submit" id="config_settings_button" class="button primary">
-                            <?= fa_image_tag('spinner', ['class' => 'indicator fa-spin']);?>
-                            <span><?= __('Save settings'); ?></span>
+                            <span class="indicator"><?= fa_image_tag('spinner', ['class' => 'fa-spin']);?></span>
+                            <span><?= __('Save'); ?></span>
                         </button>
                     </div>
                     </form>

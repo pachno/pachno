@@ -10010,6 +10010,8 @@ nav.sidebar {
   flex-direction: row;
   align-items: center;
   box-sizing: border-box; }
+  .helper-text.centered {
+    max-width: 750px; }
   .helper-text .image-container {
     flex: 0 0 60px;
     box-sizing: border-box;
@@ -10022,7 +10024,7 @@ nav.sidebar {
     color: #1c2b36; }
   .helper-text a,
   .helper-text a:hover {
-    margin: 0 .35em; }
+    font-weight: 600; }
 
 .flexible-table {
   display: flex;

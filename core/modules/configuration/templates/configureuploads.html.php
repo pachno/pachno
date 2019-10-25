@@ -4,6 +4,10 @@
     <div class="configuration-container">
         <div class="configuration-content centered">
             <h1><?php echo __('Configure uploads & attachments'); ?></h1>
+            <div class="helper-text">
+                <div class="image-container"><?= image_tag('/unthemed/onboarding_configure_uploads_icon.png', [], true); ?></div>
+                <span class="description"><?= __('Configure file uploads so users can attach files to issues and pages. File uploads also lets you provide self-hosted project downloads. Read more about configuring uploads in %ConfigureUploads.', ['%ConfigureUploads' => link_tag(\pachno\core\modules\publish\Publish::getArticleLink('ConfigureUploads'), 'ConfigureUploads')]); ?></span>
+            </div>
             <?php if (\pachno\core\framework\Context::getScope()->getMaxUploadLimit()): ?>
                 <div class="message-box type-warning">
                     <?php include_component('main/percentbar', array('height' => '20', 'percent' => \pachno\core\framework\Context::getScope()->getCurrentUploadUsagePercent())); ?>
