@@ -1,0 +1,35 @@
+@import '../variables';
+
+.fancy-tag-input-container {
+  font-family: 'Source Sans Pro', sans-serif;
+  font-size: 1em;
+  color: #555;
+  border: none;
+  border-bottom: 1px solid #AAA;
+  padding: 2px;
+  vertical-align: middle;
+  font-weight: 300;
+  background-color: #FFF;
+
+  display: flex;
+  flex-direction: row;
+
+  input {
+    flex: 1 1 auto;
+    min-width: 100px;
+    background-color: #FFF;
+    border: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .fancy-tag {
+    flex: 0 0 auto;
+    white-space: nowrap;
+    padding: .35em 1em;
+    background-color: $theme-primary;
+    color: #1c2b36;
+    border-radius: .15em;
+    margin-right: .5em;
+  }
+}

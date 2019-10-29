@@ -13,6 +13,7 @@
      * @package pachno
      * @subpackage tables
      *
+     * @method static IssuetypeSchemes getTable()
      * @method IssuetypeScheme selectById(integer $id, Criteria $query = null, $join = 'all') Retrieves an issue
      *
      * @Table(name="issuetype_schemes")

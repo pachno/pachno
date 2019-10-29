@@ -980,30 +980,6 @@
         }
 
         /**
-         * Get default comment syntax
-         *
-         * @return integer
-         */
-        public static function getDefaultCommentSyntax()
-        {
-            $syntax = self::get(self::SETTING_DEFAULT_COMMENT_SYNTAX);
-
-            return ($syntax == null) ? self::SYNTAX_MW : $syntax;
-        }
-
-        /**
-         * Get default issue syntax
-         *
-         * @return integer
-         */
-        public static function getDefaultIssueSyntax()
-        {
-            $syntax = self::get(self::SETTING_DEFAULT_ISSUE_SYNTAX);
-
-            return ($syntax == null) ? self::SYNTAX_MW : $syntax;
-        }
-
-        /**
          * Get associated syntax class for a given syntax value
          *
          * @param integer $syntax
@@ -1043,52 +1019,37 @@
             }
         }
 
-        /**
-         * Notification polling interval in seconds
-         *
-         * @return integer
-         */
-        public static function getNotificationPollInterval()
-        {
-            return 0;
-//            $seconds = self::get(self::SETTING_NOTIFICATION_POLL_INTERVAL);
-//            return $seconds == null ? 180 : $seconds;
-        }
-
         public static function getSubscriptionsSettings()
         {
             $i18n = Context::getI18n();
-            $subscriptionssettings = [];
-            $subscriptionssettings[self::SETTINGS_USER_SUBSCRIBE_CREATED_UPDATED_COMMENTED_ISSUES] = $i18n->__('Automatically subscribe to issues I posted');
-            $subscriptionssettings[self::SETTINGS_USER_SUBSCRIBE_CREATED_UPDATED_COMMENTED_ARTICLES] = $i18n->__('Automatically subscribe to article I posted');
-            $subscriptionssettings[self::SETTINGS_USER_SUBSCRIBE_NEW_ISSUES_MY_PROJECTS] = $i18n->__('Automatically subscribe to new issues that are created in my project(s)');
-            $subscriptionssettings[self::SETTINGS_USER_SUBSCRIBE_NEW_ARTICLES_MY_PROJECTS] = $i18n->__('Automatically subscribe to new articles that are created in my project(s)');
-            $subscriptionssettings[self::SETTINGS_USER_SUBSCRIBE_NEW_ISSUES_MY_PROJECTS_CATEGORY] = $i18n->__('Automatically subscribe to new issues in selected categories');
-            $subscriptionssettings[self::SETTINGS_USER_SUBSCRIBE_ASSIGNED_ISSUES] = $i18n->__('Automatically subscribe to issues I get assigned to');
+            $subscriptions_settings = [
+                self::SETTINGS_USER_SUBSCRIBE_CREATED_UPDATED_COMMENTED_ISSUES => $i18n->__('Automatically subscribe to issues I posted'),
+                self::SETTINGS_USER_SUBSCRIBE_CREATED_UPDATED_COMMENTED_ARTICLES => $i18n->__('Automatically subscribe to article I posted'),
+                self::SETTINGS_USER_SUBSCRIBE_NEW_ISSUES_MY_PROJECTS => $i18n->__('Automatically subscribe to new issues that are created in my project(s)'),
+                self::SETTINGS_USER_SUBSCRIBE_NEW_ARTICLES_MY_PROJECTS => $i18n->__('Automatically subscribe to new articles that are created in my project(s)'),
+                self::SETTINGS_USER_SUBSCRIBE_NEW_ISSUES_MY_PROJECTS_CATEGORY => $i18n->__('Automatically subscribe to new issues in selected categories'),
+                self::SETTINGS_USER_SUBSCRIBE_ASSIGNED_ISSUES => $i18n->__('Automatically subscribe to issues I get assigned to'),
+            ];
 
-            return $subscriptionssettings;
+            return $subscriptions_settings;
         }
 
         public static function getNotificationSettings()
         {
             $i18n = Context::getI18n();
-            $notificationsettings = [];
-            $notificationsettings[self::SETTINGS_USER_NOTIFY_SUBSCRIBED_ISSUES] = $i18n->__('Notify when there are updates to my subscribed issues');
-            $notificationsettings[self::SETTINGS_USER_NOTIFY_SUBSCRIBED_ARTICLES] = $i18n->__('Notify when there are updates to my subscribed articles');
-            $notificationsettings[self::SETTINGS_USER_NOTIFY_NEW_ISSUES_MY_PROJECTS] = $i18n->__('Notify when new issues are created in my project(s)');
-            $notificationsettings[self::SETTINGS_USER_NOTIFY_NEW_ARTICLES_MY_PROJECTS] = $i18n->__('Notify when new articles are created in my project(s)');
-            $notificationsettings[self::SETTINGS_USER_NOTIFY_UPDATED_SELF] = $i18n->__('Notify also when I am the one making the changes');
-            $notificationsettings[self::SETTINGS_USER_NOTIFY_MENTIONED] = $i18n->__('Notify when I am mentioned in issue or article or their comment');
-            $notificationsettings[self::SETTINGS_USER_NOTIFY_ITEM_ONCE] = $i18n->__('Only notify once per issue or article until I view the issue or article in my browser');
-            $notificationsettings[self::SETTINGS_USER_NOTIFY_NEW_ISSUES_MY_PROJECTS_CATEGORY] = $i18n->__('Notify when issues are created in selected categories');
-            $notificationsettings[self::SETTINGS_USER_NOTIFY_GROUPED_NOTIFICATIONS] = $i18n->__('Group similar notifications together if they are related');
+            $notification_settings = [
+                self::SETTINGS_USER_NOTIFY_SUBSCRIBED_ISSUES => $i18n->__('Notify when there are updates to my subscribed issues'),
+                self::SETTINGS_USER_NOTIFY_SUBSCRIBED_ARTICLES => $i18n->__('Notify when there are updates to my subscribed articles'),
+                self::SETTINGS_USER_NOTIFY_NEW_ISSUES_MY_PROJECTS => $i18n->__('Notify when new issues are created in my project(s)'),
+                self::SETTINGS_USER_NOTIFY_NEW_ARTICLES_MY_PROJECTS => $i18n->__('Notify when new articles are created in my project(s)'),
+                self::SETTINGS_USER_NOTIFY_UPDATED_SELF => $i18n->__('Notify also when I am the one making the changes'),
+                self::SETTINGS_USER_NOTIFY_MENTIONED => $i18n->__('Notify when I am mentioned in issue or article or their comment'),
+                self::SETTINGS_USER_NOTIFY_ITEM_ONCE => $i18n->__('Only notify once per issue or article until I view the issue or article in my browser'),
+                self::SETTINGS_USER_NOTIFY_NEW_ISSUES_MY_PROJECTS_CATEGORY => $i18n->__('Notify when issues are created in selected categories'),
+                self::SETTINGS_USER_NOTIFY_GROUPED_NOTIFICATIONS => $i18n->__('Group similar notifications together if they are related'),
+            ];
 
-            return $notificationsettings;
-        }
-
-        public static function isScopesFunctionalityEnabled()
-        {
-            return (bool)self::get(self::SETTING_ENABLE_SCOPES);
+            return $notification_settings;
         }
 
         /**
@@ -1143,13 +1104,15 @@
                 self::CONFIGURATION_SECTION_MODULES => []
             ];
 
-            if (Context::getScope()->getID() == 1)
+            if (Context::getScope()->getID() == 1) {
                 $config_sections['general'][self::CONFIGURATION_SECTION_SCOPES] = ['route' => 'configure_scopes', 'description' => $i18n->__('Scopes'), 'fa_style' => 'fas', 'fa_icon' => 'clone', 'details' => $i18n->__('Scopes are self-contained Pachno environments. Configure them here.')];
+            }
 
             $config_sections['general'][self::CONFIGURATION_SECTION_SETTINGS] = ['route' => 'configure_settings', 'description' => $i18n->__('Settings'), 'fa_style' => 'fas', 'fa_icon' => 'cog', 'details' => $i18n->__('Every setting in Pachno can be adjusted in this section.')];
 
-            if (Context::getScope()->isUploadsEnabled())
+            if (Context::getScope()->isUploadsEnabled()) {
                 $config_sections['general'][self::CONFIGURATION_SECTION_UPLOADS] = ['route' => 'configure_files', 'description' => $i18n->__('Uploads and attachments'), 'fa_style' => 'fas', 'fa_icon' => 'upload', 'details' => $i18n->__('All settings related to file uploads are controlled from this section.')];
+            }
 
             $config_sections['general'][self::CONFIGURATION_SECTION_MODULES] = ['route' => 'configure_modules', 'description' => $i18n->__('Manage modules'), 'fa_style' => 'fas', 'fa_icon' => 'puzzle-piece', 'details' => $i18n->__('Manage Pachno extensions from this section. New modules are installed from here.'), 'module' => 'core'];
 

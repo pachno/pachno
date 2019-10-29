@@ -3904,6 +3904,15 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
                 jQuery('.fancy-dropdown').each(function () {
                     Pachno.Main.updateFancyDropdownLabel(jQuery(this));
                 });
+                jQuery('.fancy-tag-input-container').each(function () {
+                    let $container = jQuery(this);
+
+                    let $input = jQuery($container.find('input[type=text]')[0]);
+                    let values = $input.val().split(',');
+                    values.forEach((value) => {
+                        let real_value = value.trim();
+                    })
+                });
 
                 resolve();
             });

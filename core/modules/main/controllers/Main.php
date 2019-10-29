@@ -559,7 +559,7 @@
                             foreach ($this->getUser()->getUnreadNotifications() as $unread_notification) {
                                 $data['unread_notifications'][] = $unread_notification->getID();
                             }
-                            $data['poll_interval'] = Settings::getNotificationPollInterval();
+                            $data['poll_interval'] = 0;
                     }
                 }
 
