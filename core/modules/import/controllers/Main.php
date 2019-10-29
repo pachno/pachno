@@ -838,11 +838,6 @@
                                     $project->setUsePrefix(true);
                                 }
 
-                                if (isset($activerow[self::CSV_PROJECT_SCRUM])) {
-                                    if ($activerow[self::CSV_PROJECT_SCRUM] == '1')
-                                        $project->setUsesScrum(true);
-                                }
-
                                 if (isset($activerow[self::CSV_PROJECT_OWNER]) && isset($activerow[self::CSV_PROJECT_OWNER_TYPE])) {
                                     switch ($activerow[self::CSV_PROJECT_OWNER_TYPE]) {
                                         case self::CSV_IDENTIFIER_TYPE_USER:
@@ -914,19 +909,8 @@
                                 if (isset($activerow[self::CSV_PROJECT_CLIENT]))
                                     $project->setClient(entities\Client::getB2DBTable()->selectById($activerow[self::CSV_PROJECT_CLIENT]));
 
-                                if (isset($activerow[self::CSV_PROJECT_SHOW_SUMMARY])) {
-                                    if ($activerow[self::CSV_PROJECT_SHOW_SUMMARY] == '1')
-                                        $project->setFrontpageSummaryVisibility(true);
-                                }
-
-                                if (isset($activerow[self::CSV_PROJECT_SUMMARY_TYPE]))
-                                    $project->setFrontpageSummaryType($activerow[self::CSV_PROJECT_SUMMARY_TYPE]);
-
                                 if (isset($activerow[self::CSV_PROJECT_ALLOW_REPORTING]))
                                     $project->setLocked($activerow[self::CSV_PROJECT_ALLOW_REPORTING]);
-
-                                if (isset($activerow[self::CSV_PROJECT_AUTOASSIGN]))
-                                    $project->setAutoassign($activerow[self::CSV_PROJECT_AUTOASSIGN]);
 
                                 if (isset($activerow[self::CSV_PROJECT_ISSUETYPE_SCHEME]))
                                     $project->setIssuetypeScheme(entities\IssuetypeScheme::getB2DBTable()->selectById($activerow[self::CSV_PROJECT_ISSUETYPE_SCHEME]));

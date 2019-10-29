@@ -31,9 +31,7 @@ if ($filter instanceof SearchFilter): ?>
                                     <input type="checkbox" value="<?= $project->getID(); ?>" class="fancy-checkbox" name="filters_project_id_value_<?= $project->getID(); ?>" id="filters_project_id_value_<?= $project->getID(); ?>" <?php if ($filter->hasValue($project->getID())) echo 'checked'; ?>>
                                     <label for="filters_project_id_value_<?= $project->getID(); ?>" class="list-item filtervalue">
                                         <?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far'); ?>
-                                        <?php if ($project->hasSmallIcon()): ?>
-                                            <span class="icon"><?= image_tag($project->getSmallIconName(), [], $project->hasSmallIcon()); ?></span>
-                                        <?php endif; ?>
+                                        <span class="icon"><?= image_tag($project->getIconName(), [], true); ?></span>
                                         <span class="name value"><?= $project->getName(); ?></span>
                                     </label>
                                 <?php endforeach; ?>

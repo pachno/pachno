@@ -58,7 +58,7 @@
             }
         </style>
         <?php $pachno_version = \pachno\core\framework\Settings::getVersion(); ?>
-        <link rel="shortcut icon" href="<?= (\pachno\core\framework\Context::isProjectContext() && \pachno\core\framework\Context::getCurrentProject()->hasSmallIcon()) ? \pachno\core\framework\Context::getCurrentProject()->getSmallIconName() : (\pachno\core\framework\Settings::isUsingCustomFavicon() ? \pachno\core\framework\Settings::getFaviconURL() : '/favicon.png?bust=' . $pachno_version); ?>">
+        <link rel="shortcut icon" href="<?= (\pachno\core\framework\Context::isProjectContext()) ? \pachno\core\framework\Context::getCurrentProject()->getIconName() : (\pachno\core\framework\Settings::isUsingCustomFavicon() ? \pachno\core\framework\Settings::getFaviconURL() : '/favicon.png?bust=' . $pachno_version); ?>">
         <link title="<?= (\pachno\core\framework\Context::isProjectContext()) ? __('%project_name search', array('%project_name' => \pachno\core\framework\Context::getCurrentProject()->getName())) : __('%site_name search', array('%site_name' => \pachno\core\framework\Settings::getSiteHeaderName())); ?>" href="<?= (\pachno\core\framework\Context::isProjectContext()) ? make_url('project_opensearch', array('project_key' => \pachno\core\framework\Context::getCurrentProject()->getKey())) : make_url('opensearch'); ?>" type="application/opensearchdescription+xml" rel="search">
         <?php foreach ($pachno_response->getFeeds() as $feed_url => $feed_title): ?>
             <link rel="alternate" type="application/rss+xml" title="<?= str_replace('"', '\'', $feed_title); ?>" href="<?= $feed_url; ?>">

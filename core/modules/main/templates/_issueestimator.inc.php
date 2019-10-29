@@ -50,7 +50,7 @@
         <table class="estimator_table">
             <tr>
                 <?php if (isset($board)): ?>
-                    <?php if ($board->getType() == AgileBoard::TYPE_SCRUM && $board->getTaskIssueTypeID() == $issue->getIssuetype()->getID() && $issue->getProject()->hasTimeUnit('hours')): ?>
+                    <?php if ($board->getType() == AgileBoard::TYPE_SCRUM && $board->getTaskIssueTypeID() == $issue->getIssuetype()->getID()): ?>
                         <td><input type="text" value="<?php echo $hours; ?>" name="hours" id="<?php echo $field . '_' . $issue_id; ?>_hours_input"></td>
                     <?php elseif ($board->getType() == AgileBoard::TYPE_SCRUM && $board->getTaskIssueTypeID() != $issue->getEpicIssuetypeID()): ?>
                         <td><input type="text" value="<?php echo $points; ?>" name="points" id="<?php echo $field . '_' . $issue_id; ?>_points_input">
@@ -68,7 +68,7 @@
             </tr>
             <tr>
                 <?php if (isset($board)): ?>
-                    <?php if ($board->getType() == AgileBoard::TYPE_SCRUM && $board->getTaskIssueTypeID() == $issue->getIssuetype()->getID() && $issue->getProject()->hasTimeUnit('hours')): ?>
+                    <?php if ($board->getType() == AgileBoard::TYPE_SCRUM && $board->getTaskIssueTypeID() == $issue->getIssuetype()->getID()): ?>
                         <td><?php echo __('%number_of hours', array('%number_of' => '')); ?></td>
                     <?php elseif ($board->getType() == AgileBoard::TYPE_SCRUM && $board->getTaskIssueTypeID() != $issue->getEpicIssuetypeID()): ?>
                         <td><?php echo __('%number_of points', array('%number_of' => '')); ?></td>
@@ -85,7 +85,7 @@
                     <td><?php echo __('%number_of points', array('%number_of' => '')); ?></td>
                 <?php endif; ?>
             </tr>
-            <?php if ($issue->getProject()->hasTimeUnit('minutes') && ((isset($board) && $board->getType() == AgileBoard::TYPE_GENERIC) || !isset($board))): ?>
+            <?php if ((isset($board) && $board->getType() == AgileBoard::TYPE_GENERIC) || !isset($board)): ?>
                 <tr>
                     <td colspan="<?php echo count($issue->getProject()->getTimeUnits()) + 1; ?>">
                         <?php foreach (array(60, 30, 15, 5) as $minutes): ?>

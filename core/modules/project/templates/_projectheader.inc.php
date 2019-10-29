@@ -15,7 +15,7 @@
     <?php \pachno\core\framework\Event::createNew('core', 'project/templates/projectheader', $selected_project)->trigger(); ?>
         <div class="header-name">
             <div class="image-container">
-                <?php echo image_tag($selected_project->getLargeIconName(), ['alt' => $selected_project->getName()], true); ?>
+                <?php echo image_tag($selected_project->getIconName(), ['alt' => $selected_project->getName()], true); ?>
             </div>
             <span class="name-container">
                 <span><?php echo $selected_project->getName(); ?></span>
@@ -57,7 +57,7 @@
                 <?php echo link_tag(make_url('project_releases', ['project_key' => $selected_project->getKey()]), image_tag('icon_download.png').__('Download'), ['class' => 'button button-orange']); ?>
             <?php endif; ?>
             <?php if ($selected_project->hasParent()): ?>
-                <?php echo link_tag(make_url('project_dashboard', ['project_key' => $selected_project->getParent()->getKey()]), image_tag($selected_project->getParent()->getSmallIconName(), ['style' => 'width: 16px; height: 16px;'], $selected_project->getParent()->hasSmallIcon()) . __('Up to %parent', array('%parent' => $selected_project->getParent()->getName())), array('class' => 'button')); ?>
+                <?php echo link_tag(make_url('project_dashboard', ['project_key' => $selected_project->getParent()->getKey()]), image_tag($selected_project->getParent()->getIconName(), ['style' => 'width: 16px; height: 16px;'], true) . __('Up to %parent', array('%parent' => $selected_project->getParent()->getName())), array('class' => 'button')); ?>
             <?php endif; ?>
         </div>
     <?php endif; ?>

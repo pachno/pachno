@@ -208,7 +208,7 @@
         /**
          * Returns the object which the notification is for
          *
-         * @return IdentifiableScoped
+         * @return IdentifiableScoped|Project|Issue|Article
          */
         public function getTarget()
         {

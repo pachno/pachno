@@ -3096,19 +3096,19 @@
                 if (is_array($time_parts) && count($time_parts) > 1) {
                     switch (true) {
                         case mb_stristr($time_parts[1], 'month'):
-                            if ($issue->getProject()->hasTimeUnit('months')) $retarr['months'] = (int)trim($time_parts[0]);
+                            $retarr['months'] = (int)trim($time_parts[0]);
                             break;
                         case mb_stristr($time_parts[1], 'week'):
-                            if ($issue->getProject()->hasTimeUnit('weeks')) $retarr['weeks'] = (int)trim($time_parts[0]);
+                            $retarr['weeks'] = (int)trim($time_parts[0]);
                             break;
                         case mb_stristr($time_parts[1], 'day'):
-                            if ($issue->getProject()->hasTimeUnit('days')) $retarr['days'] = (int)trim($time_parts[0]);
+                            $retarr['days'] = (int)trim($time_parts[0]);
                             break;
                         case mb_stristr($time_parts[1], 'hour'):
-                            if ($issue->getProject()->hasTimeUnit('hours')) $retarr['hours'] = trim($time_parts[0]);
+                            $retarr['hours'] = trim($time_parts[0]);
                             break;
                         case mb_stristr($time_parts[1], 'minute'):
-                            if ($issue->getProject()->hasTimeUnit('minutes')) $retarr['minutes'] = trim($time_parts[0]);
+                            $retarr['minutes'] = trim($time_parts[0]);
                             break;
                         case mb_stristr($time_parts[1], 'point'):
                             $retarr['points'] = (int)trim($time_parts[0]);
@@ -4363,10 +4363,10 @@
                 $hours_spent = floor(($time_spent - ($weeks_spent * 604800) - ($days_spent * 86400)) / 3600);
                 $minutes_spent = ceil(($time_spent - ($weeks_spent * 604800) - ($days_spent * 86400) - ($hours_spent * 3600)) / 60);
 
-                if ($this->getProject()->hasTimeUnit('minutes')) $ts_array['minutes'] = ($minutes_spent < 0) ? 0 : $minutes_spent;
-                if ($this->getProject()->hasTimeUnit('hours')) $ts_array['hours'] = ($hours_spent < 0) ? 0 : $hours_spent;
-                if ($this->getProject()->hasTimeUnit('days')) $ts_array['days'] = ($days_spent < 0) ? 0 : $days_spent;
-                if ($this->getProject()->hasTimeUnit('weeks')) $ts_array['weeks'] = ($weeks_spent < 0) ? 0 : $weeks_spent;
+                $ts_array['minutes'] = ($minutes_spent < 0) ? 0 : $minutes_spent;
+                $ts_array['hours'] = ($hours_spent < 0) ? 0 : $hours_spent;
+                $ts_array['days'] = ($days_spent < 0) ? 0 : $days_spent;
+                $ts_array['weeks'] = ($weeks_spent < 0) ? 0 : $weeks_spent;
             }
 
             return $ts_array;

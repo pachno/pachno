@@ -14,7 +14,7 @@
 <div class="configurable-component">
     <div class="row">
         <div class="icon">
-            <?= image_tag($project->getSmallIconName(), ['alt' => '[i]'], $project->hasSmallIcon()); ?>
+            <?= image_tag($project->getIconName(), ['alt' => '[i]'], true); ?>
         </div>
         <div class="name">
             <a href="<?= make_url('project_dashboard', array('project_key' => $project->getKey())); ?>" class="title">

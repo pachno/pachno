@@ -1,4 +1,4 @@
-<div id="tab_livelink_pane"<?php if ($selected_tab != 'livelink'): ?> style="display: none;"<?php endif; ?>>
+<div id="tab_livelink_pane"<?php if ($selected_tab != 'livelink'): ?> style="display: none;"<?php endif; ?> class="configuration-content centered">
     <?php include_component('livelink/projectconfig_template', ['project' => $project]); ?>
 </div>
 <script>

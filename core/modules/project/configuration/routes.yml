@@ -131,20 +131,6 @@ configure_component_set_assignedto:
       item_type: component
     csrf_enabled: false
 
-configure_project_other:
-    route: /configure/project/:project_id/other
-    module: project
-    action: configureProjectOther
-    parameters: [ ]
-    csrf_enabled: false
-
-configure_project_updateother:
-    route: /configure/project/:project_id/update/other
-    module: project
-    action: configureProjectUpdateOther
-    parameters: [ ]
-    csrf_enabled: false
-
 configure_project_edition:
     route: /configure/project/:project_id/edition/:edition_id
     module: project

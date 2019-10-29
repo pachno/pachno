@@ -8,7 +8,7 @@
 <div class="project-strip">
     <div class="icon-container">
         <div class="icon-large">
-            <?= image_tag($project->getLargeIconName(), array('alt' => '[i]'), $project->hasLargeIcon()); ?>
+            <?= image_tag($project->getIconName(), array('alt' => '[i]'), true); ?>
         </div>
     </div>
     <div class="details">
@@ -51,46 +51,3 @@
         </div>
     </div>
 <?php endif; ?>
-<?php if ($project->isIssuetypesVisibleInFrontpageSummary() && count($project->getVisibleIssuetypes())): ?>
-    <div class="frontpage-results">
-        <table style="width: 100%; margin-top: 5px;" cellpadding=0 cellspacing=0>
-            <?php foreach ($project->getVisibleIssuetypes() as $issuetype): ?>
-                <tr>
-                    <td style="padding-bottom: 2px; width: 200px; padding-right: 10px;"><b><?= $issuetype->getName(); ?>:</b></td>
-                    <td style="padding-bottom: 2px; width: auto; position: relative;">
-                        <div style="color: #222; position: absolute; right: 20px; text-align: right;"><?= __('%closed closed of %issues reported', array('%closed' => '<b>'.$project->countClosedIssuesByType($issuetype->getID()).'</b>', '%issues' => '<b>'.$project->countIssuesByType($issuetype->getID()).'</b>')); ?></div>
-                        <?php include_component('main/percentbar', array('percent' => $project->getClosedPercentageByType($issuetype->getID()), 'height' => 20)); ?>
-                    </td>
-                </tr>
-            <?php endforeach; ?>
-        </table>
-    </div>
-<?php elseif ($project->isIssuelistVisibleInFrontpageSummary() && count($project->getVisibleIssuetypes())): ?>
-    <div class="frontpage-results">
-        <div class="search-results" style="clear: both;">
-            <?php $current_spent_time = -1; ?>
-            <?php include_component(
-                'search/results_normal',
-                array(
-                    'search_object' => $project->getOpenIssuesSearchForFrontpageSummary(),
-                    'actionable'    => false,
-                    'show_summary'  => false
-                )); ?>
-        </div>
-    </div>
-<?php elseif ($project->isMilestonesVisibleInFrontpageSummary() && count($project->getVisibleMilestones())): ?>
-    <div class="frontpage-results">
-        <table style="width: 100%; margin-top: 5px;" cellpadding=0 cellspacing=0>
-            <?php foreach ($project->getVisibleMilestones() as $milestone): ?>
-                <tr>
-                    <td style="padding-bottom: 2px; width: 200px; padding-right: 10px;"><b><?= $milestone->getName(); ?>:</b></td>
-                    <td style="padding-bottom: 2px; width: auto; position: relative;">
-                        <div style="color: #222; position: absolute; right: 20px; text-align: right;"><?= __('%closed closed of %issues assigned', array('%closed' => '<b>'.$project->countClosedIssuesByMilestone($milestone->getID()).'</b>', '%issues' => '<b>'.$project->countIssuesByMilestone($milestone->getID()).'</b>')); ?></div>
-                        <?php include_component('main/percentbar', array('percent' => $project->getClosedPercentageByMilestone($milestone->getID()), 'height' => 20)); ?>
-                    </td>
-                </tr>
-            <?php endforeach; ?>
-        </table>
-    </div>
-<?php endif; ?>
-

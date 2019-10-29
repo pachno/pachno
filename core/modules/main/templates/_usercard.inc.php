@@ -82,7 +82,7 @@
                         <?php foreach ($issues as $issue): ?>
                             <?php if ($issue->hasAccess()): ?>
                                 <li>
-                                    <span class="faded_out smaller"><?php echo link_tag(make_url('project_dashboard', array('project_key' => $issue->getProject()->getKey())), image_tag($issue->getProject()->getSmallIconName(), array('class' => 'issuelog-project-logo'), $issue->getProject()->hasSmallIcon())); ?></span>
+                                    <span class="faded_out smaller"><?php echo link_tag(make_url('project_dashboard', array('project_key' => $issue->getProject()->getKey())), image_tag($issue->getProject()->getIconName(), array('class' => 'issuelog-project-logo'), true)); ?></span>
                                     <?php echo link_tag(make_url('viewissue', array('project_key' => $issue->getProject()->getKey(), 'issue_no' => $issue->getFormattedIssueNo())), pachno_truncateText($issue->getFormattedTitle(true), 100)); ?>
                                 </li>
                                 <?php if (++$seen == 7) break; ?>

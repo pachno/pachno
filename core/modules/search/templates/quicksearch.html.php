@@ -10,7 +10,7 @@
             <?php $cc++; ?>
             <?php if ($project instanceof \pachno\core\entities\Project): ?>
                 <li class="<?php if ($cc == count($found_projects) && $num_projects == count($found_projects)): ?> last<?php endif; ?>">
-                    <div class="link_container"><?php echo image_tag($project->getSmallIconName(), array('alt' => ' ')); ?><?php echo $project->getName(); ?></div>
+                    <div class="link_container"><?php echo image_tag($project->getIconName(), array('alt' => ' ')); ?><?php echo $project->getName(); ?></div>
                     <span class="hidden url"><?php echo make_url('project_dashboard', array('project_key' => $project->getKey())); ?></span>
                 </li>
             <?php endif; ?>

@@ -3,13 +3,13 @@
         <td class="imgtd"><?php echo fa_image_tag($issue->getIssueType()->getFontAwesomeIcon()); ?></td>
         <td style="padding-bottom: <?php if (isset($extra_padding) && $extra_padding == true): ?>20<?php else: ?>15<?php endif; ?>px;">
             <?php if (isset($include_time) && $include_time == true): ?><span class="time"><?php echo \pachno\core\framework\Context::getI18n()->formatTime($comment->getPosted(), 19); ?></span>&nbsp;<?php endif; ?>
-            <?php if (isset($include_project) && $include_project == true): ?><span class="faded_out smaller"><?php echo image_tag($issue->getProject()->getSmallIconName(), array('class' => 'issuelog-project-logo'), $issue->getProject()->hasSmallIcon()); ?></span><?php endif; ?>
+            <?php if (isset($include_project) && $include_project == true): ?><span class="faded_out smaller"><?php echo image_tag($issue->getProject()->getIconName(), array('class' => 'issuelog-project-logo'), true); ?></span><?php endif; ?>
             <?php
                 $issue_title = \pachno\core\framework\Context::getI18n()->decodeUTF8($issue->getFormattedTitle(true));
                 if (isset($pad_length))
                 {
                     $issue_title = pachno_truncateText($issue_title, $pad_length);
-                }            
+                }
             ?>
             <?php echo link_tag(make_url('viewissue', array('project_key' => $issue->getProject()->getKey(), 'issue_no' => $issue->getFormattedIssueNo())), $issue_title, array('class' => $issue->isClosed() ? 'issue_closed' : 'issue_open')); ?>
             <br>

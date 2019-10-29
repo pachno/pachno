@@ -38,27 +38,27 @@
          *
          * @static integer
          */
-        const ISSUES_LOCK_TYPE_PUBLIC_CATEGORY = 0;
+        public const ISSUES_LOCK_TYPE_PUBLIC_CATEGORY = 0;
 
         /**
          * New issues lock type project access
          *
          * @static integer
          */
-        const ISSUES_LOCK_TYPE_PUBLIC = 1;
+        public const ISSUES_LOCK_TYPE_PUBLIC = 1;
 
         /**
          * New issues lock type restricted access to poster
          *
          * @static integer
          */
-        const ISSUES_LOCK_TYPE_RESTRICTED = 2;
+        public const ISSUES_LOCK_TYPE_RESTRICTED = 2;
 
-        const SUMMARY_TYPE_MILESTONES = 'milestones';
+        public const SUMMARY_TYPE_MILESTONES = 'milestones';
 
-        const SUMMARY_TYPE_ISSUELIST = 'issuelist';
+        public const SUMMARY_TYPE_ISSUELIST = 'issuelist';
 
-        const SUMMARY_TYPE_ISSUETYPES = 'issuetypes';
+        public const SUMMARY_TYPE_ISSUETYPES = 'issuetypes';
 
         /**
          * Project list cache
@@ -110,14 +110,6 @@
          * @Column(type="integer", length=10)
          */
         protected $_issues_lock_type = null;
-
-        /**
-         * Whether or not the project uses sprint planning
-         *
-         * @var boolean
-         * @Column(type="boolean")
-         */
-        protected $_use_scrum = true;
 
         /**
          * Whether or not the project uses builds
@@ -198,18 +190,9 @@
         /**
          * Count of issues registered for this project
          *
-         * @var array
+         * @var integer[][]
          */
         protected $_issuecounts = null;
-
-        /**
-         * The small project icon, if set
-         *
-         * @var File
-         * @Column(type="integer", length=10)
-         * @Relates(class="\pachno\core\entities\File")
-         */
-        protected $_small_icon = null;
 
         /**
          * The large project icon, if set
@@ -219,20 +202,6 @@
          * @Relates(class="\pachno\core\entities\File")
          */
         protected $_large_icon = null;
-
-        /**
-         * Issues registered for this project with no milestone assigned
-         *
-         * @var array
-         */
-        protected $_unassignedissues = null;
-
-        /**
-         * Developer reports registered for this project with no milestone assigned
-         *
-         * @var array
-         */
-        protected $_unassignedstories = null;
 
         /**
          * The projects documentation URL
@@ -257,43 +226,6 @@
          * @Column(type="text")
          */
         protected $_description = '';
-
-        /**
-         * Available / applicable issue types for this project
-         *
-         * @var array
-         */
-        protected $_issuetypes = null;
-
-        /**
-         * Issue types visible in the frontpage summary
-         *
-         * @var array
-         */
-        protected $_visible_issuetypes = null;
-
-        /**
-         * Milestones visible in the frontpage summary
-         *
-         * @var array
-         */
-        protected $_visible_milestones = null;
-
-        /**
-         * Whether or not this project is visible in the frontpage summary
-         *
-         * @var boolean
-         * @Column(type="boolean", default=true)
-         */
-        protected $_show_in_summary = null;
-
-        /**
-         * What to show on the frontpage summary
-         *
-         * @var string
-         * @Column(type="string", length=15, default="issuetypes")
-         */
-        protected $_summary_display = null;
 
         /**
          * @Relates(class="\pachno\core\entities\User", collection=true, manytomany=true, joinclass="\pachno\core\entities\tables\ProjectAssignedUsers")
@@ -437,14 +369,6 @@
         protected $_client = null;
 
         /**
-         * Autoassignment
-         *
-         * @var boolean
-         * @Column(type="boolean")
-         */
-        protected $_autoassign = null;
-
-        /**
          * Parent project
          *
          * @var Project
@@ -491,17 +415,6 @@
          */
         protected $_dashboards = null;
 
-        /**
-         * Reportable time units
-         *
-         * @var integer
-         * @access protected
-         * @Column(type="integer", length=10)
-         */
-        protected $_time_units = null;
-
-        protected $time_units_array = null;
-
         protected $time_units_indexes = [1 => 'months', 2 => 'weeks', 3 => 'days', 4 => 'hours', 5 => 'minutes'];
 
         public static function getValidSubprojects(Project $project)
@@ -545,9 +458,7 @@
                 $projects = Projects::getTable()->getAll();
                 foreach ($projects as $index => $project) {
                     if (!$project instanceof Project) {
-                        var_dump($project);
-                        var_dump($index);
-                        die();
+                        continue;
                     }
                     if ($project->hasAccess()) {
                         self::$_projects[$project->getKey()] = $project;
@@ -932,36 +843,6 @@
         public function hasPrefix()
         {
             return ($this->_prefix != '') ? true : false;
-        }
-
-        /**
-         * Set whether the project uses sprint planning
-         *
-         * @param boolean $val
-         */
-        public function setUsesScrum($val = true)
-        {
-            $this->_use_scrum = $val;
-        }
-
-        /**
-         * Return whether the project uses sprint planning
-         *
-         * @return boolean
-         */
-        public function usesScrum()
-        {
-            return (bool)$this->_use_scrum;
-        }
-
-        /**
-         * Set autoassign setting
-         *
-         * @param boolean $autoassign
-         */
-        public function setAutoassign($autoassign)
-        {
-            $this->_autoassign = $autoassign;
         }
 
         /**
@@ -1389,221 +1270,6 @@
             return $builds;
         }
 
-        /**
-         * Returns an array with issues
-         *
-         * @return Issue[]
-         */
-        public function getIssuesWithoutMilestone()
-        {
-            $this->_populateUnassignedIssues();
-
-            return $this->_unassignedissues;
-        }
-
-        /**
-         * Populates the internal array with unassigned issues
-         */
-        protected function _populateUnassignedIssues()
-        {
-            if ($this->_unassignedissues === null) {
-                $this->_unassignedissues = [];
-                if ($res = tables\Issues::getTable()->getByProjectIDandNoMilestone($this->getID())) {
-                    while ($row = $res->getNextRow()) {
-                        $this->_unassignedissues[$row->get(tables\Issues::ID)] = new Issue($row->get(tables\Issues::ID));
-                    }
-                }
-            }
-        }
-
-        /**
-         * Returns an array with unassigned user stories
-         *
-         * @return Issue[]
-         */
-        public function getUnassignedStories()
-        {
-            $this->_populateUnassignedStories();
-
-            return $this->_unassignedstories;
-        }
-
-        /**
-         * Populates the internal array with unassigned user stories for the scrum page
-         */
-        protected function _populateUnassignedStories()
-        {
-            if ($this->_unassignedstories === null) {
-                $this->_unassignedstories = [];
-                $issuetypes = [];
-
-                foreach (Issuetype::getAll() as $issuetype) {
-                    if ($issuetype->getType() == Issuetype::TYPE_USER_STORY) {
-                        $issuetypes[] = $issuetype->getID();
-                    }
-                }
-
-                if (count($issuetypes) > 0) {
-                    if ($res = tables\Issues::getTable()->getByProjectIDandNoMilestoneandTypesAndState($this->getID(), $issuetypes, Issue::STATE_OPEN)) {
-                        while ($row = $res->getNextRow()) {
-                            $this->_unassignedstories[$row->get(tables\Issues::ID)] = new Issue($row->get(tables\Issues::ID));
-                        }
-                    }
-                }
-            }
-        }
-
-        /**
-         * Removes all milestones from being visible in the project summary block
-         *
-         * @return null
-         */
-        public function clearVisibleMilestones()
-        {
-            $this->_visible_milestones = null;
-            tables\VisibleMilestones::getTable()->clearByProjectID($this->getID());
-        }
-
-        /**
-         * Adds a milestone to list of visible milestones in project summary block
-         *
-         * @param integer $milestone_id The ID of the added milestone
-         *
-         * @return boolean
-         */
-        public function addVisibleMilestone($milestone_id)
-        {
-            try {
-                $this->_visible_milestones = null;
-                tables\VisibleMilestones::getTable()->addByProjectIDAndMilestoneID($this->getID(), $milestone_id);
-
-                return true;
-            } catch (Exception $e) {
-                return false;
-            }
-        }
-
-        /**
-         * Returns whether or not a milestone is visible in the project summary block
-         *
-         * @param integer $milestone_id The ID of the milestone
-         *
-         * @return boolean
-         */
-        public function isMilestoneVisible($milestone_id)
-        {
-            $milestones = $this->getVisibleMilestones();
-
-            return array_key_exists($milestone_id, $milestones);
-        }
-
-        /**
-         * Returns all milestones visible in the project summary block
-         *
-         * @return Milestone[]
-         */
-        public function getVisibleMilestones()
-        {
-            $this->_populateVisibleMilestones();
-
-            return $this->_visible_milestones;
-        }
-
-        /**
-         * Populates visible milestones inside the project
-         *
-         * @return void
-         */
-        protected function _populateVisibleMilestones()
-        {
-            if ($this->_visible_milestones === null) {
-                $this->_visible_milestones = [];
-                if ($res = tables\VisibleMilestones::getTable()->getAllByProjectID($this->getID())) {
-                    while ($row = $res->getNextRow()) {
-                        try {
-                            $milestone = new Milestone($row->get(tables\Milestones::ID), $row);
-                            if ($milestone->hasAccess()) {
-                                $this->_visible_milestones[$milestone->getID()] = $milestone;
-                            }
-                        } catch (Exception $e) {
-                        }
-                    }
-                }
-            }
-        }
-
-        /**
-         * Removes all issue types from being visible in the project summary block
-         *
-         * @return null
-         */
-        public function clearVisibleIssuetypes()
-        {
-            $this->_visible_issuetypes = null;
-            tables\VisibleIssueTypes::getTable()->clearByProjectID($this->getID());
-        }
-
-        /**
-         * Adds an issue type to list of visible issue types in project summary block
-         *
-         * @param integer $issuetype_id The ID of the added issue type
-         *
-         * @return bool
-         */
-        public function addVisibleIssuetype($issuetype_id)
-        {
-            try {
-                tables\VisibleIssueTypes::getTable()->addByProjectIDAndIssuetypeID($this->getID(), $issuetype_id);
-
-                return true;
-            } catch (Exception $e) {
-                return false;
-            }
-        }
-
-        /**
-         * Returns whether or not an issue type is visible in the project summary block
-         *
-         * @param integer $issuetype_id The ID of the issue type
-         *
-         * @return bool
-         */
-        public function isIssuetypeVisible($issuetype_id)
-        {
-            $issuetypes = $this->getVisibleIssuetypes();
-
-            return array_key_exists($issuetype_id, $issuetypes);
-        }
-
-        /**
-         * Returns all issue types visible in the project summary block
-         *
-         * @return Issuetype[]
-         */
-        public function getVisibleIssuetypes()
-        {
-            $this->_populateVisibleIssuetypes();
-
-            return $this->_visible_issuetypes;
-        }
-
-        protected function _populateVisibleIssuetypes()
-        {
-            if ($this->_visible_issuetypes === null) {
-                $this->_visible_issuetypes = [];
-                if ($res = tables\VisibleIssueTypes::getTable()->getAllByProjectID($this->getID())) {
-                    while ($row = $res->getNextRow()) {
-                        try {
-                            $i_id = $row->get(tables\VisibleIssueTypes::ISSUETYPE_ID);
-                            $this->_visible_issuetypes[$i_id] = Issuetype::getB2DBTable()->selectById($i_id);
-                        } catch (Exception $e) {
-                            tables\VisibleIssueTypes::getTable()->deleteByIssuetypeID($i_id);
-                        }
-                    }
-                }
-            }
-        }
-
         public function getLast15Counts()
         {
             $this->_populateIssueCounts();
@@ -1834,55 +1500,6 @@
             if ($this->countIssuesByMilestone($milestone, $allowed_status_ids) == 0) return 0;
 
             return tables\Issues::getTable()->getTotalPercentCompleteByProjectIDAndMilestoneID($this->getID(), $milestone, $allowed_status_ids) / $this->countIssuesByMilestone($milestone, $allowed_status_ids);
-        }
-
-        /**
-         * Set whether or not this project is visible in the frontpage summary
-         *
-         * @param boolean $visibility Visible or not
-         *
-         * @return null
-         */
-        public function setFrontpageSummaryVisibility($visibility)
-        {
-            $this->_show_in_summary = (bool)$visibility;
-        }
-
-        public function getOpenIssuesSearchForFrontpageSummary()
-        {
-            $search_object = new SavedSearch();
-            $search_object->setAppliesToProject($this);
-
-            $issue_type_filter = SearchFilter::createFilter('issuetype', ['value' => array_keys($this->getVisibleIssuetypes())], $search_object);
-            $project_filter = SearchFilter::createFilter('project_id', ['value' => $this->getID()], $search_object);
-            $state_filter = SearchFilter::createFilter('state', ['value' => Issue::STATE_OPEN], $search_object);
-
-            $search_object->setFilter('issuetype', $issue_type_filter);
-            $search_object->setFilter('state', $state_filter);
-            $search_object->setFilter('project_id', $project_filter);
-            $search_object->setGroupby('issuetype');
-
-            return $search_object;
-        }
-
-        /**
-         * Checks to see if anything is shown in the frontpage summary
-         *
-         * @return boolean
-         */
-        public function isAnythingVisibleInFrontpageSummary()
-        {
-            return ($this->getFrontpageSummaryType() == '') ? false : true;
-        }
-
-        /**
-         * Returns what is displayed in the frontpage summary
-         *
-         * @return string "milestones" or "issuetypes"
-         */
-        public function getFrontpageSummaryType()
-        {
-            return $this->_summary_display;
         }
 
         /**
@@ -2516,11 +2133,6 @@
             return (bool)$this->permissionCheck('canvoteforissues');
         }
 
-        public function canAutoassign()
-        {
-            return (bool)($this->_autoassign);
-        }
-
         public function getParentID()
         {
             return ($this->getParent() instanceof Project) ? $this->getParent()->getID() : 0;
@@ -2549,16 +2161,6 @@
         public function setDownloadsEnabled($value = true)
         {
             $this->_has_downloads = $value;
-        }
-
-        public function clearSmallIcon()
-        {
-            $this->_small_icon = null;
-        }
-
-        public function clearLargeIcon()
-        {
-            $this->_large_icon = null;
         }
 
         /**
@@ -2720,8 +2322,7 @@
                 'href' => framework\Context::getRouting()->generate('project_dashboard', ['project_key' => $this->getKey()]),
                 'deleted' => $this->isDeleted(),
                 'archived' => $this->isArchived(),
-                'icon_large' => $this->getLargeIconName(),
-                'icon_small' => $this->getSmallIconName(),
+                'icon' => $this->getIconName(),
                 'description' => $this->getDescription(),
                 'url_documentation' => $this->getDocumentationURL(),
                 'url_homepage' => $this->getHomepage(),
@@ -2742,11 +2343,6 @@
                     'editions_enabled' => $this->isEditionsEnabled(),
                     'components_enabled' => $this->isComponentsEnabled(),
                     'allow_freelancing' => $this->useStrictWorkflowMode(),
-                    'frontpage_shown' => $this->isShownInFrontpageSummary(),
-                    'frontpage_summary_type' => $this->getFrontpageSummaryType(),
-                    'frontpage_milestones_visible' => $this->isMilestonesVisibleInFrontpageSummary(),
-                    'frontpage_issuetypes_visible' => $this->isIssuetypesVisibleInFrontpageSummary(),
-                    'frontpage_issuelist_visible' => $this->isIssuelistVisibleInFrontpageSummary(),
                 ]
             ];
 
@@ -2783,52 +2379,27 @@
             return true;
         }
 
-        public function getLargeIconName()
+        public function getIconName()
         {
-            return ($this->hasLargeIcon()) ? framework\Context::getRouting()->generate('showfile', ['id' => $this->getLargeIcon()->getID()]) : '/unthemed/mono/project-icon-generic.png';
+            return ($this->hasIcon()) ? framework\Context::getRouting()->generate('showfile', ['id' => $this->getIcon()->getID()]) : '/unthemed/mono/project-icon-generic.png';
         }
 
-        public function hasLargeIcon()
+        public function hasIcon()
         {
-            return ($this->getLargeIcon() instanceof File);
+            return ($this->getIcon() instanceof File);
         }
 
         /**
          * @return mixed
          */
-        public function getLargeIcon()
+        public function getIcon()
         {
             return $this->_b2dbLazyLoad('_large_icon');
         }
 
-        public function setLargeIcon(File $icon)
+        public function setIcon(File $icon)
         {
             $this->_large_icon = $icon;
-        }
-
-        public function getSmallIconName()
-        {
-            return $this->getLargeIconName();
-        }
-
-        public function hasSmallIcon()
-        {
-            return ($this->getSmallIcon() instanceof File);
-        }
-
-        /**
-         * Return the small icon file object
-         *
-         * @return File
-         */
-        public function getSmallIcon()
-        {
-            return $this->getLargeIcon();
-        }
-
-        public function setSmallIcon(File $icon)
-        {
-            $this->_small_icon = $icon;
         }
 
         /**
@@ -2970,46 +2541,6 @@
         }
 
         /**
-         * Whether or not this project is visible in the frontpage summary
-         *
-         * @return boolean
-         */
-        public function isShownInFrontpageSummary()
-        {
-            return $this->_show_in_summary;
-        }
-
-        /**
-         * Checks to see if milestones are shown in the frontpage summary
-         *
-         * @return boolean
-         */
-        public function isMilestonesVisibleInFrontpageSummary()
-        {
-            return ($this->getFrontpageSummaryType() == 'milestones') ? true : false;
-        }
-
-        /**
-         * Checks to see if issue types are shown in the frontpage summary
-         *
-         * @return boolean
-         */
-        public function isIssuetypesVisibleInFrontpageSummary()
-        {
-            return ($this->getFrontpageSummaryType() == 'issuetypes') ? true : false;
-        }
-
-        /**
-         * Checks to see if a list of issues is shown in the frontpage summary
-         *
-         * @return boolean
-         */
-        public function isIssuelistVisibleInFrontpageSummary()
-        {
-            return ($this->getFrontpageSummaryType() == 'issuelist') ? true : false;
-        }
-
-        /**
          * Returns the number of open issues for this project
          *
          * @return integer
@@ -3028,42 +2559,7 @@
          */
         public function getTimeUnits()
         {
-            if ($this->time_units_array === null) {
-                // If time units column is 0, all units are reportable
-                // $this->time_units_array = $this->_time_units == 0 ? $this->time_units_indexes : array_intersect_key($this->time_units_indexes, array_flip(str_split((string) $this->_time_units)));
-                $this->time_units_array = $this->time_units_indexes;
-            }
-
-            return $this->time_units_array;
-        }
-
-        /**
-         * Set reportable time units
-         *
-         * @param array $time_units
-         */
-        public function setTimeUnits(array $time_units)
-        {
-            $time_units_intersect = array_flip(array_intersect($this->time_units_indexes, $time_units));
-            if (!count($time_units_intersect)) {
-                $this->_time_units = -1;
-            } else {
-                $this->_time_units = count($time_units_intersect) == count($this->time_units_indexes) ? 0 : (int)implode('', $time_units_intersect);
-            }
-            $this->time_units_array = null;
-        }
-
-        /**
-         * Check whether time unit is reportable
-         *
-         * @param $time_unit
-         *
-         * @return bool
-         */
-        public function hasTimeUnit($time_unit)
-        {
-            return true;
-            // return in_array($time_unit, $this->getTimeUnits());
+            return $this->time_units_indexes;
         }
 
         public function applyTemplate($template)
@@ -3133,7 +2629,6 @@
                     $this->setBuildsEnabled(true);
                     $this->setEditionsEnabled(false);
                     $this->setComponentsEnabled(true);
-                    $this->setFrontpageSummaryType(Project::SUMMARY_TYPE_ISSUELIST);
 
                     $dashboard_views[DashboardView::VIEW_PROJECT_INFO] = ['column' => 1, 'order' => 1];
                     $dashboard_views[DashboardView::VIEW_PROJECT_TEAM] = ['column' => 1, 'order' => 2];
@@ -3148,7 +2643,6 @@
                     $this->setEditionsEnabled(false);
                     $this->setComponentsEnabled(true);
                     $this->setStrictWorkflowMode(false);
-                    $this->setFrontpageSummaryType(Project::SUMMARY_TYPE_ISSUELIST);
 
                     $dashboard_views[DashboardView::VIEW_PROJECT_INFO] = ['column' => 1, 'order' => 1];
                     $dashboard_views[DashboardView::VIEW_PROJECT_RECENT_ACTIVITIES] = ['column' => 1, 'order' => 2];
@@ -3209,18 +2703,6 @@
         public function setComponentsEnabled($components_enabled)
         {
             $this->_enable_components = (bool)$components_enabled;
-        }
-
-        /**
-         * Set what to display in the frontpage summary
-         *
-         * @param string $summary_type "milestones" or "issuetypes"
-         *
-         * @return null
-         */
-        public function setFrontpageSummaryType($summary_type)
-        {
-            $this->_summary_display = $summary_type;
         }
 
         /**
@@ -3347,18 +2829,6 @@
             if ($this->_dodelete) {
                 tables\Issues::getTable()->markIssuesDeletedByProjectID($this->getID());
                 $this->_dodelete = false;
-            }
-        }
-
-        /**
-         * Populates issue types inside the project
-         *
-         * @return void
-         */
-        protected function _populateIssuetypes()
-        {
-            if ($this->_issuetypes === null) {
-                $this->_issuetypes = $this->getIssuetypeScheme()->getIssuetypes();
             }
         }
 

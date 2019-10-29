@@ -22,9 +22,6 @@
         <div id="tab_links_pane" class="configuration-content centered" <?php if ($selected_tab != 'links'): ?> style="display: none;"<?php endif; ?>>
             <?php include_component('project/projectlinks', array('access_level' => $access_level, 'project' => $selected_project)); ?>
         </div>
-        <div id="tab_icons_pane" class="configuration-content centered" <?php if ($selected_tab != 'icons'): ?> style="display: none;"<?php endif; ?>>
-            <?php include_component('project/settings_project_icons', array('access_level' => $access_level, 'project' => $selected_project)); ?>
-        </div>
         <div id="tab_issues_and_workflow_pane" class="configuration-content centered" <?php if ($selected_tab != 'issues_and_workflow'): ?> style="display: none;"<?php endif; ?>>
             <?php include_component('project/settings_project_issues_and_workflow', array('access_level' => $access_level, 'project' => $selected_project)); ?>
         </div>
@@ -36,9 +33,6 @@
         </div>
         <div id="tab_client_pane" class="configuration-content centered" <?php if ($selected_tab != 'client'): ?> style="display: none;"<?php endif; ?>>
             <?php include_component('project/settings_project_client', array('access_level' => $access_level, 'project' => $selected_project)); ?>
-        </div>
-        <div id="tab_other_pane" class="configuration-content centered" <?php if ($selected_tab != 'other'): ?> style="display: none;"<?php endif; ?>>
-            <?php include_component('project/projectother', array('access_level' => $access_level, 'project' => $selected_project)); ?>
         </div>
         <div id="tab_permissions_pane" class="configuration-content centered" <?php if ($selected_tab != 'permissions'): ?>style=" display: none;"<?php endif; ?>>
             <?php include_component('project/projectpermissions', array('access_level' => $access_level, 'project' => $selected_project)); ?>

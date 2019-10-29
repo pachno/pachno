@@ -1586,17 +1586,6 @@
                 }
             }
 
-            // FIXME: If we set the issue assignee during report issue, this needs to be set INSTEAD of this
-            if ($this->selected_project->canAutoassign()) {
-                if (isset($fields_array['component']) && $this->selected_component instanceof entities\Component && $this->selected_component->hasLeader()) {
-                    $issue->setAssignee($this->selected_component->getLeader());
-                } elseif (isset($fields_array['edition']) && $this->selected_edition instanceof entities\Edition && $this->selected_edition->hasLeader()) {
-                    $issue->setAssignee($this->selected_edition->getLeader());
-                } elseif ($this->selected_project->hasLeader()) {
-                    $issue->setAssignee($this->selected_project->getLeader());
-                }
-            }
-
             if ($request->hasParameter('custom_issue_access') && $this->selected_project->permissionCheck('canlockandeditlockedissues')) {
                 switch ($request->getParameter('issue_access')) {
                     case 'public':

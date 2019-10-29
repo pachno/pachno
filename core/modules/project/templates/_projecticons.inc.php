@@ -9,7 +9,7 @@
                 <div class="form-row">
                     <div class="image-grid" id="project-icons-grid">
                         <?php foreach (\pachno\core\entities\Project::getIcons() as $index => $icon): ?>
-                            <input type="radio" name="project_icon" value="<?= $icon; ?>" id="project_icon_<?= $index; ?>" <?php if ($icon == $project->getLargeIconName()) echo ' checked'; ?>>
+                            <input type="radio" name="project_icon" value="<?= $icon; ?>" id="project_icon_<?= $index; ?>" <?php if ($icon == $project->getIconName()) echo ' checked'; ?>>
                             <label for="project_icon_<?= $index; ?>"><?= image_tag($icon, [], true); ?></label>
                         <?php endforeach; ?>
                     </div>

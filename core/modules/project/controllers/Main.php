@@ -725,82 +725,6 @@
         }
 
         /**
-         * Configure project editions and components
-         *
-         * @param framework\Request $request The request object
-         */
-        public function runConfigureProjectEditionsAndComponents(framework\Request $request)
-        {
-
-        }
-
-        /**
-         * Configure project data types
-         *
-         * @param framework\Request $request The request object
-         */
-        public function runConfigureProjectOther(framework\Request $request)
-        {
-
-        }
-
-        /**
-         * Updates visible issue types
-         *
-         * @param framework\Request $request The request object
-         */
-        public function runConfigureProjectUpdateOther(framework\Request $request)
-        {
-            if ($this->getUser()->canEditProjectDetails($this->selected_project)) {
-                try {
-                    $this->selected_project->setDownloadsEnabled((bool)$request['has_downloads']);
-                    switch ($request['frontpage_summary']) {
-                        case 'issuelist':
-                        case 'issuetypes':
-                            $this->selected_project->setFrontpageSummaryType($request['frontpage_summary']);
-                            $this->selected_project->save();
-                            $this->selected_project->clearVisibleIssuetypes();
-                            foreach ($request->getParameter('showissuetype', []) as $issuetype_id) {
-                                $this->selected_project->addVisibleIssuetype($issuetype_id);
-                            }
-                            break;
-                        case 'milestones':
-                            $this->selected_project->setFrontpageSummaryType('milestones');
-                            $this->selected_project->save();
-                            $this->selected_project->clearVisibleMilestones();
-                            foreach ($request->getParameter('showmilestone', []) as $milestone_id) {
-                                $this->selected_project->addVisibleMilestone($milestone_id);
-                            }
-                            break;
-                        case '':
-                            $this->selected_project->setFrontpageSummaryType('');
-                            $this->selected_project->save();
-                            break;
-                    }
-
-                    return $this->renderJSON(['title' => Context::getI18n()->__('Your changes have been saved'), 'message' => '']);
-                } catch (Exception $e) {
-                    $this->getResponse()->setHttpStatus(400);
-
-                    return $this->renderJSON(['error' => Context::getI18n()->__('An error occured'), 'message' => $e->getMessage()]);
-                }
-            }
-            $this->getResponse()->setHttpStatus(403);
-
-            return $this->renderJSON(['error' => Context::getI18n()->__("You don't have access to save project settings")]);
-        }
-
-        /**
-         * Configure project builds
-         *
-         * @param framework\Request $request The request object
-         */
-        public function runConfigureProjectDevelopers(framework\Request $request)
-        {
-
-        }
-
-        /**
          * Configure project leaders
          *
          * @param framework\Request $request The request object
@@ -974,9 +898,6 @@
                     }
                 }
 
-                if ($request->hasParameter('use_scrum'))
-                    $this->selected_project->setUsesScrum((bool)$request['use_scrum']);
-
                 if ($request->hasParameter('description'))
                     $this->selected_project->setDescription($request->getParameter('description', null, false));
 
@@ -1009,12 +930,6 @@
 
                 if ($request->hasParameter('strict_workflow_mode'))
                     $this->selected_project->setStrictWorkflowMode((bool)$request['strict_workflow_mode']);
-
-                if ($request->hasParameter('allow_autoassignment'))
-                    $this->selected_project->setAutoassign((bool)$request['allow_autoassignment']);
-
-                if ($request->hasParameter('time_units'))
-                    $this->selected_project->setTimeUnits($request['time_units']);
 
                 if ($request->hasParameter('mark_as_owner'))
                     $this->selected_project->setOwner($this->getUser());
@@ -1455,28 +1370,11 @@
         {
             if ($this->getUser()->canManageProject($this->selected_project) || $this->getUser()->canManageProjectReleases($this->selected_project)) {
                 if ($request->isPost()) {
-                    if ($request['clear_icons']) {
-                        $this->selected_project->clearSmallIcon();
-                        $this->selected_project->clearLargeIcon();
-                    } else {
-                        switch ($request['small_icon_action']) {
-                            case 'upload_file':
-                                $file = $request->handleUpload('small_icon');
-                                $this->selected_project->setSmallIcon($file);
-                                break;
-                            case 'clear_file':
-                                $this->selected_project->clearSmallIcon();
-                                break;
-                        }
-                        switch ($request['large_icon_action']) {
-                            case 'upload_file':
-                                $file = $request->handleUpload('large_icon');
-                                $this->selected_project->setLargeIcon($file);
-                                break;
-                            case 'clear_file':
-                                $this->selected_project->clearLargeIcon();
-                                break;
-                        }
+                    switch ($request['large_icon_action']) {
+                        case 'upload_file':
+                            $file = $request->handleUpload('large_icon');
+                            $this->selected_project->setIcon($file);
+                            break;
                     }
                     $this->selected_project->save();
                 }

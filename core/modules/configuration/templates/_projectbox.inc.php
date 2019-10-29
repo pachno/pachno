@@ -1,7 +1,7 @@
 <?php \pachno\core\framework\Context::loadLibrary('ui'); ?>
 <div id="project_box_<?= $project->getID();?>" class="row">
     <div class="column info-icons">
-        <?= image_tag($project->getSmallIconName(), ['class' => 'icon-large', 'alt' => '[i]'], $project->hasSmallIcon()); ?>
+        <?= image_tag($project->getIconName(), ['class' => 'icon-large', 'alt' => '[i]'], true); ?>
     </div>
     <div class="column smaller">
         <?php if ($project->usePrefix()): ?>
