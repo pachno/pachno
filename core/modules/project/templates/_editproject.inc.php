@@ -12,12 +12,6 @@
         <a class="closer" href="javascript:void(0);" onclick="Pachno.Main.Helpers.Backdrop.reset();"><?= fa_image_tag('times'); ?></a>
     </div>
     <div id="backdrop_detail_content" class="backdrop_detail_content">
-        <?php if ($project->getId()): ?>
-            <h5 style="font-size: 13px; text-align: left;">
-                <div class="button button-blue" style="float: right; margin: -5px 5px 5px 0;"><?= link_tag(make_url('project_settings', ['project_key' => $project->getKey()]), '<span>'.__('More settings').'</span>'); ?></a></div>
-                <?= __('Only showing basic project details. More settings available in the main project configuration.'); ?>
-            </h5>
-        <?php endif; ?>
         <?php \pachno\core\framework\Event::createNew('core', 'project/editproject::above_content')->trigger(compact('project')); ?>
         <div class="form-container">
             <?php if ($access_level == \pachno\core\framework\Settings::ACCESS_FULL): ?>

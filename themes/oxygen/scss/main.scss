@@ -7251,50 +7251,62 @@ table.sortable tr th.nosort {
   margin: 10px;
   padding: 10px;
   border: 1px solid rgba(200, 200, 200, 0.7);
-  align-items: baseline;
+  align-items: center;
   border-radius: 3px;
+
+  &.type-error {
+    background-color: #d62246;
+    color: #FFF;
+
+    .message {
+      color: rgba(255, 255, 255, 1);
+    }
+  }
+
+  &.type-warning {
+    background-color: rgba(249, 245, 178, 0.6);
+  }
+
+  &.type-info {
+    background-color: #d4f4dd;
+    color: rgba(0, 0, 0, .55);
+  }
+
+  .fas,
+  .fab,
+  .far {
+    margin-right: 5px;
+  }
+
+  .message {
+    flex: 1 1 auto;
+    font-size: 1.1em;
+
+    & + .actions {
+      margin-left: 10px;
+    }
+  }
+
+  .actions {
+    flex: 0 0 auto;
+  }
+
+  .image-container {
+    flex: 0 0 60px;
+    box-sizing: border-box;
+    padding: 0 1em 0 .5em;
+
+    img {
+      width: 100%;
+      height: auto;
+    }
+  }
+
+  .command_box {
+    font-size: .85em;
+  }
 }
 
-.message-box.type-error {
-  background-color: #d62246;
-  color: #FFF;
-}
-
-.message-box.type-warning {
-  background-color: rgba(249, 245, 178, 0.6);
-}
-
-.message-box.type-info {
-  background-color: #d4f4dd;
-  color: rgba(0, 0, 0, .55);
-}
-
-.message-box .fas,
-.message-box .fab,
-.message-box .far {
-  margin-right: 5px;
-}
-
-.message-box .message {
-  flex: 1 1 auto;
-  font-size: 1.1em;
-}
-
-.message-box.type-error .message {
-  color: rgba(255, 255, 255, 1);
-}
-
-.message-box .actions {
-  flex: 0 0 auto;
-}
-
-.message-box .message + .actions {
-  margin-left: 10px;
-}
-
-.message-box .command_box {
-  font-size: .85em;
-}
 
 .greenbox {
   background-color: rgba(177, 210, 143, 0.3);

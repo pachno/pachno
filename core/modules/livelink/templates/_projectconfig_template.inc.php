@@ -6,13 +6,19 @@
  */
 
 ?>
-<div class="livelink-banner">
-    <h2 class="livelink-header">
-        <?= fa_image_tag('leaf') . __('Pachno Live Link'); ?>
-    </h2>
-    <p class="livelink-intro">
-        <?= __('Import and/or link an existing project from %github, %gitlab, %bitbucket and more with %pachno_live_link.', ['%github' => fa_image_tag('github', [], 'fab') . ' GitHub', '%gitlab' => fa_image_tag('gitlab', [], 'fab') . ' GitLab', '%bitbucket' => fa_image_tag('bitbucket', [], 'fab') . ' BitBucket', '%pachno_live_link' => link_tag('https://pachno.com/features/livelink', fa_image_tag('leaf') . 'Pachno Live Link', ['target' => '_blank'])]); ?>
-    </p>
+<div class="form-container">
+    <div class="form-row header">
+        <h3>
+            <?= fa_image_tag('magic', ['class' => 'icon']); ?>
+            <span class="name"><?= __('Import or link existing project(s)'); ?></span>
+        </h3>
+    </div>
+    <div class="message-box type-info">
+        <div class="image-container"><?= image_tag('/unthemed/onboarding_livelink_intro_icon.png', [], true); ?></div>
+        <div class="message">
+            <?= __('Import and/or link an existing project from %github, %gitlab, %bitbucket and more', ['%github' => fa_image_tag('github', [], 'fab') . ' GitHub', '%gitlab' => fa_image_tag('gitlab', [], 'fab') . ' GitLab', '%bitbucket' => fa_image_tag('bitbucket', [], 'fab') . ' BitBucket']); ?>
+        </div>
+    </div>
     <?php if (isset($connector)): ?>
         <ul class="livelink-import-list">
             <li>
