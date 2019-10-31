@@ -10565,6 +10565,8 @@ textarea.markItUpEditor:focus {
       text-align: center;
       vertical-align: middle;
       width: 32px; }
+      .project-strip .icon-container .icon-large img {
+        width: 100%; }
   .project-strip .button-group {
     flex: 0 0 auto;
     box-sizing: border-box;
@@ -10598,6 +10600,8 @@ textarea.markItUpEditor:focus {
       border: none; }
     .subprojects-list .configurable-component > .row .actions {
       margin-right: 1rem; }
+    .subprojects-list .configurable-component > .row .icon img {
+      width: 100%; }
     .subprojects-list .configurable-component > .row .button-group {
       flex: 0 0 auto;
       box-sizing: border-box;
