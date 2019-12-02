@@ -725,11 +725,11 @@
                         }
                     }
                     if ($this->getTargetType() == self::TYPE_ISSUE) {
-                        if (framework\Settings::getUserSetting(framework\Settings::SETTINGS_USER_SUBSCRIBE_CREATED_UPDATED_COMMENTED_ISSUES, $this->getPostedByID()))
+                        if (framework\Settings::getUserSetting($this->getPostedByID(), framework\Settings::SETTINGS_USER_SUBSCRIBE_CREATED_UPDATED_COMMENTED_ISSUES))
                             $this->getTarget()->addSubscriber($this->getPostedByID());
                     }
                     if ($this->getTargetType() == self::TYPE_ARTICLE) {
-                        if (framework\Settings::getUserSetting(framework\Settings::SETTINGS_USER_SUBSCRIBE_CREATED_UPDATED_COMMENTED_ARTICLES, $this->getPostedByID()))
+                        if (framework\Settings::getUserSetting($this->getPostedByID(), framework\Settings::SETTINGS_USER_SUBSCRIBE_CREATED_UPDATED_COMMENTED_ARTICLES))
                             $this->getTarget()->addSubscriber($this->getPostedByID());
                     }
                     $this->_addTargetNotifications();

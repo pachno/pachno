@@ -64,7 +64,7 @@
                 </td>
             </tr>
             <tr>
-                <td class="config-explanation" colspan="2"><?php echo __("If you're using a queue, outgoing emails will not slow down the system. Read more about how to set up email queueing in %email_queueing", array('%email_queueing' => link_tag(make_url('@publish_article?article_name=EmailQueueing'), 'EmailQueueing'))); ?></td>
+                <td class="config-explanation" colspan="2"><?php echo __("If you're using a queue, outgoing emails will not slow down the system. Read more about how to set up email queueing in %email_queueing", array('%email_queueing' => link_tag(pachno\core\modules\publish\Publish::getArticleLink('EmailQueueing'), 'EmailQueueing'))); ?></td>
             </tr>
             <tr>
                 <td style="padding: 5px;"><label for="mailing_mail_type"><?php echo __('Email backend selection'); ?></label></td>

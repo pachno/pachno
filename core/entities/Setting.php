@@ -104,9 +104,9 @@
         }
 
         /**
-         * @param User $user_id
+         * @param int $user_id
          */
-        public function setUserId(User $user_id)
+        public function setUserId(int $user_id)
         {
             $this->_user_id = $user_id;
         }
@@ -154,6 +154,14 @@
         public function setValue(string $value)
         {
             $this->_value = $value;
+        }
+
+        /**
+         * @return int
+         */
+        public function getScopeId()
+        {
+            return ($this->getScope() instanceof Scope) ? $this->getScope()->getID() : $this->_scope;
         }
 
         protected function _preSave($is_new = false)

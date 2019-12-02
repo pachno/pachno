@@ -26,7 +26,7 @@
                 <?php if ($show_project_config_link): ?>
                     <?php if ($project_state == 'archived'): ?>
                         <?= __('There are no archived projects'); ?><br>
-                        <?= __('Archived projects can be find in this list.'); ?>
+                        <?= __('Archived projects can be found in this list.'); ?>
                     <?php else: ?>
                         <?= __('Every journey starts with the first step.'); ?><br>
                         <?= __('Create your first project to get started.'); ?>

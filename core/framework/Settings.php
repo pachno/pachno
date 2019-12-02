@@ -318,23 +318,16 @@
             self::saveSetting($name, $setting[0], $module, Context::getScope()->getID());
         }
 
+        /**
+         * @param $name
+         * @param string $module
+         * @param int $scope
+         *
+         * @return Setting[]
+         */
         private static function _loadSetting($name, $module = 'core', $scope = 0)
         {
-            $query = tables\Settings::getTable()->getQuery();
-            $query->where(tables\Settings::NAME, $name);
-            $query->where(tables\Settings::MODULE, $module);
-            $query->where(tables\Settings::SCOPE, $scope);
-            $res = tables\Settings::getTable()->rawSelect($query);
-            if ($res) {
-                $retarr = [];
-                while ($row = $res->getNextRow()) {
-                    $retarr[$row->get(tables\Settings::UID)] = $row->get(tables\Settings::VALUE);
-                }
-
-                return $retarr;
-            } else {
-                return null;
-            }
+            return tables\Settings::getTable()->getSettingForAllUsers($name, $module, $scope);
         }
 
         /**
@@ -372,21 +365,27 @@
                 }
             }
 
-            if ($scope != 0 && ((!Context::getScope() instanceof Scope) || $scope == Context::getScope()->getID())) {
-                self::$_settings[$module][$name][$uid] = $value;
+            $is_current_scope = $scope != 0 && ((!Context::getScope() instanceof Scope) || $scope == Context::getScope()->getID());
+
+            if ($is_current_scope) {
+                $setting = self::get($name, $module, $scope, $uid);
             } else {
                 $setting = tables\Settings::getTable()->getSetting($name, $module, $uid, $scope);
-                if (!$setting instanceof Setting) {
-                    $setting = new Setting();
-                    $setting->setModuleKey($module);
-                    $setting->setName($name);
-                    $setting->setUserId($uid);
-                    $setting->setScope($scope);
-                }
-                $setting->setValue($value);
-                $setting->save();
             }
 
+            if (!$setting instanceof Setting) {
+                $setting = new Setting();
+                $setting->setModuleKey($module);
+                $setting->setName($name);
+                $setting->setUserId($uid);
+                $setting->setScope($scope);
+
+                if ($is_current_scope) {
+                    self::$_settings[$module][$name][$uid] = $setting;
+                }
+            }
+            $setting->setValue($value);
+            $setting->save();
         }
 
         public static function getUpgradeStatus()
@@ -409,7 +408,7 @@
 
         public static function hasUserSetting($user_id, $name, $module = 'core', $scope = 0)
         {
-            return self::getUserSetting($name, $module, $scope, $user_id) !== null;
+            return self::getUserSetting($user_id, $name, $module, $scope) !== null;
         }
 
         public static function getUserSetting($user_id, $name, $module = 'core', $scope = 0)
@@ -431,7 +430,7 @@
             if ($scope != Context::getScope()->getID() && $scope !== null) {
                 $setting = self::_loadSetting($name, $module, $scope);
 
-                return ($setting[$uid] instanceof Setting) ? $setting[$uid]->getValue() : null;
+                return (isset($setting[$uid]) && $setting[$uid] instanceof Setting) ? $setting[$uid]->getValue() : null;
             }
             if (self::$_settings === null) {
                 self::loadSettings();

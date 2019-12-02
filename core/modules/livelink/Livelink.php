@@ -71,20 +71,6 @@
         }
 
         /**
-         * @Listener(module='core', identifier='project_sidebar_links')
-         * @param Event $event
-         */
-        public function listen_project_links(Event $event)
-        {
-            if (!$this->isEnabled()) {
-                return;
-            }
-
-            if (framework\Context::getUser()->hasProjectPageAccess('project_commits', framework\Context::getCurrentProject()))
-                $event->addToReturnList(['url' => framework\Context::getRouting()->generate('livelink_project_commits', ['project_key' => framework\Context::getCurrentProject()->getKey()]), 'title' => framework\Context::getI18n()->__('Commits')]);
-        }
-
-        /**
          * @Listener(module='core', identifier='get_backdrop_partial')
          * @param Event $event
          */
@@ -345,6 +331,20 @@
             }
 
             include_component('livelink/projectconfig_tab', ['selected_tab' => $event->getParameter('selected_tab')]);
+        }
+
+        /**
+         * Header wiki menu and search dropdown / list
+         *
+         * @Listener(module="core", identifier="templates/headermainmenu::projectmenulinks")
+         *
+         * @param Event $event
+         */
+        public function listen_MenustripLinks(Event $event)
+        {
+            if (framework\Context::getUser()->hasProjectPageAccess('project_commits', framework\Context::getCurrentProject())) {
+                framework\ActionComponent::includeComponent('livelink/menustriplinks', ['project' => $event->getSubject()]);
+            }
         }
 
         /**

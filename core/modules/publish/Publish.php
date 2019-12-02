@@ -57,16 +57,6 @@
             return $article->getLink($mode);
         }
 
-        public function hasProjectAwareRoute()
-        {
-            return true;
-        }
-
-        public function getProjectAwareRoute($project_key)
-        {
-            return framework\Context::getRouting()->generate('publish_article', ['article_name' => ucfirst($project_key) . ":MainPage"]);
-        }
-
         public function postConfigSettings(Request $request)
         {
             if ($request->hasParameter('import_articles')) {
@@ -193,7 +183,7 @@
 
         public function listen_BreadcrumbMainLinks(Event $event)
         {
-            $link = ['url' => framework\Context::getRouting()->generate('publish'), 'title' => $this->getMenuTitle(false)];
+            $link = ['url' => self::getArticleLink('MainPage'), 'title' => $this->getMenuTitle(false)];
             $event->addToReturnList($link);
         }
 
@@ -233,7 +223,7 @@
 
         public function listen_BreadcrumbProjectLinks(Event $event)
         {
-            $link = ['url' => framework\Context::getRouting()->generate('publish_article', ['article_name' => framework\Context::getCurrentProject()->getKey() . ':MainPage']), 'title' => $this->getMenuTitle(true)];
+            $link = ['url' => self::getArticleLink('MainPage', framework\Context::getCurrentProject()), 'title' => $this->getMenuTitle(true)];
             $event->addToReturnList($link);
         }
 
@@ -264,11 +254,7 @@
 
         public function listen_createNewProject(Event $event)
         {
-            if (!Article::getByName(ucfirst($event->getSubject()->getKey()) . ':MainPage') instanceof Article) {
-                $project_key = $event->getSubject()->getKey();
-                $article = Article::createNew("Main Page", "This is the frontpage for {$event->getSubject()->getName()}", null, [], $event->getSubject());
-                $this->loadArticles($project_key);
-            }
+            Article::createNew("Main Page", "This is the frontpage for {$event->getSubject()->getName()}", null, ['noauthor' => true], $event->getSubject());
         }
 
         public function getTabKey()
@@ -493,7 +479,7 @@
         {
             Event::listen('core', 'index_left', [$this, 'listen_frontpageLeftmenu']);
             Event::listen('core', 'index_right_top', [$this, 'listen_frontpageArticle']);
-            if ($this->isWikiTabsEnabled()) {
+            if (!framework\Context::isInstallmode() && $this->isWikiTabsEnabled()) {
                 Event::listen('core', 'project_overview_item_links', [$this, 'listen_projectLinks']);
                 Event::listen('core', 'breadcrumb_main_links', [$this, 'listen_BreadcrumbMainLinks']);
                 Event::listen('core', 'breadcrumb_project_links', [$this, 'listen_BreadcrumbProjectLinks']);
@@ -543,14 +529,20 @@
         {
             if (framework\Context::isCLI())
                 Command::cli_echo("Loading default articles\n");
-            $this->loadArticles('', $overwrite, $scope);
+            $this->loadArticles(null, $overwrite, $scope);
             if (framework\Context::isCLI())
                 Command::cli_echo("... done\n");
         }
 
-        public function loadArticles($namespace = '', $overwrite = true, $scope = null)
+        /**
+         * @param Project $project
+         * @param bool $overwrite
+         * @param null $scope
+         */
+        public function loadArticles($project = null, $overwrite = true, $scope = null)
         {
-            $scope = framework\Context::getScope()->getID();
+            $scope = $scope ?? framework\Context::getScope()->getID();
+
             $namespace = mb_strtolower($namespace);
             $_path_handle = opendir(PACHNO_MODULES_PATH . 'publish' . DS . 'fixtures' . DS);
             while ($original_article_name = readdir($_path_handle)) {

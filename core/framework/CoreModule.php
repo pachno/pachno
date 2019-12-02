@@ -134,8 +134,11 @@
             return false;
         }
 
+        protected function _addListeners() {}
+
         public function initialize()
         {
+            $this->_addListeners();
         }
 
         public function getAccountSettingsLogo()

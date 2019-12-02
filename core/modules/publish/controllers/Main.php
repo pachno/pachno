@@ -272,7 +272,7 @@
             }
             if (!$this->article->canEdit()) {
                 framework\Context::setMessage('publish_article_error', framework\Context::getI18n()->__('You do not have permission to edit this article'));
-                $this->forward(framework\Context::getRouting()->generate('publish_article', ['article_name' => $this->article_name]));
+                $this->forward($this->article->getLink());
             }
 
             if ($request->isPost()) {
@@ -313,7 +313,7 @@
                     if (!$this->preview) {
                         $this->article->doSave(['article_prev_name' => $article_prev_name], $request['change_reason']);
                         framework\Context::setMessage('publish_article_message', framework\Context::getI18n()->__('The article was saved'));
-                        $this->forward(framework\Context::getRouting()->generate('publish_article', ['article_name' => $this->article->getName()]));
+                        $this->forward($this->article->getLink());
                     }
                 } catch (Exception $e) {
                     $this->error = $e->getMessage();

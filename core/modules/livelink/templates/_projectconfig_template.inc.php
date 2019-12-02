@@ -53,8 +53,8 @@
         <ul class="livelink-import-list">
             <?php foreach ($module->getConnectorModules() as $connector_key => $connector_module): ?>
                 <li>
-                    <span class="description"><?= fa_image_tag($connector_module->getConnector()->getLogo(), [], $connector_module->getConnector()->getLogoStyle()) . $connector_module->getConnector()->getProjectTemplateDescription(); ?></span>
-                    <button class="button" onclick="Pachno.Main.Helpers.Backdrop.show('<?= make_url('get_partial_for_backdrop', ['key' => 'livelink-import_project', 'connector' => $connector_key, 'project_id' => $project->getID()]); ?>');"><?php echo __('Import / link'); ?></button>
+                    <span class="description"><?= fa_image_tag($connector_module->getConnector()->getLogo(), ['class' => 'connector_logo'], $connector_module->getConnector()->getLogoStyle()) . $connector_module->getConnector()->getProjectTemplateDescription(); ?></span>
+                    <button class="button secondary highlight" onclick="Pachno.Main.Helpers.Backdrop.show('<?= make_url('get_partial_for_backdrop', ['key' => 'livelink-import_project', 'connector' => $connector_key, 'project_id' => $project->getID()]); ?>');"><?php echo __('Import / link'); ?></button>
                 </li>
             <?php endforeach; ?>
         </ul>

@@ -2173,7 +2173,8 @@ ul.client_users li, ul.team_users li, ul.project_users li {
   flex: 0 0 auto; }
 
 .commits-list .commit .commit-details {
-  flex: 0 0 130px;
+  flex: 0 0 auto;
+  white-space: nowrap;
   text-align: right; }
 
 .commits-list .commit .commit-details .not-imported {
@@ -2419,100 +2420,12 @@ a.friend {
   margin: 0 auto;
   text-align: center; }
 
-.report_issue_desc {
-  width: auto;
-  margin: 0 auto 0 auto;
-  text-align: left; }
-
 #report_more_here {
   color: #999;
   font-size: 1.1em;
   text-align: center;
   padding-top: 20px;
   min-height: 30px; }
-
-#report_form {
-  margin: 10px auto 0 auto;
-  padding: 0;
-  width: 1000px;
-  text-align: left; }
-
-#report_form table {
-  width: 990px;
-  margin: 0 auto; }
-
-#report_form table table {
-  width: auto; }
-
-#shortname_div {
-  margin-top: 10px !important; }
-
-#report_form label {
-  font-size: 1.1em;
-  padding: 3px 0 3px 0;
-  font-weight: 400; }
-
-.backdrop_detail_content #report_form label {
-  font-size: 1em;
-  text-transform: uppercase;
-  color: #888;
-  font-weight: 400; }
-
-#report_form label span {
-  display: none; }
-
-#report_form label.required {
-  font-weight: 400; }
-
-#report_form label.required span {
-  display: inline; }
-
-#report_form input[type="text"] {
-  font-size: 1.3em;
-  padding: 4px;
-  height: 20px;
-  text-align: left;
-  width: 100%; }
-
-.backdrop_detail_content #report_form input[type="text"] {
-  font-size: 1.1em;
-  padding: 2px; }
-
-input.padded {
-  padding: .6em;
-  width: 100%;
-  box-sizing: border-box;
-  vertical-align: middle; }
-
-#report_form input#title {
-  width: 804px; }
-
-#report_form input#shortname {
-  width: 804px; }
-
-#report_form select {
-  font-size: 1.1em;
-  padding: 2px;
-  height: 24px;
-  text-align: left;
-  width: 100%; }
-
-.backdrop_detail_content #report_form select {
-  font-size: 1em;
-  padding: 1px;
-  height: 25px;
-  text-align: left;
-  width: auto; }
-
-.report_issue_help {
-  padding: 5px 0 0 2px; }
-
-.backdrop_detail_content #report_issue_reported_issue_details {
-  padding: 5px;
-  font-size: 1.1em; }
-
-.backdrop_detail_content .report_issue_help {
-  padding: 3px 0 0 1px; }
 
 .backdrop_detail_content .reportissue_additional_information_container {
   border-radius: 3px;
@@ -2551,15 +2464,7 @@ input.padded {
   float: none; }
 
 #report_form table.additional_information {
-  float: left;
-  width: 323px;
-  margin: 0 0 10px 5px; }
-
-.backdrop_detail_content .additional_information .report_issue_help {
-  /*display: none;*/ }
-
-#report_form table.additional_information {
-  margin-top: 10px;
+  margin: 10px 0 10px 5px;
   width: 986px; }
 
 #reportissue_additional_information_container .markItUp {
@@ -5118,7 +5023,8 @@ ul.property-list {
   flex-direction: column;
   list-style: none;
   margin: 0;
-  padding: 0; }
+  padding: 0;
+  box-sizing: border-box; }
 
 ul.property-list + ul.property-list {
   margin: 15px 0 0 0; }
@@ -5127,7 +5033,8 @@ ul.property-list li {
   display: flex;
   flex: 1 1 auto;
   align-items: baseline;
-  padding: 0; }
+  padding: 0;
+  box-sizing: border-box; }
 
 ul.property-list li h1,
 ul.related-issues-list li h1,
@@ -5135,7 +5042,8 @@ ul.files-list li h1 {
   flex: 1 1 auto;
   font-size: 1.3em;
   font-weight: 300;
-  display: flex; }
+  display: flex;
+  box-sizing: border-box; }
 
 ul.files-list li h1 .header-text {
   flex: 1 1 auto; }
@@ -5167,29 +5075,35 @@ ul.files-list li h1 .action-buttons {
 ul.property-list li .property {
   flex: 0 0 35%;
   padding: 5px;
-  font-weight: 400; }
+  font-weight: 400;
+  box-sizing: border-box; }
 
 ul.property-list li .value {
   flex: 0 0 65%;
   padding: 5px;
-  font-weight: 300; }
+  font-weight: 300;
+  box-sizing: border-box; }
 
 ul.property-list li .disabled {
   color: #888;
-  padding: 5px; }
+  padding: 5px;
+  box-sizing: border-box; }
 
 ul.related-issues-list {
   display: block;
   margin: 20px 0 0 0;
   padding: 0;
-  list-style: none; }
+  list-style: none;
+  box-sizing: border-box; }
 
 ul.related-issues-list li {
   padding: 0;
-  line-height: 1.4em; }
+  line-height: 1.4em;
+  box-sizing: border-box; }
 
 ul.related-issues-list li .issue {
-  display: block; }
+  display: block;
+  box-sizing: border-box; }
 
 ul.files-list {
   display: block;
@@ -5197,7 +5111,8 @@ ul.files-list {
   top: 0;
   margin: 20px 0 0 0;
   padding: 0;
-  list-style: none; }
+  list-style: none;
+  box-sizing: border-box; }
 
 ul.files-list .fas,
 ul.files-list .far {
@@ -5220,11 +5135,11 @@ ul.files-list .action_D {
 
 ul.files-list li {
   padding: 0;
-  line-height: 1.2em; }
+  line-height: 1.2em;
+  box-sizing: border-box; }
 
 ul.files-list > li:not(:first-child) {
-  margin-left: 10px;
-  margin-right: -10px; }
+  padding-left: 10px; }
 
 ul.files-list .foldername {
   display: block;
@@ -5258,9 +5173,10 @@ ul.files-list .foldername.collapsed .collapser {
 
 ul.files-list li.folder ul {
   display: block;
-  margin-left: 16px;
+  padding: 0;
+  padding-left: 16px;
   list-style: none;
-  padding: 0; }
+  box-sizing: border-box; }
 
 ul.files-list li.folder .foldername.collapsed + ul {
   display: none; }
@@ -6094,6 +6010,10 @@ table.sortable tr th.nosort {
   .message-box .fab,
   .message-box .far {
     margin-right: 5px; }
+  .message-box .title {
+    flex: 1 1 auto;
+    font-size: 1.1em;
+    font-weight: 600; }
   .message-box .message {
     flex: 1 1 auto;
     font-size: 1.1em; }
@@ -6895,11 +6815,6 @@ ul#edition_table > li > div.faded_out {
 #incoming_email_account_form table .faded_out {
   padding-bottom: 5px; }
 
-#tab_mailing_other_pane .project_save_container .content {
-  display: block;
-  margin-bottom: 5px;
-  text-align: left; }
-
 #mailing_incoming_accounts h5 {
   padding: 3px 15px; }
 
@@ -7157,17 +7072,6 @@ ul#subscribers_list > li {
   padding-top: 0;
   min-width: 250px;
   margin-top: 3px; }
-
-.project-strip .button-group .button-report-issue {
-  background-color: #FFF;
-  border: none;
-  color: #1aaa55;
-  padding: 9px;
-  font-weight: 400; }
-
-.project-strip .button-group .button-report-issue:hover {
-  background-color: #1aaa55;
-  color: #FFF; }
 
 .legendColorBox > div {
   margin-top: 3px;
@@ -8855,9 +8759,11 @@ input[data-interactive-toggle].submitting + label .indicator {
     .list-mode .list-item:hover .icon {
       flex: 0 0 25px;
       padding: .35em 0;
-      color: #646464;
       align-self: center;
       text-align: center; }
+      .list-mode .list-item .icon:not(.issuetype-icon),
+      .list-mode .list-item:hover .icon:not(.issuetype-icon) {
+        color: #646464; }
     .list-mode .list-item > a,
     .list-mode .list-item > a:hover,
     .list-mode .list-item:hover > a,
@@ -10134,6 +10040,8 @@ nav.sidebar {
       .flexible-table .column.info-icons .far + .fas,
       .flexible-table .column.info-icons .far + .far {
         margin-left: -.2em; }
+      .flexible-table .column.info-icons img {
+        width: 100%; }
     .flexible-table .column .button.secondary {
       color: #141823; }
     .flexible-table .column.sca_action_selector, .flexible-table .column.sca_actions {
@@ -12864,9 +12772,14 @@ dl.info {
 
 .livelink-import-list, .livelink_connector_accounts {
   list-style: none;
-  margin: 0;
-  padding: 25px 0 0 0;
-  font-size: 1.1em; }
+  padding: 0;
+  font-size: 1.1em;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  box-sizing: border-box;
+  margin: 0 10px;
+  align-items: stretch; }
 
 .livelink_connector_accounts li .connector_logo,
 .livelink-import-list li .connector_logo {
@@ -12883,7 +12796,8 @@ dl.info {
   padding: 10px 0;
   border-bottom: 1px dotted #DDD;
   display: flex;
-  font-size: .9em; }
+  font-size: .9em;
+  align-items: center; }
 
 .livelink_connector_accounts li {
   padding: 10px;

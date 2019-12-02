@@ -31,6 +31,5 @@
             <?= fa_image_tag('exclamation-triangle', ['class' => 'not-imported', 'title' => __('This commit has been imported and is missing some information')]); ?>
         <?php endif; ?>
         <span class="commit-comments"><?= fa_image_tag('comments'); ?><?= $commit->getCommentCount(); ?></span>
-        <a class="button"><?= __('Actions'); ?></a>
     </div>
 </div>

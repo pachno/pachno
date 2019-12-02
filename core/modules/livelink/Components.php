@@ -4,6 +4,7 @@
 
     use pachno\core\entities\CommitFileDiff;
     use pachno\core\entities\Project;
+    use pachno\core\entities\tables\Branches;
     use pachno\core\framework;
 
     /**
@@ -76,6 +77,11 @@
                     }
                 }, $lines);
             }
+        }
+
+        public function componentMenustripLinks()
+        {
+            $this->selected_project = framework\Context::getCurrentProject();
         }
 
     }

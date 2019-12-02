@@ -1,1 +1,4 @@
-<li id="tab_mailing_other"<?php if ($selected_tab == 'mailing_other'): ?> class="selected"<?php endif; ?>><?php echo javascript_link_tag(__('Incoming email accounts'), array('onclick' => "Pachno.Main.Helpers.tabSwitcher('tab_mailing_other', 'project_config_menu');")); ?></li>
+<a id="tab_mailing" href="javascript:void(0);" onclick="Pachno.Main.Helpers.tabSwitcher('tab_mailing', 'project_config_menu');return false;" class="list-item <?php if ($selected_tab == 'mailing') echo 'selected'; ?>">
+    <?= fa_image_tag('envelope-open', ['class' => 'icon'], 'far'); ?>
+    <span class="name"><?= __('Emails'); ?></span>
+</a>

@@ -35,7 +35,11 @@
             </div>
         <?php endif; */ ?>
     <div class="button-group">
-        <?php if (isset($show_back) && $show_back): ?>
+        <?php if (isset($custom_back)): ?>
+            <a href="<?= $custom_back; ?>" class="button secondary icon">
+                <?= fa_image_tag('arrow-left', ['class' => 'icon']); ?>
+            </a>
+        <?php elseif (isset($show_back) && $show_back): ?>
             <a href="<?= make_url('project_dashboard', ['project_key' => $selected_project->getKey()]); ?>" class="button secondary icon">
                 <?= fa_image_tag('arrow-left', ['class' => 'icon']); ?>
             </a>

@@ -14,7 +14,7 @@
     use pachno\core\framework;
 
     /**
-     * @static @method Articles getTable() Retrieves an instance of this table
+     * @method static Articles getTable() Retrieves an instance of this table
      * @method Article selectById(integer $id) Retrieves an article
      * @method Article[] select(Query $id, $join = 'all') Retrieves articles
      * @method Article selectOne(Query $id, $join = 'all') Retrieves articles
@@ -209,19 +209,22 @@
             }
 
             $colon_pos = mb_strpos($name, ':');
-            if ($colon_pos !== 0) {
+            if ($colon_pos !== 0 && $project === null) {
                 $project_key = mb_strtolower(mb_substr($name, 0, $colon_pos));
                 $project = Project::getByKey($project_key);
-            }
 
-            if ($project instanceof Project) {
-                $article_name = mb_substr($name, $colon_pos + 1);
-            } else {
-                if (framework\Context::isProjectContext()) {
-                    $project = framework\Context::getCurrentProject();
+                if ($project instanceof Project) {
+                    $article_name = mb_substr($name, $colon_pos + 1);
+                } else {
+                    if (framework\Context::isProjectContext()) {
+                        $project = framework\Context::getCurrentProject();
+                    }
+                    $article_name = $name;
                 }
+            } else {
                 $article_name = $name;
             }
+
             $project_id = ($project instanceof Project) ? $project->getId() : $project;
 
             $query = $this->getQuery();
@@ -258,13 +261,18 @@
             return $row;
         }
 
-        public function doesNameConflictExist($name, $id, $scope = null)
+        public function doesNameConflictExist($name, $id, $project_id = null, $scope = null)
         {
             $scope = ($scope === null) ? framework\Context::getScope()->getID() : $scope;
 
             $query = $this->getQuery();
             $query->where(self::NAME, $name);
             $query->where(self::ID, $id, Criterion::NOT_EQUALS);
+            if ($project_id) {
+                $query->where('articles.project_id', $project_id);
+            } else {
+                $query->where('articles.project_id', 0);
+            }
             $query->where(self::SCOPE, $scope);
 
             return (bool)$this->count($query);

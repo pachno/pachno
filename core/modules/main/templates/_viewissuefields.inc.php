@@ -381,8 +381,12 @@
                                         ?><span id="<?= $field; ?>_name"<?php if (!$info['value']): ?> style="display: none;"<?php endif; ?>><?= $value; ?></span><span id="<?= $field; ?>_new_name" style="display: none;"><?= (int) $value; ?></span><span class="no-value" id="no_<?= $field; ?>"<?php if ($info['value']): ?> style="display: none;"<?php endif; ?>><?= __('Not set'); ?></span><?php
                                         break;
                                     default:
-                                        ?><span id="<?= $field; ?>_name"<?php if (!$info['value']): ?> style="display: none;"<?php endif; ?>><?= (filter_var($info['name'], FILTER_VALIDATE_URL) !== false) ? link_tag($info['name'], $info['name']) : $info['name']; ?></span><span class="no-value" id="no_<?= $field; ?>"<?php if ($info['value']): ?> style="display: none;"<?php endif; ?>><?= __('Not determined'); ?></span><?php
-                                        break;
+                                        if (!isset($info['name'])) {
+                                            var_dump($info);
+                                        } else {
+                                            ?><span id="<?= $field; ?>_name"<?php if (!$info['value']): ?> style="display: none;"<?php endif; ?>><?= (filter_var($info['name'], FILTER_VALIDATE_URL) !== false) ? link_tag($info['name'], $info['name']) : $info['name']; ?></span><span class="no-value" id="no_<?= $field; ?>"<?php if ($info['value']): ?> style="display: none;"<?php endif; ?>><?= __('Not determined'); ?></span><?php
+                                            break;
+                                        }
                                 }
                             ?>
                             <?php if ($issue->isUpdateable() && $issue->canEditCustomFields($field) && $info['editable']): ?>

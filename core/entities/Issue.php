@@ -58,12 +58,12 @@
         const STATE_CLOSED = 1;
 
         /**
-         * @Column(type="string", name="name", length=255)
+         * @Column(type="string", name="name", length=1000)
          */
         protected $_title;
 
         /**
-         * @Column(type="string", name="shortname", length=255)
+         * @Column(type="string", name="shortname", length=1000)
          */
         protected $_shortname;
 

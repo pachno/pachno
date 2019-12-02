@@ -263,8 +263,8 @@
                 $revision = null;
             }
 
-            ArticleLinks::getTable()->deleteLinksByArticle($this->_name);
-            ArticleCategoryLinks::getTable()->deleteCategoriesByArticle($this->_name);
+//            ArticleLinks::getTable()->deleteLinksByArticle($this->_name);
+//            ArticleCategoryLinks::getTable()->deleteCategoriesByArticle($this->_name);
 
             if ($this->getArticleType() == self::TYPE_MANUAL && isset($options['article_prev_name']) && $this->_name != $options['article_prev_name']) {
                 $manual_articles = Articles::getTable()->getManualSidebarArticles(framework\Context::getCurrentProject(), $options['article_prev_name']);

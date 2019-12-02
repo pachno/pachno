@@ -10,74 +10,74 @@
 
     $pachno_response->setTitle(__('"%project_name" commit %commit_sha', ['%project_name' => $selected_project->getName(), '%commit_sha' => $commit->getRevisionString()]));
     $branch_string = (isset($branch)) ? '&nbsp;&raquo;&nbsp;' . $branch->getName() : '';
-    include_component('project/projectheader', ['selected_project' => $selected_project, 'subpage' => __('Project commits') . $branch_string . '&nbsp;&raquo;&nbsp;' . $commit->getRevisionString()]);
 
 ?>
-<div id="project_commits_overview" class="project_info_container">
-    <div class="project_left_container">
-        <div class="project_left commit-details-list">
-            <ul class="property-list">
-                <li>
-                    <h1><?= __('Commit details'); ?></h1>
-                </li>
-                <li>
-                    <div class="property"><?= __('Commit id'); ?></div>
-                    <div class="value"><div class="commit-sha"><?= $commit->getShortRevision(); ?></div></div>
-                </li>
-                <li>
-                    <div class="property"><?= __('Committed by'); ?></div>
-                    <div class="value"><?php include_component('main/userdropdown', ['user' => $commit->getAuthor()]); ?></div>
-                </li>
-                <li>
-                    <div class="property"><?= __('Committed at'); ?></div>
-                    <div class="value"><?= \pachno\core\framework\Context::getI18n()->formatTime($commit->getDate(), 25); ?></div>
-                </li>
-                <?php if ($commit->getPreviousCommit() instanceof Commit): ?>
+<div class="content-with-sidebar">
+    <nav class="project-context sidebar <?= (isset($collapsed) && $collapsed) ? 'collapsed' : ''; ?>" id="project-menu" data-project-id="<?= (\pachno\core\framework\Context::isProjectContext()) ? \pachno\core\framework\Context::getCurrentProject()->getId() : ''; ?>">
+        <div class="list-mode">
+            <?php include_component('project/projectheader', ['subpage' => __('Project commits') . $branch_string . '&nbsp;&raquo;&nbsp;' . $commit->getRevisionString(), 'custom_back' => make_url('livelink_project_commits', ['project_key' => $selected_project->getKey()])]); ?>
+            <div class="list-mode header"><?= __('Commit details'); ?></div>
+            <div class="commit-details-list">
+                <ul class="property-list">
                     <li>
-                        <div class="property"><?= __('Previous commit'); ?></div>
-                        <div class="value"><a href="<?= make_url('livelink_project_commit', ['commit_hash' => $commit->getPreviousCommit()->getRevision(), 'project_key' => $commit->getProject()->getKey(), 'branch' => $branch->getName()]); ?>" class="commit-sha"><?= $commit->getPreviousCommit()->getShortRevision(); ?></a></div>
+                        <div class="property"><?= __('Commit id'); ?></div>
+                        <div class="value"><div class="commit-sha"><?= $commit->getShortRevision(); ?></div></div>
                     </li>
-                <?php endif; ?>
-                <li>
-                    <div class="property"><?= __('Branch(es)'); ?></div>
-                    <div class="value">
-                        <?php foreach ($commit->getBranches() as $branch): ?>
-                            <div class="branch-badge"><?= fa_image_tag('code-branch') . $branch->getName(); ?></div>
-                        <?php endforeach; ?>
-                    </div>
-                </li>
-            </ul>
-            <ul class="related-issues-list related_issues_list">
-                <li>
-                    <h1><?= __('Affected issues (%count)', ['%count' => count($commit->getIssues())]); ?></h1>
-                </li>
-                <?php if ($commit->hasIssues()): ?>
-                    <?php foreach ($commit->getIssues() as $issue): ?>
-                        <?php include_component('main/relatedissue', ['issue' => $issue]); ?>
-                    <?php endforeach; ?>
-                <?php else: ?>
-                    <li><div class="disabled"><?= __('No issues affected by this commit'); ?></div></li>
-                <?php endif; ?>
-            </ul>
-            <?php if ($commit->isImported()): ?>
-                <ul class="files-list">
                     <li>
-                        <h1>
-                            <span class="header-text">
-                                <?= __('Files committed (%count)', ['%count' => count($commit->getFiles())]); ?>
-                            </span>
-                            <span class="action-buttons">
-                                <?= fa_image_tag('plus-square', ['title' => __('Expand all'), 'class' => 'expand-all-icon action-button'], 'far'); ?>
-                                <?= fa_image_tag('minus-square', ['title' => __('Collapse all'), 'class' => 'collapse-all-icon action-button'], 'far'); ?>
-                            </span>
-                        </h1>
+                        <div class="property"><?= __('Committed by'); ?></div>
+                        <div class="value"><?php include_component('main/userdropdown', ['user' => $commit->getAuthor()]); ?></div>
                     </li>
-                    <?php include_component('livelink/tree', ['structure' => $commit->getStructure()]); ?>
+                    <li>
+                        <div class="property"><?= __('Committed at'); ?></div>
+                        <div class="value"><?= \pachno\core\framework\Context::getI18n()->formatTime($commit->getDate(), 25); ?></div>
+                    </li>
+                    <?php if ($commit->getPreviousCommit() instanceof Commit): ?>
+                        <li>
+                            <div class="property"><?= __('Previous commit'); ?></div>
+                            <div class="value"><a href="<?= make_url('livelink_project_commit', ['commit_hash' => $commit->getPreviousCommit()->getRevision(), 'project_key' => $commit->getProject()->getKey(), 'branch' => $branch->getName()]); ?>" class="commit-sha"><?= $commit->getPreviousCommit()->getShortRevision(); ?></a></div>
+                        </li>
+                    <?php endif; ?>
+                    <li>
+                        <div class="property"><?= __('Branch(es)'); ?></div>
+                        <div class="value">
+                            <?php foreach ($commit->getBranches() as $branch): ?>
+                                <div class="branch-badge"><?= fa_image_tag('code-branch') . $branch->getName(); ?></div>
+                            <?php endforeach; ?>
+                        </div>
+                    </li>
                 </ul>
-            <?php endif; ?>
+                <ul class="related-issues-list related_issues_list">
+                    <li>
+                        <h1><?= __('Affected issues (%count)', ['%count' => count($commit->getIssues())]); ?></h1>
+                    </li>
+                    <?php if ($commit->hasIssues()): ?>
+                        <?php foreach ($commit->getIssues() as $issue): ?>
+                            <?php include_component('main/relatedissue', ['issue' => $issue]); ?>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <li><div class="disabled"><?= __('No issues affected by this commit'); ?></div></li>
+                    <?php endif; ?>
+                </ul>
+                <?php if ($commit->isImported()): ?>
+                    <ul class="files-list">
+                        <li>
+                            <h1>
+                                <span class="header-text">
+                                    <?= __('Files committed (%count)', ['%count' => count($commit->getFiles())]); ?>
+                                </span>
+                                <span class="action-buttons">
+                                    <?= fa_image_tag('plus-square', ['title' => __('Expand all'), 'class' => 'expand-all-icon action-button'], 'far'); ?>
+                                    <?= fa_image_tag('minus-square', ['title' => __('Collapse all'), 'class' => 'collapse-all-icon action-button'], 'far'); ?>
+                                </span>
+                            </h1>
+                        </li>
+                        <?php include_component('livelink/tree', ['structure' => $commit->getStructure()]); ?>
+                    </ul>
+                <?php endif; ?>
+            </div>
         </div>
-    </div>
-    <div class="project_right_container">
+    </nav>
+    <div id="project_commits_center_container" class="project_info_container">
         <div class="project_right branch_<?php echo $branch->getName(); ?>" id="commit_<?php echo $commit->getID(); ?>">
             <?php if ($is_importing): ?>
                 <div class="message-box type-warning">

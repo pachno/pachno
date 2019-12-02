@@ -69,8 +69,7 @@
         {
             $this->forward403unless($this->_checkProjectPageAccess('project_commits'));
 
-            $branches = Branches::getTable()->getByProject($this->selected_project);
-            $this->branches = $branches;
+            $this->branches = Branches::getTable()->getByProject($this->selected_project);
             $this->is_importing = $this->getModule()->isProjectImportInProgress($this->selected_project);
         }
 

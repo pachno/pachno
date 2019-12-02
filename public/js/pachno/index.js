@@ -2321,8 +2321,6 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
         };
 
         Pachno.Project.showBranchCommits = function (url, branch) {
-            $$('body')[0].setStyle({'overflow': 'auto'});
-
             Pachno.Main.Helpers.ajax(url, {
                 url_method: 'post',
                 additional_params: "branch=" + branch,
@@ -2336,7 +2334,7 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
                     update: 'project_commits'
                 }
             });
-        }
+        };
 
         Pachno.Project.Commits.update = function (url, branch) {
             Pachno.Main.Helpers.ajax(url, {
@@ -4495,10 +4493,10 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
         }
 
         Pachno.Project.toggleLeftSelection = function (item) {
-            $(item).up('ul').childElements().each(function (elm) {
+            $(item).up('.list-mode').childElements().each(function (elm) {
                 elm.removeClassName('selected');
             });
-            $(item).up('li').addClassName('selected');
+            $(item).addClassName('selected');
         };
 
         Pachno.Config.Import.importCSV = function (url) {

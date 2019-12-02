@@ -28,6 +28,7 @@
      *
      * @method Setting[] select(Query $query, $join = 'all')
      * @method Setting selectOne(Query $query, $join = 'all')
+     * @method static Settings getTable()
      *
      * @Table(name="settings")
      * @Entity(class="\pachno\core\entities\Setting")
@@ -91,13 +92,31 @@
             return $this->selectOne($query, 'none');
         }
 
+        /**
+         * @param $name
+         * @param $module
+         * @param $scope
+         *
+         * @return Setting[]
+         */
+        public function getSettingForAllUsers($name, $module, $scope): ?array
+        {
+            $query = $this->getQuery();
+            $query->where(self::NAME, $name);
+            $query->where(self::MODULE, $module);
+            $query->where(self::SCOPE, $scope);
+            $query->indexBy(self::UID);
+
+            return $this->select($query, 'none');
+        }
+
         public function preventDuplicate(Setting $setting)
         {
             $query = $this->getQuery();
             $query->where(self::NAME, $setting->getName());
             $query->where(self::MODULE, $setting->getModuleKey());
             $query->where(self::UID, $setting->getUserId());
-            $query->where(self::SCOPE, $setting->getScope()->getID());
+            $query->where(self::SCOPE, $setting->getScopeId());
 
             if ($setting->getID()) {
                 $query->where(self::ID, $setting->getID(), Criterion::NOT_EQUALS);

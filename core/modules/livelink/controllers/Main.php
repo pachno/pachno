@@ -133,6 +133,7 @@
 
                 return $this->renderJSON($connector_module->postConnectorSettings($request));
             } catch (Exception $e) {
+                throw $e;
                 $this->getResponse()->setHttpStatus(400);
 
                 return $this->renderJSON(['error' => framework\Context::getI18n()->__($e->getMessage())]);

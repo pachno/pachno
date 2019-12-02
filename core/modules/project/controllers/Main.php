@@ -20,8 +20,8 @@
     {
 
         protected $anonymous_project_routes = [
-            'getUpdatedProjectKey',
-            'configureProjectSettings'
+            'rungetUpdatedProjectKey',
+            'runconfigureProjectSettings'
         ];
 
         /**
@@ -828,12 +828,6 @@
             if ($request->isPost()) {
                 $this->forward403unless($this->getUser()->canEditProjectDetails($this->selected_project), Context::getI18n()->__('You do not have access to update these settings'));
 
-                if ($request['has_release_date']) {
-                    $release_date = null;
-                    $release_date = mktime(0, 0, 1, $request['release_month'], $request['release_day'], $request['release_year']);
-                    $this->selected_project->setReleaseDate($release_date);
-                }
-
                 $old_key = $this->selected_project->getKey();
 
                 if ($request->hasParameter('project_name')) {
@@ -1342,6 +1336,7 @@
 
             if (!$this->selected_project instanceof entities\Project)
                 return $this->return404(Context::getI18n()->__("This project doesn't exist"));
+
             $this->selected_project->setName($request['project_name']);
 
             return $this->renderJSON(['content' => $this->selected_project->getKey()]);

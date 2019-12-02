@@ -140,7 +140,7 @@
                 <?php endif; ?>
             <?php if ($access_level == \pachno\core\framework\Settings::ACCESS_FULL): ?>
                 <div class="form-row submit-container">
-                    <button class="button primary" type="submit" id="project_submit_settings_button" onclick="Pachno.Project.submitInfo('<?= make_url('configure_project_settings', ['project_id' => $project->getID()]); ?>', <?= $project->getID(); ?>);">
+                    <button class="button primary" type="submit">
                         <?php if ($project->getId()): ?>
                             <?= fa_image_tag('save'); ?><span><?= __('Save project'); ?></span>
                         <?php else: ?>
