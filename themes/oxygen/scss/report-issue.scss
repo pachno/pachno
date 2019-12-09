@@ -1,0 +1,15 @@
+#reportissue_additional_information_container {
+  display: none;
+
+  &.visible {
+    display: flex;
+  }
+}
+
+#report_issue_form {
+  .form-row {
+    &.submit-container {
+      justify-content: flex-end;
+    }
+  }
+}

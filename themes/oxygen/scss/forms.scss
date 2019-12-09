@@ -66,7 +66,7 @@
     box-sizing: border-box;
     padding: 1em 1em 0 1em;
     border-bottom: 1px dotted rgba(0, 0, 0, .4);
-    margin-bottom: 1em;
+    margin: 0 1em 1em 1em;
   }
 
   .form-row {
@@ -147,6 +147,16 @@
         font-weight: 600;
         flex: 0 0 auto;
       }
+
+      > textarea,
+      > input[type=text],
+      > input[type=search],
+      > input[type=url],
+      > input[type=password] {
+        border-color: #D62246;
+        background-color: rgba(214, 34, 70, 2);
+      }
+
     }
 
     .helper-text {
@@ -203,7 +213,7 @@
       width: 100%;
     }
 
-    > label {
+    > label:not(.button) {
       flex: 1 1 100%;
       display: flex;
       flex-direction: row;

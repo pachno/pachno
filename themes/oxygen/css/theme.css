@@ -2404,95 +2404,6 @@ a.friend {
   font-size: 0.8em;
   font-weight: 300; }
 
-.report_issue_header {
-  margin: 10px auto 0 auto;
-  font-size: 1.5em;
-  font-weight: 400;
-  padding: 2px 0 10px 0;
-  width: 990px; }
-
-#report_issue_more_options_indicator {
-  text-align: left;
-  margin-top: 10px; }
-
-#reportissue_content {
-  width: 1010px;
-  margin: 0 auto;
-  text-align: center; }
-
-#report_more_here {
-  color: #999;
-  font-size: 1.1em;
-  text-align: center;
-  padding-top: 20px;
-  min-height: 30px; }
-
-.backdrop_detail_content .reportissue_additional_information_container {
-  border-radius: 3px;
-  padding: 0 7px 9px 7px;
-  background-color: #F5F5F5;
-  margin-top: 10px;
-  margin-bottom: 0; }
-
-.backdrop_detail_content .report-issue-custom-access-check {
-  border-radius: 3px;
-  padding: 10px 7px 9px 7px;
-  background-color: #F5F5F5;
-  margin-top: 10px;
-  margin-bottom: 0;
-  clear: both; }
-
-.backdrop_detail_content .report-issue-custom-access-container {
-  margin-top: 10px; }
-
-.backdrop_detail_content .report-issue-custom-access-container > label {
-  line-height: 1.7; }
-
-.report-issue-custom-access-check > img {
-  margin-bottom: -3px;
-  margin-left: 3px; }
-
-.report-issue-custom-access-check input[type=checkbox],
-.report-issue-custom-access-container input[type=radio] {
-  margin-top: -2px; }
-
-.report-issue-custom-access-check input[type=checkbox] {
-  margin-left: 2px;
-  margin-right: 4px; }
-
-.report-issue-custom-access-check .acl-delete-item-link {
-  float: none; }
-
-#report_form table.additional_information {
-  margin: 10px 0 10px 5px;
-  width: 986px; }
-
-#reportissue_additional_information_container .markItUp {
-  display: none; }
-
-.report_issue_submit_container {
-  font-size: 1.1em;
-  clear: both;
-  vertical-align: middle;
-  margin-top: 10px;
-  padding: 10px;
-  text-align: right; }
-
-.report_issue_submit_container > div {
-  padding: 7px;
-  vertical-align: middle;
-  display: inline-block;
-  float: left; }
-
-.report_issue_submit_container img {
-  float: right;
-  margin-right: 5px; }
-
-#report_issue_add_extra {
-  margin-top: 15px;
-  color: #333;
-  font-size: 1.1em; }
-
 .upload_container {
   padding: 35px 0;
   margin: 20px 10px;
@@ -2603,54 +2514,6 @@ a.friend {
   border: 1px solid rgba(100, 100, 100, 0.5);
   border-top: 0;
   text-align: right; }
-
-.reportissue_error tr {
-  background-color: #FEE; }
-
-.reportissue_error tr td input, .reportissue_error tr td textarea, .reportissue_error tr td select {
-  background-color: #FEE;
-  border-color: #B77; }
-
-.reportissue_error label {
-  color: #955; }
-
-.reportissue_error .faded_out .dark {
-  color: #aa8D8D; }
-
-#reportissue_extrafields {
-  list-style-type: none;
-  padding: 0;
-  margin: 10px 0 0 0;
-  width: 1005px;
-  clear: both;
-  font-size: 1em; }
-
-#reportissue_extrafields li {
-  font-weight: 400;
-  clear: none;
-  margin: 5px;
-  min-height: 26px;
-  width: 310px;
-  text-align: left;
-  float: left; }
-
-#reportissue_extrafields li img {
-  margin: 2px 5px 0 0;
-  float: left; }
-
-#reportissue_extrafields li div {
-  clear: none;
-  margin-top: 2px; }
-
-#reportissue_extrafields li select, #reportissue_extrafields input[type="text"] {
-  width: 255px;
-  font-size: 0.8em;
-  height: 20px;
-  padding: 1px;
-  float: left; }
-
-#reportissue_extrafields li a.img:hover {
-  border-bottom: 0; }
 
 /* end report issue styling */
 #project_planning.milestone-sort #project_planning_action_strip, #project_planning #milestone-sort-actions {
@@ -2792,20 +2655,6 @@ a.friend {
   font-size: 1.0em;
   padding: 5px;
   text-align: left; }
-
-#reportissue_container .backdrop_detail_content {
-  padding: 5px;
-  font-size: 0.9em; }
-
-#reportissue_container .backdrop_detail_footer {
-  padding: 5px;
-  font-size: 1.1em; }
-
-#reportissue_container .backdrop_detail_footer a {
-  font-weight: 300; }
-
-.backdrop_detail_content #report_issue_add_extra, .backdrop_detail_content #reproduction_steps_div {
-  display: none; }
 
 .backdrop_detail_content .tab_menu {
   margin-top: 30px;
@@ -7162,167 +7011,6 @@ td.legendLabel {
   right: 150px;
   bottom: -3px; }
 
-/* Report an issue */
-#reportissue_container .reportissue_additional_information_container,
-#reportissue_content .reportissue_additional_information_container {
-  float: left;
-  margin-bottom: 10px;
-  width: 100%;
-  box-sizing: border-box; }
-
-#reportissue_content #file_upload_list li label,
-#reportissue_content #file_upload_list li .filename,
-#reportissue_content #file_upload_list li .filesize {
-  font-size: 0.9em; }
-
-#reportissue_content #file_upload_list li input {
-  font-size: 1em;
-  padding: 2px; }
-
-#reportissue_container #file_upload_list .progress,
-#reportissue_content #file_upload_list .progress {
-  float: left;
-  transition: width 0.1s; }
-
-#reportissue_container #report_issue_report_another_button {
-  padding: 4px 10px; }
-
-#reportissue_container #report_issue_indicator,
-#reportissue_content #report_issue_indicator {
-  margin-top: 6px;
-  position: absolute;
-  right: 100px; }
-
-#reportissue_content input#title,
-#reportissue_content input#shortname {
-  width: 800px; }
-
-#reportissue_extrafields #priority_id_additional,
-#reportissue_extrafields #status_id_additional,
-#reportissue_extrafields #edition_id_additional,
-#reportissue_extrafields #build_id_additional,
-#reportissue_extrafields #component_id_additional,
-#reportissue_extrafields #milestone_id_additional,
-#reportissue_extrafields #category_id_additional,
-#reportissue_extrafields #reproducability_id_additional,
-#reportissue_extrafields #resolution_id_additional,
-#reportissue_extrafields #severity_id_additional {
-  margin-top: -4px;
-  height: 24px;
-  font-size: 1em;
-  width: 255px; }
-
-#reportissue_extrafields #estimated_time_id_additional,
-#reportissue_extrafields #spent_time_id_additional,
-#reportissue_extrafields #percent_complete_id_additional {
-  margin-top: -13px; }
-
-#report_issue_add_extra {
-  padding: 10px !important; }
-
-#reportissue_container #report_issue_add_extra {
-  font-size: 1.1em;
-  display: inherit; }
-
-#report_issue_more_options_indicator {
-  margin-left: 5px; }
-
-#reportissue_container #report_issue_more_options_indicator {
-  font-size: 1.1em; }
-
-#report_issue_add_extra #reportissue_extrafields_none {
-  color: #AAA;
-  margin-top: 10px;
-  margin-bottom: -5px; }
-
-#reportissue_content #description_toggle_syntax_button,
-#reportissue_content #reproduction_steps_toggle_syntax_button {
-  margin-top: -2px; }
-
-#reportissue_content .reportissue_additional_information_container {
-  background-color: #F5F5F5;
-  border-radius: 3px; }
-
-#reportissue_content .reportissue_additional_information_container select {
-  font-size: 1em; }
-
-#reportissue_content .additional_information label {
-  font-size: 1em; }
-
-#reportissue_content .additional_information:last-child {
-  margin-bottom: -10px; }
-
-#reportissue_content .additional_information select {
-  height: 25px; }
-
-#reportissue_content .additional_information #spent_time_id,
-#reportissue_content .additional_information #estimated_time_id,
-#reportissue_content .additional_information #percent_complete_id {
-  padding: 2px; }
-
-.reportissue_additional_information_container table {
-  border-spacing: 0 2px; }
-
-.reportissue_additional_information_container table select {
-  width: 977px !important; }
-
-.reportissue_additional_information_container table #spent_time_id,
-.reportissue_additional_information_container table #estimated_time_id {
-  font-size: 1em !important; }
-
-.reportissue_additional_information_container table #percent_complete_id {
-  font-size: 0.8em !important; }
-
-#reportissue_container .reportissue_additional_information_container table:first-child {
-  margin-top: 3px; }
-
-#reportissue_content #report_form label {
-  font-size: 1em; }
-
-#reportissue_content #report_form table input[type=text] {
-  font-size: 1.1em;
-  padding: 2px;
-  width: 804px; }
-
-#reportissue_content #report_form table select {
-  width: auto;
-  font-size: 1em; }
-
-#reportissue_content #file_upload_list li:last-of-type .progress_container,
-#reportissue_container #file_upload_list li:last-of-type .progress_container {
-  margin-bottom: 20px; }
-
-#reportissue_container .reportissue_additional_information_container {
-  margin-top: 0; }
-
-#report_issue_form #file_upload_list .progress_container {
-  width: 805px !important; }
-
-#report_issue_form #file_upload_list .progress_container {
-  margin-top: 20px; }
-
-#report_issue_form #file_upload_list li {
-  overflow: hidden;
-  margin-bottom: 10px; }
-
-#report_issue_form #file_upload_list li:last-child {
-  margin-bottom: 0; }
-
-#report_issue_form #file_upload_list li br {
-  display: block;
-  content: "";
-  margin-top: 15px; }
-
-#report_issue_form #file_upload_list li .filename {
-  width: 550px;
-  display: inline-block;
-  overflow: hidden;
-  text-overflow: ellipsis; }
-
-#report_issue_form #file_upload_list li .filesize {
-  float: right;
-  margin-right: 3px; }
-
 /* Issue */
 .typeahead.dropdown-menu {
   font-family: 'Source Sans Pro', sans-serif; }
@@ -7861,6 +7549,7 @@ header .mobile_menuanchor {
 .button .indicator, button .indicator {
   display: inline-block;
   margin-right: 0;
+  margin-left: 0;
   width: 0;
   opacity: 0;
   transition: width .2s ease-in-out, margin-left .2s ease-in-out; }
@@ -8396,10 +8085,12 @@ input.icon.danger {
           max-width: none; }
       .fancy-dropdown-container .fancy-dropdown .dropdown-container.from-left {
         right: auto;
-        left: 0; }
+        left: 0;
+        transform-origin: left; }
       .fancy-dropdown-container .fancy-dropdown .dropdown-container.from-bottom {
         top: auto;
-        bottom: calc(100% + 3px); }
+        bottom: calc(100% + 3px);
+        transform-origin: bottom; }
     .fancy-dropdown-container .fancy-dropdown.active .dropdown-container {
       transform: scaleY(1);
       opacity: 1; }
@@ -9107,7 +8798,7 @@ input[data-interactive-toggle].submitting + label .indicator {
     box-sizing: border-box;
     padding: 1em 1em 0 1em;
     border-bottom: 1px dotted rgba(0, 0, 0, 0.4);
-    margin-bottom: 1em; }
+    margin: 0 1em 1em 1em; }
   .form-container .form-row {
     flex: 1 0 100%;
     display: flex;
@@ -9159,6 +8850,13 @@ input[data-interactive-toggle].submitting + label .indicator {
       font-size: .9em;
       font-weight: 600;
       flex: 0 0 auto; }
+    .form-container .form-row.invalid > textarea,
+    .form-container .form-row.invalid > input[type=text],
+    .form-container .form-row.invalid > input[type=search],
+    .form-container .form-row.invalid > input[type=url],
+    .form-container .form-row.invalid > input[type=password] {
+      border-color: #D62246;
+      background-color: #d62246; }
     .form-container .form-row .helper-text {
       flex: 1 1 100%;
       color: #999999;
@@ -9191,7 +8889,7 @@ input[data-interactive-toggle].submitting + label .indicator {
         max-width: 40px; }
     .form-container .form-row > .list-mode {
       width: 100%; }
-    .form-container .form-row > label {
+    .form-container .form-row > label:not(.button) {
       flex: 1 1 100%;
       display: flex;
       flex-direction: row;
@@ -9199,16 +8897,16 @@ input[data-interactive-toggle].submitting + label .indicator {
       font-size: .8em;
       font-weight: 600;
       transition: color .25s ease-in-out; }
-      .form-container .form-row > label > span {
+      .form-container .form-row > label:not(.button) > span {
         flex: 0 0 auto;
         display: flex;
         align-items: center; }
-        .form-container .form-row > label > span + span {
+        .form-container .form-row > label:not(.button) > span + span {
           margin-left: .35rem; }
-      .form-container .form-row > label a,
-      .form-container .form-row > label a:hover {
+      .form-container .form-row > label:not(.button) a,
+      .form-container .form-row > label:not(.button) a:hover {
         margin: 0 .35em; }
-      .form-container .form-row > label .icon {
+      .form-container .form-row > label:not(.button) .icon {
         flex: 0 0 24px;
         margin-right: .5em; }
     .form-container .form-row > textarea,
@@ -12933,6 +12631,14 @@ dl.info {
 .livelink_project_badge .fab,
 .livelink_project_badge .far {
   margin-right: .35em; }
+
+#reportissue_additional_information_container {
+  display: none; }
+  #reportissue_additional_information_container.visible {
+    display: flex; }
+
+#report_issue_form .form-row.submit-container {
+  justify-content: flex-end; }
 
 .article_list {
   list-style-type: none;

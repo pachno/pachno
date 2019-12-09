@@ -1,6 +1,7 @@
 .button .indicator, button .indicator {
   display: inline-block;
   margin-right: 0;
+  margin-left: 0;
   width: 0;
   opacity: 0;
   transition: width .2s ease-in-out, margin-left .2s ease-in-out;

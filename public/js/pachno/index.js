@@ -5595,54 +5595,25 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
          */
         Pachno.Issues.updateFields = function (url)
         {
-            if ($('issuetype_id').getValue() != 0) {
+            let issue_type_id = document.querySelector('input[name="issuetype_id"]:checked').value;
+
+            if (issue_type_id != 0) {
                 $('issuetype_list').hide();
             }
-            if ($('project_id').getValue() != 0 && $('issuetype_id').getValue() != 0) {
+            if ($('project_id').getValue() != 0 && issue_type_id != 0) {
                 $('report_more_here').hide();
                 $('report_form').show('block');
 
                 Pachno.Main.Helpers.ajax(url, {
                     loading: {indicator: 'report_issue_more_options_indicator'},
-                    params: 'issuetype_id=' + $('issuetype_id').getValue(),
+                    params: 'issuetype_id=' + issue_type_id,
                     success: {
                         callback: function (json) {
-                            Pachno.Main.Helpers.MarkitUp($$('textarea.markuppable'));
-                            json.available_fields.each(function (fieldname, key)
-                            {
-                                if ($(fieldname + '_div')) {
-                                    if (json.fields[fieldname]) {
-                                        var prev_val = '';
-                                        if (json.fields[fieldname].values) {
-                                            if ($(fieldname + '_additional') && $(fieldname + '_additional').visible()) {
-                                                prev_val = $(fieldname + '_id_additional').getValue();
-                                            } else if ($(fieldname + '_div') && $(fieldname + '_div').visible()) {
-                                                prev_val = $(fieldname + '_id').getValue();
-                                            }
-                                        }
-                                        if (json.fields[fieldname].additional && $(fieldname + '_additional')) {
-                                            $(fieldname + '_additional').show('block');
-                                            $(fieldname + '_div').hide();
-                                            if ($(fieldname + '_id_additional')) {
-                                                $(fieldname + '_id_additional').enable();
-                                            }
-                                            if ($(fieldname + '_value_additional')) {
-                                                $(fieldname + '_value_additional').enable();
-                                            }
-                                            if ($(fieldname + '_id')) {
-                                                $(fieldname + '_id').disable();
-                                            }
-                                            if ($(fieldname + '_value')) {
-                                                $(fieldname + '_value').disable();
-                                            }
-                                            if (json.fields[fieldname].values) {
-                                                $(fieldname + '_id_additional').update('');
-                                                for (var opt in json.fields[fieldname].values) {
-                                                    $(fieldname + '_id_additional').insert('<option value="' + opt.substr(1) + '">' + json.fields[fieldname].values[opt] + '</option>');
-                                                }
-                                                $(fieldname + '_id_additional').setValue(prev_val);
-                                            }
-                                        } else {
+                            try {
+                                Pachno.Main.Helpers.MarkitUp($$('textarea.markuppable'));
+                                json.available_fields.each(function (fieldname, key) {
+                                    if ($(fieldname + '_div')) {
+                                        if (json.fields[fieldname]) {
                                             if ($(fieldname + '_div')) {
                                                 $(fieldname + '_div').show('block');
                                             }
@@ -5652,74 +5623,42 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
                                             if ($(fieldname + '_value')) {
                                                 $(fieldname + '_value').enable();
                                             }
-                                            if ($(fieldname + '_id_additional')) {
-                                                $(fieldname + '_id_additional').disable();
-                                            }
-                                            if ($(fieldname + '_value_additional')) {
-                                                $(fieldname + '_value_additional').disable();
-                                            }
-                                            if ($(fieldname + '_additional')) {
-                                                $(fieldname + '_additional').hide();
-                                            }
                                             if (json.fields[fieldname].values) {
-                                                if ($(fieldname + '_id')) {
-                                                    $(fieldname + '_id').update('');
+                                                let container = $(fieldname + '_div').select('.dropdown-container')[0];
+                                                if (container) {
+                                                    container.update('');
                                                     for (var opt in json.fields[fieldname].values) {
-                                                        $(fieldname + '_id').insert('<option value="' + opt.substr(1) + '">' + json.fields[fieldname].values[opt] + '</option>');
+                                                        let value = opt.substr(1);
+                                                        let description = json.fields[fieldname].values[opt];
+                                                        let markup = `<input type="radio" value="${value}" name="${fieldname}_id" id="report_issue_${fieldname}_id_${value}" class="fancy-checkbox">
+                                                            <label for="report_issue_${fieldname}_id_${value}" class="list-item">
+                                                            <span class="name value">${description}</span>
+                                                            </label>`;
+                                                        container.insert(markup);
                                                     }
-                                                    $(fieldname + '_id').setValue(prev_val);
                                                 }
                                             }
-                                        }
-                                        (json.fields[fieldname].required) ? $(fieldname + '_label').addClassName('required') : $(fieldname + '_label').removeClassName('required');
-                                    } else {
-                                        if ($(fieldname + '_div')) {
-                                            $(fieldname + '_div').hide();
-                                        }
-                                        if ($(fieldname + '_id')) {
-                                            $(fieldname + '_id').disable();
-                                        }
-                                        if ($(fieldname + '_value')) {
-                                            $(fieldname + '_value').disable();
-                                        }
-                                        if ($(fieldname + '_additional')) {
-                                            $(fieldname + '_additional').hide();
-                                        }
-                                        if ($(fieldname + '_id_additional')) {
-                                            $(fieldname + '_id_additional').disable();
-                                        }
-                                        if ($(fieldname + '_value_additional')) {
-                                            $(fieldname + '_value_additional').disable();
+                                            (json.fields[fieldname].required) ? $(fieldname + '_label').addClassName('required') : $(fieldname + '_label').removeClassName('required');
+                                        } else {
+                                            if ($(fieldname + '_div')) {
+                                                $(fieldname + '_div').hide();
+                                            }
+                                            if ($(fieldname + '_id')) {
+                                                $(fieldname + '_id').disable();
+                                            }
+                                            if ($(fieldname + '_value')) {
+                                                $(fieldname + '_value').disable();
+                                            }
                                         }
                                     }
-                                }
-                            });
-                            var visible_fields = false;
-                            $$('.additional_information').each(function (elm) {
-                                if (elm.visible()) {
-                                    visible_fields = true;
-                                    return;
-                                }
-                            })
-                            if (visible_fields) {
-                                $$('.additional_information')[0].up('.reportissue_additional_information_container').show('block');
-                            } else {
-                                $$('.additional_information')[0].up('.reportissue_additional_information_container').hide();
+                                });
+
+                                $('report_issue_title_input').focus();
+                                $('report_issue_more_options_indicator').hide();
+                            } catch (e) {
+                                console.error(e);
+                                throw e;
                             }
-                            var visible_extrafields = false;
-                            $('reportissue_extrafields').childElements().each(function (elm) {
-                                if (elm.visible()) {
-                                    visible_extrafields = true;
-                                    return;
-                                }
-                            })
-                            if (visible_extrafields) {
-                                $('reportissue_extrafields_none').hide();
-                            } else {
-                                $('reportissue_extrafields_none').show('block');
-                            }
-                            $('title').focus();
-                            $('report_issue_more_options_indicator').hide();
                         }
                     }
                 });

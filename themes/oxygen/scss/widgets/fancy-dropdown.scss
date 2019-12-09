@@ -115,11 +115,13 @@
       &.from-left {
         right: auto;
         left: 0;
+        transform-origin: left;
       }
 
       &.from-bottom {
         top: auto;
         bottom: calc(100% + 3px);
+        transform-origin: bottom;
       }
     }
 
