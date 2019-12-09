@@ -5627,6 +5627,11 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
                                                 let container = $(fieldname + '_div').select('.dropdown-container')[0];
                                                 if (container) {
                                                     container.update('');
+                                                    let markup = `<input type="radio" value="" name="${fieldname}_id" id="report_issue_${fieldname}_id_0" class="fancy-checkbox">
+                                                            <label for="report_issue_${fieldname}_id_0" class="list-item">
+                                                            <span class="name value">Not selected</span>
+                                                            </label>`;
+                                                    container.insert(markup);
                                                     for (var opt in json.fields[fieldname].values) {
                                                         let value = opt.substr(1);
                                                         let description = json.fields[fieldname].values[opt];
@@ -5653,6 +5658,7 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
                                     }
                                 });
 
+                                Pachno.Main.updateWidgets();
                                 $('report_issue_title_input').focus();
                                 $('report_issue_more_options_indicator').hide();
                             } catch (e) {

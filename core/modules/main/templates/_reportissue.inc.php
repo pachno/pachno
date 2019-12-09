@@ -302,7 +302,7 @@
             <?php endif; ?>
             <div class="form-row">
                 <div class="fancy-dropdown-container">
-                    <div class="fancy-dropdown">
+                    <div class="fancy-dropdown" data-default-label="<?= __('Select an issue type'); ?>">
                         <label><?= __('Issue type'); ?></label>
                         <span class="value"></span>
                         <?php if (!isset($locked_issuetype) || !$locked_issuetype): ?>
@@ -330,7 +330,7 @@
             </div>
             <div class="form-row additional_information" id="status_div" style="display: none;">
                 <div class="fancy-dropdown-container">
-                    <div class="fancy-dropdown">
+                    <div class="fancy-dropdown" data-default-label="<?= __('Not selected'); ?>">
                         <label id="status_label"><?php echo __('Select initial status'); ?></label>
                         <span class="value"></span>
                         <?= fa_image_tag('angle-down', ['class' => 'expander']); ?>
@@ -376,7 +376,7 @@
             <?php endif; ?>
             <div class="form-row additional_information <?php if (array_key_exists('edition', $errors)): ?>invalid<?php endif; ?>" id="edition_div" style="display: none;">
                 <div class="fancy-dropdown-container">
-                    <div class="fancy-dropdown">
+                    <div class="fancy-dropdown" data-default-label="<?= __('Not selected'); ?>">
                         <label id="edition_label"><span>* </span><?php echo __('Affected edition'); ?></label>
                         <span class="value"></span>
                         <?= fa_image_tag('angle-down', ['class' => 'expander']); ?>
@@ -387,7 +387,7 @@
             </div>
             <div class="form-row additional_information <?php if (array_key_exists('build', $errors)): ?>invalid<?php endif; ?>" id="build_div" style="display: none;">
                 <div class="fancy-dropdown-container">
-                    <div class="fancy-dropdown">
+                    <div class="fancy-dropdown" data-default-label="<?= __('Not selected'); ?>">
                         <label id="build_label"><span>* </span><?php echo __('Affected release'); ?></label>
                         <span class="value"></span>
                         <?= fa_image_tag('angle-down', ['class' => 'expander']); ?>
@@ -398,7 +398,7 @@
             </div>
             <div class="form-row additional_information <?php if (array_key_exists('component', $errors)): ?>invalid<?php endif; ?>" id="component_div" style="display: none;">
                 <div class="fancy-dropdown-container">
-                    <div class="fancy-dropdown">
+                    <div class="fancy-dropdown" data-default-label="<?= __('Not selected'); ?>">
                         <label id="component_label"><span>* </span><?php echo __('Affected component'); ?></label>
                         <span class="value"></span>
                         <?= fa_image_tag('angle-down', ['class' => 'expander']); ?>
@@ -433,11 +433,15 @@
             </div>
             <div class="form-row additional_information <?php if (array_key_exists('category', $errors)): ?>invalid<?php endif; ?>" id="category_div" style="display: none;">
                 <div class="fancy-dropdown-container">
-                    <div class="fancy-dropdown">
+                    <div class="fancy-dropdown" data-default-label="<?= __('Not selected'); ?>">
                         <label id="category_label"><?php echo __('Select category'); ?></label>
                         <span class="value"></span>
                         <?= fa_image_tag('angle-down', ['class' => 'expander']); ?>
                         <div class="dropdown-container list-mode">
+                            <input type="radio" value="" name="category_id" id="report_issue_category_id_0" class="fancy-checkbox" <?php if (!$selected_category instanceof Category) echo ' checked'; ?>>
+                            <label for="report_issue_category_id_0" class="list-item">
+                                <span class="name value"><?= __('Not selected'); ?></span>
+                            </label>
                             <?php foreach ($categories as $category): ?>
                                 <?php if (!$category->hasAccess()) continue; ?>
                                 <input type="radio" value="<?php echo $category->getID(); ?>" name="category_id" id="report_issue_category_id_<?php echo $category->getID(); ?>" class="fancy-checkbox" <?php if ($selected_category instanceof Datatype && $selected_category->getID() == $category->getID()) echo ' checked'; ?>>
@@ -451,11 +455,15 @@
             </div>
             <div class="form-row additional_information <?php if (array_key_exists('resolution', $errors)): ?>invalid<?php endif; ?>" id="resolution_div" style="display: none;">
                 <div class="fancy-dropdown-container">
-                    <div class="fancy-dropdown">
+                    <div class="fancy-dropdown" data-default-label="<?= __('Not selected'); ?>">
                         <label id="resolution_label"><?php echo __('Select resolution'); ?></label>
                         <span class="value"></span>
                         <?= fa_image_tag('angle-down', ['class' => 'expander']); ?>
                         <div class="dropdown-container list-mode">
+                            <input type="radio" value="" name="resolution_id" id="report_issue_resolution_id_0" class="fancy-checkbox" <?php if (!$selected_resolution instanceof Resolution) echo ' checked'; ?>>
+                            <label for="report_issue_resolution_id_0" class="list-item">
+                                <span class="name value"><?= __('Not selected'); ?></span>
+                            </label>
                             <?php foreach ($resolutions as $resolution): ?>
                                 <input type="radio" value="<?php echo $resolution->getID(); ?>" name="resolution_id" id="report_issue_resolution_id_<?php echo $resolution->getID(); ?>" class="fancy-checkbox" <?php if ($selected_resolution instanceof Datatype && $selected_resolution->getID() == $resolution->getID()) echo ' checked'; ?>>
                                 <label for="report_issue_resolution_id_<?php echo $resolution->getID(); ?>" class="list-item">
@@ -468,11 +476,15 @@
             </div>
             <div class="form-row additional_information <?php if (array_key_exists('reproducability', $errors)): ?>invalid<?php endif; ?>" id="reproducability_div" style="display: none;">
                 <div class="fancy-dropdown-container">
-                    <div class="fancy-dropdown">
+                    <div class="fancy-dropdown" data-default-label="<?= __('Not selected'); ?>">
                         <label id="reproducability_label"><?php echo __('Select reproducability'); ?></label>
                         <span class="value"></span>
                         <?= fa_image_tag('angle-down', ['class' => 'expander']); ?>
                         <div class="dropdown-container list-mode">
+                            <input type="radio" value="" name="reproducability_id" id="report_issue_reproducability_id_0" class="fancy-checkbox" <?php if (!$selected_reproducability instanceof Reproducability) echo ' checked'; ?>>
+                            <label for="report_issue_reproducability_id_0" class="list-item">
+                                <span class="name value"><?= __('Not selected'); ?></span>
+                            </label>
                             <?php foreach ($reproducabilities as $reproducability): ?>
                                 <input type="radio" value="<?php echo $reproducability->getID(); ?>" name="reproducability_id" id="report_issue_reproducability_id_<?php echo $reproducability->getID(); ?>" class="fancy-checkbox" <?php if ($selected_reproducability instanceof Datatype && $selected_reproducability->getID() == $reproducability->getID()) echo ' checked'; ?>>
                                 <label for="report_issue_reproducability_id_<?php echo $reproducability->getID(); ?>" class="list-item">
@@ -485,11 +497,15 @@
             </div>
             <div class="form-row additional_information <?php if (array_key_exists('priority', $errors)): ?>invalid<?php endif; ?>" id="priority_div" style="display: none;">
                 <div class="fancy-dropdown-container">
-                    <div class="fancy-dropdown">
+                    <div class="fancy-dropdown" data-default-label="<?= __('Not selected'); ?>">
                         <label id="priority_label"><?php echo __('Select priority'); ?></label>
                         <span class="value"></span>
                         <?= fa_image_tag('angle-down', ['class' => 'expander']); ?>
                         <div class="dropdown-container list-mode">
+                            <input type="radio" value="" name="priority_id" id="report_issue_priority_id_0" class="fancy-checkbox" <?php if (!$selected_priority instanceof Priority) echo ' checked'; ?>>
+                            <label for="report_issue_priority_id_0" class="list-item">
+                                <span class="name value"><?= __('Not selected'); ?></span>
+                            </label>
                             <?php foreach ($priorities as $priority): ?>
                                 <input type="radio" value="<?php echo $priority->getID(); ?>" name="priority_id" id="report_issue_priority_id_<?php echo $priority->getID(); ?>" class="fancy-checkbox" <?php if ($selected_priority instanceof Datatype && $selected_priority->getID() == $priority->getID()) echo ' checked'; ?>>
                                 <label for="report_issue_priority_id_<?php echo $priority->getID(); ?>" class="list-item">
@@ -500,25 +516,50 @@
                     </div>
                 </div>
             </div>
-            <?php if (!isset($selected_milestone)): ?>
-                <table id="milestone_div" style="display: none;" class="additional_information<?php if (array_key_exists('milestone', $errors)): ?> reportissue_error<?php endif; ?>">
-                    <tr>
-                        <td style="width: 180px;"><label for="milestone_id" id="milestone_label"><span>* </span><?= __('Milestone'); ?></label></td>
-                        <td class="report_issue_help faded_out dark"><?= __("Choose the milestone of this issue"); ?></td>
-                    <tr>
-                        <td colspan="2" style="padding-top: 5px;">
-                            <select name="milestone_id" id="milestone_id" style="width: 100%;">
-                                <option value=""<?php if (!$selected_milestone instanceof Milestone) echo ' selected'; ?>><?= __('Not specified'); ?></option>
-                                <?php foreach ($milestones as $milestone): ?>
-                                    <?php if ($milestone->isClosed()) continue; ?>
-                                    <option value="<?= $milestone->getID(); ?>"<?php if ($selected_milestone instanceof Milestone && $selected_milestone->getID() == $milestone->getID()): ?> selected<?php endif; ?>><?= $milestone->getName(); ?></option>
-                                <?php endforeach; ?>
-                            </select>
-                        </td>
-                    </tr>
-                </table>
-            <?php endif; ?>
-            <table id="pain_bug_type_div" style="display: none;" class="additional_information<?php if (array_key_exists('pain_bug_type', $errors)): ?> reportissue_error<?php endif; ?>">
+            <div class="form-row additional_information <?php if (array_key_exists('severity', $errors)): ?>invalid<?php endif; ?>" id="severity_div" style="display: none;">
+                <div class="fancy-dropdown-container">
+                    <div class="fancy-dropdown" data-default-label="<?= __('Not selected'); ?>">
+                        <label id="severity_label"><?php echo __('Select severity'); ?></label>
+                        <span class="value"></span>
+                        <?= fa_image_tag('angle-down', ['class' => 'expander']); ?>
+                        <div class="dropdown-container list-mode">
+                            <input type="radio" value="" name="severity_id" id="report_issue_severity_id_0" class="fancy-checkbox" <?php if (!$selected_severity instanceof Severity) echo ' checked'; ?>>
+                            <label for="report_issue_severity_id_0" class="list-item">
+                                <span class="name value"><?= __('Not selected'); ?></span>
+                            </label>
+                            <?php foreach ($severities as $severity): ?>
+                                <input type="radio" value="<?php echo $severity->getID(); ?>" name="severity_id" id="report_issue_severity_id_<?php echo $severity->getID(); ?>" class="fancy-checkbox" <?php if ($selected_severity instanceof Datatype && $selected_severity->getID() == $severity->getID()) echo ' checked'; ?>>
+                                <label for="report_issue_severity_id_<?php echo $severity->getID(); ?>" class="list-item">
+                                    <span class="name value"><?php echo __($severity->getName()); ?></span>
+                                </label>
+                            <?php endforeach; ?>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-row additional_information <?php if (array_key_exists('milestone', $errors)): ?>invalid<?php endif; ?>" id="milestone_div" style="display: none;">
+                <div class="fancy-dropdown-container">
+                    <div class="fancy-dropdown" data-default-label="<?= __('Not selected'); ?>">
+                        <label id="milestone_label"><?php echo __('Select milestone'); ?></label>
+                        <span class="value"></span>
+                        <?= fa_image_tag('angle-down', ['class' => 'expander']); ?>
+                        <div class="dropdown-container list-mode">
+                            <input type="radio" value="" name="milestone_id" id="report_issue_milestone_id_0" class="fancy-checkbox" <?php if (!$selected_milestone instanceof Milestone) echo ' checked'; ?>>
+                            <label for="report_issue_milestone_id_0" class="list-item">
+                                <span class="name value"><?= __('Not selected'); ?></span>
+                            </label>
+                            <?php foreach ($milestones as $milestone): ?>
+                                <?php if ($milestone->isClosed()) continue; ?>
+                                <input type="radio" value="<?php echo $milestone->getID(); ?>" name="milestone_id" id="report_issue_milestone_id_<?php echo $milestone->getID(); ?>" class="fancy-checkbox" <?php if ($selected_milestone instanceof Milestone && $selected_milestone->getID() == $milestone->getID()) echo ' checked'; ?>>
+                                <label for="report_issue_milestone_id_<?php echo $milestone->getID(); ?>" class="list-item">
+                                    <span class="name value"><?php echo __($milestone->getName()); ?></span>
+                                </label>
+                            <?php endforeach; ?>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <?php /*<table id="pain_bug_type_div" style="display: none;" class="additional_information<?php if (array_key_exists('pain_bug_type', $errors)): ?> reportissue_error<?php endif; ?>">
                 <tr>
                     <td style="width: 180px;"><label for="pain_bug_type_id" id="pain_bug_type_label"><span>* </span><?= __('Triaging: Bug type'); ?></label></td>
                     <td class="report_issue_help faded_out dark"><?= __("What type of bug is this?"); ?></td>
@@ -562,22 +603,7 @@
                         </select>
                     </td>
                 </tr>
-            </table>
-            <table id="severity_div" style="display: none;" class="additional_information<?php if (array_key_exists('severity', $errors)): ?> reportissue_error<?php endif; ?>">
-                <tr>
-                    <td style="width: 180px;"><label for="severity_id" id="severity_label"><span>* </span><?= __('Severity'); ?></label></td>
-                    <td class="report_issue_help faded_out dark"><?= __("Choose a severity for this issue"); ?></td>
-                <tr>
-                    <td colspan="2" style="padding-top: 5px;">
-                        <select name="severity_id" id="severity_id" style="width: 100%;">
-                            <option value=""<?php if (!$selected_severity instanceof Severity) echo ' selected'; ?>><?= __('Not specified'); ?></option>
-                            <?php foreach ($severities as $severity): ?>
-                                <option value="<?= $severity->getID(); ?>"<?php if ($selected_severity instanceof Severity && $selected_severity->getID() == $severity->getID()): ?> selected<?php endif; ?>><?= $severity->getName(); ?></option>
-                            <?php endforeach; ?>
-                        </select>
-                    </td>
-                </tr>
-            </table>
+            </table> */ ?>
             <?php foreach (CustomDatatype::getAll() as $field => $customdatatype): ?>
                 <table id="<?= $customdatatype->getKey(); ?>_div" style="display: none;" class="additional_information<?php if (array_key_exists($customdatatype->getKey(), $errors)): ?> reportissue_error<?php endif; ?>">
                     <tr>
