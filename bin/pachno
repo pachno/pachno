@@ -7,7 +7,13 @@
     define('bin/pachno', true);
 
     $path = realpath(getcwd());
-    require $path . DIRECTORY_SEPARATOR . "vendor" . DIRECTORY_SEPARATOR . "autoload.php";
+    $vendor_autoload_php = $path . DIRECTORY_SEPARATOR . "vendor" . DIRECTORY_SEPARATOR . "autoload.php";
+    if (!file_exists($vendor_autoload_php)) {
+        echo "The file 'vendor/autoload.php' does not exist. Perhaps you have not run 'composer install' yet?\n";
+        exit();
+    }
+
+    require $vendor_autoload_php;
 
     defined('PACHNO_PATH') || define('PACHNO_PATH', realpath(getcwd() . DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR);
 
