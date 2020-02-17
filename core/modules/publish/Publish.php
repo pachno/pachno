@@ -477,7 +477,6 @@
 
         protected function _addListeners()
         {
-            Event::listen('core', 'index_left', [$this, 'listen_frontpageLeftmenu']);
             Event::listen('core', 'index_right_top', [$this, 'listen_frontpageArticle']);
             if (!framework\Context::isInstallmode() && $this->isWikiTabsEnabled()) {
                 Event::listen('core', 'project_overview_item_links', [$this, 'listen_projectLinks']);
