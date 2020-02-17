@@ -183,7 +183,7 @@
 
         public function listen_BreadcrumbMainLinks(Event $event)
         {
-            $link = ['url' => self::getArticleLink('MainPage'), 'title' => $this->getMenuTitle(false)];
+            $link = ['url' => self::getArticleLink('Main Page'), 'title' => $this->getMenuTitle(false)];
             $event->addToReturnList($link);
         }
 
@@ -223,7 +223,7 @@
 
         public function listen_BreadcrumbProjectLinks(Event $event)
         {
-            $link = ['url' => self::getArticleLink('MainPage', framework\Context::getCurrentProject()), 'title' => $this->getMenuTitle(true)];
+            $link = ['url' => self::getArticleLink('Main Page', framework\Context::getCurrentProject()), 'title' => $this->getMenuTitle(true)];
             $event->addToReturnList($link);
         }
 
@@ -236,15 +236,15 @@
          */
         public function listen_MenustripLinks(Event $event)
         {
-            $article = Articles::getTable()->getArticleByName('MainPage', $event->getSubject());
+            $article = Articles::getTable()->getArticleByName('Main Page', $event->getSubject());
             if (!$article instanceof Article) {
                 return;
             }
 
             if ($event->getSubject() instanceof Project) {
-                $project_url = framework\Context::getRouting()->generate('publish_project_article', ['project_key' => $event->getSubject()->getKey(), 'article_id' => $article->getId(), 'article_name' => 'MainPage']);
+                $project_url = framework\Context::getRouting()->generate('publish_project_article', ['project_key' => $event->getSubject()->getKey(), 'article_id' => $article->getId(), 'article_name' => 'Main Page']);
             } else {
-                $project_url = framework\Context::getRouting()->generate('publish_article', ['article_id' => $article->getId(), 'article_name' => 'MainPage']);
+                $project_url = framework\Context::getRouting()->generate('publish_article', ['article_id' => $article->getId(), 'article_name' => 'Main Page']);
             }
 
             $wiki_url = ($event->getSubject() instanceof Project && $event->getSubject()->hasWikiURL()) ? $event->getSubject()->getWikiURL() : null;
@@ -504,9 +504,9 @@
 
         protected function _install($scope)
         {
-//            framework\Context::setPermission('article_management', 0, 'publish', 0, 1, 0, true, $scope);
-//            $this->saveSetting('allow_camelcase_links', 1);
-//            $this->saveSetting('require_change_reason', 0);
+            framework\Context::setPermission('article_management', 0, 'publish', 0, 1, 0, true, $scope);
+            $this->saveSetting('allow_camelcase_links', 1, 0, $scope);
+            $this->saveSetting('require_change_reason', 0, 0, $scope);
 
 //            framework\Context::getRouting()->addRoute('publish_article', '/wiki/:article_name', 'publish', 'showArticle');
 //            TextParser::addRegex('/(?<![\!|\"|\[|\>|\/\:])\b[A-Z]+[a-z]+[A-Z][A-Za-z]*\b/', array($this, 'getArticleLinkTag'));
@@ -517,7 +517,7 @@
         {
             $this->loadFixturesArticles($scope);
 
-            Links::getTable()->addLink('wiki', 0, 'MainPage', 'Wiki Frontpage', 1, $scope);
+            Links::getTable()->addLink('wiki', 0, 'Main Page', 'Wiki Frontpage', 1, $scope);
             Links::getTable()->addLink('wiki', 0, 'WikiFormatting', 'Formatting help', 2, $scope);
             Links::getTable()->addLink('wiki', 0, 'Category:Help', 'Help topics', 3, $scope);
             framework\Context::setPermission(self::PERMISSION_READ_ARTICLE, 0, 'publish', 0, 1, 0, true, $scope);
@@ -543,53 +543,25 @@
         {
             $scope = $scope ?? framework\Context::getScope()->getID();
 
-            $namespace = mb_strtolower($namespace);
-            $_path_handle = opendir(PACHNO_MODULES_PATH . 'publish' . DS . 'fixtures' . DS);
+            $fixtures_path = PACHNO_CORE_PATH . 'modules' . DS . 'publish' . DS . 'fixtures' . DS;
+            $_path_handle = opendir($fixtures_path);
             while ($original_article_name = readdir($_path_handle)) {
                 if (mb_strpos($original_article_name, '.') === false) {
-                    $article_name = mb_strtolower($original_article_name);
                     $imported = false;
-                    $import = false;
-                    if ($namespace) {
-                        if (mb_strpos(urldecode($article_name), "{$namespace}:") === 0 || (mb_strpos(urldecode($article_name), "category:") === 0 && mb_strpos(urldecode($article_name), "{$namespace}:") === 9)) {
-                            $import = true;
-                        }
-                    } else {
-                        if (mb_strpos(urldecode($article_name), "category:help:") === 0) {
-                            $name_test = mb_substr(urldecode($article_name), 14);
-                        } elseif (mb_strpos(urldecode($article_name), "category:") === 0) {
-                            $name_test = mb_substr(urldecode($article_name), 9);
-                        } else {
-                            $name_test = urldecode($article_name);
-                        }
-                        if (mb_strpos($name_test, ':') === false)
-                            $import = true;
+                    if (framework\Context::isCLI()) {
+                        Command::cli_echo('Saving ' . urldecode($original_article_name) . "\n");
                     }
-                    if ($import) {
-                        if (framework\Context::isCLI()) {
-                            Command::cli_echo('Saving ' . urldecode($original_article_name) . "\n");
-                        }
-                        if ($overwrite) {
-                            Articles::getTable()->deleteArticleByName(urldecode($original_article_name));
-                        }
-                        if (Articles::getTable()->getArticleByName(urldecode($original_article_name)) === null) {
-                            $content = file_get_contents(PACHNO_MODULES_PATH . 'publish' . DS . 'fixtures' . DS . $original_article_name);
-                            Article::createNew(urldecode($original_article_name), $content, $scope, ['overwrite' => $overwrite, 'noauthor' => true]);
-                            $imported = true;
-                        }
-                        Event::createNew('publish', 'fixture_article_loaded', urldecode($original_article_name), ['imported' => $imported])->trigger();
+                    if ($overwrite) {
+                        Articles::getTable()->deleteArticleByName(urldecode($original_article_name));
                     }
+                    if (Articles::getTable()->getArticleByName(urldecode($original_article_name)) === null) {
+                        $content = file_get_contents($fixtures_path . $original_article_name);
+                        Article::createNew(urldecode($original_article_name), $content, $scope, ['overwrite' => $overwrite, 'noauthor' => true]);
+                        $imported = true;
+                    }
+                    Event::createNew('publish', 'fixture_article_loaded', urldecode($original_article_name), ['imported' => $imported])->trigger();
                 }
             }
-        }
-
-        protected function _uninstall()
-        {
-            if (framework\Context::getScope()->getID() == 1) {
-                Articles::getTable()->drop();
-            }
-            Links::getTable()->removeByTargetTypeTargetIDandLinkID('wiki', 0);
-            parent::_uninstall();
         }
 
     }

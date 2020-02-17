@@ -336,7 +336,7 @@
                             $this->cliEcho("Skipping module installation ...\n", Command::COLOR_WHITE, Command::STYLE_BOLD);
                         } else {
                             $this->cliEcho("Setting up modules... \n", Command::COLOR_WHITE, Command::STYLE_BOLD);
-                            foreach (['publish', 'mailing', 'vcs_integration'] as $module) {
+                            foreach (['publish', 'mailing'] as $module) {
                                 $this->cliEcho("Installing {$module}... \n");
                                 Module::installModule($module);
                             }
@@ -374,11 +374,13 @@
                         $this->cliEcho("\n\nFor support, please visit ") . $this->cliEcho('https://pachno.com/', 'blue', 'underline');
                         $this->cliEcho("\n");
                     } catch (Exception $e) {
+                        throw $e;
                         throw new Exception("Could not install the $module module:\n" . $e->getMessage());
                     }
 
                 }
             } catch (Exception $e) {
+                throw $e;
                 $this->cliEcho("\n\nThe installation was interrupted\n", 'red');
                 $this->cliEcho($e->getMessage() . "\n");
             }

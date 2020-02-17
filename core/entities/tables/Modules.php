@@ -139,26 +139,31 @@
 
         public function installModule($identifier, $scope)
         {
-            $classname = "\\pachno\\modules\\" . $identifier . "\\" . ucfirst($identifier);
-            if (!class_exists("\\pachno\\modules\\" . $identifier . "\\" . ucfirst($identifier))) {
-                throw new Exception('Can not load new instance of type \\pachno\\modules\\' . $identifier . "\\" . ucfirst($identifier) . ', is not loaded');
-            }
-
-            $query = $this->getQuery();
-            $query->where(self::MODULE_NAME, $identifier);
-            $query->where(self::SCOPE, $scope);
-            if (!$res = $this->rawSelectOne($query)) {
-                $insertion = new Insertion();
-                $insertion->add(self::ENABLED, true);
-                $insertion->add(self::MODULE_NAME, $identifier);
-                $insertion->add(self::VERSION, $classname::VERSION);
-                $insertion->add(self::SCOPE, $scope);
-                $module_id = $this->rawInsert($insertion)->getInsertID();
+            $core_classname = "\\pachno\\core\\modules\\" . $identifier . "\\" . ucfirst($identifier);
+            if (class_exists($core_classname)) {
+                $module = new $core_classname($identifier);
             } else {
-                $module_id = $res->get(self::ID);
-            }
+                $classname = "\\pachno\\modules\\" . $identifier . "\\" . ucfirst($identifier);
+                if (!class_exists($classname)) {
+                    throw new Exception('Can not load new instance of type \\pachno\\modules\\' . $identifier . "\\" . ucfirst($identifier) . ', is not loaded');
+                }
 
-            $module = new $classname($module_id);
+                $query = $this->getQuery();
+                $query->where(self::MODULE_NAME, $identifier);
+                $query->where(self::SCOPE, $scope);
+                if (!$res = $this->rawSelectOne($query)) {
+                    $insertion = new Insertion();
+                    $insertion->add(self::ENABLED, true);
+                    $insertion->add(self::MODULE_NAME, $identifier);
+                    $insertion->add(self::VERSION, $classname::VERSION);
+                    $insertion->add(self::SCOPE, $scope);
+                    $module_id = $this->rawInsert($insertion)->getInsertID();
+                } else {
+                    $module_id = $res->get(self::ID);
+                }
+
+                $module = new $classname($module_id);
+            }
 
             return $module;
         }

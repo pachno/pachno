@@ -37,7 +37,7 @@
                     If you use Pachno on a regular basis, please consider:
                     <ul>
                         <li>contributing patches, fixes and features <a href="http://github.com/pachno/pachno">via github</a></li>
-                        <li>writing and improving the <a href="https://projects.pachno.com/pachno/docs/MainPage">documentation</a></li>
+                        <li>writing and improving the <a href="https://projects.pachno.com/pachno/docs/Main Page">documentation</a></li>
                         <li>help out other users in our <a href="https://forum.pachno.com/">user forums</a></li>
                         <li>improve or add <a href="https://translate.zanata.org/project/view/pachno">translations</a></li>
                         <li>author public blog posts or news articles about Pachno</li>

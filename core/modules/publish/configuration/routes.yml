@@ -3,7 +3,7 @@
 #    module: publish
 #    action: showArticle
 #    parameters:
-#      article_name: MainPage
+#      article_name: Main Page
 #    csrf_enabled: false
 #
 #publish_article_new:

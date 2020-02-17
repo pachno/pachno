@@ -180,10 +180,6 @@
         {
         }
 
-        protected function _loadFixtures($scope)
-        {
-        }
-
         protected function _uninstall()
         {
             if (framework\Context::getScope()->isDefault()) {

@@ -86,7 +86,7 @@
             $uploaded = framework\Context::getMessageAndClear('issue_file_uploaded');
 
             if (framework\Context::hasMessage('issue_deleted_shown') && (is_null($issue) || ($issue instanceof entities\Issue && $issue->isDeleted()))) {
-                $request_referer = ($request['referer'] ?: isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : null);
+                $request_referer = ($request['referer'] ?: (isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : null));
 
                 if ($request_referer) {
                     return $this->forward($request_referer);

@@ -149,4 +149,18 @@
         {
         }
 
+        public final function install($scope)
+        {
+            $this->_install($scope);
+            $this->_loadFixtures($scope);
+        }
+
+        protected function _install($scope)
+        {
+        }
+
+        protected function _loadFixtures($scope)
+        {
+        }
+
     }

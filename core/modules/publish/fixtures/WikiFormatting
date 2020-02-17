@@ -6,7 +6,7 @@ Wiki formatting is well explained in the [http://en.wikipedia.org/wiki/Help:Wiki
 We will show you the most common syntax below.
 
 == Line breaks and text formatting ==
-You can use line breaks to space out the text and make it more readable in the editor. One line break will not be transformed into a line break when the page is 
+You can use line breaks to space out the text and make it more readable in the editor. One line break will not be transformed into a line break when the page is
 displayed. A blank line makes a new paragraph. You can put <br> to make a hard line break, but be careful with this as it might break layout.
   This text is easy to
   read because it is
@@ -48,8 +48,8 @@ If you want to write a word with more than one capital letter, use an exclamatio
 You can also use the double square bracket link format to link to internal pages, if you don't want to use the CamelCasing style:
   [[InternalPage]]
 [[InternalPage]]
-  [[Myproject:MainPage|Myproject wiki frontpage]]
-[[Myproject:MainPage|Myproject wiki frontpage]]
+  [[Myproject:Main Page|Myproject wiki frontpage]]
+[[Myproject:Main Page|Myproject wiki frontpage]]
 
 With this method you can also link to internal pages in Pachno, by either specifying the relative url (like "/configure" points to the configuration page and "/wiki" points to the wiki), or use the internal route namespace "Pachno:" (this has the added benefit of being safe if the link ever changes in a future release).
 Unfortunately, the list of routes used in Pachno is quite long, but a few examples are listed below:

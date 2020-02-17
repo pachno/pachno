@@ -18,7 +18,7 @@
         <li><?php echo link_tag(make_url('publish_article', array('article_name' => "RegistrationIntro")), __('Registration introduction header'), array('title' => "RegistrationIntro")); ?></li>
         <li><?php echo link_tag(make_url('publish_article', array('article_name' => "ForgottenPasswordIntro")), __('Forgotten password introduction header'), array('title' => "ForgottenPasswordIntro")); ?></li>
     <?php else: ?>
-        <li><?php echo link_tag(make_url('publish_article', array('article_name' => \pachno\core\framework\Context::getCurrentProject()->getKey().":MainPage")), __('Project wiki frontpage'), array('title' => \pachno\core\framework\Context::getCurrentProject()->getKey().":MainPage")); ?></li>
+        <li><?php echo link_tag(make_url('publish_article', array('article_name' => \pachno\core\framework\Context::getCurrentProject()->getKey().":Main Page")), __('Project wiki frontpage'), array('title' => \pachno\core\framework\Context::getCurrentProject()->getKey().":Main Page")); ?></li>
     <?php endif; ?>
     </ul>
     <br style="clear: both;">

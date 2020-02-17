@@ -125,7 +125,7 @@
             $query->where(self::SCOPE, $scope);
             $query->addGroupBy(self::UID);
 
-            return (int)$this->count($query);
+            return (int) $this->count($query);
         }
 
         /**

@@ -88,7 +88,7 @@
                 if (preg_match('/^(.+)(\.\w*)$/i', $elements[count($elements) - 1], $matches)) {
                     $suffix = ($matches[2][0] == '.') ? $matches[2] : '';
                     $elements[count($elements) - 1] = $matches[1];
-                } elseif ($route{mb_strlen($route) - 1} == '/') {
+                } elseif ($route[mb_strlen($route) - 1] == '/') {
                     $suffix = '/';
                 }
 

@@ -21,6 +21,7 @@
     use pachno\core\helpers\TextDiff;
     use pachno\core\helpers\TextParser;
     use pachno\core\helpers\TextParserMarkdown;
+    use pachno\core\modules\publish\Publish;
 
     /**
      * @Table(name="\pachno\core\entities\tables\Articles")
@@ -286,14 +287,16 @@
                     return;
                 }
             }
-            list ($links, $categories) = $this->_retrieveLinksAndCategoriesFromContent($options);
+            $links = $this->_retrieveLinksFromContent($options);
 
             foreach ($links as $link => $occurrences) {
-                ArticleLinks::getTable()->addArticleLink($this->_name, $link);
-            }
-
-            foreach ($categories as $category => $occurrences) {
-                ArticleCategoryLinks::getTable()->addArticleCategory($this->_name, $category, $this->isCategory());
+                $linked_article = Publish::getArticleLink($link, $this->getProject());
+                if ($linked_article instanceof Article) {
+                    $article_link = new ArticleLink();
+                    $article_link->setArticle($this);
+                    $article_link->setLinkedArticle($linked_article);
+                    $article_link->save();
+                }
             }
 
             $this->_history = null;
@@ -328,13 +331,13 @@
             }
         }
 
-        protected function _retrieveLinksAndCategoriesFromContent($options = [])
+        protected function _retrieveLinksFromContent($options = [])
         {
             $parser = new TextParser($this->_content);
             $options['no_code_highlighting'] = true;
             $parser->doParse($options);
 
-            return [$parser->getInternalLinks(), $parser->getCategories()];
+            return $parser->getInternalLinks();
         }
 
         public function isCategory()

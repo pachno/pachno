@@ -474,19 +474,6 @@
 
             // Set up left menu links
             tables\Links::getTable()->loadFixtures($this);
-
-            framework\Context::setPermission('article_management', 0, 'publish', 0, 1, 0, true, $this->getID());
-            framework\Context::getModule('publish')->saveSetting('allow_camelcase_links', 1);
-            framework\Context::getModule('publish')->saveSetting('require_change_reason', 0);
-
-            framework\Context::getModule('mailing')->saveSetting('smtp_host', '', 0, $this->getID());
-            framework\Context::getModule('mailing')->saveSetting('smtp_port', 25, 0, $this->getID());
-            framework\Context::getModule('mailing')->saveSetting('smtp_user', '', 0, $this->getID());
-            framework\Context::getModule('mailing')->saveSetting('smtp_pwd', '', 0, $this->getID());
-            framework\Context::getModule('mailing')->saveSetting('headcharset', framework\Context::getI18n()->getLangCharset(), 0, $this->getID());
-            framework\Context::getModule('mailing')->saveSetting('from_name', 'Pachno Automailer', 0, $this->getID());
-            framework\Context::getModule('mailing')->saveSetting('from_addr', '', 0, $this->getID());
-            framework\Context::getModule('mailing')->saveSetting('ehlo', 1, 0, $this->getID());
         }
 
     }
