@@ -63,11 +63,11 @@
          *
          * @return Article[]
          */
-        public function getManualSidebarArticles(Project $project = null, $filter = null): array
+        public function getManualSidebarArticles($is_category, Project $project = null, $filter = null): array
         {
             $query = $this->getQuery();
             $query->where(self::SCOPE, framework\Context::getScope()->getID());
-            $query->where('articles.is_category', false);
+            $query->where('articles.is_category', $is_category);
             $query->where('articles.parent_article_id', 0);
 
             if ($project instanceof Project) {
@@ -80,9 +80,66 @@
                 $query->where('articles.name', '%' . strtolower($filter) . '%', Criterion::LIKE);
             }
 
+            $query->where('articles.name', 'Main Page', Criterion::NOT_EQUALS);
             $query->addOrderBy(self::NAME, 'asc');
 
             return $this->select($query);
+        }
+
+        /**
+         * @param Project|null $project
+         * @param null $filter
+         *
+         * @return Article[]
+         */
+        public function findArticles(Article $current_article, $filter, Project $project = null): array
+        {
+            $query = $this->getQuery();
+            $query->where(self::SCOPE, framework\Context::getScope()->getID());
+
+            if ($project instanceof Project) {
+                $query->where('articles.project_id', $project->getID());
+            } else {
+                $query->where('articles.project_id', 0);
+            }
+
+            $crit = new Criteria();
+            $crit->where('articles.name', '%' . strtolower($filter) . '%', Criterion::LIKE);
+            $crit->or('articles.name', '%' . strtolower($filter), Criterion::LIKE);
+            $crit->or('articles.name', strtolower($filter) . '%', Criterion::LIKE);
+            $query->where($crit);
+            $query->where('articles.name', 'Main Page', Criterion::NOT_EQUALS);
+            $query->where('articles.id', $current_article->getID(), Criterion::NOT_EQUALS);
+            $query->where('articles.id', $current_article->getID(), Criterion::NOT_EQUALS);
+
+            $query->addOrderBy(self::NAME, 'asc');
+
+            return $this->select($query);
+        }
+
+        public function getArticleParentCounts($article_ids)
+        {
+            if (!count($article_ids)) {
+                return [];
+            }
+
+            $article_counts = [];
+            $query = $this->getQuery();
+            $query->where(self::SCOPE, framework\Context::getScope()->getID());
+
+            $query->where('articles.parent_article_id', $article_ids, Criterion::IN);
+            $query->addSelectionColumn('articles.id', 'num_articles', Query::DB_COUNT);
+            $query->addSelectionColumn('articles.parent_article_id');
+            $query->addGroupBy('articles.parent_article_id');
+
+            $res = $this->rawSelect($query);
+            if ($res) {
+                while ($row = $res->getNextRow()) {
+                    $article_counts[$row['parent_article_id']] = $row['num_articles'];
+                }
+            }
+
+            return $article_counts;
         }
 
         public function getManualSidebarCategories(Project $project = null)
@@ -166,8 +223,8 @@
                 $project_key_normalized = ucfirst($project_key_normalized);
 
                 $criteria = new Criteria();
-                $criteria->where(self::NAME, "Category:" . ucfirst($project->getKey()) . "%", Criterion::LIKE);
-                $criteria->or(self::NAME, "Category:" . $project_key_normalized . "%", Criterion::LIKE);
+                $criteria->where(self::NAME, "Category:" . ucfirst($project->getKey()) . ":%", Criterion::LIKE);
+                $criteria->or(self::NAME, "Category:" . $project_key_normalized . ":%", Criterion::LIKE);
                 $criteria->or(self::NAME, ucfirst($project->getKey()) . ":%", Criterion::LIKE);
                 $criteria->or(self::NAME, $project_key_normalized . ":%", Criterion::LIKE);
                 $query->where($criteria);
@@ -197,9 +254,13 @@
          * @param $name
          * @param Project|integer|null $project
          *
+         * @param bool $is_manual_name
+         *
+         * @param int $parent_id
+         *
          * @return Article
          */
-        public function getArticleByName($name, $project = null): ?Article
+        public function getArticleByName($name, $project = null, $is_manual_name = false, $parent_id = null): ?Article
         {
             if (mb_substr($name, 0, 9) == 'Category:') {
                 $name = mb_substr($name, 9);
@@ -228,7 +289,14 @@
             $project_id = ($project instanceof Project) ? $project->getId() : $project;
 
             $query = $this->getQuery();
-            $query->where(self::NAME, $article_name, Criterion::LIKE);
+            if ($is_manual_name) {
+                $query->where('articles.manual_name', $article_name, Criterion::LIKE);
+                if ($parent_id !== null) {
+                    $query->where('articles.parent_article_id', $parent_id);
+                }
+            } else {
+                $query->where(self::NAME, $article_name, Criterion::LIKE);
+            }
             $query->where('articles.is_category', $is_category);
             $query->where(self::SCOPE, framework\Context::getScope()->getID());
             if ($project_id !== null) {
@@ -240,7 +308,14 @@
 
             if (!$article instanceof Article) {
                 $query = $this->getQuery();
-                $query->where(self::NAME, $article_name, Criterion::LIKE);
+                if ($is_manual_name) {
+                    $query->where('articles.manual_name', $article_name, Criterion::LIKE);
+                    if ($parent_id !== null) {
+                        $query->where('articles.parent_article_id', $parent_id);
+                    }
+                } else {
+                    $query->where(self::NAME, $article_name, Criterion::LIKE);
+                }
                 $query->where('articles.is_category', $is_category);
                 $query->where(self::SCOPE, framework\Context::getScope()->getID());
                 $query->where('articles.project_id', 0);

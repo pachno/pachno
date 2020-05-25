@@ -240,6 +240,19 @@ input.icon.danger {
   padding: 10px;
   flex: 0 0 auto;
   align-items: center;
+
+  button,
+  .button {
+    white-space: nowrap;
+  }
+
+  .separator {
+    flex: 0 0 1px;
+    height: 1.5em;
+    margin: 0 .5em;
+    display: inline-block;
+    border-right: 1px solid $theme-text-color-lighter;
+  }
 }
 
 .dialog-query-buttons {

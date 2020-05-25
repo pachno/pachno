@@ -224,7 +224,7 @@
             }
 
             $wiki_url = ($event->getSubject() instanceof Project && $event->getSubject()->hasWikiURL()) ? $event->getSubject()->getWikiURL() : null;
-            $top_level_articles = Articles::getTable()->getManualSidebarArticles($article->getProject());
+            $top_level_articles = Articles::getTable()->getManualSidebarArticles(false, $article->getProject());
             framework\ActionComponent::includeComponent('publish/menustriplinks', ['project_url' => $project_url, 'project' => $event->getSubject(), 'wiki_url' => $wiki_url, 'top_level_articles' => $top_level_articles]);
         }
 

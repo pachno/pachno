@@ -6,9 +6,14 @@
      * @var Article $article
      */
 
+    $include_link = $include_link ?? true;
 ?>
 <?php if ($article->getParentArticle() instanceof Article): ?>
-    <?php include_component('publish/articleparent', ['article' => $article->getParentArticle()]); ?>
+    <?php include_component('publish/articleparent', ['article' => $article->getParentArticle(), 'include_link' => $include_link]); ?>
     <span class="separator"><?= fa_image_tag('chevron-right'); ?></span>
 <?php endif; ?>
-<a href="<?= $article->getLink(); ?>" class="article-name"><?= $article->getName(); ?></a>
+<?php if ($include_link): ?>
+    <a href="<?= $article->getLink(); ?>" class="article-name"><?= $article->getName(); ?></a>
+<?php else: ?>
+    <span class="article-name"><?= $article->getName(); ?></span>
+<?php endif; ?>

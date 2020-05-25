@@ -8,6 +8,7 @@
     use pachno\core\entities\tables\Users;
     use pachno\core\framework;
     use pachno\core\helpers\Pagination;
+    use pachno\core\modules\project\Project;
 
     /**
      * @property Article $article
@@ -75,7 +76,8 @@
 
         public function componentManualSidebar()
         {
-            $top_level_articles = Articles::getTable()->getManualSidebarArticles($this->article->getProject());
+            $top_level_articles = Articles::getTable()->getManualSidebarArticles(false, $this->article->getProject());
+            $top_level_categories = Articles::getTable()->getManualSidebarArticles(true, $this->article->getProject());
             $parents = [];
             $article = $this->article;
             do {
@@ -86,9 +88,11 @@
                 }
             } while ($parent instanceof Article);
 
+            $this->overview_article = Articles::getTable()->getArticleByName('Main Page', framework\Context::getCurrentProject());
             $this->main_article = $article;
             $this->parents = $parents;
             $this->top_level_articles = $top_level_articles;
+            $this->top_level_categories = $top_level_categories;
         }
 
         public function componentSpecialSpecialPages()

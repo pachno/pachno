@@ -123,6 +123,22 @@
       }
     }
 
+    &.unified {
+      > input[type=text],
+      > input[type=search],
+      > input[type=url],
+      > input[type=password] {
+        flex: 1 1 auto;
+      }
+
+      button,
+      .button {
+        margin-left: 1em;
+        white-space: nowrap;
+        flex: 0 0 auto;
+      }
+    }
+
     &.submit-container {
       justify-content: space-between;
       justify-items: flex-end;

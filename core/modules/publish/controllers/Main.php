@@ -228,22 +228,37 @@
 
         /**
          * Get avilable parent articles for an article
-         * @Route(name="article_parents", url="/docs/:article_id/getparents")
+         * @Route(name="article_parents", url="/docs-api/:article_id/getparents")
          *
          * @param Request $request
          */
         public function runGetAvailableParents(Request $request)
         {
-            $articles = Articles::getTable()->getManualSidebarArticles(framework\Context::getCurrentProject(), $request['find_article']);
+            $articles = Articles::getTable()->findArticles($this->article, $request['find_article'], $this->article->getProject());
 
             $parent_articles = [];
             foreach ($articles as $article) {
-                if ($article->getID() == $this->article->getID())
-                    continue;
-                $parent_articles[$article->getName()] = $article->getManualName();
+                $parent_articles[$article->getID()] = $article;
             }
+            $article_counts = Articles::getTable()->getArticleParentCounts(array_keys($parent_articles));
+            usort($parent_articles, function ($a, $b) use ($article_counts) {
+                if ($a->isCategory() || $b->isCategory()) {
+                    return ($a->isCategory() > $b->isCategory()) ? -1 : 1;
+                }
 
-            return $this->renderJSON(['list' => $this->getComponentHTML('publish/getavailableparents', compact('parent_articles'))]);
+                if (!isset($article_counts[$a->getID()]) && isset($article_counts[$b->getID()])) {
+                    return 1;
+                }
+
+                if (!isset($article_counts[$b->getID()])) {
+                    return -1;
+                }
+
+                return ($article_counts[$a->getID()] < $article_counts[$b->getID()]) ? -1 : 1;
+            });
+            $article = $this->article;
+
+            return $this->renderJSON(['list' => $this->getComponentHTML('publish/getavailableparents', compact('parent_articles', 'article_counts', 'article'))]);
         }
 
         /**
@@ -280,23 +295,14 @@
                 $this->preview = (bool)$request['preview'];
                 $this->change_reason = $request['change_reason'];
                 try {
-                    $this->article->setName($request['article_name']);
-                    $this->article->setParentArticle($request['parent_article_id']);
-                    $this->article->setManualName($request['manual_name']);
-                    if ($this->article->getArticleType() == Article::TYPE_MANUAL && !$this->article->getName()) {
-                        $article_name_prefix = ($this->article->getParentArticle() instanceof Article) ? $this->article->getParentArticle()->getName() . ':' : $request['parent_article_name'];
-                        $this->article->setName($article_name_prefix . $this->article->getManualName());
-                    }
-                    if ($this->article->getArticleType() == Article::TYPE_MANUAL && !$this->article->getParentArticle() instanceof Article && $article_prev_manual_name == $article_prev_name && $article_prev_manual_name != $this->article->getManualName()) {
-                        $this->article->setName($request['manual_name']);
+                    if ($request['article_name'] && $this->article->getName() !== 'Main Page') {
+                        $this->article->setName($request['article_name']);
+                        $this->article->setParentArticle($request['parent_article_id']);
                     }
                     $this->article->setContentSyntax($request['article_content_syntax']);
                     $this->article->setContent($request->getRawParameter('article_content'));
 
-                    if (!$this->article->getName() || trim($this->article->getName()) == '' || !preg_match('/[\w:]+/i', $this->article->getName()))
-                        throw new Exception(framework\Context::getI18n()->__('You need to specify a valid article name'));
-
-                    if ($request['article_type'] == Article::TYPE_MANUAL && (!$this->article->getManualName() || trim($this->article->getManualName()) == '' || !preg_match('/[\w:]+/i', $this->article->getManualName())))
+                    if (!trim($this->article->getName()))
                         throw new Exception(framework\Context::getI18n()->__('You need to specify a valid article name'));
 
                     if (!$this->preview && framework\Context::getModule('publish')->getSetting('require_change_reason') == 1 && (!$this->change_reason || trim($this->change_reason) == ''))
@@ -304,9 +310,6 @@
 
                     if ($this->article->getLastUpdatedDate() != $request['last_modified'])
                         throw new Exception(framework\Context::getI18n()->__('The file has been modified since you last opened it'));
-
-                    if (($article = Article::getByName($request['new_new_article_name'])) && $article instanceof Article && $article->getID() != $request['article_id'])
-                        throw new Exception(framework\Context::getI18n()->__('An article with that name already exists. Please choose a different article name'));
 
                     if (!$this->preview) {
                         $this->article->doSave(['article_prev_name' => $article_prev_name], $request['change_reason']);

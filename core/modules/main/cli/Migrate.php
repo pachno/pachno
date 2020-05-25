@@ -109,7 +109,9 @@
             }
 
             $this->cliLineUp();
-            $this->cliEcho("Migrating settings: ");
+            $this->cliClearLine();
+            $this->cliMoveLeft();
+            $this->cliEcho("Migrating settings: ", self::COLOR_WHITE, self::STYLE_BOLD);
             Settings::getTable()->migrateSettings();
             Modules::getTable()->removeModuleByName('vcs_integration', true);
             $this->cliEcho(str_pad("100%", 55) ."\n", self::COLOR_GREEN, self::STYLE_BOLD);
@@ -226,6 +228,8 @@
                 $article->setProject($project_id);
                 if (trim($article->getManualName())) {
                     $article->setName($article->getManualName());
+                } else {
+                    $article->setManualName($article->getName());
                 }
                 $article->setIsCategory(0);
 
@@ -235,6 +239,7 @@
                 }
                 if ($project_id) {
                     $article->setName(substr($article->getName(), strpos($article->getName(), ':') + 1));
+                    $article->setManualName($article->getName());
                 }
                 if ($article->getName() == 'MainPage') {
                     $article->setName('Main Page');
@@ -256,30 +261,38 @@
                 if (count($paths) > 1) {
                     $parent_id = 0;
                     $concat_path = '';
-                    foreach ($paths as $path) {
-                        if (!$path) {
-                            continue;
-                        }
+                    $test_path = $paths;
+                    $article_name = array_pop($test_path);
 
-                        $concat_path = ($concat_path != '') ? $concat_path . ':' . $path : $path;
-                        if ($concat_path != $article->getName()) {
-                            $parent_article = Articles::getTable()->getArticleByName($concat_path, $project_id);
+                    $existing_parent_article = Articles::getTable()->getArticleByName(implode(':', $test_path), $project_id, true);
+                    if ($existing_parent_article instanceof Article) {
+                        $parent_id = $existing_parent_article->getID();
+                    } else {
+                        foreach ($paths as $path) {
+                            $concat_path = ($concat_path != '') ? $concat_path . ':' . $path : $path;
+                            // UserGuide:Modules:LDAP:Configuration
+
+                            // UserGuide
+                            // Modules
+                            // LDAP
+                            // Configuration
+                            $parent_article = Articles::getTable()->getArticleByName($concat_path, $project_id, true, $parent_id);
                             if (!$parent_article instanceof Article) {
                                 $parent_article = new Article();
                                 $parent_article->setParentArticle($parent_id);
+                                $parent_article->setManualName($concat_path);
                                 $parent_article->setProject($project_id);
-                                $parent_article->setName($concat_path);
+                                $parent_article->setName($path);
                                 $parent_article->setAuthor(0);
                                 $parent_article->save();
                             }
-                        } else {
-                            $parent_article = $article;
-                        }
 
-                        $parent_article->setParentArticle($parent_id);
-                        $parent_article->save();
-                        $parent_id = $parent_article->getID();
+                            $parent_id = $parent_article->getID();
+                        }
                     }
+                    $article->setParentArticle($parent_id);
+                    $article->setName($article_name);
+                    $article->save();
                 }
             }
             $this->cliMoveLeft();

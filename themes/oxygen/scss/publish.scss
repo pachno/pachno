@@ -231,6 +231,20 @@
             flex: 0 0 auto;
             color: $theme-text-color-lighter;
 
+            .project-logo {
+                width: 2em;
+                padding-right: .75em;
+                box-sizing: border-box;
+                display: flex;
+                align-items: center;
+                justify-content: flex-start;
+
+                img {
+                    box-sizing: border-box;
+                    width: 100%;
+                }
+            }
+
             .separator {
                 margin: 0 .75em;
                 font-size: .8em;
@@ -241,7 +255,7 @@
             display: flex;
             flex-direction: row;
             flex: 0 0 auto;
-            padding: .65em 0;
+            padding: .65em 0 1.3em 0;
             width: 100%;
 
             input {
@@ -249,6 +263,11 @@
                 font-family: $theme-font-family;
                 font-size: 1.95em;
                 font-weight: $theme-font-weight-regular;
+
+                &:disabled {
+                    background: #FFF;
+                    color: $theme-text-color-lighter;
+                }
             }
         }
 
@@ -274,12 +293,16 @@
                         flex-direction: column;
 
                         textarea {
-                            flex: 1 1 auto;
-                            font-family: $theme-font-family;
-                            font-size: 1.25em;
-                            font-weight: $theme-font-weight-regular;
-                            line-height: 1.4em;
-                            width: 100%;
+                            &,
+                            &.markItUpEditor {
+                                flex: 1 1 auto;
+                                font-family: $theme-font-family;
+                                font-size: 1.25em;
+                                font-weight: $theme-font-weight-regular;
+                                line-height: 1.4em;
+                                width: 100%;
+                                padding: 0;
+                            }
                         }
                     }
                 }
@@ -291,6 +314,7 @@
             &,
             &:hover {
                 border: none;
+                padding: 0;
             }
         }
     }
@@ -477,34 +501,6 @@ INS { display: inline; background-color: #8D8; text-decoration: none; } DEL { di
 #manual_sidebar li span { display: inline-block; vertical-align: middle; }
 /*#manual_sidebar.single_parent > ul > li.parent > img { display: none; }*/
 #manual_sidebar li img.branch { margin-right: 0; }
-
-#parent_selector_container input[type=search] {
-    display: inline-block;
-    box-sizing: border-box;
-    width: 505px;
-    padding: 5px;
-    font-size: 1.1em;
-    vertical-align: middle;
-}
-#parent_selector_container input[type=submit] {
-    display: inline-block;
-    box-sizing: border-box;
-    width: 80px;
-    padding: 7px;
-    font-size: 1.1em;
-    vertical-align: middle;
-}
-#parent_articles_list {
-    list-style: none;
-    margin: 15px 5px;
-    padding: 0;
-}
-#parent_articles_list li {
-    clear: both;
-    display: block;
-    padding: 2px;
-    font-size: 1.1em;
-}
 
 #main_container.fullscreen > header,
 #main_container.fullscreen > footer {

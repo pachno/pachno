@@ -182,8 +182,8 @@
         margin-right: .5em;
       }
       span.name {
-        flex: 0 0 auto;
-        max-width: 250px;
+        flex: 1 1 auto;
+        //max-width: 250px;
         display: flex;
         flex-direction: column;
         font-size: .85em;
@@ -193,6 +193,17 @@
           font-weight: $theme-font-weight-bold;
           white-space: normal;
           width: 100%;
+          display: flex;
+          align-items: center;
+          justify-content: flex-start;
+
+          .separator {
+            flex: 0 0 auto;
+            padding: 0 .5em;
+            margin: 0;
+            font-size: 0.8em;
+            border-bottom: none;
+          }
         }
       }
 

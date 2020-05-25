@@ -15,7 +15,7 @@
 <div class="header-container <?= $mode; ?>">
     <div class="title-container article-title">
         <div>
-            <span class="title-name"><?= $article->getName(); ?></span>
+            <span class="title-name"><?= ($article->getName() == 'Main Page') ? __('Overview') : $article->getName(); ?></span>
             <?php if ($article->isCategory()): ?>
                 <span class="title-crumbs">
                     <span class="status-badge"><span class="name"><?= __('Category'); ?></span></span>

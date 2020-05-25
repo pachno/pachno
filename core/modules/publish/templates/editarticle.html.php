@@ -16,16 +16,26 @@
     <form accept-charset="<?php echo \pachno\core\framework\Context::getI18n()->getCharset(); ?>" action="<?php echo $article->getLink('edit'); ?>" method="post" id="edit_article_form">
         <div id="article-header-container">
             <div class="logo-back-container">
-                <?php echo link_tag((($article->getId()) ? $article->getLink() : make_url('publish')), fa_image_tag('chevron-left') . '<span>'.__('Back').'</span>', ['class' => 'button secondary']); ?>
+                <?php echo link_tag((($article->getId()) ? $article->getLink() : make_url('publish')), fa_image_tag('chevron-left') . '<span>'.__('Back').'</span>', ['class' => 'button secondary highlight']); ?>
                 <div id="article-editor-header" class="toolbar-container"></div>
             </div>
             <div class="actions-container">
                 <div class="button-group">
                     <button class="button icon secondary" type="button" onclick="jQuery('#editor-container').toggleClass('wider');return false;"><?= fa_image_tag('arrows-alt-h'); ?></button>
+                    <span class="separator"></span>
+                    <button class="button icon secondary" type="button" onclick="jQuery('#parent_selector_container').show();return false;"><?= fa_image_tag('file-export'); ?></button>
+                    <span class="separator"></span>
                     <button class="button icon secondary" type="submit" onclick="$('article_preview').value = 1;"><?= fa_image_tag('eye'); ?></button>
                     <button class="button primary" id="save_button" type="submit"><?php echo ($article->getId()) ? __('Publish changes') : __('Publish page'); ?></button>
                 </div>
             </div>
+        </div>
+        <div class="message-box type-warning" id="parent_move_message" style="display: none;">
+            <span class="icon"><?= fa_image_tag('info-circle'); ?></span>
+            <span class="message"><?= __('The page will be moved when you publish the changes'); ?></span>
+            <span class="actions">
+                <button type="button" class="button secondary highlight" onclick="jQuery('#parent_article_id_input').val(jQuery('#parent_article_id_input').data('original-id'));$('parent_move_message').hide();return false;"><?= __('Undo'); ?></button>
+            </span>
         </div>
         <?php if (isset($error)): ?>
             <div class="message-box type-error">
@@ -37,7 +47,7 @@
             <div class="message-box type-info">
                 <span class="icon"><?= fa_image_tag('info-circle'); ?></span>
                 <span class="message">
-                    <?php echo __('This is a preview of the article'); ?><br>
+                    <?php echo __('This is a preview of the page'); ?><br>
                     <b><?php echo __('The article has not been saved yet'); ?>
                 </span>
                 <span class="actions">
@@ -49,6 +59,7 @@
         <?php // include_component('publish/header', array('article' => $article, 'show_actions' => true, 'mode' => 'edit')); ?>
         <input type="hidden" name="preview" value="0" id="article_preview">
         <input type="hidden" name="article_id" value="<?php echo ($article->getId()) ? $article->getID() : 0; ?>">
+        <input type="hidden" id="parent_article_id_input" name="parent_article_id" value="<?php echo ($article->getParentArticle() instanceof Article) ? $article->getParentArticle()->getID() : 0; ?>" data-original-id="<?php echo ($article->getParentArticle() instanceof Article) ? $article->getParentArticle()->getID() : 0; ?>">
         <input type="hidden" name="last_modified" value="<?php echo ($article->getId()) ? $article->getPostedDate() : 0; ?>">
         <input type="hidden" name="article_type" value="<?php echo $article->getArticleType(); ?>">
         <div class="editor-container" id="editor-container">
@@ -66,7 +77,7 @@
                 <?php endif; ?>
             </div>
             <div class="article-name-container">
-                <input type="text" name="article_name" id="article_name" value="<?= __e($article->getName()); ?>" placeholder="<?= __('Type the page title here'); ?>">
+                <input type="text" name="article_name" id="article_name" value="<?= ($article->getName() !== 'Main Page') ? __e($article->getName()) : 'Overview'; ?>" placeholder="<?= __('Type the page title here'); ?>" <?php if ($article->getName() == 'Main Page') echo ' disabled'; ?>>
             </div>
             <?php include_component('main/textarea', [
                 'area_name' => 'article_content',
@@ -87,22 +98,24 @@
             </span>
         </div>
     </form>
-    <form id="parent_selector_container" class="fullpage_backdrop" style="display: none;" onsubmit="Pachno.Main.loadParentArticles(this);return false;" action="<?php echo make_url('publish_article_parents', array('article_id' => $article->getId())); ?>">
-        <div class="backdrop_box medium">
-            <div class="backdrop_detail_header">
-                <span><?php echo __('Select parent article'); ?></span>
-                <a href="javascript:void(0);" onclick="$('parent_selector_container').hide();" class="closer"><?php echo fa_image_tag('times'); ?></a>
-            </div>
-            <div class="backdrop_detail_content">
-                <input type="search" name="find_article" id="parent_article_name_search">
-                <input type="submit" class="button" value="<?php echo __('Find'); ?>">
-                <?php echo image_tag('spinning_32.gif', array('id' => 'parent_selector_container_indicator', 'style' => 'display: none;')); ?>
-                <ul id="parent_articles_list"></ul>
-                <div class="publish_article_actions">
+    <div class="form-container" style="display: none;" id="parent_selector_container">
+        <form class="fullpage_backdrop" onsubmit="Pachno.Main.loadParentArticles(this);return false;" action="<?php echo make_url('publish_article_parents', array('article_id' => $article->getId())); ?>">
+            <div class="backdrop_box medium">
+                <div class="backdrop_detail_header">
+                    <span><?php echo __('Move page'); ?></span>
+                    <a href="javascript:void(0);" onclick="$('parent_selector_container').hide();" class="closer"><?php echo fa_image_tag('times'); ?></a>
+                </div>
+                <div class="backdrop_detail_content">
+                    <div class="form-row unified">
+                        <input type="search" name="find_article" id="parent_article_name_search">
+                        <input type="submit" class="button secondary highlight" value="<?php echo __('Find'); ?>">
+                    </div>
+                    <?php echo image_tag('spinning_32.gif', array('id' => 'parent_selector_container_indicator', 'style' => 'display: none;')); ?>
+                    <div id="parent_articles_list" class="list-mode"></div>
                 </div>
             </div>
-        </div>
-    </form>
+        </form>
+    </div>
     <input type="hidden" id="article_serialized" value="">
 </div>
 <script type="text/javascript">

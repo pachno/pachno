@@ -1119,7 +1119,7 @@
                 $this->forward403unless($this->access_level == framework\Settings::ACCESS_FULL);
                 if ($request['enable_uploads']) {
                     if (framework\Context::getScope()->isDefault()) {
-                        $settings = ['upload_restriction_mode', 'upload_extensions_list', 'upload_max_file_size', 'upload_storage', 'upload_localpath'];
+                        $settings = ['upload_restriction_mode', 'upload_extensions_list', 'upload_storage', 'upload_localpath'];
 
                         if ($request['upload_storage'] == 'files' && (bool)$request['enable_uploads']) {
                             if (!is_dir($request['upload_localpath'])) {
@@ -1132,15 +1132,15 @@
                             }
                         }
                     } else {
-                        $settings = ['upload_restriction_mode', 'upload_extensions_list', 'upload_max_file_size'];
+                        $settings = ['upload_restriction_mode', 'upload_extensions_list'];
                         framework\Settings::copyDefaultScopeSetting('upload_localpath');
                     }
 
-                    if (!is_numeric($request['upload_max_file_size'])) {
-                        $this->getResponse()->setHttpStatus(400);
-
-                        return $this->renderJSON(['error' => framework\Context::getI18n()->__("The maximum file size must be a number")]);
-                    }
+//                    if (!is_numeric($request['upload_max_file_size'])) {
+//                        $this->getResponse()->setHttpStatus(400);
+//
+//                        return $this->renderJSON(['error' => framework\Context::getI18n()->__("The maximum file size must be a number")]);
+//                    }
 
                     foreach ($settings as $setting) {
                         if (framework\Context::getRequest()->hasParameter($setting)) {
