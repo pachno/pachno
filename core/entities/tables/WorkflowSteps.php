@@ -4,8 +4,10 @@
 
     use b2db\Insertion;
     use b2db\Join;
+    use b2db\Update;
     use pachno\core\entities\Scope;
     use pachno\core\entities\Status;
+    use pachno\core\entities\WorkflowTransitionAction;
     use pachno\core\framework;
 
     /**
@@ -118,6 +120,17 @@
             }
 
             return $steps;
+        }
+
+        public function updateStepStatus($current_status_id, $new_status_id)
+        {
+            $query = $this->getQuery();
+            $query->where(self::STATUS_ID, $current_status_id);
+
+            $update = new Update();
+            $update->update(self::STATUS_ID, $new_status_id);
+
+            $this->rawUpdate($update, $query);
         }
 
     }

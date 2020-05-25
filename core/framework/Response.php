@@ -150,6 +150,8 @@
          */
         protected $_decor_footer;
 
+        protected $_is_fullscreen = false;
+
         /**
          * Whether to show the project menu strip or not
          *
@@ -799,6 +801,16 @@
         public function getAllHeaders()
         {
             return $this->_headers;
+        }
+
+        public function setFullscreen($value)
+        {
+            $this->_is_fullscreen = $value;
+        }
+
+        public function isFullscreen()
+        {
+            return $this->_is_fullscreen;
         }
 
     }

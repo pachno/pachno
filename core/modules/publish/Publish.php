@@ -128,30 +128,6 @@
             return Links::getTable()->getLinks('wiki', $target_id);
         }
 
-        public function listen_frontpageArticle(Event $event)
-        {
-            $article = $this->getFrontpageArticle('main');
-            if ($article instanceof Article && $article->hasContent()) {
-                framework\ActionComponent::includeComponent('publish/articledisplay', ['article' => $article, 'show_title' => false, 'show_details' => false, 'show_actions' => false, 'embedded' => true]);
-            }
-        }
-
-        public function getFrontpageArticle($type)
-        {
-            $article_name = ($type == 'main') ? 'FrontpageArticle' : 'FrontpageLeftmenu';
-            $article = Articles::getTable()->getArticleByName($article_name);
-
-            return $article;
-        }
-
-        public function listen_frontpageLeftmenu(Event $event)
-        {
-            $article = $this->getFrontpageArticle('menu');
-            if ($article instanceof Article && $article->hasContent()) {
-                framework\ActionComponent::includeComponent('publish/articledisplay', ['article' => $article, 'show_title' => false, 'show_details' => false, 'show_actions' => false, 'embedded' => true]);
-            }
-        }
-
         public function listen_projectLinks(Event $event)
         {
             framework\ActionComponent::includeComponent('publish/projectlinks', ['project' => $event->getSubject()]);
@@ -477,7 +453,6 @@
 
         protected function _addListeners()
         {
-            Event::listen('core', 'index_right_top', [$this, 'listen_frontpageArticle']);
             if (!framework\Context::isInstallmode() && $this->isWikiTabsEnabled()) {
                 Event::listen('core', 'project_overview_item_links', [$this, 'listen_projectLinks']);
                 Event::listen('core', 'breadcrumb_main_links', [$this, 'listen_BreadcrumbMainLinks']);

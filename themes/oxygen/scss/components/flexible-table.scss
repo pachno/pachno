@@ -1,3 +1,5 @@
+@import "../variables";
+
 .flexible-table {
   display: flex;
   flex-direction: column;
@@ -79,7 +81,7 @@
       display: flex;
       align-items: center;
       border: none;
-      font-weight: 400;
+      font-weight: $theme-font-weight-light;
       padding: .2em;
     }
 
@@ -90,7 +92,7 @@
     &.header {
       font-size: 0.8em;
       background: transparent;
-      font-weight: 700;
+      font-weight: $theme-font-weight-bold;
       text-transform: uppercase;
       border: none;
       border-bottom: 2px solid #0C8990;
@@ -187,12 +189,12 @@
       justify-content: center;
 
       .title {
-        font-weight: 400;
+        font-weight: $theme-font-weight-regular;
         flex: 0 0 auto;
       }
 
       .description {
-        font-weight: 300;
+        font-weight: $theme-font-weight-regular;
         flex: 0 0 auto;
       }
     }
@@ -205,6 +207,7 @@
     }
 
     &.smaller {
+      font-weight: $theme-font-weight-light;
       font-size: 0.8em;
     }
 

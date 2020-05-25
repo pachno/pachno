@@ -57,6 +57,7 @@
 					resizeHandle:			true,
 					beforeInsert:			'',
 					afterInsert:			'',
+					headerContainer:        undefined,
 					onEnter:				{},
 					onShiftEnter:			{},
 					onCtrlEnter:			{},
@@ -157,7 +158,11 @@
 				$$.addClass("markItUpEditor");
 
 				// add the header before the textarea
-				header = $('<div class="markItUpHeader"></div>').insertBefore($$);
+				if (options.headerContainer !== undefined) {
+					header = $('<div class="markItUpHeader"></div>').appendTo($(options.headerContainer));
+				} else {
+					header = $('<div class="markItUpHeader"></div>').insertBefore($$);
+				}
 				$(dropMenus(options.markupSet)).appendTo(header);
 
 				// add the footer after the textarea

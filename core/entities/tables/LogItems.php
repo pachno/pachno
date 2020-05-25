@@ -251,4 +251,25 @@
             }
         }
 
+        public function updateLogRelatedItem($change_type, $current_field_value, $new_field_value)
+        {
+            $query = $this->getQuery();
+            $query->where(self::CHANGE_TYPE, $change_type);
+            $query->where(self::PREVIOUS_VALUE, $current_field_value);
+
+            $update = new Update();
+            $update->add(self::PREVIOUS_VALUE, $new_field_value);
+
+            $this->rawUpdate($update, $query);
+
+            $query = $this->getQuery();
+            $query->where(self::CHANGE_TYPE, $change_type);
+            $query->where(self::CURRENT_VALUE, $current_field_value);
+
+            $update = new Update();
+            $update->add(self::CURRENT_VALUE, $new_field_value);
+
+            $this->rawUpdate($update, $query);
+        }
+
     }

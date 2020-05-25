@@ -16,7 +16,7 @@
                 padding: 0px;
                 margin: 0px;
                 background-color: #FFF;
-                font-family: 'Source Sans Pro', 'Open Sans', sans-serif;
+                font-family: 'Simplifica', 'Open Sans', sans-serif;
                 font-style: normal;
                 font-weight: normal;
                 text-align: left;
@@ -33,7 +33,7 @@
                 padding: 0;
             }
             h1.logo {
-                font-family: 'Simplifica', sans-serif;
+                font-family: 'Simplifica', 'Open Sans', sans-serif;
                 margin: 0;
                 padding: 10px;
                 background: #0C8990;

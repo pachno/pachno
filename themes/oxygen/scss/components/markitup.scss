@@ -1,21 +1,9 @@
+@import "../variables";
+
 .markItUp * {
   margin: 0;
   padding: 0;
   outline: none;
-}
-
-.markItUp a:link,
-.markItUp a:visited {
-  color: #000;
-  text-decoration: none;
-}
-
-.markItUp {
-  margin: 0;
-}
-
-.markItUpContainer {
-  font: 11px 'Source Sans Pro', sans-serif;
 }
 
 .textarea_container {
@@ -24,7 +12,7 @@
 textarea.markItUpEditor,
 textarea.markItUpEditor:focus {
   box-sizing: border-box;
-  font: 1.4em 'Fira Mono', monospace;
+  font-size: 1.4em;
   padding: 5px;
   width: 690px;
   height: 320px;
@@ -32,7 +20,7 @@ textarea.markItUpEditor:focus {
   line-height: 18px;
   overflow: auto;
   display: block;
-  font-family: 'Fira Mono', monospace;
+  font-family: $theme-font-family-mono;
   border-radius: 0 0 4px 4px;
   border: 2px solid rgba(200, 200, 200, 0.3);
   transition: border-color .25s ease-in-out;
@@ -84,6 +72,13 @@ textarea.markItUpEditor:focus {
 }
 
 .markItUpHeader {
+  a:link,
+  a:visited {
+    color: #000;
+    text-decoration: none;
+  }
+
+  font: 11px 'Source Sans Pro', sans-serif;
   height: auto;
   background-color: rgba(200, 200, 200, .3);
   border-radius: 4px 4px 0 0;
@@ -163,19 +158,19 @@ textarea.markItUpEditor:focus {
       }
     }
   }
-}
 
-/* next rows of buttons */
-.markItUpHeader ul .markItUpSeparator {
-  margin: 0 10px;
-  width: 1px;
-  height: 16px;
-  overflow: hidden;
-  background-color: #CCC;
-}
+  /* next rows of buttons */
+  ul .markItUpSeparator {
+    margin: 0 10px;
+    width: 1px;
+    height: 16px;
+    overflow: hidden;
+    background-color: #CCC;
+  }
 
-.markItUpHeader ul ul .markItUpSeparator {
-  width: auto;
-  height: 1px;
-  margin: 0;
+  ul ul .markItUpSeparator {
+    width: auto;
+    height: 1px;
+    margin: 0;
+  }
 }

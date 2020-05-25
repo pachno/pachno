@@ -1,3 +1,5 @@
+@import "../variables";
+
 .project-list {
   display: flex;
   flex-direction: column;
@@ -27,7 +29,7 @@
   }
 
   .details {
-    font-weight: 300;
+    font-weight: $theme-font-weight-regular;
     vertical-align: middle;
     box-sizing: border-box;
     flex: 1 1 auto;
@@ -39,12 +41,16 @@
     justify-content: center;
     padding: .75rem 0;
 
+    .description {
+      font-weight: $theme-font-weight-light;
+    }
+
     .name {
       a,
       a:hover {
         color: #141823;
         font-size: 1.1em;
-        font-weight: 700;
+        font-weight: $theme-font-weight-bold;
         display: flex;
         align-items: center;
         text-decoration: none;
@@ -99,7 +105,7 @@
   padding: 1rem;
   background-color: rgba(225, 225, 225, .25);
   margin: 0 .25rem;
-  font-weight: 300;
+  font-weight: $theme-font-weight-regular;
   border-radius: 0 0 5px 5px;
   transition: background-color .25s ease-in-out;
 

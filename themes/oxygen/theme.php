@@ -5,8 +5,8 @@
      */
 
     $pachno_response->addStylesheet(make_url('asset_css', array('theme_name' => 'oxygen', 'css' => 'theme.css')));
-    $pachno_response->addStylesheet(make_url('asset_css', array('theme_name' => 'oxygen', 'css' => 'widgets.css')));
-    $pachno_response->addStylesheet(make_url('asset_css', array('theme_name' => 'oxygen', 'css' => 'mobile.css')));
+//    $pachno_response->addStylesheet(make_url('asset_css', array('theme_name' => 'oxygen', 'css' => 'widgets.css')));
+//    $pachno_response->addStylesheet(make_url('asset_css', array('theme_name' => 'oxygen', 'css' => 'mobile.css')));
     \pachno\core\framework\Settings::setIconsetName('oxygen');
 ?>
 <style>

@@ -127,6 +127,12 @@
             return tables\ListTypes::getTable()->getAllByItemType(static::ITEMTYPE);
         }
 
+        protected function _postSave($is_new)
+        {
+            parent::_postSave($is_new);
+            tables\ListTypes::getTable()->updateItemCache($this);
+        }
+
         public function isBuiltin()
         {
             return true;

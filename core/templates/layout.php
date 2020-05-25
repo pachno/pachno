@@ -21,34 +21,7 @@
         <base href="<?= rtrim(\pachno\core\framework\Context::getWebroot(), '/'); ?>">
         <title><?= ($pachno_response->hasTitle()) ? strip_tags($header_name . ' ~ ' . $pachno_response->getTitle()) : strip_tags(\pachno\core\framework\Settings::getSiteHeaderName()); ?></title>
         <style>
-            @font-face {
-              font-family: 'Open Sans';
-              font-style: normal;
-              font-weight: normal;
-              src: url('<?= $webroot; ?>fonts/open_sans.eot');
-              src: local('Open Sans'), local('OpenSans'), url('<?= $webroot; ?>fonts/open_sans.woff') format('woff'), url('<?= $webroot; ?>fonts/open_sans.ttf') format('truetype');
-            }
-            @font-face {
-              font-family: 'Open Sans';
-              font-style: italic;
-              font-weight: normal;
-              src: url('<?= $webroot; ?>fonts/open_sans_italic.eot');
-              src: local('Open Sans Italic'), local('OpenSans-Italic'), url('<?= $webroot; ?>fonts/open_sans_italic.woff') format('woff'), url('<?= $webroot; ?>fonts/open_sans_italic.ttf') format('truetype');
-            }
-            @font-face {
-              font-family: 'Open Sans';
-              font-style: normal;
-              font-weight: bold;
-              src: url('<?= $webroot; ?>fonts/open_sans_bold.eot');
-              src: local('Open Sans Bold'), local('OpenSans-Bold'), url('<?= $webroot; ?>fonts/open_sans_bold.woff') format('woff'), url('<?= $webroot; ?>fonts/open_sans_bold.ttf') format('truetype');
-            }
-            @font-face {
-              font-family: 'Open Sans';
-              font-style: italic;
-              font-weight: bold;
-              src: url('<?= $webroot; ?>fonts/open_sans_bold_italic.eot');
-              src: local('Open Sans Bold Italic'), local('OpenSans-BoldItalic'), url('<?= $webroot; ?>fonts/open_sans_bold_italic.woff') format('woff'), url('<?= $webroot; ?>fonts/open_sans_bold_italic.ttf') format('truetype');
-            }
+            @import url('https://fonts.googleapis.com/css?family=Fira+Mono:400,500,700|Source+Sans+Pro:300,300i,400,400i,600,600i|Catamaran:300,300i,400,400i,600,600i&subset=cyrillic,cyrillic-ext,latin-ext');
             @font-face {
                 font-family: 'Simplifica';
                 src: url('/fonts/simplifica_typeface-webfont.woff2') format('woff2'),
@@ -229,7 +202,7 @@
         <?php \pachno\core\framework\Event::createNew('core', 'layout.php::header-ends')->trigger(); ?>
     </head>
     <body id="body">
-        <div id="main_container" class="<?php if (\pachno\core\framework\Context::isProjectContext()) echo 'project-context'; ?> page-<?= \pachno\core\framework\Context::getRouting()->getCurrentRoute()->getName(); ?> cf" data-url="<?= make_url('userdata'); ?>">
+        <div id="main_container" class="<?php if (\pachno\core\framework\Context::isProjectContext()) echo 'project-context'; ?> page-<?= \pachno\core\framework\Context::getRouting()->getCurrentRoute()->getName(); ?> cf <?php if ($pachno_response->isFullscreen()) echo ' fullscreen'; ?>" data-url="<?= make_url('userdata'); ?>">
             <?php if (!\pachno\core\framework\Context::getRouting()->getCurrentRoute()->isAnonymous()): ?>
                 <?php \pachno\core\framework\Logging::log('Rendering header'); ?>
                 <?php require PACHNO_CORE_PATH . 'templates/headertop.inc.php'; ?>

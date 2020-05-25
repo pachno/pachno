@@ -2,6 +2,8 @@
 
     namespace pachno\core\entities\tables;
 
+    use b2db\Update;
+    use pachno\core\entities\WorkflowTransitionAction;
     use pachno\core\framework;
 
     /**
@@ -56,4 +58,15 @@
             $this->addIndex('scope_transitionid', [self::SCOPE, self::TRANSITION_ID]);
         }
 
+        public function updateTransitionAction($action_type, $current_status_id, $new_status_id)
+        {
+            $query = $this->getQuery();
+            $query->where(self::ACTION_TYPE, $action_type);
+            $query->where(self::TARGET_VALUE, $current_status_id);
+
+            $update = new Update();
+            $update->add(self::TARGET_VALUE, $new_status_id);
+
+            $this->rawUpdate($update, $query);
+        }
     }

@@ -1,5 +1,7 @@
+@import "../variables";
+
 .status-badge {
-  font-weight: 300;
+  font-weight: $theme-font-weight-light;
   display: inline-flex;
   color: rgba(0, 0, 0, 0.45);
   text-transform: uppercase;

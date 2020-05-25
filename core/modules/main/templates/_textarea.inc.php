@@ -14,6 +14,7 @@
             break;
     }
     $base_id = (isset($area_id)) ? $area_id : $area_name;
+    $invisible = (isset($invisible)) ? $invisible : false;
     $mentionable = isset($target_type) && isset($target_id);
     $syntax_options = [
         'md' => ['name' => 'Markdown', 'description' => __('GitHub-flavor Markdown syntax')],
@@ -45,7 +46,7 @@
             </div>
         </div>
     </div>
-    <textarea name="<?php echo $area_name; ?>" id="<?php echo $base_id; ?>" <?php if ($mentionable): ?> data-target-type="<?php echo $target_type; ?>" data-target-id="<?php echo $target_id; ?>" <?php endif; ?> class="syntax_<?php echo $syntax; ?> markuppable <?php if ($mentionable) echo ' mentionable'; ?>" style="<?php if (isset($height)) echo 'height: '.$height; ?>; width: <?php echo $width; ?>;" <?php if (isset($placeholder)): ?>placeholder="<?= $placeholder; ?>"<?php endif; ?>><?php echo $value; ?></textarea>
+    <textarea name="<?php echo $area_name; ?>" id="<?php echo $base_id; ?>" <?php if ($mentionable): ?> data-target-type="<?php echo $target_type; ?>" data-target-id="<?php echo $target_id; ?>" <?php endif; ?> class="syntax_<?php echo $syntax; ?> markuppable <?php if ($mentionable) echo ' mentionable'; ?> <?php if ($invisible) echo ' invisible'; ?>" style="<?php if (isset($height)) echo 'height: '.$height; ?>; <?php if (isset($width)) echo "width: {$width};"; ?>" <?php if (isset($placeholder)): ?>placeholder="<?= $placeholder; ?>"<?php endif; ?>><?php echo $value; ?></textarea>
 </div>
 <script type="text/javascript">
     require(['pachno/index', 'domReady', 'mention'], function (Pachno, domReady, mention) {
@@ -61,7 +62,7 @@
                 if (ec != undefined)
                     ec.removeClassName('focussed');
             });
-            Pachno.Main.Helpers.MarkitUp([$("<?php echo $base_id; ?>")]);
+            Pachno.Main.Helpers.MarkitUp([$("<?php echo $base_id; ?>")], '#article-editor-header');
         });
     });
 </script>

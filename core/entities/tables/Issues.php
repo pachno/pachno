@@ -1155,4 +1155,15 @@
             $this->rawUpdate($update);
         }
 
+        public function updateIssueField($field, $current_field_value, $new_field_value)
+        {
+            $query = $this->getQuery();
+            $query->where("issues.{$field}", $current_field_value);
+
+            $update = new Update();
+            $update->add("issues.{$field}", $new_field_value);
+
+            $this->rawUpdate($update, $query);
+        }
+
     }

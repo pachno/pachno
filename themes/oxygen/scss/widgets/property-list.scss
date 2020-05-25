@@ -1,3 +1,5 @@
+@import "../variables";
+
 .fields-list {
   list-style: none;
   padding: 0;
@@ -19,7 +21,7 @@
         }
 
         > label {
-          font-weight: 600;
+          font-weight: $theme-font-weight-bold;
           flex: 0 1 140px;
           text-transform: none;
           color: #141823;
@@ -28,14 +30,14 @@
     }
 
     > .label {
-      font-weight: 600;
+      font-weight: $theme-font-weight-bold;
       flex: 0 1 140px;
       padding: 7px 12px;
     }
 
     > .value {
       flex: 1 1 auto;
-      font-weight: 300;
+      font-weight: $theme-font-weight-regular;
 
       .value-container {
         display: flex;

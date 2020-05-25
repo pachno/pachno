@@ -1,3 +1,5 @@
+@import "variables";
+
 @media screen and (max-width: 900px) {
 
     .popup_message {
@@ -59,7 +61,7 @@
         height: auto;
         color: #FFF;
         font-size: 1.3em;
-        font-weight: normal;
+        font-weight: $theme-font-weight-regular;
         line-height: 1;
         padding: 4px;
     }
@@ -122,10 +124,10 @@
     #header_banner .header_user_fullname {
         display: block;
         line-height: 1.2;
-        font-weight: normal;
+        font-weight: $theme-font-weight-regular;
     }
     #header_banner .header_user_fullname:first-line {
-        font-weight: bold;
+        font-weight: $theme-font-weight-bold;
     }
     #header_banner .fa {
         float: right;
@@ -195,7 +197,7 @@
         float: none;
         clear: both;
         background: transparent;
-        font-weight: normal;
+        font-weight: $theme-font-weight-regular;
         font-size: 1.1em;
         text-shadow: none;
         box-shadow: none;
@@ -204,7 +206,7 @@
         margin: 0;
     }
     #main_menu li.selected {
-        font-weight: bold;
+        font-weight: $theme-font-weight-bold;
     }
     #main_menu li a, #main_menu li a:hover, #main_menu li.selected a, #main_menu li.selected a:hover, #mobile_menu #user_menu.tab_menu_dropdown a, #mobile_menu #user_menu.tab_menu_dropdown a:hover {
         background: transparent;
@@ -220,7 +222,7 @@
         background-color: rgba(200, 200, 200, 0.1);
     }
     #main_menu li a.selected {
-        font-weight: bold;
+        font-weight: $theme-font-weight-bold;
     }
     #main_menu li img {
         display: none;
@@ -266,7 +268,7 @@
         margin: 0;
         padding: 5px 0;
         text-transform: none;
-        font-weight: bold;
+        font-weight: $theme-font-weight-bold;
     }
     #mobile_menu #user_menu.tab_menu_dropdown .header {
         padding-left: 7px;

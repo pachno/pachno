@@ -4033,8 +4033,12 @@
 
                 $times = (!isset($board) || $board->getType() != entities\AgileBoard::TYPE_KANBAN);
                 $estimator_mode = isset($request['estimator_mode']) ? $request['estimator_mode'] : null;
+                $options = compact('issue', 'times', 'estimator_mode');
+                if (isset($board)) {
+                    $options['board'] = $board;
+                }
 
-                return $this->renderJSON(['menu' => $this->getComponentHTML('main/issuemoreactions', compact('issue', 'times', 'board', 'estimator_mode'))]);
+                return $this->renderJSON(['menu' => $this->getComponentHTML('main/issuemoreactions', $options)]);
             } catch (Exception $e) {
                 throw $e;
             }

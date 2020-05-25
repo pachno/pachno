@@ -5,9 +5,9 @@
 body, td, th {
   padding: 0;
   margin: 0;
-  font-family: 'Source Sans Pro', sans-serif;
+  font-family: $theme-font-family;
   font-style: normal;
-  font-weight: 300;
+  font-weight: $theme-font-weight-regular;
   text-align: left;
   font-size: 14px;
   line-height: 1.43;
@@ -49,7 +49,7 @@ h6 {
 }
 
 h1, h2, h3, h4, h5, h6 {
-  font-weight: 400;
+  font-weight: $theme-font-weight-regular;
   padding: 3px 3px 3px 0;
   margin: 5px 0 5px 0;
   display: flex;
@@ -107,7 +107,7 @@ form, p {
 }
 
 b, strong {
-  font-weight: 400;
+  font-weight: $theme-font-weight-regular;
 }
 
 code {
@@ -116,7 +116,7 @@ code {
   border: 1px solid #DCDCDC;
   border-radius: 2px;
   font-size: 0.9em;
-  font-family: 'Fira Mono', monospace;
+  font-family: $theme-font-family-mono;
   letter-spacing: 0;
 }
 
@@ -143,14 +143,14 @@ select {
 }
 
 th {
-  font-weight: 400;
+  font-weight: $theme-font-weight-regular;
   border-bottom: 1px solid #DDD;
   padding: 2px;
   background-color: #F5F5F5;
 }
 
 label {
-  font-weight: 400;
+  font-weight: $theme-font-weight-regular;
   margin: 0;
   padding: 2px;
   cursor: pointer;
@@ -159,11 +159,11 @@ label {
 }
 
 label .faded_out {
-  font-weight: 400;
+  font-weight: $theme-font-weight-regular;
 }
 
 label.optional {
-  font-weight: 400;
+  font-weight: $theme-font-weight-regular;
 }
 
 label > input[type="checkbox"] {
@@ -175,7 +175,7 @@ label > input[type="checkbox"] {
   border: 1px dashed #DDD;
   background-color: #F5F5F5;
   padding: 4px;
-  font-family: 'Fira Mono', monospace;
+  font-family: $theme-font-family-mono;
   display: inline-block;
   margin: 0 5px;
 }
@@ -226,7 +226,7 @@ div.image_container.thumb img.image {
 
 .generic_offline {
   text-align: center;
-  font-weight: 400;
+  font-weight: $theme-font-weight-regular;
   font-size: larger;
 }
 
@@ -272,7 +272,7 @@ header {
   box-shadow: none;
   border: none;
   color: #0C8990;
-  font-weight: 600;
+  font-weight: $theme-font-weight-bold;
   font-size: 1.4em;
   margin: 0;
   text-transform: uppercase;
@@ -348,7 +348,7 @@ header {
   height: auto;
   min-width: 0;
   color: rgba(255, 255, 255, 0.4);
-  font-weight: 300;
+  font-weight: $theme-font-weight-regular;
   font-size: 0.9em;
   line-height: 1;
   transition: opacity 0.2s ease-in-out;
@@ -411,7 +411,7 @@ header #user_notifications_count.unread {
 
 #user_notifications h1 {
   font-size: 1.1em;
-  font-weight: 400;
+  font-weight: $theme-font-weight-regular;
   padding: 5px 0;
   margin: 3px 5px 5px 5px;
   color: #888;
@@ -426,7 +426,7 @@ header #user_notifications_count.unread {
 
 #user_notifications_ist > li h1 {
   font-size: 1em;
-  font-weight: 400;
+  font-weight: $theme-font-weight-regular;
   color: #555;
   border: 0;
   padding: 0;
@@ -437,7 +437,7 @@ header #user_notifications_count.unread {
 #user_notifications_list li .notification_content {
   color: #999;
   font-style: italic;
-  font-weight: 300;
+  font-weight: $theme-font-weight-regular;
   margin: 0 0 5px 0;
   padding: 0 4px;
   clear: both;
@@ -488,7 +488,7 @@ header #user_notifications_count.unread {
 #user_notifications_list li time {
   font-size: 0.85em;
   color: #888;
-  font-weight: 300;
+  font-weight: $theme-font-weight-regular;
   font-style: normal;
   display: inline-block;
   margin-right: 2px;
@@ -505,7 +505,7 @@ header #user_notifications_count.unread {
 }
 
 #user_notifications_list li.read h1, #user_notifications_list li.read .notification_content, #user_notifications_list li.read time {
-  font-weight: 300;
+  font-weight: $theme-font-weight-regular;
   color: #CCC;
 }
 
@@ -581,7 +581,7 @@ header #header_userinfo li.temporarily_switched .user_menu_dropdown {
 .userlink {
   display: inline-block;
   vertical-align: middle;
-  font-weight: 300;
+  font-weight: $theme-font-weight-regular;
   padding: 4px;
   border-radius: 3px;
   border: 1px solid transparent;
@@ -594,17 +594,17 @@ header #header_userinfo li.temporarily_switched .user_menu_dropdown {
   padding: 2px 4px;
   margin: 0;
   color: #555;
-  font-weight: 400;
+  font-weight: $theme-font-weight-regular;
 }
 
 .userlink.inline:hover {
-  font-weight: 400;
+  font-weight: $theme-font-weight-regular;
 }
 
 .userlink:hover {
   text-decoration: none;
   border: 1px solid rgba(100, 100, 100, 0.15);
-  font-weight: 300;
+  font-weight: $theme-font-weight-regular;
 }
 
 .userstate {
@@ -718,10 +718,10 @@ img.avatar {
 
 #logo_container .logo_name,
 #logo_container .logo_name:hover {
-  font-family: Simplifica, sans-serif;
+  font-family: $theme-font-family-logo;
   font-size: 1.8rem;
   color: #FFF;
-  font-weight: 400;
+  font-weight: $theme-font-weight-regular;
   margin: 0 5px 0 0;
   padding: 4px 8px 4px 3px;
   line-height: 1em;
@@ -778,7 +778,7 @@ img.avatar {
 }
 
 .header-user-info .header-user-name-name {
-  font-weight: 400;
+  font-weight: $theme-font-weight-regular;
   color: rgba(255, 255, 255, 1);
 }
 
@@ -827,6 +827,7 @@ img.avatar {
 
 .header_menu > ul > li > a:not(.header-user-info),
 .header_menu > ul > li > a:not(.header-user-info):hover {
+  font-weight: $theme-font-weight-light;
   display: inline-block;
   background-color: transparent;
   color: #FFF;
@@ -887,7 +888,7 @@ img.avatar {
 
 .submenu_strip .selected_project {
   font-size: 1em;
-  font-weight: 400;
+  font-weight: $theme-font-weight-regular;
   color: #555;
   border-color: #D9D9BB;
 }
@@ -1015,11 +1016,11 @@ input[type=checkbox].semi-checked {
     .title {
       width: 100%;
       flex: 0 0 auto;
-      font-weight: 400;
+      font-weight: $theme-font-weight-regular;
     }
 
     .message {
-      font-weight: 400;
+      font-weight: $theme-font-weight-regular;
       width: 100%;
       flex: 0 0 auto;
     }
@@ -1027,7 +1028,7 @@ input[type=checkbox].semi-checked {
 
   .dismiss_me {
     flex: 0 0 auto;
-    font-weight: 600;
+    font-weight: $theme-font-weight-bold;
     color: #B6aC6D;
     padding: .3em .8em;
     border-radius: .2em;
@@ -1122,7 +1123,7 @@ footer {
 
 .login_popup .article h1 {
   font-size: 1.7em;
-  font-weight: 400;
+  font-weight: $theme-font-weight-regular;
   border-bottom: none;
   margin: 5px 0;
   color: #555;
@@ -1194,7 +1195,7 @@ footer {
 
 .login_popup h2.login_header {
   font-size: 1.2em;
-  font-weight: 400;
+  font-weight: $theme-font-weight-regular;
   border-bottom: 1px dotted rgba(0, 0, 0, 0.2);
   padding: 5px 0;
   margin: 5px 0;
@@ -1219,30 +1220,6 @@ footer {
 /* end login / registration styling */
 
 /* frontpage article layout styling */
-.article {
-  font-size: 1.01em;
-  color: #666;
-  width: auto;
-  padding: 5px;
-  position: relative;
-}
-
-.main_area.article {
-  padding: 5px 5px 5px 15px;
-}
-
-.main_area.frontpage .article {
-  padding-top: 0;
-}
-
-.main_area.frontpage .article h1, .main_area.frontpage .article h2, .main_area.frontpage .article h3, .main_area.frontpage .article h4, .main_area.frontpage .article h5, .main_area.frontpage .article h6 {
-  margin: 0 0 5px 0;
-  padding: 5px 0;
-  color: #888;
-  border-bottom: none;
-  font-weight: 400;
-}
-
 .comment.commit {
   margin-bottom: 0;
 }
@@ -1295,7 +1272,7 @@ footer {
 }
 
 .commit_left table b {
-  font-weight: 400;
+  font-weight: $theme-font-weight-regular;
 }
 
 .commit_left table img {
@@ -1310,7 +1287,7 @@ footer {
 
 .commitbranch {
   display: inline-block;
-  font-weight: 400;
+  font-weight: $theme-font-weight-regular;
   background-color: #EAF2FF;
   color: #99C;
   padding: 0 4px 2px 4px;
@@ -1377,7 +1354,7 @@ div.autocomplete ul {
 div.autocomplete li.header {
   padding-top: 15px;
   font-size: 0.85em;
-  font-weight: 400;
+  font-weight: $theme-font-weight-regular;
   border-top: 0;
   color: #AAA;
   text-transform: uppercase;
@@ -1386,7 +1363,7 @@ div.autocomplete li.header {
 div.autocomplete ul li.selected, div.autocomplete ul li.selected:hover {
   background-color: #F1F1F1;
   text-align: left;
-  font-weight: 300;
+  font-weight: $theme-font-weight-regular;
   border-top: 1px dotted #BBB;
   color: #333;
 }
@@ -1423,7 +1400,7 @@ div.autocomplete ul li.issue_closed {
 
 div.autocomplete .extra {
   display: none;
-  font-weight: 400;
+  font-weight: $theme-font-weight-regular;
   font-size: 1em;
 }
 
@@ -1442,7 +1419,7 @@ div.autocomplete .extra.attached .fas, div.autocomplete .extra.attached .far {
 }
 
 div.autocomplete .extra span {
-  font-weight: 300;
+  font-weight: $theme-font-weight-regular;
   font-size: 1em;
 }
 
@@ -1464,7 +1441,7 @@ div.autocomplete ul li {
   margin: 0;
   padding: 7px 10px;
   cursor: pointer;
-  font-weight: 300;
+  font-weight: $theme-font-weight-regular;
   text-align: left;
   background-color: #FFF;
   color: #555;
@@ -1592,7 +1569,7 @@ div.autocomplete ul li > img:first-child {
 }
 
 .tab_menu .selected {
-  font-weight: 400;
+  font-weight: $theme-font-weight-regular;
   background-color: #FFF;
 }
 
@@ -1644,12 +1621,12 @@ a.not_clickable:hover {
 }
 
 #header_userinfo .tab_menu_dropdown a {
-  font-weight: 300;
+  font-weight: $theme-font-weight-regular;
   font-size: 1em;
 }
 
 #header_userinfo .tab_menu_dropdown .userstate {
-  font-weight: 300;
+  font-weight: $theme-font-weight-regular;
 }
 
 #header_userinfo:hover img.dropdown {
@@ -1726,24 +1703,24 @@ ul.tab_menu_dropdown, .tab_menu_dropdown ul {
 }
 
 .tab_menu_dropdown li.header, .tab_menu_dropdown .header {
-  padding: 15px 0 5px 0;
+  padding: 1em 0 .2em .2em;
   margin: 5px;
-  font-size: 1.1em;
-  font-weight: 400;
+  font-size: 1em;
+  font-weight: $theme-font-weight-bold;
   text-transform: uppercase;
-  color: #444;
-  border-bottom: 1px dotted #CCC;
+  color: #0C8990;
+  border: none;
 }
 
 .tab_menu_dropdown li.header:first-child, .tab_menu_dropdown .header:first-child {
-  padding-top: 0;
+  padding-top: .5em;
   margin-top: 0;
 }
 
 .tab_menu_dropdown li.header.userinfo {
   text-transform: none;
   font-size: 1.4em;
-  font-weight: 400;
+  font-weight: $theme-font-weight-regular;
   padding: 10px 10px 20px 10px;
 }
 
@@ -1753,7 +1730,7 @@ ul.tab_menu_dropdown, .tab_menu_dropdown ul {
 
 .tab_menu_dropdown li.header.userinfo .user_username {
   font-size: .7em;
-  font-weight: 300;
+  font-weight: $theme-font-weight-regular;
 }
 
 .tab_menu_dropdown .header.with-link {
@@ -1981,19 +1958,19 @@ ul.tab_menu_dropdown, .tab_menu_dropdown ul {
 
 .project_stuff li.project_name {
   font-size: 1em;
-  font-weight: 600;
+  font-weight: $theme-font-weight-bold;
   padding-top: 1px;
 }
 
 .project_stuff li.no_project_name {
   font-size: 0.9em;
-  font-weight: 300;
+  font-weight: $theme-font-weight-regular;
   padding-top: 2px;
   color: #888;
 }
 
 .project_stuff li.project_name span {
-  font-weight: 300;
+  font-weight: $theme-font-weight-regular;
   font-size: 0.9em;
   color: #886;
 }
@@ -2027,7 +2004,7 @@ ul.tab_menu_dropdown, .tab_menu_dropdown ul {
 
 /* generic header formatting */
 .header {
-  font-weight: 400;
+  font-weight: $theme-font-weight-regular;
   text-align: left;
 }
 
@@ -2059,7 +2036,7 @@ a.shadowed:active {
 
 .user_dropdown .user_realname {
   font-size: 1.2em;
-  font-weight: 400;
+  font-weight: $theme-font-weight-regular;
   padding: 0;
   width: 240px;
   float: left;
@@ -2074,21 +2051,21 @@ a.shadowed:active {
 
 #user_details_popup .user_realname {
   font-size: 1.5em;
-  font-weight: 400;
+  font-weight: $theme-font-weight-regular;
   padding: 2px 0 0 0;
   line-height: 1.2;
 }
 
 .usercard .user_profile {
   font-size: 1.0em;
-  font-weight: 300;
+  font-weight: $theme-font-weight-regular;
   padding: 10px;
   flex: 0 0 250px;
 }
 
 .usercard .user_details {
   line-height: 1.7;
-  font-weight: 300;
+  font-weight: $theme-font-weight-regular;
   padding: 5px 15px;
   margin-left: 10px;
   clear: both;
@@ -2105,7 +2082,7 @@ a.shadowed:active {
 
 .account_details .user_realname {
   font-size: 1.2em;
-  font-weight: 400;
+  font-weight: $theme-font-weight-regular;
   line-height: 1.3;
   padding-bottom: 2px;
 }
@@ -2127,7 +2104,7 @@ a.shadowed:active {
 
 #account_user_info {
   font-size: 1.2em;
-  font-weight: 300;
+  font-weight: $theme-font-weight-regular;
   color: #CCC;
   margin: 15px 0 0 0;
   line-height: 1.2;
@@ -2136,7 +2113,7 @@ a.shadowed:active {
 
 #account_user_info:first-line {
   font-size: 1.5em;
-  font-weight: 400;
+  font-weight: $theme-font-weight-regular;
   color: #333;
 }
 
@@ -2194,7 +2171,7 @@ a.shadowed:active {
   background-color: #FFF;
   text-align: center;
   font-size: 0.9em;
-  font-weight: 300;
+  font-weight: $theme-font-weight-regular;
   width: 100px;
   color: #888;
 }
@@ -2228,7 +2205,7 @@ a.shadowed:active {
 }
 
 #account_tabs_panes h3, #project_config_menu_panes h3 {
-  font-weight: 400;
+  font-weight: $theme-font-weight-regular;
   font-size: 1.4em;
   color: #888;
   border-bottom: 1px dotted #CCC;
@@ -2241,11 +2218,11 @@ a.shadowed:active {
 }
 
 label[for=profile_prefer_wiki_markdown] {
-  font-weight: 400;
+  font-weight: $theme-font-weight-regular;
 }
 
 #gravatar_change {
-  font-weight: 300;
+  font-weight: $theme-font-weight-regular;
   font-size: 1em;
   margin: 8px 0;
   padding: 4px 6px !important;
@@ -2253,7 +2230,7 @@ label[for=profile_prefer_wiki_markdown] {
 
 #account_tabs_panes h4 {
   font-size: 1em;
-  font-weight: 400;
+  font-weight: $theme-font-weight-regular;
   padding: 0;
   margin: 0;
 }
@@ -2277,7 +2254,7 @@ label[for=profile_prefer_wiki_markdown] {
 
 #account_tabs_panes .access_keys_list p {
   color: #888;
-  font-weight: 300;
+  font-weight: $theme-font-weight-regular;
   font-size: 0.9em;
   font-style: italic;
 }
@@ -2299,7 +2276,7 @@ label[for=profile_prefer_wiki_markdown] {
 }
 
 .usercard .user_username {
-  font-weight: 400;
+  font-weight: $theme-font-weight-regular;
   font-size: 0.9em;
   color: #AAA;
   font-style: italic;
@@ -2311,19 +2288,19 @@ label[for=profile_prefer_wiki_markdown] {
 .usercard .user_id {
   float: right;
   font-size: 2.3em;
-  font-weight: 300;
+  font-weight: $theme-font-weight-regular;
   color: #C4CAE9;
 }
 
 .user_dropdown .user_realname .user_status, .usercard .user_realname .user_status {
   font-size: 0.8em;
-  font-weight: 300;
+  font-weight: $theme-font-weight-regular;
   color: #AAA;
 }
 
 .usercard .user_realname .user_email {
   font-size: 0.7em;
-  font-weight: 300;
+  font-weight: $theme-font-weight-regular;
   color: #AAA;
   display: block;
   margin-top: 7px;
@@ -2356,7 +2333,7 @@ label[for=profile_prefer_wiki_markdown] {
 .user_dropdown .user_details {
   font-size: 0.8em;
   width: 230px;
-  font-weight: 300;
+  font-weight: $theme-font-weight-regular;
   padding: 3px 0;
   display: inline-block;
   clear: none;
@@ -2370,7 +2347,7 @@ label[for=profile_prefer_wiki_markdown] {
 
 .user_dropdown .user_details:first-line {
   font-size: 1.7em;
-  font-weight: 400;
+  font-weight: $theme-font-weight-regular;
 }
 
 .user_details ul.teamlist {
@@ -2384,7 +2361,7 @@ label[for=profile_prefer_wiki_markdown] {
 .side_bar .header {
   margin: 2px 0 5px 0;
   padding: 3px 3px 3px 5px;
-  font-weight: 400;
+  font-weight: $theme-font-weight-regular;
   border-bottom: 1px solid #CCC;
   background-color: transparent;
 }
@@ -2416,7 +2393,7 @@ label[for=profile_prefer_wiki_markdown] {
   border-bottom: 1px dotted #DDD;
   font-size: 1.1em;
   text-transform: uppercase;
-  font-weight: 400
+  font-weight: $theme-font-weight-regular
 }
 
 .client_dashboard {
@@ -2442,7 +2419,7 @@ label[for=profile_prefer_wiki_markdown] {
 }
 
 .dashboard_team_info .dashboard_team_header {
-  font-weight: 400;
+  font-weight: $theme-font-weight-regular;
   font-size: 2.1em;
 }
 
@@ -2493,7 +2470,7 @@ ul.client_users li, ul.team_users li, ul.project_users li {
 
 .commits-list .commit .message-author-container .commit-message,
 .commits-list .commit .message-author-container .commit-message:hover {
-  font-weight: 400;
+  font-weight: $theme-font-weight-regular;
   color: #555;
 }
 
@@ -2507,7 +2484,7 @@ ul.client_users li, ul.team_users li, ul.project_users li {
   padding: 10px;
   background-color: rgba(225, 225, 225, .2);
   border: 1px solid rgba(200, 200, 200, .4);
-  font-family: 'Fira Mono', monospace;
+  font-family: $theme-font-family-mono;
   font-size: 1em;
 }
 
@@ -2519,7 +2496,7 @@ ul.client_users li, ul.team_users li, ul.project_users li {
 .commit-details-list .commit-sha, .commit-details-list .commit-sha:hover {
   font-size: 1em;
   padding: 3px 7px;
-  font-weight: 400;
+  font-weight: $theme-font-weight-regular;
   margin-left: 0;
   display: inline-block;
 }
@@ -2604,11 +2581,11 @@ ul.client_users li, ul.team_users li, ul.project_users li {
 .simple-list.branch-list .branch-name {
   display: block;
   color: #555;
-  font-weight: 300;
+  font-weight: $theme-font-weight-regular;
 }
 
 .simple-list.branch-list .selected .branch-name {
-  font-weight: 400;
+  font-weight: $theme-font-weight-regular;
 }
 
 .simple-list.branch-list .branch-last-updated {
@@ -2618,7 +2595,7 @@ ul.client_users li, ul.team_users li, ul.project_users li {
 }
 
 .commit-files-summary {
-  font-weight: 300;
+  font-weight: $theme-font-weight-regular;
   padding: 15px;
   color: #888;
   vertical-align: middle;
@@ -2630,12 +2607,12 @@ ul.client_users li, ul.team_users li, ul.project_users li {
 }
 
 .commit-files-summary .summary .num_changes {
-  font-weight: 400;
+  font-weight: $theme-font-weight-regular;
   color: rgba(78, 129, 171, .7);
 }
 
 .commit-files-summary .summary .num_files {
-  font-weight: 400;
+  font-weight: $theme-font-weight-regular;
 }
 
 .commit-files-summary .fas {
@@ -2662,14 +2639,14 @@ ul.client_users li, ul.team_users li, ul.project_users li {
 .commit-files .file-preview .filename {
   padding: 10px;
   background-color: rgba(225, 225, 225, .2);
-  font-family: 'Fira Mono', monospace;
+  font-family: $theme-font-family-mono;
   font-size: .9em;
 }
 
 .commit-files .file-preview .filename .added-badge {
   display: inline-block;
   margin-left: 3px;
-  font-weight: 300;
+  font-weight: $theme-font-weight-regular;
   padding: 3px 5px;
   background-color: rgba(185, 225, 185, .4);
   border: 1px solid rgba(100, 100, 100, .3);
@@ -2687,7 +2664,7 @@ ul.client_users li, ul.team_users li, ul.project_users li {
 .diff-summary {
   display: inline-block;
   margin-left: 7px;
-  font-weight: 400;
+  font-weight: $theme-font-weight-regular;
   padding: 3px 5px;
   background-color: rgba(225, 225, 225, .4);
   border-radius: 3px;
@@ -2714,7 +2691,7 @@ ul.client_users li, ul.team_users li, ul.project_users li {
 
 .commit-files .diffs .diff-header {
   white-space: nowrap;
-  font-family: 'Fira Mono', monospace;
+  font-family: $theme-font-family-mono;
   padding: 5px;
   background-color: rgba(199, 212, 224, .7);
   color: rgba(0, 0, 0, .7);
@@ -2741,7 +2718,7 @@ ul.client_users li, ul.team_users li, ul.project_users li {
 }
 
 .commit-files .diffs .diff-preview td {
-  font-family: 'Fira Mono', monospace;
+  font-family: $theme-font-family-mono;
   font-size: .9em;
 }
 
@@ -2841,7 +2818,7 @@ a.friend {
 .issuetype_list .button, .issuetype_list .button:hover {
   margin: 10px;
   font-size: 1.5em;
-  font-weight: 400;
+  font-weight: $theme-font-weight-regular;
   padding: 20px 15px 20px 75px;
   text-align: left;
   min-width: 275px;
@@ -2856,7 +2833,7 @@ a.friend {
 
 .issuetype_list .button span:first-line, .issuetype_list .button:hover span:first-line {
   font-size: 0.8em;
-  font-weight: 300;
+  font-weight: $theme-font-weight-regular;
 }
 
 .upload_container {
@@ -2865,7 +2842,7 @@ a.friend {
   color: rgba(100, 100, 100, 0.3);
   cursor: pointer;
   font-size: 2em;
-  font-weight: 300;
+  font-weight: $theme-font-weight-regular;
   text-align: center;
   border: 2px rgba(100, 100, 100, 0.2) dashed;
   border-radius: 5px;
@@ -2919,7 +2896,7 @@ a.friend {
   width: 180px;
   display: inline-block;
   font-size: 1.1em;
-  font-weight: 400;
+  font-weight: $theme-font-weight-regular;
 }
 
 #file_upload_list li label:first-of-type {
@@ -2951,7 +2928,7 @@ a.friend {
   background-color: rgba(225, 225, 225, .2);
   border: 1px solid #B4B4B4;
   border-radius: 3px;
-  font-family: 'Fira Mono', monospace;
+  font-family: $theme-font-family-mono;
   font-size: 1em;
   display: block;
   width: 100%;
@@ -2974,7 +2951,7 @@ a.friend {
   background-color: initial;
   border: none;
   font-size: 0.9em;
-  font-family: 'Fira Mono', monospace;
+  font-family: $theme-font-family-mono;
 }
 
 .textarea_save_container {
@@ -3054,7 +3031,7 @@ a.friend {
 }
 
 #fullpage_backdrop ul.duplicate_issues li {
-  font-weight: 300;
+  font-weight: $theme-font-weight-regular;
   margin: 0 0 3px 0;
   text-align: left;
 }
@@ -3081,7 +3058,7 @@ a.friend {
   z-index: 100001;
   color: #999;
   font-size: 15px;
-  font-weight: 300;
+  font-weight: $theme-font-weight-regular;
 }
 
 .fullpage_backdrop_content {
@@ -3149,7 +3126,7 @@ a.friend {
 }
 
 .backdrop_detail_content {
-  font-weight: 300;
+  font-weight: $theme-font-weight-regular;
   font-size: 1.0em;
   padding: 5px;
   text-align: left;
@@ -3180,7 +3157,7 @@ a.friend {
   padding: 0 0 7px 0;
   color: #999;
   border-bottom: 1px dotted rgb(185, 185, 185);
-  font-weight: 400;
+  font-weight: $theme-font-weight-regular;
 }
 
 #dialog_content, #dialog_modal_content {
@@ -3250,7 +3227,7 @@ a.friend {
 
 .error_message {
   color: #E44;
-  font-weight: 400;
+  font-weight: $theme-font-weight-regular;
   margin: 10px 5px 5px 0;
 }
 
@@ -3288,13 +3265,13 @@ a.friend {
 }
 
 .viewissue_description_header, .viewissue_affects_header, .viewissue_reproduction_steps_header, .viewissue_customfield_header {
-  font-weight: 400;
+  font-weight: $theme-font-weight-regular;
   font-size: 1.1em;
   padding: 0 0 5px 0;
 }
 
 .viewissue_description, .viewissue_affects, .viewissue_reproduction_steps, .viewissue_customfield {
-  font-weight: 300;
+  font-weight: $theme-font-weight-regular;
   padding: 0;
   margin: 0;
 }
@@ -3303,14 +3280,14 @@ a.friend {
   border-bottom: 1px solid #CCC;
   padding: 3px;
   margin-top: 5px;
-  font-weight: 400;
+  font-weight: $theme-font-weight-regular;
   color: #888;
   font-size: 1.1em;
   text-transform: uppercase;
 }
 
 .header_div td {
-  font-weight: 300;
+  font-weight: $theme-font-weight-regular;
   vertical-align: middle;
 }
 
@@ -3356,14 +3333,14 @@ a.friend {
 }
 
 .statistics_percentage .hover_highlight > td:first-child {
-  font-weight: 300;
+  font-weight: $theme-font-weight-regular;
   font-size: 13px !important;
   padding-left: 3px;
 }
 
 .statistics_percentage .hover_highlight > td:nth-child(2) {
   text-align: right;
-  font-weight: 300 !important;
+  font-weight: $theme-font-weight-regular !important;
   padding-right: 5px;
   vertical-align: middle;
 }
@@ -3564,7 +3541,7 @@ h5.change-list {
 }
 
 #viewissue_relation_results .faded_out {
-  font-weight: 300;
+  font-weight: $theme-font-weight-regular;
 }
 
 .affected_item img {
@@ -3770,7 +3747,7 @@ h5.change-list {
   padding: 4px 0;
   vertical-align: top;
   color: #888;
-  font-weight: 400;
+  font-weight: $theme-font-weight-regular;
   font-size: 1em;
   text-transform: uppercase;
 }
@@ -3920,7 +3897,7 @@ table.issue_affects td img {
 }
 
 .backdrop_box.sectioned h2 {
-  font-weight: 400;
+  font-weight: $theme-font-weight-regular;
   color: #888;
   padding: 5px 0;
   margin: 15px 5px 5px 5px;
@@ -3968,7 +3945,7 @@ table.issue_affects td img {
   border: 1px solid rgba(100, 100, 100, 0.3);
   background-color: #F7F4DF;
   padding: 6px;
-  font-weight: 300;
+  font-weight: $theme-font-weight-regular;
   font-size: 1.1em;
   margin: 20px 5px;
   color: rgba(0, 0, 0, 0.6);
@@ -4047,7 +4024,7 @@ table.issue_affects td img {
   background-color: rgba(200, 200, 200, 0.1);
   font-size: 3.2em;
   line-height: 2.4em;
-  font-weight: 300;
+  font-weight: $theme-font-weight-regular;
   color: rgba(100, 100, 100, 0.5);
   text-align: center;
   vertical-align: middle;
@@ -4074,7 +4051,7 @@ table.issue_affects td img {
 }
 
 #epics-list li.add_epic_container label {
-  font-weight: 400;
+  font-weight: $theme-font-weight-regular;
   font-size: 0.9em;
   padding: 5px 0 0 0;
   display: block;
@@ -4105,7 +4082,7 @@ table.issue_affects td img {
 }
 
 #epics-list li.add_epic_container form .actionbuttons .button {
-  font-weight: 300;
+  font-weight: $theme-font-weight-regular;
   padding: 2px 5px;
   font-size: 1em;
   margin-right: -1px;
@@ -4151,7 +4128,7 @@ table.issue_affects td img {
 
 #builds-list .release_name, #epics-list .epic_name {
   font-size: 1.1em;
-  font-weight: 400;
+  font-weight: $theme-font-weight-regular;
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
@@ -4457,7 +4434,7 @@ table.issue_affects td img {
   width: 15px;
   height: 15px;
   font-size: 1px;
-  font-weight: 300;
+  font-weight: $theme-font-weight-regular;
   padding: 0;
   border: 1px solid rgba(0, 0, 0, 0.5);
   margin-right: 5px;
@@ -4474,7 +4451,7 @@ table.issue_affects td img {
   text-align: center;
   padding: 0 2px;
   font-size: 1em;
-  font-weight: 400;
+  font-weight: $theme-font-weight-regular;
   text-transform: uppercase;
   vertical-align: middle;
   line-height: 1em;
@@ -4486,7 +4463,7 @@ table.issue_affects td img {
   text-align: center;
   padding: 0;
   font-size: 1em;
-  font-weight: 400;
+  font-weight: $theme-font-weight-regular;
   text-transform: uppercase;
   vertical-align: middle;
   line-height: 1em;
@@ -4498,27 +4475,27 @@ table.issue_affects td img {
 .priority.priority_1 {
   color: #BF0303;
   font-style: normal;
-  font-weight: 400;
+  font-weight: $theme-font-weight-regular;
 }
 
 .priority.priority_2, .priority.priority_3 {
   color: #C39500;
-  font-weight: 400;
+  font-weight: $theme-font-weight-regular;
 }
 
 .priority.priority_4 {
   color: #00892C;
-  font-weight: 300;
+  font-weight: $theme-font-weight-regular;
 }
 
 .priority.priority_5, .priority.priority_6 {
   color: #888;
-  font-weight: 300;
+  font-weight: $theme-font-weight-regular;
 }
 
 .priority.priority_0 {
   color: #DDD;
-  font-weight: 300;
+  font-weight: $theme-font-weight-regular;
 }
 
 .whiteboard-issue .priority.priority_1 {
@@ -4613,7 +4590,7 @@ table.issue_affects td img {
 }
 
 .whiteboard-issue .epic_badge {
-  font-weight: 300;
+  font-weight: $theme-font-weight-regular;
   font-size: 1em;
 }
 
@@ -4637,7 +4614,7 @@ table.issue_affects td img {
 .whiteboard-issue .issue_estimates {
   color: #AAA;
   font-size: 1.1em;
-  font-weight: 300;
+  font-weight: $theme-font-weight-regular;
   border: none;
   text-shadow: none;
   padding: 0 0 0 17px;
@@ -4746,7 +4723,7 @@ a.dynamic_menu_link.active, a.dynamic_menu_link.active:hover {
   color: #888;
   font-size: 0.85em;
   padding: 2px;
-  font-weight: 400;
+  font-weight: $theme-font-weight-regular;
   text-transform: uppercase;
   border-bottom: 1px dotted #CCC;
 }
@@ -4826,19 +4803,19 @@ ul.milestone_issues_container li {
 
 ul.milestone_issues_container li .header, .infobox .header {
   font-size: 1.1em;
-  font-weight: 400;
+  font-weight: $theme-font-weight-regular;
 }
 
 ul.milestone_issues_container li .content {
   padding-top: 3px;
   line-height: 15px;
-  font-weight: 300;
+  font-weight: $theme-font-weight-regular;
   margin-bottom: 12px;
 }
 
 ul.milestone_issues_container li .story_title {
   font-size: 0.9em;
-  font-weight: 400;
+  font-weight: $theme-font-weight-regular;
   padding-top: 1px;
   height: 18px;
   overflow: hidden;
@@ -4865,11 +4842,11 @@ ul.milestone_issues_container li:hover .story_color {
 .story_estimation_div .header {
   float: left;
   padding-top: 3px;
-  font-weight: 400;
+  font-weight: $theme-font-weight-regular;
 }
 
 .story_estimation_div a {
-  font-weight: 300;
+  font-weight: $theme-font-weight-regular;
 }
 
 .story_estimation_div input[type="text"] {
@@ -4879,7 +4856,7 @@ ul.milestone_issues_container li:hover .story_color {
 ul.milestone_issues_container li .story_no {
   float: left;
   font-size: 1.1em;
-  font-weight: 400;
+  font-weight: $theme-font-weight-regular;
   font-style: italic;
   background-color: transparent;
   color: #AAA;
@@ -4890,7 +4867,7 @@ ul.milestone_issues_container li .story_no {
 ul.milestone_issues_container li .story_estimate {
   float: right;
   margin-left: 3px;
-  font-weight: 300;
+  font-weight: $theme-font-weight-regular;
   padding: 1px 0 0 0;
 }
 
@@ -4904,14 +4881,14 @@ ul.milestone_issues_container li .story_owner {
   bottom: 1px;
   left: 8px;
   font-size: 1.1em;
-  font-weight: 300;
+  font-weight: $theme-font-weight-regular;
   padding: 1px 4px 1px 1px;
 }
 
 ul.milestone_issues_container li .story_tags {
   padding-top: 3px;
   line-height: 15px;
-  font-weight: 300;
+  font-weight: $theme-font-weight-regular;
 }
 
 ul.milestone_issues_container li .actions {
@@ -4926,7 +4903,7 @@ ul.milestone_issues_container li .actions a:hover {
 
 ul.milestone_issues_container li .actions .task_count {
   font-size: 1.1em;
-  font-weight: 300;
+  font-weight: $theme-font-weight-regular;
   color: #AAA;
 }
 
@@ -4936,7 +4913,7 @@ ul.milestone_issues_container li:hover .actions {
 
 ul.milestone_issues_container li .actions label {
   float: left;
-  font-weight: 400;
+  font-weight: $theme-font-weight-regular;
   margin: 0 5px 0 0;
   padding: 0;
   font-size: 0.9em;
@@ -4951,7 +4928,7 @@ ul.milestone_issues_container li .actions label {
 }
 
 #scrum #scrum_menu .header {
-  font-weight: 600;
+  font-weight: $theme-font-weight-bold;
   margin-bottom: 5px;
 }
 
@@ -4966,7 +4943,7 @@ ul.milestone_issues_container li .actions label {
   border: 1px solid #D6D6a1;
   margin: 2px;
   padding: 2px;
-  font-weight: 300;
+  font-weight: $theme-font-weight-regular;
 }
 
 .related_issue {
@@ -4976,7 +4953,7 @@ ul.milestone_issues_container li .actions label {
   border: 1px solid #DDD;
   margin: 2px;
   padding: 2px;
-  font-weight: 300;
+  font-weight: $theme-font-weight-regular;
 }
 
 #related_parent_issues_inline td, #related_child_issues_inline td {
@@ -5032,7 +5009,7 @@ h3 .dropdown_box a, h3 .dropdown_box a:hover {
 }
 
 #scrum_unassigned .add_story_header {
-  font-weight: 400;
+  font-weight: $theme-font-weight-regular;
   float: left;
 }
 
@@ -5040,7 +5017,7 @@ h3 .dropdown_box a, h3 .dropdown_box a:hover {
   font-size: 0.9em;
   padding: 0 15px;
   color: #888;
-  font-weight: 300;
+  font-weight: $theme-font-weight-regular;
   text-transform: uppercase;
 }
 
@@ -5116,7 +5093,7 @@ h3 .dropdown_box a, h3 .dropdown_box a:hover {
 #milestone_details_overview td.estimates {
   padding: 3px;
   text-align: center;
-  font-weight: 300;
+  font-weight: $theme-font-weight-regular;
 }
 
 #milestone_details_overview td.milestone_issue_actions {
@@ -5166,7 +5143,7 @@ h3 .dropdown_box a, h3 .dropdown_box a:hover {
 .whiteboard-columns thead h1,
 .whiteboard-columns .thead h1 {
   font-size: 1.1em;
-  font-weight: 400;
+  font-weight: $theme-font-weight-regular;
   color: #777;
   margin: 0;
   border-bottom: 3px solid rgba(200, 200, 200, 0.3);
@@ -5204,7 +5181,7 @@ h3 .dropdown_box a, h3 .dropdown_box a:hover {
 .whiteboard-columns thead h1 .column_count,
 .whiteboard-columns .thead h1 .column_count {
   display: inline-block;
-  font-weight: 300;
+  font-weight: $theme-font-weight-regular;
   background-color: #FFF;
   color: #888;
   text-transform: none;
@@ -5236,7 +5213,7 @@ h3 .dropdown_box a, h3 .dropdown_box a:hover {
   float: right;
   line-height: 1em;
   margin-left: 2px;
-  font-weight: 300;
+  font-weight: $theme-font-weight-regular;
   font-size: 0.9em;
   color: rgba(0, 0, 0, 0.7);
 }
@@ -5301,7 +5278,7 @@ h3 .dropdown_box a, h3 .dropdown_box a:hover {
   font-size: 1.1em;
   margin: 5px 0 0 0;
   padding: 10px;
-  font-weight: 400;
+  font-weight: $theme-font-weight-regular;
   border-bottom: 1px dotted rgba(100, 100, 100, 0.3);
 }
 
@@ -5346,7 +5323,7 @@ h3 .dropdown_box a, h3 .dropdown_box a:hover {
 }
 
 .transition-selector h2 {
-  font-weight: 400;
+  font-weight: $theme-font-weight-regular;
   margin: 25px 5px 5px 5px;
   padding: 5px 0;
   color: #888;
@@ -5583,7 +5560,7 @@ h3 .dropdown_box a, h3 .dropdown_box a:hover {
 .menu_links .header {
   font-size: 1em;
   border-bottom: 0;
-  font-weight: 400;
+  font-weight: $theme-font-weight-regular;
   margin-bottom: 5px;
 }
 
@@ -5608,7 +5585,7 @@ h3 .dropdown_box a, h3 .dropdown_box a:hover {
 }
 
 .menu_links .content a {
-  font-weight: 400;
+  font-weight: $theme-font-weight-regular;
   display: block;
   padding: 3px 5px;
   color: #555;
@@ -5617,7 +5594,7 @@ h3 .dropdown_box a, h3 .dropdown_box a:hover {
 }
 
 .menu_links .content i:not(.fas):not(.far) {
-  font-weight: 300;
+  font-weight: $theme-font-weight-regular;
   display: block;
   padding: 3px 5px;
   color: #555;
@@ -5635,13 +5612,13 @@ h3 .dropdown_box a, h3 .dropdown_box a:hover {
 }
 
 .menu_links .content a.selected {
-  font-weight: 400;
+  font-weight: $theme-font-weight-regular;
   color: #333;
   background-color: rgba(200, 200, 200, .2);
 }
 
 .menu_links .content a.selected:hover {
-  font-weight: 400;
+  font-weight: $theme-font-weight-regular;
   color: #00a400;
 }
 
@@ -5689,7 +5666,7 @@ h3 .dropdown_box a, h3 .dropdown_box a:hover {
 }
 
 .infobox .close_me input[type="submit"] {
-  font-weight: 300;
+  font-weight: $theme-font-weight-regular;
   margin-left: 5px;
 }
 
@@ -5697,7 +5674,7 @@ h3 .dropdown_box a, h3 .dropdown_box a:hover {
   padding: 0;
   font-size: 0.95em;
   text-align: left;
-  font-weight: 300;
+  font-weight: $theme-font-weight-regular;
   margin: 0;
 }
 
@@ -5755,7 +5732,7 @@ div.quickaddtask .close_micro_popup_link {
 
 #project_name {
   font-size: 1.7em;
-  font-weight: 400;
+  font-weight: $theme-font-weight-regular;
   margin: 8px 5px 5px 0;
   line-height: 1.3;
   display: inline-block;
@@ -5764,14 +5741,14 @@ div.quickaddtask .close_micro_popup_link {
 #project_key_span {
   margin: 3px 0 0 0;
   font-size: 0.7em;
-  font-weight: 300;
+  font-weight: $theme-font-weight-regular;
   display: inline;
   padding: 3px;
   color: #AAA;
 }
 
 #project_team, #project_client {
-  font-weight: 300;
+  font-weight: $theme-font-weight-regular;
   margin: 0 5px 5px 0;
 }
 
@@ -5835,7 +5812,7 @@ ul.related-issues-list li h1,
 ul.files-list li h1 {
   flex: 1 1 auto;
   font-size: 1.3em;
-  font-weight: 300;
+  font-weight: $theme-font-weight-regular;
   display: flex;
   box-sizing: border-box;
 }
@@ -5875,14 +5852,14 @@ ul.files-list li h1 .action-buttons {
 ul.property-list li .property {
   flex: 0 0 35%;
   padding: 5px;
-  font-weight: 400;
+  font-weight: $theme-font-weight-regular;
   box-sizing: border-box;
 }
 
 ul.property-list li .value {
   flex: 0 0 65%;
   padding: 5px;
-  font-weight: 300;
+  font-weight: $theme-font-weight-regular;
   box-sizing: border-box;
 }
 
@@ -6036,13 +6013,13 @@ ul.files-list a:focus .fas {
 }
 
 ul.files-list .action_D .filename {
-  font-weight: 400;
+  font-weight: $theme-font-weight-regular;
   color: #C44;
   font-size: .95em;
 }
 
 /*ul.files-list .action_A .filename {*/
-/*font-weight: 400;*/
+/*font-weight: $theme-font-weight-regular;*/
 /*font-size: .95em;*/
 /*}*/
 /*ul.files-list .action_A .filename::after {*/
@@ -6059,7 +6036,7 @@ ul.files-list .action_D .filename {
 
 
 .project_role .label {
-  font-weight: 400;
+  font-weight: $theme-font-weight-regular;
   display: inline-block;
   margin: 0 10px 0 0;
 }
@@ -6125,7 +6102,7 @@ ul.files-list .action_D .filename {
 
 .project_team_list .roles_list {
   font-size: 1em;
-  font-weight: 300;
+  font-weight: $theme-font-weight-regular;
   display: block;
   clear: both;
   margin-top: 5px;
@@ -6134,7 +6111,7 @@ ul.files-list .action_D .filename {
 
 #project_description {
   font-size: 1.1em;
-  font-weight: 300;
+  font-weight: $theme-font-weight-regular;
   color: #666;
 }
 
@@ -6165,7 +6142,7 @@ ul.files-list .action_D .filename {
 }
 
 .project_client_info .project_client_header {
-  font-weight: 400;
+  font-weight: $theme-font-weight-regular;
   font-size: 1.5em;
 }
 
@@ -6229,7 +6206,7 @@ ul.files-list .action_D .filename {
 }
 
 #timeline .latest_action_dates {
-  font-weight: 400;
+  font-weight: $theme-font-weight-regular;
   color: #888;
   text-transform: uppercase;
   border-bottom: 1px dotted #CCC;
@@ -6251,7 +6228,7 @@ ul.files-list .action_D .filename {
 }
 
 .timeline_actions a {
-  font-weight: 400;
+  font-weight: $theme-font-weight-regular;
 }
 
 .timeline_actions .content {
@@ -6287,7 +6264,7 @@ ul.files-list .action_D .filename {
 
 .milestone_points {
   color: #888;
-  font-weight: 400;
+  font-weight: $theme-font-weight-regular;
 }
 
 .roadmap_percentbar .percentcontainer {
@@ -6301,7 +6278,7 @@ ul.files-list .action_D .filename {
 .roadmap_percentdescription {
   float: left;
   padding: 5px;
-  font-weight: 300;
+  font-weight: $theme-font-weight-regular;
   color: #555;
 }
 
@@ -6318,7 +6295,7 @@ ul.files-list .action_D .filename {
 .roadmap_dates {
   display: inline-block;
   margin-left: 5px;
-  font-weight: 300;
+  font-weight: $theme-font-weight-regular;
   color: #888;
   font-size: 0.9em;
   text-transform: none;
@@ -6362,7 +6339,7 @@ ul.files-list .action_D .filename {
 }
 
 .roadmap_issue.blocking .issue_title {
-  font-weight: 400;
+  font-weight: $theme-font-weight-regular;
   color: red;
 }
 
@@ -6643,7 +6620,7 @@ a:hover .issue_title {
 }
 
 .openid_provider_name {
-  font-weight: 400;
+  font-weight: $theme-font-weight-regular;
 }
 
 /* sortable tables */
@@ -6700,7 +6677,7 @@ table.sortable tr th.nosort {
   display: inline-block;
   font-size: 14px;
   font-family: Helvetica, Arial, sans-serif;
-  font-weight: 400;
+  font-weight: $theme-font-weight-regular;
   line-height: 1.1;
   overflow: hidden;
   position: relative;
@@ -6962,6 +6939,7 @@ table.sortable tr th.nosort {
   border: 1px solid rgba(200, 200, 200, 0.7);
   align-items: center;
   border-radius: 3px;
+  font-weight: $theme-font-weight-light;
 
   &.type-error {
     background-color: #d62246;
@@ -6990,7 +6968,7 @@ table.sortable tr th.nosort {
   .title {
     flex: 1 1 auto;
     font-size: 1.1em;
-    font-weight: 600;
+    font-weight: $theme-font-weight-bold;
   }
 
   .message {
@@ -7074,9 +7052,9 @@ table.sortable tr th.nosort {
   padding: 10px;
   text-align: left;
   border-radius: 3px;
-  font-family: 'Source Sans Pro', sans-serif;
+  font-family: $theme-font-family;
   font-size: 14px;
-  font-weight: 300;
+  font-weight: $theme-font-weight-regular;
   position: fixed;
   z-index: 9999999;
 }
@@ -7181,7 +7159,7 @@ table.sortable tr th.nosort {
   padding: 0 0 7px 0;
   color: #999;
   border-bottom: 1px dotted rgb(185, 185, 185);
-  font-weight: 400;
+  font-weight: $theme-font-weight-regular;
 }
 
 .tutorial.block_overlay {
@@ -7196,7 +7174,7 @@ table.sortable tr th.nosort {
 .tutorial-status {
   text-align: right;
   font-size: 0.8em;
-  font-weight: 300;
+  font-weight: $theme-font-weight-regular;
   color: #888;
   margin-bottom: 5px;
 }
@@ -7245,7 +7223,7 @@ div.calendar th {
 }
 
 div.calendar td.title {
-  font-weight: 400;
+  font-weight: $theme-font-weight-regular;
   font-size: 1.4em;
 }
 
@@ -7253,7 +7231,7 @@ div.calendar th {
   background: #ddd;
   border-bottom: 1px solid #ccc;
   border-top: 1px solid #ccc;
-  font-weight: 400;
+  font-weight: $theme-font-weight-regular;
   color: #555;
 }
 
@@ -7281,13 +7259,13 @@ div.calendar td.button:active {
 }
 
 div.calendar tr.days td.selected {
-  font-weight: 400;
+  font-weight: $theme-font-weight-regular;
   background-color: #fff;
   color: #000;
 }
 
 div.calendar tr.days td.today {
-  font-weight: 400;
+  font-weight: $theme-font-weight-regular;
   color: #D50000;
 }
 
@@ -7574,7 +7552,7 @@ input[type=checkbox][name=send_login_details] {
 }
 
 #user_details_popup .user_realname {
-  font-weight: 400;
+  font-weight: $theme-font-weight-regular;
   margin-top: 5px;
   clear: both;
 }
@@ -8123,7 +8101,7 @@ form#vcs div.config-explanation {
 }
 
 .dashboard_team_header {
-  font-weight: 400;
+  font-weight: $theme-font-weight-regular;
 }
 
 /* Roadmap */
@@ -8283,7 +8261,7 @@ form#vcs div.config-explanation {
 
 .issue_access_policy_box #acl-users-teams-selector h4,
 .report-issue-custom-access-check #acl-users-teams-selector h4 {
-  font-weight: 400;
+  font-weight: $theme-font-weight-regular;
   margin-left: 5px;
 }
 
@@ -8374,6 +8352,7 @@ td.legendLabel {
 
 .issuelog-project-logo {
   margin-bottom: -3px;
+  width: 1.5em;
 }
 
 /* Issues */
@@ -8473,7 +8452,7 @@ td.legendLabel {
 /* Issue */
 
 .typeahead.dropdown-menu {
-  font-family: 'Source Sans Pro', sans-serif;
+  font-family: $theme-font-family;
 }
 
 .typeahead.dropdown-menu a:hover {
@@ -8483,11 +8462,11 @@ td.legendLabel {
 /* Your account */
 
 #account_info_container #user_name_span {
-  font-weight: 300;
+  font-weight: $theme-font-weight-regular;
 }
 
 #account_info_container #user_name_span::first-line {
-  font-weight: 400;
+  font-weight: $theme-font-weight-regular;
 }
 
 #account_info_container #account_user_info img {
@@ -8799,19 +8778,8 @@ td.legendLabel {
   text-overflow: ellipsis;
 }
 
-#parent_article_name_span {
-  margin-bottom: 10px;
-  display: inline-block;
-}
-
-.article.syntax_mw .content br {
-  display: block;
-  content: "";
-  margin-top: 7px;
-}
-
 .article .content {
-  line-height: 1.7;
+  line-height: 1.4em;
 }
 
 .wiki-find-articles-button {
@@ -8922,7 +8890,7 @@ td.legendLabel {
 
 .system_comment .commit_main {
   clear: both;
-  font-family: "Fira Mono", monospace;
+  font-family: $theme-font-family-mono;
   padding: 5px;
   margin-bottom: -10px;
   border-radius: 3px;
@@ -8952,7 +8920,7 @@ table.desktop-notifications-settings tr:first-child > td:last-child {
   box-shadow: 0 0 3px rgba(0, 0, 0, 0.2) inset;
   padding: 10px 15px 10px 60px;
   font-size: 1.1em;
-  font-weight: 300;
+  font-weight: $theme-font-weight-regular;
   color: #333;
   background-color: #FFF;
   border-radius: 2px;
@@ -8992,7 +8960,7 @@ table.desktop-notifications-settings tr:first-child > td:last-child {
   height: 45px;
   box-sizing: border-box;
   font-size: 1.1em;
-  font-weight: 300;
+  font-weight: $theme-font-weight-regular;
   padding: 0 13px;
   vertical-align: top;
 }
@@ -9087,7 +9055,7 @@ form.disabled .address-container + input[type=submit], .address-container ~ .cha
 
 .todo-comment-author > span {
   color: #AAA;
-  font-weight: 300;
+  font-weight: $theme-font-weight-regular;
   font-size: 0.9em;
   display: inline-block;
   margin-left: 2px;
@@ -9112,18 +9080,18 @@ header .mobile_menuanchor {
 
 #issue_details fieldset dd.priority_1 {
   color: #C30000;
-  font-weight: 400;
+  font-weight: $theme-font-weight-regular;
 }
 
 #issue_details fieldset dd.priority_2 {
   color: #FA0;
-  font-weight: 400;
+  font-weight: $theme-font-weight-regular;
 }
 
 #issue_details fieldset dd.priority_4,
 #issue_details fieldset dd.priority_5 {
   color: #070;
-  font-weight: 300;
+  font-weight: $theme-font-weight-regular;
 }
 
 @import 'widgets';

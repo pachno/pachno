@@ -2,6 +2,10 @@
 
     namespace pachno\core\entities\tables;
 
+    use b2db\Criterion;
+    use b2db\Query;
+    use b2db\Update;
+    use pachno\core\entities\WorkflowTransitionAction;
     use pachno\core\entities\WorkflowTransitionValidationRule;
     use pachno\core\framework;
 
@@ -22,7 +26,8 @@
      * @subpackage tables
      *
      * @method static WorkflowTransitionValidationRules getTable() Return an instance of this table
-     * @method WorkflowTransitionValidationRule selectById() Return a WorkflowTransitionValidationRule object
+     * @method WorkflowTransitionValidationRule selectById($id, Query $query = null, $join = 'all')
+     * @method WorkflowTransitionValidationRule[] select(Query $query, $join = 'all')
      *
      * @Table(name="workflow_transition_validation_rules")
      * @Entity(class="\pachno\core\entities\WorkflowTransitionValidationRule")
@@ -69,4 +74,35 @@
             $this->addIndex('scope_transitionid', [self::SCOPE, self::TRANSITION_ID]);
         }
 
+        public function updateValidationRule($rule_type, $current_item_id, $new_item_id)
+        {
+            $query = $this->getQuery();
+            $query->where(self::RULE, $rule_type);
+            $query->where(self::RULE_VALUE, $current_item_id);
+
+            $update = new Update();
+            $update->add(self::RULE_VALUE, $new_item_id);
+
+            $this->rawUpdate($update, $query);
+
+            $query = $this->getQuery();
+            $query->where(self::RULE, $rule_type);
+            $query->where(self::RULE_VALUE, $current_item_id, Criterion::LIKE);
+            foreach ($this->select($query) as $rule) {
+                $valid_items = explode(',', $rule->getRuleValue());
+                foreach ($valid_items as $key => $value) {
+                    if ($value == $current_item_id) {
+                        $valid_items[$key] = $new_item_id;
+                        $updateQuery = $this->getQuery();
+                        $updateQuery->where(self::ID, $rule->getID());
+
+                        $update = new Update();
+                        $update->update(self::RULE_VALUE, implode(',', $valid_items));
+
+                        $this->rawUpdate($update, $updateQuery);
+                        break;
+                    }
+                }
+            }
+        }
     }

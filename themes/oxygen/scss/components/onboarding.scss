@@ -1,6 +1,8 @@
+@import "../variables";
+
 .onboarding {
   font-size: 1.6em;
-  font-weight: 300;
+  font-weight: $theme-font-weight-regular;
   color: rgba(0, 0, 0, 0.6);
   text-align: center;
   line-height: 1.4em;
@@ -31,10 +33,11 @@
     text-align: center;
     font-size: 1.3rem;
     margin-top: 25px;
+    font-weight: $theme-font-weight-light;
 
     &:first-line {
       font-size: 1.15em;
-      font-weight: 400;
+      font-weight: $theme-font-weight-regular;
     }
   }
 

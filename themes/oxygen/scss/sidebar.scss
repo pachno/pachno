@@ -1,3 +1,5 @@
+@import "variables";
+
 .content-with-sidebar {
   display: flex;
   flex-direction: row;
@@ -54,6 +56,7 @@ nav.sidebar {
       margin-top: 1em;
       font-size: .6em;
       line-height: 1.3em;
+      font-weight: $theme-font-weight-light;
     }
 
     button {

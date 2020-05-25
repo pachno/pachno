@@ -260,4 +260,15 @@
             return $this->rawSelectOne($query);
         }
 
+        public function updateActivityType($current_activity_type_id, $new_activity_type_id)
+        {
+            $query = $this->getQuery();
+            $query->where(self::ACTIVITY_TYPE, $current_activity_type_id);
+
+            $update = new Update();
+            $update->add(self::ACTIVITY_TYPE, $new_activity_type_id);
+
+            $this->rawUpdate($update, $query);
+        }
+
     }

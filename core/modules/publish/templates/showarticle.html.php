@@ -13,10 +13,10 @@
     $pachno_response->setTitle($article->getName());
 
 ?>
-<div class="content-with-sidebar">
+<div class="content-with-sidebar article-container">
 <?php if ($article instanceof \pachno\core\entities\Article): ?>
     <?php include_component('manualsidebar', ['article' => $article]); ?>
-    <div class="main_area article">
+    <div class="main_area">
         <a name="top"></a>
         <?php if ($error): ?>
             <div class="redbox">
@@ -48,7 +48,7 @@
         <?php endif; ?>
         <?php if (!$article->getID() && ((Context::isProjectContext() && !Context::getCurrentProject()->isArchived()) || (!Context::isProjectContext() && Context::getModule('publish')->canUserEditArticle($article->getName())))): ?>
             <div class="publish_article_actions">
-                <form action="<?php echo make_url('publish_article_edit', ['article_name' => $article->getName()]); ?>" method="get" style="float: left; margin-right: 10px;">
+                <form action="<?php echo make_url('publish_article_edit', ['article_id' => $article->getId()]); ?>" method="get" style="float: left; margin-right: 10px;">
                     <input class="button button-green" type="submit" value="<?php echo __('Create this article'); ?>">
                 </form>
             </div>

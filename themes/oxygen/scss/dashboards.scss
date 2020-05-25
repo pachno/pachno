@@ -1,3 +1,5 @@
+@import "variables";
+
 #customize_dashboard_icon {
   img,
   span {
@@ -45,7 +47,7 @@
 
       > li {
         font-size: .9rem;
-        font-weight: 300;
+        font-weight: $theme-font-weight-regular;
         display: flex;
         flex-direction: column;
         align-items: stretch;
@@ -70,7 +72,7 @@
         &.dashboard_add_view_container > div {
           cursor: pointer;
           font-size: 1.7em;
-          font-weight: 300;
+          font-weight: $theme-font-weight-regular;
           border: 1px dashed #DDD;
           padding: 50px 0;
           text-align: center;
@@ -107,7 +109,7 @@
             padding: 10px;
             border: none;
             border-bottom: 1px dotted #CCC;
-            font-weight: 600;
+            font-weight: $theme-font-weight-bold;
             font-size: 1.1em;
             box-sizing: border-box;
             text-transform: uppercase;
@@ -160,7 +162,7 @@
 
 .dashboard.layout_standard ul.dashboard_column > li .faded_out {
   font-size: 0.9em;
-  font-weight: 300;
+  font-weight: $theme-font-weight-regular;
 }
 
 .dashboard.layout_standard ul.dashboard_column > li div.faded_out {
@@ -169,7 +171,7 @@
 
 .dashboard.layout_standard ul.dashboard_column > li table tr td {
   font-size: 1em;
-  font-weight: 300;
+  font-weight: $theme-font-weight-regular;
   vertical-align: top;
 }
 
@@ -198,7 +200,7 @@
 }
 
 .dashboard.layout_standard .dashboard_view_header {
-  font-weight: 400;
+  font-weight: $theme-font-weight-regular;
   color: #666;
   font-size: 1em;
   padding: 4px;
@@ -279,7 +281,7 @@
 }
 
 #add_dashboard_views h3, #add_dashboard_views h4 {
-  font-weight: 400;
+  font-weight: $theme-font-weight-regular;
   color: #888;
   text-transform: uppercase;
   border-bottom: 1px dotted #CCC;
@@ -368,12 +370,12 @@
 
 .dashboard_view_content a.more {
   float: right;
-  font-weight: 400;
+  font-weight: $theme-font-weight-regular;
   padding-top: 5px;
 }
 
 .dashboard_view_content .project_role {
-  font-weight: 300;
+  font-weight: $theme-font-weight-regular;
   margin: 5px 0;
   font-size: 0.9em;
 }
@@ -625,7 +627,7 @@
   padding: 4px 0;
   border: none;
   font-size: 1.1em;
-  font-weight: 400;
+  font-weight: $theme-font-weight-regular;
 }
 
 .milestone_box .milestone_basic_container, .milestone_box .milestone_counts_container {
@@ -648,7 +650,7 @@
 }
 
 .milestone_box .milestone_name {
-  font-weight: 400;
+  font-weight: $theme-font-weight-regular;
   font-size: 1.2em;
   text-transform: uppercase;
   color: #777;

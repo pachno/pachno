@@ -2,15 +2,20 @@
 
     namespace pachno\core\entities\tables;
 
+    use b2db\Criterion;
+    use b2db\Query;
     use b2db\QueryColumnSort;
     use b2db\Update;
     use pachno\core\entities\Datatype;
+    use pachno\core\entities\DatatypeBase;
     use pachno\core\framework;
 
     /**
      * List types table
      *
      * @method static ListTypes getTable()
+     * @method DatatypeBase[] select(Query $query, $join = 'all')
+     * @method DatatypeBase selectOne(Query $query, $join = 'all')
      *
      * @package pachno
      * @subpackage tables
@@ -45,41 +50,103 @@
 
         protected static $_item_cache = null;
 
-        public function clearListTypeCache()
+        public function clearListTypeCache($scope_id = null)
         {
-            self::$_item_cache = null;
+            if ($scope_id === null) {
+                $scope_id = framework\Context::getScope()->getID();
+            }
+
+            unset(self::$_item_cache[$scope_id]);
         }
 
-        public function populateItemCache()
+        public function populateItemCache($scope_id = null)
         {
-            $this->_populateItemCache();
+            $this->_populateItemCache($scope_id);
         }
 
-        protected function _populateItemCache()
+        public function removeFromItemCache(DatatypeBase $item)
         {
-            if (self::$_item_cache === null) {
-                self::$_item_cache = [];
+            if (isset(self::$_item_cache[$item->getScope()->getID()][$item->getItemtype()][$item->getID()])) {
+                unset(self::$_item_cache[$item->getScope()->getID()][$item->getItemtype()][$item->getID()]);
+            }
+        }
+
+        public function updateItemCache(DatatypeBase $item)
+        {
+            if (isset(self::$_item_cache[$item->getScope()->getID()])) {
+                if (!isset(self::$_item_cache[$item->getScope()->getID()][$item->getItemtype()])) {
+                    self::$_item_cache[$item->getScope()->getID()][$item->getItemtype()] = [];
+                }
+                self::$_item_cache[$item->getScope()->getID()][$item->getItemtype()][$item->getID()] = $item;
+            }
+        }
+
+        protected function _populateItemCache($scope_id = null)
+        {
+            if ($scope_id === null) {
+                $scope_id = framework\Context::getScope()->getID();
+            }
+
+            if (!isset(self::$_item_cache[$scope_id])) {
+                self::$_item_cache[$scope_id] = [];
                 $query = $this->getQuery();
                 $query->where(self::SCOPE, framework\Context::getScope()->getID());
                 $query->addOrderBy(self::ORDER, QueryColumnSort::SORT_ASC);
                 $items = $this->select($query);
                 foreach ($items as $item) {
-                    self::$_item_cache[$item->getItemtype()][$item->getID()] = $item;
+                    $this->updateItemCache($item);
                 }
             }
         }
 
-        public function getAllByItemType($itemtype)
+        /**
+         * @param $itemtype
+         * @param int $scope_id
+         *
+         * @return DatatypeBase[]
+         */
+        public function getAllByItemType($itemtype, $scope_id = null)
         {
-            $this->_populateItemCache();
+            if ($scope_id === null) {
+                $scope_id = framework\Context::getScope()->getID();
+            }
 
-            return (array_key_exists($itemtype, self::$_item_cache)) ? self::$_item_cache[$itemtype] : [];
+            $this->_populateItemCache($scope_id);
+
+            return (array_key_exists($itemtype, self::$_item_cache[$scope_id])) ? self::$_item_cache[$scope_id][$itemtype] : [];
         }
 
-        public function getAllByItemTypeAndItemdata($itemtype, $itemdata)
+        /**
+         * @param $key
+         * @param $itemtype
+         * @param null $exclude_id
+         * @param bool $ignore_empty
+         *
+         * @return DatatypeBase
+         */
+        public function getByKeyAndItemType($key, $itemtype, $exclude_id = null, $ignore_empty = false)
         {
-            $this->_populateItemCache();
-            $items = (array_key_exists($itemtype, self::$_item_cache)) ? self::$_item_cache[$itemtype] : [];
+            $query = $this->getQuery();
+            $query->where('listtypes.key', $key);
+            $query->where(self::ITEMTYPE, $itemtype);
+            if ($exclude_id !== null) {
+                $query->where(self::ID, $exclude_id, Criterion::NOT_EQUALS);
+            }
+            if ($ignore_empty) {
+                $query->where(self::ITEMDATA, '', Criterion::NOT_EQUALS);
+                $query->where(self::ITEMDATA, '#', Criterion::NOT_EQUALS);
+            }
+
+            return $this->selectOne($query);
+        }
+
+        public function getAllByItemTypeAndItemdata($itemtype, $itemdata, $scope_id = null)
+        {
+            if ($scope_id === null) {
+                $scope_id = framework\Context::getScope()->getID();
+            }
+            $this->_populateItemCache($scope_id);
+            $items = (array_key_exists($itemtype, self::$_item_cache[$scope_id])) ? self::$_item_cache[$itemtype] : [];
             foreach ($items as $id => $item) {
                 if ($item->getItemdata() != $itemdata) unset($items[$id]);
             }

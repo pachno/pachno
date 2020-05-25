@@ -1,3 +1,4 @@
+@import "variables";
 /* search styling */
 /* search boxes */
 
@@ -21,7 +22,7 @@
   }
 
   .results_header {
-    font-weight: 600;
+    font-weight: $theme-font-weight-bold;
     font-size: 1.4em;
     padding: 10px;
     margin: 0;
@@ -40,7 +41,7 @@
     }
 
     .searchterm {
-      font-weight: 300;
+      font-weight: $theme-font-weight-regular;
       font-style: italic;
     }
   }
@@ -69,7 +70,7 @@
 
   .search-bulk-actions {
     font-size: .9rem;
-    font-weight: 400;
+    font-weight: $theme-font-weight-regular;
     opacity: 1;
     transition: opacity .2s ease-in-out;
     border-right: 0;
@@ -140,6 +141,7 @@
         color: #141823;
         margin: 0 .35rem 0 0;
         flex: 1 1 65%;
+        font-weight: $theme-font-weight-light;
         &:hover {
           border-color: #0C8990;
         }
@@ -230,7 +232,7 @@
     margin: 2rem 0 0 2rem;
     padding: 6px;
     font-size: 1.2em;
-    font-weight: 600;
+    font-weight: $theme-font-weight-bold;
     text-transform: uppercase;
     border: none;
     background-color: transparent;
@@ -243,13 +245,13 @@
   .priority_1 .column.sc_priority,
   h5.priority_1 {
     color: #C30000;
-    font-weight: 600;
+    font-weight: $theme-font-weight-bold;
   }
 
   .priority_2 .column.sc_priority,
   h5.priority_2 {
     color: #FA0;
-    font-weight: 600;
+    font-weight: $theme-font-weight-bold;
   }
 
   .priority_4 .column.sc_priority,
@@ -257,12 +259,12 @@
   .priority_5 .column.sc_priority,
   h5.priority_5 {
     color: #070;
-    font-weight: 300;
+    font-weight: $theme-font-weight-regular;
   }
 
   h5.priority_4,
   h5.priority_5 {
-    font-weight: 600;
+    font-weight: $theme-font-weight-bold;
   }
   .yellow_borderless {
     .user_pain {

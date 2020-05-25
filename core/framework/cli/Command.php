@@ -20,7 +20,7 @@
     abstract class Command
     {
 
-        const COLOR_BLACK = 29;
+        const COLOR_BLACK = 30;
 
         const COLOR_RED = 31;
 
@@ -35,6 +35,8 @@
         const COLOR_CYAN = 36;
 
         const COLOR_WHITE = 37;
+
+        const STYLE_DEFAULT = 0;
 
         const STYLE_BOLD = 1;
 
@@ -254,9 +256,41 @@
             return array_key_exists($key, self::$_provided_arguments);
         }
 
-        public function cliEcho($text, $color = 'white', $style = null)
+        public function cliEcho($text, $color = self::COLOR_WHITE, $style = self::STYLE_DEFAULT)
         {
             self::cli_echo($text, $color, $style);
+        }
+
+        public function cliLineUp($lines = 1)
+        {
+            self::cli_echo("\033[{$lines}A");
+        }
+
+        public function cliLineDown($lines = 1)
+        {
+            self::cli_echo("\033[{$lines}B");
+        }
+
+        public function cliMoveLeft($position = null)
+        {
+            $position = $position ?? 500;
+            self::cli_echo("\033[{$position}D");
+        }
+
+        public function cliMoveRight($position = null)
+        {
+            $position = $position ?? 500;
+            self::cli_echo("\033[{$position}C");
+        }
+
+        public function cliClearLine()
+        {
+            self::cli_echo("\033[K");
+        }
+
+        public function cliClearAll()
+        {
+            self::cli_echo("\033[2J");
         }
 
         public static function cli_echo($text, $color = 'white', $style = null)

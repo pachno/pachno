@@ -1,3 +1,5 @@
+@import 'variables';
+
 .boards-container {
   display: flex;
   flex-direction: column;
@@ -79,7 +81,7 @@
 
         .name {
           font-size: 1.3em;
-          font-weight: 600;
+          font-weight: $theme-font-weight-bold;
         }
 
         .description {
@@ -164,7 +166,7 @@
           > span {
             flex: 1 1 auto;
             font-size: 1.2em;
-            font-weight: 600;
+            font-weight: $theme-font-weight-bold;
           }
 
           .statuses-badge {
@@ -305,7 +307,7 @@
     margin: 0 5px 0 17px;
     text-decoration: none;
     font-size: 1em;
-    font-weight: 600;
+    font-weight: $theme-font-weight-bold;
     line-height: 1.6;
   }
 
@@ -392,7 +394,7 @@
       justify-content: flex-start;
       margin: 0;
       padding: 0;
-      font-weight: 300;
+      font-weight: $theme-font-weight-regular;
 
       .name-container {
         display: flex;
@@ -405,7 +407,7 @@
           align-items: center;
           justify-content: flex-start;
           flex: 0 0 auto;
-          font-weight: 600;
+          font-weight: $theme-font-weight-bold;
           font-size: 1.2em;
           margin-right: .5em;
           min-width: 300px;
@@ -424,7 +426,7 @@
           min-width: 150px;
           background-color: rgb(225, 225, 225);
           height: 10px;
-          font-weight: 300;
+          font-weight: $theme-font-weight-regular;
           font-size: .8em;
           border-radius: 3px;
           position: relative;
@@ -449,7 +451,7 @@
         flex: 0 0 auto;
         display: flex;
         font-size: .9em;
-        font-weight: 300;
+        font-weight: $theme-font-weight-regular;
         flex-direction: row;
         align-items: center;
         justify-content: flex-start;
@@ -587,7 +589,7 @@
     .count {
       padding: 0;
       text-align: center;
-      font-weight: 300;
+      font-weight: $theme-font-weight-regular;
       flex: 0 0 90px;
       font-size: 1.1em;
       line-height: 1.5em;

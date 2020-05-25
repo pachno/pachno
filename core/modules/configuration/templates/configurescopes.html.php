@@ -1,4 +1,13 @@
-<?php $pachno_response->setTitle(__('Configure scopes')); ?>
+<?php
+
+    /**
+     * @var \pachno\core\framework\Response $pachno_response
+     * @var \pachno\core\helpers\Pagination $pagination
+     */
+
+    $pachno_response->setTitle(__('Configure scopes'));
+
+?>
 <div class="content-with-sidebar">
     <?php include_component('configuration/sidebar', ['selected_section' => \pachno\core\framework\Settings::CONFIGURATION_SECTION_SCOPES]); ?>
     <div class="configuration-container" id="configure-scopes-container">

@@ -1,3 +1,5 @@
+@import "../variables";
+
 .fancy-labels {
   display: flex;
   justify-content: center;
@@ -14,7 +16,7 @@
   transition: border-color .2s ease-in-out, background-color .2s ease-in-out;
   justify-content: flex-start;
   align-items: center;
-  font-weight: 300;
+  font-weight: $theme-font-weight-regular;
   text-transform: none;
   box-sizing: border-box;
 }

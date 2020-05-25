@@ -1,14 +1,14 @@
 @import '../variables';
 
 .fancy-tag-input-container {
-  font-family: 'Source Sans Pro', sans-serif;
+  font-family: $theme-font-family;
   font-size: 1em;
   color: #555;
   border: none;
   border-bottom: 1px solid #AAA;
   padding: 2px;
   vertical-align: middle;
-  font-weight: 300;
+  font-weight: $theme-font-weight-regular;
   background-color: #FFF;
 
   display: flex;

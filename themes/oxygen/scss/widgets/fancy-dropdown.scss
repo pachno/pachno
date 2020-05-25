@@ -1,3 +1,5 @@
+@import "../variables";
+
 .fancy-dropdown-container {
   display: flex;
   flex-direction: column;
@@ -38,7 +40,7 @@
 
     > label {
       flex: 0 0 auto;
-      font-weight: 300;
+      font-weight: $theme-font-weight-regular;
       font-size: .9em;
       text-transform: uppercase;
       margin-right: .5em;
@@ -51,6 +53,7 @@
       overflow: hidden;
       max-width: 250px;
       min-width: 100px;
+      font-weight: $theme-font-weight-light;
     }
 
     &.no-value > .value {

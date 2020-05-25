@@ -78,7 +78,7 @@
         /**
          * Show an article
          *
-         * @Route(name="project_article", url="/:project_key/wiki/:article_id/:article_name")
+         * @Route(name="project_article", url="/:project_key/docs/:article_id/:article_name")
          * @param Request $request
          */
         public function runProjectArticle(Request $request)
@@ -89,7 +89,7 @@
         /**
          * Show an article
          *
-         * @Route(name="article", url="/wiki/:article_id/:article_name")
+         * @Route(name="article", url="/docs/:article_id/:article_name")
          * @param Request $request
          */
         public function runShowArticle(Request $request)
@@ -149,7 +149,7 @@
 
         /**
          * @param Request $request
-         * @Route(name="article_history", url="/wiki/:article_id/:article_name/history")
+         * @Route(name="article_history", url="/docs/:article_id/:article_name/history")
          */
         public function runArticleHistory(Request $request)
         {
@@ -200,7 +200,7 @@
         /**
          * Delete an article
          *
-         * @Route(name="article_delete", url="/wiki/:article_id/delete")
+         * @Route(name="article_delete", url="/docs/:article_id/delete")
          * @param Request $request
          */
         public function runDeleteArticle(Request $request)
@@ -228,6 +228,7 @@
 
         /**
          * Get avilable parent articles for an article
+         * @Route(name="article_parents", url="/docs/:article_id/getparents")
          *
          * @param Request $request
          */
@@ -248,7 +249,7 @@
         /**
          * Show an article
          *
-         * @Route(name="project_article_edit", url="/:project_key/wiki/:article_id")
+         * @Route(name="project_article_edit", url="/:project_key/docs/:article_id")
          * @param Request $request
          */
         public function runProjectEditArticle(Request $request)
@@ -259,7 +260,7 @@
         /**
          * Show an article
          *
-         * @Route(name="article_edit", url="/wiki/:article_id")
+         * @Route(name="article_edit", url="/docs/:article_id")
          * @param Request $request
          */
         public function runEditArticle(Request $request)
@@ -279,11 +280,8 @@
                 $this->preview = (bool)$request['preview'];
                 $this->change_reason = $request['change_reason'];
                 try {
-                    $article_prev_name = $this->article->getName();
-                    $article_prev_manual_name = $this->article->getManualName();
-                    $this->article->setArticleType($request['article_type']);
-                    $this->article->setName($request['new_article_name']);
-                    $this->article->setParentArticle(Articles::getTable()->getArticleByName($request['parent_article_name']));
+                    $this->article->setName($request['article_name']);
+                    $this->article->setParentArticle($request['parent_article_id']);
                     $this->article->setManualName($request['manual_name']);
                     if ($this->article->getArticleType() == Article::TYPE_MANUAL && !$this->article->getName()) {
                         $article_name_prefix = ($this->article->getParentArticle() instanceof Article) ? $this->article->getParentArticle()->getName() . ':' : $request['parent_article_name'];
@@ -333,7 +331,7 @@
         /**
          * Toggle favourite article (starring)
          *
-         * @Route(name="toggle_favourite_article", url="/wiki/:article_id/:user_id")
+         * @Route(name="toggle_favourite_article", url="/docs/:article_id/:user_id")
          * @param Request $request
          */
         public function runToggleFavouriteArticle(Request $request)

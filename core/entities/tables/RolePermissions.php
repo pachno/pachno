@@ -3,6 +3,7 @@
     namespace pachno\core\entities\tables;
 
     use b2db\Insertion;
+    use b2db\Update;
 
     /**
      * Roles <- permissions table
@@ -63,6 +64,17 @@
         protected function setupIndexes()
         {
             $this->addIndex('role_id', self::ROLE_ID);
+        }
+
+        public function updateRole($current_role_id, $new_role_id)
+        {
+            $query = $this->getQuery();
+            $query->where(self::ROLE_ID, $current_role_id);
+
+            $update = new Update();
+            $update->add(self::ROLE_ID, $new_role_id);
+
+            $this->rawUpdate($update, $query);
         }
 
     }

@@ -127,7 +127,7 @@
 .config-plugins {
   .header {
     .plugin_shortname {
-      font-weight: 400;
+      font-weight: $theme-font-weight-regular;
       font-size: 0.95em;
     }
   }
@@ -450,7 +450,7 @@
       }
 
       .title {
-        font-weight: 400;
+        font-weight: $theme-font-weight-regular;
       }
 
       .description {
@@ -530,7 +530,7 @@
     .title {
       font-size: 1.4em;
       text-transform: uppercase;
-      font-weight: 400;
+      font-weight: $theme-font-weight-regular;
     }
   }
 }
@@ -560,7 +560,7 @@
 }
 
 .issuetype_scheme_associate_link {
-  font-weight: 400;
+  font-weight: $theme-font-weight-regular;
   font-size: 0.9em;
 }
 
@@ -592,7 +592,7 @@
 
 .tab_header {
   padding-top: 10px;
-  font-weight: 400;
+  font-weight: $theme-font-weight-regular;
   border-bottom: 1px solid #DDD;
 }
 
@@ -601,7 +601,7 @@
   background-color: transparent;
   color: #888;
   text-transform: uppercase;
-  font-weight: 400;
+  font-weight: $theme-font-weight-regular;
   padding: 15px 2px 5px 2px;
 }
 
@@ -638,7 +638,7 @@
 .permission_list ul li {
   margin: 0;
   padding: 0;
-  font-weight: 300;
+  font-weight: $theme-font-weight-regular;
   clear: both;
   background-color: transparent;
 }
@@ -710,7 +710,7 @@
   border: 1px solid rgba(121, 35, 35, 0.4);
   padding: 10px;
   font-size: 1em;
-  font-weight: 300;
+  font-weight: $theme-font-weight-regular;
   display: block;
   margin: 10px 0 10px 0;
   color: rgb(183, 24, 24);
@@ -719,7 +719,7 @@
 
 .permissions_warning strong {
   display: block;
-  font-weight: 600;
+  font-weight: $theme-font-weight-bold;
   text-transform: uppercase;
 }
 
@@ -738,11 +738,11 @@
 }
 
 .groupbox_header, .teambox_header, .clientbox_header {
-  font-weight: 400;
+  font-weight: $theme-font-weight-regular;
 }
 
 .groupbox_membercount, .teambox_membercount, .clientbox_membercount {
-  font-weight: 300;
+  font-weight: $theme-font-weight-regular;
   font-size: 0.8em;
   color: #888;
 }
@@ -756,7 +756,7 @@
 }
 
 #tab_users_pane > strong {
-  font-weight: 400;
+  font-weight: $theme-font-weight-regular;
   display: block;
 }
 
@@ -788,7 +788,7 @@
 }
 
 .teamlist_container label {
-  font-weight: 300;
+  font-weight: $theme-font-weight-regular;
   font-size: 0.9em;
 }
 

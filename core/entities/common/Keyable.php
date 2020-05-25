@@ -33,7 +33,7 @@
         {
             $item = static::getByKeyish($key);
 
-            if (!$item instanceof Keyable) {
+            if (!$item instanceof self) {
                 $item = new static();
                 $item->setKey($key);
                 $item->setName($name);
@@ -42,6 +42,12 @@
             }
 
             return $item;
+        }
+
+        protected function _preSave($is_new)
+        {
+            parent::_preSave($is_new);
+            $this->_generateKey();
         }
 
         public static function getByKeyish($key)

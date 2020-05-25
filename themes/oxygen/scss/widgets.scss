@@ -11,9 +11,10 @@
 @import 'widgets/paginator';
 @import 'widgets/slider';
 @import 'widgets/tooltip';
+@import 'variables';
 
 .count-badge {
-  font-weight: 300;
+  font-weight: $theme-font-weight-regular;
   font-size: 0.8em;
   color: rgba(50, 50, 50, 0.6);
   margin-left: 5px;

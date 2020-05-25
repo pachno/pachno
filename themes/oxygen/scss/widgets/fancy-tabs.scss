@@ -1,3 +1,5 @@
+@import "../variables";
+
 .fancy-tabs {
   display: flex;
   flex-direction: row;
@@ -12,7 +14,7 @@
 .fancy-tabs .tab {
   padding: 1rem;
   font-size: .85rem;
-  font-weight: 600;
+  font-weight: $theme-font-weight-bold;
   display: flex;
   flex: 0 0 auto;
   align-items: center;

@@ -1,3 +1,5 @@
+@import "../variables";
+
 .comments-header-strip {
   display: flex;
   flex-direction: row;
@@ -75,7 +77,7 @@
     }
 
     .header {
-      font-weight: 600;
+      font-weight: $theme-font-weight-bold;
       display: inline-block;
       line-height: 1.4em;
 
@@ -119,7 +121,7 @@
 
   .date {
     color: rgba(0, 0, 0, .6);
-    font-weight: 300;
+    font-weight: $theme-font-weight-regular;
     font-size: 0.9em;
     display: inline-block;
     margin-left: 5px;
@@ -183,7 +185,7 @@
     float: right;
     font-size: 2.0em;
     line-height: 1em;
-    font-weight: 600;
+    font-weight: $theme-font-weight-bold;
     color: #B1B8E9;
     text-align: center;
   }
@@ -205,7 +207,7 @@
 }
 
 .comments-list-none {
-  font-weight: 300;
+  font-weight: $theme-font-weight-regular;
 }
 
 .comment:hover > .commentheader .action-buttons.commenttools a.action-button {
@@ -247,7 +249,7 @@
 }
 
 .comment_editsave, .comment_addsave {
-  font-weight: 600;
+  font-weight: $theme-font-weight-bold;
 }
 
 .comment-editor,

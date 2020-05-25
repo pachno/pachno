@@ -56,7 +56,7 @@
                                 </div>
                             </div>
                         </form>
-                        <div id="users_results" class="configuration-container search-results"></div>
+                        <div id="users_results" class="search-results"></div>
                     </div>
                     <div id="tab_groups_pane" style="display: none;">
                         <div class="lightyellowbox" style="margin-top: 5px; padding: 7px;">

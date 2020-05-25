@@ -144,7 +144,7 @@
         flex-direction: row;
         color: #D62246;
         font-size: .9em;
-        font-weight: 600;
+        font-weight: $theme-font-weight-bold;
         flex: 0 0 auto;
       }
 
@@ -165,6 +165,7 @@
       padding: .5em;
       display: flex;
       align-items: center;
+      font-weight: $theme-font-weight-light;
 
       .far,
       .fas {
@@ -219,7 +220,7 @@
       flex-direction: row;
       align-items: center;
       font-size: .8em;
-      font-weight: 600;
+      font-weight: $theme-font-weight-bold;
       transition: color .25s ease-in-out;
 
       > span {
@@ -252,6 +253,7 @@
       padding: .2em;
       font-size: 1em;
       box-sizing: border-box;
+      font-weight: $theme-font-weight-light;
 
       &.invisible {
         background-color: transparent;
@@ -261,7 +263,7 @@
         flex: 1 1 auto;
 
         &.title {
-          font-weight: 400;
+          font-weight: $theme-font-weight-regular;
         }
 
         &.inline {
@@ -306,6 +308,7 @@
         font-size: 1.25em;
         padding: .5em .2em;
         border-bottom-width: 2px;
+        font-weight: $theme-font-weight-regular;
       }
 
       &.code-input-6 {

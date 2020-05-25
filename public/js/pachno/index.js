@@ -998,7 +998,7 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
             }
         };
 
-        Pachno.Main.Helpers.MarkitUp = function (element) {
+        Pachno.Main.Helpers.MarkitUp = function (element, header_container) {
             var elements = (element.hasClassName) ? [element] : element;
 
             elements.each(function (elm) {
@@ -1067,6 +1067,7 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
                 jQuery(elm).markItUp({
                     previewParserPath: '', // path to your Wiki parser
                     onShiftEnter: {keepDefault: false, replaceWith: '\n\n'},
+                    headerContainer: header_container,
                     markupSet: ms
                 });
             });
