@@ -251,6 +251,49 @@
         }
 
         /**
+         * @param $parent_id
+         * @param bool $is_category
+         *
+         * @return Article[]
+         */
+        public function getArticlesByParentId($parent_id, $is_category = false)
+        {
+            $query = $this->getQuery();
+            $query->where(self::SCOPE, framework\Context::getScope()->getID());
+            $query->where('articles.is_category', $is_category);
+            $query->where('articles.parent_article_id', $parent_id);
+
+            return $this->select($query);
+        }
+
+        /**
+         * @param $project_id
+         *
+         * @return Article[]
+         */
+        public function getByProjectId($project_id)
+        {
+            $query = $this->getQuery();
+            $query->where('articles.project_id', $project_id);
+
+            return $this->select($query);
+        }
+
+        /**
+         * @param $scope_id
+         *
+         * @return Article[]
+         */
+        public function getByScopeId($scope_id)
+        {
+            $query = $this->getQuery();
+            $query->where('articles.scope', $scope_id);
+            $query->where('articles.project_id', 0);
+
+            return $this->select($query);
+        }
+
+        /**
          * @param $name
          * @param Project|integer|null $project
          *
@@ -258,71 +301,35 @@
          *
          * @param int $parent_id
          *
+         * @param null $scope_id
+         *
          * @return Article
          */
-        public function getArticleByName($name, $project = null, $is_manual_name = false, $parent_id = null): ?Article
+        public function getArticleByName($name, $project = null, $is_manual_name = false, $parent_id = null, $scope_id = null): ?Article
         {
-            if (mb_substr($name, 0, 9) == 'Category:') {
-                $name = mb_substr($name, 9);
-                $is_category = true;
-            } else {
-                $is_category = false;
-            }
-
-            $colon_pos = mb_strpos($name, ':');
-            if ($colon_pos !== 0 && $project === null) {
-                $project_key = mb_strtolower(mb_substr($name, 0, $colon_pos));
-                $project = Project::getByKey($project_key);
-
-                if ($project instanceof Project) {
-                    $article_name = mb_substr($name, $colon_pos + 1);
-                } else {
-                    if (framework\Context::isProjectContext()) {
-                        $project = framework\Context::getCurrentProject();
-                    }
-                    $article_name = $name;
-                }
-            } else {
-                $article_name = $name;
-            }
-
             $project_id = ($project instanceof Project) ? $project->getId() : $project;
 
             $query = $this->getQuery();
             if ($is_manual_name) {
-                $query->where('articles.manual_name', $article_name, Criterion::LIKE);
+                $query->where('articles.manual_name', $name, Criterion::LIKE);
                 if ($parent_id !== null) {
                     $query->where('articles.parent_article_id', $parent_id);
                 }
             } else {
-                $query->where(self::NAME, $article_name, Criterion::LIKE);
+                $query->where(self::NAME, $name, Criterion::LIKE);
             }
-            $query->where('articles.is_category', $is_category);
-            $query->where(self::SCOPE, framework\Context::getScope()->getID());
+
+            if ($scope_id !== null) {
+                $query->where('articles.scope', $scope_id);
+            }
+
             if ($project_id !== null) {
                 $query->where('articles.project_id', $project_id);
             } else {
                 $query->where('articles.project_id', 0);
             }
-            $article = $this->selectOne($query, 'none');
 
-            if (!$article instanceof Article) {
-                $query = $this->getQuery();
-                if ($is_manual_name) {
-                    $query->where('articles.manual_name', $article_name, Criterion::LIKE);
-                    if ($parent_id !== null) {
-                        $query->where('articles.parent_article_id', $parent_id);
-                    }
-                } else {
-                    $query->where(self::NAME, $article_name, Criterion::LIKE);
-                }
-                $query->where('articles.is_category', $is_category);
-                $query->where(self::SCOPE, framework\Context::getScope()->getID());
-                $query->where('articles.project_id', 0);
-                $article = $this->selectOne($query);
-            }
-
-            return $article;
+            return $this->selectOne($query, 'none');
         }
 
         public function deleteArticleByName($name)

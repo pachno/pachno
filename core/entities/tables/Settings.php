@@ -253,4 +253,14 @@
             $this->addIndex('scope_uid', [self::SCOPE, self::UID]);
         }
 
+        public function setMaintenanceMode($value)
+        {
+            $query = $this->getQuery();
+            $query->where(self::NAME, framework\Settings::SETTING_MAINTENANCE_MODE);
+
+            $update = new Update();
+            $update->update(self::VALUE, (int) $value);
+            $this->rawUpdate($update, $query);
+        }
+
     }

@@ -18,23 +18,35 @@
 
 ?>
 <?php /* <li class="<?= (isset($level) && $level >= 1) ? 'child' : 'parent'; ?> <?php if ($is_parent && !$is_selected) echo 'parent'; ?> <?php if ($is_selected) echo 'selected'; ?>"> */ ?>
-<a href="<?= $main_article->getLink(); ?>" class="list-item <?php if ($is_parent && !$is_selected) echo 'expandable expanded'; ?> <?php if ($is_selected) echo 'selected'; ?>">
+<a href="<?= $main_article->getLink(); ?>" class="list-item <?php if ($is_parent && !$is_selected) echo 'expandable expanded'; ?> <?php if ($is_selected) echo 'selected'; ?> <?php if ($main_article->isCategory()) echo 'multiline'; ?>">
     <?php if ($main_article->isCategory()): ?>
         <?= fa_image_tag('layer-group', ['class' => 'icon']); ?>
-    <?php elseif (!empty($children)): ?>
-        <?= fa_image_tag('book', ['class' => 'icon']); ?>
+        <span class="name">
+            <span class="title"><?= $main_article->getName(); ?></span>
+        </span>
+        <?php if ($is_parent || count($children)): ?>
+            <?= fa_image_tag('angle-down', ['class' => 'expander']); ?>
+        <?php endif; ?>
     <?php else: ?>
-        <?= ($main_article->getName() == 'Main Page') ? fa_image_tag('file-invoice', ['class' => 'icon']) : fa_image_tag('file-alt', ['class' => 'icon'], 'far'); ?>
-    <?php endif; ?>
-    <span class="name"><?= ($main_article->getName() == 'Main Page') ? __('Overview') : $main_article->getName(); ?></span>
-    <?php if ($is_parent || count($children)): ?>
-        <?= fa_image_tag('angle-down', ['class' => 'expander']); ?>
+        <?php if (!empty($children)): ?>
+            <?= fa_image_tag('book', ['class' => 'icon']); ?>
+        <?php else: ?>
+            <?= ($main_article->getName() == 'Main Page') ? fa_image_tag('file-invoice', ['class' => 'icon']) : fa_image_tag('file-alt', ['class' => 'icon'], 'far'); ?>
+        <?php endif; ?>
+        <span class="name"><?= ($main_article->getName() == 'Main Page') ? __('Overview') : $main_article->getName(); ?></span>
+        <?php if ($is_parent || count($children)): ?>
+            <?= fa_image_tag('angle-down', ['class' => 'expander']); ?>
+        <?php endif; ?>
     <?php endif; ?>
 </a>
 <?php if (($is_parent || $is_selected) && count($children)): ?>
     <div class="submenu">
         <?php foreach ($children as $child_article): ?>
-            <?php include_component('publish/manualsidebarlink', array('parents' => $parents, 'first' => $first, 'article' => $article, 'main_article' => $child_article, 'level' => $level + 1)); ?>
+            <?php if ($child_article instanceof \pachno\core\entities\ArticleCategoryLink): ?>
+                <?php include_component('publish/manualsidebarlink', array('parents' => $parents, 'first' => $first, 'article' => $article, 'main_article' => $child_article->getArticle(), 'level' => $level + 1)); ?>
+            <?php else: ?>
+                <?php include_component('publish/manualsidebarlink', array('parents' => $parents, 'first' => $first, 'article' => $article, 'main_article' => $child_article, 'level' => $level + 1)); ?>
+            <?php endif; ?>
         <?php endforeach; ?>
     </div>
 <?php endif; ?>

@@ -2,12 +2,18 @@
 
     namespace pachno\core\entities\tables;
 
+    use b2db\Criterion;
     use b2db\Insertion;
+    use b2db\Query;
     use b2db\QueryColumnSort;
     use b2db\Table;
+    use b2db\Update;
+    use pachno\core\entities\Article;
     use pachno\core\framework;
 
     /**
+     * @method ArticleCategoryLinks[] select(Query $query, $join = 'all')
+     *
      * @Table(name="articlecategories")
      * @Entity(class="\pachno\core\entities\ArticleCategoryLink")
      */
@@ -15,76 +21,138 @@
     {
 
         const B2DB_TABLE_VERSION = 1;
-
         const B2DBNAME = 'articlecategories';
-
         const ID = 'articlecategories.id';
-
         const ARTICLE_ID = 'articlecategories.article_id';
-
         const CATEGORY_ID = 'articlecategories.category_id';
-
-//        const ARTICLE_NAME = 'articlecategories.article_name';
-//        const ARTICLE_IS_CATEGORY = 'articlecategories.article_is_category';
-//        const CATEGORY_NAME = 'articlecategories.category_name';
+        const ARTICLE_NAME = 'articlecategories.article_name';
+        const CATEGORY_NAME = 'articlecategories.category_name';
         const SCOPE = 'articlecategories.scope';
 
-//        protected function initialize()
-//        {
-//            parent::setup(self::B2DBNAME, self::ID);
-//            parent::addVarchar(self::ARTICLE_NAME, 300);
-//            parent::addBoolean(self::ARTICLE_IS_CATEGORY);
-//            parent::addVarchar(self::CATEGORY_NAME, 300);
-//        }
-
-        public function deleteCategoriesByArticle($article_name)
+        /**
+         * @param $article_id
+         *
+         * @return ArticleCategoryLinks[]
+         */
+        public function getCategoriesByArticleId($article_id)
         {
             $query = $this->getQuery();
-            $query->where(self::ARTICLE_NAME, $article_name);
-            $query->where(self::SCOPE, framework\Context::getScope()->getID());
-            $res = $this->rawDelete($query);
+            $query->where(self::ARTICLE_ID, $article_id);
+            $query->where(self::CATEGORY_ID, 0, Criterion::NOT_EQUALS);
+
+            return $this->select($query);
         }
 
-        public function addArticleCategory($article_name, $category_name, $is_category)
-        {
-            $insertion = new Insertion();
-            $insertion->add(self::ARTICLE_NAME, $article_name);
-            $insertion->add(self::ARTICLE_IS_CATEGORY, $is_category);
-            $insertion->add(self::CATEGORY_NAME, $category_name);
-            $insertion->add(self::SCOPE, framework\Context::getScope()->getID());
-            $res = $this->rawInsert($insertion);
-        }
-
-        public function getArticleCategories($article_name)
+        /**
+         * @param $category_id
+         *
+         * @return ArticleCategoryLinks[]
+         */
+        public function getArticlesByCategoryId($category_id)
         {
             $query = $this->getQuery();
-            $query->where(self::ARTICLE_NAME, $article_name);
-            $query->where(self::SCOPE, framework\Context::getScope()->getID());
-            $query->addOrderBy(self::CATEGORY_NAME, QueryColumnSort::SORT_ASC);
-            $res = $this->rawSelect($query);
+            $query->where(self::CATEGORY_ID, $category_id);
+            $query->where(self::ARTICLE_ID, 0, Criterion::NOT_EQUALS);
 
-            return $res;
+            return $this->select($query);
         }
 
-        public function getCategoryArticles($category_name)
+        /**
+         * @param $category_id
+         *
+         * @return int
+         */
+        public function countArticlesByCategoryId($category_id)
+        {
+            $query = $this->getQuery();
+            $query->where(self::CATEGORY_ID, $category_id);
+            $query->where(self::ARTICLE_ID, 0, Criterion::NOT_EQUALS);
+
+            return $this->count($query);
+        }
+
+        /**
+         * @param $article_id
+         *
+         * @return int
+         */
+        public function countCategoriesByArticleId($article_id)
+        {
+            $query = $this->getQuery();
+            $query->where(self::ARTICLE_ID, $article_id);
+            $query->where(self::CATEGORY_ID, 0, Criterion::NOT_EQUALS);
+
+            return $this->count($query);
+        }
+
+        /**
+         * @param $article_id
+         */
+        public function deleteByArticleId($article_id)
+        {
+            $query = $this->getQuery();
+            $query->where(self::ARTICLE_ID, $article_id);
+            $query->or(self::CATEGORY_ID, $article_id);
+
+            $this->rawDelete($query);
+        }
+
+        /**
+         * @param $category_name
+         *
+         * @return int
+         */
+        public function countArticlesByCategoryName($category_name)
         {
             $query = $this->getQuery();
             $query->where(self::CATEGORY_NAME, $category_name);
-            $query->where(self::ARTICLE_IS_CATEGORY, false);
-            $query->where(self::SCOPE, framework\Context::getScope()->getID());
-            $query->addOrderBy(self::ARTICLE_NAME, QueryColumnSort::SORT_ASC);
-            $res = $this->rawSelect($query);
 
-            return $res;
+            return $this->count($query);
         }
 
-        public function getSubCategories($category_name)
+        public function updateArticleId($article_id, $article_name)
+        {
+            $query = $this->getQuery();
+            $query->where(self::ARTICLE_NAME, $article_name);
+            $update = new Update();
+            $update->update(self::ARTICLE_ID, $article_id);
+
+            $this->rawUpdate($update, $query);
+        }
+
+        public function updateCategoryId($category_id, $category_name)
         {
             $query = $this->getQuery();
             $query->where(self::CATEGORY_NAME, $category_name);
-            $query->where(self::ARTICLE_IS_CATEGORY, true);
-            $query->where(self::SCOPE, framework\Context::getScope()->getID());
-            $query->addOrderBy(self::CATEGORY_NAME, QueryColumnSort::SORT_ASC);
+            $update = new Update();
+            $update->update(self::CATEGORY_ID, $category_id);
+
+            $this->rawUpdate($update, $query);
+        }
+
+        public function removeDuplicate($article_id, $category_id, $id)
+        {
+            $query = $this->getQuery();
+            $query->where(self::ARTICLE_ID, $article_id);
+            $query->where(self::CATEGORY_ID, $category_id);
+            $query->where(self::ID, $id, Criterion::NOT_EQUALS);
+            $this->rawDelete($query);
+        }
+
+        public function getDuplicates()
+        {
+            $query = $this->getQuery();
+            $query->where(self::ARTICLE_ID, 0);
+            $query->or(self::CATEGORY_ID, 0);
+            $this->rawDelete($query);
+
+            $query = $this->getQuery();
+            $query->addSelectionColumn(self::ID);
+            $query->addSelectionColumn(self::ARTICLE_ID);
+            $query->addSelectionColumn(self::CATEGORY_ID);
+            $query->addGroupBy(self::CATEGORY_ID);
+            $query->addGroupBy(self::ARTICLE_ID);
+            $query->addGroupBy(self::ID);
             $res = $this->rawSelect($query);
 
             return $res;

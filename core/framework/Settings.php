@@ -766,7 +766,7 @@
 
         public static function isMaintenanceModeEnabled()
         {
-            return (bool)self::get(self::SETTING_MAINTENANCE_MODE);
+            return (bool) self::get(self::SETTING_MAINTENANCE_MODE);
         }
 
         public static function hasMaintenanceMessage()

@@ -117,7 +117,7 @@
         protected $_child_articles = null;
 
         /**
-         * Array of users that are subscribed to this issue
+         * Array of users that are subscribed to this article
          *
          * @var array
          * @Relates(class="\pachno\core\entities\User", collection=true, manytomany=true, joinclass="\pachno\core\entities\tables\UserArticles")
@@ -151,7 +151,7 @@
         /**
          * A list of categories this article is in
          *
-         * @var array
+         * @var ArticleCategoryLink[]
          */
         protected $_categories = null;
 
@@ -190,7 +190,7 @@
 
         public static function findArticlesByContentAndProject($content, $project, $limit = 5, $offset = 0)
         {
-            list ($resultcount, $articles) = Articles::getTable()->findArticlesContaining($content, $project, $limit, $offset);
+            [$resultcount, $articles] = Articles::getTable()->findArticlesContaining($content, $project, $limit, $offset);
 
             if ($resultcount) {
                 foreach ($articles as $key => $article) {
@@ -318,7 +318,6 @@
             if ($this->_content_syntax == Settings::SYNTAX_MW) {
                 $parser = new TextParser($content);
                 $parser->doParse();
-                $this->_populateCategories($parser->getCategories());
             }
         }
 
@@ -443,21 +442,7 @@
         protected function _populateSubCategories()
         {
             if ($this->_subcategories === null) {
-                $this->_subcategories = [];
-
-                return;
-                if ($res = ArticleCategoryLinks::getTable()->getSubCategories($this->getCategoryName())) {
-                    while ($row = $res->getNextRow()) {
-                        try {
-                            $article = Articles::getTable()->getArticleByName($row->get(ArticleCategoryLinks::ARTICLE_NAME));
-                            if ($article instanceof Article) {
-                                $this->_subcategories[$row->get(ArticleCategoryLinks::ARTICLE_NAME)] = $article;
-                            }
-                        } catch (Exception $e) {
-                            throw $e;
-                        }
-                    }
-                }
+                $this->_subcategories = Articles::getTable()->getArticlesByParentId($this->getID(), true);
             }
         }
 
@@ -471,7 +456,7 @@
         }
 
         /**
-         * @return Article[]
+         * @return ArticleCategoryLink[]
          */
         public function getCategoryArticles(): array
         {
@@ -483,24 +468,22 @@
         protected function _populateCategoryArticles()
         {
             if ($this->_category_articles === null) {
-                $this->_category_articles = [];
-
-                return;
-                if ($res = ArticleCategoryLinks::getTable()->getCategoryArticles($this->getCategoryName())) {
-                    while ($row = $res->getNextRow()) {
-                        try {
-                            $article = Articles::getTable()->getArticleByName($row->get(ArticleCategoryLinks::ARTICLE_NAME));
-                            if ($article instanceof Article) {
-                                $this->_category_articles[$row->get(ArticleCategoryLinks::ARTICLE_NAME)] = $article;
-                            }
-                        } catch (Exception $e) {
-                            throw $e;
-                        }
-                    }
-                }
+                $this->_category_articles = ArticleCategoryLinks::getTable()->getArticlesByCategoryId($this->getID());
             }
         }
 
+        public function getNumberOfArticlesInCategory()
+        {
+            if ($this->_category_articles !== null) {
+                return count($this->_category_articles);
+            }
+
+            return ArticleCategoryLinks::getTable()->countArticlesByCategoryId($this->getID());
+        }
+
+        /**
+         * @return ArticleCategoryLink[]
+         */
         public function getCategories()
         {
             $this->_populateCategories();
@@ -508,21 +491,10 @@
             return $this->_categories;
         }
 
-        protected function _populateCategories($categories = null)
+        protected function _populateCategories()
         {
-            if ($this->_categories === null || $categories !== null) {
-                $this->_categories = [];
-                if ($categories === null) {
-                    if ($res = ArticleCategoryLinks::getTable()->getArticleCategories($this->getName())) {
-                        while ($row = $res->getNextRow()) {
-                            $this->_categories[] = $row->get(ArticleCategoryLinks::CATEGORY_NAME);
-                        }
-                    }
-                } else {
-                    foreach ($categories as $category => $occurrences) {
-                        $this->_categories[] = $category;
-                    }
-                }
+            if ($this->_categories === null) {
+                $this->_categories = ArticleCategoryLinks::getTable()->getCategoriesByArticleId($this->getID());
             }
         }
 
@@ -542,7 +514,7 @@
                 return null;
 
             if (!$this->_redirect_article instanceof Article) {
-                $article = Articles::getTable()->getArticleByName($this->_redirect_article, $this->getProject());
+                $article = Articles::getTable()->getArticleByName($this->_redirect_article, $this->getProject(), true, null, $this->getScope()->getID());
                 if ($article instanceof Article)
                     $this->_redirect_article = $article;
             }
@@ -832,9 +804,18 @@
             return $this->_b2dbLazyLoad('_parent_article_id');
         }
 
+        protected function _populateChildArticles()
+        {
+            if ($this->_child_articles === null) {
+                $this->_child_articles = Articles::getTable()->getArticlesByParentId($this->getID(), false);
+            }
+        }
+
         public function getChildArticles()
         {
-            return $this->_b2dbLazyLoad('_child_articles');
+            $this->_populateChildArticles();
+
+            return $this->_child_articles;
         }
 
         public function getHistoryUserIDs()
@@ -908,9 +889,9 @@
 
         protected function _postDelete()
         {
-            ArticleLinks::getTable()->deleteLinksByArticle($this->getName());
-            ArticleCategoryLinks::getTable()->deleteCategoriesByArticle($this->getName());
-            ArticleHistory::getTable()->deleteHistoryByArticle($this->getName());
+//            ArticleLinks::getTable()->deleteLinksByArticle($this->getName());
+            ArticleCategoryLinks::getTable()->deleteByArticleId($this->getID());
+//            ArticleHistory::getTable()->deleteHistoryByArticle($this->getName());
             ArticleFiles::getTable()->deleteFilesByArticleID($this->getID());
         }
 

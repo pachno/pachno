@@ -57,7 +57,7 @@
             <div class="header"><?php echo __('Pages in this category'); ?></div>
             <ul class="category_list">
                 <?php foreach ($article->getCategoryArticles() as $categoryarticle): ?>
-                    <li><?php echo link_tag(make_url('publish_article', array('article_name' => $categoryarticle->getName())), $categoryarticle->getSpacedName()); ?></li>
+                    <li><?php echo link_tag($categoryarticle->getArticle()->getLink(), $categoryarticle->getArticle()->getName()); ?></li>
                 <?php endforeach; ?>
             </ul>
         <?php else: ?>
@@ -66,14 +66,11 @@
     </div>
     <br style="clear: both;">
 <?php endif; ?>
-<?php /* if (!$embedded && $show_article && count($article->getCategories()) > 0 && $article->getContentSyntax() == \pachno\core\framework\Settings::SYNTAX_MW): ?>
-    <br style="clear: both;">
-    <div class="greybox categories">
-        <?php echo __('Categories:'); ?>
-        <?php $category_links = array(); ?>
-        <?php foreach ($article->getCategories() as $category): ?>
-            <?php $category_links[] = link_tag(make_url('publish_article', array('article_name' => 'Category:'.$category)), $category); ?>
-        <?php endforeach; ?>
-        <?php echo join(', ', $category_links); ?>
-    </div>
-<?php endif; */ ?>
+<?php if (!$embedded && $show_article && count($article->getCategories()) > 0): ?>
+    <h2><?php echo __('Categories:'); ?></h2>
+    <?php $category_links = array(); ?>
+    <?php foreach ($article->getCategories() as $category): ?>
+        <?php $category_links[] = link_tag($category->getCategory()->getLink(), $category->getCategory()->getName()); ?>
+    <?php endforeach; ?>
+    <?php echo implode(', ', $category_links); ?>
+<?php endif; ?>
