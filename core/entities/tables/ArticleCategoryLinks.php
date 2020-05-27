@@ -2,6 +2,7 @@
 
     namespace pachno\core\entities\tables;
 
+    use b2db\Criteria;
     use b2db\Criterion;
     use b2db\Insertion;
     use b2db\Query;
@@ -9,10 +10,12 @@
     use b2db\Table;
     use b2db\Update;
     use pachno\core\entities\Article;
+    use pachno\core\entities\ArticleCategoryLink;
+    use pachno\core\entities\Project;
     use pachno\core\framework;
 
     /**
-     * @method ArticleCategoryLinks[] select(Query $query, $join = 'all')
+     * @method ArticleCategoryLink[] select(Query $query, $join = 'all')
      *
      * @Table(name="articlecategories")
      * @Entity(class="\pachno\core\entities\ArticleCategoryLink")
@@ -32,7 +35,7 @@
         /**
          * @param $article_id
          *
-         * @return ArticleCategoryLinks[]
+         * @return ArticleCategoryLink[]
          */
         public function getCategoriesByArticleId($article_id)
         {
@@ -46,7 +49,7 @@
         /**
          * @param $category_id
          *
-         * @return ArticleCategoryLinks[]
+         * @return ArticleCategoryLink[]
          */
         public function getArticlesByCategoryId($category_id)
         {
@@ -163,6 +166,42 @@
             $this->rawDelete($query);
         }
 
+        /**
+         * @param $scope
+         * @param Project $project
+         * @return ArticleCategoryLink[]
+         */
+        public function getLegacyCategories($scope, $project = null)
+        {
+            $query = $this->getQuery();
+            if ($project instanceof Project) {
+                $project_key_normalized = str_replace(['-'], [''], $project->getKey());
+                $project_key_normalized = ucfirst($project_key_normalized);
+                $criteria = new Criteria();
+                $criteria->where(self::CATEGORY_NAME, ucfirst($project->getKey()) . ":%", Criterion::LIKE);
+                $criteria->or(self::CATEGORY_NAME, $project_key_normalized . ":%", Criterion::LIKE);
+                $query->where($criteria);
+                if ($project->getID() == 4) {
+                    var_dump($criteria);
+                }
+            } else {
+                $query->where(self::CATEGORY_ID, 0);
+            }
+            $query->where(self::SCOPE, $scope);
+
+            return $this->select($query);
+        }
+
+        public function updateCategoryNames()
+        {
+            $query = $this->getQuery();
+            $query->where(self::CATEGORY_NAME, 'Category:%', Criterion::NOT_LIKE);
+            foreach ($this->select($query) as $articleCategoryLink) {
+                $articleCategoryLink->setCategoryName('Category:' . $articleCategoryLink->getCategoryName());
+                $articleCategoryLink->save();
+            }
+        }
+
         public function getDuplicates()
         {
             $query = $this->getQuery();
@@ -184,7 +223,7 @@
 
         protected function migrateData(Table $old_table)
         {
-
+            $this->updateCategoryNames();
         }
 
     }

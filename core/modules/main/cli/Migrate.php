@@ -90,7 +90,7 @@
 
                 $lines = 2;
                 $articles = Articles::getTable()->getLegacyArticles($project, null, false);
-                $this->migrateArticles($articles, $project->getID());
+                $this->migrateArticles($articles, $project);
             }
 
             $scopes = Scopes::getTable()->selectAll();
@@ -111,7 +111,7 @@
                 $this->migrateDataTypes($scope);
 
                 $articles = Articles::getTable()->getLegacyArticles(null, $scope, false);
-                $this->migrateArticles($articles, 0, $scope->getID());
+                $this->migrateArticles($articles, null, $scope->getID());
                 $lines = 2;
                 $cc++;
             }
@@ -229,11 +229,13 @@
 
         /**
          * @param Article[] $articles
-         * @param integer $project_id
+         * @param Project $project
          * @param integer $scope_id
+         * @throws \Exception
          */
-        protected function migrateArticles($articles, $project_id = 0, $scope_id = 0)
+        protected function migrateArticles($articles, Project $project = null, $scope_id = 0)
         {
+            $project_id = ($project instanceof Project) ? $project->getID() : 0;
             $cc = 1;
             foreach ($articles as $article) {
                 $percentage = round((100 / count($articles)) * $cc);
@@ -280,6 +282,29 @@
                 $this->cliEcho("{$percentage}%", self::COLOR_GREEN);
                 $this->verifyArticlePath($article);
             }
+
+//            foreach (ArticleCategoryLinks::getTable()->getLegacyCategories($scope_id, $project) as $articleCategoryLink) {
+//                if (stripos($articleCategoryLink->getCategoryName(), 'category:') === false) {
+//                    $articleCategoryLink->setCategoryName('Category:' . $articleCategoryLink->getCategoryName());
+//                }
+//                if ($project->getID() == 4) {
+//                    var_dump($articleCategoryLink);
+//                    die();
+//                }
+//                $categoryArticle = Articles::getTable()->getArticleByName($articleCategoryLink->getCategoryName(), $project_id, true, $scope_id);
+//                if (!$categoryArticle instanceof Article) {
+//                    $categoryArticle = new Article();
+//                    $categoryArticle->setManualName($articleCategoryLink->getCategoryName());
+//                    $categoryArticle->setName($categoryArticle->getManualName());
+//                    $categoryArticle->setProject($project_id);
+//                    $categoryArticle->setScope($scope_id);
+//                    $categoryArticle->setIsCategory(true);
+//                    $categoryArticle->save();
+//                }
+//                $articleCategoryLink->setCategory($categoryArticle);
+//                $articleCategoryLink->save();
+//                $this->verifyArticlePath($categoryArticle);
+//            }
 
             $cc = 1;
             if ($project_id) {

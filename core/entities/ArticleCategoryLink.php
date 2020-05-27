@@ -60,6 +60,16 @@
             $this->_article_id = $article_id;
         }
 
+        public function getArticleName()
+        {
+            return $this->_article_name;
+        }
+
+        public function setArticleName($article_name)
+        {
+            $this->_article_name = $article_name;
+        }
+
         /**
          * @return Article
          */
@@ -74,6 +84,16 @@
         public function setCategory($category_id)
         {
             $this->_category_id = $category_id;
+        }
+
+        public function getCategoryName()
+        {
+            return $this->_category_name;
+        }
+
+        public function setCategoryName($category_name)
+        {
+            $this->_category_name = $category_name;
         }
 
     }
