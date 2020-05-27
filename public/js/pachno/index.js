@@ -8207,6 +8207,10 @@ define(['prototype', 'effects', 'controls', 'scriptaculous', 'jquery', 'TweenMax
         };
 
         Pachno.Main.Helpers.loadDynamicMenu = function (menu) {
+            if ($(menu).hasClassName('populate-once') && $(menu).dataset.isLoaded === true) {
+                return;
+            }
+
             var url = $(menu).dataset.menuUrl;
             Pachno.Main.Helpers.ajax(url, {
                 url_method: 'get',

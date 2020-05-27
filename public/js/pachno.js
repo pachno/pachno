@@ -5,7 +5,6 @@ define(['pachno/tools', 'pachno/index', 'domReady', 'jquery', 'mention'],
             Pachno.Main.Helpers.MarkitUp($$('textarea.markuppable'));
             (function ($) {
                 jQuery('body').on('click', '.expandable .expander', function (event) {
-                    event.stopPropagation();
                     event.preventDefault();
 
                     jQuery(this).closest('.expandable').toggleClass('expanded');
@@ -161,8 +160,11 @@ define(['pachno/tools', 'pachno/index', 'domReady', 'jquery', 'mention'],
                     }
                     e.stopPropagation();
                 });
-                jQuery("body").on("click", ".dropper.dynamic_menu_link", function (e) {
+                jQuery("body").on("click", ".dynamic_menu_link", function (e) {
                     var menu = jQuery(this).next()[0];
+                    if (menu === undefined) {
+                        var menu = jQuery(this).parent().next()[0];
+                    }
                     if (menu !== undefined && menu.hasClassName('dynamic_menu')) {
                         Pachno.Main.Helpers.loadDynamicMenu(menu);
                     }

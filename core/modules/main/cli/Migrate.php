@@ -3,11 +3,12 @@
     namespace pachno\core\modules\main\cli;
 
     use pachno\core\entities\Article;
+    use pachno\core\entities\ArticleCategoryLink;
     use pachno\core\entities\Datatype;
     use pachno\core\entities\DatatypeBase;
     use pachno\core\entities\LogItem;
+    use pachno\core\entities\Project;
     use pachno\core\entities\Scope;
-    use pachno\core\entities\Status;
     use pachno\core\entities\tables\ArticleCategoryLinks;
     use pachno\core\entities\tables\Articles;
     use pachno\core\entities\tables\Issues;
@@ -29,7 +30,7 @@
     use pachno\core\framework\cli\Command;
     use pachno\core\framework\Context;
     use pachno\core\modules\main\cli\entities\tbg;
-    use pachno\core\modules\project\Project;
+    use Ramsey\Uuid\Uuid;
 
     /**
      * CLI command class, main -> migrate
@@ -126,23 +127,43 @@
                     $percentage = round((100 / $count) * $cc);
                     $this->cliClearLine();
                     $this->cliMoveLeft();
-                    $this->cliEcho("Cleaning up article categories: ");
+                    $this->cliEcho("Cleaning up after article migration: ", self::COLOR_WHITE, self::STYLE_BOLD);
                     $this->cliEcho("{$percentage}%", self::COLOR_GREEN);
                     ArticleCategoryLinks::getTable()->removeDuplicate($row['article_id'], $row['category_id'], $row['id']);
                 }
             }
 
+            Articles::getTable()->removeEmptyRedirects();
             $this->cliClearLine();
             $this->cliMoveLeft();
-            $this->cliEcho("Cleaning up article categories: ");
+            $this->cliEcho("Cleaning up after article migration: ", self::COLOR_WHITE, self::STYLE_BOLD);
             $this->cliEcho("100%\n", self::COLOR_GREEN, self::STYLE_BOLD);
 
+            $this->cliClearLine();
             $this->cliEcho("Migrating settings: ", self::COLOR_WHITE, self::STYLE_BOLD);
             Settings::getTable()->migrateSettings();
             Modules::getTable()->removeModuleByName('vcs_integration', true);
             Settings::getTable()->setMaintenanceMode(false);
+            $this->cliEcho("100%\n", self::COLOR_GREEN, self::STYLE_BOLD);
+        }
 
-            $this->cliEcho(str_pad("100%", 55) ."\n", self::COLOR_GREEN, self::STYLE_BOLD);
+        protected function getRedirectArticle(Article $article)
+        {
+            $content = explode("\n", $article->getContent());
+
+            preg_match('/(\[\[([^\]]*?)\]\])$/im', mb_substr(array_shift($content), 10), $matches);
+            if (count($matches) != 3) {
+                return false;
+            }
+
+            $redirect_article_name = $matches[2];
+
+            return Articles::getTable()->getArticleByName($redirect_article_name, $article->getProject(), true, null, $article->getScope()->getID());
+        }
+
+        protected function isRedirectArticle(Article $article)
+        {
+            return (mb_strpos($article->getContent(), "#REDIRECT ") === 0);
         }
 
         protected function verifyArticlePath(Article $article)
@@ -151,18 +172,23 @@
             $scope_id = $article->getScope()->getID();
             $set_category = $article->isCategory();
             $manual_name = $article->getManualName();
-            if (strpos($manual_name, 'Category:') === 0) {
-                $manual_name = substr($manual_name, 9);
-            }
-            if ($project_id) {
-                $manual_name = substr($manual_name, strpos($manual_name, ':') + 1);
+            $prefixes = [];
+            $paths = explode(':', $manual_name);
+
+            if (count($paths) > 1 && mb_strtolower($paths[0]) === "category") {
+                $set_category = true;
+                $prefixes[] = array_shift($paths);
             }
 
-            $paths = explode(':', $manual_name);
-            $this->cliEcho("Checking '{$manual_name}'");
+            if ($project_id) {
+                $prefixes[] = array_shift($paths);
+            }
+
+            $prefix = implode(':', $prefixes);
+
             if (count($paths) > 1) {
                 $parent_id = 0;
-                $concat_path = '';
+                $concat_path = $prefix;
                 $test_path = $paths;
                 $article_name = array_pop($test_path);
 
@@ -172,6 +198,7 @@
                 } else {
                     foreach ($paths as $path) {
                         $concat_path = ($concat_path != '') ? $concat_path . ':' . $path : $path;
+                        if ($concat_path == $article->getManualName()) continue;
                         // UserGuide:Modules:LDAP:Configuration
 
                         // UserGuide
@@ -196,9 +223,6 @@
                 }
                 $article->setParentArticle($parent_id);
                 $article->setName($article_name);
-                if ($article->getName() == 'MainPage') {
-                    $article->setName('Main Page');
-                }
                 $article->save();
             }
         }
@@ -219,6 +243,15 @@
                 $this->cliEcho("{$percentage}%", self::COLOR_GREEN);
 
                 $article->setProject($project_id);
+                if ($this->isRedirectArticle($article)) {
+                    $article->setRedirectArticle($this->getRedirectArticle($article));
+                    $article->setRedirectSlug(Uuid::uuid4()->toString());
+                }
+
+                $article->setManualName(trim($article->getManualName()));
+                $article->setManualName(trim($article->getManualName(), ':'));
+                $article->setName(trim($article->getName()));
+                $article->setName(trim($article->getName(), ':'));
                 if (trim($article->getManualName())) {
                     $article->setName($article->getManualName());
                 } else {
@@ -232,9 +265,6 @@
                 }
                 if ($project_id) {
                     $article->setName(substr($article->getName(), strpos($article->getName(), ':') + 1));
-                }
-                if ($article->getName() == 'MainPage') {
-                    $article->setName('Main Page');
                 }
                 $article->setArticleType(Article::TYPE_MANUAL);
                 $article->save();
@@ -272,22 +302,49 @@
                     ArticleCategoryLinks::getTable()->updateCategoryId($article_id, $article_name);
                 }
 
-                if ($article->isCategory()) {
-                    if (count($article->getCategories()) > 1) {
-                        $article->setParentArticle(0);
-                        $article->save();
+                if (!$article->isRedirect()) {
+                    if ($article->isCategory()) {
+                        if (!$article->getParentArticle() instanceof Article) {
+                            foreach ($article->getCategories() as $articleCategoryLink) {
+                                $article->setParentArticle($articleCategoryLink->getCategory());
+                                break;
+                            }
+                            $article->save();
+                        }
+                        foreach ($article->getCategories() as $articleCategoryLink) {
+                            $articleCategoryLink->delete();
+                        }
+                    } else {
+                        if ($article->getParentArticle() instanceof Article) {
+                            if ($article->getParentArticle()->isCategory()) {
+                                $articleCategoryLink = new ArticleCategoryLink();
+                                $articleCategoryLink->setArticle($article);
+                                $articleCategoryLink->setCategory($article->getParentArticle());
+                                $articleCategoryLink->save();
+                                $article->setParentArticle(0);
+                                $article->save();
+                            }
+                        } else {
+                            foreach ($article->getCategories() as $articleCategoryLink) {
+                                if (!$articleCategoryLink->getArticle()->isCategory()) {
+                                    $article->setParentArticle($articleCategoryLink->getCategory());
+                                    $article->save();
+                                    $articleCategoryLink->delete();
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    $article->setParentArticle(0);
+                    $article->save();
+                    foreach ($article->getCategories() as $articleCategoryLink) {
+                        $articleCategoryLink->delete();
                     }
                 }
 
-                if (!$article->isRedirect()) {
-                    if (count($article->getCategories()) == 1 && !$article->getParentArticle() instanceof Article) {
-                        foreach ($article->getCategories() as $articleCategoryLink) {
-                            $article->setParentArticle($articleCategoryLink->getCategory());
-                            $articleCategoryLink->delete();
-                            $article->save();
-                        }
-                    }
-                }
+                $words = preg_split('~[^A-Z]+\K|(?=[A-Z][^A-Z]+)~', $article->getName(), 0, PREG_SPLIT_NO_EMPTY);
+                $article->setName(implode(' ', $words));
+                $article->save();
 
                 $cc++;
             }
@@ -297,9 +354,25 @@
 
         protected function migrateDataTypes(Scope $scope)
         {
+            $this->cliClearLine();
             $this->cliMoveLeft();
-            $this->cliEcho(str_pad("Migrating data types: statuses ...", 50));
-            foreach (ListTypes::getTable()->getAllByItemType(Datatype::STATUS, $scope->getID()) as $status) {
+
+            $statuses = ListTypes::getTable()->getAllByItemType(Datatype::STATUS, $scope->getID());
+            $priorities = ListTypes::getTable()->getAllByItemType(Datatype::PRIORITY, $scope->getID());
+            $resolutions = ListTypes::getTable()->getAllByItemType(Datatype::RESOLUTION, $scope->getID());
+            $reproducabilities = ListTypes::getTable()->getAllByItemType(Datatype::REPRODUCABILITY, $scope->getID());
+            $roles = ListTypes::getTable()->getAllByItemType(Datatype::ROLE, $scope->getID());
+            $activity_types = ListTypes::getTable()->getAllByItemType(Datatype::ACTIVITYTYPE, $scope->getID());
+
+            $count = count($statuses) + count($priorities) + count($resolutions) + count($reproducabilities) + count($roles) + count($activity_types);
+            $cc = 1;
+
+            foreach ($statuses as $status) {
+                $percentage = round((100 / $count) * $cc);
+                $this->cliClearLine();
+                $this->cliMoveLeft();
+                $this->cliEcho("Migrating data types (status): {$percentage}%");
+
                 $existing = ListTypes::getTable()->getByKeyAndItemType($status->getKey(), Datatype::STATUS, $status->getID(), true);
                 if ($existing instanceof DatatypeBase) {
                     Issues::getTable()->updateIssueField('status', $status->getID(), $existing->getID());
@@ -315,11 +388,15 @@
                     $status->delete();
                     ListTypes::getTable()->removeFromItemCache($status);
                 }
+                $cc++;
             }
 
-            $this->cliMoveLeft();
-            $this->cliEcho(str_pad("Migrating data types: priorities ...", 50));
-            foreach (ListTypes::getTable()->getAllByItemType(Datatype::PRIORITY, $scope->getID()) as $priority) {
+            foreach ($priorities as $priority) {
+                $percentage = round((100 / $count) * $cc);
+                $this->cliClearLine();
+                $this->cliMoveLeft();
+                $this->cliEcho("Migrating data types (priority): {$percentage}%");
+
                 $existing = ListTypes::getTable()->getByKeyAndItemType($priority->getKey(), Datatype::PRIORITY, $priority->getID());
                 if ($existing instanceof DatatypeBase) {
                     Issues::getTable()->updateIssueField('priority', $priority->getID(), $existing->getID());
@@ -330,11 +407,15 @@
                     $priority->delete();
                     ListTypes::getTable()->removeFromItemCache($priority);
                 }
+                $cc++;
             }
 
-            $this->cliMoveLeft();
-            $this->cliEcho(str_pad("Migrating data types: resolutions ...", 50));
-            foreach (ListTypes::getTable()->getAllByItemType(Datatype::RESOLUTION, $scope->getID()) as $resolution) {
+            foreach ($resolutions as $resolution) {
+                $percentage = round((100 / $count) * $cc);
+                $this->cliClearLine();
+                $this->cliMoveLeft();
+                $this->cliEcho("Migrating data types (resolution): {$percentage}%");
+
                 $existing = ListTypes::getTable()->getByKeyAndItemType($resolution->getKey(), Datatype::RESOLUTION, $resolution->getID());
                 if ($existing instanceof DatatypeBase) {
                     Issues::getTable()->updateIssueField('resolution', $resolution->getID(), $existing->getID());
@@ -345,11 +426,15 @@
                     $resolution->delete();
                     ListTypes::getTable()->removeFromItemCache($resolution);
                 }
+                $cc++;
             }
 
-            $this->cliMoveLeft();
-            $this->cliEcho(str_pad("Migrating data types: reproducabilities ...", 50));
-            foreach (ListTypes::getTable()->getAllByItemType(Datatype::REPRODUCABILITY, $scope->getID()) as $reproducability) {
+            foreach ($reproducabilities as $reproducability) {
+                $percentage = round((100 / $count) * $cc);
+                $this->cliClearLine();
+                $this->cliMoveLeft();
+                $this->cliEcho("Migrating data types (reproducability): {$percentage}%");
+
                 $existing = ListTypes::getTable()->getByKeyAndItemType($reproducability->getKey(), Datatype::REPRODUCABILITY, $reproducability->getID());
                 if ($existing instanceof DatatypeBase) {
                     Issues::getTable()->updateIssueField('reproducability', $reproducability->getID(), $existing->getID());
@@ -360,11 +445,15 @@
                     $reproducability->delete();
                     ListTypes::getTable()->removeFromItemCache($reproducability);
                 }
+                $cc++;
             }
 
-            $this->cliMoveLeft();
-            $this->cliEcho(str_pad("Migrating data types: roles ...", 50));
-            foreach (ListTypes::getTable()->getAllByItemType(Datatype::ROLE, $scope->getID()) as $role) {
+            foreach ($roles as $role) {
+                $percentage = round((100 / $count) * $cc);
+                $this->cliClearLine();
+                $this->cliMoveLeft();
+                $this->cliEcho("Migrating data types (roles): {$percentage}%");
+
                 $existing = ListTypes::getTable()->getByKeyAndItemType($role->getKey(), Datatype::ROLE, $role->getID());
                 if ($existing instanceof DatatypeBase) {
                     RolePermissions::getTable()->updateRole($role->getID(), $existing->getID());
@@ -372,11 +461,15 @@
                     $role->delete();
                     ListTypes::getTable()->removeFromItemCache($role);
                 }
+                $cc++;
             }
 
-            $this->cliMoveLeft();
-            $this->cliEcho(str_pad("Migrating data types: activity types ...", 50));
-            foreach (ListTypes::getTable()->getAllByItemType(Datatype::ACTIVITYTYPE, $scope->getID()) as $activity_type) {
+            foreach ($activity_types as $activity_type) {
+                $percentage = round((100 / $count) * $cc);
+                $this->cliClearLine();
+                $this->cliMoveLeft();
+                $this->cliEcho("Migrating data types (activity types): {$percentage}%");
+
                 $existing = ListTypes::getTable()->getByKeyAndItemType($activity_type->getKey(), Datatype::ACTIVITYTYPE, $activity_type->getID());
                 if ($existing instanceof DatatypeBase) {
                     IssueSpentTimes::getTable()->updateActivityType($activity_type->getID(), $existing->getID());
@@ -384,9 +477,11 @@
                     $activity_type->delete();
                     ListTypes::getTable()->removeFromItemCache($activity_type);
                 }
+                $cc++;
             }
+            $this->cliClearLine();
             $this->cliMoveLeft();
-            $this->cliEcho(str_pad("", 50));
+            $this->cliEcho("Migrating data types: 100%");
         }
 
         protected function _setup()

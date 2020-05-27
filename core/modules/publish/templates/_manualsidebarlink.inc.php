@@ -4,49 +4,36 @@
 
     /**
      * @var Article $main_article
+     * @var Article $article
+     * @var Article[] $children
+     * @var int[] $parents
+     * @var bool $has_children
+     * @var bool $is_parent
+     * @var bool $is_selected
      */
 
-    $children = $main_article->getChildArticles();
-    $is_parent = array_key_exists($main_article->getID(), $parents);
-    $is_selected = $main_article->getID() == $article->getID() || ($main_article->isRedirect() && $main_article->getRedirectArticleName() == $article->getTitle());
-
-    $is_first = $first;
-    $first = false;
-
-    $project_key = (\pachno\core\framework\Context::isProjectContext()) ? \pachno\core\framework\Context::getCurrentProject()->getKey() . ':' : '';
-//    $article_name = (strpos(mb_strtolower($main_article->getTitle()), 'category:') !== false) ? substr($main_article->getTitle(), 9+mb_strlen($project_key)) : substr($main_article->getTitle(), mb_strlen($project_key));
-
 ?>
-<?php /* <li class="<?= (isset($level) && $level >= 1) ? 'child' : 'parent'; ?> <?php if ($is_parent && !$is_selected) echo 'parent'; ?> <?php if ($is_selected) echo 'selected'; ?>"> */ ?>
-<a href="<?= $main_article->getLink(); ?>" class="list-item <?php if ($is_parent && !$is_selected) echo 'expandable expanded'; ?> <?php if ($is_selected) echo 'selected'; ?> <?php if ($main_article->isCategory()) echo 'multiline'; ?>">
+<a href="<?= $main_article->getLink(); ?>" data-article-id="<?= $main_article->getID(); ?>" class="list-item <?php if ($has_children) echo ' expandable'; ?> <?php if ($is_parent && !$is_selected) echo ($has_children) ? ' expanded' : ' selected'; ?> <?php if ($is_selected) echo ($has_children) ? ' expanded selected' : ' selected'; ?> <?php if ($main_article->isCategory()) echo 'multiline'; ?>">
     <?php if ($main_article->isCategory()): ?>
         <?= fa_image_tag('layer-group', ['class' => 'icon']); ?>
         <span class="name">
             <span class="title"><?= $main_article->getName(); ?></span>
         </span>
-        <?php if ($is_parent || count($children)): ?>
-            <?= fa_image_tag('angle-down', ['class' => 'expander']); ?>
+        <?php if ($has_children): ?>
+            <?= fa_image_tag('angle-down', ['class' => 'expander dynamic_menu_link']); ?>
         <?php endif; ?>
     <?php else: ?>
-        <?php if (!empty($children)): ?>
+        <?php if ($has_children): ?>
             <?= fa_image_tag('book', ['class' => 'icon']); ?>
         <?php else: ?>
             <?= ($main_article->getName() == 'Main Page') ? fa_image_tag('file-invoice', ['class' => 'icon']) : fa_image_tag('file-alt', ['class' => 'icon'], 'far'); ?>
         <?php endif; ?>
         <span class="name"><?= ($main_article->getName() == 'Main Page') ? __('Overview') : $main_article->getName(); ?></span>
-        <?php if ($is_parent || count($children)): ?>
-            <?= fa_image_tag('angle-down', ['class' => 'expander']); ?>
+        <?php if ($is_parent || $has_children): ?>
+            <?= fa_image_tag('angle-down', ['class' => 'expander dynamic_menu_link']); ?>
         <?php endif; ?>
     <?php endif; ?>
 </a>
-<?php if (($is_parent || $is_selected) && count($children)): ?>
-    <div class="submenu">
-        <?php foreach ($children as $child_article): ?>
-            <?php if ($child_article instanceof \pachno\core\entities\ArticleCategoryLink): ?>
-                <?php include_component('publish/manualsidebarlink', array('parents' => $parents, 'first' => $first, 'article' => $article, 'main_article' => $child_article->getArticle(), 'level' => $level + 1)); ?>
-            <?php else: ?>
-                <?php include_component('publish/manualsidebarlink', array('parents' => $parents, 'first' => $first, 'article' => $article, 'main_article' => $child_article, 'level' => $level + 1)); ?>
-            <?php endif; ?>
-        <?php endforeach; ?>
-    </div>
+<?php if ($has_children): ?>
+    <?php include_component('publish/manualsidebarlinkchildren', compact('main_article', 'parents', 'article', 'is_selected', 'is_parent', 'has_children', 'children')); ?>
 <?php endif; ?>

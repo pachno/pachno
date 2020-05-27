@@ -12677,16 +12677,46 @@ dl.info {
 #report_issue_form .form-row.submit-container {
   justify-content: flex-end; }
 
-.content-with-sidebar.article-container .sidebar {
-  background-color: rgba(225, 225, 225, 0.15);
-  box-shadow: -3px 3px 3px -3px rgba(27, 27, 36, 0.2) inset; }
-  .content-with-sidebar.article-container .sidebar .list-mode .header-banner {
-    background-color: transparent; }
-  .content-with-sidebar.article-container .sidebar .list-mode .list-item {
+.content-with-sidebar.article-container nav.sidebar {
+  background-color: #fbfbfb;
+  box-shadow: -3px 3px 3px -3px rgba(27, 27, 36, 0.2) inset;
+  align-items: stretch;
+  justify-content: stretch;
+  overflow: hidden; }
+  .content-with-sidebar.article-container nav.sidebar .scroll-container {
+    position: relative; }
+    .content-with-sidebar.article-container nav.sidebar .scroll-container .list-mode {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0; }
+  .content-with-sidebar.article-container nav.sidebar .list-mode:first-child {
+    flex: 0 0 auto; }
+  .content-with-sidebar.article-container nav.sidebar .list-mode .header-banner {
+    background: linear-gradient(to bottom, #fbfbfb 92%, rgba(251, 251, 251, 0) 100%);
+    box-shadow: -3px 3px 3px -3px rgba(27, 27, 36, 0.2) inset; }
+  .content-with-sidebar.article-container nav.sidebar .list-mode .list-item,
+  .content-with-sidebar.article-container nav.sidebar .list-mode .list-item:hover {
     font-size: .9rem;
-    margin: .15em 1em; }
-    .content-with-sidebar.article-container .sidebar .list-mode .list-item .name {
+    margin: .15em 1em 0 1em; }
+    .content-with-sidebar.article-container nav.sidebar .list-mode .list-item:first-child,
+    .content-with-sidebar.article-container nav.sidebar .list-mode .list-item:hover:first-child {
+      margin-top: 0; }
+    .content-with-sidebar.article-container nav.sidebar .list-mode .list-item.expandable.expanded + .submenu,
+    .content-with-sidebar.article-container nav.sidebar .list-mode .list-item:hover.expandable.expanded + .submenu {
+      padding-top: 1em;
+      padding-bottom: 1em;
+      border-color: #0C8990;
+      display: flex;
+      flex-direction: column; }
+    .content-with-sidebar.article-container nav.sidebar .list-mode .list-item .name, .content-with-sidebar.article-container nav.sidebar .list-mode .list-item .name:hover,
+    .content-with-sidebar.article-container nav.sidebar .list-mode .list-item:hover .name,
+    .content-with-sidebar.article-container nav.sidebar .list-mode .list-item:hover .name:hover {
       padding: .65em; }
+  .content-with-sidebar.article-container nav.sidebar .list-mode .submenu {
+    background-color: whitesmoke;
+    box-shadow: -3px 0 3px -3px rgba(27, 27, 36, 0.2) inset; }
 
 .content-with-sidebar.article-container > div:not(.sidebar) {
   background-color: #FFF;
@@ -12695,7 +12725,7 @@ dl.info {
 .content-with-sidebar.article-container .main_area {
   padding: 0 2em; }
   .content-with-sidebar.article-container .main_area .article {
-    font-size: 1.1em;
+    font-size: 1.15em;
     font-weight: 300;
     color: #141823;
     width: auto;

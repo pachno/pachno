@@ -2,22 +2,65 @@
 
 .content-with-sidebar {
     &.article-container {
-        .sidebar {
-            background-color: rgba(225, 225, 225, .15);
+        nav.sidebar {
+            background-color: rgb(251, 251, 251);
             box-shadow: -3px 3px 3px -3px rgba(27, 27, 36, 0.2) inset;
+            align-items: stretch;
+            justify-content: stretch;
+            overflow: hidden;
+
+            .scroll-container {
+                position: relative;
+
+                .list-mode {
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    bottom: 0;
+                }
+            }
 
             .list-mode {
-                .header-banner {
-                    background-color: transparent;
+                &:first-child {
+                    flex: 0 0 auto;
                 }
 
-                .list-item {
+                .header-banner {
+                    background: linear-gradient(to bottom, rgb(251, 251, 251) 92%, rgba(251, 251, 251, 0) 100%);
+                    box-shadow: -3px 3px 3px -3px rgba(27, 27, 36, 0.2) inset;
+                }
+
+                .list-item,
+                .list-item:hover {
                     font-size: .9rem;
-                    margin: .15em 1em;
+                    margin: .15em 1em 0 1em;
+
+                    &:first-child {
+                        margin-top: 0;
+                    }
+
+                    &.expandable.expanded {
+                        + .submenu {
+                            padding-top: 1em;
+                            padding-bottom: 1em;
+                            border-color: $theme-primary;
+                            display: flex;
+                            flex-direction: column;
+                        }
+                    }
 
                     .name {
-                        padding: .65em;
+                        &,
+                        &:hover {
+                            padding: .65em;
+                        }
                     }
+                }
+
+                .submenu {
+                    background-color: rgb(245, 245, 245);
+                    box-shadow: -3px 0 3px -3px rgba(27, 27, 36, 0.2) inset;
                 }
             }
         }
@@ -31,7 +74,7 @@
             padding: 0 2em;
 
             .article {
-                font-size: 1.1em;
+                font-size: 1.15em;
                 font-weight: $theme-font-weight-light;
                 color: $theme-text-color;
                 width: auto;

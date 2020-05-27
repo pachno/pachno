@@ -78,6 +78,27 @@
         /**
          * Show an article
          *
+         * @Route(name="project_redirect_articles", url="/:project_key/r/docs")
+         * @param Request $request
+         */
+        public function runProjectRedirectArticles(Request $request)
+        {
+            $this->redirect('redirectarticles');
+        }
+
+        /**
+         * Show an article
+         *
+         * @Route(name="redirect_articles", url="/r/docs")
+         * @param Request $request
+         */
+        public function runRedirectArticles(Request $request)
+        {
+        }
+
+        /**
+         * Show an article
+         *
          * @Route(name="project_article", url="/:project_key/docs/:article_id/:article_name")
          * @param Request $request
          */
@@ -312,7 +333,7 @@
                         throw new Exception(framework\Context::getI18n()->__('The file has been modified since you last opened it'));
 
                     if (!$this->preview) {
-                        $this->article->doSave(['article_prev_name' => $article_prev_name], $request['change_reason']);
+                        $this->article->doSave([], $request['change_reason']);
                         framework\Context::setMessage('publish_article_message', framework\Context::getI18n()->__('The article was saved'));
                         $this->forward($this->article->getLink());
                     }
@@ -320,6 +341,31 @@
                     $this->error = $e->getMessage();
                 }
             }
+        }
+
+        /**
+         * Show an article
+         *
+         * @Route(name="api_article_menu", url="/docs-api/:article_id/menu/:selected_article_id")
+         * @param Request $request
+         */
+        public function runGetSidebarMenu(Request $request)
+        {
+            $main_article = $this->article;
+            $selected_article = Articles::getTable()->selectById($request['selected_article_id']);
+
+            $menu = $this->getComponentHTML('publish/manualsidebarlinkchildren', [
+                'main_article' => $main_article,
+                'article' => $selected_article,
+                'is_selected' => false,
+                'is_parent' => false,
+                'parents' => [],
+                'loaded' => true,
+                'has_children' => $main_article->hasChildren(),
+                'children' => $main_article->getChildren()
+            ]);
+
+            return $this->renderJSON(['menu' => $menu]);
         }
 
         public function runFindArticles(Request $request)

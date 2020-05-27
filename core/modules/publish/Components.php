@@ -74,23 +74,24 @@
             $this->links = framework\Context::getModule('publish')->getMenuItems($this->links_target_id);
         }
 
+        public function componentManualSidebarLink()
+        {
+            $this->is_parent = array_key_exists($this->main_article->getID(), $this->parents);
+            $this->is_selected = $this->main_article->getID() == $this->article->getID();
+            $this->children = ($this->is_parent || $this->is_selected) ? $this->main_article->getChildren() : [];
+            $this->has_children = $this->main_article->hasChildren();
+        }
+
         public function componentManualSidebar()
         {
             $top_level_articles = Articles::getTable()->getManualSidebarArticles(false, $this->article->getProject());
             $top_level_categories = Articles::getTable()->getManualSidebarArticles(true, $this->article->getProject());
-            $parents = [];
-            $article = $this->article;
-            do {
-                $parent = $article->getParentArticle();
-                if ($parent instanceof Article) {
-                    $parents[$parent->getId()] = $parent->getId();
-                    $article = $parent;
-                }
-            } while ($parent instanceof Article);
+            usort($top_level_articles, '\pachno\core\entities\Article::sortArticleChildren');
+            usort($top_level_categories, '\pachno\core\entities\Article::sortArticleChildren');
+            $this->parents = $this->article->getParentsArray();
 
             $this->overview_article = Articles::getTable()->getArticleByName('Main Page', framework\Context::getCurrentProject());
-            $this->main_article = $article;
-            $this->parents = $parents;
+            $this->main_article = $this->article;
             $this->top_level_articles = $top_level_articles;
             $this->top_level_categories = $top_level_categories;
         }

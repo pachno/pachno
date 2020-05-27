@@ -44,7 +44,7 @@
             <div class="header"><?php echo __('Subcategories'); ?></div>
             <ul class="category_list">
                 <?php foreach ($article->getSubCategories() as $subcategory): ?>
-                    <li><?php echo link_tag(make_url('publish_article', array('article_name' => $subcategory->getName())), $subcategory->getCategoryName()); ?></li>
+                    <li><?php echo link_tag($subcategory->getLink(), $subcategory->getName()); ?></li>
                 <?php endforeach; ?>
             </ul>
         <?php else: ?>

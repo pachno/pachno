@@ -58,6 +58,30 @@
         }
 
         /**
+         * @param int[] $existing_article_ids
+         *
+         * @return int[]
+         */
+        public function getArticlesIdsWithCategory($existing_article_ids = null)
+        {
+            $query = $this->getQuery();
+            $query->addSelectionColumn(self::ARTICLE_ID, 'article_id', Query::DB_DISTINCT);
+            if ($existing_article_ids !== null) {
+                $query->where(self::ARTICLE_ID, $existing_article_ids, Criterion::NOT_IN);
+            }
+
+            $article_ids = [];
+            $res = $this->rawSelect($query);
+            if ($res) {
+                while ($row = $res->getNextRow()) {
+                    $article_ids[] = $row['article_id'];
+                }
+            }
+
+            return $article_ids;
+        }
+
+        /**
          * @param $category_id
          *
          * @return int

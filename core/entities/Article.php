@@ -53,6 +53,11 @@
         protected $_manual_name;
 
         /**
+         * @Column(type="string", length=200, default="")
+         */
+        protected $_redirect_slug = '';
+
+        /**
          * When the article was posted
          *
          * @var integer
@@ -81,7 +86,7 @@
          * @var string
          * @Column(type="text")
          */
-        protected $_content = null;
+        protected $_content = '';
 
         /**
          * The article content syntax
@@ -106,7 +111,7 @@
          * @Column(type="integer", length=10)
          * @Relates(class="\pachno\core\entities\Article")
          */
-        protected $_parent_article_id = false;
+        protected $_parent_article_id = 0;
 
         /**
          * Child article, if this article has any
@@ -182,9 +187,23 @@
 
         protected $_namespaces = null;
 
-        protected $_redirect_article = null;
+        /**
+         * The article this slug redirects to
+         *
+         * @var Article
+         * @Column(type="integer", length=10)
+         * @Relates(class="\pachno\core\entities\Article")
+         */
+        protected $_redirect_article_id = 0;
 
         protected $_new_subscribers = [];
+
+        /**
+         * @var Article[]
+         */
+        protected $_children = null;
+
+        protected $_has_children = null;
 
         protected $_parser = null;
 
@@ -244,6 +263,27 @@
             return $article->getID();
         }
 
+        public static function sortArticleChildren ($a, $b)
+        {
+            /**
+             * @var Article $a
+             * @var Article $b
+             */
+            if ($a->isCategory() != $b->isCategory()) {
+                return ($a->isCategory() > $b->isCategory()) ? -1 : 1;
+            }
+
+            if (!$a->isCategory() && !$b->isCategory()) {
+                $a_has_children = $a->hasChildren();
+                $b_has_children = $b->hasChildren();
+                if ($a_has_children != $b_has_children) {
+                    return ($a_has_children > $b_has_children) ? -1 : 1;
+                }
+            }
+
+            return strnatcmp($a->getName(), $b->getName());
+        }
+
         public function setProject($project_id)
         {
             $this->_project_id = $project_id;
@@ -251,11 +291,6 @@
 
         public function doSave($options = [], $reason = null)
         {
-            if (Articles::getTable()->doesNameConflictExist($this->_name, $this->_id, framework\Context::getScope()->getID())) {
-                if (!array_key_exists('overwrite', $options) || !$options['overwrite']) {
-                    throw new Exception(framework\Context::getI18n()->__('Another article with this name already exists'));
-                }
-            }
             $user_id = (framework\Context::getUser() instanceof User) ? framework\Context::getUser()->getID() : 0;
 
             if (!isset($options['revert']) || !$options['revert']) {
@@ -271,13 +306,6 @@
 
             $this->_old_content = $this->_content;
 
-            if (mb_substr($this->getContent(), 0, 10) == "#REDIRECT ") {
-                $content = explode("\n", $this->getContent());
-                preg_match('/(\[\[([^\]]*?)\]\])$/im', mb_substr(array_shift($content), 10), $matches);
-                if (count($matches) == 3) {
-                    return;
-                }
-            }
             $links = $this->_retrieveLinksFromContent($options);
 
             foreach ($links as $link => $occurrences) {
@@ -432,6 +460,9 @@
             }
         }
 
+        /**
+         * @return Article[]
+         */
         public function getSubCategories()
         {
             $this->_populateSubCategories();
@@ -508,33 +539,9 @@
             return preg_replace('/(?<=[a-z])(?=[A-Z])/', ' ', $this->getName());
         }
 
-        public function getRedirectArticle()
-        {
-            if (!$this->isRedirect())
-                return null;
-
-            if (!$this->_redirect_article instanceof Article) {
-                $article = Articles::getTable()->getArticleByName($this->_redirect_article, $this->getProject(), true, null, $this->getScope()->getID());
-                if ($article instanceof Article)
-                    $this->_redirect_article = $article;
-            }
-
-            return $this->_redirect_article;
-        }
-
         public function isRedirect()
         {
-            if (mb_substr($this->getContent(), 0, 10) == "#REDIRECT ") {
-                $content = explode("\n", $this->getContent());
-                preg_match('/(\[\[([^\]]*?)\]\])$/im', mb_substr(array_shift($content), 10), $matches);
-                if (count($matches) == 3) {
-                    $this->_redirect_article = $matches[2];
-
-                    return true;
-                }
-            }
-
-            return false;
+            return (bool) $this->_redirect_article_id;
         }
 
         /**
@@ -543,11 +550,6 @@
         public function getProject()
         {
             return $this->_b2dbLazyLoad('_project_id');
-        }
-
-        public function getRedirectArticleName()
-        {
-            return ($this->_redirect_article instanceof Article) ? $this->_redirect_article->getName() : $this->_redirect_article;
         }
 
         /**
@@ -804,6 +806,28 @@
             return $this->_b2dbLazyLoad('_parent_article_id');
         }
 
+        public function setRedirectArticle($redirect_article_id)
+        {
+            $this->_redirect_article_id = $redirect_article_id;
+        }
+
+        public function getRedirectArticleName()
+        {
+            $article = $this->getRedirectArticle();
+
+            return ($article instanceof self) ? $article->getName() : null;
+        }
+
+        /**
+         * Return the redirect article (if any)
+         *
+         * @return Article
+         */
+        public function getRedirectArticle()
+        {
+            return $this->_b2dbLazyLoad('_redirect_article_id');
+        }
+
         protected function _populateChildArticles()
         {
             if ($this->_child_articles === null) {
@@ -816,6 +840,49 @@
             $this->_populateChildArticles();
 
             return $this->_child_articles;
+        }
+
+        public function hasChildren()
+        {
+            if ($this->_has_children !== null) {
+                return $this->_has_children;
+            }
+
+            if ($this->_children !== null) {
+                return (bool) count($this->_children);
+            }
+
+            $this->_has_children = (bool) Articles::getTable()->countArticlesByParentId($this->getID(), $this->isCategory());
+
+            return $this->_has_children;
+        }
+
+        /**
+         * @return Article[]
+         */
+        public function getChildren()
+        {
+            $this->_populateChildren();
+
+            return $this->_children;
+        }
+
+        public function _populateChildren()
+        {
+            if ($this->_children === null) {
+//                if ($this->isCategory()) {
+//                    foreach ($this->getSubCategories() as $subCategory) {
+//                        $this->_children[] = $subCategory;
+//                    }
+//                } else {
+//                    foreach ($this->getChildArticles() as $childArticle) {
+//                        $this->_children[] = $childArticle;
+//                    }
+//                }
+                $this->_children = ($this->isCategory()) ? $this->getSubCategories() : $this->getChildArticles();
+
+                usort($this->_children, 'self::sortArticleChildren');
+            }
         }
 
         public function getHistoryUserIDs()
@@ -1141,6 +1208,43 @@
                     $this->_addNotificationIfNotNotified(Notification::TYPE_ARTICLE_UPDATED, $user, $updated_by);
                 }
             }
+        }
+
+        /**
+         * @return string
+         */
+        public function getRedirectSlug()
+        {
+            return $this->_redirect_slug;
+        }
+
+        /**
+         * @param string $redirect_slug
+         */
+        public function setRedirectSlug($redirect_slug)
+        {
+            $this->_redirect_slug = $redirect_slug;
+        }
+
+        public function getParentsArray()
+        {
+            $parents = [];
+            $article = $this;
+
+            do {
+                $parent = $article->getParentArticle();
+                if ($parent instanceof self) {
+                    $parents[$parent->getId()] = $parent->getId();
+                    $article = $parent;
+                }
+            } while ($parent instanceof self);
+
+            foreach ($article->getCategories() as $articleCategoryLink) {
+                $category_id = $articleCategoryLink->getCategory()->getID();
+                $parents[$category_id] = $category_id;
+            }
+
+            return $parents;
         }
 
     }
