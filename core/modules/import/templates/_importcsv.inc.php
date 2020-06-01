@@ -1,7 +1,7 @@
 <div class="backdrop_box large">
     <div class="backdrop_detail_header">
         <span><?= __('Import content from CSV'); ?></span>
-        <a href="javascript:void(0);" class="closer" onclick="Pachno.Main.Helpers.Backdrop.reset();"><?= fa_image_tag('times'); ?></a>
+        <a href="javascript:void(0);" class="closer" onclick="Pachno.UI.Backdrop.reset();"><?= fa_image_tag('times'); ?></a>
     </div>
     <form accept-charset="<?= \pachno\core\framework\Context::getI18n()->getCharset(); ?>" method="post" id="import_csv_form" onsubmit="Pachno.Config.Import.importCSV('<?= make_url('import_do_import_csv', array('type' => $type)); ?>');return false;">
         <div id="backdrop_detail_content" class="backdrop_detail_content">

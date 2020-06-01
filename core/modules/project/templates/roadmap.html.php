@@ -13,7 +13,7 @@
     <?php include_component('project/sidebar', ['dashboard' => __('Roadmap')]); ?>
     <?php /* <h3><?php echo __('Roadmap filters'); ?></h3>
             <ul class="simple-list">
-                <li class="<?php if ($mode == 'upcoming') echo 'selected'; ?>"><a href="javascript:void(0);" onclick="Pachno.Project.clearRoadmapFilters(); $('project_roadmap_page').addClassName('upcoming');Pachno.Project.toggleLeftSelection(this);Pachno.Project.showRoadmap();"><?php echo __('Upcoming roadmap'); ?></a></li>
+                <li class="<?php if ($mode == 'upcoming') echo 'selected'; ?>"><a href="javascript:void(0);" onclick="Pachno.Project.clearRoadmapFilters(); $('project_roadmap_page').addClass('upcoming');Pachno.Project.toggleLeftSelection(this);Pachno.Project.showRoadmap();"><?php echo __('Upcoming roadmap'); ?></a></li>
                 <li class="<?php if ($mode == 'all') echo 'selected'; ?>"><a href="javascript:void(0);" onclick="Pachno.Project.clearRoadmapFilters(); Pachno.Project.toggleLeftSelection(this);Pachno.Project.showRoadmap();"><?php echo __('Include past milestones'); ?></a></li>
                 <li><h3><?php echo __('Milestone details'); ?></h3></li>
                 <?php foreach ($milestones as $milestone): ?>
@@ -24,7 +24,7 @@
         <?php if ($pachno_user->canManageProjectReleases($selected_project)): ?>
             <div class="planning_indicator" id="milestone_0_indicator" style="display: none;"><?php echo image_tag('spinning_30.gif'); ?></div>
             <div class="project_save_container" id="project_planning_action_strip">
-                <?php echo javascript_link_tag(__('New milestone'), array('class' => 'button', 'onclick' => "Pachno.Main.Helpers.Backdrop.show('".make_url('get_partial_for_backdrop', array('key' => 'milestone', 'project_id' => $selected_project->getId()))."');")); ?>
+                <?php echo javascript_link_tag(__('New milestone'), array('class' => 'button', 'onclick' => "Pachno.UI.Backdrop.show('".make_url('get_partial_for_backdrop', array('key' => 'milestone', 'project_id' => $selected_project->getId()))."');")); ?>
                 <?php echo image_tag('spinning_16.gif', array('id' => 'retrieve_indicator', 'class' => 'indicator', 'style' => 'display: none;')); ?>
                 <?php echo fa_image_tag('cog', array('class' => 'dropper dropdown_link planning_board_settings_gear', 'id' => 'planning_board_settings_gear')); ?>
                 <ul class="more_actions_dropdown popup_box">

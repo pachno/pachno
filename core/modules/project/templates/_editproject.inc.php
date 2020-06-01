@@ -9,7 +9,7 @@
 <div class="backdrop_box large" id="project_config_popup_main_container">
     <div class="backdrop_detail_header">
         <span><?= ($project->getId()) ? __('Edit project') : __('Create a project'); ?></span>
-        <a class="closer" href="javascript:void(0);" onclick="Pachno.Main.Helpers.Backdrop.reset();"><?= fa_image_tag('times'); ?></a>
+        <a class="closer" href="javascript:void(0);" onclick="Pachno.UI.Backdrop.reset();"><?= fa_image_tag('times'); ?></a>
     </div>
     <div id="backdrop_detail_content" class="backdrop_detail_content">
         <?php \pachno\core\framework\Event::createNew('core', 'project/editproject::above_content')->trigger(compact('project')); ?>

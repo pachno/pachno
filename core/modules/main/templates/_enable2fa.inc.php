@@ -8,7 +8,7 @@
 <div class="backdrop_box large" id="project_config_popup_main_container">
     <div class="backdrop_detail_header">
         <span><?= __('Enable two-factor authentication'); ?></span>
-        <a class="closer" href="javascript:void(0);" onclick="Pachno.Main.Helpers.Backdrop.reset();"><?= fa_image_tag('times'); ?></a>
+        <a class="closer" href="javascript:void(0);" onclick="Pachno.UI.Backdrop.reset();"><?= fa_image_tag('times'); ?></a>
     </div>
     <div id="backdrop_detail_content" class="backdrop_detail_content">
         <div class="form-container">
@@ -36,7 +36,7 @@
                     <div class="error" id="tfa-error-message"></div>
                 </div>
                 <div class="form-row submit-container">
-                    <a href="javascript:void(0);" onclick="Pachno.Main.Helpers.Backdrop.reset();" class="button secondary"><?= __('Never mind'); ?></a>
+                    <a href="javascript:void(0);" onclick="Pachno.UI.Backdrop.reset();" class="button secondary"><?= __('Never mind'); ?></a>
                     <button type="submit" class="button primary"><span><?= __('Verify code'); ?></span><?= fa_image_tag('spinner', ['class' => 'fa-spin icon indicator']); ?></button>
                 </div>
             </form>

@@ -33,7 +33,7 @@
         &nbsp;
     <?php endif; ?>
     <?php if ($pachno_user->canEditMainMenu($link->getTargetType())): ?>
-        <?php echo javascript_link_tag(fa_image_tag('close'), array('class' => 'delete-icon', 'style' => 'float: right;', 'onclick' => "Pachno.Main.Helpers.Dialog.show('".__('Please confirm')."', '".__('Do you really want to delete this link?')."', {yes: {click: function() {Pachno.Main.Link.remove('".make_url('remove_link', array('target_type' => $link->getTargetType(), 'target_id' => $link->getTargetId(), 'link_id' => $link_id))."', '{$link->getTargetType()}', '{$link->getTargetId()}', ".$link_id."); }}, no: {click: Pachno.Main.Helpers.Dialog.dismiss}})")); ?>
+        <?php echo javascript_link_tag(fa_image_tag('close'), array('class' => 'delete-icon', 'style' => 'float: right;', 'onclick' => "Pachno.UI.Dialog.show('".__('Please confirm')."', '".__('Do you really want to delete this link?')."', {yes: {click: function() {Pachno.Main.Link.remove('".make_url('remove_link', array('target_type' => $link->getTargetType(), 'target_id' => $link->getTargetId(), 'link_id' => $link_id))."', '{$link->getTargetType()}', '{$link->getTargetId()}', ".$link_id."); }}, no: {click: Pachno.UI.Dialog.dismiss}})")); ?>
     <?php endif; ?>
 <?php if ($link->hasUrl()): ?>
     </div>

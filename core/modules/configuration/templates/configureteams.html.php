@@ -11,10 +11,10 @@
         <h1><?= __('Manage users'); ?></h1>
         <div class="tab_menu inset">
             <ul id="usersteamsgroups_menu">
-                <li id="tab_users" class="selected"><?= javascript_link_tag($users_text, array('onclick' => "Pachno.Main.Helpers.tabSwitcher('tab_users', 'usersteamsgroups_menu');")); ?></li>
-                <li id="tab_teams"><?= javascript_link_tag($teams_text, array('onclick' => "Pachno.Main.Helpers.tabSwitcher('tab_teams', 'usersteamsgroups_menu');")); ?></li>
-                <li id="tab_clients"><?= javascript_link_tag(__('Clients'), array('onclick' => "Pachno.Main.Helpers.tabSwitcher('tab_clients', 'usersteamsgroups_menu');")); ?></li>
-                <li id="tab_groups" class="right modest"><?= javascript_link_tag(__('Groups'), array('onclick' => "Pachno.Main.Helpers.tabSwitcher('tab_groups', 'usersteamsgroups_menu');")); ?></li>
+                <li id="tab_users" class="selected"><?= javascript_link_tag($users_text, array('onclick' => "Pachno.UI.tabSwitcher('tab_users', 'usersteamsgroups_menu');")); ?></li>
+                <li id="tab_teams"><?= javascript_link_tag($teams_text, array('onclick' => "Pachno.UI.tabSwitcher('tab_teams', 'usersteamsgroups_menu');")); ?></li>
+                <li id="tab_clients"><?= javascript_link_tag(__('Clients'), array('onclick' => "Pachno.UI.tabSwitcher('tab_clients', 'usersteamsgroups_menu');")); ?></li>
+                <li id="tab_groups" class="right modest"><?= javascript_link_tag(__('Groups'), array('onclick' => "Pachno.UI.tabSwitcher('tab_groups', 'usersteamsgroups_menu');")); ?></li>
             </ul>
         </div>
         <div id="usersteamsgroups_menu_panes">
@@ -36,7 +36,7 @@
                     <?= javascript_link_tag('0-9', array('style' => 'width: 23px;', 'class' => 'button', 'onclick' => "Pachno.Config.User.show('".make_url('configure_users_find_user')."', '0-9');")); ?>
                 </div>
                 <div id="users_more_actions_container" style="position: relative;">
-                    <button class="button last dropper" id="users_more_actions" onclick="if ($(this).hasClassName('button-pressed')){ $('findusers').focus(); }"><?= __('Search'); ?></button>
+                    <button class="button last dropper" id="users_more_actions" onclick="if ($(this).hasClass('button-pressed')){ $('findusers').focus(); }"><?= __('Search'); ?></button>
                     <ul id="users_more_actions_dropdown" style="width: 400px; font-size: 1.1em; z-index: 1000; margin-top: 21px;" class="simple-list rounded_box white shadowed popup_box more_actions_dropdown">
                         <li class="finduser_container">
                             <label for="findusers"><?= __('Find user(s)'); ?>:</label><br>
@@ -53,13 +53,13 @@
                 <div class="fullpage_backdrop" id="adduser_div"style="display: none;">
                     <script>
                         var import_cb = function () {
-                            Pachno.Main.Helpers.Dialog.show('<?= __('Would you like to add this user to the current scope?'); ?>',
+                            Pachno.UI.Dialog.show('<?= __('Would you like to add this user to the current scope?'); ?>',
                                                          '<?= __('The username you tried to create already exists. You can give this user access to the current scope by pressing "%yes" below. If you want to create a different user, press "%no" and enter a different username.', array('%yes' => __('yes'), '%no' => __('no'))); ?>',
                                                          {
                                                              yes: {
                                                                  click: function() {Pachno.Config.User.addToScope('<?= make_url('configure_users_import_user'); ?>');}
                                                              },
-                                                             no: {click: Pachno.Main.Helpers.Dialog.dismiss}
+                                                             no: {click: Pachno.UI.Dialog.dismiss}
                                                          });
                         };
                     </script>
@@ -190,13 +190,13 @@
 <script type="text/javascript">
     require(['domReady', 'pachno/index', 'jquery'], function (domReady, pachno_index_js, jQuery) {
         domReady(function () {
-            jQuery('body').on('click', '#findusers', function(event) {
+            $('body').on('click', '#findusers', function(event) {
                 event.preventDefault();
                 event.stopPropagation();
             });
 
-            jQuery('body').on('click', '#users_more_actions_dropdown', function (event) {
-                $('users_more_actions').toggleClassName('button-pressed');
+            $('body').on('click', '#users_more_actions_dropdown', function (event) {
+                $('users_more_actions').toggleClass('button-pressed');
                 $('users_more_actions_dropdown').toggle();
             });
             <?php if ($finduser): ?>

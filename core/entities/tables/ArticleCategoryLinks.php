@@ -69,7 +69,7 @@
         {
             $query = $this->getQuery();
             $query->addSelectionColumn(self::ARTICLE_ID, 'article_id', Query::DB_DISTINCT);
-            if ($existing_article_ids !== null) {
+            if (is_array($existing_article_ids) && !empty($existing_article_ids)) {
                 $query->where(self::ARTICLE_ID, $existing_article_ids, Criterion::NOT_IN);
             }
 

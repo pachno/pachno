@@ -10,7 +10,7 @@
         <h3>
             <span><?= __('Client'); ?></span>
             <?php if ($access_level == \pachno\core\framework\Settings::ACCESS_FULL): ?>
-                <button class="button secondary" onclick="Pachno.Main.Helpers.Backdrop.show('<?php echo make_url('get_partial_for_backdrop', ['key' => 'edit_client', 'project_id' => $project->getID()]); ?>');">
+                <button class="button secondary" onclick="Pachno.UI.Backdrop.show('<?php echo make_url('get_partial_for_backdrop', ['key' => 'edit_client', 'project_id' => $project->getID()]); ?>');">
                     <?= fa_image_tag('plus', ['class' => 'icon']); ?>
                     <span class="name"><?= __('Create client'); ?></span>
                 </button>

@@ -1,7 +1,7 @@
 <div class="backdrop_box medium" id="viewissue_add_relation_div">
     <div class="backdrop_detail_header">
         <span><?php echo __('Find related issues'); ?></span>
-        <a href="javascript:void(0);" onclick="Pachno.Main.Helpers.Backdrop.reset();" class="closer"><?php echo fa_image_tag('times'); ?></a>
+        <a href="javascript:void(0);" onclick="Pachno.UI.Backdrop.reset();" class="closer"><?php echo fa_image_tag('times'); ?></a>
     </div>
     <div id="backdrop_detail_content" class="backdrop_detail_content">
         <?php echo __('Please enter some details to search for, and then select the matching issues to relate them'); ?>

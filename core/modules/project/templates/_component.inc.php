@@ -20,7 +20,7 @@
             <a href="javascript:void(0);" onclick="$('component_<?php echo $component->getID(); ?>_permissions').toggle();" class="button secondary icon"><?= fa_image_tag('lock'); ?></a>
         </div>
         <div class="icon">
-            <a class="button secondary icon danger" href="javascript:void(0);" onclick="Pachno.Main.Helpers.Dialog.show('<?php echo __('Do you really want to delete this component?'); ?>', '<?php echo __('Please confirm that you want to completely remove this component.'); ?>', {yes: {click: function() { Pachno.Project.Component.remove('<?= make_url('configure_project_component_delete', array('project_id' => $component->getProject()->getID(), 'component_id' => $component->getID())); ?>', <?= $component->getID(); ?>);}}, no: { click: Pachno.Main.Helpers.Dialog.dismiss }});"><?php echo fa_image_tag('trash-alt', [], 'far'); ?></a>
+            <a class="button secondary icon danger" href="javascript:void(0);" onclick="Pachno.UI.Dialog.show('<?php echo __('Do you really want to delete this component?'); ?>', '<?php echo __('Please confirm that you want to completely remove this component.'); ?>', {yes: {click: function() { Pachno.Project.Component.remove('<?= make_url('configure_project_component_delete', array('project_id' => $component->getProject()->getID(), 'component_id' => $component->getID())); ?>', <?= $component->getID(); ?>);}}, no: { click: Pachno.UI.Dialog.dismiss }});"><?php echo fa_image_tag('trash-alt', [], 'far'); ?></a>
         </div>
     </form>
 </div>

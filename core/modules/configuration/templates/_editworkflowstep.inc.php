@@ -40,7 +40,7 @@
             </label>
         </div>
         <div class="form-row submit-container">
-            <a class="button secondary" href="javascript:void(0);" onclick="Pachno.Main.Helpers.Dialog.show('<?= __('Do you really want to delete this workflow step?'); ?>', '<?=__('This will set the status of any issues currently in this step back to the initial workflow step. It will also remove any transitions to / from this step.'); ?>', {yes: {click: function() {Pachno.Config.Workflows.Workflow.Step.remove('<?= make_url('configure_workflow_delete_step', ['workflow_id' => $step->getWorkflow()->getID(), 'step_id' => $step->getID()]); ?>')}}, no: { click: Pachno.Main.Helpers.Dialog.dismiss }});">
+            <a class="button secondary" href="javascript:void(0);" onclick="Pachno.UI.Dialog.show('<?= __('Do you really want to delete this workflow step?'); ?>', '<?=__('This will set the status of any issues currently in this step back to the initial workflow step. It will also remove any transitions to / from this step.'); ?>', {yes: {click: function() {Pachno.Config.Workflows.Workflow.Step.remove('<?= make_url('configure_workflow_delete_step', ['workflow_id' => $step->getWorkflow()->getID(), 'step_id' => $step->getID()]); ?>')}}, no: { click: Pachno.UI.Dialog.dismiss }});">
                 <span class="icon"><?= fa_image_tag('times'); ?></span>
                 <span class="name"><?= __('Remove step'); ?></span>
             </a>
@@ -115,9 +115,9 @@
 <td class="workflow_step_actions">
     <?php echo link_tag(make_url('configure_workflow_step', array('workflow_id' => $step->getWorkflow()->getID(), 'step_id' => $step->getID())), __('Edit step')); ?> |
     <?php if ($step->hasIncomingTransitions()): ?>
-        <span class="faded_out"><a href="javascript:void(0);" class="disabled" onclick="Pachno.Main.Helpers.Message.error('<?php echo __('You cannot delete a step with incoming transitions'); ?>', '<?php echo __('To delete a step that has incoming transitions, first remove all incoming transitions'); ?>');"><?php echo __('Delete step'); ?></a></span><br>
+        <span class="faded_out"><a href="javascript:void(0);" class="disabled" onclick="Pachno.UI.Message.error('<?php echo __('You cannot delete a step with incoming transitions'); ?>', '<?php echo __('To delete a step that has incoming transitions, first remove all incoming transitions'); ?>');"><?php echo __('Delete step'); ?></a></span><br>
     <?php elseif ($step->getWorkflow()->getNumberOfSteps() == 1): ?>
-        <span class="faded_out"><a href="javascript:void(0);" class="disabled" onclick="Pachno.Main.Helpers.Message.error('<?php echo __('You cannot delete the last step'); ?>', '<?php echo __('To delete this step, make sure there are other steps available'); ?>');"><?php echo __('Delete step'); ?></a></span><br>
+        <span class="faded_out"><a href="javascript:void(0);" class="disabled" onclick="Pachno.UI.Message.error('<?php echo __('You cannot delete the last step'); ?>', '<?php echo __('To delete this step, make sure there are other steps available'); ?>');"><?php echo __('Delete step'); ?></a></span><br>
     <?php else: ?>
         <?php echo javascript_link_tag(__('Delete step'), array('onclick' => "\$('step_{$step->getID()}_delete').toggle();")); ?><br>
     <?php endif; ?>

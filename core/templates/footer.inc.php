@@ -15,12 +15,11 @@
     <?php if (\pachno\core\framework\Context::isDebugMode() && \pachno\core\framework\Logging::isEnabled()): ?>
         <script>
             function pachno_debug_show_menu_tab(tab, clicked) {
-                $('debug-bar').childElements().each(function (unclicked) {
-                    unclicked.removeClassName('selected');
-                });
-                clicked.addClassName('selected');
-                $('debug-frames-container').childElements().each(function (container) {
-                    (container.id == tab) ? container.addClassName('selected') : container.removeClassName('selected');
+                $('#debug-bar').children().removeClass('selected');
+                clicked.addClass('selected');
+                $('#debug-frames-container').children().each(function () {
+                    let container = $(this);
+                    (container.id == tab) ? container.addClass('selected') : container.removeClass('selected');
                 });
             }
         </script>

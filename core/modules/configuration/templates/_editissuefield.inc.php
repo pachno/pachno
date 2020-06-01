@@ -10,7 +10,7 @@
                 <label for="custom_type_<?= $type; ?>_instructions"><?= __('Instructions (optional)'); ?></label>
             </div>
             <div class="form-row submit-container">
-                <a class="button secondary" href="javascript:void(0);" onclick="Pachno.Main.Helpers.Dialog.show('<?= __('Do you really want to delete this issue field?'); ?>', '<?=__('This will also remove the value of this issue field from all issues, along with any possible options this field can have.'); ?>', {yes: {click: function() {Pachno.Config.Issuefields.Custom.remove('<?= make_url('configure_issuefields_delete_customtype', ['type' => $type]); ?>', '<?= $type; ?>'); }}, no: { click: Pachno.Main.Helpers.Dialog.dismiss }});">
+                <a class="button secondary" href="javascript:void(0);" onclick="Pachno.UI.Dialog.show('<?= __('Do you really want to delete this issue field?'); ?>', '<?=__('This will also remove the value of this issue field from all issues, along with any possible options this field can have.'); ?>', {yes: {click: function() {Pachno.Config.Issuefields.Custom.remove('<?= make_url('configure_issuefields_delete_customtype', ['type' => $type]); ?>', '<?= $type; ?>'); }}, no: { click: Pachno.UI.Dialog.dismiss }});">
                     <span class="icon"><?= fa_image_tag('times'); ?></span>
                     <span class="name"><?= __('Remove field'); ?></span>
                 </a>

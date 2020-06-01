@@ -70,7 +70,7 @@
             <?php if (!$module instanceof CoreModule && $module->getID()): ?>
                 <?php if ($is_default_scope): ?>
                     <button class="button button-lightblue update-button dropper" id="module_<?php echo $module->getID(); ?>_update" data-key="<?php echo $module->getName(); ?>"><?php echo __('Update'); ?></button>
-                    <ul id="module_<?php echo $module->getID(); ?>_update_dropdown" style="font-size: 1.1em; overflow: visible;" class="popup_box more_actions_dropdown" onclick="$(this).previous().toggleClassName('button-pressed');$(this).toggle();">
+                    <ul id="module_<?php echo $module->getID(); ?>_update_dropdown" style="font-size: 1.1em; overflow: visible;" class="popup_box more_actions_dropdown" onclick="$(this).previous().toggleClass('button-pressed');$(this).toggle();">
                         <?php if ($module->isOutdated()): ?>
                             <li>
                                 <?php echo link_tag(make_url('configuration_module_update', array('module_key' => $module->getName())), __('Update to latest version')); ?>
@@ -84,7 +84,7 @@
                     </ul>
                 <?php endif; ?>
                 <button class="button dropper" id="module_<?php echo $module->getID(); ?>_more_actions"><?php echo __('Actions'); ?></button>
-                <ul id="module_<?php echo $module->getID(); ?>_more_actions_dropdown" style="font-size: 1.1em;" class="popup_box more_actions_dropdown" onclick="$(this).previous().toggleClassName('button-pressed');$(this).toggle();">
+                <ul id="module_<?php echo $module->getID(); ?>_more_actions_dropdown" style="font-size: 1.1em;" class="popup_box more_actions_dropdown" onclick="$(this).previous().toggleClass('button-pressed');$(this).toggle();">
                     <?php if ($module->hasConfigSettings()): ?>
                         <li>
                             <?php echo link_tag(make_url('configure_module', array('config_module' => $module->getName())), __('Configure module')); ?>

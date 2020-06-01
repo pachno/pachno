@@ -37,7 +37,7 @@
                         $('#livelink_address_container').addClass('verified');
                         $('#livelink_repository_url_input').attr('disabled', true);
                     }, function (details) {
-                        pachno_index_js.Main.Helpers.Message.error(details.responseJSON.error);
+                        pachno_index_js.Helpers.Message.error(details.responseJSON.error);
                     });
             };
 

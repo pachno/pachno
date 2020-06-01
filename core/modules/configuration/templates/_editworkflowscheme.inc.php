@@ -7,7 +7,7 @@
 <div class="backdrop_box large">
     <div class="backdrop_detail_header">
         <span><?php echo ($scheme->getId()) ? __('Edit workflow scheme') : __('Create new workflow scheme'); ?></span>
-        <a href="javascript:void(0);" class="closer" onclick="Pachno.Main.Helpers.Backdrop.reset();"><?= fa_image_tag('times'); ?></a>
+        <a href="javascript:void(0);" class="closer" onclick="Pachno.UI.Backdrop.reset();"><?= fa_image_tag('times'); ?></a>
     </div>
     <div id="backdrop_detail_content" class="backdrop_detail_content">
         <div class="form-container">

@@ -14,7 +14,11 @@
         public function runIndex(framework\Request $request)
         {
             $this->getResponse()->setDecoration(Response::DECORATE_NONE);
-            $this->pachno_summary = framework\Context::getDebugData($request['debug_id']);
+            return $this->renderJSON([
+                'content' => $this->getComponentHTML('debugger', [
+                    'pachno_summary' => framework\Context::getDebugData($request['debug_id'])
+                ])
+            ]);
         }
 
     }

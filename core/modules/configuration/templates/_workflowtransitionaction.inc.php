@@ -179,7 +179,7 @@ use pachno\core\entities\Component;
             </div>
         <?php endif; ?>
         <div class="icon">
-            <button class="secondary icon" onclick="Pachno.Main.Helpers.Dialog.show('<?= __('Do you really want to delete this transition action?'); ?>', '<?= __('Please confirm that you really want to delete this transition action.'); ?>', {yes: {click: function() {Pachno.Config.Workflows.Transition.Actions.remove('<?= make_url('configure_workflow_transition_action_delete', array('workflow_id' => $action->getWorkflow()->getID(), 'transition_id' => $action->getTransition()->getID(), 'action_id' => $action->getID())); ?>', <?= $action->getID(); ?>, '<?= $action->getActionType(); ?>'); }}, no: { click: Pachno.Main.Helpers.Dialog.dismiss }});"><?= fa_image_tag('trash-alt'); ?></button>
+            <button class="secondary icon" onclick="Pachno.UI.Dialog.show('<?= __('Do you really want to delete this transition action?'); ?>', '<?= __('Please confirm that you really want to delete this transition action.'); ?>', {yes: {click: function() {Pachno.Config.Workflows.Transition.Actions.remove('<?= make_url('configure_workflow_transition_action_delete', array('workflow_id' => $action->getWorkflow()->getID(), 'transition_id' => $action->getTransition()->getID(), 'action_id' => $action->getID())); ?>', <?= $action->getID(); ?>, '<?= $action->getActionType(); ?>'); }}, no: { click: Pachno.UI.Dialog.dismiss }});"><?= fa_image_tag('trash-alt'); ?></button>
         </div>
     </div>
 </div>

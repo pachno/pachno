@@ -11,7 +11,7 @@
                 <input type="text" name="desired_username" id="username_pick" style="width: 390px;"><br>
                 <div id="username_unavailable" style="display: none;"><?php echo __('This username is not available'); ?></div>
                 <div class="smaller" style="text-align: right; margin: 10px 2px 5px 0; height: 23px;">
-                    <div style="float: right; padding: 3px;"><?php echo __('%check_availability or %cancel', array('%check_availability' => '', '%cancel' => '<a href="javascript:void(0);" onclick="$(\'pick_username_div\').toggle();$(\'pick_username_button\').toggleClassName(\'button-pressed\');"><b>' . __('cancel') . '</b></a>')); ?></div>
+                    <div style="float: right; padding: 3px;"><?php echo __('%check_availability or %cancel', array('%check_availability' => '', '%cancel' => '<a href="javascript:void(0);" onclick="$(\'pick_username_div\').toggle();$(\'pick_username_button\').toggleClass(\'button-pressed\');"><b>' . __('cancel') . '</b></a>')); ?></div>
                     <input type="submit" value="<?php echo __('Check availability'); ?>" style="font-weight: bold; float: right;">
                     <span id="pick_username_indicator"><?php echo image_tag('spinning_20.gif'); ?></span>
                 </div>

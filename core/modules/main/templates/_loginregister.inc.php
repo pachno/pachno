@@ -25,7 +25,7 @@
                 </div>
                 <?php include_component('main/captcha'); ?>
                 <div class="form-row submit-container">
-                    <a class="button secondary" href="javascript:void(0);" onclick="Pachno.Main.Login.showLogin('regular_login_container');">
+                    <a class="button secondary" href="javascript:void(0);" onclick="Pachno.Main.Login.showLogin('#regular_login_container');">
                         <?= fa_image_tag('angle-left', ['class' => 'icon']); ?>
                         <span><?php echo __('Back'); ?></span>
                     </a>
@@ -56,7 +56,7 @@
                     </button>
                 </div>
                 <div class="login_button_container" id="register_confirm_back" style="display: none;">
-                    <a style="float: left;" href="javascript:void(0);" onclick="Pachno.Main.Login.showLogin('regular_login_container');">&laquo;&nbsp;<?php echo __('Back'); ?></a>
+                    <a style="float: left;" href="javascript:void(0);" onclick="Pachno.Main.Login.showLogin('#regular_login_container');">&laquo;&nbsp;<?php echo __('Back'); ?></a>
                 </div>
             </form>
         </div>

@@ -2,20 +2,20 @@ define(['pachno/tools', 'pachno/index', 'domReady', 'jquery', 'mention'],
     function (tools, Pachno, domReady, jQuery, mention) {
 
         domReady(function () {
-            Pachno.Main.Helpers.MarkitUp($$('textarea.markuppable'));
+            Pachno.Helpers.MarkitUp(jQuery('textarea.markuppable'));
             (function ($) {
-                jQuery('body').on('click', '.expandable .expander', function (event) {
-                    event.preventDefault();
-
-                    jQuery(this).closest('.expandable').toggleClass('expanded');
-                });
-
-                jQuery('body').on('click', '.sidebar .collapser a', function (event) {
-                    event.stopPropagation();
-                    event.preventDefault();
-
-                    jQuery(this).closest('.sidebar').toggleClass('collapsed');
-                });
+                // jQuery('body').on('click', '.expandable .expander', function (event) {
+                //     event.preventDefault();
+                //
+                //     jQuery(this).closest('.expandable').toggleClass('expanded');
+                // });
+                //
+                // jQuery('body').on('click', '.sidebar .collapser a', function (event) {
+                //     event.stopPropagation();
+                //     event.preventDefault();
+                //
+                //     jQuery(this).closest('.sidebar').toggleClass('collapsed');
+                // });
 
                 jQuery('body').on('blur', 'form[data-interactive-form] input, form[data-interactive-form] textarea', function () {
                     console.log(this);
@@ -60,15 +60,6 @@ define(['pachno/tools', 'pachno/index', 'domReady', 'jquery', 'mention'],
                     $form.submit();
                 });
 
-                jQuery("body").on("click", ".dropper", function (e) {
-                    var is_visible = jQuery(this).hasClass('active');
-                    Pachno.Main.Profile.clearPopupsAndButtons();
-                    if (!is_visible) {
-                        Pachno.Main.Helpers.toggler(jQuery(this));
-                    }
-                    e.stopPropagation();
-                    e.preventDefault();
-                });
                 jQuery("body").on("click", ".collapser", function (e) {
                     let collapser_item = jQuery(this),
 
@@ -148,8 +139,8 @@ define(['pachno/tools', 'pachno/index', 'domReady', 'jquery', 'mention'],
                 //     }
                 // });
                 // filter.select('.filtervalue').each(function (elm) {
-                //     if (!elm.hasClassName('separator'))
-                //         elm.addClassName('unfiltered');
+                //     if (!elm.hasClass('separator'))
+                //         elm.addClass('unfiltered');
                 // });
 
                 jQuery("body").on("click", ".fancy-dropdown", function (e) {
@@ -165,51 +156,51 @@ define(['pachno/tools', 'pachno/index', 'domReady', 'jquery', 'mention'],
                     if (menu === undefined) {
                         var menu = jQuery(this).parent().next()[0];
                     }
-                    if (menu !== undefined && menu.hasClassName('dynamic_menu')) {
-                        Pachno.Main.Helpers.loadDynamicMenu(menu);
+                    if (menu !== undefined && menu.hasClass('dynamic_menu')) {
+                        Pachno.Helpers.loadDynamicMenu(menu);
                     }
                 });
                 jQuery("#user_notifications_container").on("click", Pachno.Main.Profile.toggleNotifications);
                 jQuery("#disable-tutorial-button").on("click", Pachno.Tutorial.disable);
 
-                jQuery("body").on("click", function (e) {
-                    if (e.target.up('#topmenu-container') == undefined && jQuery('#topmenu-container').hasClass('active')) {
-                        jQuery('#topmenu-container').removeClass('active');
-                    }
-                    if (e.target.up('#user_notifications') == undefined && e.target.up('#user_notifications_container') == undefined && jQuery('#user_notifications').hasClass('active')) {
-                        jQuery('#user_notifications').removeClass('active');
-                        jQuery('#user_notifications_container').removeClass('active');
-                    }
-                    if (['INPUT'].indexOf(e.target.nodeName) != -1)
-                        return;
-                    else if (e.target.up('.popup_box') != undefined)
-                        return;
-                    else if (e.target && typeof(e.target.hasAttribute) == 'function' && e.target.hasAttribute('onclick'))
-                        return;
-                    else if (e.target && typeof(e.target.hasAttribute) == 'function' && e.target.hasAttribute('onclick'))
-                        return;
-                    Pachno.Main.Profile.clearPopupsAndButtons();
-                    if (e.target && jQuery(e.target).parents('#searchfor_autocomplete_choices').length > 0)
-                        return;
-                    if (Pachno.autocompleter !== undefined) {
-                        Pachno.autocompleter.options.forceHide();
-                    }
-
-                    e.stopPropagation();
-                });
-                $$("textarea").each(function (ta) {
+                // jQuery("body").on("click", function (e) {
+                //     if (e.target.up('#topmenu-container') == undefined && jQuery('#topmenu-container').hasClass('active')) {
+                //         jQuery('#topmenu-container').removeClass('active');
+                //     }
+                //     if (e.target.up('#user_notifications') == undefined && e.target.up('#user_notifications_container') == undefined && jQuery('#user_notifications').hasClass('active')) {
+                //         jQuery('#user_notifications').removeClass('active');
+                //         jQuery('#user_notifications_container').removeClass('active');
+                //     }
+                //     if (['INPUT'].indexOf(e.target.nodeName) != -1)
+                //         return;
+                //     else if (e.target.up('.popup_box') != undefined)
+                //         return;
+                //     else if (e.target && typeof(e.target.hasAttribute) == 'function' && e.target.hasAttribute('onclick'))
+                //         return;
+                //     else if (e.target && typeof(e.target.hasAttribute) == 'function' && e.target.hasAttribute('onclick'))
+                //         return;
+                //     Pachno.Main.Profile.clearPopupsAndButtons();
+                //     if (e.target && jQuery(e.target).parents('#searchfor_autocomplete_choices').length > 0)
+                //         return;
+                //     if (Pachno.autocompleter !== undefined) {
+                //         Pachno.autocompleter.options.forceHide();
+                //     }
+                //
+                //     e.stopPropagation();
+                // });
+                jQuery("textarea").each(function (ta) {
                     ta.on('focus', function (e) {
                         Pachno.Main.initializeMentionable(e.target);
                         var ec = this.up('.editor_container');
                         if (ec != undefined)
-                            ec.addClassName('focussed');
+                            ec.addClass('focussed');
                     });
                 });
-                $$("textarea").each(function (ta) {
+                jQuery("textarea").each(function (ta) {
                     ta.on('blur', function (e) {
                         var ec = this.up('.editor_container');
                         if (ec != undefined)
-                            ec.removeClassName('focussed');
+                            ec.removeClass('focussed');
                     });
                 });
                 Pachno.Main.Dashboard.initializeSorting($);

@@ -23,7 +23,7 @@ $new_milestone_label = ($board->getType() == AgileBoard::TYPE_SCRUM) ? __('Creat
                 <span class="issue_estimates estimated_hours"><?php echo __('Hours'); ?></span>
             </div>
         </div>
-        <?php echo javascript_link_tag($new_milestone_label, array('class' => 'button', 'onclick' => "Pachno.Main.Helpers.Backdrop.show('".make_url('get_partial_for_backdrop', array('key' => 'agilemilestone', 'project_id' => $board->getProject()->getId(), 'board_id' => $board->getID()))."', Pachno.Project.Planning.updateNewMilestoneIssues);")); ?>
+        <?php echo javascript_link_tag($new_milestone_label, array('class' => 'button', 'onclick' => "Pachno.UI.Backdrop.show('".make_url('get_partial_for_backdrop', array('key' => 'agilemilestone', 'project_id' => $board->getProject()->getId(), 'board_id' => $board->getID()))."', Pachno.Project.Planning.updateNewMilestoneIssues);")); ?>
     </div>
 </div>
 <?php foreach ($board->getBacklogSearchObject()->getIssues() as $issue): ?>

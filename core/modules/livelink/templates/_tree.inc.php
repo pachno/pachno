@@ -4,8 +4,8 @@
 <script>
     require(['domReady', 'jquery'], function (domReady, jquery) {
         domReady(function () {
-            jquery('body').on('click', '.foldername', function (e) {
-                jquery(this).toggleClass('collapsed');
+            $('body').on('click', '.foldername', function (e) {
+                $(this).toggleClass('collapsed');
             });
         });
     });

@@ -35,7 +35,7 @@
                         <?php endforeach; ?>
                     </div>
                     <div class="configurable-components-list">
-                        <a class="configurable-component" href="javascript:void(0);" onclick="Pachno.Main.Helpers.Backdrop.show('<?= make_url('get_partial_for_backdrop', ['key' => 'edit_issuefield']); ?>');">
+                        <a class="configurable-component" href="javascript:void(0);" onclick="Pachno.UI.Backdrop.show('<?= make_url('get_partial_for_backdrop', ['key' => 'edit_issuefield']); ?>');">
                             <span class="row">
                                 <span class="icon"><?= fa_image_tag('plus'); ?></span>
                                 <span class="name">
@@ -53,11 +53,11 @@
 <script>
     require(['domReady', 'pachno/index', 'jquery'], function (domReady, pachno_index_js, jQuery) {
         domReady(function () {
-            jQuery('body').on('click', '.issue-field .open', function(event) {
+            $('body').on('click', '.issue-field .open', function(event) {
                 event.preventDefault();
                 event.stopPropagation();
 
-                const $item = jQuery(this).parents('.issue-field');
+                const $item = $(this).parents('.issue-field');
                 pachno_index_js.Config.Issuefields.showOptions($item);
             });
 

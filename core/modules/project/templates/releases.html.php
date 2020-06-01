@@ -9,8 +9,8 @@
     <?php /* <div class="project_left">
             <h3><?= __('Release selection'); ?></h3>
             <ul class="simple-list">
-                <li class="selected"><a href="javascript:void(0);" onclick="$$('.releases_list').each(function (r) { (r.hasClassName('active_releases')) ? r.show() : r.hide() }); Pachno.Project.toggleLeftSelection(this);"><?= __('All active releases'); ?></a></li>
-                <li ><a href="javascript:void(0);" onclick="$$('.releases_list').each(function (r) { (r.hasClassName('archived_releases')) ? r.show() : r.hide() }); Pachno.Project.toggleLeftSelection(this);"><?= __('Archived releases'); ?></a></li>
+                <li class="selected"><a href="javascript:void(0);" onclick="$$('.releases_list').each(function (r) { (r.hasClass('active_releases')) ? r.show() : r.hide() }); Pachno.Project.toggleLeftSelection(this);"><?= __('All active releases'); ?></a></li>
+                <li ><a href="javascript:void(0);" onclick="$$('.releases_list').each(function (r) { (r.hasClass('archived_releases')) ? r.show() : r.hide() }); Pachno.Project.toggleLeftSelection(this);"><?= __('Archived releases'); ?></a></li>
             </ul>
         </div> */ ?>
     <div id="project_releases_container">

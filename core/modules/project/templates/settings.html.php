@@ -43,11 +43,11 @@
 <script>
     require(['domReady', 'pachno/index', 'jquery'], function (domReady, pachno_index_js, jQuery) {
         domReady(function () {
-            jQuery('body').on('click', '.project-edition .open', function(event) {
+            $('body').on('click', '.project-edition .open', function(event) {
                 event.preventDefault();
                 event.stopPropagation();
 
-                const $item = jQuery(this).parents('.project-edition');
+                const $item = $(this).parents('.project-edition');
                 pachno_index_js.Project.Edition.showOptions($item);
             });
 

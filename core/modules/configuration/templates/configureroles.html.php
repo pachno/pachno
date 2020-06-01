@@ -25,7 +25,7 @@
             </div>
             <h3>
                 <span><?php echo __('Globally available roles'); ?></span>
-                <button class="button" onclick="Pachno.Main.Helpers.Backdrop.show('<?= make_url('get_partial_for_backdrop', ['key' => 'edit_role']); ?>');"><?= __('Create role'); ?></button>
+                <button class="button" onclick="Pachno.UI.Backdrop.show('<?= make_url('get_partial_for_backdrop', ['key' => 'edit_role']); ?>');"><?= __('Create role'); ?></button>
             </h3>
             <div id="global_roles_list" class="flexible-table">
                 <div class="row header">

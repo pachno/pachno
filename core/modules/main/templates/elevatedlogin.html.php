@@ -49,12 +49,12 @@
     </div>
 </div>
 <script type="text/javascript">
-    require(['domReady', 'pachno/index', 'prototype'], function (domReady, Pachno, prototype) {
+    require(['domReady', 'pachno/index'], function (domReady, Pachno) {
         domReady(function () {
         <?php if (\pachno\core\framework\Context::hasMessage('elevated_login_message')): ?>
-            Pachno.Main.Helpers.Message.success('<?php echo \pachno\core\framework\Context::getMessageAndClear('elevated_login_message'); ?>');
+            Pachno.UI.Message.success('<?php echo \pachno\core\framework\Context::getMessageAndClear('elevated_login_message'); ?>');
         <?php elseif (\pachno\core\framework\Context::hasMessage('elevated_login_message_err')): ?>
-            Pachno.Main.Helpers.Message.error('<?php echo \pachno\core\framework\Context::getMessageAndClear('elevated_login_message_err'); ?>');
+            Pachno.UI.Message.error('<?php echo \pachno\core\framework\Context::getMessageAndClear('elevated_login_message_err'); ?>');
         <?php endif; ?>
             $('pachno_password').focus();
         });

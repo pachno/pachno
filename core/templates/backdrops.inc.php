@@ -1,4 +1,4 @@
-<div class="popup_message failure" onclick="Pachno.Main.Helpers.Message.clear();" style="display: none;" id="pachno_failuremessage">
+<div class="popup_message failure" onclick="Pachno.UI.Message.clear();" style="display: none;" id="pachno_failuremessage">
     <div class="message-content">
         <span class="title" id="pachno_failuremessage_title"></span>
         <span class="message" id="pachno_failuremessage_content"></span>
@@ -14,7 +14,7 @@
     <br style="clear: both;">
     <div class="tutorial-status"><span id="tutorial-current-step"></span> of <span id="tutorial-total-steps"></span></div>
 </div>
-<div class="popup_message success" onclick="Pachno.Main.Helpers.Message.clear();" style="display: none;" id="pachno_successmessage">
+<div class="popup_message success" onclick="Pachno.UI.Message.clear();" style="display: none;" id="pachno_successmessage">
     <div class="message-content">
         <span class="title" id="pachno_successmessage_title"></span>
         <span class="message" id="pachno_successmessage_content"></span>
@@ -60,7 +60,7 @@
         <div class="backdrop_details_submit">
             <span class="explanation"></span>
             <div class="submit_container">
-                <a href="javascript:void(0)" id="dialog_okay" onclick="Pachno.Main.Helpers.Dialog.dismissModal();" class="button"><?php echo __('Okay'); ?></a>
+                <a href="javascript:void(0)" id="dialog_okay" onclick="Pachno.UI.Dialog.dismissModal();" class="button"><?php echo __('Okay'); ?></a>
             </div>
         </div>
     </div>

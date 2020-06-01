@@ -1,7 +1,7 @@
 <div class="backdrop_box medium" id="viewissue_add_item_div">
     <div class="backdrop_detail_header">
         <span><?= __('Add affected item'); ?></span>
-        <a href="javascript:void(0);" class="closer" onclick="Pachno.Main.Helpers.Backdrop.reset();"><?= fa_image_tag('times'); ?></a>
+        <a href="javascript:void(0);" class="closer" onclick="Pachno.UI.Backdrop.reset();"><?= fa_image_tag('times'); ?></a>
     </div>
     <form id="viewissue_add_item_form" action="<?= make_url('add_affected', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID())); ?>" method="post" accept-charset="<?= \pachno\core\framework\Settings::getCharset(); ?>" onsubmit="Pachno.Issues.Affected.add('<?= make_url('add_affected', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID())); ?>');return false;">
         <div id="backdrop_detail_content" class="backdrop_detail_content">

@@ -238,9 +238,9 @@ $current_spent_time = $current_estimated_time;
                 //pachno_index_js.Search.setColumns('results_normal', ['title', 'issuetype', 'assigned_to', 'status', 'resolution', 'category', 'severity', 'percent_complete', 'reproducability', 'priority', 'components', 'milestone', 'estimated_time', 'spent_time', 'last_updated', 'comments'], [<?php echo "'".join("', '", $visible_columns)."'"; ?>], [<?php echo "'".join("', '", $default_columns)."'"; ?>]);
             }, 250);
             // issue checkboxes
-            jQuery(".sca_actions").on("click", "input[type='checkbox']", pachno_index_js.Search.toggleCheckbox);
+            $(".sca_actions").on("click", "input[type='checkbox']", pachno_index_js.Search.toggleCheckbox);
             // issue checkboxes select all
-            jQuery(".sca_action_selector").on("click", "input[type='checkbox']", pachno_index_js.Search.toggleCheckboxes);
+            $(".sca_action_selector").on("click", "input[type='checkbox']", pachno_index_js.Search.toggleCheckboxes);
         });
     });
 </script>

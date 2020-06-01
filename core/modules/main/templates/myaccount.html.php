@@ -150,15 +150,15 @@
     </div>
     <div id="account_details_container">
         <div id="account_tabs" class="fancy-tabs">
-            <a class="tab <?php if ($selected_tab == 'profile'): ?> selected<?php endif; ?>" id="tab_profile" onclick="Pachno.Main.Helpers.tabSwitcher('tab_profile', 'account_tabs', true);" href="javascript:void(0);">
+            <a class="tab <?php if ($selected_tab == 'profile'): ?> selected<?php endif; ?>" id="tab_profile" onclick="Pachno.UI.tabSwitcher('tab_profile', 'account_tabs', true);" href="javascript:void(0);">
                 <?= fa_image_tag('edit', ['class' => 'icon']); ?>
                 <span class="name"><?= __('Profile'); ?></span>
             </a>
-            <a class="tab" id="tab_settings" onclick="Pachno.Main.Helpers.tabSwitcher('tab_settings', 'account_tabs', true);" href="javascript:void(0);">
+            <a class="tab" id="tab_settings" onclick="Pachno.UI.tabSwitcher('tab_settings', 'account_tabs', true);" href="javascript:void(0);">
                 <?= fa_image_tag('cog', ['class' => 'icon']); ?>
                 <span class="name"><?= __('Settings'); ?></span>
             </a>
-            <a class="tab" id="tab_notificationsettings" onclick="Pachno.Main.Helpers.tabSwitcher('tab_notificationsettings', 'account_tabs', true);" href="javascript:void(0);">
+            <a class="tab" id="tab_notificationsettings" onclick="Pachno.UI.tabSwitcher('tab_notificationsettings', 'account_tabs', true);" href="javascript:void(0);">
                 <?= fa_image_tag('bell', ['class' => 'icon']); ?>
                 <span class="name"><?= __('Notification settings'); ?></span>
             </a>
@@ -166,19 +166,19 @@
             <?php foreach (\pachno\core\framework\Context::getAllModules() as $modules): ?>
                 <?php foreach ($modules as $module_name => $module): ?>
                     <?php if ($module->hasAccountSettings()): ?>
-                        <a class="tab" id="tab_settings_<?= $module_name; ?>" onclick="Pachno.Main.Helpers.tabSwitcher('tab_settings_<?= $module_name; ?>', 'account_tabs', true);" href="javascript:void(0);">
+                        <a class="tab" id="tab_settings_<?= $module_name; ?>" onclick="Pachno.UI.tabSwitcher('tab_settings_<?= $module_name; ?>', 'account_tabs', true);" href="javascript:void(0);">
                             <?= fa_image_tag($module->getAccountSettingsLogo(), ['class' => 'icon']); ?>
                             <span class="name"><?= __($module->getAccountSettingsName()); ?></span>
                         </a>
                     <?php endif; ?>
                 <?php endforeach; ?>
             <?php endforeach; ?>
-            <a class="tab <?php if ($selected_tab == 'security'): ?> selected<?php endif; ?>" id="tab_security" onclick="Pachno.Main.Helpers.tabSwitcher('tab_security', 'account_tabs', true);" href="javascript:void(0);">
+            <a class="tab <?php if ($selected_tab == 'security'): ?> selected<?php endif; ?>" id="tab_security" onclick="Pachno.UI.tabSwitcher('tab_security', 'account_tabs', true);" href="javascript:void(0);">
                 <?= fa_image_tag('lock', ['class' => 'icon']); ?>
                 <span class="name"><?= __('Security'); ?></span>
             </a>
             <?php if (count($pachno_user->getScopes()) > 1): ?>
-                <a class="tab" id="tab_scopes" onclick="Pachno.Main.Helpers.tabSwitcher('tab_scopes', 'account_tabs', true);" href="javascript:void(0);">
+                <a class="tab" id="tab_scopes" onclick="Pachno.UI.tabSwitcher('tab_scopes', 'account_tabs', true);" href="javascript:void(0);">
                     <?= fa_image_tag('clone', ['class' => 'icon']); ?>
                     <span class="name"><?= __('Scope memberships'); ?></span>
                 </a>
@@ -565,12 +565,12 @@
                     <li id="account_2fa_disabled" style="<?php if ($pachno_user->is2FaEnabled()) echo 'display: none;'; ?>">
                         <h4><?= fa_image_tag('times', ['class' => 'icon']); ?><span><?= __('Two-factor authentication is not enabled'); ?></span></h4>
                         <p><?= __('Enable two-factor authentication to increase account security'); ?></p>
-                        <button class="button" onclick="Pachno.Main.Helpers.Backdrop.show('<?= make_url('get_partial_for_backdrop', ['key' => 'enable_2fa']); ?>');"><?= __('Enable'); ?></button>
+                        <button class="button" onclick="Pachno.UI.Backdrop.show('<?= make_url('get_partial_for_backdrop', ['key' => 'enable_2fa']); ?>');"><?= __('Enable'); ?></button>
                     </li>
                     <li id="account_2fa_enabled" style="<?php if (!$pachno_user->is2FaEnabled()) echo 'display: none;'; ?>">
                         <h4><?= fa_image_tag('check', ['class' => 'icon']); ?><span><?= __('Two-factor authentication is enabled'); ?></span></h4>
                         <p><?= __('A one-time code is required to log in on a new device'); ?></p>
-                        <button class="button" onclick="Pachno.Main.Helpers.Dialog.show('<?= __('Really disable two-factor authentication?'); ?>', '<?= __('Do you really want to two-factor authentication? By doing this, only your username and password is required when logging in.'); ?>', {yes: {click: function () { Pachno.Main.Login.disable2Fa('<?= make_url('account_disable_2fa', array('csrf_token' => \pachno\core\framework\Context::getCsrfToken())); ?>') }}, no: {click: Pachno.Main.Helpers.Dialog.dismiss}});"><?= __('Disable 2FA'); ?></button>
+                        <button class="button" onclick="Pachno.UI.Dialog.show('<?= __('Really disable two-factor authentication?'); ?>', '<?= __('Do you really want to two-factor authentication? By doing this, only your username and password is required when logging in.'); ?>', {yes: {click: function () { Pachno.Main.Login.disable2Fa('<?= make_url('account_disable_2fa', array('csrf_token' => \pachno\core\framework\Context::getCsrfToken())); ?>') }}, no: {click: Pachno.UI.Dialog.dismiss}});"><?= __('Disable 2FA'); ?></button>
                     </li>
                 </ul>
                 <h3 style="position: relative;">
@@ -582,7 +582,7 @@
                         <?php elseif ($pachno_user->isOpenIdLocked()): ?>
                             <li><a href="javascript:void(0);" onclick="$('pick_username_div').toggle();" id="pick_username_button"><?= __('Pick a username'); ?></a></li>
                         <?php else: ?>
-                            <li><a href="javascript:void(0);" onclick="Pachno.Main.Helpers.Message.error('<?= __('Changing password disabled'); ?>', '<?= __('Changing your password can not be done via this interface. Please contact your administrator to change your password.'); ?>');" class="disabled"><?= __('Change my password'); ?></a></li>
+                            <li><a href="javascript:void(0);" onclick="Pachno.UI.Message.error('<?= __('Changing password disabled'); ?>', '<?= __('Changing your password can not be done via this interface. Please contact your administrator to change your password.'); ?>');" class="disabled"><?= __('Change my password'); ?></a></li>
                         <?php endif; ?>
                         <li><a href="javascript:void(0);" onclick="$('add_application_password_div').toggle();"><?= __('Add application-specific password'); ?></a></li>
                     </ul>
@@ -590,13 +590,13 @@
                 <p><?= __("When authenticating with Pachno you only use your main password on the website - other applications and RSS feeds needs specific access tokens that you can enable / disable on an individual basis. You can control all your passwords and keys from here."); ?></p>
                 <ul class="access_keys_list">
                     <li>
-                        <button class="button" onclick="Pachno.Main.Helpers.Dialog.show('<?= __('Regenerate your RSS key?'); ?>', '<?= __('Do you really want to regenerate your RSS access key? By doing this all your previously bookmarked or linked RSS feeds will stop working and you will have to get the link from inside Pachno again.'); ?>', {yes: {href: '<?= make_url('account_regenerate_rss_key', array('csrf_token' => \pachno\core\framework\Context::getCsrfToken())); ?>'}, no: {click: Pachno.Main.Helpers.Dialog.dismiss}});"><?= __('Reset'); ?></button>
+                        <button class="button" onclick="Pachno.UI.Dialog.show('<?= __('Regenerate your RSS key?'); ?>', '<?= __('Do you really want to regenerate your RSS access key? By doing this all your previously bookmarked or linked RSS feeds will stop working and you will have to get the link from inside Pachno again.'); ?>', {yes: {href: '<?= make_url('account_regenerate_rss_key', array('csrf_token' => \pachno\core\framework\Context::getCsrfToken())); ?>'}, no: {click: Pachno.UI.Dialog.dismiss}});"><?= __('Reset'); ?></button>
                         <h4><?= __('RSS feeds access key'); ?></h4>
                         <p><?= __('Automatically used as part of RSS feed URLs. Regenerating this key prevents your previous RSS feed links from working.'); ?></p>
                     </li>
                     <?php foreach ($pachno_user->getApplicationPasswords() as $password): ?>
                         <li id="application_password_<?= $password->getID(); ?>">
-                            <button class="button" onclick="Pachno.Main.Helpers.Dialog.show('<?= __('Remove this application-specific password?'); ?>', '<?= __('Do you really want to remove this application-specific password? By doing this, that application will no longer have access, and you will have to generate a new application password for the application to regain access.'); ?>', {yes: {click: function() {Pachno.Main.Profile.removeApplicationPassword('<?= make_url('account_remove_application_password', array('id' => $password->getID(), 'csrf_token' => \pachno\core\framework\Context::getCsrfToken())); ?>', <?= $password->getID(); ?>);}}, no: {click: Pachno.Main.Helpers.Dialog.dismiss}});"><?= __('Delete'); ?></button>
+                            <button class="button" onclick="Pachno.UI.Dialog.show('<?= __('Remove this application-specific password?'); ?>', '<?= __('Do you really want to remove this application-specific password? By doing this, that application will no longer have access, and you will have to generate a new application password for the application to regain access.'); ?>', {yes: {click: function() {Pachno.Main.Profile.removeApplicationPassword('<?= make_url('account_remove_application_password', array('id' => $password->getID(), 'csrf_token' => \pachno\core\framework\Context::getCsrfToken())); ?>', <?= $password->getID(); ?>);}}, no: {click: Pachno.UI.Dialog.dismiss}});"><?= __('Delete'); ?></button>
                             <h4><?= __('Application password: %password_name', array('%password_name' => $password->getName())); ?></h4>
                             <p><?= __('Last used: %last_used_time, created at: %created_at_time', array('%last_used_time' => ($password->getLastUsedAt()) ? \pachno\core\framework\Context::getI18n()->formatTime($password->getLastUsedAt(), 20) : __('never used'), '%created_at_time' => \pachno\core\framework\Context::getI18n()->formatTime($password->getCreatedAt(), 20))); ?></p>
                         </li>
@@ -639,23 +639,23 @@
         domReady(function () {
             Pachno = pachno_index_js;
 
-            Pachno.Main.Helpers.tabSwitchFromHash('account_tabs');
+            Pachno.UI.tabSwitchFromHash('account_tabs');
 
             $$('.filter').each(function (filter) {
                 Pachno.Search.initializeFilterField(filter);
             });
 
             <?php if ($error): ?>
-                Pachno.Main.Helpers.Message.error('<?= __('An error occurred'); ?>', '<?= $error; ?>');
+                Pachno.UI.Message.error('<?= __('An error occurred'); ?>', '<?= $error; ?>');
             <?php endif; ?>
             <?php if ($rsskey_generated): ?>
-                Pachno.Main.Helpers.Message.success('<?= __('Your RSS key has been regenerated'); ?>', '<?= __('All previous RSS links have been invalidated.'); ?>');
+                Pachno.UI.Message.success('<?= __('Your RSS key has been regenerated'); ?>', '<?= __('All previous RSS links have been invalidated.'); ?>');
             <?php endif; ?>
             <?php if ($username_chosen): ?>
-                Pachno.Main.Helpers.Message.success('<?= __("You\'ve chosen the username \'%username\'", array('%username' => $pachno_user->getUsername())); ?>', '<?= __('Before you can use the new username to log in, you must pick a password via the "%change_password" button.', array('%change_password' => __('Change password'))); ?>');
+                Pachno.UI.Message.success('<?= __("You\'ve chosen the username \'%username\'", array('%username' => $pachno_user->getUsername())); ?>', '<?= __('Before you can use the new username to log in, you must pick a password via the "%change_password" button.', array('%change_password' => __('Change password'))); ?>');
             <?php endif; ?>
             <?php if ($openid_used): ?>
-                Pachno.Main.Helpers.Message.error('<?= __('This OpenID identity is already in use'); ?>', '<?= __('Someone is already using this identity. Check to see if you have already added this account.'); ?>');
+                Pachno.UI.Message.error('<?= __('This OpenID identity is already in use'); ?>', '<?= __('Someone is already using this identity. Check to see if you have already added this account.'); ?>');
             <?php endif; ?>
         });
     });

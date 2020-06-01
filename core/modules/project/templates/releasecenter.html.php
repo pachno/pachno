@@ -10,9 +10,9 @@
         <div class="project_left">
             <h3><?php echo __('Filters'); ?></h3>
             <ul class="simple-list">
-                <li class="selected"><a href="javascript:void(0);" onclick="Pachno.Project.clearReleaseCenterFilters(); $('project_release_center_container').addClassName('only_active');Pachno.Project.checkAndToggleNoBuildsMessage();Pachno.Project.toggleLeftSelection(this);"><?php echo __('Active releases'); ?></a></li>
-                <li><a href="javascript:void(0);" onclick="Pachno.Project.clearReleaseCenterFilters(); $('project_release_center_container').addClassName('only_archived');Pachno.Project.checkAndToggleNoBuildsMessage();Pachno.Project.toggleLeftSelection(this);"><?php echo __('Archived releases'); ?></a></li>
-                <li><a href="javascript:void(0);" onclick="Pachno.Project.clearReleaseCenterFilters(); $('project_release_center_container').addClassName('only_downloads');Pachno.Project.checkAndToggleNoBuildsMessage();Pachno.Project.toggleLeftSelection(this);"><?php echo __('With downloads'); ?></a></li>
+                <li class="selected"><a href="javascript:void(0);" onclick="Pachno.Project.clearReleaseCenterFilters(); $('project_release_center_container').addClass('only_active');Pachno.Project.checkAndToggleNoBuildsMessage();Pachno.Project.toggleLeftSelection(this);"><?php echo __('Active releases'); ?></a></li>
+                <li><a href="javascript:void(0);" onclick="Pachno.Project.clearReleaseCenterFilters(); $('project_release_center_container').addClass('only_archived');Pachno.Project.checkAndToggleNoBuildsMessage();Pachno.Project.toggleLeftSelection(this);"><?php echo __('Archived releases'); ?></a></li>
+                <li><a href="javascript:void(0);" onclick="Pachno.Project.clearReleaseCenterFilters(); $('project_release_center_container').addClass('only_downloads');Pachno.Project.checkAndToggleNoBuildsMessage();Pachno.Project.toggleLeftSelection(this);"><?php echo __('With downloads'); ?></a></li>
                 <li><a href="javascript:void(0);" onclick="Pachno.Project.clearReleaseCenterFilters(); Pachno.Project.checkAndToggleNoBuildsMessage();Pachno.Project.toggleLeftSelection(this);"><?php echo __('Show all releases'); ?></a></li>
             </ul>
         </div>
@@ -20,12 +20,12 @@
     <div id="project_release_center_container">
         <?php if ($pachno_user->canManageProjectReleases($selected_project)): ?>
             <div class="project_save_container">
-                <div class="button" onclick="Pachno.Main.Helpers.Backdrop.show('<?php echo make_url('get_partial_for_backdrop', array('key' => 'project_build', 'project_id' => $selected_project->getId())); ?>');"><?php echo __('Add new project release'); ?></div>
+                <div class="button" onclick="Pachno.UI.Backdrop.show('<?php echo make_url('get_partial_for_backdrop', array('key' => 'project_build', 'project_id' => $selected_project->getId())); ?>');"><?php echo __('Add new project release'); ?></div>
                 <?php if ($selected_project->isEditionsEnabled()): ?>
                     <div class="button dropper"><?php echo __('Add edition release'); ?></div>
                     <ul class="rounded_box white shadowed dropdown_box rightie popup_box more_actions_dropdown">
                         <?php foreach ($selected_project->getEditions() as $edition_id => $edition): ?>
-                            <li><a href="javascript:void(0);" onclick="Pachno.Main.Helpers.Backdrop.show('<?php echo make_url('get_partial_for_backdrop', array('key' => 'project_build', 'project_id' => $selected_project->getId(), 'edition_id' => $edition_id)); ?>');"><?php echo __('Add %edition_name release', array('%edition_name' => $edition->getName())); ?></a></li>
+                            <li><a href="javascript:void(0);" onclick="Pachno.UI.Backdrop.show('<?php echo make_url('get_partial_for_backdrop', array('key' => 'project_build', 'project_id' => $selected_project->getId(), 'edition_id' => $edition_id)); ?>');"><?php echo __('Add %edition_name release', array('%edition_name' => $edition->getName())); ?></a></li>
                         <?php endforeach; ?>
                     </ul>
                 <?php endif; ?>
@@ -59,7 +59,7 @@
     <script type="text/javascript">
         require(['domReady', 'pachno/index'], function (domReady, Pachno) {
             domReady(function () {
-                Pachno.Main.Helpers.Message.error(__('An error occured when adding or updating the release'), $build_error);
+                Pachno.UI.Message.error(__('An error occured when adding or updating the release'), $build_error);
             });
         });
     </script>

@@ -15,7 +15,7 @@
     <?php \pachno\core\framework\Event::createNew('core', 'project_sidebar_links_dashboard')->trigger(array('submenu' => $submenu)); ?>
     <?php if (!($submenu) && $pachno_response->getPage() == 'project_dashboard' && $pachno_user->canEditProjectDetails($selected_project)): ?>
         <ul class="simple-list">
-            <li><?= javascript_link_tag('<span>' . __('Customize') . '</span>', array('title' => __('Customize'), 'onclick' => "Pachno.Main.Helpers.Backdrop.show('" . make_url('get_partial_for_backdrop', array('key' => 'dashboard_config', 'tid' => $selected_project->getID(), 'target_type' => DashboardView::TYPE_PROJECT, 'previous_route')) . "');")); ?></li>
+            <li><?= javascript_link_tag('<span>' . __('Customize') . '</span>', array('title' => __('Customize'), 'onclick' => "Pachno.UI.Backdrop.show('" . make_url('get_partial_for_backdrop', array('key' => 'dashboard_config', 'tid' => $selected_project->getID(), 'target_type' => DashboardView::TYPE_PROJECT, 'previous_route')) . "');")); ?></li>
         </ul>
     <?php endif; ?>
 <?php endif; ?>

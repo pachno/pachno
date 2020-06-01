@@ -16,7 +16,7 @@
             <?php endif; ?>
             <div class="form-container">
                 <?php if ($access_level == \pachno\core\framework\Settings::ACCESS_FULL): ?>
-                    <form accept-charset="<?php echo \pachno\core\framework\Context::getI18n()->getCharset(); ?>" action="<?php echo make_url('configure_files'); ?>" method="post" onsubmit="Pachno.Main.Helpers.formSubmit('<?php echo make_url('configure_files'); ?>', 'config_uploads'); return false;" id="config_uploads">
+                    <form accept-charset="<?php echo \pachno\core\framework\Context::getI18n()->getCharset(); ?>" action="<?php echo make_url('configure_files'); ?>" method="post" onsubmit="Pachno.UI.formSubmit('<?php echo make_url('configure_files'); ?>', 'config_uploads'); return false;" id="config_uploads">
                 <?php endif; ?>
                 <?php if (!function_exists('mime_content_type') && !extension_loaded('fileinfo')): ?>
                     <div class="message-box type-warning">

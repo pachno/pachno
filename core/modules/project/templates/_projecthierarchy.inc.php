@@ -9,8 +9,8 @@
 
 ?>
 <div class="fancy-tabs" id="project-hierarchy-menu">
-    <a id="tab_project_components" class="tab <?php if ($selected_tab == 'components') echo 'selected'; ?>" onclick="Pachno.Main.Helpers.tabSwitcher('tab_project_components', 'project-hierarchy-menu');"><?= fa_image_tag('boxes', ['class' => 'icon']); ?><span><?= __('Components'); ?></span></a>
-    <a id="tab_project_editions" class="tab <?php if ($selected_tab == 'editions') echo 'selected'; ?>" onclick="Pachno.Main.Helpers.tabSwitcher('tab_project_editions', 'project-hierarchy-menu');"><?= fa_image_tag('layer-group', ['class' => 'icon']); ?><span><?= __('Editions'); ?></span></a>
+    <a id="tab_project_components" class="tab <?php if ($selected_tab == 'components') echo 'selected'; ?>" onclick="Pachno.UI.tabSwitcher('tab_project_components', 'project-hierarchy-menu');"><?= fa_image_tag('boxes', ['class' => 'icon']); ?><span><?= __('Components'); ?></span></a>
+    <a id="tab_project_editions" class="tab <?php if ($selected_tab == 'editions') echo 'selected'; ?>" onclick="Pachno.UI.tabSwitcher('tab_project_editions', 'project-hierarchy-menu');"><?= fa_image_tag('layer-group', ['class' => 'icon']); ?><span><?= __('Editions'); ?></span></a>
 </div>
 <div id="project-hierarchy-menu_panes">
     <div id="tab_project_editions_pane" style="<?php if ($selected_tab != 'editions') echo 'display: none;'; ?>">

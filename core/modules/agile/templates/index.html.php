@@ -9,7 +9,7 @@
     <div class="project-boards-list-container boards-container">
         <h3>
             <span class="name"><?php echo __('Project boards'); ?></span>
-            <button class="button primary" onclick="Pachno.Main.Helpers.Backdrop.show('<?php echo make_url('get_partial_for_backdrop', array('key' => 'agileboard', 'project_id' => $selected_project->getID(), 'is_private' => 0)); ?>');"><?= fa_image_tag('plus-square'); ?><span><?= __('Create board'); ?></span></button>
+            <button class="button primary" onclick="Pachno.UI.Backdrop.show('<?php echo make_url('get_partial_for_backdrop', array('key' => 'agileboard', 'project_id' => $selected_project->getID(), 'is_private' => 0)); ?>');"><?= fa_image_tag('plus-square'); ?><span><?= __('Create board'); ?></span></button>
         </h3>
         <div id="agileboards" class="project-boards-list">
             <?php foreach ($project_boards as $board): ?>

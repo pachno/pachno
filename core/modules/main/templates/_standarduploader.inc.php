@@ -166,7 +166,7 @@
                                 $('article_<?php echo mb_strtolower($article->getName()); ?>_files').insert({bottom: json.content_inline});
                             <?php endif; ?>
                             this.error = false;
-                            Pachno.Main.Helpers.Message.success('File attached successfully');
+                            Pachno.UI.Message.success('File attached successfully');
                         }
                         else if (json.error)
                         {
@@ -174,7 +174,7 @@
                             this.status.hide();
                             this.form.hide();
                             this.error = true;
-                            Pachno.Main.Helpers.Message.error(json.error);
+                            Pachno.UI.Message.error(json.error);
                         }
                     }
                 },
@@ -188,11 +188,11 @@
                     this.poller.stop();
                     if (json && (json.failed || json.error))
                     {
-                        Pachno.Main.Helpers.Message.error(json.error);
+                        Pachno.UI.Message.error(json.error);
                     }
                     else
                     {
-                        Pachno.Main.Helpers.Message.error(transport.responseText);
+                        Pachno.UI.Message.error(transport.responseText);
                     }
                 }
 

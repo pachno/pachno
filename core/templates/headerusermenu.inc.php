@@ -32,7 +32,7 @@
         <?php endif; ?>
         <li class="with-dropdown <?php if ($pachno_request->hasCookie('original_username')): ?>temporarily_switched<?php endif; ?> <?php if ($pachno_routing->getCurrentRoute()->getName() == 'account') echo 'selected'; ?>" id="header_usermenu_link">
             <?php if ($pachno_user->isGuest()): ?>
-                <a href="javascript:void(0);" <?php if (\pachno\core\framework\Context::getRouting()->getCurrentRoute()->getName() != 'login_page'): ?>onclick="Pachno.Main.Login.showLogin('regular_login_container');"<?php endif; ?>><?= fa_image_tag('user'); ?><span><?= __('Log in'); ?></span></a>
+                <a href="javascript:void(0);" <?php if (\pachno\core\framework\Context::getRouting()->getCurrentRoute()->getName() != 'login_page'): ?>onclick="Pachno.Main.Login.showLogin('#regular_login_container');"<?php endif; ?>><?= fa_image_tag('user'); ?><span><?= __('Log in'); ?></span></a>
             <?php else: ?>
                 <a href="javascript:void(0);" class="dropper header-user-info">
                     <span class="header_avatar">
@@ -59,7 +59,7 @@
                             </li>
                             <li><?= link_tag(make_url('dashboard'), fa_image_tag('columns').__('Your dashboard')); ?></li>
                             <?php if ($pachno_response->getPage() == 'dashboard'): ?>
-                                <li><?= javascript_link_tag(fa_image_tag('edit').__('Customize your dashboard'), array('title' => __('Customize your dashboard'), 'onclick' => "$$('.dashboard').each(function (elm) { elm.toggleClassName('editable');});")); ?></li>
+                                <li><?= javascript_link_tag(fa_image_tag('edit').__('Customize your dashboard'), array('title' => __('Customize your dashboard'), 'onclick' => "$$('.dashboard').each(function (elm) { elm.toggleClass('editable');});")); ?></li>
                             <?php endif; ?>
                             <li><?= link_tag(make_url('account'), fa_image_tag('user-md').__('Your account')); ?></li>
                             <?php if ($pachno_request->hasCookie('original_username')): ?>

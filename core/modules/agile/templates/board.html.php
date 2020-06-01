@@ -49,12 +49,12 @@
                 <div class="search-strip" id="project_planning_action_strip">
                     <input type="search" class="planning_filter_title" id="planning_filter_title_input" disabled placeholder="<?php echo __('Filter issues by title'); ?>">
                     <?php if ($board->getProject()->isBuildsEnabled()): ?>
-                        <a class="button" id="releases_toggler_button" href="javascript:void(0);" onclick="$(this).toggleClassName('button-pressed');$('builds-list').toggleClassName('expanded');"><?php echo __('Releases'); ?></a>
+                        <a class="button" id="releases_toggler_button" href="javascript:void(0);" onclick="$(this).toggleClass('button-pressed');$('builds-list').toggleClass('expanded');"><?php echo __('Releases'); ?></a>
                     <?php endif; ?>
                     <?php if ($board->getEpicIssuetypeID()): ?>
-                        <button class="button" id="epics_toggler_button" onclick="$(this).toggleClassName('button-pressed');$('epics-list').toggleClassName('expanded');" disabled><?php echo __('Epics'); ?></button>
+                        <button class="button" id="epics_toggler_button" onclick="$(this).toggleClass('button-pressed');$('epics-list').toggleClass('expanded');" disabled><?php echo __('Epics'); ?></button>
                     <?php endif; ?>
-                    <?php echo javascript_link_tag($newmilestonelabel, array('class' => 'button', 'onclick' => "Pachno.Main.Helpers.Backdrop.show('".make_url('get_partial_for_backdrop', array('key' => 'agilemilestone', 'project_id' => $board->getProject()->getId(), 'board_id' => $board->getID()))."');")); ?>
+                    <?php echo javascript_link_tag($newmilestonelabel, array('class' => 'button', 'onclick' => "Pachno.UI.Backdrop.show('".make_url('get_partial_for_backdrop', array('key' => 'agilemilestone', 'project_id' => $board->getProject()->getId(), 'board_id' => $board->getID()))."');")); ?>
                     <?php echo image_tag('spinning_16.gif', array('id' => 'retrieve_indicator', 'class' => 'indicator', 'style' => 'display: none;')); ?>
                     <?php if ($pachno_user->canManageProjectReleases($selected_project)): ?>
                         <div class="dropper-container">
@@ -71,7 +71,7 @@
                                         <span class="icon"><?= fa_image_tag('toggle-on', ['class' => 'checked']) . fa_image_tag('toggle-off', ['class' => 'unchecked']); ?></span>
                                         <span class="name"><?= __('Show closed issues'); ?></span>
                                     </label>
-                                    <input type="checkbox" class="fancy-checkbox" name="show_hidden_milestones" id="board-show-hidden-milestones-checkbox" onchange="$('planning_container').toggleClassName('show-unavailable');Pachno.Main.Profile.clearPopupsAndButtons();">
+                                    <input type="checkbox" class="fancy-checkbox" name="show_hidden_milestones" id="board-show-hidden-milestones-checkbox" onchange="$('planning_container').toggleClass('show-unavailable');Pachno.Main.Profile.clearPopupsAndButtons();">
                                     <label for="board-show-hidden-milestones-checkbox" class="list-item toggler">
                                         <span class="icon"><?= fa_image_tag('toggle-on', ['class' => 'checked']) . fa_image_tag('toggle-off', ['class' => 'unchecked']); ?></span>
                                         <span class="name"><?= $togglemilestoneslabel; ?></span>

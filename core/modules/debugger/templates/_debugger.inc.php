@@ -64,7 +64,7 @@
         #debug-frames-container > li.selected { display: block; text-align: left; position: absolute; height: 100%; width: 100%; left: 0; top: 0; right: 0; bottom: 0; box-sizing: border-box; padding: 5px; background: #FFF; margin: 0; overflow: auto; }
         #debug-frames-container > li h1 { font-size: 17px; font-weight: normal; color: #999; border: 1px solid rgba(100, 100, 100, 0.2); background-color: rgba(200, 200, 200, 0.1); box-shadow: inset 0 0 3px rgba(100, 100, 100, 0.1); padding: 5px; text-transform: uppercase; }
     </style>
-    <ul class="" id="debug-bar" onclick="$(this).addClassName('enabled');">
+    <ul class="" id="debug-bar" onclick="$(this).addClass('enabled');">
         <li onclick="pachno_debug_show_menu_tab('debug_routes', $(this));">
             <?php echo fa_image_tag('desktop'); ?>
             <span>
@@ -113,10 +113,10 @@
             <?php echo fa_image_tag('file-alt'); ?>
             <span>Log</span>
         </li>
-        <li onclick="setTimeout(function() { $('debug-bar').removeClassName('enabled'); }, 150);" title="Minimize" class="minimizer">
+        <li onclick="setTimeout(function() { $('debug-bar').removeClass('enabled'); }, 150);" title="Minimize" class="minimizer">
             <?php echo fa_image_tag('arrows-alt-h'); ?>
         </li>
-        <li onclick="event.preventDefault(); event.stopPropagation(); setTimeout(function() { $('debug-bar').toggleClassName('minimized');$('debug-bar').removeClassName('enabled'); }, 150);" title="Minimize" class="maximizer">
+        <li onclick="event.preventDefault(); event.stopPropagation(); setTimeout(function() { $('debug-bar').toggleClass('minimized');$('debug-bar').removeClass('enabled'); }, 150);" title="Minimize" class="maximizer">
             <?php echo fa_image_tag('arrows-alt-h'); ?>
         </li>
     </ul>

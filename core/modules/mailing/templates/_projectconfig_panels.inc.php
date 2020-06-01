@@ -6,7 +6,7 @@
             Pachno = pachno_index_js;
             Pachno.Modules.mailing = {};
             Pachno.Modules.mailing.checkIncomingAccount = function(url, account_id) {
-                Pachno.Main.Helpers.ajax(url, {
+                Pachno.UI.fetch(url, {
                     loading: {indicator: 'mailing_account_' + account_id + '_indicator'},
                     success: {
                         callback: function(json) {
@@ -18,7 +18,7 @@
             };
 
             Pachno.Modules.mailing.deleteIncomingAccount = function(url, account_id) {
-                Pachno.Main.Helpers.ajax(url, {
+                Pachno.UI.fetch(url, {
                     loading: {
                         indicator: 'fullpage_backdrop',
                         clear: 'fullpage_backdrop_content',
@@ -27,7 +27,7 @@
                     },
                     success: {
                         remove: 'incoming_email_account_' + account_id,
-                        callback: Pachno.Main.Helpers.Dialog.dismiss
+                        callback: Pachno.UI.Dialog.dismiss
                     }
                 });
             };
@@ -35,7 +35,7 @@
     });
 </script>
 <div id="tab_mailing_settings_pane"<?php if ($selected_tab != 'mailing_settings'): ?> style="display: none;"<?php endif; ?>>
-    <form accept-charset="<?php echo \pachno\core\framework\Context::getI18n()->getCharset(); ?>" action="<?php echo make_url('mailing_configure_settings', array('project_id' => $project->getID())); ?>" method="post" onsubmit="Pachno.Main.Helpers.formSubmit('<?php echo make_url('mailing_configure_settings', array('project_id' => $project->getID())); ?>', 'mailing'); return false;" id="mailing">
+    <form accept-charset="<?php echo \pachno\core\framework\Context::getI18n()->getCharset(); ?>" action="<?php echo make_url('mailing_configure_settings', array('project_id' => $project->getID())); ?>" method="post" onsubmit="Pachno.UI.formSubmit('<?php echo make_url('mailing_configure_settings', array('project_id' => $project->getID())); ?>', 'mailing'); return false;" id="mailing">
         <div class="project_save_container">
             <span id="mailing_indicator" style="display: none;"><?php echo image_tag('spinning_20.gif'); ?></span>
             <input type="submit" class="button" id="mailing_button" value="<?php echo __('Save outgoing email settings'); ?>">
@@ -65,7 +65,7 @@
         <span class="content">
             <?php echo __('Pachno can check email accounts and create issues from incoming emails. Set up a new account here, and check the %online_documentation for more information.', array('%online_documentation' => link_tag('https://projects.pachno.com/pachno/docs/IncomingEmail', '<b>'.__('online documentation').'</b>'))); ?>
         </span>
-        <div class="button" onclick="Pachno.Main.Helpers.Backdrop.show('<?php echo make_url('get_partial_for_backdrop', array('key' => 'mailing_editincomingemailaccount', 'project_id' => $project->getId())); ?>');"><?php echo __('Add new account'); ?></div>
+        <div class="button" onclick="Pachno.UI.Backdrop.show('<?php echo make_url('get_partial_for_backdrop', array('key' => 'mailing_editincomingemailaccount', 'project_id' => $project->getId())); ?>');"><?php echo __('Add new account'); ?></div>
     </div>
     <?php if ($access_level != \pachno\core\framework\Settings::ACCESS_FULL): ?>
         <div class="rounded_box red" style="margin-top: 10px;">

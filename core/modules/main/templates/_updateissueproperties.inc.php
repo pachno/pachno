@@ -2,9 +2,9 @@
     <div class="backdrop_detail_header">
         <span><?= $transition->getDescription(); ?></span>
         <?php if (($issue instanceof \pachno\core\entities\Issue && ($issue->isUpdateable() && !$issue->isDuplicate()) || isset($issues)) && $transition->hasAction(\pachno\core\entities\WorkflowTransitionAction::ACTION_SET_DUPLICATE)): ?>
-            <a href="javascript:void(0);" onclick="$(this).up('.issuedetailspopup').toggleClassName('show_duplicate_search');" class="add_link" title="<?= __('Mark as duplicate'); ?>"><?= fa_image_tag('search-plus'); ?></a>
+            <a href="javascript:void(0);" onclick="$(this).up('.issuedetailspopup').toggleClass('show_duplicate_search');" class="add_link" title="<?= __('Mark as duplicate'); ?>"><?= fa_image_tag('search-plus'); ?></a>
         <?php endif; ?>
-        <a href="javascript:void(0);" id="transition_working_<?= $transition->getID(); ?>_cancel" onclick="($('workflow_transition_fullpage')) ? $('workflow_transition_fullpage').fade({duration: 0.2}) : Pachno.Main.Helpers.Backdrop.reset();" class="closer"><?= fa_image_tag('times'); ?></a>
+        <a href="javascript:void(0);" id="transition_working_<?= $transition->getID(); ?>_cancel" onclick="($('workflow_transition_fullpage')) ? $('workflow_transition_fullpage').fade({duration: 0.2}) : Pachno.UI.Backdrop.reset();" class="closer"><?= fa_image_tag('times'); ?></a>
     </div>
     <div class="form-container">
 <?php if (isset($interactive) && $interactive && $issue instanceof \pachno\core\entities\Issue): ?>

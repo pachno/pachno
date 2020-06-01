@@ -27,13 +27,13 @@
                         <span class="name"><?php echo __('Edit this user'); ?></span>
                     </a>
                 <?php else: ?>
-                    <a href="javascript:void(0);" class="list-item disabled" onclick="Pachno.Main.Helpers.Message.error('<?php echo __('This user cannot be edited'); ?>', '<?php echo __('The user must confirm his membership in this scope before you can perform this action'); ?>');">
+                    <a href="javascript:void(0);" class="list-item disabled" onclick="Pachno.UI.Message.error('<?php echo __('This user cannot be edited'); ?>', '<?php echo __('The user must confirm his membership in this scope before you can perform this action'); ?>');">
                         <?= fa_image_tag('edit', ['class' => 'icon']); ?>
                         <span class="name"><?php echo __('Edit this user'); ?></span>
                     </a>
                 <?php endif; ?>
                 <?php if (\pachno\core\framework\Context::getScope()->isDefault()): ?>
-                    <a href="javascript:void(0);" class="list-item" onclick="Pachno.Main.Helpers.Backdrop.show('<?php echo make_url('get_partial_for_backdrop', ['key' => 'userscopes', 'user_id' => $user->getID()]); ?>');">
+                    <a href="javascript:void(0);" class="list-item" onclick="Pachno.UI.Backdrop.show('<?php echo make_url('get_partial_for_backdrop', ['key' => 'userscopes', 'user_id' => $user->getID()]); ?>');">
                         <?= fa_image_tag('copy', ['class' => 'icon']); ?>
                         <span class="name"><?php echo __('Edit available scopes for this user'); ?></span>
                     </a>
@@ -48,29 +48,29 @@
                         <span class="name"><?php echo __('Remove this friend'); ?></span>
                     </a>
                 <?php endif; ?>
-                <a href="javascript:void(0);" class="list-item" onclick="Pachno.Main.Helpers.Backdrop.show('<?php echo make_url('get_partial_for_backdrop', array('key' => 'usercard', 'user_id' => $user->getID())); ?>');$('bud_<?php echo $user->getUsername() . "_12"; ?>').hide();">
+                <a href="javascript:void(0);" class="list-item" onclick="Pachno.UI.Backdrop.show('<?php echo make_url('get_partial_for_backdrop', array('key' => 'usercard', 'user_id' => $user->getID())); ?>');$('bud_<?php echo $user->getUsername() . "_12"; ?>').hide();">
                     <?= fa_image_tag('info-circle', ['class' => 'icon']); ?>
                     <span class="name"><?php echo __('Show user details'); ?></span>
                 </a>
                 <?php if (!in_array($user->getID(), array(1, (int) \pachno\core\framework\Settings::get(\pachno\core\framework\Settings::SETTING_DEFAULT_USER_ID)))): ?>
                     <?php if (\pachno\core\framework\Context::getScope()->isDefault()): ?>
-                        <a href="javascript:void(0);" class="list-item" onclick="Pachno.Main.Helpers.Dialog.show('<?= __('Permanently delete this user?'); ?>', '<?= __('Are you sure you want to remove this user? This will remove the users login data, as well as memberships in (and data in) any scopes the user is a member of.'); ?>', {yes: {click: function() {Pachno.Config.User.remove('<?= make_url('configure_users_delete_user', ['user_id' => $user->getID()]); ?>', <?= $user->getID(); ?>); Pachno.Main.Helpers.Dialog.dismiss(); } }, no: {click: Pachno.Main.Helpers.Dialog.dismiss}});">
+                        <a href="javascript:void(0);" class="list-item" onclick="Pachno.UI.Dialog.show('<?= __('Permanently delete this user?'); ?>', '<?= __('Are you sure you want to remove this user? This will remove the users login data, as well as memberships in (and data in) any scopes the user is a member of.'); ?>', {yes: {click: function() {Pachno.Config.User.remove('<?= make_url('configure_users_delete_user', ['user_id' => $user->getID()]); ?>', <?= $user->getID(); ?>); Pachno.UI.Dialog.dismiss(); } }, no: {click: Pachno.UI.Dialog.dismiss}});">
                             <?= fa_image_tag('times', ['class' => 'icon']); ?>
                             <span class="name"><?php echo __('Delete this user'); ?></span>
                         </a>
                     <?php elseif ($user->isScopeConfirmed()): ?>
-                        <a href="javascript:void(0);" class="list-item" onclick="Pachno.Main.Helpers.Dialog.show('<?= __('Remove this user?'); ?>', '<?= __('Are you sure you want to remove this user from the current scope? The users login is kept, and you can re-add the user later.'); ?>', {yes: {click: function() {Pachno.Config.User.remove('<?= make_url('configure_users_delete_user', array('user_id' => $user->getID())); ?>', <?= $user->getID(); ?>); Pachno.Main.Helpers.Dialog.dismiss(); } }, no: {click: Pachno.Main.Helpers.Dialog.dismiss}});">
+                        <a href="javascript:void(0);" class="list-item" onclick="Pachno.UI.Dialog.show('<?= __('Remove this user?'); ?>', '<?= __('Are you sure you want to remove this user from the current scope? The users login is kept, and you can re-add the user later.'); ?>', {yes: {click: function() {Pachno.Config.User.remove('<?= make_url('configure_users_delete_user', array('user_id' => $user->getID())); ?>', <?= $user->getID(); ?>); Pachno.UI.Dialog.dismiss(); } }, no: {click: Pachno.UI.Dialog.dismiss}});">
                             <?= fa_image_tag('times', ['class' => 'icon']); ?>
                             <span class="name"><?php echo __('Remove user from this scope'); ?></span>
                         </a>
                     <?php else: ?>
-                        <a href="javascript:void(0);" class="list-item" onclick="Pachno.Main.Helpers.Dialog.show('<?= __('Cancel membership in this scope?'); ?>', '<?= __('If you cancel the invitation to this scope, then this user will be notified and the unconfirmed membership removed from this scope.'); ?>', {yes: {click: function() {Pachno.Config.User.remove('<?= make_url('configure_users_delete_user', array('user_id' => $user->getID())); ?>', <?= $user->getID(); ?>); Pachno.Main.Helpers.Dialog.dismiss(); } }, no: {click: Pachno.Main.Helpers.Dialog.dismiss}});">
+                        <a href="javascript:void(0);" class="list-item" onclick="Pachno.UI.Dialog.show('<?= __('Cancel membership in this scope?'); ?>', '<?= __('If you cancel the invitation to this scope, then this user will be notified and the unconfirmed membership removed from this scope.'); ?>', {yes: {click: function() {Pachno.Config.User.remove('<?= make_url('configure_users_delete_user', array('user_id' => $user->getID())); ?>', <?= $user->getID(); ?>); Pachno.UI.Dialog.dismiss(); } }, no: {click: Pachno.UI.Dialog.dismiss}});">
                             <?= fa_image_tag('times', ['class' => 'icon']); ?>
                             <span class="name"><?php echo __('Cancel invitation'); ?></span>
                         </a>
                     <?php endif; ?>
                 <?php else: ?>
-                    <a href="javascript:void(0);" class="list-item disabled" onclick="Pachno.Main.Helpers.Message.error('<?php echo __('This user cannot be removed'); ?>', '<?php echo __('This is a system user which cannot be removed'); ?>');">
+                    <a href="javascript:void(0);" class="list-item disabled" onclick="Pachno.UI.Message.error('<?php echo __('This user cannot be removed'); ?>', '<?php echo __('This is a system user which cannot be removed'); ?>');">
                         <?= fa_image_tag('times', ['class' => 'icon']); ?>
                         <span class="name"><?php echo __('Delete this user'); ?></span>
                     </a>

@@ -1,14 +1,14 @@
 <div class="fancy-tabs" id="permissions_<?php echo $mode; ?>_<?php echo $base_id; ?>_tabs">
-    <a class="tab selected" id="<?php echo $mode.'_'.$base_id; ?>_tab_general" onclick="Pachno.Main.Helpers.tabSwitcher('<?php echo $mode.'_'.$base_id; ?>_tab_general', 'permissions_<?php echo $mode.'_'.$base_id; ?>_tabs');" href="javascript:void(0);">
+    <a class="tab selected" id="<?php echo $mode.'_'.$base_id; ?>_tab_general" onclick="Pachno.UI.tabSwitcher('<?php echo $mode.'_'.$base_id; ?>_tab_general', 'permissions_<?php echo $mode.'_'.$base_id; ?>_tabs');" href="javascript:void(0);">
         <span class="name"><?php echo __('General permissions'); ?></span>
     </a>
-    <a class="tab" id="<?php echo $mode.'_'.$base_id; ?>_tab_pages" onclick="Pachno.Main.Helpers.tabSwitcher('<?php echo $mode.'_'.$base_id; ?>_tab_pages', 'permissions_<?php echo $mode.'_'.$base_id; ?>_tabs');" href="javascript:void(0);">
+    <a class="tab" id="<?php echo $mode.'_'.$base_id; ?>_tab_pages" onclick="Pachno.UI.tabSwitcher('<?php echo $mode.'_'.$base_id; ?>_tab_pages', 'permissions_<?php echo $mode.'_'.$base_id; ?>_tabs');" href="javascript:void(0);">
         <span class="name"><?php echo __('Page access permissions'); ?></span>
     </a>
-    <a class="tab" id="<?php echo $mode.'_'.$base_id; ?>_tab_projects" onclick="Pachno.Main.Helpers.tabSwitcher('<?php echo $mode.'_'.$base_id; ?>_tab_projects', 'permissions_<?php echo $mode.'_'.$base_id; ?>_tabs');" href="javascript:void(0);">
+    <a class="tab" id="<?php echo $mode.'_'.$base_id; ?>_tab_projects" onclick="Pachno.UI.tabSwitcher('<?php echo $mode.'_'.$base_id; ?>_tab_projects', 'permissions_<?php echo $mode.'_'.$base_id; ?>_tabs');" href="javascript:void(0);">
         <span class="name"><?php echo __('Project-specific permissions'); ?></span>
     </a>
-    <a class="tab" id="<?php echo $mode.'_'.$base_id; ?>_tab_modules" onclick="Pachno.Main.Helpers.tabSwitcher('<?php echo $mode.'_'.$base_id; ?>_tab_modules', 'permissions_<?php echo $mode.'_'.$base_id; ?>_tabs');" href="javascript:void(0);">
+    <a class="tab" id="<?php echo $mode.'_'.$base_id; ?>_tab_modules" onclick="Pachno.UI.tabSwitcher('<?php echo $mode.'_'.$base_id; ?>_tab_modules', 'permissions_<?php echo $mode.'_'.$base_id; ?>_tabs');" href="javascript:void(0);">
         <span class="name"><?php echo __('Module-specific permissions'); ?></span>
     </a>
 </div>

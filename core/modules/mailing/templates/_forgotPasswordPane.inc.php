@@ -13,7 +13,7 @@
                 </li>
             </ul>
             <div class="login_button_container">
-                <a style="float: left;" href="javascript:void(0);" onclick="Pachno.Main.Login.showLogin('regular_login_container');">&laquo;&nbsp;<?php echo __('Back'); ?></a>
+                <a style="float: left;" href="javascript:void(0);" onclick="Pachno.Main.Login.showLogin('#regular_login_container');">&laquo;&nbsp;<?php echo __('Back'); ?></a>
                 <?php echo image_tag('spinning_20.gif', array('id' => 'forgot_password_indicator', 'class' => 'indicator', 'style' => 'display: none;')); ?></span>
                 <input type="submit" class="button button-green" id="forgot_password_button" value="<?php echo __('Send email'); ?>">
             </div>

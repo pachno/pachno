@@ -1,7 +1,7 @@
 <div class="backdrop_box medium" id="viewissue_move_issue_div">
     <div class="backdrop_detail_header">
         <span><?= __('Move issue to a different project'); ?></span>
-        <a href="javascript:void(0);" class="closer" onclick="Pachno.Main.Helpers.Backdrop.reset();"><?= fa_image_tag('times'); ?></a>
+        <a href="javascript:void(0);" class="closer" onclick="Pachno.UI.Backdrop.reset();"><?= fa_image_tag('times'); ?></a>
     </div>
     <form action="<?= make_url('move_issue', array('issue_id' => $issue->getID())); ?>" method="post" <?php if (isset($multi) && $multi): ?>onsubmit="Pachno.Issues.move($(this), <?= $issue->getID(); ?>);return false;"<?php endif; ?>>
         <div id="backdrop_detail_content" class="backdrop_detail_content">

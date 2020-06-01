@@ -12,7 +12,7 @@
                 <?php include_component('main/userdropdown', array('user' => $commit->getAuthor(), 'size' => 'large')); ?>
             </div>
             <div class="comment_hash">
-                <a href="javascript:void(0)" onclick="Pachno.Main.Helpers.Backdrop.show('<?php echo make_url('get_partial_for_backdrop', array('key' => 'livelink_getcommit', 'commit_id' => $commit->getID())); ?>');"><?php echo $commit->getRevisionString(); ?></a>
+                <a href="javascript:void(0)" onclick="Pachno.UI.Backdrop.show('<?php echo make_url('get_partial_for_backdrop', array('key' => 'livelink_getcommit', 'commit_id' => $commit->getID())); ?>');"><?php echo $commit->getRevisionString(); ?></a>
             </div>
             <div class="commentdate" id="commit_<?php echo $commit->getID(); ?>_date">
                 <?php echo \pachno\core\framework\Context::getI18n()->formatTime($commit->getDate(), 9); ?>

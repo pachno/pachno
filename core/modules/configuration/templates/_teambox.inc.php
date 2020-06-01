@@ -3,7 +3,7 @@
         <?= image_tag('team_large.png', array('style' => 'float: left; margin-right: 5px;')); ?>
         <div style="position: absolute; right: 12px; top: 12px;">
             <button class="button dropper" id="team_<?= $team->getID(); ?>_more_actions"><?= __('Actions'); ?></button>
-            <ul id="team_<?= $team->getID(); ?>_more_actions_dropdown" style="font-size: 1.1em; width: 200px; top: 23px; margin-top: 0; text-align: right; z-index: 1000;" class="simple-list rounded_box white shadowed popup_box more_actions_dropdown" onclick="$(this).previous().toggleClassName('button-pressed');$(this).toggle();">
+            <ul id="team_<?= $team->getID(); ?>_more_actions_dropdown" style="font-size: 1.1em; width: 200px; top: 23px; margin-top: 0; text-align: right; z-index: 1000;" class="simple-list rounded_box white shadowed popup_box more_actions_dropdown" onclick="$(this).previous().toggleClass('button-pressed');$(this).toggle();">
                 <li>
                     <?= javascript_link_tag(__('Add member(s) to this team'), array('onclick' => '$(\'addmember_team_'.$team->getID().'\').toggle(\'block\');')); ?>
                 </li>
@@ -17,7 +17,7 @@
                     <?= javascript_link_tag(__('Clone this user team'), array('onclick' => '$(\'clone_team_'.$team->getID().'\').toggle();')); ?>
                 </li>
                 <li>
-                    <?= javascript_link_tag(__('Delete this user team'), array('onclick' => "Pachno.Main.Helpers.Dialog.show('".__('Do you really want to delete this team?')."', '".__('If you delete this team, then all users in this team will be lose the permissions given via this team')."', {yes: {click: function() {Pachno.Config.Team.remove('".make_url('configure_users_delete_team', array('team_id' => $team->getID()))."', {$team->getID()}); }}, no: { click: Pachno.Main.Helpers.Dialog.dismiss }});")); ?>
+                    <?= javascript_link_tag(__('Delete this user team'), array('onclick' => "Pachno.UI.Dialog.show('".__('Do you really want to delete this team?')."', '".__('If you delete this team, then all users in this team will be lose the permissions given via this team')."', {yes: {click: function() {Pachno.Config.Team.remove('".make_url('configure_users_delete_team', array('team_id' => $team->getID()))."', {$team->getID()}); }}, no: { click: Pachno.UI.Dialog.dismiss }});")); ?>
                 </li>
             </ul>
         </div>

@@ -12,7 +12,7 @@
             </div>
             <h3>
                 <span><?php echo __('Existing issue types'); ?></span>
-                <button class="button" onclick="Pachno.Main.Helpers.Backdrop.show('<?= make_url('get_partial_for_backdrop', ['key' => 'edit_issuetype']); ?>');"><?= __('Create issue type'); ?></button>
+                <button class="button" onclick="Pachno.UI.Backdrop.show('<?= make_url('get_partial_for_backdrop', ['key' => 'edit_issuetype']); ?>');"><?= __('Create issue type'); ?></button>
             </h3>
             <div id="issuetypes_list" class="flexible-table">
                 <div class="row header">

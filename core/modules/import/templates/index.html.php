@@ -6,8 +6,8 @@
             <h3><?php echo __('Import data'); ?></h3>
             <div style="margin-top: 15px;" class="tab_menu inset">
                 <ul id="import_menu">
-                    <li id="tab_csv" class="selected"><?php echo javascript_link_tag(fa_image_tag('sign-in-alt') . '<span>'.__('Import from CSV').'</span>', array('onclick' => "Pachno.Main.Helpers.tabSwitcher('tab_csv', 'import_menu');")); ?></li>
-                    <li id="tab_sample"><?php echo javascript_link_tag(fa_image_tag('gift') . '<span>'.__('Sample data').'</span>', array('onclick' => "Pachno.Main.Helpers.tabSwitcher('tab_sample', 'import_menu');")); ?></li>
+                    <li id="tab_csv" class="selected"><?php echo javascript_link_tag(fa_image_tag('sign-in-alt') . '<span>'.__('Import from CSV').'</span>', array('onclick' => "Pachno.UI.tabSwitcher('tab_csv', 'import_menu');")); ?></li>
+                    <li id="tab_sample"><?php echo javascript_link_tag(fa_image_tag('gift') . '<span>'.__('Sample data').'</span>', array('onclick' => "Pachno.UI.tabSwitcher('tab_sample', 'import_menu');")); ?></li>
                 </ul>
             </div>
             <div id="import_menu_panes">
@@ -15,9 +15,9 @@
                     <div class="tab_content">
                         <?php echo __('You can import data from a CSV file copied into a text box in Pachno, exported from other sources. Please see the %CSVImport wiki article for further details and instructions.', array('%CSVImport' => link_tag(\pachno\core\modules\publish\Publish::getArticleLink('CSVImport'), __('CSVImport'), array('target' => '_blank')))); ?>
                         <div id="csv_button_area" class="button-group">
-                            <button class="button" onclick="Pachno.Main.Helpers.Backdrop.show('<?php echo make_url('import_csv', array('type' => 'issues')); ?>');"><?php echo __('Issues'); ?></button>
-                            <button class="button" onclick="Pachno.Main.Helpers.Backdrop.show('<?php echo make_url('import_csv', array('type' => 'projects')); ?>');"><?php echo __('Projects'); ?></button>
-                            <button class="button" onclick="Pachno.Main.Helpers.Backdrop.show('<?php echo make_url('import_csv', array('type' => 'clients')); ?>');"><?php echo __('Clients'); ?></button>
+                            <button class="button" onclick="Pachno.UI.Backdrop.show('<?php echo make_url('import_csv', array('type' => 'issues')); ?>');"><?php echo __('Issues'); ?></button>
+                            <button class="button" onclick="Pachno.UI.Backdrop.show('<?php echo make_url('import_csv', array('type' => 'projects')); ?>');"><?php echo __('Projects'); ?></button>
+                            <button class="button" onclick="Pachno.UI.Backdrop.show('<?php echo make_url('import_csv', array('type' => 'clients')); ?>');"><?php echo __('Clients'); ?></button>
                         </div>
                         <br class="clear" />
                         <div class="tab_content">
@@ -50,7 +50,7 @@
             </div>
             <?php if (isset($imported_data)): ?>
                 <script type="text/javascript">
-                    Pachno.Main.Helpers.Message.success('<?php echo __('Sample data loaded!'); ?>', '<?php echo __('Sample data was loaded. You can now browse around Pachno and try it out!'); ?>');
+                    Pachno.UI.Message.success('<?php echo __('Sample data loaded!'); ?>', '<?php echo __('Sample data was loaded. You can now browse around Pachno and try it out!'); ?>');
                 </script>
             <?php endif; ?>
         </div>

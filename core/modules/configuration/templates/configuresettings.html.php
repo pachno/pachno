@@ -14,22 +14,22 @@
                     <span class="description"><?= __("These settings configure various features in Pachno. Keep in mind that changing any of these settings will apply globally and immediately. There is no need to log out and back in."); ?></span>
                 </div>
                 <?php if ($access_level == \pachno\core\framework\Settings::ACCESS_FULL): ?>
-                    <form accept-charset="<?= \pachno\core\framework\Context::getI18n()->getCharset(); ?>" action="<?= make_url('configure_settings'); ?>" method="post" onsubmit="Pachno.Main.Helpers.formSubmit('<?= make_url('configure_settings'); ?>', 'config_settings'); return false;" id="config_settings">
+                    <form accept-charset="<?= \pachno\core\framework\Context::getI18n()->getCharset(); ?>" action="<?= make_url('configure_settings'); ?>" method="post" onsubmit="Pachno.UI.formSubmit('<?= make_url('configure_settings'); ?>', 'config_settings'); return false;" id="config_settings">
                 <?php endif; ?>
                 <div class="fancy-tabs" id="settings_menu">
-                    <a class="tab selected" id="tab_general_settings" onclick="Pachno.Main.Helpers.tabSwitcher('tab_general_settings', 'settings_menu');" href="javascript:void(0);">
+                    <a class="tab selected" id="tab_general_settings" onclick="Pachno.UI.tabSwitcher('tab_general_settings', 'settings_menu');" href="javascript:void(0);">
                         <?= fa_image_tag('cog', ['class' => 'icon']); ?>
                         <span class="name"><?= __('General', [], true); ?></span>
                     </a>
-                    <a class="tab" id="tab_reglang_settings" onclick="Pachno.Main.Helpers.tabSwitcher('tab_reglang_settings', 'settings_menu');" href="javascript:void(0);">
+                    <a class="tab" id="tab_reglang_settings" onclick="Pachno.UI.tabSwitcher('tab_reglang_settings', 'settings_menu');" href="javascript:void(0);">
                         <?= fa_image_tag('globe', ['class' => 'icon']); ?>
                         <span class="name"><?= __('Regional & language'); ?></span>
                     </a>
-                    <a class="tab" id="tab_user_settings" onclick="Pachno.Main.Helpers.tabSwitcher('tab_user_settings', 'settings_menu');" href="javascript:void(0);">
+                    <a class="tab" id="tab_user_settings" onclick="Pachno.UI.tabSwitcher('tab_user_settings', 'settings_menu');" href="javascript:void(0);">
                         <?= fa_image_tag('unlock-alt', ['class' => 'icon']); ?>
                         <span class="name"><?= __('Users & security'); ?></span>
                     </a>
-                    <a class="tab" id="tab_offline_settings" onclick="Pachno.Main.Helpers.tabSwitcher('tab_offline_settings', 'settings_menu');" href="javascript:void(0);">
+                    <a class="tab" id="tab_offline_settings" onclick="Pachno.UI.tabSwitcher('tab_offline_settings', 'settings_menu');" href="javascript:void(0);">
                         <?= fa_image_tag('coffee', ['class' => 'icon']); ?>
                         <span class="name"><?= __('Maintenance mode', [], true); ?></span>
                     </a>

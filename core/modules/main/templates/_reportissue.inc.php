@@ -205,7 +205,7 @@
             <?= __('The following issue was reported: %link_to_issue', ['%link_to_issue' => link_tag(make_url('viewissue', ['project_key' => $issue->getProject()->getKey(), 'issue_no' => $issue->getFormattedIssueNo()]), $issue->getFormattedIssueNo(true) . ' - ' . $issue->getTitle())]); ?>
         </div>
         <div class="actions">
-            <a class="button primary" id="report_issue_report_another_button" onclick="[$(this), $('report_issue_form'), $('report_more_here'), $('report_form'), $('issuetype_list'), $('report_issue_reported_issue_details')].each(function (el) { Element.toggle(el, 'block'); });$('reportissue_container').removeClassName('medium');$('reportissue_container').addClassName('large');"><?= __('Report another issue'); ?></a>
+            <a class="button primary" id="report_issue_report_another_button" onclick="[$(this), $('report_issue_form'), $('report_more_here'), $('report_form'), $('issuetype_list'), $('report_issue_reported_issue_details')].each(function (el) { Element.toggle(el, 'block'); });$('reportissue_container').removeClass('medium');$('reportissue_container').addClass('large');"><?= __('Report another issue'); ?></a>
         </div>
     </div>
 <?php endif; ?>
@@ -809,7 +809,7 @@
                         <input type="radio" name="issue_access" id="issue_access_restricted" onchange="Pachno.Issues.ACL.toggle_checkboxes(this, '', 'restricted');" value="restricted"<?php if ($selected_project->getIssuesLockType() === Project::ISSUES_LOCK_TYPE_RESTRICTED) echo ' checked'; ?>><label for="issue_access_restricted"><?= __('Available only to you and those listed below'); ?></label><br>
                         <script>
                             require(['domReady', 'jquery'], function (domReady, jQuery) {
-                                domReady(function () { jQuery('input[name=issue_access]').trigger('change'); });
+                                domReady(function () { $('input[name=issue_access]').trigger('change'); });
                             });
                         </script>
                         <?php image_tag('spinning_16.gif', array('id' => 'acl_indicator_', 'style' => '')); ?>

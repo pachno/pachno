@@ -19,7 +19,7 @@
                                 <?php echo image_tag($user->getAvatarURL(false), array('alt' => ' ', 'style' => "width: 48px; height: 48px;"), true); ?>
                             </div>
                             <div class="user_realname">
-                                <a href="javascript:void(0);" onclick="Pachno.Main.Helpers.Backdrop.show('<?php echo make_url('get_partial_for_backdrop', array('key' => 'usercard', 'user_id' => $user->getID())); ?>');"><?php echo $user->getRealname(); ?> <span class="user_username"><?php echo $user->getUsername(); ?></span></a>
+                                <a href="javascript:void(0);" onclick="Pachno.UI.Backdrop.show('<?php echo make_url('get_partial_for_backdrop', array('key' => 'usercard', 'user_id' => $user->getID())); ?>');"><?php echo $user->getRealname(); ?> <span class="user_username"><?php echo $user->getUsername(); ?></span></a>
                                 <div class="user_status"><?php echo pachno_get_userstate_image($user) . __($user->getState()->getName()); ?></div>
                                 <?php if ($user->isEmailPublic() || $pachno_user->canAccessConfigurationPage(\pachno\core\framework\Settings::CONFIGURATION_SECTION_USERS)): ?>
                                     <div class="user_email"><?php echo link_tag('mailto:'.$user->getEmail(), $user->getEmail()); ?></div>

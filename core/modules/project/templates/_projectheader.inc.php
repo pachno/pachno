@@ -31,7 +31,7 @@
         <?php \pachno\core\framework\Event::createNew('core', 'project/templates/projectheader/namelabel', $selected_project)->trigger(); ?>
         <?php /* if ($pachno_response->getPage() == 'project_dashboard' && $pachno_user->canEditProjectDetails($selected_project)): ?>
             <div class="project_header_right button-group">
-                <a href="javascript:void(0);" id="edit-project-dashboard-button" class="button" onclick="$$('.dashboard').each(function (elm) { elm.toggleClassName('editable');});$(this).toggleClassName('button-pressed');"><?= fa_image_tag('cog'); ?><span><?= __('Edit dashboard'); ?></span></a>
+                <a href="javascript:void(0);" id="edit-project-dashboard-button" class="button" onclick="$$('.dashboard').each(function (elm) { elm.toggleClass('editable');});$(this).toggleClass('button-pressed');"><?= fa_image_tag('cog'); ?><span><?= __('Edit dashboard'); ?></span></a>
             </div>
         <?php endif; */ ?>
     <div class="button-group">

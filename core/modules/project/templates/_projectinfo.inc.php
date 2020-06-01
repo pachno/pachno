@@ -36,7 +36,7 @@
             <div class="image-container">
                 <?php echo image_tag($project->getIconName(), [], true); ?>
             </div>
-            <button class="button secondary" onclick="Pachno.Main.Helpers.Backdrop.show('<?php echo make_url('get_partial_for_backdrop', array('key' => 'project_icons', 'project_id' => $project->getId())); ?>');return false;">
+            <button class="button secondary" onclick="Pachno.UI.Backdrop.show('<?php echo make_url('get_partial_for_backdrop', array('key' => 'project_icons', 'project_id' => $project->getId())); ?>');return false;">
                 <?= fa_image_tag('image', ['class' => 'icon']); ?>
                 <span class="name"><?php echo __('Change project icon'); ?></span>
             </button>

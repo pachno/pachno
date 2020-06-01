@@ -28,7 +28,7 @@
                         break;
                 }
             ?></span>
-            <a href="javascript:void(0);" class="closer" onclick="Pachno.Main.Helpers.Backdrop.reset();"><?= fa_image_tag('times'); ?></a>
+            <a href="javascript:void(0);" class="closer" onclick="Pachno.UI.Backdrop.reset();"><?= fa_image_tag('times'); ?></a>
         </div>
         <div id="backdrop_detail_content" class="backdrop_detail_content edit_milestone">
             <?php

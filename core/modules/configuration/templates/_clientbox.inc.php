@@ -3,7 +3,7 @@
         <?= image_tag('client_large.png', array('style' => 'float: left; margin-right: 5px;')); ?>
         <div style="position: absolute; right: 12px; top: 12px;">
             <button class="button dropper"><?= __('Actions'); ?></button>
-            <ul style="position: absolute; font-size: 1.1em; width: 200px; top: 23px; margin-top: 0; right: 0; text-align: right; z-index: 1000;" class="simple-list rounded_box white shadowed popup_box more_actions_dropdown" onclick="jQuery(this).prev().toggleClass('button-pressed');jQuery(this).toggle();">
+            <ul style="position: absolute; font-size: 1.1em; width: 200px; top: 23px; margin-top: 0; right: 0; text-align: right; z-index: 1000;" class="simple-list rounded_box white shadowed popup_box more_actions_dropdown" onclick="$(this).prev().toggleClass('button-pressed');$(this).toggle();">
                 <li>
                     <?= javascript_link_tag(__('Add member(s) to this client'), array('onclick' => '$(\'addmember_client_'.$client->getID().'\').toggle(\'block\');')); ?>
                 </li>
@@ -14,7 +14,7 @@
                     <?= javascript_link_tag(__('Edit this client'), array('onclick' => '$(\'edit_client_'.$client->getID().'\').toggle();')); ?>
                 </li>
                 <li>
-                    <?= javascript_link_tag(__('Delete this client'), array('onclick' => "Pachno.Main.Helpers.Dialog.show('".__('Do you really want to delete this client?')."', '".__('If you delete this client, any projects this client is assigned to will be set to having no client')."', {yes: {click: function() {Pachno.Config.Client.remove('".make_url('configure_users_delete_client', array('client_id' => $client->getID()))."', {$client->getID()}); }}, no: { click: Pachno.Main.Helpers.Dialog.dismiss }});")); ?>
+                    <?= javascript_link_tag(__('Delete this client'), array('onclick' => "Pachno.UI.Dialog.show('".__('Do you really want to delete this client?')."', '".__('If you delete this client, any projects this client is assigned to will be set to having no client')."', {yes: {click: function() {Pachno.Config.Client.remove('".make_url('configure_users_delete_client', array('client_id' => $client->getID()))."', {$client->getID()}); }}, no: { click: Pachno.UI.Dialog.dismiss }});")); ?>
                 </li>
             </ul>
         </div>

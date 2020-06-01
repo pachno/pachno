@@ -14,11 +14,11 @@
     require(['domReady', 'pachno/index', 'jquery'], function (domReady, Pachno, jquery) {
         domReady(function () {
         <?php if (\pachno\core\framework\Context::hasMessage('login_message')): ?>
-            Pachno.Main.Helpers.Message.success('<?php echo \pachno\core\framework\Context::getMessageAndClear('login_message'); ?>');
+            Pachno.UI.Message.success('<?php echo \pachno\core\framework\Context::getMessageAndClear('login_message'); ?>');
         <?php elseif (\pachno\core\framework\Context::hasMessage('login_message_err')): ?>
-            Pachno.Main.Helpers.Message.error('<?php echo \pachno\core\framework\Context::getMessageAndClear('login_message_err'); ?>');
+            Pachno.UI.Message.error('<?php echo \pachno\core\framework\Context::getMessageAndClear('login_message_err'); ?>');
         <?php endif; ?>
-            jquery('#pachno_username').focus();
+            $('#pachno_username').focus();
         });
     });
 </script>

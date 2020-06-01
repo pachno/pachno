@@ -8,7 +8,7 @@
         <div class="score" style="width: <?php echo $onlinemodule->rating * 16; ?>px;"></div>
     </div>
     <div class="module-actions plugin-actions">
-        <button class="install-button button" onclick="Pachno.Main.Helpers.Message.success('<?= __('Add modules with one click'); ?>', '<?= __('With a valid subscription you can install modules straight from the control center'); ?>')"><span><?php echo __('Add'); ?></span></button>
+        <button class="install-button button" onclick="Pachno.UI.Message.success('<?= __('Add modules with one click'); ?>', '<?= __('With a valid subscription you can install modules straight from the control center'); ?>')"><span><?php echo __('Add'); ?></span></button>
         <div class="status-badge module_status plugin_status enabled">
             <?php echo __('Enabled'); ?>
         </div>

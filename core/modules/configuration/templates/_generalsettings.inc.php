@@ -10,7 +10,7 @@
 </div>
 <div class="form-row">
         <label><?php echo __('Custom header and favicons'); ?></label>
-        <div class="button button-blue" onclick="Pachno.Main.Helpers.Backdrop.show('<?php echo make_url('get_partial_for_backdrop', ['key' => 'site_icons']); ?>');"><span><?php echo __('Configure icons'); ?></span></div>
+        <div class="button button-blue" onclick="Pachno.UI.Backdrop.show('<?php echo make_url('get_partial_for_backdrop', ['key' => 'site_icons']); ?>');"><span><?php echo __('Configure icons'); ?></span></div>
 </div>
 <div class="form-row">
     <label for="header_link">

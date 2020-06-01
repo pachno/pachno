@@ -19,8 +19,6 @@
         <meta name="author" content="zegenie">
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
         <link rel="shortcut icon" href="images/favicon.png">
-        <script type="text/javascript" src="js/prototype.js"></script>
-        <script type="text/javascript" src="js/scriptaculous.js"></script>
         <script type="text/javascript" src="js/install.js"></script>
         <style type="text/css">
             <?php include PACHNO_PATH . 'themes' . DS . 'oxygen' . DS . 'css' . DS . 'theme.css'; ?>

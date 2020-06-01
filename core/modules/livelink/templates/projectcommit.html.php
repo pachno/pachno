@@ -153,11 +153,11 @@
 <script>
     require(['domReady', 'jquery'], function (domReady, jquery) {
         domReady(function () {
-            jquery('body').on('click', '.collapse-all-icon', function (e) {
-                jquery('.folder .foldername').addClass('collapsed');
+            $('body').on('click', '.collapse-all-icon', function (e) {
+                $('.folder .foldername').addClass('collapsed');
             });
-            jquery('body').on('click', '.expand-all-icon', function (e) {
-                jquery('.folder .foldername').removeClass('collapsed');
+            $('body').on('click', '.expand-all-icon', function (e) {
+                $('.folder .foldername').removeClass('collapsed');
             });
         });
     });

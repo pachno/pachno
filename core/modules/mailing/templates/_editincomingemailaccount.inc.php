@@ -2,13 +2,13 @@
     require(['domReady'], function (domReady) {
         domReady(function () {
             Pachno.Modules.mailing.saveIncomingEmailAccount = function(url) {
-                Pachno.Main.Helpers.ajax(url, {
+                Pachno.UI.fetch(url, {
                     form: 'incoming_email_account_form',
                     loading: {indicator: 'add_account_indicator'},
                     success: {
                         update: {element: <?php echo ($account->getID()) ? "'mailing_account_{$account->getID()}_name', from: 'name'" : "'mailing_incoming_accounts', insertion: true"; ?>},
                         callback: function() {
-                            Pachno.Main.Helpers.Backdrop.reset();
+                            Pachno.UI.Backdrop.reset();
                         }
                     }
                 });
@@ -19,7 +19,7 @@
 <div class="backdrop_box large">
     <div class="backdrop_detail_header">
         <span><?php echo ($account->getId()) ? __('Edit incoming email account') : __('Add new incoming email account'); ?></span>
-        <a href="javascript:void(0);" class="closer" onclick="Pachno.Main.Helpers.Backdrop.reset();"><?= fa_image_tag('times'); ?></a>
+        <a href="javascript:void(0);" class="closer" onclick="Pachno.UI.Backdrop.reset();"><?= fa_image_tag('times'); ?></a>
     </div>
     <form accept-charset="<?php echo \pachno\core\framework\Context::getI18n()->getCharset(); ?>" id="incoming_email_account_form" action="<?php echo make_url('mailing_save_incoming_account', array('project_key' => $project->getKey())); ?>" method="post" id="build_form" onsubmit="Pachno.Modules.mailing.saveIncomingEmailAccount('<?php echo make_url('mailing_save_incoming_account', array('project_key' => $project->getKey())); ?>');return false;">
         <div id="backdrop_detail_content" class="backdrop_detail_content">

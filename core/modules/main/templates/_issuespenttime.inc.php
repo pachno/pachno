@@ -1,8 +1,8 @@
 <div class="backdrop_box large" id="viewissue_add_item_div">
     <div class="backdrop_detail_header">
-        <a href="javascript:void(0);" class="back_link" onclick="Pachno.Main.Helpers.Backdrop.show('<?php echo make_url('get_partial_for_backdrop', array('key' => 'issue_spenttimes', 'issue_id' => $entry->getIssue()->getID())); ?>');"><?= fa_image_tag('chevron-left'); ?></a>
+        <a href="javascript:void(0);" class="back_link" onclick="Pachno.UI.Backdrop.show('<?php echo make_url('get_partial_for_backdrop', array('key' => 'issue_spenttimes', 'issue_id' => $entry->getIssue()->getID())); ?>');"><?= fa_image_tag('chevron-left'); ?></a>
         <span><?php echo __('Issue time tracking - edit time spent entry'); ?></span>
-        <a href="javascript:void(0);" class="closer" onclick="Pachno.Main.Helpers.Backdrop.reset();"><?= fa_image_tag('times'); ?></a>
+        <a href="javascript:void(0);" class="closer" onclick="Pachno.UI.Backdrop.reset();"><?= fa_image_tag('times'); ?></a>
     </div>
     <div id="backdrop_detail_content" class="backdrop_detail_content">
         <form action="<?php echo make_url('issue_edittimespent', array('project_key' => $entry->getIssue()->getProject()->getKey(), 'issue_id' => $entry->getIssueID(), 'entry_id' => $entry->getID())); ?>" onsubmit="Pachno.Issues.editTimeEntry(this);return false;">

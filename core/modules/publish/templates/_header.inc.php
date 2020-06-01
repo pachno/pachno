@@ -15,12 +15,10 @@
 <div class="header-container <?= $mode; ?>">
     <div class="title-container article-title">
         <div>
-            <span class="title-name"><?= ($article->getName() == 'Main Page') ? __('Overview') : $article->getName(); ?></span>
-            <?php if ($article->isCategory()): ?>
-                <span class="title-crumbs">
-                    <span class="status-badge"><span class="name"><?= __('Category'); ?></span></span>
-                </span>
-            <?php endif; ?>
+            <span class="title-name">
+                <?php if ($article->isCategory()) echo fa_image_tag('layer-group', ['class' => 'icon category']); ?>
+                <span><?= ($article->getName() == 'Main Page') ? __('Overview') : $article->getName(); ?></span>
+            </span>
         </div>
     </div>
     <?php if ($article->getID() || $mode == 'edit'): ?>
@@ -65,7 +63,7 @@
                         <div class="dropdown-container">
                             <div class="list-mode">
                                 <?php  /*if ($mode == 'edit'): ?>
-                                    <a href="javascript:void(0);" onclick="$('main_container').toggleClassName('distraction-free');" class="list-item">
+                                    <a href="javascript:void(0);" onclick="$('main_container').toggleClass('distraction-free');" class="list-item">
                                         <?= fa_image_tag('arrows-alt', ['class' => 'icon']); ?>
                                         <span class="name"><?= __('Toggle distraction-free writing'); ?></span>
                                     </a>
@@ -111,7 +109,7 @@
                                     <?php endif; ?>
                                     <div class="separator"></div>
                                     <?php if ($article->canDelete()): ?>
-                                        <?= javascript_link_tag(fa_image_tag('times', ['class' => 'icon']) . '<span class="name">'.__('Delete this article').'</span>', ['onclick' => "Pachno.Main.Helpers.Dialog.show('".__('Please confirm')."', '".__('Do you really want to delete this article?')."', {yes: {click: function () { Pachno.Main.deleteArticle('".make_url('publish_article_delete', ['article_id' => $article->getID()])."') }}, no: {click: Pachno.Main.Helpers.Dialog.dismiss}})", 'class' => 'list-item destroy']); ?>
+                                        <?= javascript_link_tag(fa_image_tag('times', ['class' => 'icon']) . '<span class="name">'.__('Delete this article').'</span>', ['onclick' => "Pachno.UI.Dialog.show('".__('Please confirm')."', '".__('Do you really want to delete this article?')."', {yes: {click: function () { Pachno.Main.deleteArticle('".make_url('publish_article_delete', ['article_id' => $article->getID()])."') }}, no: {click: Pachno.UI.Dialog.dismiss}})", 'class' => 'list-item destroy']); ?>
                                     <?php endif; ?>
                                 <?php endif; ?>
                             </div>

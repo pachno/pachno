@@ -1,7 +1,7 @@
 <div id="attach_link" class="backdrop_box medium">
     <div class="backdrop_detail_header">
         <span><?= __('Attach a link to this issue'); ?></span>
-        <a href="javascript:void(0)" class="closer" onclick="Pachno.Main.Helpers.Backdrop.reset()"><?= fa_image_tag('times'); ?></a>
+        <a href="javascript:void(0)" class="closer" onclick="Pachno.UI.Backdrop.reset()"><?= fa_image_tag('times'); ?></a>
     </div>
     <div id="backdrop_detail_content" class="backdrop_detail_content">
         <form action="<?= make_url('issue_attach_link', array('issue_id' => $issue->getID())); ?>" method="post" onsubmit="Pachno.Issues.Link.add('<?= make_url('issue_attach_link', array('issue_id' => $issue->getID())); ?>');return false;" id="attach_link_form">

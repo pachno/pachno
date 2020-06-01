@@ -314,6 +314,7 @@
          */
         public function runProjectList(Request $request)
         {
+            $this->getResponse()->setDecoration(Response::DECORATE_NONE);
             $list_mode = $request->getParameter('list_mode', 'all');
             $project_state = $request->getParameter('project_state', 'active');
             $paginationOptions = [
@@ -340,12 +341,17 @@
             }
 
             $pagination = new Pagination($projects, $this->getRouting()->generate('project_list', $paginationOptions), $request);
-            $this->pagination = $pagination;
-            $this->projects = $pagination->getPageItems();
-            $this->project_count = count($projects);
-            $this->list_mode = $list_mode;
-            $this->project_state = $project_state;
-            $this->show_project_config_link = $this->getUser()->canAccessConfigurationPage(Settings::CONFIGURATION_SECTION_PROJECTS) && framework\Context::getScope()->hasProjectsAvailable();
+
+            return $this->renderJSON([
+                'content' => $this->getComponentHTML('main/projectlistcontainer', [
+                    'pagination' => $pagination,
+                    'projects' => $pagination->getPageItems(),
+                    'project_count' => count($projects),
+                    'list_mode' => $list_mode,
+                    'project_state' => $project_state,
+                    'show_project_config_link' => $this->getUser()->canAccessConfigurationPage(Settings::CONFIGURATION_SECTION_PROJECTS) && framework\Context::getScope()->hasProjectsAvailable(),
+                ])
+            ]);
         }
 
         public function runUserdata(Request $request)

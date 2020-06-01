@@ -84,7 +84,7 @@
             </div>
         <?php endif; ?>
         <div class="icon">
-            <button class="secondary icon" onclick="Pachno.Main.Helpers.Dialog.show('<?php echo __('Do you really want to delete this transition validation rule?'); ?>', '<?php echo __('Please confirm that you really want to delete this transition validation rule.'); ?>', {yes: {click: function() {Pachno.Config.Workflows.Transition.Validations.remove('<?php echo make_url('configure_workflow_transition_validation_rule_delete', array('workflow_id' => $rule->getWorkflow()->getID(), 'transition_id' => $rule->getTransition()->getID(), 'rule_id' => $rule->getID())); ?>', <?php echo $rule->getID(); ?>, '<?php echo $rule->isPreOrPost(); ?>', '<?php echo $rule->getRule(); ?>'); }}, no: { click: Pachno.Main.Helpers.Dialog.dismiss }});return false;"><?php echo fa_image_tag('trash', ['class' => 'icon']); ?></button>
+            <button class="secondary icon" onclick="Pachno.UI.Dialog.show('<?php echo __('Do you really want to delete this transition validation rule?'); ?>', '<?php echo __('Please confirm that you really want to delete this transition validation rule.'); ?>', {yes: {click: function() {Pachno.Config.Workflows.Transition.Validations.remove('<?php echo make_url('configure_workflow_transition_validation_rule_delete', array('workflow_id' => $rule->getWorkflow()->getID(), 'transition_id' => $rule->getTransition()->getID(), 'rule_id' => $rule->getID())); ?>', <?php echo $rule->getID(); ?>, '<?php echo $rule->isPreOrPost(); ?>', '<?php echo $rule->getRule(); ?>'); }}, no: { click: Pachno.UI.Dialog.dismiss }});return false;"><?php echo fa_image_tag('trash', ['class' => 'icon']); ?></button>
         </div>
     </form>
 </div>

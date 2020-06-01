@@ -41,7 +41,7 @@
             <?php endif; ?>
             <h2>
                 <span class="name"><?php echo __('Scopes available on this installation'); ?></span>
-                <button class="button" onclick="Pachno.Main.Helpers.Backdrop.show('<?= make_url('get_partial_for_backdrop', ['key' => 'scope_config']); ?>');"><?= __('Create scope'); ?></button>
+                <button class="button" onclick="Pachno.UI.Backdrop.show('<?= make_url('get_partial_for_backdrop', ['key' => 'scope_config']); ?>');"><?= __('Create scope'); ?></button>
             </h2>
             <?php include_component('main/pagination', ['pagination' => $pagination]); ?>
             <div id="scopes_list" class="flexible-table">

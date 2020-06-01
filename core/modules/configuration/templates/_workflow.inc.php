@@ -33,14 +33,14 @@
                         <span class="name"><?= __('Edit workflow'); ?></span>
                     </a>
                     <?php if (\pachno\core\framework\Context::getScope()->hasCustomWorkflowsAvailable()): ?>
-                        <a class="list-item" href="javascript:void(0);" onclick="Pachno.Main.Helpers.Backdrop.show('<?= make_url('get_partial_for_backdrop', ['key' => 'edit_workflow', 'workflow_id' => $workflow->getId(), 'clone' => 'yes']); ?>');">
+                        <a class="list-item" href="javascript:void(0);" onclick="Pachno.UI.Backdrop.show('<?= make_url('get_partial_for_backdrop', ['key' => 'edit_workflow', 'workflow_id' => $workflow->getId(), 'clone' => 'yes']); ?>');">
                             <span class="icon"><?php echo fa_image_tag('clone'); ?></span>
                             <span class="name"><?= __('Copy workflow'); ?></span>
                         </a>
                     <?php endif; ?>
                     <div class="list-item separator"></div>
                     <?php if ($workflow->isInUse()): ?>
-                        <a class="list-item danger" href="javascript:void(0);" onclick="Pachno.Main.Helpers.Message.error('<?php echo __('Cannot delete workflow'); ?>', '<?php echo __('This workflow can not be deleted as it is being used by %number_of_schemes workflow scheme(s)', array('%number_of_schemes' => $workflow->getNumberOfSchemes())); ?>');">
+                        <a class="list-item danger" href="javascript:void(0);" onclick="Pachno.UI.Message.error('<?php echo __('Cannot delete workflow'); ?>', '<?php echo __('This workflow can not be deleted as it is being used by %number_of_schemes workflow scheme(s)', array('%number_of_schemes' => $workflow->getNumberOfSchemes())); ?>');">
                             <span class="icon"><?php echo fa_image_tag('times'); ?></span>
                             <span class="name"><?= __('Delete workflow'); ?></span>
                         </a>

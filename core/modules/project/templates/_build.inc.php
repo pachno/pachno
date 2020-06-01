@@ -1,7 +1,7 @@
 <div class="backdrop_box large">
     <div class="backdrop_detail_header">
         <span><?php echo ($build->getId()) ? __('Edit release details') : __('Add new release'); ?></span>
-        <a href="javascript:void(0);" class="closer" onclick="Pachno.Main.Helpers.Backdrop.reset();"><?= fa_image_tag('times'); ?></a>
+        <a href="javascript:void(0);" class="closer" onclick="Pachno.UI.Backdrop.reset();"><?= fa_image_tag('times'); ?></a>
     </div>
     <form accept-charset="<?php echo \pachno\core\framework\Context::getI18n()->getCharset(); ?>" action="<?php echo make_url('configure_projects_build', array('project_id' => $project->getID())); ?>" method="post" id="build_form" onsubmit="$('add_release_indicator').show();return true;" enctype="multipart/form-data">
         <div id="backdrop_detail_content" class="backdrop_detail_content">
@@ -38,17 +38,17 @@
                         <script type="text/javascript">
                             require(['domReady', 'jquery'], function (domReady, jQuery) {
                                 domReady(function () {
-                                    jQuery('#has_release_date').on('change', function (ev) {
+                                    $('#has_release_date').on('change', function (ev) {
                                         if (this.value == 0) return false;
 
-                                        if (jQuery('#release_month').val() == 1
-                                            && jQuery('#release_day').val() == 1
-                                            && jQuery('#release_year').val() == 1990) {
+                                        if ($('#release_month').val() == 1
+                                            && $('#release_day').val() == 1
+                                            && $('#release_year').val() == 1990) {
                                             var d = new Date();
 
-                                            jQuery('#release_month').val(d.getMonth() + 1);
-                                            jQuery('#release_day').val(d.getDate());
-                                            jQuery('#release_year').val(d.getFullYear());
+                                            $('#release_month').val(d.getMonth() + 1);
+                                            $('#release_day').val(d.getDate());
+                                            $('#release_year').val(d.getFullYear());
                                         }
                                     });
                                 });

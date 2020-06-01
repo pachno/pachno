@@ -38,7 +38,7 @@
     </div>
 </div>
 <script type="text/javascript">
-    require(['domReady', 'pachno/index', 'prototype'], function (domReady, Pachno, prototype) {
+    require(['domReady', 'pachno/index'], function (domReady, Pachno) {
         domReady(function () {
             $('pachno_2fa_code').focus();
         });

@@ -22,7 +22,7 @@
             <div class="error"></div>
         </div>
         <div id="comment_edit_controls_<?= $comment->getID(); ?>" class="form-row submit-container">
-            <?= javascript_link_tag('<span>'.__('Cancel').'</span>', ['class' => 'button secondary', 'onclick' => "$('comment_edit_{$comment->getID()}').removeClassName('active');$('comment_view_{$comment->getID()}').show();$('comment_add_button').show();"]); ?>
+            <?= javascript_link_tag('<span>'.__('Cancel').'</span>', ['class' => 'button secondary', 'onclick' => "$('comment_edit_{$comment->getID()}').removeClass('active');$('comment_view_{$comment->getID()}').show();$('comment_add_button').show();"]); ?>
             <button type="submit" class="button primary">
                 <?= fa_image_tag('spinner', ['class' => 'indicator fa-spin']);?>
                 <span><?= __('Update comment'); ?></span>

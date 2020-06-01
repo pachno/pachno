@@ -37,7 +37,7 @@
                         <?php endforeach; ?>
                     </div>
                     <div class="configurable-components-list">
-                        <a class="configurable-component" href="javascript:void(0);" onclick="Pachno.Main.Helpers.Backdrop.show('<?= make_url('get_partial_for_backdrop', ['key' => 'edit_workflow_step', 'workflow_id' => $workflow->getId()]); ?>');">
+                        <a class="configurable-component" href="javascript:void(0);" onclick="Pachno.UI.Backdrop.show('<?= make_url('get_partial_for_backdrop', ['key' => 'edit_workflow_step', 'workflow_id' => $workflow->getId()]); ?>');">
                             <span class="row">
                                 <span class="icon"><?= fa_image_tag('plus'); ?></span>
                                 <span class="name">
@@ -55,27 +55,27 @@
 <script>
     require(['domReady', 'pachno/index', 'jquery'], function (domReady, pachno_index_js, jQuery) {
         domReady(function () {
-            jQuery('body').on('click', '.workflow-step .open', function(event) {
+            $('body').on('click', '.workflow-step .open', function(event) {
                 event.preventDefault();
                 event.stopPropagation();
 
-                const $item = jQuery(this).parents('.workflow-step');
+                const $item = $(this).parents('.workflow-step');
                 pachno_index_js.Config.Workflows.Workflow.Step.show($item);
             });
 
-            jQuery('body').on('click', '.list-item[data-issue-field]:not(.disabled)', function(event) {
-                const key = jQuery(this).data('id'),
-                    url = jQuery(this).data('url');
+            $('body').on('click', '.list-item[data-issue-field]:not(.disabled)', function(event) {
+                const key = $(this).data('id'),
+                    url = $(this).data('url');
 
                 pachno_index_js.Config.IssuetypeScheme.addField(url, key);
             });
 
-            jQuery('body').on('click', '.configurable-component[data-issue-field] .remove-item', function(event) {
-                const $item = jQuery(this).parents('.configurable-component'),
+            $('body').on('click', '.configurable-component[data-issue-field] .remove-item', function(event) {
+                const $item = $(this).parents('.configurable-component'),
                     key = $item.data('id');
 
                 $item.remove();
-                jQuery('.list-item[data-issue-field][data-id=' + key + ']').removeClass('disabled');
+                $('.list-item[data-issue-field][data-id=' + key + ']').removeClass('disabled');
             });
         });
     });

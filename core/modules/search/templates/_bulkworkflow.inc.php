@@ -2,7 +2,7 @@
 <div class="backdrop_box medium" id="viewissue_add_item_div">
     <div class="backdrop_detail_header">
         <span><?php echo __('Perform workflow step'); ?></span>
-        <a href="javascript:void(0);" class="closer" onclick="Pachno.Main.Helpers.Backdrop.reset();"><?= fa_image_tag('times'); ?></a>
+        <a href="javascript:void(0);" class="closer" onclick="Pachno.UI.Backdrop.reset();"><?= fa_image_tag('times'); ?></a>
     </div>
     <div id="backdrop_detail_content" class="backdrop_detail_content">
         <div class="header"><?php echo __('%number_of issues selected', array('%number_of' => count($issues))); ?></div>
@@ -22,7 +22,7 @@
                         <span class="explanation"><?= $transition->getDescription(); ?></span>
                         <div class="submit_container">
                             <?php if ($transition->hasTemplate()): ?>
-                                <?php echo javascript_link_tag(image_tag('spinning_16.gif', ['style' => 'display: none;', 'id' => 'transition_working_'.$transition->getID().'_indicator']) . $transition->getName(), ['onclick' => "Pachno.Main.Helpers.Backdrop.show('".make_url('get_partial_for_backdrop', ['key' => 'workflow_transition', 'transition_id' => $transition->getID()])."&project_key=".$project->getKey()."&issue_ids[]=".join('&issue_ids[]=', array_keys($issues))."');", 'class' => 'button workflow_transition_submit_button']); ?>
+                                <?php echo javascript_link_tag(image_tag('spinning_16.gif', ['style' => 'display: none;', 'id' => 'transition_working_'.$transition->getID().'_indicator']) . $transition->getName(), ['onclick' => "Pachno.UI.Backdrop.show('".make_url('get_partial_for_backdrop', ['key' => 'workflow_transition', 'transition_id' => $transition->getID()])."&project_key=".$project->getKey()."&issue_ids[]=".join('&issue_ids[]=', array_keys($issues))."');", 'class' => 'button workflow_transition_submit_button']); ?>
                             <?php else: ?>
                                 <form action="<?php echo make_url('transition_issues', ['project_key' => $project->getKey(), 'transition_id' => $transition->getID()]); ?>" method="post" onsubmit="Pachno.Search.bulkWorkflowTransition('<?php echo make_url('transition_issues', array('project_key' => $project->getKey(), 'transition_id' => $transition->getID())); ?>', <?php echo $transition->getID(); ?>);return false;" accept-charset="<?php echo \pachno\core\framework\Context::getI18n()->getCharset(); ?>" id="bulk_workflow_transition_form">
                                     <?php foreach ($issues as $issue_id => $i): ?>

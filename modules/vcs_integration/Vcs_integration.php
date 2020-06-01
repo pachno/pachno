@@ -148,7 +148,7 @@
 
         protected function _getCommitLink($commit)
         {
-            return '<a href="javascript:void(0)" onclick="Pachno.Main.Helpers.Backdrop.show(\''.framework\Context::getRouting()->generate('get_partial_for_backdrop', array('key' => 'vcs_integration_getcommit', 'commit_id' => $commit->getID())).'\');">'.$commit->getRevisionString().'</a>';
+            return '<a href="javascript:void(0)" onclick="Pachno.UI.Backdrop.show(\''.framework\Context::getRouting()->generate('get_partial_for_backdrop', array('key' => 'vcs_integration_getcommit', 'commit_id' => $commit->getID())).'\');">'.$commit->getRevisionString().'</a>';
         }
 
         public function _parse_commit($matches)
@@ -156,7 +156,7 @@
             if (!framework\Context::isProjectContext())
                 return $matches[0];
 
-            /* <a href="javascript:void(0)" onclick="Pachno.Main.Helpers.Backdrop.show('<?php echo make_url('get_partial_for_backdrop', array('key' => 'vcs_integration_getcommit', 'commit_id' => $commit->getID())); ?>');"><?php echo $commit->getRevisionString(); ?></a> */
+            /* <a href="javascript:void(0)" onclick="Pachno.UI.Backdrop.show('<?php echo make_url('get_partial_for_backdrop', array('key' => 'vcs_integration_getcommit', 'commit_id' => $commit->getID())); ?>');"><?php echo $commit->getRevisionString(); ?></a> */
             $commit = Commits::getTable()->getCommitByCommitId($matches[0], framework\Context::getCurrentProject()->getID());
 
             if (!$commit instanceof Commit)

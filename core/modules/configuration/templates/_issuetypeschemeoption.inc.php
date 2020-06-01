@@ -50,7 +50,7 @@
                         <span><?= __('Remove field'); ?></span>
                     </button>
                     <?php if (!in_array($key, ['owner', 'description', 'reproduction_steps'])): ?>
-                        <button class="button secondary" onclick="Pachno.Main.Helpers.Backdrop.show('<?= make_url('get_partial_for_backdrop', ['key' => 'edit_issuefield', 'type' => $key]); ?>');return false;">
+                        <button class="button secondary" onclick="Pachno.UI.Backdrop.show('<?= make_url('get_partial_for_backdrop', ['key' => 'edit_issuefield', 'type' => $key]); ?>');return false;">
                             <?= fa_image_tag('edit', ['class' => 'icon'], 'far'); ?>
                             <span><?= __('Edit field options'); ?></span>
                         </button>

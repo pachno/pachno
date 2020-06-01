@@ -23,7 +23,7 @@
                 <span><?php echo __('Active projects'); ?></span>
                 <?php if (framework\Context::getScope()->hasProjectsAvailable()): ?>
                     <button class="button"
-                            onclick="Pachno.Main.Helpers.Backdrop.show('<?= make_url('get_partial_for_backdrop', ['key' => 'project_config']); ?>');"><?= __('Create project'); ?></button>
+                            onclick="Pachno.UI.Backdrop.show('<?= make_url('get_partial_for_backdrop', ['key' => 'project_config']); ?>');"><?= __('Create project'); ?></button>
                 <?php endif; ?>
             </h2>
             <div id="project_table" class="flexible-table">

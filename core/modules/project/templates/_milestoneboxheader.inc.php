@@ -40,9 +40,9 @@
             <div class="settings_container">
                 <?php echo fa_image_tag('cog', array('class' => 'dropper dropdown_link')); ?>
                 <ul class="popup_box milestone_moreactions more_actions_dropdown" id="milestone_<?php echo $milestone->getID(); ?>_moreactions">
-                    <li><?php echo javascript_link_tag(__('Edit'), array('onclick' => "Pachno.Main.Helpers.Backdrop.show('".make_url('get_partial_for_backdrop', array('key' => 'milestone', 'project_id' => $milestone->getProject()->getId(), 'milestone_id' => $milestone->getID()))."');")); ?></li>
+                    <li><?php echo javascript_link_tag(__('Edit'), array('onclick' => "Pachno.UI.Backdrop.show('".make_url('get_partial_for_backdrop', array('key' => 'milestone', 'project_id' => $milestone->getProject()->getId(), 'milestone_id' => $milestone->getID()))."');")); ?></li>
                     <li class="separator"></li>
-                    <li><?php echo javascript_link_tag(__('Delete'), array('onclick' => "Pachno.Main.Helpers.Dialog.show('".__('Do you really want to delete this milestone?')."', '".__('Removing this milestone will unassign all issues from this milestone and remove it from all available lists. This action cannot be undone.')."', {yes: {click: function() { Pachno.Project.Milestone.remove('".make_url('project_milestone', array('project_key' => $milestone->getProject()->getKey(), 'milestone_id' => $milestone->getID()))."', ".$milestone->getID()."); } }, no: {click: Pachno.Main.Helpers.Dialog.dismiss} });")); ?></li>
+                    <li><?php echo javascript_link_tag(__('Delete'), array('onclick' => "Pachno.UI.Dialog.show('".__('Do you really want to delete this milestone?')."', '".__('Removing this milestone will unassign all issues from this milestone and remove it from all available lists. This action cannot be undone.')."', {yes: {click: function() { Pachno.Project.Milestone.remove('".make_url('project_milestone', array('project_key' => $milestone->getProject()->getKey(), 'milestone_id' => $milestone->getID()))."', ".$milestone->getID()."); } }, no: {click: Pachno.UI.Dialog.dismiss} });")); ?></li>
                 </ul>
             </div>
         <?php endif; ?>

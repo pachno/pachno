@@ -188,7 +188,7 @@
                 </div>
             <?php endif; ?>
             <div class="form-row submit-container">
-                <a href="javascript:void(0);" class="closer button primary" onclick="Pachno.Main.Helpers.Backdrop.reset();"><?= __('Done'); ?></a>
+                <a href="javascript:void(0);" class="closer button primary" onclick="Pachno.UI.Backdrop.reset();"><?= __('Done'); ?></a>
             </div>
         </div>
     </div>

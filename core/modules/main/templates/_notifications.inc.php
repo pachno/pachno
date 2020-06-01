@@ -149,7 +149,7 @@
                                     }
                                 }
                                 else {
-                                    Pachno.Main.Helpers.Backdrop.show(target_url);
+                                    Pachno.UI.Backdrop.show(target_url);
                                 }
                             });
                         });

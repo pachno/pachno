@@ -17,7 +17,7 @@
         <?php foreach ($module->getConnectorModules() as $connector_key => $connector_provider): ?>
             <li id="livelink-<?= $connector_key; ?>-configuration" class="<?= ($connector_provider->getConnector()->isConfigured()) ? 'connected' : ''; ?>">
                 <span class="description"><?= fa_image_tag($connector_provider->getConnector()->getLogo(), ['class' => 'connector_logo'], $connector_provider->getConnector()->getLogoStyle()) . $connector_provider->getConnector()->getName(); ?><span class="not-connected"><?= fa_image_tag('square') . __('Not connected'); ?></span><span class="connected-ok"><?= fa_image_tag('check-square', [], 'far') . __('Connected'); ?></span></span>
-                <button class="button button-connect-livelink-connector" onclick="Pachno.Main.Helpers.Backdrop.show('<?= make_url('get_partial_for_backdrop', ['key' => 'livelink-configure_connector', 'connector' => $connector_key]); ?>');"><?= __('Connect'); ?></button>
+                <button class="button button-connect-livelink-connector" onclick="Pachno.UI.Backdrop.show('<?= make_url('get_partial_for_backdrop', ['key' => 'livelink-configure_connector', 'connector' => $connector_key]); ?>');"><?= __('Connect'); ?></button>
                 <button class="button button-disconnect-livelink-connector" data-connector="<?= $connector_key; ?>"><?= image_tag('spinning_16.gif', ['class' => "indicator"]) . __('Disconnect'); ?></button>
             </li>
         <?php endforeach; ?>
@@ -61,7 +61,7 @@
                             $button.removeClass('submitting');
                             $button.attr('disabled', false);
                         }, function (details) {
-                            pachno_index_js.Main.Helpers.Message.error(details.responseJSON.error);
+                            pachno_index_js.Helpers.Message.error(details.responseJSON.error);
                         });
                 };
 

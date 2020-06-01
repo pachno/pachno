@@ -28,11 +28,11 @@
                             <span class="name"><?= __('Details'); ?></span>
                         </a>
                         <?php if (!\pachno\core\framework\Context::isProjectContext() || !$role->isSystemRole()): ?>
-                            <a href="javascript:void(0);" class="list-item" onclick="Pachno.Main.Helpers.Backdrop.show('<?= make_url('get_partial_for_backdrop', ['key' => 'edit_role', 'role_id' => $role->getId()]); ?>');">
+                            <a href="javascript:void(0);" class="list-item" onclick="Pachno.UI.Backdrop.show('<?= make_url('get_partial_for_backdrop', ['key' => 'edit_role', 'role_id' => $role->getId()]); ?>');">
                                 <?= fa_image_tag('edit', ['class' => 'icon']); ?>
                                 <span class="name"><?php echo __('Edit'); ?></span>
                             </a>
-                            <a href="javascript:void(0);" class="list-item" onclick="Pachno.Main.Helpers.Dialog.show('<?php echo __('Delete this role?'); ?>', '<?php echo __('Do you really want to delete this role?').'<br>'.__('Users assigned via this role will be unassigned, and depending on other roles their project permissions may be reset.').'<br><b>'.__('This action cannot be reverted').'</b>'; ?>', {yes: {click: function() {Pachno.Config.Roles.remove('<?php echo make_url('configure_role', array('role_id' => $role->getID(), 'mode' => 'delete')); ?>', <?php print $role->getID(); ?>);}}, no: {click: Pachno.Main.Helpers.Dialog.dismiss}});">
+                            <a href="javascript:void(0);" class="list-item" onclick="Pachno.UI.Dialog.show('<?php echo __('Delete this role?'); ?>', '<?php echo __('Do you really want to delete this role?').'<br>'.__('Users assigned via this role will be unassigned, and depending on other roles their project permissions may be reset.').'<br><b>'.__('This action cannot be reverted').'</b>'; ?>', {yes: {click: function() {Pachno.Config.Roles.remove('<?php echo make_url('configure_role', array('role_id' => $role->getID(), 'mode' => 'delete')); ?>', <?php print $role->getID(); ?>);}}, no: {click: Pachno.UI.Dialog.dismiss}});">
                                 <?= fa_image_tag('times', ['class' => 'icon']); ?>
                                 <span class="name"><?php echo __('Delete'); ?></span>
                             </a>

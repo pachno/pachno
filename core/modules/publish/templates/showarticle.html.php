@@ -34,25 +34,7 @@
                 <b><?php echo link_tag(make_url('publish_article', ['article_name' => $article->getName()]), __('Show current version')); ?></b>
             </div>
         <?php endif; ?>
-        <?php if ($article->getID()): ?>
-            <?php include_component('articledisplay', ['article' => $article, 'show_article' => true, 'redirected_from' => $redirected_from]); ?>
-        <?php else: ?>
-            <?php include_component('publish/header', ['article' => $article, 'show_actions' => true, 'mode' => 'view']); ?>
-            <div class="article">
-                <?php if (Context::isProjectContext() && Context::getCurrentProject()->isArchived()): ?>
-                    <?php include_component('publish/placeholder', ['article_name' => $article->getName(), 'nocreate' => true]); ?>
-                <?php else: ?>
-                    <?php include_component('publish/placeholder', ['article_name' => $article->getName()]); ?>
-                <?php endif; ?>
-            </div>
-        <?php endif; ?>
-        <?php if (!$article->getID() && ((Context::isProjectContext() && !Context::getCurrentProject()->isArchived()) || (!Context::isProjectContext() && Context::getModule('publish')->canUserEditArticle($article->getName())))): ?>
-            <div class="publish_article_actions">
-                <form action="<?php echo make_url('publish_article_edit', ['article_id' => $article->getId()]); ?>" method="get" style="float: left; margin-right: 10px;">
-                    <input class="button button-green" type="submit" value="<?php echo __('Create this article'); ?>">
-                </form>
-            </div>
-        <?php endif; ?>
+        <?php include_component('articledisplay', ['article' => $article, 'show_article' => $article->hasContent(), 'redirected_from' => $redirected_from]); ?>
         <?php if ($article->getID()): ?>
             <?php $attachments = array_reverse($article->getFiles()); ?>
             <div id="article_attachments">
@@ -64,7 +46,7 @@
                     <?php if (\pachno\core\framework\Settings::isUploadsEnabled() && $article->canEdit()): ?>
                         <button class="button" onclick="Pachno.Main.showUploader('<?php echo make_url('get_partial_for_backdrop', ['key' => 'uploader', 'mode' => 'article', 'article_name' => $article->getName()]); ?>');"><?php echo __('Attach a file'); ?></button>
                     <?php else: ?>
-                        <button class="button disabled" onclick="Pachno.Main.Helpers.Message.error('<?php echo __('File uploads are not enabled'); ?>');"><?php echo __('Attach a file'); ?></button>
+                        <button class="button disabled" onclick="Pachno.UI.Message.error('<?php echo __('File uploads are not enabled'); ?>');"><?php echo __('Attach a file'); ?></button>
                     <?php endif; ?>
                 </h4>
                 <?php include_component('publish/attachments', ['article' => $article, 'attachments' => $attachments]); ?>

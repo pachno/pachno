@@ -5,7 +5,7 @@
                 <?php echo ($build->hasFile()) ? link_tag(make_url('downloadfile', array('id' => $build->getFile()->getID())), __('Download'), array('class' => 'button')) : link_tag($build->getFileURL(), __('Download'), array('class' => 'button')); ?>
             <?php endif; ?>
             <?php echo link_tag(make_url('project_issues', array('project_key' => \pachno\core\framework\Context::getCurrentProject()->getKey(), 'search' => true, 'fs[state]' => array('o' => '=', 'v' => \pachno\core\entities\Issue::STATE_OPEN), 'fs[build]' => array('o' => '=', 'v' => $build->getID())))."?sortfields=issues.posted=desc", __('Issues'), array('class' => 'button', 'title' => __('Show all issues for this release'))); ?>
-            <?php echo javascript_link_tag(__('Report an issue'), array('onclick' => "Pachno.Main.Helpers.Backdrop.show('".make_url('get_partial_for_backdrop', array('key' => 'reportissue', 'project_id' => $build->getProject()->getId(), 'build_id' => $build->getID()))."');", 'class' => 'button')); ?>
+            <?php echo javascript_link_tag(__('Report an issue'), array('onclick' => "Pachno.UI.Backdrop.show('".make_url('get_partial_for_backdrop', array('key' => 'reportissue', 'project_id' => $build->getProject()->getId(), 'build_id' => $build->getID()))."');", 'class' => 'button')); ?>
         <?php else: ?>
             <?php if ($build->hasDownload()): ?>
                 <?php if (!$build->isReleased()): ?>

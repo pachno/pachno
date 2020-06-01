@@ -40,7 +40,7 @@
     </form>
     <div class="separator"></div>
     <div class="form-row submit-container">
-        <button class="secondary danger" onclick="Pachno.Main.Helpers.Dialog.show('<?php echo __('Do you really want to delete this edition?'); ?>', '<?php echo __('Please confirm that you want to completely remove this edition.'); ?>', {yes: {click: function() { Pachno.Project.Edition.remove('<?= make_url('configure_project_edition_delete', array('project_id' => $edition->getProject()->getID(), 'edition_id' => $edition->getID())); ?>', <?= $edition->getID(); ?>);}}, no: { click: Pachno.Main.Helpers.Dialog.dismiss }});">
+        <button class="secondary danger" onclick="Pachno.UI.Dialog.show('<?php echo __('Do you really want to delete this edition?'); ?>', '<?php echo __('Please confirm that you want to completely remove this edition.'); ?>', {yes: {click: function() { Pachno.Project.Edition.remove('<?= make_url('configure_project_edition_delete', array('project_id' => $edition->getProject()->getID(), 'edition_id' => $edition->getID())); ?>', <?= $edition->getID(); ?>);}}, no: { click: Pachno.UI.Dialog.dismiss }});">
             <span class="icon"><?= fa_image_tag('trash-alt', [], 'far'); ?></span>
             <span class="name"><?= __('Remove this edition'); ?></span>
         </button>

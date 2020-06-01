@@ -25,6 +25,6 @@ $assignee_type = ($assignee instanceof \pachno\core\entities\User) ? 'user' : 't
         </div>
     </div>
     <div class="column actions">
-        <button class="secondary danger icon" onclick="Pachno.Main.Helpers.Dialog.show('<?= __('Remove %username from this project?', array('%username' => $assignee->getName())); ?>', '<?= __('Please confirm removal from the project team'); ?>', {yes: {click: function() {Pachno.Project.removeAssignee('<?= make_url('configure_project_remove_assignee', ['project_id' => $project->getID(), 'assignee_type' => $assignee_type, 'assignee_id' => $assignee->getID()]); ?>', '<?= $assignee_type; ?>', <?= $assignee->getID(); ?>);Pachno.Main.Helpers.Dialog.dismiss();}}, no: {click: Pachno.Main.Helpers.Dialog.dismiss}});"><?= fa_image_tag('times'); ?></button>
+        <button class="secondary danger icon" onclick="Pachno.UI.Dialog.show('<?= __('Remove %username from this project?', array('%username' => $assignee->getName())); ?>', '<?= __('Please confirm removal from the project team'); ?>', {yes: {click: function() {Pachno.Project.removeAssignee('<?= make_url('configure_project_remove_assignee', ['project_id' => $project->getID(), 'assignee_type' => $assignee_type, 'assignee_id' => $assignee->getID()]); ?>', '<?= $assignee_type; ?>', <?= $assignee->getID(); ?>);Pachno.UI.Dialog.dismiss();}}, no: {click: Pachno.UI.Dialog.dismiss}});"><?= fa_image_tag('times'); ?></button>
     </div>
 </div>

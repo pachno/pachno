@@ -55,7 +55,7 @@
         <?php if ((!$comment_id && $issue->canEditDescription()) || (isset($comment) && $comment instanceof \pachno\core\entities\Comment && $comment->canUserEditComment())): ?>
             <?php echo javascript_link_tag(
                 image_tag('icon_delete.png'), [
-                    'onclick' => "Pachno.Main.Helpers.Dialog.show('"
+                    'onclick' => "Pachno.UI.Dialog.show('"
                         . __('Do you really want to delete this todo?') . "', '"
                         . __('Please confirm that you want to delete this todo.')
                         . "', {yes: {click: function() {Pachno.Issues.removeTodo('"
@@ -65,7 +65,7 @@
                             'comment_id' => $comment_id,
                         ])
                         . "', '" . base64_encode($todo['text']) . '.' . $todo_index
-                        . "'); }}, no: { click: Pachno.Main.Helpers.Dialog.dismiss }});",
+                        . "'); }}, no: { click: Pachno.UI.Dialog.dismiss }});",
                     'class' => 'todo-delete',
                 ]
             ); ?>

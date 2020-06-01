@@ -92,14 +92,14 @@ Calendar.handleClickEvent = function(event, el)
   if (typeof el.navAction == 'undefined')
   {
     if (calendar.currentDateElement) {
-      Element.removeClassName(calendar.currentDateElement, 'selected')
-      Element.addClassName(el, 'selected')
+      Element.removeClass(calendar.currentDateElement, 'selected')
+      Element.addClass(el, 'selected')
       calendar.shouldClose = (calendar.currentDateElement == el)
       if (!calendar.shouldClose) calendar.currentDateElement = el
     }
     calendar.date.setDateOnly(el.date)
     isNewDate = true
-    calendar.shouldClose = !el.hasClassName('otherDay')
+    calendar.shouldClose = !el.hasClass('otherDay')
     var isOtherMonth     = !calendar.shouldClose
     if (isOtherMonth) calendar.update(calendar.date)
   }
@@ -360,23 +360,23 @@ Calendar.prototype = {
 
             // Account for days of the month other than the current month
             if (!isCurrentMonth)
-              cell.addClassName('otherDay')
+              cell.addClass('otherDay')
             else
               rowHasDays = true
 
             // Ensure the current day is selected
             if (isCurrentMonth && day == dayOfMonth) {
-              cell.addClassName('selected')
+              cell.addClass('selected')
               calendar.currentDateElement = cell
             }
 
             // Today
             if (date.getFullYear() == thisYear && date.getMonth() == thisMonth && day == thisDay)
-              cell.addClassName('today')
+              cell.addClass('today')
 
             // Weekend
             if ([0, 6].indexOf(dayOfWeek) != -1)
-              cell.addClassName('weekend')
+              cell.addClass('weekend')
 
             // Set the date to tommorrow
             date.setDate(day + 1)
@@ -419,7 +419,7 @@ Calendar.prototype = {
     // Title Placeholder
     var row  = new Element('tr')
     var cell = new Element('td', { colSpan: 7 } )
-    cell.addClassName('title')
+    cell.addClass('title')
     row.appendChild(cell)
     thead.appendChild(row)
 
@@ -437,7 +437,7 @@ Calendar.prototype = {
     for (var i = 0; i < 7; ++i) {
       cell = new Element('th').update(Calendar.SHORT_DAY_NAMES[i])
       if (i == 0 || i == 6)
-        cell.addClassName('weekend')
+        cell.addClass('weekend')
       row.appendChild(cell)
     }
     thead.appendChild(row)
@@ -446,7 +446,7 @@ Calendar.prototype = {
     var tbody = table.appendChild(new Element('tbody'))
     for (i = 6; i > 0; --i) {
       row = tbody.appendChild(new Element('tr'))
-      row.addClassName('days')
+      row.addClass('days')
       for (var j = 7; j > 0; --j) {
         cell = row.appendChild(new Element('td'))
         cell.calendar = this
@@ -455,10 +455,10 @@ Calendar.prototype = {
 
     // Calendar Container (div)
     this.container = new Element('div')
-    this.container.addClassName('calendar')
+    this.container.addClass('calendar')
     if (this.isPopup) {
       this.container.setStyle({ position: 'absolute', display: 'none' })
-      this.container.addClassName('popup')
+      this.container.addClass('popup')
     }
     this.container.appendChild(table)
 

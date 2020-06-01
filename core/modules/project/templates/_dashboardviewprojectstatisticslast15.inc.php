@@ -12,7 +12,7 @@
             d_closed.push([<?php echo $i; ?>, <?php echo $issues['closed'][$i]; ?>]);
             <?php endfor; ?>
             function initPlot() {
-                jQuery.plot(jQuery("#dashboard_<?php echo $view->getID(); ?>_graph"), [
+                jQuery.plot($("#dashboard_<?php echo $view->getID(); ?>_graph"), [
                     {
                         data: d_closed,
                         lines: { show: true, fill: true },
@@ -47,7 +47,7 @@
                     }
                 });
             }
-            jQuery("#dashboard_<?php echo $view->getID(); ?>_graph").resize(function () {
+            $("#dashboard_<?php echo $view->getID(); ?>_graph").resize(function () {
                 initPlot();
             });
             initPlot();

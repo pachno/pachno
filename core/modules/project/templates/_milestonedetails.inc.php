@@ -2,7 +2,7 @@
     <div class="milestone_details" id="milestone_details_<?php echo $milestone->getID(); ?>">
         <h3>
             <span id="milestone_name" class="milestone_name"><?php echo $milestone->getName(); ?></span>&nbsp;
-            <?php echo javascript_link_tag(fa_image_tag('edit'), array('onclick' => "Pachno.Main.Helpers.Backdrop.show('".make_url('get_partial_for_backdrop', array('key' => 'milestone', 'project_id' => $milestone->getProject()->getId(), 'milestone_id' => $milestone->getID()))."');", 'class' => 'button button-icon')); ?>
+            <?php echo javascript_link_tag(fa_image_tag('edit'), array('onclick' => "Pachno.UI.Backdrop.show('".make_url('get_partial_for_backdrop', array('key' => 'milestone', 'project_id' => $milestone->getProject()->getId(), 'milestone_id' => $milestone->getID()))."');", 'class' => 'button button-icon')); ?>
             <br>
         </h3>
         <span class="milestone_date">
@@ -61,7 +61,7 @@
         <script type="text/javascript">
             require(['domReady', 'pachno/index', 'jquery', 'jquery.flot', 'jquery.flot.time', 'jquery.flot.dashes'], function (domReady, Pachno, jQuery) {
                 domReady(function () {
-                    jQuery(function () {
+                    $(function () {
 
                         var d_e_points = [];
                         var d_e_hours = [];
@@ -110,7 +110,7 @@
                                 x_config.mode = 'time';
                                 var grid_config = Pachno.Chart.config.grid_config;
                                 grid_config.markings = [{xaxis: {from: currenttime, to: currenttime}, color: '#955', lineWidth: 1}];
-                                jQuery.plot(jQuery("#selected_burndown_image"), [
+                                jQuery.plot($("#selected_burndown_image"), [
                                     {
                                         data: d_e_velocity_hours,
                                         dashes: {show: true, lineWidth: 1},
@@ -157,7 +157,7 @@
                             <?php endforeach; ?>
                             var x_config = Pachno.Chart.config.x_config;
                             x_config.ticks = [[0, ' '], [1, ' '], [2, ' '], [3, '<?php echo __('Hours'); ?>'], [4, ' '], [5, '<?php echo __('Points'); ?>'], [6, ' '], [7, ' '], [8, ' ']]
-                            jQuery.plot(jQuery("#selected_burndown_image"), [
+                            jQuery.plot($("#selected_burndown_image"), [
                                 {
                                     data: d_e_hours,
                                     color: '#92BA6F',

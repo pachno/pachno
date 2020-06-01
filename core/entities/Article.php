@@ -391,6 +391,10 @@
 
         protected function _parseContent($options = [])
         {
+            if (!isset($options['article'])) {
+                $options['article'] = $this;
+            }
+
             switch ($this->_content_syntax) {
                 case Settings::SYNTAX_MD:
                     $parser = new TextParserMarkdown();

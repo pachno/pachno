@@ -47,10 +47,10 @@
                 </div>
             <?php endif; ?>
             <div class="fancy-tabs" id="modules_menu">
-                <a id="tab_installed" class="tab selected" onclick="Pachno.Main.Helpers.tabSwitcher('tab_installed', 'modules_menu');"><span><?= __('Installed modules %count', ['%count' => '<span class="count-badge">'.count($modules[Context::EXTERNAL_MODULES]).'</span>']); ?></span></a>
-                <a id="tab_uninstalled" class="tab" onclick="Pachno.Main.Helpers.tabSwitcher('tab_uninstalled', 'modules_menu');"><span><?= __('Installable local modules %count', ['%count' => '<span class="count-badge">'.count($uninstalled_modules).'</span>']); ?></span></a>
+                <a id="tab_installed" class="tab selected" onclick="Pachno.UI.tabSwitcher('tab_installed', 'modules_menu');"><span><?= __('Installed modules %count', ['%count' => '<span class="count-badge">'.count($modules[Context::EXTERNAL_MODULES]).'</span>']); ?></span></a>
+                <a id="tab_uninstalled" class="tab" onclick="Pachno.UI.tabSwitcher('tab_uninstalled', 'modules_menu');"><span><?= __('Installable local modules %count', ['%count' => '<span class="count-badge">'.count($uninstalled_modules).'</span>']); ?></span></a>
                 <?php if ($is_default_scope): ?>
-                    <a id="tab_install" class="tab" onclick="Pachno.Main.Helpers.tabSwitcher('tab_install', 'modules_menu');"><?= __('Discover new modules'); ?></a>
+                    <a id="tab_install" class="tab" onclick="Pachno.UI.tabSwitcher('tab_install', 'modules_menu');"><?= __('Discover new modules'); ?></a>
                 <?php endif; ?>
             </div>
             <div id="modules_menu_panes">

@@ -1,7 +1,7 @@
 <header>
     <div id="logo_container">
         <?php \pachno\core\framework\Event::createNew('core', 'header_before_logo')->trigger(); ?>
-        <span id="mobile_menuanchor" class="mobile_menuanchor" onclick="$('body').toggleClassName('mobile_leftmenu_visible');"><?= fa_image_tag('bars'); ?></span>
+        <span id="mobile_menuanchor" class="mobile_menuanchor" onclick="$('body').toggleClass('mobile_leftmenu_visible');"><?= fa_image_tag('bars'); ?></span>
         <?php $link = (\pachno\core\framework\Settings::getHeaderLink() == '') ? \pachno\core\framework\Context::getWebroot() : \pachno\core\framework\Settings::getHeaderLink(); ?>
         <a class="logo" href="<?php print $link; ?>"><?php echo image_tag(\pachno\core\framework\Settings::getHeaderIconUrl(), [], true); ?></a>
         <?php if (\pachno\core\framework\Settings::getSiteHeaderName() != '' || \pachno\core\framework\Context::isProjectContext()): ?>
@@ -27,19 +27,13 @@
             <?php require PACHNO_CORE_PATH . 'templates/headerusermenu.inc.php'; ?>
         </div>
         <script type="text/javascript">
-            var Pachno, jQuery;
-            require(['domReady', 'pachno/index', 'jquery', 'jquery.nanoscroller'], function (domReady, pachno_index_js, jquery, nanoscroller) {
-                domReady(function () {
-                    Pachno = pachno_index_js;
-                    jQuery = jquery;
-
-                    var mm = $('main_menu');
-                    if (mm.hasClassName('project_context')) {
-                        mm.select('div.menuitem_container').each(function(elm) {
-                            elm.observe('click', function(e) { elm.toggleClassName('selected');e.preventDefault(); });
-                        });
-                    }
-                });
+            $(document).ready(() => {
+                var mm = $('#main_menu');
+                if (mm.hasClass('project_context')) {
+                    mm.select('div.menuitem_container').each(function(elm) {
+                        elm.observe('click', function(e) { elm.toggleClass('selected');e.preventDefault(); });
+                    });
+                }
             });
         </script>
         <?php \pachno\core\framework\Event::createNew('core', 'header_menu_end')->trigger(); ?>

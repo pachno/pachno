@@ -46,23 +46,23 @@
             </div>
         </div>
     </div>
-    <textarea name="<?php echo $area_name; ?>" id="<?php echo $base_id; ?>" <?php if ($mentionable): ?> data-target-type="<?php echo $target_type; ?>" data-target-id="<?php echo $target_id; ?>" <?php endif; ?> class="syntax_<?php echo $syntax; ?> markuppable <?php if ($mentionable) echo ' mentionable'; ?> <?php if ($invisible) echo ' invisible'; ?>" style="<?php if (isset($height)) echo 'height: '.$height; ?>; <?php if (isset($width)) echo "width: {$width};"; ?>" <?php if (isset($placeholder)): ?>placeholder="<?= $placeholder; ?>"<?php endif; ?>><?php echo $value; ?></textarea>
+    <textarea name="<?php echo $area_name; ?>" id="<?php echo $base_id; ?>" <?php if ($mentionable): ?> data-target-type="<?php echo $target_type; ?>" data-target-id="<?php echo $target_id; ?>" <?php endif; ?> class="syntax_<?php echo $syntax; ?> trumbowyggable <?php if ($mentionable) echo ' mentionable'; ?> <?php if ($invisible) echo ' invisible'; ?>" style="<?php if (isset($height)) echo 'height: '.$height; ?>; <?php if (isset($width)) echo "width: {$width};"; ?>" <?php if (isset($placeholder)): ?>placeholder="<?= $placeholder; ?>"<?php endif; ?>><?php echo $value; ?></textarea>
 </div>
 <script type="text/javascript">
-    require(['pachno/index', 'domReady', 'mention'], function (Pachno, domReady, mention) {
-        domReady(function () {
-            $("<?php echo $base_id; ?>").on('focus', function (e) {
-                Pachno.Main.initializeMentionable(e.target);
-                var ec = this.up('.editor_container');
-                if (ec != undefined)
-                    ec.addClassName('focussed');
-            });
-            $("<?php echo $base_id; ?>").on('blur', function (e) {
-                var ec = this.up('.editor_container');
-                if (ec != undefined)
-                    ec.removeClassName('focussed');
-            });
-            Pachno.Main.Helpers.MarkitUp([$("<?php echo $base_id; ?>")], '#article-editor-header');
-        });
-    });
+    //require(['pachno/index', 'domReady', 'mention'], function (Pachno, domReady, mention) {
+    //    domReady(function () {
+    //        $("<?php //echo $base_id; ?>//").on('focus', function (e) {
+    //            Pachno.Main.initializeMentionable(e.target);
+    //            var ec = this.up('.editor_container');
+    //            if (ec != undefined)
+    //                ec.addClass('focussed');
+    //        });
+    //        $("<?php //echo $base_id; ?>//").on('blur', function (e) {
+    //            var ec = this.up('.editor_container');
+    //            if (ec != undefined)
+    //                ec.removeClass('focussed');
+    //        });
+    //        Pachno.UI.MarkitUp([$("<?php //echo $base_id; ?>//")], '#article-editor-header');
+    //    });
+    //});
 </script>

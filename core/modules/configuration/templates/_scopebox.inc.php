@@ -29,11 +29,11 @@
                 </button>
                 <div class="dropdown-container">
                     <div class="list-mode">
-                        <a href="javascript:void(0);" class="list-item" onclick="Pachno.Main.Helpers.Backdrop.show('<?= make_url('get_partial_for_backdrop', ['key' => 'scope_config', 'scope_id' => $scope->getId()]); ?>');">
+                        <a href="javascript:void(0);" class="list-item" onclick="Pachno.UI.Backdrop.show('<?= make_url('get_partial_for_backdrop', ['key' => 'scope_config', 'scope_id' => $scope->getId()]); ?>');">
                             <?= fa_image_tag('edit', ['class' => 'icon']); ?>
                             <span class="name"><?= __('Edit'); ?></span>
                         </a>
-                        <a href="javascript:void(0);" class="list-item" onclick="Pachno.Main.Helpers.Dialog.show('<?php echo __('Do you really want to delete this scope?'); ?>', '<?php echo __('Deleting this scope will destroy all data that exists inside this scope.'); ?> <i><?php echo __('This action cannot be undone.'); ?></i>', {yes: {click: function() {$('delete_scope_<?php echo $scope->getID(); ?>_form').submit();}}, no: {click: Pachno.Main.Helpers.Dialog.dismiss}});">
+                        <a href="javascript:void(0);" class="list-item" onclick="Pachno.UI.Dialog.show('<?php echo __('Do you really want to delete this scope?'); ?>', '<?php echo __('Deleting this scope will destroy all data that exists inside this scope.'); ?> <i><?php echo __('This action cannot be undone.'); ?></i>', {yes: {click: function() {$('delete_scope_<?php echo $scope->getID(); ?>_form').submit();}}, no: {click: Pachno.UI.Dialog.dismiss}});">
                             <?php echo fa_image_tag('times', ['class' => 'icon']); ?>
                             <span class="name"><?= __('Delete'); ?></span>
                         </a>

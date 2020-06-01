@@ -30,8 +30,8 @@
         <?php endif; ?>
         <div style="margin-top: 15px; clear: both;" class="tab_menu inset">
             <ul id="themes_menu">
-                <li id="tab_installed" class="selected"><?= javascript_link_tag(image_tag('spinning_16.gif', array('id' => 'installed_themes_indicator', 'style' => 'display: none;')).__('Installed themes (%count)', array('%count' => count($themes))), array('onclick' => "Pachno.Main.Helpers.tabSwitcher('tab_installed', 'themes_menu');")); ?></li>
-                <li id="tab_install"><?= javascript_link_tag(__('Discover new themes'), array('onclick' => "Pachno.Main.Helpers.tabSwitcher('tab_install', 'themes_menu');")); ?></li>
+                <li id="tab_installed" class="selected"><?= javascript_link_tag(image_tag('spinning_16.gif', array('id' => 'installed_themes_indicator', 'style' => 'display: none;')).__('Installed themes (%count)', array('%count' => count($themes))), array('onclick' => "Pachno.UI.tabSwitcher('tab_installed', 'themes_menu');")); ?></li>
+                <li id="tab_install"><?= javascript_link_tag(__('Discover new themes'), array('onclick' => "Pachno.UI.tabSwitcher('tab_install', 'themes_menu');")); ?></li>
             </ul>
         </div>
         <div id="themes_menu_panes">

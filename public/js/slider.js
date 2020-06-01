@@ -197,8 +197,8 @@ Control.Slider = Class.create({
     }
   },
   updateStyles: function() {
-    this.handles.each( function(h){ Element.removeClassName(h, 'selected') });
-    Element.addClassName(this.activeHandle, 'selected');
+    this.handles.each( function(h){ Element.removeClass(h, 'selected') });
+    Element.addClass(this.activeHandle, 'selected');
   },
   startDrag: function(event) {
     if (Event.isLeftClick(event)) {

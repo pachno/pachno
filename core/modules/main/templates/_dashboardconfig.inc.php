@@ -9,7 +9,7 @@
         <?php foreach ($dashboardViews as $view): ?>
             <li id="view_<?php echo $view->getDetail(); ?>" class="rounded_box mediumgrey">
                 <span class="dashboard_view_data" id="<?php echo $view->getDetail(); ?>_<?php echo $view->getType(); ?>"><?php echo ($view->getType()) ? __($views[$view->getType()][$view->getDetail()]) : __('...Select a view...'); ?></span>
-                <?php echo javascript_link_tag(image_tag('tabmenu_dropdown.png', array('class' => 'menu_dropdown', 'style' => 'float: right; margin-left: 5px;')), array('onclick' => "this.up('li').toggleClassName('verylightyellow');this.up('li').toggleClassName('mediumgrey');")); ?>
+                <?php echo javascript_link_tag(image_tag('tabmenu_dropdown.png', array('class' => 'menu_dropdown', 'style' => 'float: right; margin-left: 5px;')), array('onclick' => "this.up('li').toggleClass('verylightyellow');this.up('li').toggleClass('mediumgrey');")); ?>
                 <?php echo javascript_link_tag(image_tag('action_remove_small.png', array('class' => 'menu_dropdown', 'style' => 'float: right; margin-left: 5px;')), array('onclick' => "this.up('li').remove();Sortable.create('views_list');")); ?>
                 <div class="available_views_list">
                     <?php foreach ($views as $id_type => $view_type): ?>
@@ -25,7 +25,7 @@
         <ul id="view_template" style="display: none;">
             <li id="view_default" class="rounded_box verylightyellow">
                 <span class="template_view dashboard_view_data" id="0_0"><?php echo __('...Select a view...'); ?></span>
-                <?php echo javascript_link_tag(image_tag('tabmenu_dropdown.png', array('class' => 'menu_dropdown', 'style' => 'float: right; margin-left: 5px;')), array('onclick' => "this.up('li').toggleClassName('verylightyellow');this.up('li').toggleClassName('mediumgrey');")); ?>
+                <?php echo javascript_link_tag(image_tag('tabmenu_dropdown.png', array('class' => 'menu_dropdown', 'style' => 'float: right; margin-left: 5px;')), array('onclick' => "this.up('li').toggleClass('verylightyellow');this.up('li').toggleClass('mediumgrey');")); ?>
                 <?php echo javascript_link_tag(image_tag('action_remove_small.png', array('class' => 'menu_dropdown', 'style' => 'float: right; margin-left: 5px;')), array('onclick' => "this.up('li').remove();Sortable.create('views_list');")); ?>
                 <div class="available_views_list">
                     <?php foreach ($views as $id_type => $view_type): ?>

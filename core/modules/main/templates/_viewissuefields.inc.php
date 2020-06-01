@@ -249,7 +249,7 @@
                 <?= __('Subscribers'); ?>
             </div>
             <div class="value">
-                <a href="javascript:void(0)" onclick="Pachno.Main.Helpers.Backdrop.show('<?= make_url('get_partial_for_backdrop', array('key' => 'issue_subscribers', 'issue_id' => $issue->getID())); ?>');"><?= __('%number_of subscriber(s)', array('%number_of' => '<span id="subscribers_field_count">'.count($issue->getSubscribers()).'</span>')); ?></a>
+                <a href="javascript:void(0)" onclick="Pachno.UI.Backdrop.show('<?= make_url('get_partial_for_backdrop', array('key' => 'issue_subscribers', 'issue_id' => $issue->getID())); ?>');"><?= __('%number_of subscriber(s)', array('%number_of' => '<span id="subscribers_field_count">'.count($issue->getSubscribers()).'</span>')); ?></a>
             </div>
             <div class="tooltip from-above"><?= __('Click here to show the list of subscribers'); ?></div>
         </li>
@@ -283,9 +283,9 @@
             <div class="value" id="spent_time_content">
                 <div class="value-container">
                     <span id="spent_time_<?= $issue->getID(); ?>_name"<?php if (!$issue->hasSpentTime()): ?> style="display: none;"<?php endif; ?>>
-                        <a href="javascript:void(0)" onclick="Pachno.Main.Helpers.Backdrop.show('<?= make_url('get_partial_for_backdrop', array('key' => 'issue_spenttimes', 'issue_id' => $issue->getID())); ?>');" id="spent_time_<?= $issue->getID(); ?>_value"><?= Issue::getFormattedTime($issue->getSpentTime(true, true)); ?></a>
+                        <a href="javascript:void(0)" onclick="Pachno.UI.Backdrop.show('<?= make_url('get_partial_for_backdrop', array('key' => 'issue_spenttimes', 'issue_id' => $issue->getID())); ?>');" id="spent_time_<?= $issue->getID(); ?>_value"><?= Issue::getFormattedTime($issue->getSpentTime(true, true)); ?></a>
                     </span>
-                    <span class="no-value" id="no_spent_time_<?= $issue->getID(); ?>"<?php if ($issue->hasSpentTime()): ?> style="display: none;"<?php endif; ?>><a href="javascript:void(0)" onclick="Pachno.Main.Helpers.Backdrop.show('<?= make_url('get_partial_for_backdrop', array('key' => 'issue_spenttimes', 'issue_id' => $issue->getID())); ?>');"><?= __('No time spent'); ?></a></span>
+                    <span class="no-value" id="no_spent_time_<?= $issue->getID(); ?>"<?php if ($issue->hasSpentTime()): ?> style="display: none;"<?php endif; ?>><a href="javascript:void(0)" onclick="Pachno.UI.Backdrop.show('<?= make_url('get_partial_for_backdrop', array('key' => 'issue_spenttimes', 'issue_id' => $issue->getID())); ?>');"><?= __('No time spent'); ?></a></span>
                     <div id="estimated_percentbar"<?php if (!($issue->hasEstimatedTime())): ?> style="display: none;"<?php endif; ?>><?php include_component('main/percentbar', array('percent' => $issue->getEstimatedPercentCompleted(), 'height' => 2)); ?></div>
                 </div>
             </div>

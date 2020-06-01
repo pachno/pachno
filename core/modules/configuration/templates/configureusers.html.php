@@ -14,11 +14,11 @@
                     <span class="name"><?= __('Manage users and groups'); ?></span>
                 </h1>
                 <div class="fancy-tabs">
-                    <a class="tab selected" href="javascript:void(0);" onclick="Pachno.Main.Helpers.tabSwitcher('tab_users', 'usersteamsgroups_menu');">
+                    <a class="tab selected" href="javascript:void(0);" onclick="Pachno.UI.tabSwitcher('tab_users', 'usersteamsgroups_menu');">
                         <?= fa_image_tag('user', ['class' => 'icon']); ?>
                         <span class="name"><?= $users_text; ?><span class="count-badge"><?= $number_of_users; ?></span></span>
                     </a>
-                    <a class="tab" href="javascript:void(0);" onclick="Pachno.Main.Helpers.tabSwitcher('tab_groups', 'usersteamsgroups_menu');">
+                    <a class="tab" href="javascript:void(0);" onclick="Pachno.UI.tabSwitcher('tab_groups', 'usersteamsgroups_menu');">
                         <?= fa_image_tag('users', ['class' => 'icon']); ?>
                         <span class="name"><?= __('Groups'); ?></span>
                     </a>
@@ -88,13 +88,13 @@
 <div class="fullpage_backdrop" id="adduser_div" style="display: none;">
     <script>
         var import_cb = function () {
-            Pachno.Main.Helpers.Dialog.show('<?= __('Would you like to add this user to the current scope?'); ?>',
+            Pachno.UI.Dialog.show('<?= __('Would you like to add this user to the current scope?'); ?>',
                 '<?= __('The username you tried to create already exists. You can give this user access to the current scope by pressing "%yes" below. If you want to create a different user, press "%no" and enter a different username.', array('%yes' => __('yes'), '%no' => __('no'))); ?>',
                 {
                     yes: {
                         click: function() {Pachno.Config.User.addToScope('<?= make_url('configure_users_import_user'); ?>');}
                     },
-                    no: {click: Pachno.Main.Helpers.Dialog.dismiss}
+                    no: {click: Pachno.UI.Dialog.dismiss}
                 });
         };
     </script>
@@ -171,13 +171,13 @@
 <script type="text/javascript">
     require(['domReady', 'pachno/index', 'jquery'], function (domReady, pachno_index_js, jQuery) {
         domReady(function () {
-            jQuery('body').on('click', '#findusers', function(event) {
+            $('body').on('click', '#findusers', function(event) {
                 event.preventDefault();
                 event.stopPropagation();
             });
 
-            jQuery('body').on('click', '#users_more_actions_dropdown', function (event) {
-                $('users_more_actions').toggleClassName('button-pressed');
+            $('body').on('click', '#users_more_actions_dropdown', function (event) {
+                $('users_more_actions').toggleClass('button-pressed');
                 $('users_more_actions_dropdown').toggle();
             });
             <?php if ($finduser): ?>

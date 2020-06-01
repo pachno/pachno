@@ -3,7 +3,7 @@
         Log messages
         <div class="log-selectors">
             <?php foreach(array("core", "main", "B2DB", "routing", "i18n", "cache", "search", "publish") as $category): ?>
-            <span class="cat-<?php echo $category; ?>"><span class="badge catname selected" onclick="$(this).toggleClassName('selected');$('log_entries').select('.cat-<?php echo $category; ?>').each(Element.toggle);"><?php echo $category; ?></span></span>
+            <span class="cat-<?php echo $category; ?>"><span class="badge catname selected" onclick="$(this).toggleClass('selected');$('log_entries').select('.cat-<?php echo $category; ?>').each(Element.toggle);"><?php echo $category; ?></span></span>
             <?php endforeach; ?>
         </div>
     </h1>

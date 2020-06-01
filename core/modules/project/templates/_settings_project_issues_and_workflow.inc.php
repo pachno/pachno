@@ -13,8 +13,8 @@
 
 ?>
 <div class="fancy-tabs" id="project-issues-and-workflow-menu">
-    <a id="tab_project_workflow" class="tab selected" onclick="Pachno.Main.Helpers.tabSwitcher('tab_project_workflow', 'project-issues-and-workflow-menu');"><?= fa_image_tag('code-branch', ['class' => 'icon']); ?><span><?= __('Workflow'); ?></span></a>
-    <a id="tab_project_issues" class="tab" onclick="Pachno.Main.Helpers.tabSwitcher('tab_project_issues', 'project-issues-and-workflow-menu');"><?= fa_image_tag('file-alt', ['class' => 'icon']); ?><span><?= __('Issues'); ?></span></a>
+    <a id="tab_project_workflow" class="tab selected" onclick="Pachno.UI.tabSwitcher('tab_project_workflow', 'project-issues-and-workflow-menu');"><?= fa_image_tag('code-branch', ['class' => 'icon']); ?><span><?= __('Workflow'); ?></span></a>
+    <a id="tab_project_issues" class="tab" onclick="Pachno.UI.tabSwitcher('tab_project_issues', 'project-issues-and-workflow-menu');"><?= fa_image_tag('file-alt', ['class' => 'icon']); ?><span><?= __('Issues'); ?></span></a>
 </div>
 <div id="project-issues-and-workflow-menu_panes" class="form-container">
     <div id="tab_project_issues_pane" style="display: none;">
@@ -151,7 +151,7 @@
         <div class="form-row">
             <h3>
                 <span><?= __('Workflow scheme'); ?></span>
-                <button class="secondary" onclick="Pachno.Main.Helpers.Backdrop.show('<?php echo make_url('get_partial_for_backdrop', array('key' => 'project_workflow', 'project_id' => $project->getId())); ?>');"><?= fa_image_tag('stream'); ?><span><?php echo __('Change workflow scheme'); ?></span></button>
+                <button class="secondary" onclick="Pachno.UI.Backdrop.show('<?php echo make_url('get_partial_for_backdrop', array('key' => 'project_workflow', 'project_id' => $project->getId())); ?>');"><?= fa_image_tag('stream'); ?><span><?php echo __('Change workflow scheme'); ?></span></button>
             </h3>
             <div class="flexible-table">
                 <?php include_component('configuration/workflowscheme', ['scheme' => $project->getWorkflowScheme(), 'embed' => true]); ?>

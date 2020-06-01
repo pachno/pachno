@@ -1,3 +1,22 @@
+<?php
+
+use pachno\core\entities\User;
+
+/**
+ * @var boolean $allow_clear
+ * @var boolean $use_form
+ * @var boolean $include_teams
+ * @var boolean $include_users
+ * @var boolean $include_clients
+ *
+ * @var string $base_id
+ * @var string $header;
+ * @var string $clear_link_text
+ *
+ * @var User $pachno_user
+ */
+
+?>
 <div class="dropdown-container">
     <div class="list-mode">
         <div class="header"><?php echo $header; ?></div>
@@ -11,7 +30,7 @@
         <?php if (!$use_form): ?>
             <div id="<?php echo $base_id; ?>_form" class="list-item filter-container">
         <?php else: ?>
-            <form id="<?php echo $base_id; ?>_form" class="list-item filter-container" accept-charset="<?php echo \pachno\core\framework\Context::getI18n()->getCharset(); ?>" method="post" action="" onsubmit="Pachno.Main.findIdentifiable('<?php echo make_url('main_find_identifiable'); ?>', '<?php echo $base_id; ?>');return false;">
+            <form id="<?php echo $base_id; ?>_form" class="list-item filter-container" data-identifiable-selector-form data-base-id="<?= $base_id; ?>" accept-charset="<?php echo \pachno\core\framework\Context::getI18n()->getCharset(); ?>" method="post" action="<?php echo make_url('main_find_identifiable'); ?>">
         <?php endif; ?>
             <?php if ($include_teams && $include_users): ?>
                 <?php $text_title = __('Find a user or team'); ?>

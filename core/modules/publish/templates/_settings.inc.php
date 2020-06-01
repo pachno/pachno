@@ -9,8 +9,8 @@
 ?>
 <div style="margin-top: 5px;" class="tab_menu inset">
     <ul id="publish_settings_menu">
-        <li class="selected" id="publish_tab_settings"><a onclick="Pachno.Main.Helpers.tabSwitcher('publish_tab_settings', 'publish_settings_menu');" href="javascript:void(0);"><?= fa_image_tag('cog'); ?><span><?= __('General wiki settings'); ?></span></a></li>
-        <li id="publish_tab_import"><a onclick="Pachno.Main.Helpers.tabSwitcher('publish_tab_import', 'publish_settings_menu');" href="javascript:void(0);"><?= fa_image_tag('sign-in-alt'); ?><span><?= __('Import wiki articles'); ?></span></a></li>
+        <li class="selected" id="publish_tab_settings"><a onclick="Pachno.UI.tabSwitcher('publish_tab_settings', 'publish_settings_menu');" href="javascript:void(0);"><?= fa_image_tag('cog'); ?><span><?= __('General wiki settings'); ?></span></a></li>
+        <li id="publish_tab_import"><a onclick="Pachno.UI.tabSwitcher('publish_tab_import', 'publish_settings_menu');" href="javascript:void(0);"><?= fa_image_tag('sign-in-alt'); ?><span><?= __('Import wiki articles'); ?></span></a></li>
     </ul>
 </div>
 <div id="publish_settings_menu_panes">
@@ -92,14 +92,14 @@
             <input type="hidden" name="import_articles" value="1">
             <div class="greybox" style="margin-bottom: 5px;">
                 <label for="select_article_categories"><?= __('Show articles in namespace'); ?>: </label>
-                <select id="select_article_categories" onchange="$('import_articles_list').childElements().each(function (elm) { if (elm.hasClassName('article_category_' + $('select_article_categories').getValue())) { elm.show(); var chkval = true; } else { elm.hide(); } elm.select('input[type=checkbox]').each(function (chkbx) { chkbx.enabled = chkval; }); })">
+                <select id="select_article_categories" onchange="$('import_articles_list').childElements().each(function (elm) { if (elm.hasClass('article_category_' + $('select_article_categories').getValue())) { elm.show(); var chkval = true; } else { elm.hide(); } elm.select('input[type=checkbox]').each(function (chkbx) { chkbx.enabled = chkval; }); })">
                     <option value="" selected><?= __('Without namespace'); ?></option>
                     <?php foreach ($categories as $category_key => $category_name): ?>
                         <option value="<?= $category_key; ?>"><?= $category_name; ?></option>
                     <?php endforeach; ?>
                 </select>
                 <br style="clear: both;">
-                <input type="checkbox" id="import_articles_select_all" onchange="$('import_articles_list').childElements().each(function (elm) { elm.select('input[type=checkbox]').each(function (chkbx) { chkbx.checked = elm.hasClassName('article_category_' + $('select_article_categories').getValue()) && $('import_articles_select_all').checked; }); })">&nbsp;<?= __('Toggle selection on visible articles'); ?>
+                <input type="checkbox" id="import_articles_select_all" onchange="$('import_articles_list').childElements().each(function (elm) { elm.select('input[type=checkbox]').each(function (chkbx) { chkbx.checked = elm.hasClass('article_category_' + $('select_article_categories').getValue()) && $('import_articles_select_all').checked; }); })">&nbsp;<?= __('Toggle selection on visible articles'); ?>
             </div>
             <p class="faded_out" style="margin-bottom: 5px;">
                 <?= __('Please select which articles to import, from the list of available articles below. When you are finished, click the %import_articles button at the bottom', array('%import_articles' => __('Import articles'))); ?>

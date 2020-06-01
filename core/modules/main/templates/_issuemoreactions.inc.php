@@ -18,7 +18,7 @@
                     <?php if ($issue->isWorkflowTransitionsAvailable()): ?>
                         <?php foreach ($issue->getAvailableWorkflowTransitions() as $transition): ?>
                             <?php if ($transition->hasTemplate()): ?>
-                                <?php echo javascript_link_tag('<span class="name">'.$transition->getName().'</span>', array('class' => 'list-item', 'onclick' => "Pachno.Main.Helpers.Backdrop.show('".make_url('get_partial_for_backdrop', array('key' => 'workflow_transition', 'transition_id' => $transition->getID()))."&project_key=".$issue->getProject()->getKey()."&issue_id=".$issue->getID()."');")); ?>
+                                <?php echo javascript_link_tag('<span class="name">'.$transition->getName().'</span>', array('class' => 'list-item', 'onclick' => "Pachno.UI.Backdrop.show('".make_url('get_partial_for_backdrop', array('key' => 'workflow_transition', 'transition_id' => $transition->getID()))."&project_key=".$issue->getProject()->getKey()."&issue_id=".$issue->getID()."');")); ?>
                             <?php else: ?>
                                 <?php echo javascript_link_tag(fa_image_tag('spinner', array('style' => 'display: none;', 'id' => 'transition_working_'.$transition->getID().'_indicator', 'class' => 'fa-spin icon')).'<span class="name">'.$transition->getName().'</span>', array('class' => 'list-item', 'onclick' => "Pachno.Search.interactiveWorkflowTransition('".make_url('transition_issues', array('project_key' => $issue->getProject()->getKey(), 'transition_id' => $transition->getID()))."&issue_ids[]=".$issue->getID()."', ".$transition->getID().");")); ?>
                             <?php endif; ?>
@@ -54,7 +54,7 @@
                 <?php endif; ?>
                 <?php if ((!isset($multi) || !$multi) && $issue->isUpdateable() && $issue->canAttachLinks()): ?>
                     <?php if ($issue->canAttachLinks()): ?>
-                        <a href="javascript:void(0);" class="list-item" id="attach_link_button" onclick="Pachno.Main.Profile.clearPopupsAndButtons();Pachno.Main.Helpers.Backdrop.show('<?php echo make_url('get_partial_for_backdrop', array('key' => 'attachlink', 'issue_id' => $issue->getID())); ?>');">
+                        <a href="javascript:void(0);" class="list-item" id="attach_link_button" onclick="Pachno.Main.Profile.clearPopupsAndButtons();Pachno.UI.Backdrop.show('<?php echo make_url('get_partial_for_backdrop', array('key' => 'attachlink', 'issue_id' => $issue->getID())); ?>');">
                             <?php echo fa_image_tag('link', ['class' => 'icon']); ?>
                             <span class="name"><?= __('Attach a link'); ?></span>
                         </a>
@@ -67,7 +67,7 @@
                             <span class="name"><?= __('Attach a file'); ?></span>
                         </a>
                     <?php else: ?>
-                        <a href="javascript:void(0);" class="list-item" id="attach_file_button" onclick="Pachno.Main.Helpers.Message.error('<?php echo __('File uploads are not enabled'); ?>', '<?php echo __('Before you can upload attachments, file uploads needs to be activated'); ?>');">
+                        <a href="javascript:void(0);" class="list-item" id="attach_file_button" onclick="Pachno.UI.Message.error('<?php echo __('File uploads are not enabled'); ?>', '<?php echo __('Before you can upload attachments, file uploads needs to be activated'); ?>');">
                             <?php echo fa_image_tag('paperclip', ['class' => 'icon']); ?>
                             <span class="name"><?= __('Attach a file'); ?></span>
                         </a>
@@ -75,13 +75,13 @@
                 <?php endif; ?>
                 <?php if ($issue->isUpdateable()): ?>
                     <?php if ($issue->canEditAffectedComponents() || $issue->canEditAffectedBuilds() || $issue->canEditAffectedEditions()): ?>
-                        <a id="affected_add_button" class="list-item" href="javascript:void(0);" onclick="Pachno.Main.Profile.clearPopupsAndButtons();Pachno.Main.Helpers.Backdrop.show('<?php echo make_url('get_partial_for_backdrop', array('key' => 'issue_add_item', 'issue_id' => $issue->getID())); ?>');">
+                        <a id="affected_add_button" class="list-item" href="javascript:void(0);" onclick="Pachno.Main.Profile.clearPopupsAndButtons();Pachno.UI.Backdrop.show('<?php echo make_url('get_partial_for_backdrop', array('key' => 'issue_add_item', 'issue_id' => $issue->getID())); ?>');">
                             <?php echo fa_image_tag('cubes', ['class' => 'affected_items icon']); ?>
                             <span class="name"><?= __('Add affected item'); ?></span>
                         </a>
                     <?php else: ?>
                         <div class="list-item disabled">
-                            <a id="affected_add_button" href="javascript:void(0);" onclick="Pachno.Main.Helpers.Message.error('<?php echo __('You are not allowed to add an item to this list'); ?>');">
+                            <a id="affected_add_button" href="javascript:void(0);" onclick="Pachno.UI.Message.error('<?php echo __('You are not allowed to add an item to this list'); ?>');">
                                 <?php echo fa_image_tag('cubes', ['class' => 'affected_items icon']); ?>
                                 <span class="name"><?= __('Add affected item'); ?></span>
                             </a>
@@ -101,16 +101,16 @@
                     <?php if ($issue->canAddRelatedIssues() && $pachno_user->canReportIssues($issue->getProject())): ?>
                         <?php if (isset($board)): ?>
                             <?php if (!$board->getTaskIssuetypeID()): ?>
-                                <?php echo javascript_link_tag(fa_image_tag('list-alt', ['class' => 'icon']).'<span class="name">'.__('Create a new child issue').'</span>', array('class' => 'list-item', 'onclick' => "Pachno.Main.Profile.clearPopupsAndButtons();Pachno.Main.Helpers.Backdrop.show('".make_url('get_partial_for_backdrop', array('key' => 'reportissue', 'project_id' => $issue->getProject()->getId(), 'parent_issue_id' => $issue->getID()))."');", 'title' => __('Create a new child issue'))); ?>
+                                <?php echo javascript_link_tag(fa_image_tag('list-alt', ['class' => 'icon']).'<span class="name">'.__('Create a new child issue').'</span>', array('class' => 'list-item', 'onclick' => "Pachno.Main.Profile.clearPopupsAndButtons();Pachno.UI.Backdrop.show('".make_url('get_partial_for_backdrop', array('key' => 'reportissue', 'project_id' => $issue->getProject()->getId(), 'parent_issue_id' => $issue->getID()))."');", 'title' => __('Create a new child issue'))); ?>
                             <?php elseif ($issue->getIssuetype()->getID() != $board->getTaskIssuetypeID()): ?>
-                                <?php echo javascript_link_tag(fa_image_tag('list-alt', ['class' => 'icon']).'<span class="name">'.__('Add a new task').'</span>', array('class' => 'list-item', 'onclick' => "Pachno.Main.Helpers.Backdrop.show('".make_url('get_partial_for_backdrop', array('key' => 'reportissue', 'project_id' => $issue->getProject()->getId(), 'parent_issue_id' => $issue->getID(), 'issuetype_id' => $board->getTaskIssuetypeID(), 'lock_issuetype' => 1))."');", 'title' => __('Add a new task'))); ?>
+                                <?php echo javascript_link_tag(fa_image_tag('list-alt', ['class' => 'icon']).'<span class="name">'.__('Add a new task').'</span>', array('class' => 'list-item', 'onclick' => "Pachno.UI.Backdrop.show('".make_url('get_partial_for_backdrop', array('key' => 'reportissue', 'project_id' => $issue->getProject()->getId(), 'parent_issue_id' => $issue->getID(), 'issuetype_id' => $board->getTaskIssuetypeID(), 'lock_issuetype' => 1))."');", 'title' => __('Add a new task'))); ?>
                             <?php endif; ?>
                         <?php else: ?>
-                            <?php echo javascript_link_tag(fa_image_tag('plus', ['class' => 'icon']).'<span class="name">'.__('Create a related issue / subtask').'</span>', array('class' => 'list-item', 'onclick' => "Pachno.Main.Profile.clearPopupsAndButtons();Pachno.Main.Helpers.Backdrop.show('".make_url('get_partial_for_backdrop', array('key' => 'reportissue', 'project_id' => $issue->getProject()->getId(), 'parent_issue_id' => $issue->getID()))."');", 'title' => __('Create a new child issue'))); ?>
+                            <?php echo javascript_link_tag(fa_image_tag('plus', ['class' => 'icon']).'<span class="name">'.__('Create a related issue / subtask').'</span>', array('class' => 'list-item', 'onclick' => "Pachno.Main.Profile.clearPopupsAndButtons();Pachno.UI.Backdrop.show('".make_url('get_partial_for_backdrop', array('key' => 'reportissue', 'project_id' => $issue->getProject()->getId(), 'parent_issue_id' => $issue->getID()))."');", 'title' => __('Create a new child issue'))); ?>
                         <?php endif; ?>
                     <?php endif; ?>
                     <?php if ($issue->canAddRelatedIssues()): ?>
-                        <a href="javascript:void(0)" class="list-item" id="relate_to_existing_issue_button" onclick="Pachno.Main.Profile.clearPopupsAndButtons();Pachno.Main.Helpers.Backdrop.show('<?php echo make_url('get_partial_for_backdrop', array('key' => 'relate_issue', 'issue_id' => $issue->getID())); ?>');">
+                        <a href="javascript:void(0)" class="list-item" id="relate_to_existing_issue_button" onclick="Pachno.Main.Profile.clearPopupsAndButtons();Pachno.UI.Backdrop.show('<?php echo make_url('get_partial_for_backdrop', array('key' => 'relate_issue', 'issue_id' => $issue->getID())); ?>');">
                             <?php echo fa_image_tag('share-alt', ['class' => 'icon']); ?>
                             <span class="name"><?= __('Relate to an existing issue'); ?></span>
                         </a>
@@ -136,19 +136,19 @@
                     <?php endif; ?>
                 <?php endif; ?>
                 <?php if ($issue->canEditSpentTime()): ?>
-                    <a href="javascript:void(0)" class="list-item" onclick="Pachno.Main.Profile.clearPopupsAndButtons();Pachno.Main.Helpers.Backdrop.show('<?php echo make_url('get_partial_for_backdrop', array('key' => 'issue_spenttimes', 'issue_id' => $issue->getID(), 'initial_view' => 'entry')); ?>');"><?php echo fa_image_tag('clock', ['class' => 'icon']); ?><span class="name"><?= __('Log time spent'); ?></span></a>
+                    <a href="javascript:void(0)" class="list-item" onclick="Pachno.Main.Profile.clearPopupsAndButtons();Pachno.UI.Backdrop.show('<?php echo make_url('get_partial_for_backdrop', array('key' => 'issue_spenttimes', 'issue_id' => $issue->getID(), 'initial_view' => 'entry')); ?>');"><?php echo fa_image_tag('clock', ['class' => 'icon']); ?><span class="name"><?= __('Log time spent'); ?></span></a>
                 <?php endif; ?>
                 <?php if ($issue->canEditAccessPolicy()): ?>
                     <div class="list-item separator"></div>
-                    <a href="javascript:void(0);" class="list-item" onclick="Pachno.Main.Profile.clearPopupsAndButtons();Pachno.Main.Helpers.Backdrop.show('<?php echo make_url('get_partial_for_backdrop', array('key' => 'issue_permissions', 'issue_id' => $issue->getID())); ?>');"><?php echo fa_image_tag('lock', ['class' => 'access_policy icon']); ?><span class="name"><?= __("Update issue access policy"); ?></span></a>
-                    <a href="javascript:void(0);" class="list-item" onclick="Pachno.Main.Profile.clearPopupsAndButtons();Pachno.Main.Helpers.Backdrop.show('<?php echo make_url('get_partial_for_backdrop', array('key' => 'issue_subscribers', 'issue_id' => $issue->getID())); ?>');"><?php echo fa_image_tag('star', ['class' => 'subscriber_list icon']); ?><span class="name"><?= __("Manage issue subscribers"); ?></span></a>
+                    <a href="javascript:void(0);" class="list-item" onclick="Pachno.Main.Profile.clearPopupsAndButtons();Pachno.UI.Backdrop.show('<?php echo make_url('get_partial_for_backdrop', array('key' => 'issue_permissions', 'issue_id' => $issue->getID())); ?>');"><?php echo fa_image_tag('lock', ['class' => 'access_policy icon']); ?><span class="name"><?= __("Update issue access policy"); ?></span></a>
+                    <a href="javascript:void(0);" class="list-item" onclick="Pachno.Main.Profile.clearPopupsAndButtons();Pachno.UI.Backdrop.show('<?php echo make_url('get_partial_for_backdrop', array('key' => 'issue_subscribers', 'issue_id' => $issue->getID())); ?>');"><?php echo fa_image_tag('star', ['class' => 'subscriber_list icon']); ?><span class="name"><?= __("Manage issue subscribers"); ?></span></a>
                 <?php endif; ?>
                 <?php if ($issue->canEditIssueDetails()): ?>
-                    <a href="javascript:void(0);" class="list-item" onclick="Pachno.Main.Profile.clearPopupsAndButtons();Pachno.Main.Helpers.Backdrop.show('<?php echo make_url('get_partial_for_backdrop', array('key' => 'move_issue', 'issue_id' => $issue->getID(), 'multi' => (int) (isset($multi) && $multi))); ?>');"><?php echo fa_image_tag('exchange-alt', ['class' => 'icon']); ?><span class="name"><?= __("Move issue to another project"); ?></span></a>
+                    <a href="javascript:void(0);" class="list-item" onclick="Pachno.Main.Profile.clearPopupsAndButtons();Pachno.UI.Backdrop.show('<?php echo make_url('get_partial_for_backdrop', array('key' => 'move_issue', 'issue_id' => $issue->getID(), 'multi' => (int) (isset($multi) && $multi))); ?>');"><?php echo fa_image_tag('exchange-alt', ['class' => 'icon']); ?><span class="name"><?= __("Move issue to another project"); ?></span></a>
                 <?php endif; ?>
                 <?php if ($issue->canDeleteIssue()): ?>
                     <div class="list-item separator"></div>
-                    <a href="javascript:void(0)" class="list-item delete" onclick="Pachno.Main.Profile.clearPopupsAndButtons();Pachno.Main.Helpers.Dialog.show('<?php echo __('Permanently delete this issue?'); ?>', '<?php echo __('Are you sure you wish to delete this issue? It will remain in the database for your records, but will not be accessible via Pachno.'); ?>', {yes: {href: '<?php echo make_url('deleteissue', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID())); ?><?php if (isset($_SERVER['HTTP_REFERER'])): ?>?referer=<?php echo \pachno\core\framework\Response::escape($_SERVER['HTTP_REFERER']); ?><?php echo ($issue->getMilestone()) ? '#roadmap_milestone_' . $issue->getMilestone()->getID() : ''; endif; ?>' }, no: {click: Pachno.Main.Helpers.Dialog.dismiss}});"><?php echo fa_image_tag('times', ['class' => 'icon']); ?><span class="name"><?= __("Permanently delete this issue"); ?></span></a>
+                    <a href="javascript:void(0)" class="list-item delete" onclick="Pachno.Main.Profile.clearPopupsAndButtons();Pachno.UI.Dialog.show('<?php echo __('Permanently delete this issue?'); ?>', '<?php echo __('Are you sure you wish to delete this issue? It will remain in the database for your records, but will not be accessible via Pachno.'); ?>', {yes: {href: '<?php echo make_url('deleteissue', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID())); ?><?php if (isset($_SERVER['HTTP_REFERER'])): ?>?referer=<?php echo \pachno\core\framework\Response::escape($_SERVER['HTTP_REFERER']); ?><?php echo ($issue->getMilestone()) ? '#roadmap_milestone_' . $issue->getMilestone()->getID() : ''; endif; ?>' }, no: {click: Pachno.UI.Dialog.dismiss}});"><?php echo fa_image_tag('times', ['class' => 'icon']); ?><span class="name"><?= __("Permanently delete this issue"); ?></span></a>
                 <?php endif; ?>
             <?php else: ?>
                 <div class="list-item disabled"><span class="name"><?php echo __('No additional actions available'); ?></span></div>

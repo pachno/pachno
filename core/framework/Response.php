@@ -76,16 +76,8 @@
          * @var array
          */
         protected $_javascripts = [
-            'prototype',
-            'builder',
-            'effects',
-            //'dragdrop',
-            'controls',
-            'bootstrap-typeahead',
-            'mention',
-            'scriptaculous',
-            'slider',
-            'tablekit'
+            'jquery.min',
+            'pachno/index'
         ];
 
         /**

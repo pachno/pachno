@@ -27,6 +27,6 @@
 <?php include_component('main/dashboardjavascript'); ?>
 <?php if (!$dashboard->countViews()): ?>
     <script>
-        $$('.dashboard').each(function (elm) { elm.toggleClassName('editable');});
+        $$('.dashboard').each(function (elm) { elm.toggleClass('editable');});
     </script>
 <?php endif; ?>

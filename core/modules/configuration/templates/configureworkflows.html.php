@@ -18,7 +18,7 @@
             </div>
             <h3>
                 <span><?php echo __('Existing workflows'); ?></span>
-                <button class="button" onclick="Pachno.Main.Helpers.Backdrop.show('<?= make_url('get_partial_for_backdrop', ['key' => 'edit_workflow']); ?>');"><?= __('Create workflow'); ?></button>
+                <button class="button" onclick="Pachno.UI.Backdrop.show('<?= make_url('get_partial_for_backdrop', ['key' => 'edit_workflow']); ?>');"><?= __('Create workflow'); ?></button>
             </h3>
             <div class="flexible-table" id="workflow-schemes-list">
                 <div class="row header">

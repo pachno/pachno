@@ -45,7 +45,7 @@
                             <?php endif; ?>
                         </span>
                     </span>
-                    <button class="button" id="project_remove_livelink_button" onclick="Pachno.Main.Helpers.Backdrop.show('<?= make_url('get_partial_for_backdrop', $partial_options); ?>');"><?php echo __('Cancel'); ?></button>
+                    <button class="button" id="project_remove_livelink_button" onclick="Pachno.UI.Backdrop.show('<?= make_url('get_partial_for_backdrop', $partial_options); ?>');"><?php echo __('Cancel'); ?></button>
                 <?php endif; ?>
             </li>
         </ul>
@@ -54,7 +54,7 @@
             <?php foreach ($module->getConnectorModules() as $connector_key => $connector_module): ?>
                 <li>
                     <span class="description"><?= fa_image_tag($connector_module->getConnector()->getLogo(), ['class' => 'connector_logo'], $connector_module->getConnector()->getLogoStyle()) . $connector_module->getConnector()->getProjectTemplateDescription(); ?></span>
-                    <button class="button secondary highlight" onclick="Pachno.Main.Helpers.Backdrop.show('<?= make_url('get_partial_for_backdrop', ['key' => 'livelink-import_project', 'connector' => $connector_key, 'project_id' => $project->getID()]); ?>');"><?php echo __('Import / link'); ?></button>
+                    <button class="button secondary highlight" onclick="Pachno.UI.Backdrop.show('<?= make_url('get_partial_for_backdrop', ['key' => 'livelink-import_project', 'connector' => $connector_key, 'project_id' => $project->getID()]); ?>');"><?php echo __('Import / link'); ?></button>
                 </li>
             <?php endforeach; ?>
         </ul>
@@ -114,11 +114,11 @@
                             ['#dialog_yes', '#dialog_no'].each(function (elm) {
                                 $(elm).removeClass('disabled');
                             });
-                            pachno_index_js.Main.Helpers.Dialog.dismiss();
+                            pachno_index_js.Helpers.Dialog.dismiss();
                         })
                         .catch(function (error) {
-                            pachno_index_js.Main.Helpers.Dialog.dismiss();
-                            pachno_index_js.Main.Helpers.Message.error(error);
+                            pachno_index_js.Helpers.Dialog.dismiss();
+                            pachno_index_js.Helpers.Message.error(error);
                             ['#dialog_yes', '#dialog_no'].each(function (elm) {
                                 $(elm).removeClass('disabled');
                             });
@@ -128,7 +128,7 @@
                 $('#project_remove_livelink_button').off();
                 $('#project_remove_livelink_button').on('click', function (e) {
                     e.preventDefault();
-                    pachno_index_js.Main.Helpers.Dialog.show('<?php echo __('Remove Pachno LiveLink?'); ?>', '<?php echo __('Are you sure you want to remove the LiveLink integration from this project? No issues or project details will be removed or affected by this, but you will no longer receive updates from the external repository.'); ?>', {yes: {click: removeProjectLivelink }, no: {click: pachno_index_js.Main.Helpers.Dialog.dismiss}});
+                    pachno_index_js.Helpers.Dialog.show('<?php echo __('Remove Pachno LiveLink?'); ?>', '<?php echo __('Are you sure you want to remove the LiveLink integration from this project? No issues or project details will be removed or affected by this, but you will no longer receive updates from the external repository.'); ?>', {yes: {click: removeProjectLivelink }, no: {click: pachno_index_js.Helpers.Dialog.dismiss}});
                 });
 
             });

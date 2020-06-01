@@ -16,9 +16,9 @@
             <span class="badge timing"><?= fa_image_tag('clock'); ?><span><?php echo ($details['time'] >= 1) ? round($details['time'], 2) . 's' : round($details['time'] * 1000, 1) . 'ms'; ?></span></span>
             <span class="partial code"><?php echo $classname . $type . $function; ?>()</span>
             <span class="partial hidden"><?= fa_image_tag('file-alt', ['class' => 'file-icon']); ?><span class="filename"><?php echo join(DS, $file_details).DS.'<b>'.$filename.'</b>' ?>:<?php echo $details['line']; ?></span></span>
-            <span class="partial hidden expander" onclick="$(this).up().toggleClassName('expanded');"><?= fa_image_tag('plus-circle', ['class' => 'expand']); ?><?= fa_image_tag('minus-circle', ['class' => 'collapse']); ?></span>
+            <span class="partial hidden expander" onclick="$(this).up().toggleClass('expanded');"><?= fa_image_tag('plus-circle', ['class' => 'expand']); ?><?= fa_image_tag('minus-circle', ['class' => 'collapse']); ?></span>
             <ul class="backtrace">
-                <li class="b2db-hidden-toggler" onclick="$(this).up().toggleClassName('b2db-hidden-visible');">...</li>
+                <li class="b2db-hidden-toggler" onclick="$(this).up().toggleClass('b2db-hidden-visible');">...</li>
                 <?php foreach ($details['backtrace'] as $trace): ?>
                     <?php
                         $file_details = explode(DS, $trace['file']);

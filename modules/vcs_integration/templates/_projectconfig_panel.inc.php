@@ -7,7 +7,7 @@
     <?php else: ?>
         <div class="rounded_box lightgrey"><?php // echo __("Remember to set up the hook after saving these settings - see the %documentation. You will need this project's ID number: %id", array('%id' => '<b>'.$project->getID().'</b>', '%documentation' => link_tag(make_url('publish_article', array('article_name' => 'VCSIntegration')), __('documentation'), array('target' => '_blank')))); ?></div>
         <br>
-        <form accept-charset="<?php echo \pachno\core\framework\Context::getI18n()->getCharset(); ?>" action="<?php echo make_url('configure_vcs_settings', array('project_id' => $project->getID())); ?>" method="post" onsubmit="Pachno.Main.Helpers.formSubmit('<?php echo make_url('configure_vcs_settings', array('project_id' => $project->getID())); ?>', 'vcs'); return false;" id="vcs">
+        <form accept-charset="<?php echo \pachno\core\framework\Context::getI18n()->getCharset(); ?>" action="<?php echo make_url('configure_vcs_settings', array('project_id' => $project->getID())); ?>" method="post" onsubmit="Pachno.UI.formSubmit('<?php echo make_url('configure_vcs_settings', array('project_id' => $project->getID())); ?>', 'vcs'); return false;" id="vcs">
             <input type="hidden" name="project_id" value="<?php echo $project->getID(); ?>">
             <table style="clear: both; width: 780px;" class="padded_table" cellpadding=0 cellspacing=0>
                 <tr>
@@ -85,13 +85,13 @@
                             </optgroup>
                         </select>
                         <script type="text/javascript">
-                            require(['domReady', 'jquery', 'prototype'], function (domReady, jquery, prototype) {
+                            require(['domReady', 'jquery'], function (domReady, jquery) {
                                 domReady(function () {
                                     var browser_type_value = "<?php echo \pachno\core\framework\Settings::get('browser_type_'.$project->getID(), 'vcs_integration'); ?>";
 
                                     if (browser_type_value != '') {
                                         $('browser_type').value = browser_type_value;
-                                        jquery('#browser_type').trigger('change');
+                                        $('#browser_type').trigger('change');
                                     }
                                 });
                             });

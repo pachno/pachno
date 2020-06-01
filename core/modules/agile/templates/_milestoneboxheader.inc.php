@@ -67,12 +67,12 @@
                             <span class="name"><?= __('Show overview'); ?></span>
                         </a>
                         <?php if ($pachno_user->canEditProjectDetails(\pachno\core\framework\Context::getCurrentProject())): ?>
-                            <a href="javascript:void(0);" class="list-item" onclick="Pachno.Main.Helpers.Backdrop.show('<?= make_url('get_partial_for_backdrop', array('key' => 'milestone_finish', 'project_id' => $milestone->getProject()->getId(), 'milestone_id' => $milestone->getID(), 'board_id' => isset($board) ? $board->getID() : '')); ?>');">
+                            <a href="javascript:void(0);" class="list-item" onclick="Pachno.UI.Backdrop.show('<?= make_url('get_partial_for_backdrop', array('key' => 'milestone_finish', 'project_id' => $milestone->getProject()->getId(), 'milestone_id' => $milestone->getID(), 'board_id' => isset($board) ? $board->getID() : '')); ?>');">
                                 <span class="icon"><?= fa_image_tag('flag-checkered'); ?></span>
                                 <span class="name"><?= __('Mark as finished'); ?></span>
                             </a>
                             <div class="list-item separator"></div>
-                            <a href="javascript:void(0);" class="list-item" onclick="Pachno.Main.Helpers.Backdrop.show('<?= make_url('get_partial_for_backdrop', array('key' => 'agilemilestone', 'project_id' => $milestone->getProject()->getId(), 'milestone_id' => $milestone->getID(), 'board_id' => isset($board) ? $board->getID() : '')); ?>');">
+                            <a href="javascript:void(0);" class="list-item" onclick="Pachno.UI.Backdrop.show('<?= make_url('get_partial_for_backdrop', array('key' => 'agilemilestone', 'project_id' => $milestone->getProject()->getId(), 'milestone_id' => $milestone->getID(), 'board_id' => isset($board) ? $board->getID() : '')); ?>');">
                                 <span class="icon"><?= fa_image_tag('edit'); ?></span>
                                 <span class="name"><?= __('Edit'); ?></span>
                             </a>
@@ -86,7 +86,7 @@
                                             echo javascript_link_tag(
                                                 '<span class="icon">'.fa_image_tag('times').'</span><span class="name">'.__('Delete').'</span>',
                                                 [
-                                                    'onclick' => "Pachno.Main.Helpers.Dialog.show('".__('Do you really want to delete this milestone?')."', '".__('Removing this milestone will unassign all issues from this milestone and remove it from all available lists. This action cannot be undone.')."', {yes: {click: function() { Pachno.Project.Milestone.remove('".make_url('agile_milestone', ['project_key' => $milestone->getProject()->getKey(), 'milestone_id' => $milestone->getID()])."', ".$milestone->getID()."); } }, no: {click: Pachno.Main.Helpers.Dialog.dismiss} });",
+                                                    'onclick' => "Pachno.UI.Dialog.show('".__('Do you really want to delete this milestone?')."', '".__('Removing this milestone will unassign all issues from this milestone and remove it from all available lists. This action cannot be undone.')."', {yes: {click: function() { Pachno.Project.Milestone.remove('".make_url('agile_milestone', ['project_key' => $milestone->getProject()->getKey(), 'milestone_id' => $milestone->getID()])."', ".$milestone->getID()."); } }, no: {click: Pachno.UI.Dialog.dismiss} });",
                                                     'class' => 'list-item'
                                                 ]
                                             );
@@ -96,7 +96,7 @@
                                             echo javascript_link_tag(
                                                 '<span class="icon">'.fa_image_tag('times').'</span><span class="name">'.__('Delete').'</span>',
                                                 [
-                                                    'onclick' => "Pachno.Main.Helpers.Dialog.show('".__('Do you really want to delete this sprint?')."', '".__('Deleting this sprint will remove all issues in this sprint and put them in the backlog. This action cannot be undone.')."', {yes: {click: function() { Pachno.Project.Milestone.remove('".make_url('agile_milestone', ['project_key' => $milestone->getProject()->getKey(), 'milestone_id' => $milestone->getID()])."', ".$milestone->getID()."); } }, no: {click: Pachno.Main.Helpers.Dialog.dismiss} });",
+                                                    'onclick' => "Pachno.UI.Dialog.show('".__('Do you really want to delete this sprint?')."', '".__('Deleting this sprint will remove all issues in this sprint and put them in the backlog. This action cannot be undone.')."', {yes: {click: function() { Pachno.Project.Milestone.remove('".make_url('agile_milestone', ['project_key' => $milestone->getProject()->getKey(), 'milestone_id' => $milestone->getID()])."', ".$milestone->getID()."); } }, no: {click: Pachno.UI.Dialog.dismiss} });",
                                                     'class' => 'list-item'
                                                 ]
                                             );
@@ -114,7 +114,7 @@
 </div>
 <script>
     setTimeout(function () {
-        <?php /* jQuery('#milestone_<?= $milestone->getId(); ?>_percentage_filler').css({ width: '<?= $milestone->getPercentComplete(); ?>%' }); */ ?>
-        jQuery('#milestone_<?= $milestone->getId(); ?>_percentage_filler').css({ transform: '<?= ($milestone->getPercentComplete() < 100) ? 'scaleX(0.'.round($milestone->getPercentComplete()).')' : 'scaleX(1)'; ?>' });
+        <?php /* $('#milestone_<?= $milestone->getId(); ?>_percentage_filler').css({ width: '<?= $milestone->getPercentComplete(); ?>%' }); */ ?>
+        $('#milestone_<?= $milestone->getId(); ?>_percentage_filler').css({ transform: '<?= ($milestone->getPercentComplete() < 100) ? 'scaleX(0.'.round($milestone->getPercentComplete()).')' : 'scaleX(1)'; ?>' });
     }, 1500);
 </script>

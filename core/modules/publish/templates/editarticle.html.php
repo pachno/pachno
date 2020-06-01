@@ -5,7 +5,6 @@
      * @var \pachno\core\framework\Response $pachno_response
      */
 
-//    include_component('publish/wikibreadcrumbs', array('article_name' => $article->getName(), 'edit' => true));
     use pachno\core\entities\Article;
 
     $pachno_response->setTitle(__('Editing %article_name', array('%article_name' => $article->getName())));
@@ -17,15 +16,22 @@
         <div id="article-header-container">
             <div class="logo-back-container">
                 <?php echo link_tag((($article->getId()) ? $article->getLink() : make_url('publish')), fa_image_tag('chevron-left') . '<span>'.__('Back').'</span>', ['class' => 'button secondary highlight']); ?>
-                <div id="article-editor-header" class="toolbar-container"></div>
             </div>
             <div class="actions-container">
                 <div class="button-group">
-                    <button class="button icon secondary" type="button" onclick="jQuery('#editor-container').toggleClass('wider');return false;"><?= fa_image_tag('arrows-alt-h'); ?></button>
+                    <button class="secondary" type="button">
+                        <?= fa_image_tag('paperclip', ['class' => 'icon']); ?><span class="name"><?= __('Attach a file'); ?></span>
+                    </button>
                     <span class="separator"></span>
-                    <button class="button icon secondary" type="button" onclick="jQuery('#parent_selector_container').show();return false;"><?= fa_image_tag('file-export'); ?></button>
+                    <button class="button icon secondary" type="button" onclick="$('#editor-container').toggleClass('wider');return false;"><?= fa_image_tag('arrows-alt-h'); ?></button>
                     <span class="separator"></span>
-                    <button class="button icon secondary" type="submit" onclick="$('article_preview').value = 1;"><?= fa_image_tag('eye'); ?></button>
+                    <button class="button icon secondary" type="button" onclick="$('#parent_selector_container').show();return false;"><?= fa_image_tag('file-export'); ?></button>
+                    <button class="button icon secondary" type="button" onclick="$('#category_selector_container').show();return false;"><?= fa_image_tag('layer-group'); ?></button>
+                    <span class="separator"></span>
+                    <button class="button secondary" type="submit" onclick="$('#article_preview').value = 1;">
+                        <?= fa_image_tag('eye', ['class' => 'icon']); ?>
+                        <span class="name"><?= __('Preview'); ?></span>
+                    </button>
                     <button class="button primary" id="save_button" type="submit"><?php echo ($article->getId()) ? __('Publish changes') : __('Publish page'); ?></button>
                 </div>
             </div>
@@ -34,7 +40,7 @@
             <span class="icon"><?= fa_image_tag('info-circle'); ?></span>
             <span class="message"><?= __('The page will be moved when you publish the changes'); ?></span>
             <span class="actions">
-                <button type="button" class="button secondary highlight" onclick="jQuery('#parent_article_id_input').val(jQuery('#parent_article_id_input').data('original-id'));$('parent_move_message').hide();return false;"><?= __('Undo'); ?></button>
+                <button type="button" class="button secondary highlight" onclick="$('#parent_article_id_input').val($('#parent_article_id_input').data('original-id'));$('#parent_move_message').hide();return false;"><?= __('Undo'); ?></button>
             </span>
         </div>
         <?php if (isset($error)): ?>
@@ -51,7 +57,7 @@
                     <b><?php echo __('The article has not been saved yet'); ?>
                 </span>
                 <span class="actions">
-                    <a href="#edit_article" class="button secondary highlight" onclick="$('article_content').focus();"><?php echo __('Continue editing'); ?></a>
+                    <a href="#edit_article" class="button secondary highlight" onclick="$('#article_content').focus();"><?php echo __('Continue editing'); ?></a>
                 </span>
             </div>
             <?php include_component('articledisplay', array('article' => $article, 'show_article' => $preview, 'show_category_contains' => false, 'show_actions' => true, 'mode' => 'view')); ?>
@@ -62,6 +68,7 @@
         <input type="hidden" id="parent_article_id_input" name="parent_article_id" value="<?php echo ($article->getParentArticle() instanceof Article) ? $article->getParentArticle()->getID() : 0; ?>" data-original-id="<?php echo ($article->getParentArticle() instanceof Article) ? $article->getParentArticle()->getID() : 0; ?>">
         <input type="hidden" name="last_modified" value="<?php echo ($article->getId()) ? $article->getPostedDate() : 0; ?>">
         <input type="hidden" name="article_type" value="<?php echo $article->getArticleType(); ?>">
+        <textarea id="article_content_textarea" style="display: none;"><?= htmlspecialchars($article->getContent()); ?></textarea>
         <div class="editor-container" id="editor-container">
             <div id="article_edit_header_information" class="title-crumbs">
                 <?php if ($article->getProject() instanceof \pachno\core\entities\Project): ?>
@@ -79,7 +86,10 @@
             <div class="article-name-container">
                 <input type="text" name="article_name" id="article_name" value="<?= ($article->getName() !== 'Main Page') ? __e($article->getName()) : 'Overview'; ?>" placeholder="<?= __('Type the page title here'); ?>" <?php if ($article->getName() == 'Main Page') echo ' disabled'; ?>>
             </div>
-            <?php include_component('main/textarea', [
+            <div class="editor-input-container-wrapper article">
+                <div class="editor-input-container wysiwyg-editor" data-placeholder="<?= __("Click here to start writing. When writing, press [tab] to see writing options"); ?>" data-toolbar="#article-editor-header" data-content="#article_content_textarea"><?php // echo $article->getParsedContent(); ?></div>
+            </div>
+            <?php /* include_component('main/textarea', [
                 'area_name' => 'article_content',
                 'invisible' => true,
                 'target_type' => 'article',
@@ -87,9 +97,8 @@
                 'area_id' => 'article_content',
                 'placeholder' => __e(__('Start writing your page content here')).'&#10;'.__e(__('Link to issues by just typing them, or other users by @-ing them')),
                 'syntax' => $article->getContentSyntax(),
-                'markuppable' => !($article->getContentSyntax(true) == \pachno\core\framework\Settings::SYNTAX_PT),
                 'value' => htmlspecialchars($article->getContent())
-            ]); ?>
+            ]); */ ?>
         </div>
         <div class="form-row" style="display: none;">
             <label><?php echo __('Comment'); ?></label>
@@ -103,7 +112,7 @@
             <div class="backdrop_box medium">
                 <div class="backdrop_detail_header">
                     <span><?php echo __('Move page'); ?></span>
-                    <a href="javascript:void(0);" onclick="$('parent_selector_container').hide();" class="closer"><?php echo fa_image_tag('times'); ?></a>
+                    <a href="javascript:void(0);" onclick="$('#parent_selector_container').hide();" class="closer"><?php echo fa_image_tag('times'); ?></a>
                 </div>
                 <div class="backdrop_detail_content">
                     <div class="form-row unified">
@@ -111,7 +120,9 @@
                         <input type="submit" class="button secondary highlight" value="<?php echo __('Find'); ?>">
                     </div>
                     <?php echo image_tag('spinning_32.gif', array('id' => 'parent_selector_container_indicator', 'style' => 'display: none;')); ?>
-                    <div id="parent_articles_list" class="list-mode"></div>
+                    <div id="parent_articles_list" class="list-mode">
+
+                    </div>
                 </div>
             </div>
         </form>
@@ -119,23 +130,25 @@
     <input type="hidden" id="article_serialized" value="">
 </div>
 <script type="text/javascript">
-    require(['domReady', 'pachno/index', 'jquery'], function (domReady, pachno_index_js, jquery) {
-        domReady(function () {
-            $('edit_article_form').on('submit', function(event) {
-                var ok = true;
-                <?php if (\pachno\core\framework\Context::getModule('publish')->getSetting('require_change_reason') != 0): ?>
-                if ($('article_preview').value != 1 && $('change_reason').value.length == 0) {
-                    $('change_reason').focus();
-                    Pachno.Main.Helpers.Message.error('<?php echo __('Comment required') ?>', '<?php echo __('Please provide a comment describing the edit.') ?>');
-                    ok = false;
-                }
-                <?php endif; ?>
-                if (ok)
-                    Event.stopObserving(window, 'beforeunload');
-                else
-                    Event.stop(event);
-                return ok;
-            });
+    Pachno.on(Pachno.EVENTS.ready, (PachnoApplication) => {
+        // var quill = new Quill('#article_content', {
+        //     theme: 'snow'
+        // });
+        $('#edit_article_form').on('submit', function(event) {
+            var ok = true;
+
+            <?php if (\pachno\core\framework\Context::getModule('publish')->getSetting('require_change_reason') != 0): ?>
+            if ($('#article_preview').val() != 1 && $('#change_reason').val().length == 0) {
+                $('#change_reason').focus();
+                Pachno.UI.Message.error('<?php echo __('Comment required') ?>', '<?php echo __('Please provide a comment describing the edit.') ?>');
+                ok = false;
+            }
+            <?php endif; ?>
+            if (ok)
+                Event.stopObserving(window, 'beforeunload');
+            else
+                Event.stop(event);
+            return ok;
         });
     });
 

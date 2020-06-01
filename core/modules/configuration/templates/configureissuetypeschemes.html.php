@@ -18,7 +18,7 @@
             </div>
             <h3>
                 <span><?php echo __('Existing issue type schemes'); ?></span>
-                <button class="button" onclick="Pachno.Main.Helpers.Backdrop.show('<?= make_url('get_partial_for_backdrop', ['key' => 'edit_issuetype_scheme']); ?>');"><?= __('Create scheme'); ?></button>
+                <button class="button" onclick="Pachno.UI.Backdrop.show('<?= make_url('get_partial_for_backdrop', ['key' => 'edit_issuetype_scheme']); ?>');"><?= __('Create scheme'); ?></button>
             </h3>
             <div class="flexible-table" id="issuetype_schemes_list">
                 <div class="row header">

@@ -77,7 +77,7 @@
                         <button class="button secondary icon dropper"><?= fa_image_tag('cog'); ?></button>
                         <div class="dropdown-container">
                             <div class="list-mode">
-                                <a class="list-item" href="javascript:void(0);" onclick="Pachno.Main.Helpers.Backdrop.show('<?php echo make_url('get_partial_for_backdrop', array('key' => 'agileboard', 'project_id' => $board->getProject()->getID(), 'board_id' => $board->getID())); ?>');" title="<?php echo __('Edit this board'); ?>">
+                                <a class="list-item" href="javascript:void(0);" onclick="Pachno.UI.Backdrop.show('<?php echo make_url('get_partial_for_backdrop', array('key' => 'agileboard', 'project_id' => $board->getProject()->getID(), 'board_id' => $board->getID())); ?>');" title="<?php echo __('Edit this board'); ?>">
                                     <span class="icon"><?php echo fa_image_tag('edit'); ?></span>
                                     <span class="name"><?= __('Edit this board'); ?></span>
                                 </a>
@@ -86,7 +86,7 @@
                                     <span class="name"><?= __('Manage columns'); ?></span>
                                 </a>
                                 <span class="list-item separator"></span>
-                                <a class="list-item" href="javascript:void(0);" onclick="$('main_container').toggleClassName('fullscreen');">
+                                <a class="list-item" href="javascript:void(0);" onclick="$('main_container').toggleClass('fullscreen');">
                                     <span class="icon"><?php echo fa_image_tag('arrows-alt'); ?></span>
                                     <span class="name"><?= __('Toggle fullscreen mode'); ?></span>
                                 </a>
@@ -163,7 +163,7 @@
                     <div class="header backlog" id="milestone_0_header">
                         <div class="milestone_basic_container">
                             <span class="milestone_name"><?php echo __('Backlog'); ?></span>
-                            <div class="backlog_toggler dynamic_menu_link" onclick="$('project_planning').toggleClassName('left_toggled');" title="<?php echo __('Click to toggle the show / hide the backlog'); ?>"><?php echo image_tag('icon_sidebar_collapse.png'); ?></div>
+                            <div class="backlog_toggler dynamic_menu_link" onclick="$('project_planning').toggleClass('left_toggled');" title="<?php echo __('Click to toggle the show / hide the backlog'); ?>"><?php echo image_tag('icon_sidebar_collapse.png'); ?></div>
                         </div>
                         <div class="milestone_counts_container">
                             <table>

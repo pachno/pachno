@@ -3,7 +3,7 @@
 <?php elseif (!$user->isScopeConfirmed()): ?>
     <span class="faded_out" title="<?php echo __('This user has not been confirmed yet'); ?>"><?php echo $user->getUsername() ?></span>
 <?php else: ?>
-    <a href="javascript:void(0);" class="userlink inline<?php if ($pachno_user->isFriend($user)): ?> friend" title="<?php echo __('This is one of your friends'); ?><?php endif; ?>" onclick="Pachno.Main.Helpers.Backdrop.show('<?php echo make_url('get_partial_for_backdrop', array('key' => 'usercard', 'user_id' => $user->getID())); ?>');">
+    <a href="javascript:void(0);" class="userlink inline<?php if ($pachno_user->isFriend($user)): ?> friend" title="<?php echo __('This is one of your friends'); ?><?php endif; ?>" onclick="Pachno.UI.Backdrop.show('<?php echo make_url('get_partial_for_backdrop', array('key' => 'usercard', 'user_id' => $user->getID())); ?>');">
         <?php if ($show_avatar): ?>
             <?php $extraClass = (!isset($size) || $size == 'small') ? "small" : ""; ?>
             <?php echo image_tag($user->getAvatarURL(), array('alt' => ' ', 'class' => 'avatar '.$extraClass, 'style' => (isset($in_email) && $in_email) ? 'vertical-align: text-bottom' : ''), true); ?>

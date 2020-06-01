@@ -160,7 +160,7 @@
                     <?php /*
                     <div class="fancy-tabs" id="viewissue_activity">
                         <?php \pachno\core\framework\Event::createNew('core', 'viewissue_before_tabs', $issue)->trigger(); ?>
-                        <a id="tab_viewissue_history" class="tab" href="javascript:void(0);" onclick="Pachno.Main.Helpers.tabSwitcher('tab_viewissue_history', 'viewissue_activity');">
+                        <a id="tab_viewissue_history" class="tab" href="javascript:void(0);" onclick="Pachno.UI.tabSwitcher('tab_viewissue_history', 'viewissue_activity');">
                             <?= fa_image_tag('history', ['class' => 'icon']); ?>
                             <span class="name"><?= __('History'); ?></span>
                         </a>

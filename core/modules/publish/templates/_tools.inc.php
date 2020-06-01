@@ -4,7 +4,7 @@
 
 ?>
 <div class="container_div toggled<?php if (isset($special) && $special) echo ' visible'; ?>">
-    <div class="header" onclick="$(this).up().toggleClassName('visible');">
+    <div class="header" onclick="$(this).up().toggleClass('visible');">
         <?php echo __('Wiki tools'); ?>
     </div>
     <div class="toggle_info"><?php echo __('Click the header to show / hide'); ?></div>
