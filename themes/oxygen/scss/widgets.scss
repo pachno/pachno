@@ -24,8 +24,50 @@
   vertical-align: middle;
   padding: 3px 6px;
   background-color: rgba(200, 200, 200, .3);
+
+  span:first-child {
+    margin-right: 5px;
+  }
+
+  + span {
+    margin-left: .35em;
+  }
 }
 
-.count-badge span:first-child {
-  margin-right: 5px;
+.card-badge {
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  box-shadow: rgba(9, 30, 66, 0.25) 0 1px 1px, rgba(9, 30, 66, 0.31) 0 0 1px;
+  background-color: #FFF;
+  padding: .35em .75em;
+  border-radius: .2em;
+  font-size: 1em;
+  transition: background-color .25s ease-in-out, color .25s ease-in-out;
+  border: none;
+  color: $theme-text-color;
+
+  &:hover {
+    text-decoration: none;
+    border: none;
+    background-color: $theme-primary;
+    color: $theme-text-color-inverse;
+
+    .icon {
+      color: $theme-text-color-inverse;
+    }
+  }
+
+  .icon {
+    color: $theme-text-color-lighter;
+    transition: color .25s ease-in-out;
+    margin-right: .35em;
+    flex: 0 0 auto;
+  }
+
+  .name {
+    flex: 1 1 auto;
+    font-weight: $theme-font-weight-light;
+  }
 }

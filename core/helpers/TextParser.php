@@ -41,7 +41,7 @@
 
         protected $options = [];
 
-        protected $use_toc = false;
+        protected $use_toc = true;
 
         protected $toc_base_id = null;
 
@@ -497,11 +497,11 @@
                 $this->codeblocks = array_reverse($this->codeblocks);
                 $this->elinks = array_reverse($this->elinks);
 
-                if (!array_key_exists('ignore_toc', $options)) {
-                    $output = preg_replace_callback('/\{\{TOC\}\}/', [$this, "_parse_add_toc"], $output);
-                } else {
+//                if (!array_key_exists('ignore_toc', $options)) {
+//                    $output = preg_replace_callback('/\{\{TOC\}\}/', [$this, "_parse_add_toc"], $output);
+//                } else {
                     $output = str_replace('{{TOC}}', '', $output);
-                }
+//                }
                 $output = preg_replace_callback('/~~~NOWIKI~~~/i', [$this, "_parse_restore_nowiki"], $output);
                 if (!isset($options['no_code_highlighting'])) {
                     $output = preg_replace_callback('/~~~CODE~~~/Ui', [$this, "_parse_restore_code"], $output);
@@ -1211,7 +1211,7 @@
                     $href_options['class'] = 'missing_wiki_page';
                 }
 
-                $href = Publish::getArticleLink($href, $project);
+                $href = Publish::getArticleLink($href, $project, 'show', true);
             } else {
                 $href = $namespace . ':' . $this->_wiki_link($href);
             }
@@ -1312,6 +1312,11 @@
             Context::getResponse()->addStylesheet('/css/highlight.php/github.css');
 
             return '<pre class="hljs ' . strtolower($language) . '"><code>' . $codeblock->value . '</code></pre>';
+        }
+
+        public function getTableOfContents()
+        {
+            return $this->toc;
         }
 
     }

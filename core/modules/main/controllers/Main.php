@@ -2382,7 +2382,7 @@
                         $file_object_id = tables\Files::getTable()->saveFile($new_filename, basename($file['name']), $content_type);
                     }
 
-                    return $this->renderJSON(['file_id' => $file_object_id]);
+                    return $this->renderJSON(['file_id' => $file_object_id, 'data' => ['filePath' => $this->getRouting()->generate('showfile', ['id' => $file_object_id])]]);
                 }
             }
 
@@ -2851,7 +2851,7 @@
          */
         public function runGetBackdropPartial(Request $request)
         {
-            if (!$request->isAjaxCall()) {
+            if (!$request->isResponseFormatAccepted('application/json')) {
                 return $this->return404($this->getI18n()->__('You need to enable javascript for Pachno to work properly'));
             }
             try {

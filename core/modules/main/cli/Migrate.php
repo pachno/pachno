@@ -328,6 +328,12 @@
                 }
 
                 if (!$article->isRedirect()) {
+                    if (in_array($article->getName(), ['Main Page', 'MainPage'])) {
+                        foreach ($article->getCategories() as $articleCategoryLink) {
+                            $articleCategoryLink->delete();
+                        }
+                    }
+
                     if ($article->isCategory()) {
                         if (!$article->getParentArticle() instanceof Article) {
                             foreach ($article->getCategories() as $articleCategoryLink) {

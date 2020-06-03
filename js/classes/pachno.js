@@ -9,7 +9,8 @@ class PachnoApplication {
 
     get EVENTS() {
         return {
-            ready: 'pachno-ready'
+            ready: 'pachno-ready',
+            formSubmit: 'form-submit'
         }
     }
 
@@ -54,13 +55,23 @@ class PachnoApplication {
     }
 
     trigger(key, data) {
-        if (this.listeners[key] === undefined) {
-            return;
-        }
+        return new Promise((resolve, reject) => {
+            if (this.listeners[key] === undefined) {
+                return resolve();
+            }
 
-        for (let callback of this.listeners[key]) {
-            callback(this, data);
-        }
+            try {
+                let promises = [];
+                for (let callback of this.listeners[key]) {
+                    promises.push(callback(this, data));
+                }
+                Promise.all(promises)
+                    .then(resolve)
+                    .catch(reject);
+            } catch (error) {
+                reject(error);
+            }
+        });
     }
 
     setupListeners() {
@@ -85,8 +96,6 @@ class PachnoApplication {
             $('html').css({'cursor': 'default'});
         }
 
-        // Core.Pollers.Callbacks.dataPoller();
-        //Pachno.Main.Profile.toggleNotifications(false);
         OpenID.init();
 
         // Mimick browser scroll to element with id as hash once header get 'fixed' class
@@ -97,8 +106,35 @@ class PachnoApplication {
                 window.location.href = window.location.href;
             }
         }, 1000);
-
     }
+
+    loadComponentOptions(options, $item) {
+        return new Promise(function (resolve, reject) {
+            const $container = $(options.container),
+                $options = $(options.options),
+                url = $item.data('options-url');
+
+            $options.html('<div><i class="fas fa-spin fa-spinner"></i></div>');
+            $container.addClass('active');
+            $container.find(options.component).removeClass('active');
+            $item.addClass('active');
+
+            fetchHelper(url)
+            fetch(url, {
+                method: 'GET'
+            })
+                .then(function (response) {
+                    response.json().then(function (json) {
+                        if (response.ok) {
+                            $options.html(json.content);
+                            Pachno.Main.updateWidgets()
+                                .then(resolve);
+                        }
+                    });
+                });
+        });
+    }
+
 }
 
 const Pachno = new PachnoApplication();

@@ -56,6 +56,7 @@
             $query = $this->getQuery();
             $query->where(self::CATEGORY_ID, $category_id);
             $query->where(self::ARTICLE_ID, 0, Criterion::NOT_EQUALS);
+            $query->addOrderBy(Articles::DATE, QueryColumnSort::SORT_DESC);
 
             return $this->select($query);
         }

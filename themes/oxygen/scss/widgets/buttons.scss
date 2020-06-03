@@ -1,19 +1,5 @@
 @import '../variables';
 
-.button .indicator, button .indicator {
-  display: inline-block;
-  margin-right: 0;
-  margin-left: 0;
-  width: 0;
-  opacity: 0;
-  transition: width .2s ease-in-out, margin-left .2s ease-in-out;
-}
-.submitting .button .indicator, .submitting button .indicator, .button.submitting .indicator, button.submitting .indicator {
-  opacity: 1;
-  width: auto;
-  margin-left: .8em;
-}
-
 input[type=submit], input[type=button], button {
   -webkit-appearance: none;
   -moz-appearance: none;
@@ -47,21 +33,66 @@ button, button:hover,
   flex-direction: row;
   align-items: center;
 
+  &:active,
+  &.activated {
+    box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.16) inset, 0 0 1px 0 rgba(0, 0, 0, 0.16) inset;
+  }
+
   span + .fas,
   span + .icon,
   span + .far {
     margin-left: .35rem;
   }
 
-  .icon + span,
-  .fas + span,
-  .far + span {
-    margin-left: .35rem;
+  .icon,
+  .fas,
+  .far {
+    &:not(.indicator) {
+      + span {
+        margin-left: .35rem;
+      }
+    }
+  }
+
+  .indicator {
+    display: inline-block;
+    width: 0;
+    opacity: 0;
+    transition: width .2s ease-in-out, margin-left .2s ease-in-out;
+
+    &,
+    &.fas,
+    &.far {
+      margin-right: 0;
+      margin-left: 0;
+    }
+  }
+}
+
+.submitting {
+  input[type=submit], input[type=submit]:hover,
+  input[type=button], input[type=button]:hover,
+  button, button:hover,
+  .button, .button:hover {
+    .indicator {
+      opacity: 1;
+      width: auto;
+
+      &:first-child {
+        margin-right: .65em;
+      }
+
+      &:last-child {
+        margin-left: .65em;
+      }
+    }
   }
 }
 
 button + button, button + button:hover,
 .button + button, .button + button:hover,
+button + .dropper-container, button + .dropper-container:hover,
+.button + .dropper-container, .button + .dropper-container:hover,
 button + .button, button + .button:hover,
 .button + .button, .button + .button:hover {
   margin-left: 7px;
@@ -78,10 +109,6 @@ button .fas:last-child, .button .fas:last-child, button .far:last-child, .button
 
 button:hover, input[type=submit]:hover, .button:hover {
   box-shadow: 0 2px 4px -1px rgba(0,0,0,.2),0 4px 5px 0 rgba(0,0,0,.14),0 1px 10px 0 rgba(0,0,0,.12);
-}
-button:active, input[type=submit]:active, .button:active {
-  box-shadow: 0 3px 1px -2px rgba(0,0,0,.2),0 2px 2px 0 rgba(0,0,0,.14),0 1px 5px 0 rgba(0,0,0,.12);
-  background: #DBD69E;
 }
 button:disabled, input[type=submit]:disabled, .button:disabled,
 button:disabled:hover, input[type=submit]:disabled:hover, .button:disabled:hover,
@@ -104,10 +131,6 @@ button::-moz-focus-inner {
 button:focus, input[type=submit]:focus, .button:focus {
   outline: 0;
   box-shadow: 0 0 4px $theme-primary, 0 3px 1px -2px rgba(0,0,0,.2),0 2px 2px 0 rgba(0,0,0,.14),0 1px 5px 0 rgba(0,0,0,.12);
-}
-input[type=submit]:active, input[type=button]:active, button:active, .button:active, input[type=submit].activated, button.activated, .button.activated {
-  //box-shadow: inset 0 0 2px rgba(150, 150, 150, 0.4);
-  box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.16) inset, 0 0 1px 0 rgba(0, 0, 0, 0.16) inset;
 }
 button.secondary,
 input.button.secondary,

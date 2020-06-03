@@ -79,7 +79,7 @@
             .rounded_box h4 { margin-bottom: 0; margin-top: 7px; font-size: 14px; }
             .error_content { padding: 10px; }
             .description { padding: 3px 3px 3px 0;}
-            pre { overflow: scroll; padding: 5px; }
+            pre{white-space:pre-wrap;padding:0.85em;background:#f8f8f8;font-size: 0.9em; font-family: 'Fira Mono', monospace;}
             .command_box { border: 1px dashed #DDD; background-color: #F5F5F5; padding: 4px; font-family: 'Fira Mono', monospace; font-size: 0.9em; display: inline-block; margin: 0 5px; }
             .stacktrace { font-family: 'Fira Mono', monospace; font-size: 0.9em; }
             .filename { color: #55F; font-size: 0.9em; font-family: 'Fira Mono', monospace; }
@@ -182,6 +182,11 @@
                             </li>
                         <?php endforeach; ?>
                     </ul>
+                    <h4>Watched variables</h4>
+                    <?php foreach (\pachno\core\framework\Context::getDebugger()->getWatchedVariables() as $key => $value): ?>
+                        <strong>$<?= $key; ?>:</strong>
+                        <pre><?= print_r($value, true); ?></pre>
+                    <?php endforeach; ?>
                 <?php endif; ?>
                 <?php if (class_exists('\pachno\core\framework\Context') && class_exists('\pachno\core\framework\Logging') && \pachno\core\framework\Context::isDebugMode() && (!isset($exception) || (!$exception instanceof \pachno\core\framework\exceptions\ComposerException && !$exception instanceof \pachno\core\framework\exceptions\CacheException))): ?>
                     <h4>Log messages:</h4>

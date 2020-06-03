@@ -14,16 +14,16 @@
         <?php endif; ?>
         <?php if (!$pachno_user->isGuest()): ?>
             <li class="user_notifications_container" id="user_notifications_container">
-                <div id="user_notifications_count" class="notifications-indicator" data-callback-url=""><?= image_tag('spinning_16_white.gif'); ?></div>
+                <div id="user_notifications_count" class="notifications-indicator"><?= image_tag('spinning_16_white.gif'); ?></div>
                 <a href="javascript:void(0);" class="dropper"><?= fa_image_tag('bell'); ?></a>
-                <div class="popup_box tab_menu_dropdown notifications" id="user_notifications">
+                <div class="popup_box tab_menu_dropdown notifications dynamic_menu_link" id="user_notifications" data-url="<?= make_url('get_partial_for_backdrop', ['key' => 'notifications']); ?>">
                     <div class="header with-link">
                         <span><?= __('Your notifications'); ?></span>
                         <a class="icon-link" href="javascript:void(0);" onclick="Pachno.Main.Notifications.markAllRead();"><?= fa_image_tag('check'); ?></a>
                     </div>
                     <div id="user_notifications_list_wrapper_nano" class="nano">
                         <div id="user_notifications_list_wrapper" class="nano-content">
-                            <ul id="user_notifications_list" data-notifications-url="<?= make_url('get_partial_for_backdrop', array('key' => 'notifications')); ?>" data-offset="25"></ul>
+                            <ul id="user_notifications_list" data-notifications-url="<?= make_url('get_partial_for_backdrop', ['key' => 'notifications']); ?>" data-offset="25"></ul>
                         </div>
                     </div>
                     <?= image_tag('spinning_32.gif', array('id' => 'user_notifications_loading_indicator')); ?>

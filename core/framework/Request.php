@@ -554,6 +554,59 @@
             return $this->_querystring;
         }
 
+        public function getHttpAcceptHeader()
+        {
+            $headers = $_SERVER['HTTP_ACCEPT'];
+            return $headers;
+        }
+
+        public function getSortedAcceptHeaders()
+        {
+            $accept_header = $this->getHttpAcceptHeader();
+            $accepts = explode(',', $accept_header);
+            if (count($accepts) > 1) {
+                usort($accepts, function ($a, $b) {
+                    $q_a = explode(';', $a);
+                    $q_b = explode(';', $a);
+
+                    $q_a = (count($q_a) > 1) ? $q_a[1] : 1;
+                    $q_b = (count($q_b) > 1) ? $q_b[1] : 1;
+
+                    return $q_a <=> $q_b;
+                });
+            }
+
+            return $accepts;
+        }
+
+        public function isResponseFormatAccepted($format, $allow_accept_all = true)
+        {
+            $formatParts = explode('/', $format);
+            foreach ($this->getSortedAcceptHeaders() as $acceptHeader) {
+                $acceptHeaderParts = explode(';', $acceptHeader);
+                $acceptedFormat = array_shift($acceptHeaderParts);
+                $acceptedFormatParts = explode('/', $acceptedFormat);
+
+                if (count($acceptedFormatParts) > 1) {
+                    if ($acceptedFormatParts[0] == '*' && $acceptedFormatParts[1] == '*' && $allow_accept_all) {
+                        return true;
+                    }
+
+                    if ($formatParts[0] != $acceptedFormatParts[0] && $acceptedFormatParts[1] != '*') {
+                        continue;
+                    }
+
+                    if ($formatParts[0] != $acceptedFormatParts[0] && $acceptedFormatParts[1] != '*') {
+                        continue;
+                    }
+
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         public function getAuthorizationHeader()
         {
             $headers = "";

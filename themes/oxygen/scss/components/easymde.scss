@@ -1,0 +1,62 @@
+@import "../variables";
+
+.syntax_md {
+  border: 1px solid $theme-primary;
+  border-radius: .25em;
+
+  .editor-toolbar {
+    display: flex;
+    background-color: rgba(200, 200, 200, .3);
+    padding: .4em;
+    border-radius: .25em .25em 0 0;
+    border-bottom: 2px solid $theme-primary;
+    align-items: center;
+    justify-content: flex-start;
+
+    button {
+      background-color: transparent;
+      box-shadow: none;
+      color: $theme-text-color;
+
+      &:hover {
+        background-color: $theme-primary;
+        color: $theme-text-color-inverse;
+      }
+    }
+
+    .separator {
+      color: transparent;
+      flex: 0 0 auto;
+      padding: 0 .3em 0 0;
+      margin: 0 .35em 0 0;
+      height: 70%;
+      border-bottom: none;
+      border-right: 2px solid $theme-primary;
+    }
+  }
+
+  .editor-statusbar {
+    font-size: .85em;
+    padding: .5em;
+    border-top: 1px dotted $theme-primary;
+    background-color: rgba(200, 200, 200, .15);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    a {
+      text-decoration: none;
+      border: none;
+      color: $theme-text-color;
+      margin-left: auto;
+
+      &:hover {
+        color: $theme-text-color-lighter;
+      }
+    }
+  }
+
+  .CodeMirror-wrap {
+    border-radius: 0 0 .25em .25em;
+  }
+}

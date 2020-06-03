@@ -26,9 +26,9 @@
         <?php if ($has_children): ?>
             <?= fa_image_tag('book', ['class' => 'icon']); ?>
         <?php else: ?>
-            <?= ($main_article->getName() == 'Main Page') ? fa_image_tag('file-invoice', ['class' => 'icon']) : fa_image_tag('file-alt', ['class' => 'icon'], 'far'); ?>
+            <?= ($main_article->isMainPage()) ? fa_image_tag('file-invoice', ['class' => 'icon']) : fa_image_tag('file-alt', ['class' => 'icon'], 'far'); ?>
         <?php endif; ?>
-        <span class="name"><?= ($main_article->getName() == 'Main Page') ? __('Overview') : $main_article->getName(); ?></span>
+        <span class="name"><?= ($main_article->isMainPage()) ? __('Overview') : $main_article->getName(); ?></span>
         <?php if ($is_parent || $has_children): ?>
             <?= fa_image_tag('angle-down', ['class' => 'expander dynamic_menu_link']); ?>
         <?php endif; ?>

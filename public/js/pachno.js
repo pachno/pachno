@@ -151,16 +151,16 @@ define(['pachno/tools', 'pachno/index', 'domReady', 'jquery', 'mention'],
                     }
                     e.stopPropagation();
                 });
-                jQuery("body").on("click", ".dynamic_menu_link", function (e) {
-                    var menu = jQuery(this).next()[0];
-                    if (menu === undefined) {
-                        var menu = jQuery(this).parent().next()[0];
-                    }
-                    if (menu !== undefined && menu.hasClass('dynamic_menu')) {
-                        Pachno.Helpers.loadDynamicMenu(menu);
-                    }
-                });
-                jQuery("#user_notifications_container").on("click", Pachno.Main.Profile.toggleNotifications);
+                // jQuery("body").on("click", ".dynamic_menu_link", function (e) {
+                //     var menu = jQuery(this).next()[0];
+                //     if (menu === undefined) {
+                //         var menu = jQuery(this).parent().next()[0];
+                //     }
+                //     if (menu !== undefined && menu.hasClass('dynamic_menu')) {
+                //         Pachno.Helpers.loadDynamicMenu(menu);
+                //     }
+                // });
+                // jQuery("#user_notifications_container").on("click", Pachno.Main.Profile.toggleNotifications);
                 jQuery("#disable-tutorial-button").on("click", Pachno.Tutorial.disable);
 
                 // jQuery("body").on("click", function (e) {

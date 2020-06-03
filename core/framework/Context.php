@@ -21,6 +21,7 @@
     use pachno\core\framework\exceptions\TemplateNotFoundException;
     use pachno\core\framework\routing\Route;
     use pachno\core\helpers\TextParserMarkdown;
+    use pachno\core\modules\debugger\Debugger;
     use pachno\core\modules\main\controllers\Common;
     use pachno\core\modules\main\controllers\Main;
     use Ramsey\Uuid\Uuid;
@@ -609,6 +610,16 @@
             } else {
                 return (isset(self::$_internal_modules[$module_name])) ? self::$_internal_modules[$module_name] : self::$_modules[$module_name];
             }
+        }
+
+        /**
+         * @return Debugger
+
+         * @throws Exception
+         */
+        public static function getDebugger()
+        {
+            return self::getModule('debugger');
         }
 
         /**

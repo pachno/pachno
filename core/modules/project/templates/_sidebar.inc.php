@@ -18,38 +18,38 @@
     <div class="list-mode">
         <?php include_component('project/projectheader', ['subpage' => (isset($dashboard) && $dashboard instanceof \pachno\core\entities\Dashboard) ? $dashboard->getName() : $dashboard, 'show_back' => ($show_back) ?? $pachno_response->getPage() == 'project_settings']); ?>
         <?php if ($pachno_response->getPage() == 'project_settings'): ?>
-            <div id="project_config_menu">
-                <a id="tab_information" href="javascript:void(0);" onclick="Pachno.UI.tabSwitcher('tab_information', 'project_config_menu');return false;" class="list-item <?php if ($selected_tab == 'info') echo 'selected'; ?>">
+            <div id="project_config_menu" class="tab-switcher">
+                <a href="javascript:void(0);" data-tab-target="information" class="tab-switcher-trigger list-item <?php if ($selected_tab == 'info') echo 'selected'; ?>">
                     <?= fa_image_tag('edit', ['class' => 'icon'], 'far'); ?>
                     <span class="name"><?= __('Details'); ?></span>
                 </a>
-                <a id="tab_settings" href="javascript:void(0);" onclick="Pachno.UI.tabSwitcher('tab_settings', 'project_config_menu');return false;" class="list-item <?php if ($selected_tab == 'settings') echo 'selected'; ?>">
+                <a href="javascript:void(0);" data-tab-target="settings" class="tab-switcher-trigger list-item <?php if ($selected_tab == 'settings') echo 'selected'; ?>">
                     <?= fa_image_tag('list-alt', ['class' => 'icon'], 'far'); ?>
                     <span class="name"><?= __('Settings'); ?></span>
                 </a>
-                <a id="tab_developers" href="javascript:void(0);" onclick="Pachno.UI.tabSwitcher('tab_developers', 'project_config_menu');return false;" class="list-item <?php if ($selected_tab == 'developers') echo 'selected'; ?>">
+                <a href="javascript:void(0);" data-tab-target="developers" class="tab-switcher-trigger list-item <?php if ($selected_tab == 'developers') echo 'selected'; ?>">
                     <?= fa_image_tag('users', ['class' => 'icon']); ?>
                     <span class="name"><?= __('People'); ?></span>
                 </a>
-                <a id="tab_permissions" href="javascript:void(0);" onclick="Pachno.UI.tabSwitcher('tab_permissions', 'project_config_menu');return false;" class="list-item <?php if ($selected_tab == 'permissions') echo 'selected'; ?>">
+                <a href="javascript:void(0);" data-tab-target="permissions" class="tab-switcher-trigger list-item <?php if ($selected_tab == 'permissions') echo 'selected'; ?>">
                     <?= fa_image_tag('user-shield', ['class' => 'icon']); ?>
                     <span class="name"><?= __('Roles and access'); ?></span>
                 </a>
                 <div class="list-item separator"></div>
-                <a id="tab_client" href="javascript:void(0);" onclick="Pachno.UI.tabSwitcher('tab_client', 'project_config_menu');return false;" class="list-item <?php if ($selected_tab == 'client') echo 'selected'; ?>">
+                <a href="javascript:void(0);" data-tab-target="client" class="tab-switcher-trigger list-item <?php if ($selected_tab == 'client') echo 'selected'; ?>">
                     <?= fa_image_tag('user-tie', ['class' => 'icon']); ?>
                     <span class="name"><?= __('Client'); ?></span>
                 </a>
                 <div class="list-item separator"></div>
-                <a id="tab_hierarchy" href="javascript:void(0);" onclick="Pachno.UI.tabSwitcher('tab_hierarchy', 'project_config_menu');return false;" class="list-item <?php if ($selected_tab == 'hierarchy') echo 'selected'; ?>">
+                <a href="javascript:void(0);" data-tab-target="hierarchy" class="tab-switcher-trigger list-item <?php if ($selected_tab == 'hierarchy') echo 'selected'; ?>">
                     <?= fa_image_tag('boxes', ['class' => 'icon']); ?>
                     <span class="name"><?= __('Editions and components'); ?></span>
                 </a>
-                <a id="tab_issues_and_workflow" href="javascript:void(0);" onclick="Pachno.UI.tabSwitcher('tab_issues_and_workflow', 'project_config_menu');return false;" class="list-item <?php if ($selected_tab == 'issues_and_workflow') echo 'selected'; ?>">
+                <a href="javascript:void(0);" data-tab-target="issues_and_workflow" class="tab-switcher-trigger list-item <?php if ($selected_tab == 'issues_and_workflow') echo 'selected'; ?>">
                     <?= fa_image_tag('edit', ['class' => 'icon'], 'far'); ?>
                     <span class="name"><?= __('Issues and workflow'); ?></span>
                 </a>
-                <a id="tab_links" href="javascript:void(0);" onclick="Pachno.UI.tabSwitcher('tab_links', 'project_config_menu');return false;" class="list-item <?php if ($selected_tab == 'links') echo 'selected'; ?>">
+                <a href="javascript:void(0);" data-tab-target="links" class="tab-switcher-trigger list-item <?php if ($selected_tab == 'links') echo 'selected'; ?>">
                     <?= fa_image_tag('link', ['class' => 'icon']); ?>
                     <span class="name"><?= __('Links'); ?></span>
                 </a>

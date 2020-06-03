@@ -2,6 +2,8 @@ import $ from "jquery";
 import setupFancyDropdownListeners from "./fancydropdown";
 import setupFancyTagInputListeners from "./fancytaginput";
 import setupEditorListeners from "./editor";
+import setupDynamicMenuListeners from "./dynamic-menu";
+import setupNotificationListeners from "./notifications";
 import Pachno from "../classes/pachno";
 import { EVENTS as FetchEvents } from "../helpers/fetch";
 
@@ -65,6 +67,8 @@ const setupListeners = function () {
     setupFancyDropdownListeners();
     setupFancyTagInputListeners();
     setupEditorListeners();
+    setupDynamicMenuListeners();
+    setupNotificationListeners();
 
     const $body = $('body');
 

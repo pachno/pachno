@@ -83,7 +83,7 @@
   .list-item,
   .list-item:hover {
     position: relative;
-    padding: 0 7px;
+    padding: 0 .35em;
     display: flex;
     flex-direction: row;
     color: #141823;
@@ -99,6 +99,10 @@
     white-space: nowrap;
     min-width: 250px;
     transition: color .25s ease-in-out, background-color .25s ease-in-out;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
 
     &.disabled {
       color: rgba(100, 100, 100, .4);
@@ -385,10 +389,19 @@
     }
   }
 
+  + .expandable-menu {
+    display: none;
+  }
+
   &.expanded {
     &:not(button) .expander {
       transform: rotate(180deg);
       color: #0C8990;
+    }
+
+    & + .expandable-menu {
+      display: flex;
+      flex-direction: column;
     }
 
     & + .submenu {
@@ -473,10 +486,14 @@
     }
 
     .icon {
-      flex: 0 0 25px;
-      padding: .35em 0;
+      flex: 0 0 auto;
+      padding: .35em;
+      margin: 0 .35em;
       align-self: center;
       text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
 
       &,
       &:hover {

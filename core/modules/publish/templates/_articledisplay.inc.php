@@ -11,7 +11,7 @@
 <?php if ($show_title): ?>
     <?php include_component('publish/header', array('article_name' => $article->getName(), 'article' => $article, 'show_actions' => $show_actions, 'mode' => $mode, 'embedded' => $embedded)); ?>
 <?php endif; ?>
-<?php if ($show_details && $show_article): ?>
+<?php if ($show_details && $show_article && ($article->hasContent() || !$article->isCategory())): ?>
     <div class="details-container">
         <div class="avatar-container">
             <?php if ($article->getAuthor() instanceof \pachno\core\entities\common\Identifiable): ?>
@@ -38,37 +38,13 @@
         <div class="content"><?php echo $article->getParsedContent(['embedded' => $embedded, 'article' => $article]); ?></div>
     </div>
 <?php endif; ?>
-<?php if ($article->isCategory() && !$embedded && $show_category_contains): ?>
-    <h2>
-        <span class="name"><?php echo __('In this category'); ?></span>
-        <span class="button-group"><button class="icon secondary"><?= fa_image_tag('ellipsis-v', ['class' => 'icon']); ?></button></span>
-    </h2>
-    <?php if (count($article->getCategoryArticles()) > 0): ?>
-        <div class="article-pages-list">
-            <?php foreach ($article->getCategoryArticles() as $categoryarticle): ?>
-                <div class="article-page">
-                    <h3>
-                        <span class="name multiline">
-                            <span><?= $categoryarticle->getArticle()->getName(); ?></span>
-                            <span class="date-container">
-                                <?= fa_image_tag('clock', ['class' => 'icon']); ?>
-                                <span><?= Context::getI18n()->formatTime($categoryarticle->getArticle()->getLastUpdatedDate(), 20); ?></span>
-                            </span>
-                        </span>
-                    </h3>
-                    <?php echo link_tag($categoryarticle->getArticle()->getLink(), $categoryarticle->getArticle()->getName()); ?>
-                </div>
-            <?php endforeach; ?>
-        </div>
-    <?php else: ?>
-        <div class="faded_out"><?php echo __('There are no pages in this category'); ?></div>
-    <?php endif; ?>
-<?php endif; ?>
-<?php if (!$embedded && $show_article && count($article->getCategories()) > 0): ?>
-    <h2><?php echo __('Categories:'); ?></h2>
+<?php if (!$embedded && $show_article && !$article->isCategory() && !$article->isMainPage() && count($article->getCategories()) > 0): ?>
+    <h2><?php echo __('Categories'); ?></h2>
     <?php $category_links = array(); ?>
     <?php foreach ($article->getCategories() as $category): ?>
-        <?php $category_links[] = link_tag($category->getCategory()->getLink(), $category->getCategory()->getName()); ?>
+        <a href="<?php $category->getCategory()->getLink(); ?>" class="card-badge">
+            <?= fa_image_tag('layer-group', ['class' => 'icon']); ?>
+            <span><?= $category->getCategory()->getName(); ?></span>
+        </a>
     <?php endforeach; ?>
-    <?php echo implode(', ', $category_links); ?>
 <?php endif; ?>

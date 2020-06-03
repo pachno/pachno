@@ -14,6 +14,11 @@
     use pachno\core\framework\Context,
         pachno\core\entities\Comment;
 
+    $comment_options = ['comment_count_div' => $comment_count_div, 'mentionable_target_type' => $mentionable_target_type, 'target_type' => $target_type, 'target_id' => $target_id];
+    if (isset($issue)) {
+        $comment_options['issue'] = $issue;
+    }
+
 ?>
 <?php $module = (isset($module)) ? $module : 'core'; ?>
 <?php if ($pachno_user->canPostComments() && ((Context::isProjectContext() && !Context::getCurrentProject()->isArchived()) || !Context::isProjectContext())): ?>
@@ -62,5 +67,5 @@
     </div>
 </div>
 <div id="comments_box">
-    <?php include_component('main/commentlist', compact('comment_count_div', 'mentionable_target_type', 'target_type', 'target_id', 'issue')); ?>
+    <?php include_component('main/commentlist', $comment_options); ?>
 </div>

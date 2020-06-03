@@ -93,155 +93,171 @@ const processCommonAjaxPostEvents = function (options) {
 }
 
 export const fetchHelper = function (url, options) {
-    const method = (options.method) ? options.method : 'POST';
-    const $form = (options.form) ? $('#' + options.form) : undefined;
+    return new Promise((resolve, reject) => {
+        const method = (options.method) ? options.method : 'GET';
+        const $form = (options.form) ? $('#' + options.form) : undefined;
 
-    let params = (options.params) ? options.params : '';
-
-    if (options.form && options.form != undefined) {
-        params = $form.serialize();
-    }
-    if (options.additional_params) {
-        params += options.additional_params;
-    }
-
-    const onLoading = () => {
-        if (options.loading) {
-            if (fetch_debugger !== undefined) {
-                $('#___PACHNO_DEBUG_INFO___indicator').show();
-            }
-            if ($(options.loading.indicator)) {
-                $(options.loading.indicator).show();
-            }
-            if ($(options.loading.disable)) {
-                $(options.loading.disabled).prop('disabled', true);
-            }
-            processCommonAjaxPostEvents(options.loading);
-            if (options.loading.callback) {
-                options.loading.callback();
-            }
+        if (options.form !== undefined && method === 'GET') {
+            throw new Error('Cannot send form data when using GET method');
         }
-        if ($form !== undefined) {
-            $form.addClass('submitting');
-            $form.find('button[type=submit]').each(function () {
-                var $button = $(this);
-                $button.addClass('auto-disabled');
-                $button.attr("disabled", true);
-            });
-        }
-    }
 
-    onLoading();
-    let response;
-    let fetch_options = {
-        method: method
-    };
-    if (method === 'POST') {
-        fetch_options.body = params;
-    }
-
-    fetch(url, fetch_options)
-        .then((_response) => {
-            response = _response;
-            const contentType = response.headers.get("content-type");
-            const is_json = (contentType && contentType.indexOf("application/json") !== -1);
-
-            return new Promise((resolve, reject) => {
-                if (response.ok && is_json) {
-                    response.json().then(json => {
-                        resolve(json);
-                    });
-                } else {
-                    if (options.failure) {
-                        processCommonAjaxPostEvents(options.failure);
-                    }
-
-                    response.json().then(json => {
-                        UI.Message.error(json.error, json.message);
-                        if (options.failure.callback) {
-                            options.failure.callback(json);
-                        }
-                    });
-                    reject(response);
+        const onLoading = () => {
+            if (options.loading) {
+                if (fetch_debugger !== undefined) {
+                    $('#___PACHNO_DEBUG_INFO___indicator').show();
                 }
-            });
-        })
-        .then((json, responseText) => {
-            if (json || (options.success && options.success.update)) {
-                if (json && json.forward != undefined) {
-                    document.location = json.forward;
-                } else {
-                    if (options.success && options.success.update) {
-                        var json_content_element = (is_string(options.success.update) || options.success.update.from == undefined) ? 'content' : options.success.update.from;
-                        var content = (json) ? json[json_content_element] : responseText;
-                        var update_element = (is_string(options.success.update)) ? options.success.update : options.success.update.element;
-                        if ($(update_element)) {
-                            var insertion = (is_string(options.success.update)) ? false : (options.success.update.insertion) ? options.success.update.insertion : false;
-                            if (insertion) {
-                                $(update_element).append(content);
-                            } else {
-                                $(update_element).html(content);
+                if ($(options.loading.indicator)) {
+                    $(options.loading.indicator).show();
+                }
+                if ($(options.loading.disable)) {
+                    $(options.loading.disabled).prop('disabled', true);
+                }
+                processCommonAjaxPostEvents(options.loading);
+                if (options.loading.callback) {
+                    options.loading.callback();
+                }
+            }
+            if ($form !== undefined) {
+                $form.addClass('submitting');
+                $form.find('button[type=submit]').each(function () {
+                    var $button = $(this);
+                    $button.addClass('auto-disabled');
+                    $button.attr("disabled", true);
+                });
+            }
+        }
+
+        onLoading();
+        let response;
+        let fetch_options = {
+            method: method
+        };
+
+        if (['POST', 'PUT'].indexOf(method) !== -1) {
+
+            let data;
+            if ($form.length) {
+                data = new FormData($form[0]);
+                if (options.additional_params) {
+                    for (let param in options.additional_params) {
+                        if (options.additional_params.hasOwnProperty(param)) {
+                            data.append(param, options.additional_params[param]);
+                        }
+                    }
+                }
+            } else {
+                fetch_options.headers = {
+                    'Content-Type': 'application/json'
+                }
+            }
+
+            fetch_options.body = data;
+        }
+
+        fetch(url, fetch_options)
+            .then((_response) => {
+                response = _response;
+                const contentType = response.headers.get("content-type");
+                const is_json = (contentType && contentType.indexOf("application/json") !== -1);
+
+                return new Promise((_resolve, _reject) => {
+                    if (response.ok && is_json) {
+                        response.json().then(json => {
+                            _resolve(json);
+                        });
+                    } else {
+                        if (options.failure) {
+                            processCommonAjaxPostEvents(options.failure);
+                        }
+
+                        response.json().then(json => {
+                            UI.Message.error(json.error, json.message);
+                            if (options.failure.callback) {
+                                options.failure.callback(json);
+                            }
+                        });
+                        _reject(response);
+                    }
+                });
+            })
+            .then((json, responseText) => {
+                if (json || (options.success && options.success.update)) {
+                    if (json && json.forward != undefined) {
+                        document.location = json.forward;
+                    } else {
+                        if (options.success && options.success.update) {
+                            var json_content_element = (is_string(options.success.update) || options.success.update.from == undefined) ? 'content' : options.success.update.from;
+                            var content = (json) ? json[json_content_element] : responseText;
+                            var update_element = (is_string(options.success.update)) ? options.success.update : options.success.update.element;
+                            if ($(update_element)) {
+                                var insertion = (is_string(options.success.update)) ? false : (options.success.update.insertion) ? options.success.update.insertion : false;
+                                if (insertion) {
+                                    $(update_element).append(content);
+                                } else {
+                                    $(update_element).html(content);
+                                }
+                            }
+                            if (json && json.message) {
+                                UI.Message.success(json.message);
+                            }
+                        } else if (options.success && options.success.replace) {
+                            var json_content_element = (is_string(options.success.replace) || options.success.replace.from == undefined) ? 'content' : options.success.replace.from;
+                            var content = (json) ? json[json_content_element] : responseText;
+                            var replace_element = (is_string(options.success.replace)) ? options.success.replace : options.success.replace.element;
+                            if ($(replace_element)) {
+                                Element.replace(replace_element, content);
+                            }
+                            if (json && json.message) {
+                                UI.Message.success(json.message);
+                            }
+                        } else if (json && (json.title || json.content)) {
+                            UI.Message.success(json.title, json.content);
+                        } else if (json && (json.message)) {
+                            UI.Message.success(json.message);
+                        }
+                        if (options.success) {
+                            processCommonAjaxPostEvents(options.success);
+                            if (options.success.callback) {
+                                options.success.callback(json);
                             }
                         }
-                        if (json && json.message) {
-                            UI.Message.success(json.message);
-                        }
-                    } else if (options.success && options.success.replace) {
-                        var json_content_element = (is_string(options.success.replace) || options.success.replace.from == undefined) ? 'content' : options.success.replace.from;
-                        var content = (json) ? json[json_content_element] : responseText;
-                        var replace_element = (is_string(options.success.replace)) ? options.success.replace : options.success.replace.element;
-                        if ($(replace_element)) {
-                            Element.replace(replace_element, content);
-                        }
-                        if (json && json.message) {
-                            UI.Message.success(json.message);
-                        }
-                    } else if (json && (json.title || json.content)) {
-                        UI.Message.success(json.title, json.content);
-                    } else if (json && (json.message)) {
-                        UI.Message.success(json.message);
-                    }
-                    if (options.success) {
-                        processCommonAjaxPostEvents(options.success);
-                        if (options.success.callback) {
-                            options.success.callback(json);
-                        }
                     }
                 }
-            }
-        })
-        .then(() => {
-            if (fetch_debugger !== undefined) {
-                $('#___PACHNO_DEBUG_INFO___indicator').hide();
-                var d = new Date(),
-                    d_id = response.headers.get('x-pachno-debugid'),
-                    d_time = response.headers.get('x-pachno-loadtime'),
-                    d_session_time = response.headers.get('x-pachno-sessiontime'),
-                    d_calculated_time = response.headers.get('x-pachno-calculatedtime');
+            })
+            .then(() => {
+                if (fetch_debugger !== undefined) {
+                    $('#___PACHNO_DEBUG_INFO___indicator').hide();
+                    var d = new Date(),
+                        d_id = response.headers.get('x-pachno-debugid'),
+                        d_time = response.headers.get('x-pachno-loadtime'),
+                        d_session_time = response.headers.get('x-pachno-sessiontime'),
+                        d_calculated_time = response.headers.get('x-pachno-calculatedtime');
 
-                fetch_debugger.updateDebugInfo({location: url, time: d, debug_id: d_id, loadtime: d_time, session_loadtime: d_session_time, calculated_loadtime: d_calculated_time });
-            }
-            if (options.loading) {
-                $(options.loading.indicator).hide();
-                if ($(options.loading.disable)) {
-                    $(options.loading.disabled).prop('disabled', false);
+                    fetch_debugger.updateDebugInfo({location: url, time: d, debug_id: d_id, loadtime: d_time, session_loadtime: d_session_time, calculated_loadtime: d_calculated_time });
                 }
-            }
-            if (options.complete) {
-                processCommonAjaxPostEvents(options.complete);
-                if (options.complete.callback) {
-                    var json = (response.responseJSON) ? response.responseJSON : undefined;
-                    options.complete.callback(json);
+                if (options.loading) {
+                    $(options.loading.indicator).hide();
+                    if ($(options.loading.disable)) {
+                        $(options.loading.disabled).prop('disabled', false);
+                    }
                 }
-            }
-            Pachno.trigger(EVENTS.updated);
-        })
-        .catch(error => {
-            console.error(error);
-            console.error('OPTIONS', options);
+                if (options.complete) {
+                    processCommonAjaxPostEvents(options.complete);
+                    if (options.complete.callback) {
+                        var json = (response.responseJSON) ? response.responseJSON : undefined;
+                        options.complete.callback(json);
+                    }
+                }
+                Pachno.trigger(EVENTS.updated);
+                resolve(response);
+            })
+            .catch(error => {
+                console.error(error);
+                console.error('OPTIONS', options);
 
-            clearFormSubmit($form);
-        });
+                clearFormSubmit($form);
+            });
+    });
 };
 
 export const formSubmitHelper = function (url, form_id) {

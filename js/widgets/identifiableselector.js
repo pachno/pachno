@@ -1,3 +1,5 @@
+import Pachno from "../classes/pachno";
+
 const findIdentifiable = function (url, field) {
     Pachno.fetch(url, {
         form: field + '_form',

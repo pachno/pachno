@@ -84,6 +84,8 @@
 
         const SYNTAX_PT = 3;
 
+        const SYNTAX_EDITOR_JS = 4;
+
         const SETTING_ADMIN_GROUP = 'admingroup';
 
         const SETTING_ALLOW_REGISTRATION = 'allowreg';
@@ -988,6 +990,8 @@
         public static function getSyntaxClass($syntax)
         {
             switch ($syntax) {
+                case self::SYNTAX_EDITOR_JS:
+                    return 'editor-js';
                 case self::SYNTAX_MW:
                     return 'mw';
                 case self::SYNTAX_PT:

@@ -34,20 +34,48 @@
                     <span class="name"><?= __('Named links'); ?></span>
                 </a>
             <?php endif; ?>
-            <div class="header"><?= __('Categories'); ?></div>
-            <?php foreach ($top_level_categories as $top_level_category): ?>
-                <?php include_component('publish/manualsidebarlink', [
-                    'parents' => $parents,
-                    'article' => $article,
-                    'main_article' => $top_level_category]); ?>
-            <?php endforeach; ?>
-            <div class="header"><?= __('Pages'); ?></div>
-            <?php foreach ($top_level_articles as $top_level_article): ?>
-                <?php include_component('publish/manualsidebarlink', [
-                    'parents' => $parents,
-                    'article' => $article,
-                    'main_article' => $top_level_article]); ?>
-            <?php endforeach; ?>
+            <?php if (count($article->getTableOfContents()) > 1): ?>
+                <div class="header expandable expanded">
+                    <span class="name"><?= __('On this page'); ?></span>
+                    <button class="button secondary icon expander"><?= fa_image_tag('caret-square-down', [], 'far'); ?></button>
+                </div>
+                <div class="expandable-menu">
+                    <?php foreach ($article->getTableOfContents() as $header): ?>
+                        <a href="#<?= $header['id']; ?>" class="list-item">
+                            <?= fa_image_tag('bookmark', ['class' => 'icon'], 'far'); ?>
+                            <span class="name"><?= trim($header['content']); ?></span>
+                        </a>
+                    <?php endforeach; ?>
+                </div>
+            <?php endif; ?>
+            <div class="header expandable expanded">
+                <span class="name"><?= __('Categories'); ?></span>
+                <button class="button secondary icon expander"><?= fa_image_tag('caret-square-down', [], 'far'); ?></button>
+            </div>
+            <div class="expandable-menu">
+                <?php foreach ($top_level_categories as $top_level_category): ?>
+                    <?php include_component('publish/manualsidebarlink', [
+                        'parents' => $parents,
+                        'article' => $article,
+                        'main_article' => $top_level_category]); ?>
+                <?php endforeach; ?>
+            </div>
+            <div class="header expandable expanded">
+                <span class="name"><?= __('Pages'); ?></span>
+                <button class="button secondary icon"><?= fa_image_tag('search'); ?></button>
+                <a href="<?= make_url('publish_project_article_edit', ['article_id' => 0, 'parent_article_id' => $article->getID(), 'project_key' => $article->getProject()->getKey()]); ?>" class="button secondary icon">
+                    <?= fa_image_tag('plus'); ?>
+                </a>
+                <button class="button secondary icon expander"><?= fa_image_tag('caret-square-down', [], 'far'); ?></button>
+            </div>
+            <div class="expandable-menu">
+                <?php foreach ($top_level_articles as $top_level_article): ?>
+                    <?php include_component('publish/manualsidebarlink', [
+                        'parents' => $parents,
+                        'article' => $article,
+                        'main_article' => $top_level_article]); ?>
+                <?php endforeach; ?>
+            </div>
         </div>
     </div>
 </nav>

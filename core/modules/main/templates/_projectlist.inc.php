@@ -34,8 +34,8 @@ use pachno\core\framework;
         </div>
     <?php endif; ?>
     <div id="projects_list_tabs_panes">
-        <div id="tab_active_pane" style=""></div>
-        <div id="tab_archived_pane" style="display: none;"></div>
+        <div id="tab_active_pane" data-tab-id="active" style=""></div>
+        <div id="tab_archived_pane" data-tab-id="archived" style="display: none;"></div>
     </div>
 </div>
 <script type="text/javascript">
@@ -45,7 +45,7 @@ use pachno\core\framework;
                 archived: '<?= $archived_url; ?>',
                 active: '<?= $active_url; ?>'
             };
-            PachnoApplication.UI.tabSwitcher('#tab_' + key, '#projects_list_tabs', true);
+            PachnoApplication.UI.tabSwitcher($('#tab_' + key), key, $('#projects_list_tabs'), true);
 
             if ($('#tab_' + key + '_pane').html() == '') {
                 PachnoApplication.fetch(urls[key], {

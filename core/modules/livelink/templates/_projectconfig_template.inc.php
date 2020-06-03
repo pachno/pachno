@@ -74,63 +74,60 @@
     </fieldset>
 <?php else: ?>
     <script>
-        require(['domReady', 'pachno/index', 'jquery'], function (domReady, pachno_index_js, $) {
-            domReady(function () {
-                var removeProjectLivelink = function () {
-                    ['#dialog_yes', '#dialog_no'].each(function (elm) {
-                        $(elm).addClass('disabled');
-                    });
-
-                    var submitRemoveLivelink = function () {
-                        return new Promise(function (resolve, reject) {
-                            $.ajax({
-                                type: 'POST',
-                                url: '<?= make_url('livelink_remove_project_connector', ['project_id' => $project->getID()]); ?>',
-                                success: resolve,
-                                error: function (details) {
-                                    reject(details);
-                                }
-                            });
-                        });
-                    };
-
-                    var loadLivelinkPartial = function () {
-                        return new Promise(function (resolve, reject) {
-                            $.ajax({
-                                type: 'GET',
-                                url: '<?= make_url('get_project_connector_template', ['project_id' => $project->getID()]); ?>',
-                                success: resolve,
-                                error: function (details) {
-                                    reject(details);
-                                }
-                            });
-                        });
-                    };
-
-                    submitRemoveLivelink()
-                        .then(loadLivelinkPartial)
-                        .then(function (content) {
-                            $('#tab_livelink_pane').html(content);
-                            ['#dialog_yes', '#dialog_no'].each(function (elm) {
-                                $(elm).removeClass('disabled');
-                            });
-                            pachno_index_js.Helpers.Dialog.dismiss();
-                        })
-                        .catch(function (error) {
-                            pachno_index_js.Helpers.Dialog.dismiss();
-                            pachno_index_js.Helpers.Message.error(error);
-                            ['#dialog_yes', '#dialog_no'].each(function (elm) {
-                                $(elm).removeClass('disabled');
-                            });
-                        })
-                };
-
-                $('#project_remove_livelink_button').off();
-                $('#project_remove_livelink_button').on('click', function (e) {
-                    e.preventDefault();
-                    pachno_index_js.Helpers.Dialog.show('<?php echo __('Remove Pachno LiveLink?'); ?>', '<?php echo __('Are you sure you want to remove the LiveLink integration from this project? No issues or project details will be removed or affected by this, but you will no longer receive updates from the external repository.'); ?>', {yes: {click: removeProjectLivelink }, no: {click: pachno_index_js.Helpers.Dialog.dismiss}});
+        $(document).ready(() => {
+            var removeProjectLivelink = function () {
+                ['#dialog_yes', '#dialog_no'].each(function (elm) {
+                    $(elm).addClass('disabled');
                 });
 
+                var submitRemoveLivelink = function () {
+                    return new Promise(function (resolve, reject) {
+                        $.ajax({
+                            type: 'POST',
+                            url: '<?= make_url('livelink_remove_project_connector', ['project_id' => $project->getID()]); ?>',
+                            success: resolve,
+                            error: function (details) {
+                                reject(details);
+                            }
+                        });
+                    });
+                };
+
+                var loadLivelinkPartial = function () {
+                    return new Promise(function (resolve, reject) {
+                        $.ajax({
+                            type: 'GET',
+                            url: '<?= make_url('get_project_connector_template', ['project_id' => $project->getID()]); ?>',
+                            success: resolve,
+                            error: function (details) {
+                                reject(details);
+                            }
+                        });
+                    });
+                };
+
+                submitRemoveLivelink()
+                    .then(loadLivelinkPartial)
+                    .then(function (content) {
+                        $('#tab_livelink_pane').html(content);
+                        ['#dialog_yes', '#dialog_no'].each(function (elm) {
+                            $(elm).removeClass('disabled');
+                        });
+                        pachno_index_js.Helpers.Dialog.dismiss();
+                    })
+                    .catch(function (error) {
+                        pachno_index_js.Helpers.Dialog.dismiss();
+                        pachno_index_js.Helpers.Message.error(error);
+                        ['#dialog_yes', '#dialog_no'].each(function (elm) {
+                            $(elm).removeClass('disabled');
+                        });
+                    })
+            };
+
+            $('#project_remove_livelink_button').off();
+            $('#project_remove_livelink_button').on('click', function (e) {
+                e.preventDefault();
+                pachno_index_js.Helpers.Dialog.show('<?php echo __('Remove Pachno LiveLink?'); ?>', '<?php echo __('Are you sure you want to remove the LiveLink integration from this project? No issues or project details will be removed or affected by this, but you will no longer receive updates from the external repository.'); ?>', {yes: {click: removeProjectLivelink }, no: {click: pachno_index_js.Helpers.Dialog.dismiss}});
             });
         });
     </script>

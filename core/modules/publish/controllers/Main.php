@@ -4,6 +4,7 @@
 
     use Exception;
     use pachno\core\entities\Article;
+    use pachno\core\entities\Comment;
     use pachno\core\entities\Project;
     use pachno\core\entities\tables\Articles;
     use pachno\core\entities\User;
@@ -61,8 +62,6 @@
                 if ($request->hasParameter('parent_article_id')) {
                     $this->article->setParentArticle(Articles::getTable()->selectById($request['parent_article_id']));
                 }
-
-                $this->article->setContentSyntax($this->getUser()->getPreferredWikiSyntax(true));
             }
         }
 
@@ -104,7 +103,7 @@
          */
         public function runProjectArticle(Request $request)
         {
-            $this->redirect('showarticle');
+            return $this->redirect('showarticle');
         }
 
         /**
@@ -121,6 +120,7 @@
             $this->message = framework\Context::getMessageAndClear('publish_article_message');
             $this->error = framework\Context::getMessageAndClear('publish_article_error');
             $this->redirected_from = framework\Context::getMessageAndClear('publish_redirected_article');
+            $this->comment_count = 0;
 
             if ($this->redirected_from) {
                 $this->redirected_from = Articles::getTable()->selectById($this->redirected_from);
@@ -149,6 +149,7 @@
                         $this->error = framework\Context::getI18n()->__('There was an error trying to show this revision');
                     }
                 }
+                $this->comment_count = Comment::countComments($this->article->getID(), Comment::TYPE_ARTICLE);
             }
         }
 
@@ -290,7 +291,7 @@
          */
         public function runProjectEditArticle(Request $request)
         {
-            $this->redirect('editarticle');
+            return $this->redirect('editarticle');
         }
 
         /**
@@ -312,8 +313,17 @@
                 $this->forward($this->article->getLink());
             }
 
+            if ($request['convert']) {
+                $this->article->setContentSyntax(framework\Settings::SYNTAX_EDITOR_JS);
+                $json = ['time' => $this->article->getLastUpdatedDate() * 1000, 'blocks' => [
+                    ['type' => 'paragraph', 'data' => ['text' => $this->article->getContent()]]
+                ], 'version' => '2.17.0'];
+                $this->article->setContent(json_encode($json));
+                $this->convert = true;
+            }
+
             if ($request->isPost()) {
-                $this->preview = (bool)$request['preview'];
+                $this->preview = (bool) $request['preview'];
                 $this->change_reason = $request['change_reason'];
                 try {
                     if ($request['article_name'] && $this->article->getName() !== 'Main Page') {
@@ -329,16 +339,17 @@
                     if (!$this->preview && framework\Context::getModule('publish')->getSetting('require_change_reason') == 1 && (!$this->change_reason || trim($this->change_reason) == ''))
                         throw new Exception(framework\Context::getI18n()->__('You have to provide a reason for the changes'));
 
-                    if ($this->article->getLastUpdatedDate() != $request['last_modified'])
+                    if ($this->article->getID() && $this->article->getLastUpdatedDate() != $request['last_modified'])
                         throw new Exception(framework\Context::getI18n()->__('The file has been modified since you last opened it'));
 
                     if (!$this->preview) {
                         $this->article->doSave([], $request['change_reason']);
                         framework\Context::setMessage('publish_article_message', framework\Context::getI18n()->__('The article was saved'));
-                        $this->forward($this->article->getLink());
+                        return $this->renderJSON(['forward' => $this->article->getLink()]);
                     }
                 } catch (Exception $e) {
-                    $this->error = $e->getMessage();
+                    $this->getResponse()->setHttpStatus(400);
+                    return $this->renderJSON(['error' => $e->getMessage()]);
                 }
             }
         }

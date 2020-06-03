@@ -1,4 +1,5 @@
 import $ from "jquery";
+import Pachno from "../classes/pachno";
 import {EVENTS as WidgetEvents} from "./index";
 
 const setupListeners = function () {

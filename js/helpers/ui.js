@@ -7,12 +7,8 @@ const UI = {
          * Clears all popup messages from the effect queue
          */
         clear: () => {
-            if ($('#pachno_successmessage').visible()) {
-                $('#pachno_successmessage').fade({duration: 0.2});
-            }
-            if ($('#pachno_failuremessage').visible()) {
-                $('#pachno_failuremessage').fade({duration: 0.2});
-            }
+            $('#pachno_successmessage').hide();
+            $('#pachno_failuremessage').hide();
         },
 
         /**
@@ -22,23 +18,11 @@ const UI = {
          * @param content string Error details
          */
         error: (title, content) => {
+            $('#pachno_failuremessage').hide();
             $('#pachno_failuremessage_title').html(title);
             $('#pachno_failuremessage_content').html(content);
-            if ($('#pachno_successmessage').visible()) {
-                Effect.Queues.get(Pachno.effect_queues.successmessage).each(function (effect) {
-                    effect.cancel();
-                });
-                new Effect.Fade('pachno_successmessage', {queue: {position: 'end', scope: Pachno.effect_queues.successmessage, limit: 2}, duration: 0.2});
-            }
-            if ($('#pachno_failuremessage').visible()) {
-                Effect.Queues.get(Pachno.effect_queues.failedmessage).each(function (effect) {
-                    effect.cancel();
-                });
-                new Effect.Pulsate('pachno_failuremessage', {duration: 1, pulses: 4});
-            } else {
-                new Effect.Appear('pachno_failuremessage', {queue: {position: 'end', scope: Pachno.effect_queues.failedmessage, limit: 2}, duration: 0.2});
-            }
-            new Effect.Fade('pachno_failuremessage', {queue: {position: 'end', scope: Pachno.effect_queues.failedmessage, limit: 2}, delay: 30, duration: 0.2});
+            $('#pachno_failuremessage').show();
+            $('#pachno_successmessage').hide();
         },
 
         /**
@@ -48,30 +32,11 @@ const UI = {
          * @param content string Message details
          */
         success: (title, content) => {
+            $('#pachno_successmessage').hide();
             $('#pachno_successmessage_title').html(title);
             $('#pachno_successmessage_content').html(content);
-            if (title || content) {
-                if ($('#pachno_failuremessage').visible()) {
-                    Effect.Queues.get(Pachno.effect_queues.failedmessage).each(function (effect) {
-                        effect.cancel();
-                    });
-                    new Effect.Fade('pachno_failuremessage', {queue: {position: 'end', scope: Pachno.effect_queues.failedmessage, limit: 2}, duration: 0.2});
-                }
-                if ($('#pachno_successmessage').visible()) {
-                    Effect.Queues.get(Pachno.effect_queues.successmessage).each(function (effect) {
-                        effect.cancel();
-                    });
-                    new Effect.Pulsate('pachno_successmessage', {duration: 1, pulses: 4});
-                } else {
-                    new Effect.Appear('pachno_successmessage', {queue: {position: 'end', scope: Pachno.effect_queues.successmessage, limit: 2}, duration: 0.2});
-                }
-                new Effect.Fade('pachno_successmessage', {queue: {position: 'end', scope: Pachno.effect_queues.successmessage, limit: 2}, delay: 10, duration: 0.2});
-            } else if ($('#pachno_successmessage').visible()) {
-                Effect.Queues.get(Pachno.effect_queues.successmessage).each(function (effect) {
-                    effect.cancel();
-                });
-                new Effect.Fade('pachno_successmessage', {queue: {position: 'end', scope: Pachno.effect_queues.successmessage, limit: 2}, duration: 0.2});
-            }
+            $('#pachno_successmessage').show();
+            $('#pachno_failuremessage').hide();
         }
     },
     Dialog: {
@@ -106,17 +71,17 @@ const UI = {
             $('#dialog_modal_title').html(title);
             $('#dialog_modal_content').html(content);
             $('#dialog_backdrop_modal_content').show();
-            $('#dialog_backdrop_modal').appear({duration: 0.2});
+            $('#dialog_backdrop_modal').show();
         },
 
         dismiss: () => {
-            $('#dialog_backdrop_content').fade({duration: 0.2});
-            $('#dialog_backdrop').fade({duration: 0.2});
+            $('#dialog_backdrop_content').hide();
+            $('#dialog_backdrop').hide();
         },
 
         dismissModal: () => {
-            $('#dialog_backdrop_modal_content').fade({duration: 0.2});
-            $('#dialog_backdrop_modal').fade({duration: 0.2});
+            $('#dialog_backdrop_modal_content').hide();
+            $('#dialog_backdrop_modal').hide();
         }
     },
 
@@ -159,25 +124,27 @@ const UI = {
         }
     },
 
-    tabSwitcher: (visibletab, menu, change_hash) => {
-        if (change_hash == null) change_hash = false;
+    tabSwitcher: ($tab, target, $tabSwitcher, change_hash) => {
+        if (!change_hash) {
+            change_hash = false;
+        }
 
-        if ($(menu)) {
-            $(menu).children().removeClass('selected');
-            if ($(visibletab)) {
-                $(visibletab).addClass('selected');
-                $(menu + '_panes').children().hide();
+        $tabSwitcher.children().removeClass('selected');
+        $tab.addClass('selected');
+        $($tabSwitcher.prop('id') + '_panes').children().each(function (pane) {
+            const $pane = $(pane);
+            if ($pane.data('tab-id') == target) {
+                $pane.show();
+            } else {
+                $pane.hide();
             }
-            if ($(visibletab + '_pane')) {
-                $(visibletab + '_pane').show();
+        });
+        if (change_hash) {
+            if (history.replaceState) {
+                window.history.replaceState(null, null, '#' + target);
             }
-            if (change_hash) {
-                if (history.replaceState) {
-                    window.history.replaceState(null, null, '#' + visibletab);
-                }
-                else {
-                    window.location.hash = visibletab;
-                }
+            else {
+                window.location.hash = target;
             }
         }
     },
@@ -190,5 +157,15 @@ const UI = {
         }
     }
 };
+
+$(document).ready(() => {
+    $('body').on('click', '.tab-switcher .tab-switcher-trigger', function () {
+        const $tabSwitcher = $(this).parent('.tab-switcher');
+        const $tab = $(this);
+        const target = $tab.data('tab-target');
+
+        UI.tabSwitcher($tab, target, $tabSwitcher);
+    });
+})
 
 export default UI;

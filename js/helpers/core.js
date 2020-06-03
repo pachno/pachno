@@ -1,64 +1,6 @@
 import $ from "jquery";
 
 const Core = {
-    AjaxCalls: [],
-    Pollers: {
-        Callbacks: {
-            dataPoller: function (toggled_notification_id) {
-                if (!Core.Pollers.Locks.datapoller) {
-                    Core.Pollers.Locks.datapoller = true;
-                    Pachno.Helpers.fetch(Pachno.data_url, {
-                        method: 'GET',
-                        success: {
-                            callback: function (json) {
-                                var unc = $('#user_notifications_count');
-                                if (unc) {
-                                    if (parseInt(json.unread_notifications_count) != parseInt(unc.innerHTML)) {
-                                        unc.html(json.unread_notifications_count);
-                                        if (parseInt(json.unread_notifications_count) > 0) {
-                                            unc.addClass('unread');
-                                        } else {
-                                            unc.removeClass('unread');
-                                        }
-                                    }
-                                    Pachno.Main.Notifications.loadMore(undefined, true);
-                                }
-                                var un = $('#user_notifications');
-                                if (un && json.unread_notifications !== undefined) {
-                                    for (let uni = 0; uni < json.unread_notifications.length; uni++) {
-                                        var read_notification_is_unread = $('.read[data-notification-id='+json.unread_notifications[uni]+']', un);
-
-                                        if (read_notification_is_unread != null && ((toggled_notification_id != null && toggled_notification_id != read_notification_is_unread.data('notification_id')) || toggled_notification_id == null)) {
-                                            read_notification_is_unread.removeClass('read');
-                                            read_notification_is_unread.addClass('unread');
-                                        }
-                                    }
-                                    un.find('.unread').each(function (li) {
-                                        if (((toggled_notification_id != null && toggled_notification_id != li.data('notification-id')) || toggled_notification_id == null) && json.unread_notifications.indexOf(li.data('notification-id')) == -1) {
-                                            li.removeClass('unread');
-                                            li.addClass('read');
-                                        }
-                                    });
-                                }
-                                Core.Pollers.Locks.datapoller = false;
-                                if (Core.Pollers.datapoller != null)
-                                    Core.Pollers.datapoller.stop();
-                                var interval = parseInt(json.poll_interval);
-                                Core.Pollers.datapoller = interval > 0 ? new PeriodicalExecuter(Core.Pollers.Callbacks.dataPoller, interval) : null;
-                            }
-                        },
-                        exception: {
-                            callback: function () {
-                                Core.Pollers.Locks.datapoller = false;
-                            }
-                        }
-                    });
-                }
-            }
-        },
-        Locks: {}
-    },
-
     /**
      * Initializes the autocompleter
      */

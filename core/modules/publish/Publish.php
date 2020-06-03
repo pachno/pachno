@@ -45,9 +45,12 @@
 
         protected $_has_config_settings = true;
 
-        public static function getArticleLink($article_name, $project = null, $mode = 'show')
+        public static function getArticleLink($article_name, $project = null, $mode = 'show', $legacy_name = false)
         {
-            $article = Articles::getTable()->getArticleByName($article_name, $project);
+            $article = Articles::getTable()->getArticleByName($article_name, $project, $legacy_name);
+            if (!$article instanceof Article && $project instanceof Project) {
+                $article = Articles::getTable()->getArticleByName($project->getKey() . ':' . $article_name, $project, $legacy_name);
+            }
             if (!$article instanceof Article) {
                 $article = new Article();
                 $article->setName($article_name);

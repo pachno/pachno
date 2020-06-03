@@ -15,3 +15,32 @@
         </div>
     </h5>
 </div>
+<script>
+    Pachno.Modules.mailing.checkIncomingAccount = function(url, account_id) {
+        Pachno.UI.fetch(url, {
+            loading: {indicator: 'mailing_account_' + account_id + '_indicator'},
+            success: {
+                callback: function(json) {
+                    $('mailing_account_' + account_id + '_time').update(json.time);
+                    $('mailing_account_' + account_id + '_count').update(json.count);
+                }
+            }
+        });
+    };
+
+    Pachno.Modules.mailing.deleteIncomingAccount = function(url, account_id) {
+        Pachno.UI.fetch(url, {
+            loading: {
+                indicator: 'fullpage_backdrop',
+                clear: 'fullpage_backdrop_content',
+                show: 'fullpage_backdrop_indicator',
+                hide: 'dialog_backdrop'
+            },
+            success: {
+                remove: 'incoming_email_account_' + account_id,
+                callback: Pachno.UI.Dialog.dismiss
+            }
+        });
+    };
+
+</script>

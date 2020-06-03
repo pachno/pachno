@@ -16,7 +16,7 @@
 <div class="content-with-sidebar article-container">
 <?php if ($article instanceof \pachno\core\entities\Article): ?>
     <?php include_component('manualsidebar', ['article' => $article]); ?>
-    <div class="main_area">
+    <div class="main_area" data-simplebar>
         <a name="top"></a>
         <?php if ($error): ?>
             <div class="redbox">
@@ -35,6 +35,31 @@
             </div>
         <?php endif; ?>
         <?php include_component('articledisplay', ['article' => $article, 'show_article' => $article->hasContent(), 'redirected_from' => $redirected_from]); ?>
+        <?php if ($article->isCategory()): ?>
+            <div class="article-pages-list">
+                <h2>
+                    <span class="name"><?php echo __('In this category'); ?></span>
+                    <span class="button-group"><button class="icon secondary"><?= fa_image_tag('sort-numeric-up', ['class' => 'icon']); ?></button></span>
+                </h2>
+                <?php if (count($article->getCategoryArticles()) > 0): ?>
+                    <?php foreach ($article->getCategoryArticles() as $categoryarticle): ?>
+                        <a class="article-page" href="<?= $categoryarticle->getArticle()->getLink(); ?>">
+                            <h3>
+                                <span>
+                                    <span class="date-container count-badge">
+                                        <?= fa_image_tag('calendar-alt', ['class' => 'icon'], 'far'); ?>
+                                        <span><?= Context::getI18n()->formatTime($categoryarticle->getArticle()->getLastUpdatedDate(), 20); ?></span>
+                                    </span>
+                                    <span><?= $categoryarticle->getArticle()->getName(); ?></span>
+                                </span>
+                            </h3>
+                        </a>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <div class="faded_out"><?php echo __('There are no pages in this category'); ?></div>
+                <?php endif; ?>
+            </div>
+        <?php endif; ?>
         <?php if ($article->getID()): ?>
             <?php $attachments = array_reverse($article->getFiles()); ?>
             <div id="article_attachments">
@@ -42,34 +67,35 @@
                     <?php include_component('main/uploader', array('article' => $article, 'mode' => 'article')); ?>
                 <?php endif;*/ ?>
                 <h4>
-                    <span class="header-text"><?php echo __('Article attachments'); ?></span>
+                    <?= fa_image_tag('paperclip', ['class' => 'icon']); ?>
+                    <span class="name">
+                        <span><?php echo __('Attachments'); ?></span>
+                        <span class="count-badge"><?= count($attachments); ?></span>
+                    </span>
                     <?php if (\pachno\core\framework\Settings::isUploadsEnabled() && $article->canEdit()): ?>
-                        <button class="button" onclick="Pachno.Main.showUploader('<?php echo make_url('get_partial_for_backdrop', ['key' => 'uploader', 'mode' => 'article', 'article_name' => $article->getName()]); ?>');"><?php echo __('Attach a file'); ?></button>
+                        <button class="button secondary" onclick="Pachno.Main.showUploader('<?php echo make_url('get_partial_for_backdrop', ['key' => 'uploader', 'mode' => 'article', 'article_name' => $article->getName()]); ?>');"><?php echo __('Add attachment'); ?></button>
                     <?php else: ?>
-                        <button class="button disabled" onclick="Pachno.UI.Message.error('<?php echo __('File uploads are not enabled'); ?>');"><?php echo __('Attach a file'); ?></button>
+                        <button class="button secondary disabled" onclick="Pachno.UI.Message.error('<?php echo __('File uploads are not enabled'); ?>');"><?php echo __('Attach a file'); ?></button>
                     <?php endif; ?>
                 </h4>
                 <?php include_component('publish/attachments', ['article' => $article, 'attachments' => $attachments]); ?>
             </div>
             <div id="article_comments">
                 <h4>
-                    <span class="header-text">
-                        <?php echo __('Article comments (%count)', ['%count' => Comment::countComments($article->getID(), Comment::TYPE_ARTICLE)]); ?>
+                    <?= fa_image_tag('comment', ['class' => 'icon'], 'far'); ?>
+                    <span class="name">
+                        <span><?php echo __('Comments'); ?></span>
+                        <span class="count-badge"><?= $comment_count; ?></span>
                     </span>
-                    <div class="action-buttons">
-                        <div class="dropper_container">
-                            <?php echo fa_image_tag('spinner', ['class' => 'fa-spin', 'style' => 'display: none;', 'id' => 'comments_loading_indicator']); ?>
-                            <span class="dropper"><?= fa_image_tag('cog') . __('Options'); ?></span>
-                            <ul class="more_actions_dropdown dropdown_box popup_box leftie" id="comment_dropdown_options">
-                                <li><a href="javascript:void(0);" onclick="Pachno.Main.Comment.toggleOrder('<?= Comment::TYPE_ARTICLE; ?>', '<?= $article->getID(); ?>');"><?php echo __('Sort comments in opposite direction'); ?></a></li>
-                            </ul>
-                        </div>
+                    <div class="button-group">
+                        <?php echo fa_image_tag('spinner', ['class' => 'fa-spin', 'style' => 'display: none;', 'id' => 'comments_loading_indicator']); ?>
+                        <button class="secondary icon" id="sort-comments-button" style="<?php if (!$comment_count) echo 'display: none; '; ?>" onclick="Pachno.Main.Comment.toggleOrder('<?= Comment::TYPE_ARTICLE; ?>', '<?= $article->getID(); ?>')"><?= fa_image_tag('sort', ['class' => 'icon']); ?></button>
+                        <?php if ($pachno_user->canPostComments() && ((Context::isProjectContext() && !Context::getCurrentProject()->isArchived()) || !Context::isProjectContext())): ?>
+                            <button id="comment_add_button" class="button secondary" onclick="Pachno.Main.Comment.showPost();"><span><?php echo __('Add comment'); ?></span></button>
+                        <?php endif; ?>
                     </div>
-                    <?php if ($pachno_user->canPostComments() && ((Context::isProjectContext() && !Context::getCurrentProject()->isArchived()) || !Context::isProjectContext())): ?>
-                        <button id="comment_add_button" class="button" onclick="Pachno.Main.Comment.showPost();"><?php echo __('Post comment'); ?></button>
-                    <?php endif; ?>
                 </h4>
-                <?php //include_component('main/comments', ['target_id' => $article->getID(), 'mentionable_target_type' => 'article', 'target_type' => Comment::TYPE_ARTICLE, 'show_button' => false, 'comment_count_div' => 'article_comment_count']); ?>
+                <?php include_component('main/comments', ['target_id' => $article->getID(), 'mentionable_target_type' => 'article', 'target_type' => Comment::TYPE_ARTICLE, 'show_button' => false, 'comment_count_div' => 'article_comment_count']); ?>
             </div>
         <?php endif; ?>
     </div>

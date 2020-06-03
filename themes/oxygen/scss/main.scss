@@ -55,14 +55,33 @@ h1, h2, h3, h4, h5, h6 {
   display: flex;
   align-items: center;
 
-  span {
+  > .icon {
+    flex: 0 0 auto;
+
+    + span {
+      margin-left: .35em;
+    }
+  }
+
+  > span {
     flex: 1 1 auto;
     display: flex;
     flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+
+    &.multiline {
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: center;
+    }
   }
 
-  .dropper-container {
+  .dropper-container,
+  .action-buttons,
+  .button-group {
     flex: 0 0 auto;
+    padding: 0;
   }
 }
 
@@ -6931,77 +6950,6 @@ table.sortable tr th.nosort {
   padding: 10px;
   border-radius: 3px;
 }
-
-.message-box {
-  display: flex;
-  width: calc(100% - 20px);
-  box-sizing: border-box;
-  margin: 10px;
-  padding: 10px;
-  border: 1px solid rgba(200, 200, 200, 0.7);
-  align-items: center;
-  border-radius: 3px;
-  font-weight: $theme-font-weight-light;
-
-  &.type-error {
-    background-color: #d62246;
-    color: #FFF;
-
-    .message {
-      color: rgba(255, 255, 255, 1);
-    }
-  }
-
-  &.type-warning {
-    background-color: rgba(249, 245, 178, 0.6);
-  }
-
-  &.type-info {
-    background-color: #d4f4dd;
-    color: rgba(0, 0, 0, .55);
-  }
-
-  .fas,
-  .fab,
-  .far {
-    margin-right: 5px;
-  }
-
-  .title {
-    flex: 1 1 auto;
-    font-size: 1.1em;
-    font-weight: $theme-font-weight-bold;
-  }
-
-  .message {
-    flex: 1 1 auto;
-    font-size: 1.1em;
-
-    & + .actions {
-      margin-left: 10px;
-    }
-  }
-
-  .actions {
-    flex: 0 0 auto;
-  }
-
-  .image-container {
-    flex: 0 0 60px;
-    box-sizing: border-box;
-    padding: 0 1em 0 .5em;
-
-    img {
-      width: 100%;
-      height: auto;
-    }
-  }
-
-  .command_box {
-    font-size: .85em;
-  }
-}
-
 
 .greenbox {
   background-color: rgba(177, 210, 143, 0.3);

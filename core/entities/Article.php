@@ -20,6 +20,7 @@
     use pachno\core\helpers\ContentParser;
     use pachno\core\helpers\TextDiff;
     use pachno\core\helpers\TextParser;
+    use pachno\core\helpers\TextParserEditorJS;
     use pachno\core\helpers\TextParserMarkdown;
     use pachno\core\modules\publish\Publish;
 
@@ -94,7 +95,7 @@
          * @var integer
          * @Column(type="integer", length=3, default=1)
          */
-        protected $_content_syntax = Settings::SYNTAX_MW;
+        protected $_content_syntax = Settings::SYNTAX_EDITOR_JS;
 
         /**
          * Whether the article is published or not
@@ -396,6 +397,10 @@
             }
 
             switch ($this->_content_syntax) {
+                case Settings::SYNTAX_EDITOR_JS:
+                    $parser = new TextParserEditorJS($this->_content, $options);
+                    $text = $parser->getContent();
+                    break;
                 case Settings::SYNTAX_MD:
                     $parser = new TextParserMarkdown();
                     $text = $parser->transform($this->_content);
@@ -417,6 +422,17 @@
             }
 
             return $text;
+        }
+
+        public function getTableOfContents()
+        {
+            $parser = $this->_getParser();
+            $toc = [];
+            if ($parser instanceof TextParser || $this->getContentSyntax() == Settings::SYNTAX_EDITOR_JS) {
+                $toc = $parser->getTableOfContents();
+            }
+
+            return $toc;
         }
 
         public function getContentSyntax()
@@ -1249,6 +1265,12 @@
             }
 
             return $parents;
+        }
+
+        public function isMainPage()
+        {
+            $name = str_replace(' ', '', mb_strtolower(trim($this->getName())));
+            return $name == 'mainpage';
         }
 
     }

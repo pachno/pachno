@@ -43,7 +43,8 @@
         "easybook/geshi": "v1.0.8.19",
         "league/html-to-markdown": "^4.8",
         "pragmarx/google2fa": "^6.1",
-        "pragmarx/google2fa-qrcode": "^1.0"
+        "pragmarx/google2fa-qrcode": "^1.0",
+        "codex-team/editor.js": "dev-master"
     },
     "require-dev" : {
         "symfony/finder" : "~2.7",
