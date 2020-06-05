@@ -111,7 +111,7 @@ Google Maps).
                     callback(loaded);
             };
 
-            $('<img />').load(handler).error(handler).attr('src', url);
+            $('#<img />').load(handler).error(handler).attr('src', url);
         });
     };
     

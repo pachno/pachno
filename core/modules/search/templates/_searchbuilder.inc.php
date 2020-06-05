@@ -109,7 +109,7 @@
                         <a href="javascript:void(0);" class="button icon secondary dropper" id="interactive_save_button" style="<?php if (!$show_results) echo 'display: none;'; ?>"><span class="expander"><?= fa_image_tag('save'); ?></span></a>
                         <div class="dropdown-container list-mode">
                             <div class="header"><?= __('Save or download search results'); ?></div>
-                            <div class="list-item" onclick="$('saved_search_details').toggle();">
+                            <div class="list-item" onclick="$('#saved_search_details').toggle();">
                                 <?= fa_image_tag('bookmark', array('class' => 'icon')); ?>
                                 <span class="name"><?= __('Save search filters'); ?></span>
                             </div>
@@ -228,7 +228,7 @@
         <div class="backdrop_box large">
             <div class="backdrop_detail_header">
                 <span><?= __('Save this search'); ?></span>
-                <a href="javascript:void(0);" class="closer" onclick="$('saved_search_details').hide();"><?= fa_image_tag('times'); ?></a>
+                <a href="javascript:void(0);" class="closer" onclick="$('#saved_search_details').hide();"><?= fa_image_tag('times'); ?></a>
             </div>
             <form id="save_search_form" action="<?= make_url('search_save'); ?>" method="post" onsubmit="Pachno.Search.saveSearch();return false;">
                 <div class="backdrop_detail_content">

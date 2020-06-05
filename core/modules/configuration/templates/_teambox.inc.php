@@ -49,7 +49,7 @@
         </div>
         <?php include_component('main/identifiableselector', array(    'html_id'        => "addmember_team_{$team->getID()}",
                                                                 'header'             => __('Add a member to this team'),
-                                                                'callback'             => "Pachno.Config.Team.addMember('".make_url('configure_users_add_team_member', array('team_id' => $team->getID(), 'user_id' => '%identifiable_value'))."', ".$team->getID().", '%identifiable_value');$('addmember_team_{$team->getID()}').hide();",
+                                                                'callback'             => "Pachno.Config.Team.addMember('".make_url('configure_users_add_team_member', array('team_id' => $team->getID(), 'user_id' => '%identifiable_value'))."', ".$team->getID().", '%identifiable_value');$('#addmember_team_{$team->getID()}').hide();",
                                                                 'base_id'            => "addmember_team_{$team->getID()}",
                                                                 'include_teams'        => false,
                                                                 'allow_clear'        => false,
@@ -72,7 +72,7 @@
     <div class="fullpage_backdrop_content backdrop_box large">
         <div class="backdrop_detail_header">
             <span><?= __('Configure advanced permissions for %teamname', array('%teamname' => $team->getName())); ?></span>
-            <?= javascript_link_tag(fa_image_tag('times'), array('class' => 'closer', 'onclick' => "$('team_".$team->getID()."_permissions_container').toggle();")); ?>
+            <?= javascript_link_tag(fa_image_tag('times'), array('class' => 'closer', 'onclick' => "$('#team_".$team->getID()."_permissions_container').toggle();")); ?>
         </div>
         <?= image_tag('spinning_32.gif', array('id' => 'team_'.$team->getID().'_permissions_indicator', 'style' => 'display: none;')); ?>
         <div class="backdrop_detail_content config_permissions" id="team_<?= $team->getID(); ?>_permissions"></div>

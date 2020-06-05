@@ -519,7 +519,7 @@ More detail and specific examples can be found in the included HTML file.
 							}
 
 							var pos = "top:" + labelTop + "px;left:" + labelLeft + "px;";
-							$("<div class='pieLabelBackground' style='position:absolute;width:" + label.width() + "px;height:" + label.height() + "px;" + pos + "background-color:" + c + ";'></div>")
+							$("#<div class='pieLabelBackground' style='position:absolute;width:" + label.width() + "px;height:" + label.height() + "px;" + pos + "background-color:" + c + ";'></div>")
 								.css("opacity", options.series.pie.label.background.opacity)
 								.insertBefore(label);
 						}

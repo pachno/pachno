@@ -419,8 +419,8 @@ lightwindow.prototype = {
 			if (typeof this.galleries[i] == 'object') {
 				for (j in this.galleries[i]) {
 					if (typeof this.galleries[i][j] == 'object') {
-						Event.observe($('lightwindow_gallery_'+i+'_'+j), 'click', this.openWindow.bind(this, this.galleries[i][j][0]), false);
-						$('lightwindow_gallery_'+i+'_'+j).onclick = function() {return false;};	
+						Event.observe($('#lightwindow_gallery_'+i+'_'+j), 'click', this.openWindow.bind(this, this.galleries[i][j][0]), false);
+						$('#lightwindow_gallery_'+i+'_'+j).onclick = function() {return false;};	
 					}
 				}
 			}
@@ -507,19 +507,19 @@ lightwindow.prototype = {
 		body.appendChild(overlay);
 		body.appendChild(lw);	
 				
-		if ($('lightwindow_title_bar_close_link')) {
+		if ($('#lightwindow_title_bar_close_link')) {
 			Event.observe('lightwindow_title_bar_close_link', 'click', this.deactivate.bindAsEventListener(this));
-			$('lightwindow_title_bar_close_link').onclick = function() {return false;};
+			$('#lightwindow_title_bar_close_link').onclick = function() {return false;};
 		}
 			
-		Event.observe($('lightwindow_previous'), 'click', this.navigateWindow.bind(this, 'previous'), false);
-		$('lightwindow_previous').onclick = function() {return false;};		
-		Event.observe($('lightwindow_next'), 'click', this.navigateWindow.bind(this, 'next'), false);
-		$('lightwindow_next').onclick = function() {return false;};
+		Event.observe($('#lightwindow_previous'), 'click', this.navigateWindow.bind(this, 'previous'), false);
+		$('#lightwindow_previous').onclick = function() {return false;};		
+		Event.observe($('#lightwindow_next'), 'click', this.navigateWindow.bind(this, 'next'), false);
+		$('#lightwindow_next').onclick = function() {return false;};
 
 		if (!this.options.hideGalleryTab) {
-			Event.observe($('lightwindow_galleries_tab'), 'click', this._handleGalleryAnimation.bind(this, true), false);
-			$('lightwindow_galleries_tab').onclick = function() {return false;};
+			Event.observe($('#lightwindow_galleries_tab'), 'click', this._handleGalleryAnimation.bind(this, true), false);
+			$('#lightwindow_galleries_tab').onclick = function() {return false;};
 		}
 		
 		// Because we use position absolute, kill the scroll Wheel on animations
@@ -536,7 +536,7 @@ lightwindow.prototype = {
 	//  Add loading window markup
 	//
 	_addLoadingWindowMarkup : function() {
-		$('lightwindow_contents').innerHTML += this.options.skin.loading;
+		$('#lightwindow_contents').innerHTML += this.options.skin.loading;
 	},
 	//
 	//  Setup the window elements
@@ -558,24 +558,24 @@ lightwindow.prototype = {
 	//
 	_clearWindowContents : function(contents) {
 		// If there is an iframe, its got to go
-		if ($('lightwindow_iframe')) {
-			Element.remove($('lightwindow_iframe'));
+		if ($('#lightwindow_iframe')) {
+			Element.remove($('#lightwindow_iframe'));
 		}
 
 		// Stop playing an object if its still around
-		if ($('lightwindow_media_primary')) {
+		if ($('#lightwindow_media_primary')) {
 			try {
-				$('lightwindow_media_primary').Stop();
+				$('#lightwindow_media_primary').Stop();
 			} catch(e) {}
-			Element.remove($('lightwindow_media_primary'));
+			Element.remove($('#lightwindow_media_primary'));
 		}
 
 		// Stop playing an object if its still around		
-		if ($('lightwindow_media_secondary')) {
+		if ($('#lightwindow_media_secondary')) {
 			try {
-				$('lightwindow_media_secondary').Stop();
+				$('#lightwindow_media_secondary').Stop();
 			} catch(e) {}
-			Element.remove($('lightwindow_media_secondary'));
+			Element.remove($('#lightwindow_media_secondary'));
 		}
 		
 		this.activeGallery = false;
@@ -583,23 +583,23 @@ lightwindow.prototype = {
 		
 		if (contents) {
 			// Empty the contents
-			$('lightwindow_contents').innerHTML = '';
+			$('#lightwindow_contents').innerHTML = '';
 			
 			// Reset the scroll bars
-			$('lightwindow_contents').setStyle({
+			$('#lightwindow_contents').setStyle({
 				overflow: 'hidden'
 			});		
 			
 			if (!this.windowActive) {
-				$('lightwindow_data_slide_inner').setStyle({
+				$('#lightwindow_data_slide_inner').setStyle({
 					display: 'none'
 				});
 
-				$('lightwindow_title_bar_title').innerHTML = '';
+				$('#lightwindow_title_bar_title').innerHTML = '';
 			}
 
 			// Because of browser differences and to maintain flexible captions we need to reset this height at close
-			$('lightwindow_data_slide').setStyle({
+			$('#lightwindow_data_slide').setStyle({
 				height: 'auto'
 			});
 		}
@@ -626,30 +626,30 @@ lightwindow.prototype = {
 		if (status) {
 			if (this.windowActive) {
 				this._getScroll();
-				$('lightwindow').setStyle({
+				$('#lightwindow').setStyle({
 					position: 'absolute',
-					top: parseFloat($('lightwindow').getStyle('top'))+this.pagePosition.y+'px',
-					left: parseFloat($('lightwindow').getStyle('left'))+this.pagePosition.x+'px'
+					top: parseFloat($('#lightwindow').getStyle('top'))+this.pagePosition.y+'px',
+					left: parseFloat($('#lightwindow').getStyle('left'))+this.pagePosition.x+'px'
 				});		
 			} else {
-				$('lightwindow').setStyle({
+				$('#lightwindow').setStyle({
 					position: 'absolute'
 				});						
 			}
 		} else {
 			if (this.windowActive) {
 				this._getScroll();
-				$('lightwindow').setStyle({
+				$('#lightwindow').setStyle({
 					position: 'fixed',
-					top: parseFloat($('lightwindow').getStyle('top'))-this.pagePosition.y+'px',
-					left: parseFloat($('lightwindow').getStyle('left'))-this.pagePosition.x+'px'
+					top: parseFloat($('#lightwindow').getStyle('top'))-this.pagePosition.y+'px',
+					left: parseFloat($('#lightwindow').getStyle('left'))-this.pagePosition.x+'px'
 				});		
 			} else {
-				if ($('lightwindow_iframe')) {
+				if ($('#lightwindow_iframe')) {
 					// Ideally here we would set a 50% value for top and left, but Safari rears it ugly head again and we need to do it by pixels
 					this._browserDimensions();
 				}
-				$('lightwindow').setStyle({
+				$('#lightwindow').setStyle({
 					position: 'fixed',
 					top: (parseFloat(this._getParameter('lightwindow_top')) ? parseFloat(this._getParameter('lightwindow_top'))+'px' : this.dimensions.viewport.height/2+'px'),
 					left: (parseFloat(this._getParameter('lightwindow_left')) ? parseFloat(this._getParameter('lightwindow_left'))+'px' : this.dimensions.viewport.width/2+'px')
@@ -710,7 +710,7 @@ lightwindow.prototype = {
 	_toggleTroubleElements : function(visibility, content){
 		
 		if (content) {
-			var selects = $('lightwindow_contents').getElementsByTagName('select');
+			var selects = $('#lightwindow_contents').getElementsByTagName('select');
 		} else {
 			var selects = document.getElementsByTagName('select');
 		}
@@ -780,8 +780,8 @@ lightwindow.prototype = {
 	//	Display the lightWindow.
 	//
 	_displayLightWindow : function(display, visibility) {
-		$('lightwindow_overlay').style.display = $('lightwindow').style.display = $('lightwindow_container').style.display = display;	
-		$('lightwindow_overlay').style.visibility = $('lightwindow').style.visibility = $('lightwindow_container').style.visibility = visibility;
+		$('#lightwindow_overlay').style.display = $('#lightwindow').style.display = $('#lightwindow_container').style.display = display;	
+		$('#lightwindow_overlay').style.visibility = $('#lightwindow').style.visibility = $('#lightwindow_container').style.visibility = visibility;
 	},
 	//
 	//	Setup Dimensions of lightwindow.
@@ -827,19 +827,19 @@ lightwindow.prototype = {
 		var offsetWidth = this._getParameter('lightwindow_left') ? parseFloat(this._getParameter('lightwindow_left'))+this.pagePosition.x : this.dimensions.viewport.width/2+this.pagePosition.x;
 		
 		// So if a theme has say shadowed edges, they should be consistant and take care of in the contentOffset
-		$('lightwindow').setStyle({
+		$('#lightwindow').setStyle({
 			top: offsetHeight+'px',
 			left: offsetWidth+'px'
 		});
 		
-		$('lightwindow_container').setStyle({
+		$('#lightwindow_container').setStyle({
 			height: originalHeight+'px',
 			width: originalWidth+'px',
 			left: -(originalWidth/2)+'px',
 			top: -(originalHeight/2)+'px'
 		});
 
-		$('lightwindow_contents').setStyle({
+		$('#lightwindow_contents').setStyle({
 			height: originalHeight+'px',
 			width: originalWidth+'px'
 		});
@@ -1037,11 +1037,11 @@ lightwindow.prototype = {
 		var body = document.getElementsByTagName('body')[0];
 		body.appendChild(scrollDiv);
 
-	    var noScroll = $('lightwindow_content_scroll_div').offsetWidth;
+	    var noScroll = $('#lightwindow_content_scroll_div').offsetWidth;
 	    scrollDiv.style.overflow = 'auto';
-    	var withScroll = $('lightwindow_content_scroll_div').offsetWidth;
+    	var withScroll = $('#lightwindow_content_scroll_div').offsetWidth;
 
-	   	Element.remove($('lightwindow_scroll_div'));
+	   	Element.remove($('#lightwindow_scroll_div'));
 
 	    this.scrollbarOffset = noScroll-withScroll;
 	},
@@ -1121,7 +1121,7 @@ lightwindow.prototype = {
 		iframe.setAttribute('marginheight', '0');
 		iframe.setAttribute('scrolling', scroll);	
 		
-		this._appendObject(iframe, 'iframe', $('lightwindow_contents'));
+		this._appendObject(iframe, 'iframe', $('#lightwindow_contents'));
 	},
 	//
 	//  Write Content to the iframe using the skin
@@ -1129,14 +1129,14 @@ lightwindow.prototype = {
 	_writeToIframe : function(content) {
 		var template = this.options.skin.iframe;
 		template = template.replace('{body_replace}', content); 
-		if ($('lightwindow_iframe').contentWindow){
-			$('lightwindow_iframe').contentWindow.document.open();
-			$('lightwindow_iframe').contentWindow.document.write(template);
-			$('lightwindow_iframe').contentWindow.document.close();
+		if ($('#lightwindow_iframe').contentWindow){
+			$('#lightwindow_iframe').contentWindow.document.open();
+			$('#lightwindow_iframe').contentWindow.document.write(template);
+			$('#lightwindow_iframe').contentWindow.document.close();
 		} else {
-			$('lightwindow_iframe').contentDocument.open();
-			$('lightwindow_iframe').contentDocument.write(template);
-			$('lightwindow_iframe').contentDocument.close();
+			$('#lightwindow_iframe').contentDocument.open();
+			$('#lightwindow_iframe').contentDocument.write(template);
+			$('#lightwindow_iframe').contentDocument.close();
 		}
 	},
 	//
@@ -1186,25 +1186,25 @@ lightwindow.prototype = {
 						this.galleryLocation = {current: (i+1)/this.imageCount, total: (this.galleries[gallery[0]][gallery[1]].length)/this.imageCount};
 											
 						if (!this.galleries[gallery[0]][gallery[1]][i+this.imageCount]) {
-							$('lightwindow_next').setStyle({
+							$('#lightwindow_next').setStyle({
 								display: 'none'
 							});
 						} else {
-							$('lightwindow_next').setStyle({
+							$('#lightwindow_next').setStyle({
 								display: 'block'
 							});
-							$('lightwindow_next_title').innerHTML = this.galleries[gallery[0]][gallery[1]][i+this.imageCount].title;
+							$('#lightwindow_next_title').innerHTML = this.galleries[gallery[0]][gallery[1]][i+this.imageCount].title;
 						}
 						
 						if (!this.galleries[gallery[0]][gallery[1]][i-this.imageCount]) {
-							$('lightwindow_previous').setStyle({
+							$('#lightwindow_previous').setStyle({
 								display: 'none'
 							});
 						} else {
-							$('lightwindow_previous').setStyle({
+							$('#lightwindow_previous').setStyle({
 								display: 'block'
 							});
-							$('lightwindow_previous_title').innerHTML = this.galleries[gallery[0]][gallery[1]][i-this.imageCount].title;
+							$('#lightwindow_previous_title').innerHTML = this.galleries[gallery[0]][gallery[1]][i-this.imageCount].title;
 						}
 					}
 
@@ -1212,22 +1212,22 @@ lightwindow.prototype = {
 					images[i].setAttribute('id', 'lightwindow_image_'+i);
 					images[i].setAttribute('border', '0');
 					images[i].setAttribute('src', this.contentToFetch);
-					$('lightwindow_contents').appendChild(images[i]);
+					$('#lightwindow_contents').appendChild(images[i]);
 
 					// We have to do this instead of .onload 
 					this.checkImage[i] = new PeriodicalExecuter(function(i) {
-						if (!(typeof $('lightwindow_image_'+i).naturalWidth != "undefined" && $('lightwindow_image_'+i).naturalWidth == 0)) {
+						if (!(typeof $('#lightwindow_image_'+i).naturalWidth != "undefined" && $('#lightwindow_image_'+i).naturalWidth == 0)) {
 	
 							this.checkImage[i].stop();
 	
-							var imageHeight = $('lightwindow_image_'+i).getHeight();
+							var imageHeight = $('#lightwindow_image_'+i).getHeight();
 							if (imageHeight > this.resizeTo.height) {
 								this.resizeTo.height = imageHeight;
 							}
-							this.resizeTo.width += $('lightwindow_image_'+i).getWidth();
+							this.resizeTo.width += $('#lightwindow_image_'+i).getWidth();
 							this.imageCount--;
 	
-							$('lightwindow_image_'+i).setStyle({
+							$('#lightwindow_image_'+i).setStyle({
 								height: '100%'
 							});
 	
@@ -1281,25 +1281,25 @@ lightwindow.prototype = {
 				this.galleryLocation = {current: current+1, total: this.galleries[gallery[0]][gallery[1]].length};
 				
 				if (!this.galleries[gallery[0]][gallery[1]][current+1]) {
-					$('lightwindow_next').setStyle({
+					$('#lightwindow_next').setStyle({
 						display: 'none'
 					});
 				} else {
-					$('lightwindow_next').setStyle({
+					$('#lightwindow_next').setStyle({
 						display: 'block'
 					});
-					$('lightwindow_next_title').innerHTML = this.galleries[gallery[0]][gallery[1]][current+1].title;
+					$('#lightwindow_next_title').innerHTML = this.galleries[gallery[0]][gallery[1]][current+1].title;
 				}
 				
 				if (!this.galleries[gallery[0]][gallery[1]][current-1]) {
-					$('lightwindow_previous').setStyle({
+					$('#lightwindow_previous').setStyle({
 						display: 'none'
 					});
 				} else {
-					$('lightwindow_previous').setStyle({
+					$('#lightwindow_previous').setStyle({
 						display: 'block'
 					});
-					$('lightwindow_previous_title').innerHTML = this.galleries[gallery[0]][gallery[1]][current-1].title;
+					$('#lightwindow_previous_title').innerHTML = this.galleries[gallery[0]][gallery[1]][current-1].title;
 				}
 			}
 			
@@ -1333,9 +1333,9 @@ lightwindow.prototype = {
 					method: 'get', 
 					parameters: '', 
 					onComplete: function(response) {
-						$('lightwindow_contents').innerHTML += response.responseText;
-						this.resizeTo.height = $('lightwindow_contents').scrollHeight+(this.options.contentOffset.height);
-						this.resizeTo.width = $('lightwindow_contents').scrollWidth+(this.options.contentOffset.width);
+						$('#lightwindow_contents').innerHTML += response.responseText;
+						this.resizeTo.height = $('#lightwindow_contents').scrollHeight+(this.options.contentOffset.height);
+						this.resizeTo.width = $('#lightwindow_contents').scrollWidth+(this.options.contentOffset.width);
 						this._processWindow();
 					}.bind(this)
 				}
@@ -1351,10 +1351,10 @@ lightwindow.prototype = {
 			}
 			content = content.substring(content.indexOf('#')+1);
 			
-			new Insertion.Top($('lightwindow_contents'), $(content).innerHTML);
+			new Insertion.Top($('#lightwindow_contents'), $(content).innerHTML);
 			
-			this.resizeTo.height = $('lightwindow_contents').scrollHeight+(this.options.contentOffset.height);
-			this.resizeTo.width = $('lightwindow_contents').scrollWidth+(this.options.contentOffset.width);
+			this.resizeTo.height = $('#lightwindow_contents').scrollHeight+(this.options.contentOffset.height);
+			this.resizeTo.width = $('#lightwindow_contents').scrollWidth+(this.options.contentOffset.width);
 			
 			this._toggleTroubleElements('hidden', true); 			
 			this._processWindow();
@@ -1376,7 +1376,7 @@ lightwindow.prototype = {
 			// We only care about ratio's with this window type			
 			if (this.windowType == 'image' || (this.windowType == 'media' && !this._getParameter('lightwindow_iframe_embed'))) {
 				this.resizeTo.width = this.resizeTo.height/heightRatio;
-				$('lightwindow_data_slide_inner').setStyle({
+				$('#lightwindow_data_slide_inner').setStyle({
 					width: this.resizeTo.width+'px'
 				});			
 			}
@@ -1387,7 +1387,7 @@ lightwindow.prototype = {
 			// We only care about ratio's with this window type
 			if (this.windowType == 'image' || (this.windowType == 'media' && !this._getParameter('lightwindow_iframe_embed'))) {
 				this.resizeTo.height = this.resizeTo.width/widthRatio;
-				$('lightwindow_data_slide_inner').setStyle({
+				$('#lightwindow_data_slide_inner').setStyle({
 					height: this.resizeTo.height+'px'
 				});
 			}
@@ -1415,55 +1415,55 @@ lightwindow.prototype = {
 		// Set up the data-slide if we have caption information
 		if (this.element.caption || this.element.author || (this.activeGallery && this.options.showGalleryCount)) {
 			if (this.element.caption) {
-				$('lightwindow_data_caption').innerHTML = this.element.caption;
-				$('lightwindow_data_caption').setStyle({
+				$('#lightwindow_data_caption').innerHTML = this.element.caption;
+				$('#lightwindow_data_caption').setStyle({
 					display: 'block'
 				});
 			} else {
-				$('lightwindow_data_caption').setStyle({
+				$('#lightwindow_data_caption').setStyle({
 					display: 'none'
 				});				
 			}
 			if (this.element.author) {
-				$('lightwindow_data_author').innerHTML = this.element.author;
-				$('lightwindow_data_author_container').setStyle({
+				$('#lightwindow_data_author').innerHTML = this.element.author;
+				$('#lightwindow_data_author_container').setStyle({
 					display: 'block'
 				});
 			} else {
-				$('lightwindow_data_author_container').setStyle({
+				$('#lightwindow_data_author_container').setStyle({
 					display: 'none'
 				});				
 			}
 			if (this.activeGallery && this.options.showGalleryCount) {
-				$('lightwindow_data_gallery_current').innerHTML = this.galleryLocation.current;
-				$('lightwindow_data_gallery_total').innerHTML = this.galleryLocation.total;
-				$('lightwindow_data_gallery_container').setStyle({
+				$('#lightwindow_data_gallery_current').innerHTML = this.galleryLocation.current;
+				$('#lightwindow_data_gallery_total').innerHTML = this.galleryLocation.total;
+				$('#lightwindow_data_gallery_container').setStyle({
 					display: 'block'
 				});
 			} else {
-				$('lightwindow_data_gallery_container').setStyle({
+				$('#lightwindow_data_gallery_container').setStyle({
 					display: 'none'
 				});				
 			}
 
-			$('lightwindow_data_slide_inner').setStyle({
+			$('#lightwindow_data_slide_inner').setStyle({
 				width: this.resizeTo.width+'px',
 				height: 'auto',
 				visibility: 'visible',
 				display: 'block'
 			});
-			$('lightwindow_data_slide').setStyle({
-				height: $('lightwindow_data_slide').getHeight()+'px',
+			$('#lightwindow_data_slide').setStyle({
+				height: $('#lightwindow_data_slide').getHeight()+'px',
 				width: '1px',
 				overflow: 'hidden',
 				display: 'block'
 			});
 		} else {
-			$('lightwindow_data_slide').setStyle({
+			$('#lightwindow_data_slide').setStyle({
 				display: 'none',
 				width: 'auto'
 			});
-			$('lightwindow_data_slide_inner').setStyle({
+			$('#lightwindow_data_slide_inner').setStyle({
 				display: 'none',
 				visibility: 'hidden',
 				width: this.resizeTo.width+'px',
@@ -1472,26 +1472,26 @@ lightwindow.prototype = {
 		}
 				
 		if (this.element.title != 'null') {		
-			$('lightwindow_title_bar_title').innerHTML = this.element.title;
+			$('#lightwindow_title_bar_title').innerHTML = this.element.title;
 		} else {
-			$('lightwindow_title_bar_title').innerHTML = '';
+			$('#lightwindow_title_bar_title').innerHTML = '';
 		}
 		
-		var originalContainerDimensions = {height: $('lightwindow_container').getHeight(), width: $('lightwindow_container').getWidth()};
+		var originalContainerDimensions = {height: $('#lightwindow_container').getHeight(), width: $('#lightwindow_container').getWidth()};
 		// Position the window
-    	$('lightwindow_container').setStyle({
+    	$('#lightwindow_container').setStyle({
 			height: 'auto',
 			// We need to set the width to a px not auto as opera has problems with it
-			width: $('lightwindow_container').getWidth()+this.options.contentOffset.width-(this.windowActive ? this.options.contentOffset.width : 0)+'px'
+			width: $('#lightwindow_container').getWidth()+this.options.contentOffset.width-(this.windowActive ? this.options.contentOffset.width : 0)+'px'
 		});
-		var newContainerDimensions = {height: $('lightwindow_container').getHeight(), width: $('lightwindow_container').getWidth()};
+		var newContainerDimensions = {height: $('#lightwindow_container').getHeight(), width: $('#lightwindow_container').getWidth()};
  		
 		// We need to record the container dimension changes
 		this.containerChange = {height: originalContainerDimensions.height-newContainerDimensions.height, width: originalContainerDimensions.width-newContainerDimensions.width};
 
 		// Get out general dimensions
-		this.dimensions.container = {height: $('lightwindow_container').getHeight(), width: $('lightwindow_container').getWidth()};
-		this.dimensions.cruft = {height: this.dimensions.container.height-$('lightwindow_contents').getHeight()+this.options.contentOffset.height, width: this.dimensions.container.width-$('lightwindow_contents').getWidth()+this.options.contentOffset.width};
+		this.dimensions.container = {height: $('#lightwindow_container').getHeight(), width: $('#lightwindow_container').getWidth()};
+		this.dimensions.cruft = {height: this.dimensions.container.height-$('#lightwindow_contents').getHeight()+this.options.contentOffset.height, width: this.dimensions.container.width-$('#lightwindow_contents').getWidth()+this.options.contentOffset.width};
 		
 		// Set Sizes if we need too
 		this._presetWindowSize();
@@ -1499,12 +1499,12 @@ lightwindow.prototype = {
 
 		if (!this.windowActive) {
 			// Position the window
-		   	$('lightwindow_container').setStyle({
+		   	$('#lightwindow_container').setStyle({
 				left: -(this.dimensions.container.width/2)+'px',
 				top: -(this.dimensions.container.height/2)+'px'
 			});
 		}
-	   	$('lightwindow_container').setStyle({
+	   	$('#lightwindow_container').setStyle({
 			height: this.dimensions.container.height+'px',
 			width: this.dimensions.container.width+'px'
 		});
@@ -1568,14 +1568,14 @@ lightwindow.prototype = {
 	//
 	_defaultDisplayNavigation : function(display) {
 		if (display) {
-			$('lightwindow_navigation').setStyle({
+			$('#lightwindow_navigation').setStyle({
 				display: 'block',
-				height: $('lightwindow_contents').getHeight()+'px',
+				height: $('#lightwindow_contents').getHeight()+'px',
 				width: '100%',
 				marginTop: this.options.dimensions.titleHeight+'px'
 			});			
 		} else {
-			$('lightwindow_navigation').setStyle({
+			$('#lightwindow_navigation').setStyle({
 				display: 'none',
 				height: 'auto',
 				width: 'auto'
@@ -1588,7 +1588,7 @@ lightwindow.prototype = {
 	_defaultAnimationHandler : function() {	
 		// Now that we have figures out the cruft lets make the caption go away and add its effects
 		if (this.element.caption || this.element.author || (this.activeGallery && this.options.showGalleryCount)) {
-			$('lightwindow_data_slide').setStyle({
+			$('#lightwindow_data_slide').setStyle({
 				display: 'none',
 				width: 'auto'
 			});
@@ -1599,7 +1599,7 @@ lightwindow.prototype = {
 		}
 
 		// Set up the Title if we have one
-		$('lightwindow_title_bar_inner').setStyle({
+		$('#lightwindow_title_bar_inner').setStyle({
 			height: '0px',
 			marginTop: this.options.dimensions.titleHeight+'px'
 		});
@@ -1612,21 +1612,21 @@ lightwindow.prototype = {
 		
 		if (!this.options.hideGalleryTab) {
 			this._handleGalleryAnimation(false);
-			if ($('lightwindow_galleries_tab_container').getHeight() == 0) {
+			if ($('#lightwindow_galleries_tab_container').getHeight() == 0) {
 				this.dimensions.dataEffects.push(
 					new Effect.Morph('lightwindow_galleries_tab_container', {sync: true, style: {height: '20px', marginTop: '0px'}})
 				);
-				$('lightwindow_galleries').setStyle({
+				$('#lightwindow_galleries').setStyle({
 					width: '0px'
 				});
 			}
 		}
 		
 		var resized = false;
-		var ratio = this.dimensions.container.width-$('lightwindow_contents').getWidth()+this.resizeTo.width+this.options.contentOffset.width;
-		if (ratio != $('lightwindow_container').getWidth()) {
+		var ratio = this.dimensions.container.width-$('#lightwindow_contents').getWidth()+this.resizeTo.width+this.options.contentOffset.width;
+		if (ratio != $('#lightwindow_container').getWidth()) {
 			new Effect.Parallel([
-					new Effect.Scale('lightwindow_contents', 100*(this.resizeTo.width/$('lightwindow_contents').getWidth()), {scaleFrom: 100*($('lightwindow_contents').getWidth()/($('lightwindow_contents').getWidth()+(this.options.contentOffset.width))), sync: true,  scaleY: false, scaleContent: false}),
+					new Effect.Scale('lightwindow_contents', 100*(this.resizeTo.width/$('#lightwindow_contents').getWidth()), {scaleFrom: 100*($('#lightwindow_contents').getWidth()/($('#lightwindow_contents').getWidth()+(this.options.contentOffset.width))), sync: true,  scaleY: false, scaleContent: false}),
 					new Effect.Scale('lightwindow_container', 100*(ratio/(this.dimensions.container.width)), {sync: true, scaleY: false, scaleFromCenter: true, scaleContent: false})
 				], {
 					duration: this.duration, 
@@ -1636,17 +1636,17 @@ lightwindow.prototype = {
 			);		
 		}
 		
-		ratio = this.dimensions.container.height-$('lightwindow_contents').getHeight()+this.resizeTo.height+this.options.contentOffset.height;
-		if (ratio != $('lightwindow_container').getHeight()) {
+		ratio = this.dimensions.container.height-$('#lightwindow_contents').getHeight()+this.resizeTo.height+this.options.contentOffset.height;
+		if (ratio != $('#lightwindow_container').getHeight()) {
 			new Effect.Parallel([
-					new Effect.Scale('lightwindow_contents', 100*(this.resizeTo.height/$('lightwindow_contents').getHeight()), {scaleFrom: 100*($('lightwindow_contents').getHeight()/($('lightwindow_contents').getHeight()+(this.options.contentOffset.height))), sync: true, scaleX: false, scaleContent: false}),
+					new Effect.Scale('lightwindow_contents', 100*(this.resizeTo.height/$('#lightwindow_contents').getHeight()), {scaleFrom: 100*($('#lightwindow_contents').getHeight()/($('#lightwindow_contents').getHeight()+(this.options.contentOffset.height))), sync: true, scaleX: false, scaleContent: false}),
 					new Effect.Scale('lightwindow_container', 100*(ratio/(this.dimensions.container.height)), {sync: true, scaleX: false, scaleFromCenter: true, scaleContent: false})
 				], {
 					duration: this.duration, 
 					afterFinish: function() {				
 						if (this.dimensions.dataEffects.length > 0) {
 							if (!this.options.hideGalleryTab) {
-								$('lightwindow_galleries').setStyle({
+								$('#lightwindow_galleries').setStyle({
 									width: this.resizeTo.width+'px'
 								});
 							}
@@ -1672,7 +1672,7 @@ lightwindow.prototype = {
 					duration: this.duration,
 					beforeStart: function() {
 						if (!this.options.hideGalleryTab) {
-							$('lightwindow_galleries').setStyle({
+							$('#lightwindow_galleries').setStyle({
 								width: this.resizeTo.width+'px'
 							});
 						}
@@ -1705,7 +1705,7 @@ lightwindow.prototype = {
 				afterFinish: function() {
 					// Just in case we need some scroll goodness (this also avoids the swiss cheese effect)
 					if (this.windowType != 'image' && this.windowType != 'media' && this.windowType != 'external') {
-						$('lightwindow_contents').setStyle({
+						$('#lightwindow_contents').setStyle({
 							overflow: 'auto'
 						});
 					}
@@ -1722,34 +1722,34 @@ lightwindow.prototype = {
 	//
 	_defaultGalleryAnimationHandler : function(list) {
 		if (this.activeGallery) {
-			$('lightwindow_galleries').setStyle({
+			$('#lightwindow_galleries').setStyle({
 				display: 'block',
-				marginBottom: $('lightwindow_data_slide').getHeight()+this.options.contentOffset.height/2+'px'
+				marginBottom: $('#lightwindow_data_slide').getHeight()+this.options.contentOffset.height/2+'px'
 			});
-			$('lightwindow_navigation').setStyle({
-				height: $('lightwindow_contents').getHeight()-20+'px'
+			$('#lightwindow_navigation').setStyle({
+				height: $('#lightwindow_contents').getHeight()-20+'px'
 			});
 		} else {
-			$('lightwindow_galleries').setStyle({
+			$('#lightwindow_galleries').setStyle({
 				display: 'none'
 			});	
-			$('lightwindow_galleries_tab_container').setStyle({
+			$('#lightwindow_galleries_tab_container').setStyle({
 				height: '0px',
 				marginTop: '20px'
 			});
-			$('lightwindow_galleries_list').setStyle({
+			$('#lightwindow_galleries_list').setStyle({
 				height: '0px'
 			});
 			return false;
 		}
 		
 		if (list) {
-			if ($('lightwindow_galleries_list').getHeight() == 0) {
-				var height = $('lightwindow_contents').getHeight()*0.80;
-				$('lightwindow_galleries_tab_span').className = 'down';
+			if ($('#lightwindow_galleries_list').getHeight() == 0) {
+				var height = $('#lightwindow_contents').getHeight()*0.80;
+				$('#lightwindow_galleries_tab_span').className = 'down';
 			} else {
 				var height = 0;
-				$('lightwindow_galleries_tab_span').className = 'up';
+				$('#lightwindow_galleries_tab_span').className = 'up';
 			}
 
 			new Effect.Morph('lightwindow_galleries_list', {
@@ -1757,12 +1757,12 @@ lightwindow.prototype = {
 				transition: Effect.Transitions.sinoidal,
 				style: {height: height+'px'},
 				beforeStart: function() {
-					$('lightwindow_galleries_list').setStyle({
+					$('#lightwindow_galleries_list').setStyle({
 						overflow: 'hidden'
 					});					
 				},
 				afterFinish: function() {
-					$('lightwindow_galleries_list').setStyle({
+					$('#lightwindow_galleries_list').setStyle({
 						overflow: 'auto'
 					});
 				},
@@ -1780,7 +1780,7 @@ lightwindow.prototype = {
 		this.dimensions.dataEffects = [];
 
 		// Now that we have figures out the cruft lets make the caption go away and add its effects
-		if ($('lightwindow_data_slide').getStyle('display') != 'none') {
+		if ($('#lightwindow_data_slide').getStyle('display') != 'none') {
 			this.dimensions.dataEffects.push(
 				new Effect.SlideUp('lightwindow_data_slide', {sync: true}),
 				new Effect.Fade('lightwindow_data_slide', {sync: true, from: 1.0, to: 0.0})
@@ -1788,26 +1788,26 @@ lightwindow.prototype = {
 		}
 		
 		if (!this.options.hideGalleryTab) {
-			if ($('lightwindow_galleries').getHeight() != 0 && !this.options.hideGalleryTab) {
+			if ($('#lightwindow_galleries').getHeight() != 0 && !this.options.hideGalleryTab) {
 				this.dimensions.dataEffects.push(
 					new Effect.Morph('lightwindow_galleries_tab_container', {sync: true, style: {height: '0px', marginTop: '20px'}})
 				);
 			}
 			
-			if ($('lightwindow_galleries_list').getHeight() != 0) {
-				$('lightwindow_galleries_tab_span').className = 'up';
+			if ($('#lightwindow_galleries_list').getHeight() != 0) {
+				$('#lightwindow_galleries_tab_span').className = 'up';
 				this.dimensions.dataEffects.push(
 					new Effect.Morph('lightwindow_galleries_list', {
 						sync: true, 
 						style: {height: '0px'},
 						transition: Effect.Transitions.sinoidal,
 						beforeStart: function() {
-							$('lightwindow_galleries_list').setStyle({
+							$('#lightwindow_galleries_list').setStyle({
 								overflow: 'hidden'
 							});					
 						},
 						afterFinish: function() {
-							$('lightwindow_galleries_list').setStyle({
+							$('#lightwindow_galleries_list').setStyle({
 								overflow: 'auto'
 							});
 						}
@@ -1857,7 +1857,7 @@ lightwindow.prototype = {
 	_finishWindow : function() {
 		if (this.windowType == 'external') {
 			// We set the externals source here because it allows for a much smoother animation
-			$('lightwindow_iframe').setAttribute('src', this.element.href);
+			$('#lightwindow_iframe').setAttribute('src', this.element.href);
 			this._handleFinalWindowAnimation(1);	
 		} else if (this.windowType == 'media') {
 
@@ -1895,7 +1895,7 @@ lightwindow.prototype = {
 				this._appendIframe('no');
 				this._writeToIframe(this._convertToMarkup(outerObject, 'object'));
 			} else {
-				this._appendObject(outerObject, 'object', $('lightwindow_contents'));
+				this._appendObject(outerObject, 'object', $('#lightwindow_contents'));
 			}
 
 			this._handleFinalWindowAnimation(0);

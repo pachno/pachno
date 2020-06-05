@@ -48,8 +48,8 @@
         </dl>
         <br style="clear: both;">
         <div>
-            <label for="connection_type_dsn">DSN</label><input type="radio" style="vertical-align: text-top;" name="connection_type" value="dsn" id="connection_type_dsn"<?php if ($selected_connection_detail == 'dsn'): ?> checked<?php endif; ?> onclick="$('dsn_info').show();$('custom_info').hide()">&nbsp;&nbsp;
-            <label for="connection_type_custom">Custom</label><input type="radio" style="vertical-align: text-top;" name="connection_type" value="custom" id="connection_type_custom"<?php if ($selected_connection_detail == 'custom'): ?> checked<?php endif; ?> onclick="$('dsn_info').hide();$('custom_info').show()">
+            <label for="connection_type_dsn">DSN</label><input type="radio" style="vertical-align: text-top;" name="connection_type" value="dsn" id="connection_type_dsn"<?php if ($selected_connection_detail == 'dsn'): ?> checked<?php endif; ?> onclick="$('#dsn_info').show();$('#custom_info').hide()">&nbsp;&nbsp;
+            <label for="connection_type_custom">Custom</label><input type="radio" style="vertical-align: text-top;" name="connection_type" value="custom" id="connection_type_custom"<?php if ($selected_connection_detail == 'custom'): ?> checked<?php endif; ?> onclick="$('#dsn_info').hide();$('#custom_info').show()">
         </div>
         <dl class="install_list" style="<?php if ($selected_connection_detail != 'dsn') echo 'display: none;'; ?>" id="dsn_info">
             <dt style="padding-bottom: 10px;">
@@ -88,7 +88,7 @@
         </dl>
         <div style="clear: both; padding: 30px 0 15px 0; text-align: right;">
             <img src="images/spinning_30.gif" id="next_indicator" style="display: none; vertical-align: middle; margin-left: 10px;">
-            <input type="submit" id="continue_button" onclick="$('continue_button').hide();$('next_indicator').show();" value="Continue">
+            <input type="submit" id="continue_button" onclick="$('#continue_button').hide();$('#next_indicator').show();" value="Continue">
         </div>
     </form>
     <p id="connection_status"></p>

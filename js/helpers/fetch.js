@@ -122,7 +122,7 @@ export const fetchHelper = function (url, options) {
                 $form.find('button[type=submit]').each(function () {
                     var $button = $(this);
                     $button.addClass('auto-disabled');
-                    $button.attr("disabled", true);
+                    $button.prop('disabled', true);
                 });
             }
         }
@@ -136,18 +136,16 @@ export const fetchHelper = function (url, options) {
         if (['POST', 'PUT'].indexOf(method) !== -1) {
 
             let data;
-            if ($form.length) {
+            if ($form !== undefined && $form.length) {
                 data = new FormData($form[0]);
-                if (options.additional_params) {
-                    for (let param in options.additional_params) {
-                        if (options.additional_params.hasOwnProperty(param)) {
-                            data.append(param, options.additional_params[param]);
-                        }
-                    }
-                }
             } else {
-                fetch_options.headers = {
-                    'Content-Type': 'application/json'
+                data = new FormData();
+            }
+            if (options.additional_params) {
+                for (let param in options.additional_params) {
+                    if (options.additional_params.hasOwnProperty(param)) {
+                        data.append(param, options.additional_params[param]);
+                    }
                 }
             }
 
@@ -172,7 +170,7 @@ export const fetchHelper = function (url, options) {
 
                         response.json().then(json => {
                             UI.Message.error(json.error, json.message);
-                            if (options.failure.callback) {
+                            if (options.failure && options.failure.callback) {
                                 options.failure.callback(json);
                             }
                         });
@@ -186,16 +184,23 @@ export const fetchHelper = function (url, options) {
                         document.location = json.forward;
                     } else {
                         if (options.success && options.success.update) {
-                            var json_content_element = (is_string(options.success.update) || options.success.update.from == undefined) ? 'content' : options.success.update.from;
-                            var content = (json) ? json[json_content_element] : responseText;
-                            var update_element = (is_string(options.success.update)) ? options.success.update : options.success.update.element;
-                            if ($(update_element)) {
-                                var insertion = (is_string(options.success.update)) ? false : (options.success.update.insertion) ? options.success.update.insertion : false;
+                            let json_content_element = (is_string(options.success.update) || options.success.update.from == undefined) ? 'content' : options.success.update.from;
+                            let content = (json) ? json[json_content_element] : responseText;
+                            let update_element = (is_string(options.success.update)) ? options.success.update : options.success.update.element;
+                            if ($(update_element).length) {
+                                let insertion = (is_string(options.success.update)) ? false : (options.success.update.insertion) ? options.success.update.insertion : false;
+                                let replace = (is_string(options.success.update)) ? false : (options.success.update.replace) ? options.success.update.replace : false;
                                 if (insertion) {
                                     $(update_element).append(content);
+                                } else if (replace) {
+                                    $(update_element).replaceWith(content);
                                 } else {
                                     $(update_element).html(content);
                                 }
+                            } else {
+                                console.error('Trying to update element ' + options.success.update + ' but it does not exist in markup');
+                                console.error(options);
+                                console.trace();
                             }
                             if (json && json.message) {
                                 UI.Message.success(json.message);
@@ -210,7 +215,7 @@ export const fetchHelper = function (url, options) {
                             if (json && json.message) {
                                 UI.Message.success(json.message);
                             }
-                        } else if (json && (json.title || json.content)) {
+                        } else if (json && json.title && json.content) {
                             UI.Message.success(json.title, json.content);
                         } else if (json && (json.message)) {
                             UI.Message.success(json.message);
@@ -223,8 +228,9 @@ export const fetchHelper = function (url, options) {
                         }
                     }
                 }
+                return json;
             })
-            .then(() => {
+            .then((json) => {
                 if (fetch_debugger !== undefined) {
                     $('#___PACHNO_DEBUG_INFO___indicator').hide();
                     var d = new Date(),
@@ -249,7 +255,7 @@ export const fetchHelper = function (url, options) {
                     }
                 }
                 Pachno.trigger(EVENTS.updated);
-                resolve(response);
+                resolve(json);
             })
             .catch(error => {
                 console.error(error);
@@ -260,15 +266,27 @@ export const fetchHelper = function (url, options) {
     });
 };
 
-export const formSubmitHelper = function (url, form_id) {
-    fetchHelper(url, {
+export const formSubmitHelper = function (url, form_id, options) {
+    const fetchOptions = {
         form: form_id,
+        method: 'POST',
         loading: {indicator: form_id + '_indicator', disable: form_id + '_button'},
         success: {enable: form_id + '_button'},
         failure: {enable: form_id + '_button'}
-    });
+    };
+
+    if (options !== undefined) {
+        if (options.success !== undefined) {
+            fetchOptions.success = { ...fetchOptions.success, ...options.success }
+        }
+    }
+
+    return fetchHelper(url, fetchOptions);
 };
 
-export const setFetchDebugger = function (fetch_debugger) {
-    fetch_debugger = fetch_debugger;
+export const setFetchDebugger = function (_fetch_debugger) {
+    fetch_debugger = _fetch_debugger;
+};
+
+export const setupListeners = function () {
 };

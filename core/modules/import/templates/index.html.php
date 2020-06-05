@@ -23,7 +23,7 @@
                         <div class="tab_content">
                         <?php echo __('To import some fields, ID numbers are required, which can be seen below. User, team, group and client IDs can be found in user configuration.'); ?>
                         </div>
-                        <div class="tab_content"><button onclick="Pachno.Config.Import.getImportCsvIds('<?php echo make_url('import_csv_get_ids'); ?>'); $('id_zone').toggle();"><?php echo __('Toggle list of ID numbers'); ?></button></div>
+                        <div class="tab_content"><button onclick="Pachno.Config.Import.getImportCsvIds('<?php echo make_url('import_csv_get_ids'); ?>'); $('#id_zone').toggle();"><?php echo __('Toggle list of ID numbers'); ?></button></div>
                         <div class="tab_content" id="id_zone" style="display: none">
                             <div id="id_zone_indicator"><?php echo image_tag('spinning_20.gif'); ?></div>
                             <div id="id_zone_content" style="display: none;"></div>
@@ -38,7 +38,7 @@
                             <input type="hidden" name="import_sample_data" value="1">
                             <div style="text-align: right;">
                                 <?php if ($canimport): ?>
-                                    <input type="submit" onclick="$('import_sample_button').hide();$('import_sample_indicator').show();" id="import_sample_button" value="<?php echo __('Import sample data'); ?>" style="font-weight: bold; font-size: 1em; padding: 4px;">
+                                    <input type="submit" onclick="$('#import_sample_button').hide();$('#import_sample_indicator').show();" id="import_sample_button" value="<?php echo __('Import sample data'); ?>" style="font-weight: bold; font-size: 1em; padding: 4px;">
                                 <?php else: ?>
                                     <div class="faded_out"><?php echo __('You can only import sample projects once'); ?></div>
                                 <?php endif; ?>

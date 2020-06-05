@@ -27,7 +27,7 @@
                         <?php echo fa_image_tag('edit', ['class' => 'icon']); ?>
                         <span class="name"><?= __('Edit'); ?></span>
                     </a>
-                    <a class="list-item" href="javascript:void(0);" onclick="$('copy_scheme_<?php echo $scheme->getID(); ?>_popup').toggle();" class="button">
+                    <a class="list-item" href="javascript:void(0);" onclick="$('#copy_scheme_<?php echo $scheme->getID(); ?>_popup').toggle();" class="button">
                         <?php echo fa_image_tag('clone', ['class' => 'icon']); ?>
                         <span class="name"><?= __('Make a copy'); ?></span>
                     </a>
@@ -64,7 +64,7 @@
             <form accept-charset="<?php echo \pachno\core\framework\Context::getI18n()->getCharset(); ?>" action="<?php echo make_url('configure_issuetypes_delete_scheme', array('scheme_id' => $scheme->getID())); ?>" onsubmit="Pachno.Config.IssuetypeScheme.remove('<?php echo make_url('configure_issuetypes_delete_scheme', array('scheme_id' => $scheme->getID())); ?>', <?php echo $scheme->getID(); ?>);return false;" id="delete_issuetype_scheme_<?php echo $scheme->getID(); ?>_form">
                 <div style="text-align: right;">
                     <?php echo image_tag('spinning_16.gif', array('style' => 'margin-right: 5px; display: none;', 'id' => 'delete_issuetype_scheme_'.$scheme->getID().'_indicator')); ?>
-                    <input type="submit" value="<?php echo __('Yes, delete it'); ?>"><?php echo __('%delete or %cancel', array('%delete' => '', '%cancel' => '<b>'.javascript_link_tag(__('cancel'), array('onclick' => "$('delete_scheme_{$scheme->getID()}_popup').toggle();")).'</b>')); ?>
+                    <input type="submit" value="<?php echo __('Yes, delete it'); ?>"><?php echo __('%delete or %cancel', array('%delete' => '', '%cancel' => '<b>'.javascript_link_tag(__('cancel'), array('onclick' => "$('#delete_scheme_{$scheme->getID()}_popup').toggle();")).'</b>')); ?>
                 </div>
             </form>
         </div>

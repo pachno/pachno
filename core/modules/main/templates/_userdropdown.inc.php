@@ -62,7 +62,7 @@
                     </a>
                 <?php endif; ?>
             <?php endif; ?>
-            <a class="list-item" href="javascript:void(0);" onclick="Pachno.UI.Backdrop.show('<?php echo make_url('get_partial_for_backdrop', array('key' => 'usercard', 'user_id' => $user->getID())); ?>');$('bud_<?php echo $user->getUsername() . "_" . $rnd_no; ?>').hide();">
+            <a class="list-item" href="javascript:void(0);" onclick="Pachno.UI.Backdrop.show('<?php echo make_url('get_partial_for_backdrop', array('key' => 'usercard', 'user_id' => $user->getID())); ?>');$('#bud_<?php echo $user->getUsername() . "_" . $rnd_no; ?>').hide();">
                 <?= fa_image_tag('info-circle', ['class' => 'icon']); ?>
                 <span class="name"><?php echo __('Show user details'); ?></span>
             </a>

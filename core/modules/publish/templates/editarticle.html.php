@@ -29,7 +29,7 @@
                 <div class="button-group">
                     <?php if (!isset($convert)): ?>
                         <button class="secondary" type="button">
-                            <?= fa_image_tag('paperclip', ['class' => 'icon']); ?><span class="name"><?= __('Attach a file'); ?></span>
+                            <?= fa_image_tag('paperclip', ['class' => 'icon']); ?><span class="name"><?= __('Manage attachments'); ?></span><span id="number_of_attachments" class="count-badge"><?= count($article->getFiles()); ?></span>
                         </button>
                         <span class="separator"></span>
                     <?php endif; ?>
@@ -181,10 +181,10 @@
     <input type="hidden" id="article_serialized" value="">
 </div>
 <script type="text/javascript">
-    Pachno.on(Pachno.EVENTS.ready, (PachnoApplication) => {
+    Pachno.on(Pachno.EVENTS.ready, () => {
         <?php if ($article->getContentSyntax() != \pachno\core\framework\Settings::SYNTAX_EDITOR_JS): ?>
             const $publishButton = $('#article-publish-button');
-            $publishButton.removeAttr('disabled');
+            $publishButton.removeProp('disabled');
         <?php endif; ?>
 
         const $form = $('#edit_article_form');
@@ -194,7 +194,7 @@
             var ok = true;
 
             const $publishButton = $('#article-publish-button');
-            $publishButton.attr('disabled', true);
+            $publishButton.prop('disabled', true);
             $form.addClass('submitting');
 
             <?php if (\pachno\core\framework\Context::getModule('publish')->getSetting('require_change_reason') != 0): ?>
@@ -209,7 +209,7 @@
                 event.preventDefault();
                 event.stopPropagation();
                 $form.removeClass('submitting');
-                $publishButton.removeAttr('disabled');
+                $publishButton.removeProp('disabled');
                 return;
             }
 

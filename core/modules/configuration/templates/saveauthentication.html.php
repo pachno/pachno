@@ -3,10 +3,15 @@
     $pachno_response->setTitle(__('Configure authentication'));
     
 ?>
-<center>
-<h1><?php echo __('Settings saved'); ?></h1>
-<?php echo __('To apply changes to the authentication system, you have been automatically logged out. The new authentication system is now in use.'); ?>
-<p><?php echo link_tag(make_url('home'), __('Continue')); ?></p>
-</center>
+<div class="message-box type-info">
+    <span class="icon">
 
-<?php \pachno\core\framework\Context::logout(); ?>
+    </span>
+    <span class="message">
+        <span class="title"><?php echo __('Settings saved'); ?></span>
+        <span><?php echo __('To apply changes to the authentication system, you have been automatically logged out. The new authentication system is now in use.'); ?></span>
+    </span>
+    <span class="actions">
+        <?php echo link_tag(make_url('home'), '<span>'.__('Continue').'</span>'.fa_image_tag('chevron-right', ['class' => 'icon']), ['class' => 'button primary']); ?>
+    </span>
+</div>

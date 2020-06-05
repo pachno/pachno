@@ -2,7 +2,7 @@
     <div class="header">
         <?php echo __('Table of contents'); ?>
         <div class="button-group">
-            <button class="first" title="<?php echo __('Minimize'); ?>" onclick="$(this).toggleClass('button-pressed');$('publish_toc').toggle();">M</button>
+            <button class="first" title="<?php echo __('Minimize'); ?>" onclick="$(this).toggleClass('button-pressed');$('#publish_toc').toggle();">M</button>
             <button class="button last" title="<?php echo __('Stick to top'); ?>" onclick="$(this).toggleClass('button-pressed');$(this).up('.toc').toggleClass('fixed');">S</button>
         </div>
     </div>

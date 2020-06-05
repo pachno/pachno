@@ -205,7 +205,7 @@
             <?= __('The following issue was reported: %link_to_issue', ['%link_to_issue' => link_tag(make_url('viewissue', ['project_key' => $issue->getProject()->getKey(), 'issue_no' => $issue->getFormattedIssueNo()]), $issue->getFormattedIssueNo(true) . ' - ' . $issue->getTitle())]); ?>
         </div>
         <div class="actions">
-            <a class="button primary" id="report_issue_report_another_button" onclick="[$(this), $('report_issue_form'), $('report_more_here'), $('report_form'), $('issuetype_list'), $('report_issue_reported_issue_details')].each(function (el) { Element.toggle(el, 'block'); });$('reportissue_container').removeClass('medium');$('reportissue_container').addClass('large');"><?= __('Report another issue'); ?></a>
+            <a class="button primary" id="report_issue_report_another_button" onclick="[$(this), $('#report_issue_form'), $('#report_more_here'), $('#report_form'), $('#issuetype_list'), $('#report_issue_reported_issue_details')].each(function (el) { Element.toggle(el, 'block'); });$('#reportissue_container').removeClass('medium');$('#reportissue_container').addClass('large');"><?= __('Report another issue'); ?></a>
         </div>
     </div>
 <?php endif; ?>
@@ -372,7 +372,7 @@
                 </div>
             </div>
             <?php if ($canupload): ?>
-                <?php include_component('main/dynamicuploader', array('mode' => 'issue')); ?>
+                <?php include_component('main/uploader', array('mode' => 'issue')); ?>
             <?php endif; ?>
             <div class="form-row additional_information <?php if (array_key_exists('edition', $errors)): ?>invalid<?php endif; ?>" id="edition_div" style="display: none;">
                 <div class="fancy-dropdown-container">
@@ -614,7 +614,7 @@
                                 <ul class="popup_box more_actions_dropdown" id="<?= $customdatatype->getKey(); ?>_change">
                                     <li class="header"><?= __($customdatatype->getDescription()); ?></li>
                                     <li>
-                                        <a href="javascript:void(0);" onclick="$('<?= $customdatatype->getKey(); ?>_name').hide();$('<?= $customdatatype->getKey(); ?>_value').value = '';$('no_<?= $customdatatype->getKey(); ?>').show();"><?= __('Clear this field'); ?></a>
+                                        <a href="javascript:void(0);" onclick="$('#<?= $customdatatype->getKey(); ?>_name').hide();$('#<?= $customdatatype->getKey(); ?>_value').value = '';$('#no_<?= $customdatatype->getKey(); ?>').show();"><?= __('Clear this field'); ?></a>
                                     </li>
                                     <li class="separator"></li>
                                     <li id="customfield_<?= $customdatatype->getKey(); ?>_calendar_container" style="padding: 0;"></li>
@@ -633,46 +633,46 @@
                                                     parentElement: 'customfield_<?= $customdatatype->getKey(); ?>_calendar_container',
                                                     valueCallback: function(element, date) {
                                                         <?php if ($customdatatype->getType() == CustomDatatype::DATETIME_PICKER) { ?>
-                                                            var value = date.setHours(parseInt($('customfield_<?= $customdatatype->getKey(); ?>_hour').value));
+                                                            var value = date.setHours(parseInt($('#customfield_<?= $customdatatype->getKey(); ?>_hour').value));
                                                             var date  = new Date(value);
-                                                            var value = Math.floor(date.setMinutes(parseInt($('customfield_<?= $customdatatype->getKey(); ?>_minute').value)) / 1000);
-                                                            $('<?= $customdatatype->getKey(); ?>_name').dataset.dateStr = $('<?= $customdatatype->getKey(); ?>_name').innerText;
-                                                            $('<?= $customdatatype->getKey(); ?>_name').update(
-                                                                $('<?= $customdatatype->getKey(); ?>_name').dataset.dateStr + ' '
-                                                                + parseInt($('customfield_<?= $customdatatype->getKey(); ?>_hour').value) + ':'
-                                                                + parseInt($('customfield_<?= $customdatatype->getKey(); ?>_minute').value)
+                                                            var value = Math.floor(date.setMinutes(parseInt($('#customfield_<?= $customdatatype->getKey(); ?>_minute').value)) / 1000);
+                                                            $('#<?= $customdatatype->getKey(); ?>_name').dataset.dateStr = $('#<?= $customdatatype->getKey(); ?>_name').innerText;
+                                                            $('#<?= $customdatatype->getKey(); ?>_name').update(
+                                                                $('#<?= $customdatatype->getKey(); ?>_name').dataset.dateStr + ' '
+                                                                + parseInt($('#customfield_<?= $customdatatype->getKey(); ?>_hour').value) + ':'
+                                                                + parseInt($('#customfield_<?= $customdatatype->getKey(); ?>_minute').value)
                                                             );
                                                         <?php } else { ?>
                                                             var value = Math.floor(date.getTime() / 1000);
                                                         <?php } ?>
-                                                        $('<?= $customdatatype->getKey(); ?>_name').show();
-                                                        $('<?= $customdatatype->getKey(); ?>_value').value = value;
-                                                        $('no_<?= $customdatatype->getKey(); ?>').hide();
+                                                        $('#<?= $customdatatype->getKey(); ?>_name').show();
+                                                        $('#<?= $customdatatype->getKey(); ?>_value').value = value;
+                                                        $('#no_<?= $customdatatype->getKey(); ?>').hide();
                                                     }
                                                 });
                                                 <?php if ($customdatatype->getType() == CustomDatatype::DATETIME_PICKER): ?>
-                                                    Event.observe($('customfield_<?= $customdatatype->getKey(); ?>_hour'), 'change', function (event) {
-                                                        var value = parseInt($('<?= $customdatatype->getKey(); ?>_value').value);
+                                                    Event.observe($('#customfield_<?= $customdatatype->getKey(); ?>_hour'), 'change', function (event) {
+                                                        var value = parseInt($('#<?= $customdatatype->getKey(); ?>_value').value);
                                                         var hours = parseInt(this.value);
                                                         if (value <= 0 || hours < 0 || hours > 24) return;
                                                         var date = new Date(value * 1000);
-                                                        $('<?= $customdatatype->getKey(); ?>_value').value = date.setHours(parseInt(this.value)) / 1000;
-                                                        $('<?= $customdatatype->getKey(); ?>_name').update(
-                                                            $('<?= $customdatatype->getKey(); ?>_name').dataset.dateStr + ' '
-                                                            + parseInt($('customfield_<?= $customdatatype->getKey(); ?>_hour').value) + ':'
-                                                            + parseInt($('customfield_<?= $customdatatype->getKey(); ?>_minute').value)
+                                                        $('#<?= $customdatatype->getKey(); ?>_value').value = date.setHours(parseInt(this.value)) / 1000;
+                                                        $('#<?= $customdatatype->getKey(); ?>_name').update(
+                                                            $('#<?= $customdatatype->getKey(); ?>_name').dataset.dateStr + ' '
+                                                            + parseInt($('#customfield_<?= $customdatatype->getKey(); ?>_hour').value) + ':'
+                                                            + parseInt($('#customfield_<?= $customdatatype->getKey(); ?>_minute').value)
                                                         );
                                                     });
-                                                    Event.observe($('customfield_<?= $customdatatype->getKey(); ?>_minute'), 'change', function (event) {
-                                                        var value = parseInt($('<?= $customdatatype->getKey(); ?>_value').value);
+                                                    Event.observe($('#customfield_<?= $customdatatype->getKey(); ?>_minute'), 'change', function (event) {
+                                                        var value = parseInt($('#<?= $customdatatype->getKey(); ?>_value').value);
                                                         var minutes = parseInt(this.value);
                                                         if (value <= 0 || minutes < 0 || minutes > 60) return;
                                                         var date = new Date(value * 1000);
-                                                        $('<?= $customdatatype->getKey(); ?>_value').value = date.setMinutes(parseInt(this.value)) / 1000;
-                                                        $('<?= $customdatatype->getKey(); ?>_name').update(
-                                                            $('<?= $customdatatype->getKey(); ?>_name').dataset.dateStr + ' '
-                                                            + parseInt($('customfield_<?= $customdatatype->getKey(); ?>_hour').value) + ':'
-                                                            + parseInt($('customfield_<?= $customdatatype->getKey(); ?>_minute').value)
+                                                        $('#<?= $customdatatype->getKey(); ?>_value').value = date.setMinutes(parseInt(this.value)) / 1000;
+                                                        $('#<?= $customdatatype->getKey(); ?>_name').update(
+                                                            $('#<?= $customdatatype->getKey(); ?>_name').dataset.dateStr + ' '
+                                                            + parseInt($('#customfield_<?= $customdatatype->getKey(); ?>_hour').value) + ':'
+                                                            + parseInt($('#customfield_<?= $customdatatype->getKey(); ?>_minute').value)
                                                         );
                                                     });
                                                 <?php endif; ?>
@@ -809,13 +809,13 @@
                         <input type="radio" name="issue_access" id="issue_access_restricted" onchange="Pachno.Issues.ACL.toggle_checkboxes(this, '', 'restricted');" value="restricted"<?php if ($selected_project->getIssuesLockType() === Project::ISSUES_LOCK_TYPE_RESTRICTED) echo ' checked'; ?>><label for="issue_access_restricted"><?= __('Available only to you and those listed below'); ?></label><br>
                         <script>
                             require(['domReady', 'jquery'], function (domReady, jQuery) {
-                                domReady(function () { $('input[name=issue_access]').trigger('change'); });
+                                domReady(function () { $('#input[name=issue_access]').trigger('change'); });
                             });
                         </script>
                         <?php image_tag('spinning_16.gif', array('id' => 'acl_indicator_', 'style' => '')); ?>
                         <div id="acl-users-teams-selector" style="display: none;">
                             <h4 style="margin-top: 10px;">
-                                <?= javascript_link_tag(__('Add a user or team'), array('onclick' => "$('popup_find_acl_').toggle('block');", 'style' => 'float: right;', 'class' => 'button')); ?>
+                                <?= javascript_link_tag(__('Add a user or team'), array('onclick' => "$('#popup_find_acl_').toggle('block');", 'style' => 'float: right;', 'class' => 'button')); ?>
                                 <?= __('Users or teams who can see this issue'); ?>
                             </h4>
                             <?php include_component('main/identifiableselector', array(    'html_id'             => "popup_find_acl_",
@@ -877,7 +877,7 @@
                                     </label>
                                 <?php endforeach; ?>
                             </div>
-                            <button type="button" class="remove-button" onclick="$('milestone_link').show();$('milestone_additional_div').hide();document.querySelectorAll('#report_issue_form input[name=milestone_id]').forEach((elm) => { elm.checked = false; });"><?= fa_image_tag('undo-alt'); ?></button>
+                            <button type="button" class="remove-button" onclick="$('#milestone_link').show();$('#milestone_additional_div').hide();document.querySelectorAll('#report_issue_form input[name=milestone_id]').forEach((elm) => { elm.checked = false; });"><?= fa_image_tag('undo-alt'); ?></button>
                         </div>
                     </div>
                 </div>
@@ -900,7 +900,7 @@
                                     </label>
                                 <?php endforeach; ?>
                             </div>
-                            <button type="button" class="remove-button" onclick="$('category_link').show();$('category_additional_div').hide();document.querySelectorAll('#report_issue_form input[name=category_id]').forEach((elm) => { elm.checked = false; });"><?= fa_image_tag('undo-alt'); ?></button>
+                            <button type="button" class="remove-button" onclick="$('#category_link').show();$('#category_additional_div').hide();document.querySelectorAll('#report_issue_form input[name=category_id]').forEach((elm) => { elm.checked = false; });"><?= fa_image_tag('undo-alt'); ?></button>
                         </div>
                     </div>
                 </div>
@@ -930,7 +930,7 @@
                                     </label>
                                 <?php endforeach; ?>
                             </div>
-                            <button type="button" class="remove-button" onclick="$('priority_link').show();$('priority_additional_div').hide();document.querySelectorAll('#report_issue_form input[name=priority_id]').forEach((elm) => { elm.checked = false; });"><?= fa_image_tag('undo-alt'); ?></button>
+                            <button type="button" class="remove-button" onclick="$('#priority_link').show();$('#priority_additional_div').hide();document.querySelectorAll('#report_issue_form input[name=priority_id]').forEach((elm) => { elm.checked = false; });"><?= fa_image_tag('undo-alt'); ?></button>
                         </div>
                     </div>
                 </div>
@@ -953,7 +953,7 @@
                                     </label>
                                 <?php endforeach; ?>
                             </div>
-                            <button type="button" class="remove-button" onclick="$('reproducability_link').show();$('reproducability_additional_div').hide();document.querySelectorAll('#report_issue_form input[name=reproducability_id]').forEach((elm) => { elm.checked = false; });"><?= fa_image_tag('undo-alt'); ?></button>
+                            <button type="button" class="remove-button" onclick="$('#reproducability_link').show();$('#reproducability_additional_div').hide();document.querySelectorAll('#report_issue_form input[name=reproducability_id]').forEach((elm) => { elm.checked = false; });"><?= fa_image_tag('undo-alt'); ?></button>
                         </div>
                     </div>
                 </div>
@@ -976,7 +976,7 @@
                                     </label>
                                 <?php endforeach; ?>
                             </div>
-                            <button type="button" class="remove-button" onclick="$('resolution_link').show();$('resolution_additional_div').hide();document.querySelectorAll('#report_issue_form input[name=resolution_id]').forEach((elm) => { elm.checked = false; });"><?= fa_image_tag('undo-alt'); ?></button>
+                            <button type="button" class="remove-button" onclick="$('#resolution_link').show();$('#resolution_additional_div').hide();document.querySelectorAll('#report_issue_form input[name=resolution_id]').forEach((elm) => { elm.checked = false; });"><?= fa_image_tag('undo-alt'); ?></button>
                         </div>
                     </div>
                 </div>
@@ -999,14 +999,14 @@
                                     </label>
                                 <?php endforeach; ?>
                             </div>
-                            <button type="button" class="remove-button" onclick="$('severity_link').show();$('severity_additional_div').hide();document.querySelectorAll('#report_issue_form input[name=severity_id]').forEach((elm) => { elm.checked = false; });"><?= fa_image_tag('undo-alt'); ?></button>
+                            <button type="button" class="remove-button" onclick="$('#severity_link').show();$('#severity_additional_div').hide();document.querySelectorAll('#report_issue_form input[name=severity_id]').forEach((elm) => { elm.checked = false; });"><?= fa_image_tag('undo-alt'); ?></button>
                         </div>
                     </div>
                 </div>
                 <?php foreach (CustomDatatype::getAll() as $customdatatype): ?>
                     <div class="form-row" id="<?= $customdatatype->getKey(); ?>_additional" style="display: none;">
                         <?= image_tag('icon_customdatatype.png'); ?>
-                        <div id="<?= $customdatatype->getKey(); ?>_link"<?php if ($selected_customdatatype[$customdatatype->getKey()] !== null): ?> style="display: none;"<?php endif; ?>><a href="javascript:void(0);" onclick="$('<?= $customdatatype->getKey(); ?>_link').hide();$('<?= $customdatatype->getKey(); ?>_additional_div').show();"><?= __($customdatatype->getDescription()); ?></a></div>
+                        <div id="<?= $customdatatype->getKey(); ?>_link"<?php if ($selected_customdatatype[$customdatatype->getKey()] !== null): ?> style="display: none;"<?php endif; ?>><a href="javascript:void(0);" onclick="$('#<?= $customdatatype->getKey(); ?>_link').hide();$('#<?= $customdatatype->getKey(); ?>_additional_div').show();"><?= __($customdatatype->getDescription()); ?></a></div>
                         <div id="<?= $customdatatype->getKey(); ?>_additional_div"<?php if ($selected_customdatatype[$customdatatype->getKey()] === null): ?> style="display: none;"<?php endif; ?> class="editor_container">
                             <?php
                                 switch ($customdatatype->getType())
@@ -1106,13 +1106,13 @@
                                 if (!$customdatatype->hasCustomOptions())
                                 {
                                     ?>
-                                    <a href="javascript:void(0);" class="img" onclick="$('<?= $customdatatype->getKey(); ?>_link').show();$('<?= $customdatatype->getKey(); ?>_additional_div').hide();$('<?= $customdatatype->getKey(); ?>_value_additional').setValue('');"><?= fa_image_tag('undo-alt', ['style' => 'float: none; margin-left: 5px;'], 'fas'); ?></a>
+                                    <a href="javascript:void(0);" class="img" onclick="$('#<?= $customdatatype->getKey(); ?>_link').show();$('#<?= $customdatatype->getKey(); ?>_additional_div').hide();$('#<?= $customdatatype->getKey(); ?>_value_additional').setValue('');"><?= fa_image_tag('undo-alt', ['style' => 'float: none; margin-left: 5px;'], 'fas'); ?></a>
                                     <?php
                                 }
                                 else
                                 {
                                     ?>
-                                    <a href="javascript:void(0);" class="img" onclick="$('<?= $customdatatype->getKey(); ?>_link').show();$('<?= $customdatatype->getKey(); ?>_additional_div').hide();$('<?= $customdatatype->getKey(); ?>_id_additional').setValue(0);"><?= fa_image_tag('undo-alt', ['style' => 'float: none; margin-left: 5px;'], 'fas'); ?></a>
+                                    <a href="javascript:void(0);" class="img" onclick="$('#<?= $customdatatype->getKey(); ?>_link').show();$('#<?= $customdatatype->getKey(); ?>_additional_div').hide();$('#<?= $customdatatype->getKey(); ?>_id_additional').setValue(0);"><?= fa_image_tag('undo-alt', ['style' => 'float: none; margin-left: 5px;'], 'fas'); ?></a>
                                     <?php
                                 }
                                 ?>

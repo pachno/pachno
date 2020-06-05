@@ -65,4 +65,5 @@
         </div>
     </div>
 </div>
-<input type="file" id="file_upload_dummy" style="display: none;" multiple onchange="Pachno.Main.selectFiles(this);" data-upload-url="<?php echo make_url('upload_file'); ?>">
+<label for="file_upload_dummy" id="file_upload_dummy_label"></label>
+<input type="file" id="file_upload_dummy" multiple data-upload-url="<?php echo make_url('upload_file'); ?>">

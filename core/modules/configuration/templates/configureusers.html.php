@@ -13,19 +13,19 @@
                 <h1>
                     <span class="name"><?= __('Manage users and groups'); ?></span>
                 </h1>
-                <div class="fancy-tabs">
-                    <a class="tab selected" href="javascript:void(0);" onclick="Pachno.UI.tabSwitcher('tab_users', 'usersteamsgroups_menu');">
+                <div class="fancy-tabs tab-switcher">
+                    <a class="tab tab-switcher-trigger selected" data-tab-target="users" href="javascript:void(0);">
                         <?= fa_image_tag('user', ['class' => 'icon']); ?>
                         <span class="name"><?= $users_text; ?><span class="count-badge"><?= $number_of_users; ?></span></span>
                     </a>
-                    <a class="tab" href="javascript:void(0);" onclick="Pachno.UI.tabSwitcher('tab_groups', 'usersteamsgroups_menu');">
+                    <a class="tab tab-switcher-trigger" data-tab-target="groups" href="javascript:void(0);">
                         <?= fa_image_tag('users', ['class' => 'icon']); ?>
                         <span class="name"><?= __('Groups'); ?></span>
                     </a>
                 </div>
                 <div id="usersteamsgroups_menu_panes">
-                    <div id="tab_users_pane" class="top-search-filters-container">
-                        <form action="<?= make_url('configure_users_find_user'); ?>" method="post" onsubmit="Pachno.Config.User.show('<?= make_url('configure_users_find_user'); ?>', $('findusers').getValue());return false;">
+                    <div id="tab_users_pane" class="top-search-filters-container" data-tab-id="users">
+                        <form action="<?= make_url('configure_users_find_user'); ?>" method="post" data-simple-submit data-update-container="#users_results" id="find_users_form">
                             <div class="search-and-filters-strip">
                                 <div class="search-strip">
                                     <div class="dropper-container">
@@ -44,13 +44,13 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <input type="search" name="findusers" id="findusers" value="<?= $finduser; ?>" placeholder="<?= __('Type user details to find users'); ?>" class="filter_searchfield">
+                                    <input type="search" name="findstring" id="findusers" value="<?= $finduser; ?>" placeholder="<?= __('Type user details to find users'); ?>" class="filter_searchfield">
                                     <button type="submit" class="button secondary">
-                                        <?= fa_image_tag('find', ['class' => 'icon']); ?>
+                                        <?= fa_image_tag('search', ['class' => 'icon']); ?>
                                         <span class="name"><?= __('Find'); ?></span>
-                                        <?= fa_image_tag('spinner', ['class' => 'fa-spin icon', 'id' => 'find_users_indicator', 'style' => 'display: none;']); ?>
+                                        <?= fa_image_tag('spinner', ['class' => 'fa-spin icon indicator']); ?>
                                     </button>
-                                    <button style="<?php if (!\pachno\core\framework\Context::getScope()->hasUsersAvailable()): ?>display: none;<?php endif; ?>" type="button" class="button secondary icon" onclick="$('adduser_div').toggle();">
+                                    <button style="<?php if (!\pachno\core\framework\Context::getScope()->hasUsersAvailable()): ?>display: none;<?php endif; ?>" type="button" class="button secondary icon" onclick="$('#adduser_div').toggle();">
                                         <?= fa_image_tag('plus', ['class' => 'icon']); ?>
                                     </button>
                                 </div>
@@ -58,7 +58,7 @@
                         </form>
                         <div id="users_results" class="search-results"></div>
                     </div>
-                    <div id="tab_groups_pane" style="display: none;">
+                    <div id="tab_groups_pane" data-tab-id="groups" style="display: none;">
                         <div class="lightyellowbox" style="margin-top: 5px; padding: 7px;">
                             <form id="create_group_form" action="<?= make_url('configure_users_add_group'); ?>" method="post" accept-charset="<?= \pachno\core\framework\Settings::getCharset(); ?>" onsubmit="Pachno.Config.Group.add('<?= make_url('configure_users_add_group'); ?>');return false;">
                                 <div id="add_group">
@@ -102,7 +102,7 @@
         <div class="backdrop_box medium">
             <div class="backdrop_detail_header">
                 <span><?= __('Add a user'); ?></span>
-                <?= javascript_link_tag(fa_image_tag('times'), array('class' => 'closer', 'onclick' => "$('adduser_div').toggle();")); ?>
+                <?= javascript_link_tag(fa_image_tag('times'), ['onclick' => "$('#adduser_div').toggle();", 'class' => 'closer']); ?>
             </div>
             <div class="backdrop_detail_content">
                 <div class="form-container">
@@ -169,20 +169,9 @@
     </div>
 </div>
 <script type="text/javascript">
-    require(['domReady', 'pachno/index', 'jquery'], function (domReady, pachno_index_js, jQuery) {
-        domReady(function () {
-            $('body').on('click', '#findusers', function(event) {
-                event.preventDefault();
-                event.stopPropagation();
-            });
-
-            $('body').on('click', '#users_more_actions_dropdown', function (event) {
-                $('users_more_actions').toggleClass('button-pressed');
-                $('users_more_actions_dropdown').toggle();
-            });
-            <?php if ($finduser): ?>
-                pachno_index_js.Config.User.show('<?= make_url('configure_users_find_user'); ?>', '<?= $finduser; ?>');
-            <?php endif; ?>
+    <?php if ($finduser): ?>
+        Pachno.on(Pachno.EVENTS.ready, function () {
+            pachno_index_js.Config.User.show('<?= make_url('configure_users_find_user'); ?>', '<?= $finduser; ?>');
         });
-    });
+    <?php endif; ?>
 </script>

@@ -31,7 +31,7 @@
                 <input type="hidden" name="step" value="6">
                 <div style="padding-top: 20px; clear: both; text-align: center;">
                     <img src="images/spinning_30.gif" id="next_indicator" style="display: none;">
-                    <input type="submit" id="continue_button" onclick="$('continue_button').hide();$('next_indicator').show();" value="Finalize installation">
+                    <input type="submit" id="continue_button" onclick="$('#continue_button').hide();$('#next_indicator').show();" value="Finalize installation">
                 </div>
             </form>
         </div>

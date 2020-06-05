@@ -306,7 +306,7 @@
       }
 
       elmAutocompleteList.empty();
-      var elmDropDownList = $("<ul>").appendTo(elmAutocompleteList).hide();
+      var elmDropDownList = $("#<ul>").appendTo(elmAutocompleteList).hide();
 
       _.each(results, function (item, index) {
         var itemUid = _.uniqueId('mention_');

@@ -2,8 +2,9 @@ import $ from "jquery";
 import OpenID from "../helpers/openid";
 import Debugger from "./debugger";
 import UI from "../helpers/ui";
-import {fetchHelper} from "../helpers/fetch";
+import {fetchHelper, formSubmitHelper, setupListeners as formSetupListeners} from "../helpers/fetch";
 import widgetSetupListeners from "../widgets";
+import {initializeDashboards} from "../helpers/dashboard";
 
 class PachnoApplication {
 
@@ -46,6 +47,10 @@ class PachnoApplication {
         return fetchHelper(url, options);
     }
 
+    submit(url, form_id) {
+        return formSubmitHelper(url, form_id);
+    }
+
     on(key, callback) {
         if (this.listeners[key] === undefined) {
             this.listeners[key] = [];
@@ -78,6 +83,7 @@ class PachnoApplication {
         // $(window).on('resize', Core._resizeWatcher);
         // $(document).on('keydown', Core._escapeWatcher);
         widgetSetupListeners();
+        formSetupListeners();
         // $('#fullpage_backdrop_content').on('click', Core._resizeWatcher);
     }
 
@@ -87,25 +93,13 @@ class PachnoApplication {
         // $(window).on('scroll', Pachno.Core._scrollWatcher);
         // Core._resizeWatcher();
         // Core._scrollWatcher();
-        if ($('.dashboard_view_container').length > 0) {
-            $('.dashboard_view_container').each(function () {
-                let view = $(this);
-                // Pachno.Main.Dashboard.View.init(parseInt(view.data('view-id')));
+
+        initializeDashboards()
+            .then(() => {
+                $('html').css({'cursor': 'default'});
             });
-        } else {
-            $('html').css({'cursor': 'default'});
-        }
 
         OpenID.init();
-
-        // Mimick browser scroll to element with id as hash once header get 'fixed' class
-        // from _scrollWatcher method.
-        setTimeout(function () {
-            var hash = window.location.hash;
-            if (hash != undefined && hash.indexOf('comment_') == 1 && typeof(window.location.href) == 'string') {
-                window.location.href = window.location.href;
-            }
-        }, 1000);
     }
 
     loadComponentOptions(options, $item) {

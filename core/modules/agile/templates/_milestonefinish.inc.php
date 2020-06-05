@@ -71,7 +71,7 @@
                         <?php echo __('There are %number issue(s) which are not currently resolved. Please select what to do with these issues, below.', array('%number' => $milestone->countOpenIssues())); ?>
                     </div>
                     <label for="select_unresolved_issues_action"><?php echo __('Unresolved issues action'); ?></label>
-                    <select name="unresolved_issues_action" id="select_unresolved_issues_action" onchange="switch($(this).getValue()) { case 'keep': $('reassign_select').hide(); $('mark_milestone_finished_submit').show(); $('mark_milestone_finished_next').hide(); break; case 'reassign': $('reassign_select').show(); $('mark_milestone_finished_submit').show(); $('mark_milestone_finished_next').hide(); break; case 'addnew': $('reassign_select').hide(); $('mark_milestone_finished_submit').hide(); $('mark_milestone_finished_next').show(); }">
+                    <select name="unresolved_issues_action" id="select_unresolved_issues_action" onchange="switch($(this).getValue()) { case 'keep': $('#reassign_select').hide(); $('#mark_milestone_finished_submit').show(); $('#mark_milestone_finished_next').hide(); break; case 'reassign': $('#reassign_select').show(); $('#mark_milestone_finished_submit').show(); $('#mark_milestone_finished_next').hide(); break; case 'addnew': $('#reassign_select').hide(); $('#mark_milestone_finished_submit').hide(); $('#mark_milestone_finished_next').show(); }">
                         <option value="keep"><?php echo __("Don't do anything"); ?></option>
                         <option value="backlog" selected><?php echo __("Move to the backlog"); ?></option>
                         <option value="reassign"><?php
@@ -123,7 +123,7 @@
                 <div class="submit_container">
                     <span id="milestone_edit_indicator" style="display: none;"><?php echo image_tag('spinning_20.gif'); ?></span>
                     <input class="button" id="mark_milestone_finished_submit" type="submit" value="<?php echo $savelabel; ?>">
-                    <input class="button" id="mark_milestone_finished_next" type="button" value="<?php echo __('Next'); ?>" style="display: none;" onclick="$('milestone_finish_container').hide();$('edit_milestone_container').show();">
+                    <input class="button" id="mark_milestone_finished_next" type="button" value="<?php echo __('Next'); ?>" style="display: none;" onclick="$('#milestone_finish_container').hide();$('#edit_milestone_container').show();">
                 </div>
             </div>
         </div>

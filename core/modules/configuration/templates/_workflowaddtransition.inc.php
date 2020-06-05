@@ -6,7 +6,7 @@
                 <li>
                     <input type="radio" name="add_transition_type" value="existing" id="step_<?php echo $step->getID(); ?>_add_existing_transition">
                     <label for="step_<?php echo $step->getID(); ?>_add_existing_transition"><?php echo __('Existing transition'); ?></label>
-                    <select name="existing_transition_id" onclick="$('step_<?php echo $step->getID(); ?>_add_existing_transition').checked = true;">
+                    <select name="existing_transition_id" onclick="$('#step_<?php echo $step->getID(); ?>_add_existing_transition').checked = true;">
                         <?php foreach ($step->getWorkflow()->getTransitions() as $transition): ?>
                             <?php if ($step->hasOutgoingTransition($transition) || $transition->getOutgoingStep()->getID() == $step->getID()) continue; ?>
                             <option value="<?php echo $transition->getID(); ?>"><?php echo $transition->getName(); ?> &rarr; <?php echo $transition->getOutgoingStep()->getName(); ?></option>
@@ -49,7 +49,7 @@
             <div style="text-align: center; padding: 10px;">
                 <input type="submit" value="<?php echo __('Add transition'); ?>">
                 <?php echo __('%add_transition or %cancel', array('%add_transition' => '', '%cancel' => '')); ?>
-                <?php echo javascript_link_tag(__('cancel'), array('onclick' => "$('step_{$step->getID()}_transition_add').toggle()")); ?>
+                <?php echo javascript_link_tag(__('cancel'), array('onclick' => "$('#step_{$step->getID()}_transition_add').toggle()")); ?>
             </div>
         </form>
     </div>

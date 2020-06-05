@@ -1,7 +1,7 @@
 <div class="backdrop_box large" id="viewissue_add_item_div">
     <div class="backdrop_detail_header">
         <span><?= __('Issue time tracking - time spent'); ?></span>
-        <?= javascript_link_tag(fa_image_tag('plus'), array('onclick' => "$('time_spent_{$issue->getID()}_form').toggle();if ($('time_spent_{$issue->getID()}_form').visible()) { $('issue_{$issue->getID()}_timeentry').focus(); }", 'class' => 'add_link')); ?>
+        <?= javascript_link_tag(fa_image_tag('plus'), array('onclick' => "$('#time_spent_{$issue->getID()}_form').toggle();if ($('#time_spent_{$issue->getID()}_form').visible()) { $('#issue_{$issue->getID()}_timeentry').focus(); }", 'class' => 'add_link')); ?>
         <a href="javascript:void(0);" class="closer" onclick="Pachno.UI.Backdrop.reset();"><?= fa_image_tag('times'); ?></a>
     </div>
     <div id="backdrop_detail_content" class="backdrop_detail_content">
@@ -50,6 +50,6 @@
 </div>
 <?php if (isset($initial_view) && $initial_view == 'entry'): ?>
 <script>
-    $('issue_<?= $issue->getID(); ?>_timeentry').focus();
+    $('#issue_<?= $issue->getID(); ?>_timeentry').focus();
 </script>
 <?php endif; ?>

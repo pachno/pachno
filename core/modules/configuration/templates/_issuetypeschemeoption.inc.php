@@ -18,19 +18,35 @@
             <div class="name">
                 <?= (is_object($item)) ? $item->getDescription() : IssueFields::getFieldDescription($item); ?>
             </div>
+            <?php if (in_array($key, ['build', 'component', 'edition'])): ?>
+                <div class="icon tooltip-container">
+                    <button type="button" class="button icon secondary" data-target="#f_<?= $issue_type->getID(); ?>_<?= $key; ?>_options" data-exclusive><?= fa_image_tag('info-circle'); ?></button>
+                    <div class="tooltip">
+                        <span><?= __('This field is only shown for projects with this setting enabled'); ?></span>
+                    </div>
+                </div>
+            <?php endif; ?>
             <div class="icon">
                 <?php if (in_array($key, ['votes'])): ?>
                     <button class="button icon secondary remove-item"><?= fa_image_tag('times'); ?></button>
                 <?php else: ?>
-                    <button class="button icon secondary collapser <?php if (isset($expanded) && $expanded) echo 'active'; ?>" data-target="#f_<?= $issue_type->getID(); ?>_<?= $key; ?>_options" data-exclusive><?= fa_image_tag('angle-down'); ?></button>
+                    <button type="button" class="button icon secondary collapser <?php if (isset($expanded) && $expanded) echo 'active'; ?>" data-target="#f_<?= $issue_type->getID(); ?>_<?= $key; ?>_options" data-exclusive><?= fa_image_tag('angle-down'); ?></button>
                 <?php endif; ?>
             </div>
         </div>
         <?php if (!in_array($key, ['votes'])): ?>
             <div class="row options-container collapse-target <?php if (isset($expanded) && $expanded) echo 'active'; ?>" id="f_<?= $issue_type->getID(); ?>_<?= $key; ?>_options">
+                <?php if (in_array($key, ['build', 'component', 'edition'])): ?>
+                    <div class="message-box type-warning">
+                        <?= fa_image_tag('info-circle', ['class' => 'icon']); ?>
+                        <span class="message">
+                            <span><?= __('This field is only shown for projects with this setting enabled'); ?></span>
+                        </span>
+                    </div>
+                <?php endif; ?>
                 <?php if (!in_array($key, array('votes', 'owner', 'assignee'))): ?>
                     <div class="form-row">
-                        <input type="checkbox" class="fancy-checkbox" id="f_<?= $issue_type->getID(); ?>_<?= $key; ?>_reportable" onclick="if (this.checked) { $('f_<?= $issue_type->getID(); ?>_<?= $key; ?>_required').enable();$('f_<?= $issue_type->getID(); ?>_<?= $key; ?>_required').enable(); } else { $('f_<?= $issue_type->getID(); ?>_<?= $key; ?>_required').disable();$('f_<?= $issue_type->getID(); ?>_<?= $key; ?>_required').disable(); }" name="field[<?= $key; ?>][reportable]" value="1"<?php if (array_key_exists($key, $visible_fields) && $visible_fields[$key]['reportable']): ?> checked<?php endif; ?><?php if (!array_key_exists($key, $visible_fields) && !in_array($key, array('status'))): ?> disabled<?php endif; ?>>
+                        <input type="checkbox" class="fancy-checkbox" id="f_<?= $issue_type->getID(); ?>_<?= $key; ?>_reportable" onclick="if ($(this).checked) { $('#f_<?= $issue_type->getID(); ?>_<?= $key; ?>_required').prop('disabled', false); } else { $('#f_<?= $issue_type->getID(); ?>_<?= $key; ?>_required').prop('disabled', true); }" name="field[<?= $key; ?>][reportable]" value="1"<?php if (array_key_exists($key, $visible_fields) && $visible_fields[$key]['reportable']): ?> checked<?php endif; ?><?php if (!array_key_exists($key, $visible_fields) && !in_array($key, array('status'))): ?> disabled<?php endif; ?>>
                         <label for="f_<?= $issue_type->getID(); ?>_<?= $key; ?>_reportable">
                             <?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far'); ?>
                             <span class="name"><?= __('Show field when creating a new issue'); ?></span>

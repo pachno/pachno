@@ -4,7 +4,7 @@
         <?php if (($issue instanceof \pachno\core\entities\Issue && ($issue->isUpdateable() && !$issue->isDuplicate()) || isset($issues)) && $transition->hasAction(\pachno\core\entities\WorkflowTransitionAction::ACTION_SET_DUPLICATE)): ?>
             <a href="javascript:void(0);" onclick="$(this).up('.issuedetailspopup').toggleClass('show_duplicate_search');" class="add_link" title="<?= __('Mark as duplicate'); ?>"><?= fa_image_tag('search-plus'); ?></a>
         <?php endif; ?>
-        <a href="javascript:void(0);" id="transition_working_<?= $transition->getID(); ?>_cancel" onclick="($('workflow_transition_fullpage')) ? $('workflow_transition_fullpage').fade({duration: 0.2}) : Pachno.UI.Backdrop.reset();" class="closer"><?= fa_image_tag('times'); ?></a>
+        <a href="javascript:void(0);" id="transition_working_<?= $transition->getID(); ?>_cancel" onclick="($('#workflow_transition_fullpage')) ? $('#workflow_transition_fullpage').fade({duration: 0.2}) : Pachno.UI.Backdrop.reset();" class="closer"><?= fa_image_tag('times'); ?></a>
     </div>
     <div class="form-container">
 <?php if (isset($interactive) && $interactive && $issue instanceof \pachno\core\entities\Issue): ?>
@@ -51,16 +51,16 @@
                     <?php if ($issue instanceof \pachno\core\entities\Issue): ?>
                         <label for="viewissue_find_issue_<?= $transition->getID(); ?>_input"><?= __('Find issue(s)'); ?>&nbsp;</label>
                         <input type="text" name="searchfor" id="viewissue_find_issue_<?= $transition->getID(); ?>_input">
-                        <input class="button button-blue" type="button" onclick="Pachno.Issues.findDuplicate($('duplicate_finder_transition_<?= $transition->getID(); ?>').getValue(), <?= $transition->getID(); ?>);return false;" value="<?= __('Find'); ?>" id="viewissue_find_issue_<?= $transition->getID(); ?>_submit">
+                        <input class="button button-blue" type="button" onclick="Pachno.Issues.findDuplicate($('#duplicate_finder_transition_<?= $transition->getID(); ?>').getValue(), <?= $transition->getID(); ?>);return false;" value="<?= __('Find'); ?>" id="viewissue_find_issue_<?= $transition->getID(); ?>_submit">
                         <?= image_tag('spinning_20.gif', array('id' => 'viewissue_find_issue_'.$transition->getID().'_indicator', 'style' => 'display: none;')); ?><br>
                         <div id="viewissue_<?= $transition->getID(); ?>_duplicate_results"></div>
                         <input type="hidden" name="transition_duplicate_ulr[<?= $transition->getID(); ?>]" id="duplicate_finder_transition_<?= $transition->getID(); ?>" value="<?= make_url('viewissue_find_duplicated_issue', array('project_key' => $project->getKey(), 'issue_id' => $issue->getID())); ?>">
                         <?php if (!$issue instanceof \pachno\core\entities\Issue): ?>
                             <script type="text/javascript">
                                 var transition_id = <?= $transition->getID(); ?>;
-                                $('viewissue_find_issue_' + transition_id + '_input').observe('keypress', function(event) {
+                                $('#viewissue_find_issue_' + transition_id + '_input').observe('keypress', function(event) {
                                     if (event.keyCode == Event.KEY_RETURN) {
-                                        Pachno.Issues.findDuplicate($('duplicate_finder_transition_' + transition_id).getValue(), transition_id);
+                                        Pachno.Issues.findDuplicate($('#duplicate_finder_transition_' + transition_id).getValue(), transition_id);
                                         event.stop();
                                     }
                                 });
@@ -261,9 +261,9 @@
                         <label for="transition_popup_set_stop_working"><?= __('Log time spent'); ?></label>
                         <div class="time_logger_summary">
                             <?php $time_spent = $issue->calculateTimeSpent(); ?>
-                            <input type="radio" <?php echo (array_sum($time_spent) == 0) ? ' disabled' : ' checked'; ?> name="did" id="transition_popup_set_stop_working_<?= $transition->getID(); ?>" value="something" onchange="$('transition_popup_set_stop_working_specify_log_div_<?= $transition->getID(); ?>').hide();"><label for="transition_popup_set_stop_working_<?= $transition->getID(); ?>" class="simple"><?= __('Yes'); ?></label>&nbsp;&nbsp;&nbsp;&nbsp;<span class="faded_out"><?= __($issue->getTimeLoggerSomethingSummaryText(), array('%minutes' => $time_spent['minutes'], '%hours' => $time_spent['hours'], '%days' => $time_spent['days'], '%weeks' => $time_spent['weeks'])); ?></span><br>
-                            <input type="radio" name="did" id="transition_popup_set_stop_working_specify_log_<?= $transition->getID(); ?>" value="this" onchange="$('transition_popup_set_stop_working_specify_log_div_<?= $transition->getID(); ?>').show()"><label for="transition_popup_set_stop_working_specify_log_<?= $transition->getID(); ?>" class="simple"><?= __('Yes, let me specify'); ?></label><br>
-                            <input type="radio" <?php if (array_sum($time_spent) == 0) echo ' checked'; ?> name="did" id="transition_popup_set_stop_working_no_log_<?= $transition->getID(); ?>" value="nothing" onchange="$('transition_popup_set_stop_working_specify_log_div_<?= $transition->getID(); ?>').hide();"><label for="transition_popup_set_stop_working_no_log_<?= $transition->getID(); ?>" class="simple"><?= __('No'); ?></label>
+                            <input type="radio" <?php echo (array_sum($time_spent) == 0) ? ' disabled' : ' checked'; ?> name="did" id="transition_popup_set_stop_working_<?= $transition->getID(); ?>" value="something" onchange="$('#transition_popup_set_stop_working_specify_log_div_<?= $transition->getID(); ?>').hide();"><label for="transition_popup_set_stop_working_<?= $transition->getID(); ?>" class="simple"><?= __('Yes'); ?></label>&nbsp;&nbsp;&nbsp;&nbsp;<span class="faded_out"><?= __($issue->getTimeLoggerSomethingSummaryText(), array('%minutes' => $time_spent['minutes'], '%hours' => $time_spent['hours'], '%days' => $time_spent['days'], '%weeks' => $time_spent['weeks'])); ?></span><br>
+                            <input type="radio" name="did" id="transition_popup_set_stop_working_specify_log_<?= $transition->getID(); ?>" value="this" onchange="$('#transition_popup_set_stop_working_specify_log_div_<?= $transition->getID(); ?>').show()"><label for="transition_popup_set_stop_working_specify_log_<?= $transition->getID(); ?>" class="simple"><?= __('Yes, let me specify'); ?></label><br>
+                            <input type="radio" <?php if (array_sum($time_spent) == 0) echo ' checked'; ?> name="did" id="transition_popup_set_stop_working_no_log_<?= $transition->getID(); ?>" value="nothing" onchange="$('#transition_popup_set_stop_working_specify_log_div_<?= $transition->getID(); ?>').hide();"><label for="transition_popup_set_stop_working_no_log_<?= $transition->getID(); ?>" class="simple"><?= __('No'); ?></label>
                         </div>
                     </div>
                     <div id="transition_popup_set_stop_working_specify_log_div_<?= $transition->getID(); ?>" class="lightyellowbox issue_timespent_form" style="display: none;">

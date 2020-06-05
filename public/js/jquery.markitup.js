@@ -68,7 +68,7 @@
 
 		// compute markItUp! path
 		if (!options.root) {
-			$('script').each(function(a, tag) {
+			$('#script').each(function(a, tag) {
 				miuScript = $(tag).get(0).src.match(/(.*)jquery\.markitup(\.pack)?\.js$/);
 				if (miuScript !== null) {
 					options.root = miuScript[1];
@@ -159,18 +159,18 @@
 
 				// add the header before the textarea
 				if (options.headerContainer !== undefined) {
-					header = $('<div class="markItUpHeader"></div>').appendTo($(options.headerContainer));
+					header = $('#<div class="markItUpHeader"></div>').appendTo($(options.headerContainer));
 				} else {
-					header = $('<div class="markItUpHeader"></div>').insertBefore($$);
+					header = $('#<div class="markItUpHeader"></div>').insertBefore($$);
 				}
 				$(dropMenus(options.markupSet)).appendTo(header);
 
 				// add the footer after the textarea
-				footer = $('<div class="markItUpFooter"></div>').insertAfter($$);
+				footer = $('#<div class="markItUpFooter"></div>').insertAfter($$);
 
 				// add the resize handle after textarea
 				if (options.resizeHandle === true && browser.safari !== true) {
-					resizeHandle = $('<div class="markItUpResizeHandle"></div>')
+					resizeHandle = $('#<div class="markItUpResizeHandle"></div>')
 						.insertAfter($$)
 						.bind("mousedown.markItUp", function(e) {
 							var h = $$.height(), y = e.clientY, mouseMove, mouseUp;
@@ -212,20 +212,20 @@
 
 			// recursively build header with dropMenus from markupset
 			function dropMenus(markupSet) {
-				var ul = $('<ul></ul>'), i = 0;
-				$('li:hover > ul', ul).css('display', 'block');
+				var ul = $('#<ul></ul>'), i = 0;
+				$('#li:hover > ul', ul).css('display', 'block');
 				$.each(markupSet, function() {
 					var button = this, t = '', title, li, j;
 					button.title ? title = (button.key) ? (button.title||'')+' [Ctrl+'+button.key+']' : (button.title||'') : title = (button.key) ? (button.name||'')+' [Ctrl+'+button.key+']' : (button.name||'');
 					key   = (button.key) ? 'accesskey="'+button.key+'"' : '';
 					if (button.separator) {
-						li = $('<li class="markItUpSeparator">'+(button.separator||'')+'</li>').appendTo(ul);
+						li = $('#<li class="markItUpSeparator">'+(button.separator||'')+'</li>').appendTo(ul);
 					} else {
 						i++;
 						for (j = levels.length -1; j >= 0; j--) {
 							t += levels[j]+"-";
 						}
-						li = $('<li class="markItUpButton markItUpButton'+t+(i)+' '+(button.className||'')+'"><a href="#" '+key+' title="'+title+'">'+(button.name||'')+'</a></li>')
+						li = $('#<li class="markItUpButton markItUpButton'+t+(i)+' '+(button.className||'')+'"><a href="#" '+key+' title="'+title+'">'+(button.name||'')+'</a></li>')
 						.bind("contextmenu.markItUp", function() { // prevent contextmenu on mac and allow ctrl+click
 							return false;
 						}).bind('click.markItUp', function(e) {
@@ -239,13 +239,13 @@
 							setTimeout(function() { markup(button) },1);
 							return false;
 						}).bind('mouseenter.markItUp', function() {
-								$('> ul', this).show();
+								$('#> ul', this).show();
 								$(document).one('click', function() { // close dropmenu if click outside
-										$('ul ul', header).hide();
+										$('#ul ul', header).hide();
 									}
 								);
 						}).bind('mouseleave.markItUp', function() {
-								$('> ul', this).hide();
+								$('#> ul', this).hide();
 						}).appendTo(ul);
 						if (button.dropMenu) {
 							levels.push(i);
@@ -520,7 +520,7 @@
 							previewWindow.close();
 						});
 					} else {
-						iFrame = $('<iframe class="markItUpPreviewFrame"></iframe>');
+						iFrame = $('#<iframe class="markItUpPreviewFrame"></iframe>');
 						if (options.previewPosition == 'after') {
 							iFrame.insertAfter(footer);
 						} else {
@@ -607,7 +607,7 @@
 
 				if (e.type === 'keydown') {
 					if (ctrlKey === true) {
-						li = $('a[accesskey="'+((e.keyCode == 13) ? '\\n' : String.fromCharCode(e.keyCode))+'"]', header).parent('li');
+						li = $('#a[accesskey="'+((e.keyCode == 13) ? '\\n' : String.fromCharCode(e.keyCode))+'"]', header).parent('li');
 						if (li.length !== 0) {
 							ctrlKey = false;
 							setTimeout(function() {
@@ -680,7 +680,7 @@
 				$(this).trigger('insertion', [options]);
 			});
 		} else {
-			$('textarea').trigger('insertion', [options]);
+			$('#textarea').trigger('insertion', [options]);
 		}
 	};
 }));

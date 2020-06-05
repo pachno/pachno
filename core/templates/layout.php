@@ -76,8 +76,6 @@
         <script type="text/javascript" src="<?= make_url('home'); ?>js/dist/<?= $js; ?>.js?bust=<?= (Context::isDebugMode()) ? $rand : $pachno_version; ?>"></script>
     <?php endforeach; ?>
     <script src="https://unpkg.com/simplebar@latest/dist/simplebar.min.js"></script>
-    <script type="text/javascript" src="<?= make_url('home'); ?>js/HackTimer<?= $minified; ?>.js"></script>
-    <script type="text/javascript" src="<?= make_url('home'); ?>js/HackTimerWorker<?= $minified; ?>.js"></script>
     <?php foreach ($externaljs as $js): ?>
         <script type="text/javascript" src="<?= $js; ?>"></script>
     <?php endforeach; ?>

@@ -280,6 +280,12 @@
       }
     }
 
+    &.submitting {
+      .indicator {
+        display: inline-block;
+      }
+    }
+
     &.separator,
     &.separator:hover {
       padding: 2px 0 0 0;
@@ -375,9 +381,12 @@
 }
 .expandable {
   .expander {
-    transform: rotate(0);
-    cursor: pointer;
-    padding: 10px;
+    &,
+    &:hover {
+      transform: rotate(0);
+      cursor: pointer;
+      padding: 10px;
+    }
   }
 
   + .submenu {

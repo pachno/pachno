@@ -11,7 +11,7 @@
             </a>
             <ul class="more_actions_dropdown popup_box">
                 <li><?php echo javascript_link_tag(__('Toggle menu edit mode'), array('onclick' => "Pachno.Main.Profile.clearPopupsAndButtons();Pachno.Main.Menu.toggleEditMode('{$target_type}', '{$target_id}', '".make_url('save_menu_order', array('target_type' => $target_type, 'target_id' => $target_id))."');", 'id' => 'toggle_'.$target_type.'_'.$target_id.'_edit_mode')); ?></li>
-                <li><?php echo javascript_link_tag(__('Add menu item'), array('onclick' => "Pachno.Main.Profile.clearPopupsAndButtons();$('attach_link_{$target_type}_{$target_id}').toggle();")); ?></li>
+                <li><?php echo javascript_link_tag(__('Add menu item'), array('onclick' => "Pachno.Main.Profile.clearPopupsAndButtons();$('#attach_link_{$target_type}_{$target_id}').toggle();")); ?></li>
             </ul>
         <?php endif; ?>
         <?php echo $title; ?>
@@ -21,7 +21,7 @@
             <div class="backdrop_box medium">
                 <div class="backdrop_detail_header">
                     <span><?php echo __('Add menu item'); ?></span>
-                    <?= javascript_link_tag(fa_image_tag('times'), ['class' => 'closer', 'onclick' => "$('attach_link_{$target_type}_{$target_id}').toggle();"]); ?>
+                    <?= javascript_link_tag(fa_image_tag('times'), ['class' => 'closer', 'onclick' => "$('#attach_link_{$target_type}_{$target_id}').toggle();"]); ?>
                 </div>
                 <div class="backdrop_detail_content">
                     <div class="form-container">

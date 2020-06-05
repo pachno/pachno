@@ -36,7 +36,7 @@
                     e.preventDefault();
 
                     $button.addClass('submitting');
-                    $button.attr('disabled', true);
+                    $button.prop('disabled', true);
 
                     var submitStep = function () {
                         return new Promise(function (resolve, reject) {
@@ -48,7 +48,7 @@
                                 success: resolve,
                                 error: function (details) {
                                     $button.removeClass('submitting');
-                                    $button.attr('disabled', false);
+                                    $button.prop('disabled', false);
                                     reject(details);
                                 }
                             });
@@ -59,7 +59,7 @@
                         .then(function (result) {
                             $('#livelink-' + connector + '-configuration').removeClass('connected');
                             $button.removeClass('submitting');
-                            $button.attr('disabled', false);
+                            $button.prop('disabled', false);
                         }, function (details) {
                             pachno_index_js.Helpers.Message.error(details.responseJSON.error);
                         });

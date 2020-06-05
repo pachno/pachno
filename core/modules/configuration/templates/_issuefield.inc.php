@@ -32,7 +32,7 @@
                 <div class="description"><?= $type->getTypeDescription(); ?></div>
             <?php endif; ?>
         </div>
-        <button class="icon open">
+        <button class="icon open trigger-open-component" type="button">
             <?= fa_image_tag('angle-right'); ?>
         </button>
     </div>

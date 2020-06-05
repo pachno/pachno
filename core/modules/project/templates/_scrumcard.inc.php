@@ -13,11 +13,11 @@
     </div>
     <div class="story_estimate">
         <?php if ($issue->canEditEstimatedTime()): ?>
-            <a href="javascript:void(0);" onclick="$('scrum_story_<?php echo $issue->getID(); ?>_estimation').toggle();" alt="<?php echo __('Change estimate'); ?>" title="<?php echo __('Change estimate'); ?>"><?php echo image_tag('scrum_estimate.png'); ?></a>
+            <a href="javascript:void(0);" onclick="$('#scrum_story_<?php echo $issue->getID(); ?>_estimation').toggle();" alt="<?php echo __('Change estimate'); ?>" title="<?php echo __('Change estimate'); ?>"><?php echo image_tag('scrum_estimate.png'); ?></a>
         <?php endif; ?>
         <?php echo __('%pointspt(s)', array('%points' => '<span id="scrum_story_' . $issue->getID() . '_points">' . $issue->getEstimatedPoints() . '</span>')); ?>
     </div>
-    <div class="story_color" id="story_color_<?php echo $issue->getID(); ?>" <?php if ($issue->canEditIssue()): ?>onclick="$('color_selector_<?php echo $issue->getID(); ?>').toggle();"<?php endif; ?> style="cursor: pointer; background-color: <?php echo $issue->getAgileColor(); ?>;">&nbsp;</div>
+    <div class="story_color" id="story_color_<?php echo $issue->getID(); ?>" <?php if ($issue->canEditIssue()): ?>onclick="$('#color_selector_<?php echo $issue->getID(); ?>').toggle();"<?php endif; ?> style="cursor: pointer; background-color: <?php echo $issue->getAgileColor(); ?>;">&nbsp;</div>
     <div class="story_no"><?php echo $issue->getFormattedIssueNo(); ?></div>
     <div class="story_title"><?php echo $issue->getTitle(); ?></div>
     <input type="hidden" id="scrum_story_<?php echo $issue->getID(); ?>_id" value="<?php echo $issue->getID(); ?>">
@@ -28,9 +28,9 @@
         <label><?php echo __('Actions'); ?>:</label>
         <?php echo link_tag(make_url('viewissue', array('issue_no' => $issue->getFormattedIssueNo(), 'project_key' => $issue->getProject()->getKey())), image_tag('tab_new.png', array('title' => __('Open in new window'))), array('target' => '_blank')); ?>
         <?php if ($issue->canAddRelatedIssues()): ?>
-            <a href="javascript:void(0);" onclick="$('scrum_story_<?php echo $issue->getID(); ?>_add_task_div').toggle();"><?php echo image_tag('scrum_add_task.png', array('title' => __('Add a task to this user story'))); ?></a>
+            <a href="javascript:void(0);" onclick="$('#scrum_story_<?php echo $issue->getID(); ?>_add_task_div').toggle();"><?php echo image_tag('scrum_add_task.png', array('title' => __('Add a task to this user story'))); ?></a>
         <?php endif; ?>
-        <a href="javascript:void(0);" onclick="$('scrum_story_<?php echo $issue->getID(); ?>_tasks').toggle();"><?php echo image_tag('view_list_details.png', array('title' => __('Show tasks for this user story'))); ?></a>&nbsp;<span class="task_count">(<span id="scrum_story_<?php echo $issue->getID(); ?>_tasks_count"><?php echo count($issue->getChildIssues()); ?></span>)</span>
+        <a href="javascript:void(0);" onclick="$('#scrum_story_<?php echo $issue->getID(); ?>_tasks').toggle();"><?php echo image_tag('view_list_details.png', array('title' => __('Show tasks for this user story'))); ?></a>&nbsp;<span class="task_count">(<span id="scrum_story_<?php echo $issue->getID(); ?>_tasks_count"><?php echo count($issue->getChildIssues()); ?></span>)</span>
         <?php if ($issue->canAddRelatedIssues()): ?>
             <?php include_component('project/quickaddtask', array('issue' => $issue, 'mode' => 'scrum')); ?>
         <?php endif; ?>

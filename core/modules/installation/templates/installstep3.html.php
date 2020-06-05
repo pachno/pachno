@@ -3,32 +3,32 @@
 
     function updateURLPreview()
     {
-        if ($('url_subdir').value.empty())
+        if ($('#url_subdir').value.empty())
         {
-            $('continue_button').hide();
-            $('continue_error').show();
-            $('continue_error').update('You need to fill the subdirectory url.<br />If Pachno is located directly under the server, put a single forward slash in the subdirectory url.');
+            $('#continue_button').hide();
+            $('#continue_error').show();
+            $('#continue_error').update('You need to fill the subdirectory url.<br />If Pachno is located directly under the server, put a single forward slash in the subdirectory url.');
         }
-        else if(($F($('pachno_settings')['url_subdir']).endsWith('/') == false || $F($('pachno_settings')['url_subdir']).startsWith('/') == false))
+        else if(($F($('#pachno_settings')['url_subdir']).endsWith('/') == false || $F($('#pachno_settings')['url_subdir']).startsWith('/') == false))
         {
-            $('continue_button').hide();
-            $('continue_error').show();
-            $('continue_error').update('The subdirectory url <i>must start and end with a forward slash</i>');
+            $('#continue_button').hide();
+            $('#continue_error').show();
+            $('#continue_error').update('The subdirectory url <i>must start and end with a forward slash</i>');
         }
         else
         {
-            $('continue_button').show();
-            $('continue_error').hide();
-            $('url_preview').update($('url_subdir').value);
+            $('#continue_button').show();
+            $('#continue_error').hide();
+            $('#url_preview').update($('#url_subdir').value);
         }
 
-        var new_url = $('url_subdir').value;
+        var new_url = $('#url_subdir').value;
 
         if (new_url.endsWith('//'))
         {
-            $('continue_button').hide();
-            $('continue_error').show();
-            $('continue_error').update('The complete url <i><b>cannot end with two forward slashes</b></i>. If Pachno is located directly under the server, put <i><b>a single forward slash</b></i> as the directory url.');
+            $('#continue_button').hide();
+            $('#continue_error').show();
+            $('#continue_error').update('The complete url <i><b>cannot end with two forward slashes</b></i>. If Pachno is located directly under the server, put <i><b>a single forward slash</b></i> as the directory url.');
         }
     }
 
@@ -67,8 +67,8 @@
                     <label for="apache_autosetup_yes">Auto-configure apache</label>
                 </dt>
                 <dd>
-                    <input type="radio" style="vertical-align: text-top;" name="apache_autosetup" id="apache_autosetup_yes" value="1" onclick="$('server_autosetup_info').show();" <?php if ($server_type == 'apache') echo "checked"; ?>><label for="apache_autosetup_yes">Yes</label>&nbsp;
-                    <input type="radio" style="vertical-align: text-top;" name="apache_autosetup" id="apache_autosetup_no" value="0" onclick="$('server_autosetup_info').hide();" <?php if ($server_type != 'apache') echo "checked"; ?>><label for="apache_autosetup_no">No</label>
+                    <input type="radio" style="vertical-align: text-top;" name="apache_autosetup" id="apache_autosetup_yes" value="1" onclick="$('#server_autosetup_info').show();" <?php if ($server_type == 'apache') echo "checked"; ?>><label for="apache_autosetup_yes">Yes</label>&nbsp;
+                    <input type="radio" style="vertical-align: text-top;" name="apache_autosetup" id="apache_autosetup_no" value="0" onclick="$('#server_autosetup_info').hide();" <?php if ($server_type != 'apache') echo "checked"; ?>><label for="apache_autosetup_no">No</label>
                 </dd>
             </dl>
             <div style="<?php if ($server_type != 'apache') echo "display: none;"; ?>" id="server_autosetup_info">
@@ -89,7 +89,7 @@
             <br style="clear: both;">
             <div style="clear: both; padding: 30px 0 15px 0; text-align: right;">
                 <img src="images/spinning_30.gif" id="next_indicator" style="display: none; vertical-align: middle; margin-left: 10px;">
-                <input type="submit" id="continue_button" onclick="$('continue_button').hide();$('next_indicator').show();" value="Continue">
+                <input type="submit" id="continue_button" onclick="$('#continue_button').hide();$('#next_indicator').show();" value="Continue">
             </div>
         </form>
     <?php endif; ?>

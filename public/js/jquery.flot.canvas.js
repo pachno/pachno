@@ -189,7 +189,7 @@ browser, but needs to redraw with canvas text when exporting as an image.
 
 				if (typeof font !== "object") {
 
-					var element = $("<div>&nbsp;</div>")
+					var element = $("#<div>&nbsp;</div>")
 						.css("position", "absolute")
 						.addClass(typeof font === "string" ? font : null)
 						.appendTo(this.getTextLayer(layer));

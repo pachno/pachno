@@ -181,7 +181,7 @@
                 <form accept-charset="utf-8" action="index.php" method="post">
                     <input type="hidden" name="step" value="2">
                     <img src="images/spinning_30.gif" id="next_indicator" style="display: none; vertical-align: middle; margin-left: 10px;" >
-                    <input type="submit" onclick="$('start_install').hide();$('next_indicator').show();" id="start_install" value="Continue" style="margin-left: 10px;">
+                    <input type="submit" onclick="$('#start_install').hide();$('#next_indicator').show();" id="start_install" value="Continue" style="margin-left: 10px;">
                 </form>
             </div>
         <?php else: ?>

@@ -1,7 +1,7 @@
 <div class="backdrop_box medium" id="viewissue_add_item_div">
     <div class="backdrop_detail_header">
         <span><?= __('Manage issue subscribers'); ?></span>
-        <?= javascript_link_tag(fa_image_tag('user-plus'), array('onclick' => "$('popup_find_subscriber_{$issue->getID()}').toggleClass('force-active');", 'class' => 'add_link')); ?>
+        <?= javascript_link_tag(fa_image_tag('user-plus'), array('onclick' => "$('#popup_find_subscriber_{$issue->getID()}').toggleClass('force-active');", 'class' => 'add_link')); ?>
         <a href="javascript:void(0);" class="closer" onclick="Pachno.UI.Backdrop.reset();"><?= fa_image_tag('times'); ?></a>
     </div>
     <div id="backdrop_detail_content" class="backdrop_detail_content">

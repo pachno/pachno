@@ -1,6 +1,6 @@
 <form accept-charset="<?php echo \pachno\core\framework\Context::getI18n()->getCharset(); ?>" onsubmit="Pachno.Project.workflow('<?php echo make_url('configure_projects_workflow', array('project_id' => $project->getID())); ?>');return false;" action="<?php echo make_url('configure_projects_workflow', array('project_id' => $project->getID())); ?>" method="post" id="workflow_form2" enctype="multipart/form-data">
     <div class="backdrop_detail_header">
-        <a href="javascript:void(0);" class="back_link" onclick="$('change_workflow_table').update('');$('change_workflow_box').show();"><?= fa_image_tag('chevron-left'); ?></a>
+        <a href="javascript:void(0);" class="back_link" onclick="$('#change_workflow_table').update('');$('#change_workflow_box').show();"><?= fa_image_tag('chevron-left'); ?></a>
         <span><?php echo __('Change workflow'); ?></span>
         <a href="javascript:void(0);" class="closer" onclick="Pachno.UI.Backdrop.reset();"><?= fa_image_tag('times'); ?></a>
     </div>

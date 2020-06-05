@@ -352,7 +352,7 @@
                     // Create the text layer container, if it doesn't exist
 
                     if (this.textContainer == null) {
-                        this.textContainer = $("<div class='flot-text'></div>")
+                        this.textContainer = $("#<div class='flot-text'></div>")
                             .css({
                                 position: "absolute",
                                 top: 0,
@@ -365,7 +365,7 @@
                             .insertAfter(this.element);
                     }
 
-                    layer = this.text[classes] = $("<div></div>")
+                    layer = this.text[classes] = $("#<div></div>")
                         .addClass(classes)
                         .css({
                             position: "absolute",
@@ -456,7 +456,7 @@
 
                 if (info == null) {
 
-                    var element = $("<div></div>").html(text)
+                    var element = $("#<div></div>").html(text)
                         .css({
                             position: "absolute",
                             'max-width': width,
@@ -2937,7 +2937,7 @@
                             pos += 'right:' + (m[0] + plotOffset.right) + 'px;';
                         else if (p.charAt(1) == "w")
                             pos += 'left:' + (m[0] + plotOffset.left) + 'px;';
-                        var legend = $('<div class="legend">' + table.replace('style="', 'style="position:absolute;' + pos + ';') + '</div>').appendTo(placeholder);
+                        var legend = $('#<div class="legend">' + table.replace('style="', 'style="position:absolute;' + pos + ';') + '</div>').appendTo(placeholder);
                         if (options.legend.backgroundOpacity != 0.0) {
                             // put in the transparent background
                             // separately to avoid blended labels and
@@ -2953,7 +2953,7 @@
                                 c = c.toString();
                             }
                             var div = legend.children();
-                            $('<div style="position:absolute;width:' + div.width() + 'px;height:' + div.height() + 'px;' + pos + 'background-color:' + c + ';"> </div>').prependTo(legend).css('opacity', options.legend.backgroundOpacity);
+                            $('#<div style="position:absolute;width:' + div.width() + 'px;height:' + div.height() + 'px;' + pos + 'background-color:' + c + ';"> </div>').prependTo(legend).css('opacity', options.legend.backgroundOpacity);
                         }
                     }
                 }

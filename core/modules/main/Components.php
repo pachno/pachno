@@ -9,6 +9,7 @@
     use pachno\core\framework;
     use pachno\core\framework\Event;
     use pachno\core\framework\interfaces\AuthenticationProvider;
+    use pachno\core\framework\Settings;
     use PragmaRX\Google2FA\Google2FA;
 
     /**
@@ -260,22 +261,6 @@
 
         public function componentUploader()
         {
-            switch ($this->mode) {
-                case 'issue':
-                    $this->issue = entities\Issue::getB2DBTable()->selectById($this->issue_id);
-                    break;
-                case 'article':
-                    $this->article = entities\Article::getByName($this->article_name);
-                    break;
-                default:
-                    // @todo: dispatch a framework\Event that allows us to retrieve the
-                    // necessary variables from anyone catching it
-                    break;
-            }
-        }
-
-        public function componentDynamicUploader()
-        {
             switch (true) {
                 case isset($this->issue):
                     $this->target = $this->issue;
@@ -283,26 +268,6 @@
                     break;
                 case isset($this->article):
                     $this->target = $this->article;
-                    $this->existing_files = array_reverse($this->article->getFiles());
-                    break;
-                default:
-                    // @todo: dispatch a framework\Event that allows us to retrieve the
-                    // necessary variables from anyone catching it
-                    break;
-            }
-        }
-
-        public function componentStandarduploader()
-        {
-            switch ($this->mode) {
-                case 'issue':
-                    $this->form_action = make_url('issue_upload', ['issue_id' => $this->issue->getID()]);
-                    $this->poller_url = make_url('issue_upload_status', ['issue_id' => $this->issue->getID()]);
-                    $this->existing_files = array_reverse($this->issue->getFiles());
-                    break;
-                case 'article':
-                    $this->form_action = make_url('article_upload', ['article_name' => $this->article->getName()]);
-                    $this->poller_url = make_url('article_upload_status', ['article_name' => $this->article->getName()]);
                     $this->existing_files = array_reverse($this->article->getFiles());
                     break;
                 default:
@@ -326,11 +291,6 @@
         {
             $this->issue = $this->issue ?: null;
             $this->setupVariables();
-        }
-
-        public function componentRelateissue()
-        {
-
         }
 
         public function componentNotifications()
@@ -362,11 +322,6 @@
         public function componentFindduplicateissues()
         {
             $this->setupVariables();
-        }
-
-        public function componentFindrelatedissues()
-        {
-
         }
 
         public function componentLogitem()
@@ -467,11 +422,6 @@
             }
         }
 
-        public function componentLoginRegister()
-        {
-
-        }
-
         public function componentCaptcha()
         {
             if (!isset($_SESSION['activation_number'])) {
@@ -552,21 +502,6 @@
             $this->al_items = [];
         }
 
-        public function componentReportIssueContainer()
-        {
-
-        }
-
-        public function componentConfirmUsername()
-        {
-
-        }
-
-        public function componentMoveIssue()
-        {
-
-        }
-
         public function componentIssuePermissions()
         {
             $al_items = $this->issue->getAccessList();
@@ -585,19 +520,9 @@
             $this->users = $this->issue->getSubscribers();
         }
 
-        public function componentIssueSpenttimes()
-        {
-
-        }
-
         public function componentIssueSpenttime()
         {
             $this->entry = tables\IssueSpentTimes::getTable()->selectById($this->entry_id);
-        }
-
-        public function componentDashboardLayoutStandard()
-        {
-
         }
 
         public function componentDashboardViewRecentComments()
@@ -625,11 +550,6 @@
             $event = Event::createNew('core', 'main\Components::DashboardViewUserProjects::links', null, [], $links);
             $event->trigger();
             $this->links = $event->getReturnList();
-        }
-
-        public function componentDashboardViewUserMilestones()
-        {
-
         }
 
         public function componentIssueEstimator()
@@ -706,6 +626,16 @@
             $google2fa_qr_code = new \PragmaRX\Google2FAQRCode\Google2FA();
             $this->qr_code_inline = $google2fa_qr_code->getQRCodeInline('Pachno', $this->getUser()->getEmail(), $secret);
             $this->session_token = framework\Context::getRequest()->getCookie('session_token');
+        }
+
+        public function componentTextarea()
+        {
+            $this->syntax = $this->syntax ?? Settings::SYNTAX_MD;
+            $this->syntaxClass = (is_numeric($this->syntax)) ? Settings::getSyntaxClass($this->syntax) : $this->syntax;
+            $this->base_id = $this->area_id ?? $this->area_name;
+            $this->invisible = $this->invisible ?? false;
+            $this->mentionable = isset($this->target_type) && isset($this->target_id);
+            $this->markuppable = ($this->syntaxClass == Settings::getSyntaxClass(Settings::SYNTAX_MD));
         }
 
     }

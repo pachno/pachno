@@ -2876,11 +2876,6 @@
                         $options['content'] = $this->getComponentHTML('login', ['section' => $request->getParameter('section', 'login')]);
                         $options['mandatory'] = false;
                         break;
-                    case 'uploader':
-                        $template_name = 'main/uploader';
-                        $options = $request->getParameters();
-                        $options['uploader'] = ($request['uploader'] == 'dynamic') ? 'dynamic' : 'standard';
-                        break;
                     case 'attachlink':
                         $template_name = 'main/attachlink';
                         break;

@@ -62,7 +62,7 @@
                                 <form class="viewissue-form" id="description_form" action="<?php echo make_url('viewissue', ['project_key' => $issue->getProject()->getKey(), 'issue_no' => $issue->getFormattedIssueNo()]); ?>" method="post" id="description_change" style="display: none;" class="editor_container">
                                     <?php include_component('main/textarea', ['area_name' => 'value', 'target_type' => 'issue', 'target_id' => $issue->getID(), 'area_id' => 'description_form_value', 'syntax' => \pachno\core\framework\Settings::getSyntaxClass($issue->getDescriptionSyntax()), 'height' => '250px', 'width' => '100%', 'value' => htmlentities($issue->getDescription(), ENT_COMPAT, \pachno\core\framework\Context::getI18n()->getCharset())]); ?>
                                     <div class="textarea_save_container">
-                                        <?php echo __('%cancel or %save', ['%save' => '<input class="button" type="submit" value="'.__('Save').'">', '%cancel' => javascript_link_tag(__('Cancel'), ['onclick' => "$('description_edit').style.display = '';$('description_change').hide();".(($issue->getDescription() != '') ? "$('description_name').show();" : "$('no_description').show();")."return false;"])]); ?>
+                                        <?php echo __('%cancel or %save', ['%save' => '<input class="button" type="submit" value="'.__('Save').'">', '%cancel' => javascript_link_tag(__('Cancel'), ['onclick' => "$('#description_edit').style.display = '';$('#description_change').hide();".(($issue->getDescription() != '') ? "$('#description_name').show();" : "$('#no_description').show();")."return false;"])]); ?>
                                     </div>
                                 </form>
                             <?php endif; ?>
@@ -70,7 +70,7 @@
                         <div id="reproduction_steps_field"<?php if (!$issue->isReproductionStepsVisible()): ?> style="display: none;"<?php endif; ?> class="fields-list-container">
                             <div class="header" id="reproduction_steps_header">
                                 <?php if (false && $issue->isEditable() && $issue->canEditReproductionSteps()): ?>
-                                    <?php echo fa_image_tag('edit', ['class' => 'dropdown', 'id' => 'reproduction_steps_edit', 'onclick' => "$('reproduction_steps_change').show(); $('reproduction_steps_name').hide(); $('no_reproduction_steps').hide();", 'title' => __('Click here to edit reproduction steps')]); ?>
+                                    <?php echo fa_image_tag('edit', ['class' => 'dropdown', 'id' => 'reproduction_steps_edit', 'onclick' => "$('#reproduction_steps_change').show(); $('#reproduction_steps_name').hide(); $('#no_reproduction_steps').hide();", 'title' => __('Click here to edit reproduction steps')]); ?>
                                 <?php endif; ?>
                                 <span class="icon"><?= fa_image_tag('list-ol'); ?></span>
                                 <span class="name"><?php echo __('How to reproduce'); ?></span>
@@ -88,7 +88,7 @@
                                     <form class="viewissue-form" id="reproduction_steps_form" action="<?php echo make_url('viewissue', ['project_key' => $issue->getProject()->getKey(), 'issue_no' => $issue->getFormattedIssueNo()]); ?>" method="post">
                                         <?php include_component('main/textarea', ['area_name' => 'value', 'target_type' => 'issue', 'target_id' => $issue->getID(), 'area_id' => 'reproduction_steps_form_value', 'syntax' => \pachno\core\framework\Settings::getSyntaxClass($issue->getReproductionStepsSyntax()), 'height' => '250px', 'width' => '100%', 'value' => htmlentities($issue->getReproductionSteps(), ENT_COMPAT, \pachno\core\framework\Context::getI18n()->getCharset())]); ?>
                                         <div class="textarea_save_container">
-                                            <?php echo __('%cancel or %save', ['%save' => '<input class="button" type="submit" value="'.__('Save').'">', '%cancel' => javascript_link_tag(__('Cancel'), ['onclick' => "$('reproduction_steps_change').hide();".(($issue->getReproductionSteps() != '') ? "$('reproduction_steps_name').show();" : "$('no_reproduction_steps').show();")."return false;"])]); ?>
+                                            <?php echo __('%cancel or %save', ['%save' => '<input class="button" type="submit" value="'.__('Save').'">', '%cancel' => javascript_link_tag(__('Cancel'), ['onclick' => "$('#reproduction_steps_change').hide();".(($issue->getReproductionSteps() != '') ? "$('#reproduction_steps_name').show();" : "$('#no_reproduction_steps').show();")."return false;"])]); ?>
                                         </div>
                                     </form>
                                     <?php echo image_tag('spinning_16.gif', ['style' => 'display: none; float: left; margin-right: 5px;', 'id' => 'reproduction_steps_spinning']); ?>
@@ -139,7 +139,7 @@
                             <div id="todo_add" class="todo_add todo_editor" style="<?php if (!(isset($todo_error) && $todo_error)): ?>display: none; <?php endif; ?>margin-top: 5px;">
                                 <div class="backdrop_detail_header">
                                     <span><?php echo __('Create a todo'); ?></span>
-                                    <?= javascript_link_tag(fa_image_tag('times'), ['onclick' => "$('todo_add').hide();$('todo_add_button').show();", 'class' => 'closer']); ?>
+                                    <?= javascript_link_tag(fa_image_tag('times'), ['onclick' => "$('#todo_add').hide();$('#todo_add_button').show();", 'class' => 'closer']); ?>
                                 </div>
                                 <div class="todo_add_main">
                                     <form class="viewissue-form" id="todo_form" accept-charset="<?php echo mb_strtoupper(\pachno\core\framework\Context::getI18n()->getCharset()); ?>" action="<?php echo make_url('todo_add', ['project_key' => $issue->getProject()->getKey(), 'issue_no' => $issue->getFormattedIssueNo()]); ?>" method="post" onSubmit="Pachno.Issues.addTodo('<?php echo make_url('todo_add', ['project_key' => $issue->getProject()->getKey(), 'issue_no' => $issue->getFormattedIssueNo()]); ?>');return false;">

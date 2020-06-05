@@ -370,7 +370,7 @@
             $is_current_scope = $scope != 0 && ((!Context::getScope() instanceof Scope) || $scope == Context::getScope()->getID());
 
             if ($is_current_scope) {
-                $setting = self::get($name, $module, $scope, $uid);
+                $setting = self::get($name, $module, $scope, $uid, true);
             } else {
                 $setting = tables\Settings::getTable()->getSetting($name, $module, $uid, $scope);
             }
@@ -386,8 +386,10 @@
                     self::$_settings[$module][$name][$uid] = $setting;
                 }
             }
-            $setting->setValue($value);
-            $setting->save();
+            if (!$setting->getID() || $setting->getValue() != $value) {
+                $setting->setValue($value);
+                $setting->save();
+            }
         }
 
         public static function getUpgradeStatus()
@@ -418,7 +420,7 @@
             return self::get($name, $module, $scope, $user_id);
         }
 
-        public static function get($name, $module = 'core', $scope = null, $uid = 0)
+        public static function get($name, $module = 'core', $scope = null, $uid = 0, $return_object = false)
         {
             if (Context::isInstallmode() && !Context::getScope() instanceof Scope) {
                 return null;
@@ -447,13 +449,21 @@
                 return null;
             }
             if ($uid !== 0 && array_key_exists($uid, self::$_settings[$module][$name])) {
-                return (self::$_settings[$module][$name][$uid] instanceof Setting) ? self::$_settings[$module][$name][$uid]->getValue() : null;
+                if ($return_object) {
+                    return self::$_settings[$module][$name][$uid];
+                } else {
+                    return (self::$_settings[$module][$name][$uid] instanceof Setting) ? self::$_settings[$module][$name][$uid]->getValue() : null;
+                }
             } else {
                 if (!array_key_exists($uid, self::$_settings[$module][$name])) {
                     return null;
                 }
 
-                return (self::$_settings[$module][$name][$uid] instanceof Setting) ? self::$_settings[$module][$name][$uid]->getValue() : null;
+                if ($return_object) {
+                    return self::$_settings[$module][$name][$uid];
+                } else {
+                    return (self::$_settings[$module][$name][$uid] instanceof Setting) ? self::$_settings[$module][$name][$uid]->getValue() : null;
+                }
             }
         }
 

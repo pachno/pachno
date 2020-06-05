@@ -90,16 +90,19 @@
         }
       }
 
-      .list-item {
-        margin-left: 0;
-        margin-right: 0;
-        padding-left: .7em;
-        padding-right: .7em;
-        border-radius: 0;
+      .list-item:not(.separator) {
+        &,
+        &:hover {
+          margin-left: 0;
+          margin-right: 0;
+          padding-left: .7em;
+          padding-right: .7em;
+          border-radius: 0;
 
-        .icon {
-          flex: 0 0 auto;
-          min-width: 20px;
+          .icon {
+            flex: 0 0 auto;
+            min-width: 20px;
+          }
         }
       }
     }

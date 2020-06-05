@@ -1,12 +1,19 @@
 <?php
 
-    /** @var \pachno\core\entities\IssuetypeScheme[] $issue_type_schemes */
+    use pachno\core\entities\IssuetypeScheme;
+    use pachno\core\framework\Response;
+    use pachno\core\framework\Settings;
+
+    /**
+     * @var IssuetypeScheme[] $schemes
+     * @var Response $pachno_response
+     */
 
     $pachno_response->setTitle(__('Configure issue types'));
 
 ?>
 <div class="content-with-sidebar">
-    <?php include_component('configuration/sidebar', ['selected_section' => \pachno\core\framework\Settings::CONFIGURATION_SECTION_ISSUETYPE_SCHEMES]); ?>
+    <?php include_component('configuration/sidebar', ['selected_section' => Settings::CONFIGURATION_SECTION_ISSUETYPE_SCHEMES]); ?>
     <div class="configuration-container">
         <div class="configuration-content">
             <h1><?php echo __('Configure issue type schemes'); ?></h1>
@@ -18,7 +25,7 @@
             </div>
             <h3>
                 <span><?php echo __('Existing issue type schemes'); ?></span>
-                <button class="button" onclick="Pachno.UI.Backdrop.show('<?= make_url('get_partial_for_backdrop', ['key' => 'edit_issuetype_scheme']); ?>');"><?= __('Create scheme'); ?></button>
+                <button class="button trigger-backdrop" data-url="<?= make_url('get_partial_for_backdrop', ['key' => 'edit_issuetype_scheme']); ?>"><?= __('Create scheme'); ?></button>
             </h3>
             <div class="flexible-table" id="issuetype_schemes_list">
                 <div class="row header">

@@ -56,7 +56,7 @@
         <?php elseif (\pachno\core\framework\Context::hasMessage('elevated_login_message_err')): ?>
             Pachno.UI.Message.error('<?php echo \pachno\core\framework\Context::getMessageAndClear('elevated_login_message_err'); ?>');
         <?php endif; ?>
-            $('pachno_password').focus();
+            $('#pachno_password').focus();
         });
     });
 </script>

@@ -15,32 +15,32 @@ function testDBConnection()
 
 function updateURLPreview()
 {
-	if ($('url_host').value.empty() || $('url_subdir').value.empty())
+	if ($('#url_host').value.empty() || $('#url_subdir').value.empty())
 	{
 		Element.hide('continue_button');
 		Element.show('continue_error');
-		$('url_preview').update('<b>!! </b>You need to fill out both server and directory url.<br />If BUGS is located directly under the server, end the server url <i>without</i> a forward slash, and put a single forward slash in the directory url.');
+		$('#url_preview').update('<b>!! </b>You need to fill out both server and directory url.<br />If BUGS is located directly under the server, end the server url <i>without</i> a forward slash, and put a single forward slash in the directory url.');
 	}
-	else if($F($('bugs_settings')['url_host']).endsWith('/') == true || ($F($('bugs_settings')['url_subdir']).endsWith('/') == false || $F($('bugs_settings')['url_subdir']).startsWith('/') == false))
+	else if($F($('#bugs_settings')['url_host']).endsWith('/') == true || ($F($('#bugs_settings')['url_subdir']).endsWith('/') == false || $F($('#bugs_settings')['url_subdir']).startsWith('/') == false))
 	{
 		Element.hide('continue_button');
 		Element.show('continue_error');
-		$('url_preview').update('<b>!! </b>The server url <i>cannot end with a forward slash</i>, and the directory url <i>must start and end with a forward slash</i>');
+		$('#url_preview').update('<b>!! </b>The server url <i>cannot end with a forward slash</i>, and the directory url <i>must start and end with a forward slash</i>');
 	}
 	else 
 	{ 
 		Element.show('continue_button');
 		Element.hide('continue_error');
-		$('url_preview').update($('url_host').value + $('url_subdir').value + 'index.php');
+		$('#url_preview').update($('#url_host').value + $('#url_subdir').value + 'index.php');
 	}
 	
-	var new_url = $('url_host').value + $('url_subdir').value;
+	var new_url = $('#url_host').value + $('#url_subdir').value;
 	
 	if (new_url.endsWith('//'))
 	{
 		Element.hide('continue_button');
 		Element.show('continue_error');
-		$('url_preview').update('<b>!! </b>The complete url <i><b>cannot end with two forward slashes</b></i>. If BUGS is located directly under the server, end the server url <i><b>without</b></i> a forward slash, and put <i><b>a single forward slash</b></i> as the directory url.');
+		$('#url_preview').update('<b>!! </b>The complete url <i><b>cannot end with two forward slashes</b></i>. If BUGS is located directly under the server, end the server url <i><b>without</b></i> a forward slash, and put <i><b>a single forward slash</b></i> as the directory url.');
 	}
 }
 

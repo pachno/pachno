@@ -61,29 +61,32 @@
                     </div>
                 <?php endif; ?>
                 <div class="form-row">
-                    <?php include_component('main/textarea', array('area_name' => 'register_message', 'area_id' => 'register_message', 'height' => '75px', 'width' => '100%', 'value' => \pachno\core\framework\Settings::get('register_message'), 'hide_hint' => true)); ?>
                     <label for="register_message"><?php echo __('Registration message'); ?></label>
+                    <?php include_component('main/textarea', array('area_name' => 'register_message', 'area_id' => 'register_message', 'height' => '75px', 'width' => '100%', 'value' => \pachno\core\framework\Settings::get('register_message'), 'hide_hint' => true)); ?>
                 </div>
                 <div class="form-row">
                     <div class="helper-text">
-                        <?php echo __("Pachno's registration page is unavailable when using a different backend. Write a message here to be shown to users instead. WikiFormatting can be used in this box and similar ones on this page."); ?>
+                        <?php echo __("The registration page is unavailable when using a different backend. You can write a message to be shown to users instead."); ?>
                     </div>
                 </div>
                 <div class="form-row">
-                    <?php include_component('main/textarea', array('area_name' => 'forgot_message', 'area_id' => 'forgot_message', 'height' => '75px', 'width' => '100%', 'value' => \pachno\core\framework\Settings::get('forgot_message'), 'hide_hint' => true)); ?>
                     <label for="forgot_message"><?php echo __('Forgot password message'); ?></label>
+                    <?php include_component('main/textarea', array('area_name' => 'forgot_message', 'area_id' => 'forgot_message', 'height' => '75px', 'width' => '100%', 'value' => \pachno\core\framework\Settings::get('forgot_message'), 'hide_hint' => true)); ?>
                 </div>
                 <div class="form-row">
-                    <?php include_component('main/textarea', array('area_name' => 'changepw_message', 'area_id' => 'changepw_message', 'height' => '75px', 'width' => '100%', 'value' => \pachno\core\framework\Settings::get('changepw_message'), 'hide_hint' => true)); ?>
                     <label for="changepw_message"><?php echo __('Change password message'); ?></label>
+                    <?php include_component('main/textarea', array('area_name' => 'changepw_message', 'area_id' => 'changepw_message', 'height' => '75px', 'width' => '100%', 'value' => \pachno\core\framework\Settings::get('changepw_message'), 'hide_hint' => true)); ?>
                 </div>
                 <div class="form-row">
-                    <?php include_component('main/textarea', array('area_name' => 'changedetails_message', 'area_id' => 'changedetails_message', 'height' => '75px', 'width' => '100%', 'value' => \pachno\core\framework\Settings::get('changedetails_message'), 'hide_hint' => true)); ?>
                     <label for="changedetails_message"><?php echo __('Change account details message'); ?></label>
+                    <?php include_component('main/textarea', array('area_name' => 'changedetails_message', 'area_id' => 'changedetails_message', 'height' => '75px', 'width' => '100%', 'value' => \pachno\core\framework\Settings::get('changedetails_message'), 'hide_hint' => true)); ?>
                 </div>
                 <?php if ($access_level == \pachno\core\framework\Settings::ACCESS_FULL): ?>
                         <div class="form-row submit-container">
-                            <input type="submit" value="<?php echo __('Save'); ?>" class="button primary">
+                            <button type="submit" class="button primary">
+                                <span><?php echo __('Save'); ?></span>
+                                <?= fa_image_tag('spinner', ['class' => 'fa-spin icon indicator']); ?>
+                            </button>
                         </div>
                     </form>
                 <?php endif; ?>

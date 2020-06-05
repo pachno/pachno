@@ -66,7 +66,7 @@
                                                                         'include_teams'        => false,
                                                                         'allow_clear'        => false,
                                                                         'absolute'            => true)); ?>
-            <button onclick="$('filter_<?php echo $filter; ?>_<?php echo $key; ?>_popup').toggle(); return false;" class="button"><?php echo __('Select'); ?></button>
+            <button onclick="$('#filter_<?php echo $filter; ?>_<?php echo $key; ?>_popup').toggle(); return false;" class="button"><?php echo __('Select'); ?></button>
             <?php $show_button = true; ?>
         <?php elseif (in_array($filter, array('assignee_team', 'owner_team'))): ?>
             <label for="filter_<?php echo $filter; ?>_<?php echo $key; ?>"><?php echo $filters[$filter]['description']; ?></label>
@@ -88,7 +88,7 @@
                                                                         'include_users'        => false,
                                                                         'allow_clear'        => false,
                                                                         'absolute'            => true)); ?>
-            <button onclick="$('filter_<?php echo $filter; ?>_<?php echo $key; ?>_popup').toggle(); return false;" class="button"><?php echo __('Select'); ?></button>
+            <button onclick="$('#filter_<?php echo $filter; ?>_<?php echo $key; ?>_popup').toggle(); return false;" class="button"><?php echo __('Select'); ?></button>
             <?php $show_button = true; ?>
         <?php elseif (in_array($filter, array_keys($filters))): ?>
             <label for="filter_<?php echo $filter; ?>_<?php echo $key; ?>"><?php echo $filters[$filter]['description']; ?></label>

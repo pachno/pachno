@@ -5,14 +5,15 @@
     display: inline-flex;
     align-items: center;
     color: #555;
-    transition: color .2s ease-in-out;
+    transition: color .2s ease-in-out, background-color .2s ease-in-out;
   }
 
   + label,
   + .list-item {
+    align-items: center;
+
     .fas.unchecked,
     .far.unchecked {
-      align-items: center;
       display: inline-flex;
       margin-right: .3em;
     }
@@ -20,6 +21,29 @@
     .fas.checked,
     .far.checked {
       display: none;
+    }
+
+    .fas.indicator,
+    .far.indicator {
+      display: none;
+    }
+  }
+
+  &.submitting {
+    + label,
+    + .list-item {
+      .fas.unchecked,
+      .far.unchecked,
+      .fas.checked,
+      .far.checked {
+        display: none;
+      }
+
+      .fas.indicator,
+      .far.indicator {
+        display: inline-flex;
+        opacity: 1;
+      }
     }
   }
 
@@ -30,7 +54,7 @@
     }
   }
 
-  &:checked:not(:disabled) {
+  &:checked:not(:disabled):not(.submitting) {
     + label {
       color: #88AB75;
     }

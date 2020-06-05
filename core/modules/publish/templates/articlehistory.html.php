@@ -49,14 +49,14 @@
                                         </td>
                                         <?php if ($revision < $revision_count && $article->canEdit()): ?>
                                             <td style="position: relative;">
-                                                    <?php echo javascript_link_tag(__('Restore this version'), array('onclick' => "$('restore_article_revision_{$revision}').toggle();")); ?>
+                                                    <?php echo javascript_link_tag(__('Restore this version'), array('onclick' => "$('#restore_article_revision_{$revision}').toggle();")); ?>
                                                     <div class="rounded_box white shadowed" style="width: 400px; position: absolute; right: 15px; display: none; z-index: 100;" id="restore_article_revision_<?php echo $revision; ?>">
                                                         <div class="header_div"><?php echo __('Are you sure you want to restore this revision?'); ?></div>
                                                         <div class="content" style="padding: 5px;">
                                                             <?php echo __('If you confirm, all changes after this revision will be lost, and the article reverted back to the state it was in revision %revision_number', array('%revision_number' => '<b>'.$revision.'</b>')); ?>
                                                             <div style="text-align: right; padding: 5px;">
                                                                 <input type="hidden" name="restore">
-                                                                <?php echo __('%yes or %cancel', array('%yes' => link_tag(make_url('publish_article_restore', array('article_name' => $article->getName(), 'revision' => $revision)), __('Yes')), '%cancel' => javascript_link_tag(__('cancel'), array('onclick' => "$('restore_article_revision_{$revision}').toggle();", 'style' => 'font-weight: bold;')))); ?>
+                                                                <?php echo __('%yes or %cancel', array('%yes' => link_tag(make_url('publish_article_restore', array('article_name' => $article->getName(), 'revision' => $revision)), __('Yes')), '%cancel' => javascript_link_tag(__('cancel'), array('onclick' => "$('#restore_article_revision_{$revision}').toggle();", 'style' => 'font-weight: bold;')))); ?>
                                                             </div>
                                                         </div>
                                                     </div>

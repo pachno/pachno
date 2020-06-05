@@ -22,7 +22,7 @@
                         success: resolve,
                         error: function (details) {
                             $indicator.hide();
-                            $submit_button.attr('disabled', false);
+                            $submit_button.prop('disabled', false);
                             reject(details);
                         }
                     });
@@ -34,7 +34,7 @@
                     $indicator.hide();
                     $form.addClass('disabled');
                     $('#livelink_address_container').addClass('verified');
-                    $('#livelink_repository_url_input').attr('disabled', true);
+                    $('#livelink_repository_url_input').prop('disabled', true);
                 }, function (details) {
                     pachno_index_js.Helpers.Message.error(details.responseJSON.error);
                 });
@@ -47,7 +47,7 @@
 
             $('#livelink_form').removeClass('disabled');
             $('#livelink_address_container').removeClass('verified');
-            $('#livelink_repository_url_input').attr('disabled', false);
+            $('#livelink_repository_url_input').prop('disabled', false);
         });
     });
 </script>

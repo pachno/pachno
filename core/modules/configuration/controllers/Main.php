@@ -124,6 +124,7 @@
         {
             if (framework\Context::getRequest()->isPost()) {
                 $this->forward403unless($this->access_level == framework\Settings::ACCESS_FULL);
+
                 $settings = [framework\Settings::SETTING_USER_DISPLAYNAME_FORMAT, framework\Settings::SETTING_ENABLE_GRAVATARS, framework\Settings::SETTING_IS_SINGLE_PROJECT_TRACKER,
                     framework\Settings::SETTING_REQUIRE_LOGIN, framework\Settings::SETTING_ALLOW_REGISTRATION, framework\Settings::SETTING_USER_GROUP,
                     framework\Settings::SETTING_RETURN_FROM_LOGIN, framework\Settings::SETTING_RETURN_FROM_LOGOUT,
@@ -407,16 +408,37 @@
                 $scheme->setIssuetypeEnabled($issuetype);
 
                 return $this->renderJSON([
-                    'component' => $this->getComponentHTML('schemeissuetype', ['type' => $issuetype, 'scheme' => $scheme]),
+                    'content' => $this->getComponentHTML('schemeissuetype', ['type' => $issuetype, 'scheme' => $scheme]),
                     'scheme' => $scheme->toJSON(),
                     'issue_type' => $issuetype->toJSON(),
                 ]);
             }
 
             return $this->renderJSON([
-                'component' => $this->getComponentHTML('issuetype', ['type' => $issuetype]),
+                'content' => $this->getComponentHTML('issuetype', ['type' => $issuetype]),
                 'issue_type' => $issuetype->toJSON(),
             ]);
+        }
+
+        /**
+         * Perform an action on an issue type
+         * @Route(name="toggle_issuetype_for_scheme", url="/issuetypes/toggle/:issue_type_id/:scheme_id")
+         * @param framework\Request $request
+         */
+        public function runConfigureToggleIssuetypeForScheme(framework\Request $request)
+        {
+            if (($issuetype = entities\Issuetype::getB2DBTable()->selectById($request['issue_type_id'])) instanceof entities\Issuetype) {
+                $this->scheme = entities\IssuetypeScheme::getB2DBTable()->selectById((int)$request['scheme_id']);
+                if ($this->scheme instanceof entities\IssuetypeScheme) {
+                    $new_value = !$this->scheme->isSchemeAssociatedWithIssuetype($issuetype);
+                    $this->scheme->setIssuetypeEnabled($issuetype, $new_value);
+
+                    return $this->renderJSON(['value' => $new_value]);
+                }
+            }
+            $this->getResponse()->setHttpStatus(400);
+
+            return $this->renderJSON(['error' => framework\Context::getI18n()->__('Please provide a valid action for this issue type / scheme')]);
         }
 
         /**
@@ -489,7 +511,7 @@
                 case 'toggletype':
                     if (($issuetype = entities\Issuetype::getB2DBTable()->selectById($request['id'])) instanceof entities\Issuetype) {
                         if ($this->scheme instanceof entities\IssuetypeScheme) {
-                            $this->scheme->setIssuetypeEnabled($issuetype, ($request['state'] == 'enable'));
+                            $this->scheme->setIssuetypeEnabled($issuetype, !$this->scheme->isSchemeAssociatedWithIssuetype($issuetype));
 
                             return $this->renderJSON(['issuetype_id' => $issuetype->getID()]);
                         }
@@ -1447,27 +1469,31 @@
 
         public function runFindUsers(framework\Request $request)
         {
-            $this->too_short = false;
-            $findstring = $request['findstring'];
-            if (mb_strlen($findstring) >= 1) {
-                $this->users = tables\Users::getTable()->findInConfig($findstring);
-                $this->total_results = count($this->users);
+            $options = [
+                'findstring' => $request['findstring']
+            ];
+
+            if (mb_strlen($options['findstring']) >= 1) {
+                $options['users'] = tables\Users::getTable()->findInConfig($options['findstring']);
+                $options['total_results'] = count($options['users']);
             } else {
-                $this->too_short = true;
+                $options['too_short'] = true;
             }
-            switch ($findstring) {
+            switch ($options['findstring']) {
                 case 'unactivated':
-                    $this->findstring = framework\Context::getI18n()->__('Unactivated users');
+                    $options['findstring'] = framework\Context::getI18n()->__('Unactivated users');
                     break;
                 case 'newusers':
-                    $this->findstring = framework\Context::getI18n()->__('New users');
+                    $options['findstring'] = framework\Context::getI18n()->__('New users');
                     break;
                 case 'all':
-                    $this->findstring = framework\Context::getI18n()->__('All users');
+                    $options['findstring'] = framework\Context::getI18n()->__('All users');
                     break;
-                default:
-                    $this->findstring = $findstring;
             }
+
+            return $this->renderJSON([
+                'content' => $this->getComponentHTML('configuration/usersresult', $options)
+            ]);
         }
 
         public function runAddUser(framework\Request $request)

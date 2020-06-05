@@ -62,7 +62,7 @@
             </dl>
             <div style="clear: both; padding: 30px 0 15px 0; text-align: right;">
                 <img src="images/spinning_30.gif" id="next_indicator" style="display: none; vertical-align: middle; margin-left: 10px;">
-                <input type="submit" id="continue_button" onclick="$('continue_button').hide();$('next_indicator').show();" value="Continue">
+                <input type="submit" id="continue_button" onclick="$('#continue_button').hide();$('#next_indicator').show();" value="Continue">
             </div>
         </form>
     <?php endif; ?>

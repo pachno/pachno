@@ -13,7 +13,7 @@
     <?php include_component('project/sidebar', ['dashboard' => __('Roadmap')]); ?>
     <?php /* <h3><?php echo __('Roadmap filters'); ?></h3>
             <ul class="simple-list">
-                <li class="<?php if ($mode == 'upcoming') echo 'selected'; ?>"><a href="javascript:void(0);" onclick="Pachno.Project.clearRoadmapFilters(); $('project_roadmap_page').addClass('upcoming');Pachno.Project.toggleLeftSelection(this);Pachno.Project.showRoadmap();"><?php echo __('Upcoming roadmap'); ?></a></li>
+                <li class="<?php if ($mode == 'upcoming') echo 'selected'; ?>"><a href="javascript:void(0);" onclick="Pachno.Project.clearRoadmapFilters(); $('#project_roadmap_page').addClass('upcoming');Pachno.Project.toggleLeftSelection(this);Pachno.Project.showRoadmap();"><?php echo __('Upcoming roadmap'); ?></a></li>
                 <li class="<?php if ($mode == 'all') echo 'selected'; ?>"><a href="javascript:void(0);" onclick="Pachno.Project.clearRoadmapFilters(); Pachno.Project.toggleLeftSelection(this);Pachno.Project.showRoadmap();"><?php echo __('Include past milestones'); ?></a></li>
                 <li><h3><?php echo __('Milestone details'); ?></h3></li>
                 <?php foreach ($milestones as $milestone): ?>

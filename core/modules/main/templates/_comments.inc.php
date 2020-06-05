@@ -30,7 +30,7 @@
     <div id="comment_add" class="comment_add comment-editor" style="<?php if (!(isset($comment_error) && $comment_error)): ?>display: none; <?php endif; ?>margin-top: 5px;">
         <div class="backdrop_detail_header">
             <span><?= __('Create a comment'); ?></span>
-            <?= javascript_link_tag(fa_image_tag('times'), ['onclick' => "$('comment_add').hide();$('comment_add_button').show();", 'class' => 'closer']); ?>
+            <?= javascript_link_tag(fa_image_tag('times'), ['onclick' => "$('#comment_add').hide();$('#comment_add_button').show();", 'class' => 'closer']); ?>
         </div>
         <div class="add-comment-container form-container">
             <form id="add-comment-form" accept-charset="<?= mb_strtoupper(Context::getI18n()->getCharset()); ?>" action="<?= make_url('comment_add', ['comment_applies_id' => $target_id, 'comment_applies_type' => $target_type, 'comment_module' => $module]); ?>" method="post" onSubmit="Pachno.Main.Comment.add('<?= $comment_count_div; ?>');return false;">

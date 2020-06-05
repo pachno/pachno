@@ -65,7 +65,7 @@
             }
         }
 
-        > div:not(.sidebar) {
+        > div:not(.sidebar):not(.fixed-position) {
             background-color: #FFF;
             box-shadow: none;
         }

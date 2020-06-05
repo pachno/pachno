@@ -13,7 +13,7 @@
         <?php include_component('configuration/workflowmenu', array('selected_tab' => 'transition', 'workflow' => $workflow, 'transition' => $transition)); ?>
         <?php if ($transition instanceof \pachno\core\entities\WorkflowTransition): ?>
             <h3>
-                <?php echo javascript_link_tag(__('Edit details'), array('onclick' => "\$('transition_details_form').toggle();\$('transition_details_info').toggle();", 'class' => 'button')); ?>
+                <?php echo javascript_link_tag(__('Edit details'), array('onclick' => "\$('#transition_details_form').toggle();\$('#transition_details_info').toggle();", 'class' => 'button')); ?>
                 <?php echo __('Transition "%transition_name"', array('%transition_name' => $transition->getName())); ?>
             </h3>
             <div class="workflow_step_intro">
@@ -59,7 +59,7 @@
                     <dt><?php echo __('Outgoing step'); ?></dt>
                     <dd><?php echo link_tag(make_url('configure_workflow_step', array('workflow_id' => $transition->getOutgoingStep()->getWorkflow()->getID(), 'step_id' => $transition->getOutgoingStep()->getID())), $transition->getOutgoingStep()->getName()); ?></dd>
                 </dl>
-                <form accept-charset="<?php echo \pachno\core\framework\Context::getI18n()->getCharset(); ?>" method="post" action="<?php echo make_url('configure_workflow_edit_transition', array('workflow_id' => $transition->getWorkflow()->getID(), 'transition_id' => $transition->getID())); ?>" id="transition_details_form" style="display: none;" onsubmit="$('transition_update_indicator').show();$('update_transition_buttons').hide();">
+                <form accept-charset="<?php echo \pachno\core\framework\Context::getI18n()->getCharset(); ?>" method="post" action="<?php echo make_url('configure_workflow_edit_transition', array('workflow_id' => $transition->getWorkflow()->getID(), 'transition_id' => $transition->getID())); ?>" id="transition_details_form" style="display: none;" onsubmit="$('#transition_update_indicator').show();$('#update_transition_buttons').hide();">
                     <dl>
                         <?php if (!$transition->isInitialTransition()): ?>
                             <dt><label for="edit_transition_<?php echo $transition->getID(); ?>_name"><?php echo __('Transition name'); ?></label></dt>
@@ -101,7 +101,7 @@
                     <div style="text-align: right; clear: both; padding: 10px 0 0 0;" id="update_transition_buttons">
                         <input type="submit" value="<?php echo __('Update transition details'); ?>" name="edit">
                         <?php echo __('%update_transition_details or %cancel', array('%update_transition_details' => '', '%cancel' => '')); ?>
-                        <b><?php echo javascript_link_tag(__('cancel'), array('onclick' => "\$('transition_details_form').toggle();\$('transition_details_info').toggle();")); ?></b>
+                        <b><?php echo javascript_link_tag(__('cancel'), array('onclick' => "\$('#transition_details_form').toggle();\$('#transition_details_info').toggle();")); ?></b>
                     </div>
                     <div style="text-align: right; padding: 10px 0 10px 0; display: none;" id="transition_update_indicator"><span style="float: right;"><?php echo image_tag('spinning_16.gif'); ?></span>&nbsp;<?php echo __('Please wait'); ?></div>
                 </form>

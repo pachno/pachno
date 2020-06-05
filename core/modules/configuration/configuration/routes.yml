@@ -530,7 +530,7 @@ configure_issuetypes_disable_issuetype_for_scheme:
 configure_issuetypes_enable_issuetype_for_scheme:
   route: /configure/issuetypes/enable/:id/for/scheme/:scheme_id
   module: configuration
-  action: configureIssuetypesAction
+  action: configureIssuetype
   parameters:
     config_module: core
     section: 6

@@ -23,9 +23,9 @@
                     <form action="<?= make_url('configure_users_add_user'); ?>" method="post" onsubmit="Pachno.Config.User.add('<?= make_url('configure_users_add_user'); ?>', import_cb, this);return false;" id="createuser_form_quick">
                         <label for="quick_add_user_username"><?= __('Quick add user'); ?></label>
                         <input type="text" id="quick_add_user_username" name="username" placeholder="<?= __('Enter username to add'); ?>">
-                        <input type="submit" value="<?= __('Create'); ?>" onclick="$('createuser_form_quick_indicator').show()">
+                        <input type="submit" value="<?= __('Create'); ?>" onclick="$('#createuser_form_quick_indicator').show()">
                         <?= image_tag('spinning_16.gif', array('style' => 'display: none; margin: 3px 5px -4px;', 'id' => 'createuser_form_quick_indicator')); ?>
-                        <a href="javascript:void(0);" style="float: right; <?php if (!\pachno\core\framework\Context::getScope()->hasUsersAvailable()): ?>display: none;<?php endif; ?>" onclick="$('adduser_div').toggle();"><?= __('More details'); ?></a>
+                        <a href="javascript:void(0);" style="float: right; <?php if (!\pachno\core\framework\Context::getScope()->hasUsersAvailable()): ?>display: none;<?php endif; ?>" onclick="$('#adduser_div').toggle();"><?= __('More details'); ?></a>
                     </form>
                 </div>
                 <strong><?= __('Quick selection'); ?></strong>
@@ -36,11 +36,11 @@
                     <?= javascript_link_tag('0-9', array('style' => 'width: 23px;', 'class' => 'button', 'onclick' => "Pachno.Config.User.show('".make_url('configure_users_find_user')."', '0-9');")); ?>
                 </div>
                 <div id="users_more_actions_container" style="position: relative;">
-                    <button class="button last dropper" id="users_more_actions" onclick="if ($(this).hasClass('button-pressed')){ $('findusers').focus(); }"><?= __('Search'); ?></button>
+                    <button class="button last dropper" id="users_more_actions" onclick="if ($(this).hasClass('button-pressed')){ $('#findusers').focus(); }"><?= __('Search'); ?></button>
                     <ul id="users_more_actions_dropdown" style="width: 400px; font-size: 1.1em; z-index: 1000; margin-top: 21px;" class="simple-list rounded_box white shadowed popup_box more_actions_dropdown">
                         <li class="finduser_container">
                             <label for="findusers"><?= __('Find user(s)'); ?>:</label><br>
-                            <form action="<?= make_url('configure_users_find_user'); ?>" method="post" onsubmit="Pachno.Config.User.show('<?= make_url('configure_users_find_user'); ?>', $('findusers').getValue());return false;">
+                            <form action="<?= make_url('configure_users_find_user'); ?>" method="post" onsubmit="Pachno.Config.User.show('<?= make_url('configure_users_find_user'); ?>', $('#findusers').getValue());return false;">
                                 <input type="text" name="findusers" id="findusers" value="<?= $finduser; ?>" placeholder="<?= __('Enter something to search for'); ?>">&nbsp;<input type="submit" value="<?= __('Find'); ?>">
                             </form>
                         </li>
@@ -66,7 +66,7 @@
                     <div class="fullpage_backdrop_content backdrop_box medium">
                         <div class="backdrop_detail_header">
                             <span><?= __('Add a user'); ?></span>
-                            <?= javascript_link_tag(fa_image_tag('times'), array('class' => 'closer', 'onclick' => "$('adduser_div').toggle();")); ?>
+                            <?= javascript_link_tag(fa_image_tag('times'), array('class' => 'closer', 'onclick' => "$('#adduser_div').toggle();")); ?>
                         </div>
                         <form action="<?= make_url('configure_users_add_user'); ?>" method="post" onsubmit="Pachno.Config.User.add('<?= make_url('configure_users_add_user'); ?>', import_cb);return false;" id="createuser_form">
                             <div class="backdrop_detail_content">
@@ -196,8 +196,8 @@
             });
 
             $('body').on('click', '#users_more_actions_dropdown', function (event) {
-                $('users_more_actions').toggleClass('button-pressed');
-                $('users_more_actions_dropdown').toggle();
+                $('#users_more_actions').toggleClass('button-pressed');
+                $('#users_more_actions_dropdown').toggle();
             });
             <?php if ($finduser): ?>
                 pachno_index_js.Config.User.show('<?= make_url('configure_users_find_user'); ?>', '<?= $finduser; ?>');

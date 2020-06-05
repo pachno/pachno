@@ -61,7 +61,7 @@
         </form>
     </div>
     <script type="text/javascript">
-        sortable_options = {constraint: '', handle: 'handle', onUpdate: function(container) { Pachno.Config.Issuefields.saveOrder(container, '<?= $type; ?>', '<?= make_url('configure_issuefields_saveorder', ['type' => $type]); ?>'); }};
-        Sortable.create('field-options-list', sortable_options);
+        //sortable_options = {constraint: '', handle: 'handle', onUpdate: function(container) { Pachno.Config.Issuefields.saveOrder(container, '<?//= $type; ?>//', '<?//= make_url('configure_issuefields_saveorder', ['type' => $type]); ?>//'); }};
+        //Sortable.create('field-options-list', sortable_options);
     </script>
 <?php endif; ?>

@@ -117,18 +117,18 @@ Test.Unit.Logger.prototype = {
     '<thead><tr><th>Status</th><th>Test</th><th>Message</th></tr></thead>' +
     '<tbody id="loglines"></tbody>' +
     '</table>';
-    this.logsummary = $('logsummary');
-    this.loglines = $('loglines');
+    this.logsummary = $('#logsummary');
+    this.loglines = $('#loglines');
   },
   _toHTML: function(txt) {
     return txt.escapeHTML().replace(/\n/g,"<br/>");
   },
   addLinksToResults: function(){ 
-    $$("tr.failed .nameCell").each( function(td){ // todo: limit to children of this.log
+    $$("#tr.failed .nameCell").each( function(td){ // todo: limit to children of this.log
       td.title = "Run only this test";
       Event.observe(td, 'click', function(){ window.location.search = "?tests=" + td.innerHTML;});
     });
-    $$("tr.passed .nameCell").each( function(td){ // todo: limit to children of this.log
+    $$("#tr.passed .nameCell").each( function(td){ // todo: limit to children of this.log
       td.title = "Run all tests";
       Event.observe(td, 'click', function(){ window.location.search = "";});
     });

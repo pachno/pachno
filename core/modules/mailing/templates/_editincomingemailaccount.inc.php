@@ -4,7 +4,7 @@
             Pachno.Modules.mailing.saveIncomingEmailAccount = function(url) {
                 Pachno.UI.fetch(url, {
                     form: 'incoming_email_account_form',
-                    loading: {indicator: 'add_account_indicator'},
+                    loading: {indicator: '#add_account_indicator'},
                     success: {
                         update: {element: <?php echo ($account->getID()) ? "'mailing_account_{$account->getID()}_name', from: 'name'" : "'mailing_incoming_accounts', insertion: true"; ?>},
                         callback: function() {

@@ -12,7 +12,7 @@
 
 ?>
 <div class="container_div toggled<?php if (count($whatlinkshere) == 0) echo ' visible'; ?>">
-    <div class="header" onclick="if ($('nothing_links_here') == undefined) $(this).up().toggleClass('visible');">
+    <div class="header" onclick="if ($('#nothing_links_here') == undefined) $(this).up().toggleClass('visible');">
         <?php echo __('Links to this article'); ?>
     </div>
     <div class="toggle_info"><?php echo __('Click the header to show / hide'); ?></div>

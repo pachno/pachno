@@ -31,7 +31,7 @@ define(['pachno/tools', 'pachno/index', 'domReady', 'jquery', 'mention'],
                     if ($input.hasClass('submitting')) return;
 
                     $input.addClass('submitting');
-                    $input.attr('disabled', true);
+                    $input.prop('disabled', true);
 
                     let data = new FormData();
                     data.append('value', value);
@@ -42,7 +42,7 @@ define(['pachno/tools', 'pachno/index', 'domReady', 'jquery', 'mention'],
                     })
                         .then(function(response) {
                             $input.removeClass('submitting');
-                            $input.attr('disabled', false);
+                            $input.prop('disabled', false);
                             // response.json().then(resolve);
                             // res = response;
                             // console.log(response);
@@ -60,39 +60,39 @@ define(['pachno/tools', 'pachno/index', 'domReady', 'jquery', 'mention'],
                     $form.submit();
                 });
 
-                jQuery("body").on("click", ".collapser", function (e) {
-                    let collapser_item = jQuery(this),
-
-                        is_visible = collapser_item.hasClass('active'),
-                        collapseItem = function (item) {
-                            let target = item.data('target');
-                            if (target) {
-                                jQuery(target).removeClass('active');
-                            }
-                            item.removeClass('active');
-                        },
-
-                        expandItem = function (item) {
-                            let target = item.data('target');
-                            if (target) {
-                                jQuery(target).addClass('active');
-                            }
-                            item.addClass('active');
-                        };
-
-                    if (collapser_item.data('exclusive')) {
-                        jQuery('.collapser.active').each(function () {
-                            collapseItem(collapser_item);
-                        });
-                    }
-                    if (!is_visible) {
-                        expandItem(collapser_item);
-                    } else {
-                        collapseItem(collapser_item);
-                    }
-                    e.stopPropagation();
-                    e.preventDefault();
-                });
+                // jQuery("body").on("click", ".collapser", function (e) {
+                //     let collapser_item = jQuery(this),
+                //
+                //         is_visible = collapser_item.hasClass('active'),
+                //         collapseItem = function (item) {
+                //             let target = item.data('target');
+                //             if (target) {
+                //                 jQuery(target).removeClass('active');
+                //             }
+                //             item.removeClass('active');
+                //         },
+                //
+                //         expandItem = function (item) {
+                //             let target = item.data('target');
+                //             if (target) {
+                //                 jQuery(target).addClass('active');
+                //             }
+                //             item.addClass('active');
+                //         };
+                //
+                //     if (collapser_item.data('exclusive')) {
+                //         jQuery('.collapser.active').each(function () {
+                //             collapseItem(collapser_item);
+                //         });
+                //     }
+                //     if (!is_visible) {
+                //         expandItem(collapser_item);
+                //     } else {
+                //         collapseItem(collapser_item);
+                //     }
+                //     e.stopPropagation();
+                //     e.preventDefault();
+                // });
                 jQuery("body").on("click", ".filter-container input[type=search]", function (event) {
                     event.stopPropagation();
                     event.stopImmediatePropagation();

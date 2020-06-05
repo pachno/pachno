@@ -37,7 +37,7 @@
         <fieldset style="border: 0; border-top: 1px dotted rgba(0, 0, 0, 0.3); padding: 5px 100px; width: 100px; margin: 5px auto 0 auto;">
             <legend style="text-align: center; width: 100%; background-color: transparent;"><?= __('%login or %signup', array('%login' => '', '%signup' => '')); ?></legend>
         </fieldset>
-        <a href="javascript:void(0);" class="button secondary highlight" id="create-account-button" onclick="$('register').addClass('active');$('registration-button-container').removeClass('active');$('regular_login_container').removeClass('active');"><?= __('Create an account'); ?></a>
+        <a href="javascript:void(0);" class="button secondary highlight" id="create-account-button" onclick="$('#register').addClass('active');$('#registration-button-container').removeClass('active');$('#regular_login_container').removeClass('active');"><?= __('Create an account'); ?></a>
     </div>
     <?php include_component('main/loginregister', compact('registrationintro')); ?>
 <?php endif; ?>

@@ -49,7 +49,7 @@
             <div class="backdrop_box medium">
                 <div class="backdrop_detail_header">
                     <span><?php echo __('Install downloaded module update file'); ?></span>
-                    <a href="javascript:void(0);" class="closer" onclick="Pachno.Core.cancelManualUpdatePoller();$('update_module_help_<?php echo $module->getID(); ?>').hide();"><?php echo image_tag('times'); ?></a>
+                    <a href="javascript:void(0);" class="closer" onclick="Pachno.Core.cancelManualUpdatePoller();$('#update_module_help_<?php echo $module->getID(); ?>').hide();"><?php echo image_tag('times'); ?></a>
                 </div>
                 <div class="backdrop_detail_content">
                     <?php echo __('Please click the download link below and download the update file. Place the downloaded file in the cache folder (%cache_folder) on this server. As soon as the file has been verified, the %update button below will be enabled, and you can press the button to update the module.',
@@ -93,14 +93,14 @@
                     <?php if ($module->getType() !== ModuleInterface::MODULE_AUTH): ?>
                         <li>
                             <?php if ($module->isEnabled()): ?>
-                                <a href="javascript:void(0);" onclick="$('disable_module_<?php echo $module->getID(); ?>').toggle();$('permissions_module_<?php echo($module->getID()); ?>').hide();$('uninstall_module_<?php echo $module->getID(); ?>').hide();"><?php echo __('Disable module'); ?></a>
+                                <a href="javascript:void(0);" onclick="$('#disable_module_<?php echo $module->getID(); ?>').toggle();$('#permissions_module_<?php echo($module->getID()); ?>').hide();$('#uninstall_module_<?php echo $module->getID(); ?>').hide();"><?php echo __('Disable module'); ?></a>
                             <?php else: ?>
-                                <a href="javascript:void(0);" onclick="$('enable_module_<?php echo $module->getID(); ?>').toggle();$('permissions_module_<?php echo($module->getID()); ?>').hide();$('uninstall_module_<?php echo $module->getID(); ?>').hide();"><?php echo __('Enable module'); ?></a>
+                                <a href="javascript:void(0);" onclick="$('#enable_module_<?php echo $module->getID(); ?>').toggle();$('#permissions_module_<?php echo($module->getID()); ?>').hide();$('#uninstall_module_<?php echo $module->getID(); ?>').hide();"><?php echo __('Enable module'); ?></a>
                             <?php endif; ?>
                         </li>
                     <?php endif; ?>
                     <?php if (!$module instanceof CoreModule): ?>
-                        <li><a href="javascript:void(0);" onclick="$('uninstall_module_<?php echo $module->getID(); ?>').toggle();$('permissions_module_<?php echo($module->getID()); ?>').hide();$('<?php if($module->isEnabled()): ?>disable<?php else: ?>enable<?php endif; ?>_module_<?php echo $module->getID(); ?>').hide();"><?php echo __('Uninstall module'); ?></a></li>
+                        <li><a href="javascript:void(0);" onclick="$('#uninstall_module_<?php echo $module->getID(); ?>').toggle();$('#permissions_module_<?php echo($module->getID()); ?>').hide();$('#<?php if($module->isEnabled()): ?>disable<?php else: ?>enable<?php endif; ?>_module_<?php echo $module->getID(); ?>').hide();"><?php echo __('Uninstall module'); ?></a></li>
                     <?php endif; ?>
                 </ul>
             <?php else: ?>
@@ -112,19 +112,19 @@
                 <div id="disable_module_<?php echo($module->getID()); ?>" style="display: none; margin-top: 10px; padding: 0 10px 5px 10px; text-align: left;" class="rounded_box white shadowed">
                     <h4><?php echo __('Really disable "%module_name"?', array('%module_name' => $module->getLongname())); ?></h4>
                     <span class="question_header"><?php echo __('Disabling this module will prevent users from accessing it or any associated data.'); ?></span><br>
-                    <div style="text-align: right;" id="disable_module_controls_<?php echo $module->getID(); ?>"><?php echo link_tag(make_url('configure_disable_module', array('module_key' => $module->getName())), __('Yes'), array('class' => 'xboxlink')); ?> :: <a href="javascript:void(0)" class="xboxlink" onclick="$('disable_module_<?php echo $module->getID(); ?>').hide();"><?php echo __('No'); ?></a></div>
+                    <div style="text-align: right;" id="disable_module_controls_<?php echo $module->getID(); ?>"><?php echo link_tag(make_url('configure_disable_module', array('module_key' => $module->getName())), __('Yes'), array('class' => 'xboxlink')); ?> :: <a href="javascript:void(0)" class="xboxlink" onclick="$('#disable_module_<?php echo $module->getID(); ?>').hide();"><?php echo __('No'); ?></a></div>
                 </div>
             <?php else: ?>
                 <div id="enable_module_<?php echo($module->getID()); ?>" style="display: none; margin-top: 10px; padding: 0 10px 5px 10px; text-align: left;" class="rounded_box white shadowed">
                     <h4><?php echo __('Really enable "%module_name"?', array('%module_name' => $module->getLongname())); ?></h4>
                     <span class="question_header"><?php echo __('Enabling this module will give users access to it and all associated data.'); ?></span><br>
-                    <div style="text-align: right;" id="enable_module_controls_<?php echo $module->getID(); ?>"><?php echo link_tag(make_url('configure_enable_module', array('module_key' => $module->getName())), __('Yes'), array('class' => 'xboxlink')); ?> :: <a href="javascript:void(0)" class="xboxlink" onclick="$('enable_module_<?php echo $module->getID(); ?>').hide();"><?php echo __('No'); ?></a></div>
+                    <div style="text-align: right;" id="enable_module_controls_<?php echo $module->getID(); ?>"><?php echo link_tag(make_url('configure_enable_module', array('module_key' => $module->getName())), __('Yes'), array('class' => 'xboxlink')); ?> :: <a href="javascript:void(0)" class="xboxlink" onclick="$('#enable_module_<?php echo $module->getID(); ?>').hide();"><?php echo __('No'); ?></a></div>
                 </div>
             <?php endif; ?>
             <div id="uninstall_module_<?php echo($module->getID()); ?>" style="display: none; margin-top: 10px; padding: 0 10px 5px 10px; text-align: left;" class="rounded_box white shadowed">
                 <h4><?php echo __('Really uninstall "%module_name"?', array('%module_name' => $module->getLongname())); ?></h4>
                 <span class="question_header"><?php echo __('Uninstalling this module will permanently prevent users from accessing it or any associated data. If you just want to prevent access to the module temporarily, disable the module instead.'); ?></span><br>
-                <div style="text-align: right;" id="uninstall_module_controls_<?php echo $module->getID(); ?>"><?php echo link_tag(make_url('configure_uninstall_module', array('module_key' => $module->getName())), __('Yes'), array('class' => 'xboxlink')); ?> :: <a href="javascript:void(0)" class="xboxlink" onclick="$('uninstall_module_<?php echo $module->getID(); ?>').hide();"><?php echo __('No'); ?></a></div>
+                <div style="text-align: right;" id="uninstall_module_controls_<?php echo $module->getID(); ?>"><?php echo link_tag(make_url('configure_uninstall_module', array('module_key' => $module->getName())), __('Yes'), array('class' => 'xboxlink')); ?> :: <a href="javascript:void(0)" class="xboxlink" onclick="$('#uninstall_module_<?php echo $module->getID(); ?>').hide();"><?php echo __('No'); ?></a></div>
             </div>
         <?php endif; ?>
         <div id="permissions_module_<?php echo($module->getName()); ?>" style="display: none; margin-top: 10px;" class="rounded_box white shadowed">

@@ -22,11 +22,6 @@ import Pachno from "./classes/pachno";
 // };
 //
 // Pachno.Main.showUploader = function (url) {
-//     if (window.File && window.FileList && window.FileReader) {
-//         url += '&uploader=dynamic';
-//     } else {
-//         url += '&uploader=legacy';
-//     }
 //     Pachno.Helpers.Backdrop.show(url);
 // };
 //
@@ -36,7 +31,7 @@ import Pachno from "./classes/pachno";
 //         form: form,
 //         method: 'POST',
 //         loading: {
-//             indicator: 'attachments_indicator',
+//             indicator: '#attachments_indicator',
 //             callback: function () {
 //                 $('#dynamic_uploader_submit').addClass('disabled');
 //                 $('#dynamic_uploader_submit').prop('disabled', true);
@@ -178,7 +173,7 @@ import Pachno from "./classes/pachno";
 //         form: 'report_issue_form',
 //         method: 'POST',
 //         loading: {
-//             indicator: 'report_issue_indicator'
+//             indicator: '#report_issue_indicator'
 //         },
 //         success: {
 //             update: '#fullpage_backdrop_content',
@@ -200,7 +195,7 @@ import Pachno from "./classes/pachno";
 //     Pachno.Helpers.fetch(url, {
 //         form: 'attach_link_' + target_type + '_' + target_id + '_form',
 //         loading: {
-//             indicator: 'attach_link_' + target_type + '_' + target_id + '_indicator',
+//             indicator: '#attach_link_' + target_type + '_' + target_id + '_indicator',
 //             callback: function () {
 //                 $('#attach_link_' + target_type + '_' + target_id + '_submit').prop('disabled', true);
 //             }
@@ -228,7 +223,7 @@ import Pachno from "./classes/pachno";
 //     Pachno.Helpers.fetch(url, {
 //         loading: {
 //             hide: target_type + '_' + target_id + '_links_' + link_id + '_remove_link',
-//             indicator: 'dialog_indicator'
+//             indicator: '#dialog_indicator'
 //         },
 //         success: {
 //             remove: [target_type + '_' + target_id + '_links_' + link_id, target_type + '_' + target_id + '_links_' + link_id + '_remove_confirm'],
@@ -273,7 +268,7 @@ import Pachno from "./classes/pachno";
 // {
 //     Pachno.Helpers.fetch(url, {
 //         loading: {
-//             indicator: 'article_favourite_indicator_' + article_id,
+//             indicator: '#article_favourite_indicator_' + article_id,
 //             hide: ['article_favourite_normal_' + article_id, 'article_favourite_faded_' + article_id]
 //         },
 //         success: {
@@ -300,7 +295,7 @@ import Pachno from "./classes/pachno";
 //     Pachno.Helpers.fetch(url, {
 //         method: 'POST',
 //         loading: {
-//             indicator: 'fullpage_backdrop',
+//             indicator: '#fullpage_backdrop',
 //             show: 'fullpage_backdrop_indicator',
 //             hide: ['fullpage_backdrop_content', 'dialog_backdrop']
 //         },
@@ -325,7 +320,7 @@ import Pachno from "./classes/pachno";
 // Pachno.Main.Profile.updateInformation = function (url) {
 //     Pachno.Helpers.fetch(url, {
 //         form: 'profile_information_form',
-//         loading: {indicator: 'profile_save_indicator'},
+//         loading: {indicator: '#profile_save_indicator'},
 //         success: {callback: function () {
 //             ($('#profile_use_gravatar_yes').checked) ? $('#gravatar_change').show() : $('#gravatar_change').hide();
 //         }}
@@ -335,28 +330,28 @@ import Pachno from "./classes/pachno";
 // Pachno.Main.Profile.updateModuleSettings = function (url, module_name) {
 //     Pachno.Helpers.fetch(url, {
 //         form: 'profile_' + module_name + '_form',
-//         loading: {indicator: 'profile_' + module_name + '_save_indicator'}
+//         loading: {indicator: '#profile_' + module_name + '_save_indicator'}
 //     });
 // };
 //
 // Pachno.Main.Profile.updateSettings = function (url) {
 //     Pachno.Helpers.fetch(url, {
 //         form: 'profile_settings_form',
-//         loading: {indicator: 'profile_settings_save_indicator'}
+//         loading: {indicator: '#profile_settings_save_indicator'}
 //     });
 // };
 //
 // Pachno.Main.Profile.updateNotificationSettings = function (url) {
 //     Pachno.Helpers.fetch(url, {
 //         form: 'profile_notificationsettings_form',
-//         loading: {indicator: 'profile_notificationsettings_save_indicator'}
+//         loading: {indicator: '#profile_notificationsettings_save_indicator'}
 //     });
 // };
 //
 // Pachno.Main.Profile.changePassword = function (url) {
 //     Pachno.Helpers.fetch(url, {
 //         form: 'change_password_form',
-//         loading: {indicator: 'change_password_indicator'},
+//         loading: {indicator: '#change_password_indicator'},
 //         success: {reset: 'change_password_form', hide: 'change_password_div'}
 //     });
 // };
@@ -364,7 +359,7 @@ import Pachno from "./classes/pachno";
 // Pachno.Main.Profile.addApplicationPassword = function (url) {
 //     Pachno.Helpers.fetch(url, {
 //         form: 'add_application_password_form',
-//         loading: {indicator: 'add_application_password_indicator'},
+//         loading: {indicator: '#add_application_password_indicator'},
 //         success: {
 //             hide: 'add_application_password_container',
 //             update: {element: 'application_password_preview', from: 'password'},
@@ -399,7 +394,7 @@ import Pachno from "./classes/pachno";
 //     Pachno.Helpers.fetch(url, {
 //         form: 'check_username_form',
 //         loading: {
-//             indicator: 'pick_username_indicator',
+//             indicator: '#pick_username_indicator',
 //             hide: 'username_unavailable'
 //         },
 //         complete: {
@@ -425,7 +420,7 @@ import Pachno from "./classes/pachno";
 //
 // Pachno.Main.Profile.removeOpenIDIdentity = function (url, oid) {
 //     Pachno.Helpers.fetch(url, {
-//         loading: {indicator: 'dialog_indicator'},
+//         loading: {indicator: '#dialog_indicator'},
 //         success: {
 //             remove: 'openid_account_' + oid,
 //             callback: function () {
@@ -441,7 +436,7 @@ import Pachno from "./classes/pachno";
 //
 // Pachno.Main.Profile.cancelScopeMembership = function (url, sid) {
 //     Pachno.Helpers.fetch(url, {
-//         loading: {indicator: 'dialog_indicator'},
+//         loading: {indicator: '#dialog_indicator'},
 //         success: {
 //             remove: 'account_scope_' + sid,
 //             callback: function () {
@@ -455,7 +450,7 @@ import Pachno from "./classes/pachno";
 //
 // Pachno.Main.Profile.confirmScopeMembership = function (url, sid) {
 //     Pachno.Helpers.fetch(url, {
-//         loading: {indicator: 'dialog_indicator'},
+//         loading: {indicator: '#dialog_indicator'},
 //         success: {
 //             callback: function () {
 //                 $('#confirmed_scope_memberships').append($('#account_scope_' + sid).remove());
@@ -477,7 +472,7 @@ import Pachno from "./classes/pachno";
 //     if (dashboard_element.data('preloaded') == "0") {
 //         Pachno.Helpers.fetch(url, {
 //             method: 'GET',
-//             loading: {indicator: 'dashboard_view_' + view_id + '_indicator'},
+//             loading: {indicator: '#dashboard_view_' + view_id + '_indicator'},
 //             success: {update: '#dashboard_view_' + view_id},
 //             complete: {
 //                 callback: function () {
@@ -560,13 +555,6 @@ import Pachno from "./classes/pachno";
 //     });
 // };
 //
-// Pachno.Main.Dashboard.addViewPopup = function (event, element) {
-//     event.stopPropagation();
-//     var backdrop_url = element.parents('.dashboard').data('add-view-url');
-//     backdrop_url += '&column=' + element.parents('.dashboard_column').data('column');
-//     Pachno.Helpers.Backdrop.show(backdrop_url);
-// };
-//
 // Pachno.Main.Dashboard.toggleMenu = function (link) {
 //     var section = $(link).data('section');
 //     $(link).parents('ul').children().each(function (menu_elm) {
@@ -603,7 +591,7 @@ import Pachno from "./classes/pachno";
 // Pachno.Main.Profile.addFriend = function (url, user_id, rnd_no) {
 //     Pachno.Helpers.fetch(url, {
 //         loading: {
-//             indicator: 'toggle_friend_' + user_id + '_' + rnd_no + '_indicator',
+//             indicator: '#toggle_friend_' + user_id + '_' + rnd_no + '_indicator',
 //             hide: ['add_friend_' + user_id + '_' + rnd_no, 'user_' + user_id + '_more_actions']
 //         },
 //         success: {
@@ -618,7 +606,7 @@ import Pachno from "./classes/pachno";
 // Pachno.Main.Profile.removeFriend = function (url, user_id, rnd_no) {
 //     Pachno.Helpers.fetch(url, {
 //         loading: {
-//             indicator: 'toggle_friend_' + user_id + '_' + rnd_no + '_indicator',
+//             indicator: '#toggle_friend_' + user_id + '_' + rnd_no + '_indicator',
 //             hide: ['remove_friend_' + user_id + '_' + rnd_no, 'user_' + user_id + '_more_actions']
 //         },
 //         success: {
@@ -634,13 +622,13 @@ import Pachno from "./classes/pachno";
 //     if ($('#close_me_' + boxkey).checked) {
 //         var $form = $('#close_me_' + boxkey + '_form');
 //         $form.addClass('submitting');
-//         $form.find('.button.primary').attr('disabled', true);
+//         $form.find('.button.primary').prop('disabled', true);
 //
 //         fetch(url)
 //             .then(function (response) {
 //                 setTimeout(function () {
 //                     $form.removeClass('submitting');
-//                     $form.find('.button.primary').attr('disabled', false);
+//                     $form.find('.button.primary').prop('disabled', false);
 //                 }, 300);
 //                 $('#infobox_' + boxkey).fade({duration: 0.25});
 //             });
@@ -665,7 +653,7 @@ import Pachno from "./classes/pachno";
 //     Pachno.Helpers.fetch($('#main_container').data('url'), {
 //         method: 'POST',
 //         loading: {
-//             indicator: 'comments_loading_indicator'
+//             indicator: '#comments_loading_indicator'
 //         },
 //         params: '&say=togglecommentsorder',
 //         success: {
@@ -680,7 +668,7 @@ import Pachno from "./classes/pachno";
 //     Pachno.Helpers.fetch($('#main_container').data('url'), {
 //         method: 'GET',
 //         loading: {
-//             indicator: 'comments_loading_indicator'
+//             indicator: '#comments_loading_indicator'
 //         },
 //         params: '&say=loadcomments&target_type='+target_type+'&target_id='+target_id,
 //         success: {
@@ -713,7 +701,7 @@ import Pachno from "./classes/pachno";
 //     // Pachno.Helpers.fetch(url, {
 //     //     method: 'DELETE'
 //     //     loading: {
-//     //         indicator: 'dialog_indicator'
+//     //         indicator: '#dialog_indicator'
 //     //     },
 //     //     success: {
 //     //         remove: 'comment_' + comment_id,
@@ -736,7 +724,7 @@ import Pachno from "./classes/pachno";
 //     $form.find('.error-container').removeClass('invalid');
 //     $form.find('.error-container > .error').html('');
 //     $form.addClass('submitting');
-//     $form.find('.button.primary').attr('disabled', true);
+//     $form.find('.button.primary').prop('disabled', true);
 //
 //     fetch($form.attr('action'), {
 //         method: 'POST',
@@ -755,14 +743,14 @@ import Pachno from "./classes/pachno";
 //                 }
 //
 //                 $form.removeClass('submitting');
-//                 $form.find('.button.primary').attr('disabled', false);
+//                 $form.find('.button.primary').prop('disabled', false);
 //             });
 //         });
 //
 //     // Pachno.Helpers.fetch(url, {
 //     //     form: 'comment_edit_form_' + comment_id,
 //     //     loading: {
-//     //         indicator: 'comment_edit_indicator_' + comment_id,
+//     //         indicator: '#comment_edit_indicator_' + comment_id,
 //     //         hide: 'comment_edit_controls_' + comment_id
 //     //     },
 //     //     success: {
@@ -789,7 +777,7 @@ import Pachno from "./classes/pachno";
 //     $form.find('.error-container').removeClass('invalid');
 //     $form.find('.error-container > .error').html('');
 //     $form.addClass('submitting');
-//     $form.find('.button.primary').attr('disabled', true);
+//     $form.find('.button.primary').prop('disabled', true);
 //
 //     fetch($form.attr('action'), {
 //         method: 'POST',
@@ -812,7 +800,7 @@ import Pachno from "./classes/pachno";
 //                 }
 //
 //                 $form.removeClass('submitting');
-//                 $form.find('.button.primary').attr('disabled', false);
+//                 $form.find('.button.primary').prop('disabled', false);
 //             });
 //         });
 // };
@@ -825,7 +813,7 @@ import Pachno from "./classes/pachno";
 //     $form.find('.error-container').removeClass('invalid');
 //     $form.find('.error-container > .error').html('');
 //     $form.addClass('submitting');
-//     $form.find('.button.primary').attr('disabled', true);
+//     $form.find('.button.primary').prop('disabled', true);
 //
 //     fetch($form.attr('action'), {
 //         method: 'POST',
@@ -846,7 +834,7 @@ import Pachno from "./classes/pachno";
 //                 }
 //
 //                 $form.removeClass('submitting');
-//                 $form.find('.button.primary').attr('disabled', false);
+//                 $form.find('.button.primary').prop('disabled', false);
 //             });
 //         });
 // };
@@ -856,7 +844,7 @@ import Pachno from "./classes/pachno";
 //     Pachno.Helpers.fetch(url, {
 //         form: 'register_form',
 //         loading: {
-//             indicator: 'register_indicator',
+//             indicator: '#register_indicator',
 //             hide: 'register_button',
 //             callback: function () {
 //                 $('#input.required').each(function (field) {
@@ -917,7 +905,7 @@ import Pachno from "./classes/pachno";
 //     Pachno.Helpers.fetch(url, {
 //         form: 'register_auto_form',
 //         loading: {
-//             indicator: 'register_autologin_indicator',
+//             indicator: '#register_autologin_indicator',
 //             callback: function () {
 //                 $('#register_autologin_button').prop('disabled', true);
 //                 $('#register_autologin_indicator').show();
@@ -940,7 +928,7 @@ import Pachno from "./classes/pachno";
 //
 //     $('#login-error-container').removeClass('invalid');
 //     $login_button.addClass('submitting');
-//     $login_button.attr('disabled', true);
+//     $login_button.prop('disabled', true);
 //
 //     fetch(url, {
 //         method: 'POST',
@@ -949,7 +937,7 @@ import Pachno from "./classes/pachno";
 //         .then(function (response) {
 //             response.json().then(function (json) {
 //                 $login_button.removeClass('submitting');
-//                 $login_button.attr('disabled', false);
+//                 $login_button.prop('disabled', false);
 //
 //                 if (response.ok) {
 //                     if (json.forward) {
@@ -973,7 +961,7 @@ import Pachno from "./classes/pachno";
 //     // Pachno.Helpers.fetch(url, {
 //     //     form: 'login_form',
 //     //     loading: {
-//     //         indicator: 'login_indicator',
+//     //         indicator: '#login_indicator',
 //     //         callback: function () {
 //     //             $('#login_button').prop('disabled', true);
 //     //             $('#login_indicator').show();
@@ -1008,7 +996,7 @@ import Pachno from "./classes/pachno";
 //                 $('##account_2fa_enabled').show();
 //                 $('##account_2fa_disabled').hide();
 //             }
-//             $form.find('.button.primary').attr('disabled', false);
+//             $form.find('.button.primary').prop('disabled', false);
 //             Pachno.Helpers.Dialog.dismiss();
 //         });
 // };
@@ -1029,7 +1017,7 @@ import Pachno from "./classes/pachno";
 //     Pachno.Helpers.fetch(url, {
 //         form: 'login_form',
 //         loading: {
-//             indicator: 'elevated_login_indicator',
+//             indicator: '#elevated_login_indicator',
 //             callback: function () {
 //                 $('#login_button').prop('disabled', true);
 //                 $('#elevated_login_indicator').show();
@@ -1053,7 +1041,7 @@ import Pachno from "./classes/pachno";
 //     Pachno.Helpers.fetch(url, {
 //         form: 'forgot_password_form',
 //         loading: {
-//             indicator: 'forgot_password_indicator',
+//             indicator: '#forgot_password_indicator',
 //             hide: 'forgot_password_button'
 //         },
 //         failure: {
@@ -1150,7 +1138,7 @@ import Pachno from "./classes/pachno";
 //     var m_id = milestone_id;
 //     Pachno.Helpers.fetch(url, {
 //         loading: {
-//             indicator: 'milestone_' + milestone_id + '_indicator'
+//             indicator: '#milestone_' + milestone_id + '_indicator'
 //         },
 //         success: {
 //             callback: function (json) {
@@ -1186,7 +1174,7 @@ import Pachno from "./classes/pachno";
 //         method: 'GET',
 //         additional_params: "offset=" + $('#timeline_offset').val(),
 //         loading: {
-//             indicator: 'timeline_indicator',
+//             indicator: '#timeline_indicator',
 //             hide: 'timeline_more_link'
 //         },
 //         success: {
@@ -1204,7 +1192,7 @@ import Pachno from "./classes/pachno";
 //         method: 'POST',
 //         additional_params: "branch=" + branch,
 //         loading: {
-//             indicator: 'fullpage_backdrop',
+//             indicator: '#fullpage_backdrop',
 //             show: 'fullpage_backdrop_indicator',
 //             hide: ['fullpage_backdrop_content', 'project_commits_box']
 //         },
@@ -1220,7 +1208,7 @@ import Pachno from "./classes/pachno";
 //         method: 'POST',
 //         additional_params: "from_commit=" + $('#from_commit').val() + "&branch=" + branch,
 //         loading: {
-//             indicator: 'commits_indicator',
+//             indicator: '#commits_indicator',
 //             hide: 'commits_more_link'
 //         },
 //         success: {
@@ -1238,7 +1226,7 @@ import Pachno from "./classes/pachno";
 //         method: 'POST',
 //         additional_params: "offset=" + $('#commits_offset').val() + "&limit=" + $('#commits_limit').val(),
 //         loading: {
-//             indicator: 'commits_indicator',
+//             indicator: '#commits_indicator',
 //             hide: 'commits_more_link'
 //         },
 //         success: {
@@ -1251,7 +1239,7 @@ import Pachno from "./classes/pachno";
 // {
 //     Pachno.Helpers.fetch(url, {
 //         form: 'add_sprint_form',
-//         loading: {indicator: 'sprint_add_indicator'},
+//         loading: {indicator: '#sprint_add_indicator'},
 //         success: {
 //             reset: 'add_sprint_form',
 //             hide: 'no_sprints',
@@ -1265,7 +1253,7 @@ import Pachno from "./classes/pachno";
 //     event.stopPropagation();
 //     Pachno.Helpers.fetch(url, {
 //         params: {color: color},
-//         loading: {indicator: 'color_selector_' + story_id + '_indicator'},
+//         loading: {indicator: '#color_selector_' + story_id + '_indicator'},
 //         success: {
 //             callback: function (json) {
 //                 $('#story_color_' + story_id).style.backgroundColor = color;
@@ -1330,7 +1318,7 @@ import Pachno from "./classes/pachno";
 // Pachno.Project.add = function (url) {
 //     Pachno.Helpers.fetch(url, {
 //         form: 'add_project_form',
-//         loading: {indicator: 'project_add_indicator'},
+//         loading: {indicator: '#project_add_indicator'},
 //         success: {
 //             reset: 'add_project_form',
 //             update: {element: 'project_table', insertion: true},
@@ -1343,7 +1331,7 @@ import Pachno from "./classes/pachno";
 // Pachno.Project.remove = function (url, pid) {
 //     Pachno.Helpers.fetch(url, {
 //         loading: {
-//             indicator: 'fullpage_backdrop',
+//             indicator: '#fullpage_backdrop',
 //             show: 'fullpage_backdrop_indicator',
 //             hide: ['fullpage_backdrop_content', 'dialog_backdrop', 'project_delete_controls_' + pid]
 //         },
@@ -1370,7 +1358,7 @@ import Pachno from "./classes/pachno";
 // Pachno.Project.archive = function (url, pid) {
 //     Pachno.Helpers.fetch(url, {
 //         loading: {
-//             indicator: 'project_' + pid + '_archive_indicator'
+//             indicator: '#project_' + pid + '_archive_indicator'
 //         },
 //         success: {
 //             remove: 'project_box_' + pid,
@@ -1388,7 +1376,7 @@ import Pachno from "./classes/pachno";
 // Pachno.Project.unarchive = function (url, pid) {
 //     Pachno.Helpers.fetch(url, {
 //         loading: {
-//             indicator: 'project_' + pid + '_archive_indicator'
+//             indicator: '#project_' + pid + '_archive_indicator'
 //         },
 //         success: {
 //             remove: 'project_box_' + pid,
@@ -1563,7 +1551,7 @@ import Pachno from "./classes/pachno";
 //     var url = form.action;
 //     Pachno.Helpers.fetch(url, {
 //         form: form,
-//         loading: {indicator: 'new_epic_indicator'},
+//         loading: {indicator: '#new_epic_indicator'},
 //         success: {
 //             callback: function (json) {
 //                 $(form).reset();
@@ -1674,7 +1662,7 @@ import Pachno from "./classes/pachno";
 // Pachno.Project.Planning.Whiteboard.addColumn = function(button) {
 //     Pachno.Helpers.fetch(button.data('url'), {
 //         loading: {
-//             indicator: 'planning_indicator'
+//             indicator: '#planning_indicator'
 //         },
 //         method: 'POST',
 //         success: {
@@ -1798,7 +1786,7 @@ import Pachno from "./classes/pachno";
 //         additional_params: '&milestone_id=' + milestone_id,
 //         method: 'GET',
 //         loading: {
-//             indicator: 'whiteboard_indicator',
+//             indicator: '#whiteboard_indicator',
 //             callback: function() {
 //                 $('#whiteboard').find('.thead .column_count.primary').each(function (cc) {
 //                     cc.html('-');
@@ -1838,7 +1826,7 @@ import Pachno from "./classes/pachno";
 //         method: 'GET',
 //         loading: {
 //             hide: 'selected_milestone_status_details',
-//             indicator: 'selected_milestone_status_indicator'
+//             indicator: '#selected_milestone_status_indicator'
 //         },
 //         success: {
 //             update: '#selected_milestone_status_details',
@@ -1908,7 +1896,7 @@ import Pachno from "./classes/pachno";
 //         additional_params: parameters,
 //         method: 'POST',
 //         loading: {
-//             indicator: 'fullpage_backdrop',
+//             indicator: '#fullpage_backdrop',
 //             show: 'fullpage_backdrop_indicator',
 //             hide: ['fullpage_backdrop_content', 'dialog_backdrop']
 //         },
@@ -2196,7 +2184,7 @@ import Pachno from "./classes/pachno";
 // }
 //
 // Pachno.Project.Planning.Whiteboard.initialize = function (options) {
-//     $('#body').on('click', '#selected_milestone_input li', Pachno.Project.Planning.Whiteboard.retrieveMilestoneStatus);
+//     $('body').on('click', '#selected_milestone_input li', Pachno.Project.Planning.Whiteboard.retrieveMilestoneStatus);
 //     $(window).on('hashchange', Pachno.Project.Planning.Whiteboard.checkNav);
 //     Pachno.Project.Planning._initializeFilterSearch(true);
 //     if (window.location.hash) {
@@ -2587,7 +2575,7 @@ import Pachno from "./classes/pachno";
 //     Pachno.Helpers.fetch(url, {
 //         method: 'POST',
 //         additional_params: items,
-//         loading: {indicator: 'planning_indicator'}
+//         loading: {indicator: '#planning_indicator'}
 //     });
 // };
 //
@@ -2670,7 +2658,7 @@ import Pachno from "./classes/pachno";
 //     Pachno.Helpers.fetch(url, {
 //         method: 'delete',
 //         loading: {
-//             indicator: 'dialog_indicator',
+//             indicator: '#dialog_indicator',
 //             callback: function () {
 //                 ['dialog_yes', 'dialog_no'].each(function (elm) {
 //                     elm.addClass('disabled');
@@ -2770,7 +2758,7 @@ import Pachno from "./classes/pachno";
 //     Pachno.Helpers.fetch(url, {
 //         form: form,
 //         loading: {
-//             indicator: 'milestone_edit_indicator',
+//             indicator: '#milestone_edit_indicator',
 //             callback: function () {
 //                 $('#mark_milestone_finished_form').find('input.button').each(Element.disable);
 //             }
@@ -2847,7 +2835,7 @@ import Pachno from "./classes/pachno";
 //     // Pachno.Helpers.fetch(url, {
 //     //     form: form,
 //     //     additional_params: issues,
-//     //     loading: {indicator: 'milestone_edit_indicator'},
+//     //     loading: {indicator: '#milestone_edit_indicator'},
 //     //     success: {
 //     //         reset: 'edit_milestone_form',
 //     //         hide: 'no_milestones',
@@ -2887,7 +2875,7 @@ import Pachno from "./classes/pachno";
 //     Pachno.Helpers.fetch(url, {
 //         method: 'delete',
 //         loading: {
-//             indicator: 'dialog_indicator',
+//             indicator: '#dialog_indicator',
 //         },
 //         success: {
 //             callback: function (json) {
@@ -2906,7 +2894,7 @@ import Pachno from "./classes/pachno";
 //     var update_elm = (update == 'all') ? 'build_table' : 'build_list_' + bid;
 //     Pachno.Helpers.fetch(url, {
 //         loading: {
-//             indicator: 'build_' + bid + '_indicator',
+//             indicator: '#build_' + bid + '_indicator',
 //             hide: 'build_' + bid + '_info'
 //         },
 //         success: {
@@ -2922,7 +2910,7 @@ import Pachno from "./classes/pachno";
 //     Pachno.Helpers.fetch(url, {
 //         form: 'edit_build_' + bid,
 //         loading: {
-//             indicator: 'build_' + bid + '_indicator',
+//             indicator: '#build_' + bid + '_indicator',
 //             hide: 'build_' + bid + '_info'
 //         },
 //         success: {
@@ -2938,7 +2926,7 @@ import Pachno from "./classes/pachno";
 //     Pachno.Helpers.fetch(url, {
 //         form: 'addtoopen_build_' + bid,
 //         loading: {
-//             indicator: 'build_' + bid + '_indicator',
+//             indicator: '#build_' + bid + '_indicator',
 //             hide: 'build_' + bid + '_info'
 //         },
 //         success: {
@@ -2954,7 +2942,7 @@ import Pachno from "./classes/pachno";
 //     Pachno.Helpers.fetch(url, {
 //         loading: {
 //             show: 'fullpage_backdrop_indicator',
-//             indicator: 'fullpage_backdrop',
+//             indicator: '#fullpage_backdrop',
 //             hide: ['fullpage_backdrop_content', 'dialog_backdrop', 'build_' + bid + '_info'],
 //             callback: function () {
 //                 $('#build_' + bid + '_indicator').addClass('selected_red');
@@ -2982,7 +2970,7 @@ import Pachno from "./classes/pachno";
 // Pachno.Project.Build.add = function (url, edition_id) {
 //     Pachno.Helpers.fetch(url, {
 //         form: 'add_build_form',
-//         loading: {indicator: 'build_add_indicator'},
+//         loading: {indicator: '#build_add_indicator'},
 //         success: {
 //             reset: 'add_build_form',
 //             hide: 'no_builds_' + edition_id,
@@ -2997,7 +2985,7 @@ import Pachno from "./classes/pachno";
 //         .then(([$form, response]) => {
 //             if (response.ok) {
 //                 response.json().then(function (json) {
-//                     const $component_container = $('[data-component][data-id='+json.item.id+']');
+//                     const $component_container = $('#[data-component][data-id='+json.item.id+']');
 //                     if ($component_container.length > 0) {
 //                         $component_container.replaceWith(json.component);
 //                     } else {
@@ -3018,7 +3006,7 @@ import Pachno from "./classes/pachno";
 //             response.json().then(function (json) {
 //                 Pachno.Helpers.Dialog.dismiss();
 //                 if (response.ok) {
-//                     $('[data-component][data-id=' + id + ']').remove();
+//                     $('#[data-component][data-id=' + id + ']').remove();
 //                 } else {
 //                     Pachno.Helpers.Message.error(json.error);
 //                 }
@@ -3047,7 +3035,7 @@ import Pachno from "./classes/pachno";
 //         .then(([$form, response]) => {
 //             if (response.ok) {
 //                 response.json().then(function (json) {
-//                     const $edition_container = $('[data-edition][data-id='+json.item.id+']');
+//                     const $edition_container = $('#[data-edition][data-id='+json.item.id+']');
 //                     if ($edition_container.length > 0) {
 //                         $edition_container.replaceWith(json.edition);
 //                     } else {
@@ -3070,7 +3058,7 @@ import Pachno from "./classes/pachno";
 //             response.json().then(function (json) {
 //                 Pachno.Helpers.Dialog.dismiss();
 //                 if (response.ok) {
-//                     $('[data-edition][data-id=' + id + ']').remove();
+//                     $('#[data-edition][data-id=' + id + ']').remove();
 //                     $('#project-editions-list-container').removeClass('active');
 //                     $('#selected-edition-options').html('');
 //                 } else {
@@ -3084,75 +3072,10 @@ import Pachno from "./classes/pachno";
 //         });
 // }
 //
-// Pachno.Project.saveOther = function (url) {
-//     Pachno.Helpers.fetch(url, {
-//         form: 'project_other',
-//         loading: {indicator: 'settings_save_indicator'}
-//     });
-// };
-//
-// Pachno.Project.submitAdvancedSettings = function (url) {
-//     Pachno.Project._submitDetails(url, 'project_settings');
-// }
-//
-// Pachno.Project.submitDisplaySettings = function (url) {
-//     Pachno.Project._submitDetails(url, 'project_other');
-// }
-//
-// Pachno.Project.submitInfo = function (url, pid) {
-//     Pachno.Project._submitDetails(url, 'project_info', pid);
-// }
-//
-// Pachno.Project.submitLinks = function (url, pid) {
-//     Pachno.Project._submitDetails(url, 'project_links', pid);
-// }
-//
-// Pachno.Project._submitDetails = function (url, form_id, pid) {
-//     Pachno.Helpers.fetch(url, {
-//         form: form_id,
-//         success: {
-//             callback: function (json) {
-//                 if ($('#project_name_span'))
-//                     $('#project_name_span').html($('#project_name_input').val());
-//                 if ($('#project_description_span')) {
-//                     if ($('#project_description_input').val()) {
-//                         $('#project_description_span').html(json.project_description);
-//                         $('#project_no_description').hide();
-//                     } else {
-//                         $('#project_description_span').html('');
-//                         $('#project_no_description').show();
-//                     }
-//                 }
-//                 if ($('#project_key_span'))
-//                     $('#project_key_span').html(json.project_key);
-//                 if ($('#sidebar_link_scrum') && $('#use_scrum').val() == 1)
-//                     $('#sidebar_link_scrum').show();
-//                 else if ($('#sidebar_link_scrum'))
-//                     $('#sidebar_link_scrum').hide();
-//
-//                 ['edition', 'component'].each(function (element) {
-//                     if ($('#enable_' + element + 's').val() == 1) {
-//                         $('#add_' + element + '_button').show();
-//                         $('#project_' + element + 's').show();
-//                         $('#project_' + element + 's_disabled').hide();
-//                     } else {
-//                         $('#add_' + element + '_button').hide();
-//                         $('#project_' + element + 's').hide();
-//                         $('#project_' + element + 's_disabled').show();
-//                     }
-//                 });
-//
-//                 if (pid != undefined && $('#project_box_' + pid) != undefined)
-//                     $('#project_box_' + pid).html(json.content);
-//             }
-//         }
-//     });
-// }
-//
 // Pachno.Project.findDevelopers = function (url) {
 //     Pachno.Helpers.fetch(url, {
 //         form: 'find_dev_form',
-//         loading: {indicator: 'find_dev_indicator'},
+//         loading: {indicator: '#find_dev_indicator'},
 //         success: {
 //             update: '#find_dev_results',
 //             callback: function () {
@@ -3161,7 +3084,7 @@ import Pachno from "./classes/pachno";
 //                 $form.find('button[type=submit]').each(function () {
 //                     var $button = $(this);
 //                     $button.removeClass('auto-disabled');
-//                     $button.attr("disabled", false);
+//                     $button.prop('disabled', false);
 //                 })
 //             }
 //         }
@@ -3196,7 +3119,7 @@ import Pachno from "./classes/pachno";
 //     var parameters = "&role_id=" + role_id;
 //     Pachno.Helpers.fetch(url, {
 //         params: parameters,
-//         loading: {indicator: 'assign_dev_indicator'},
+//         loading: {indicator: '#assign_dev_indicator'},
 //         success: {update: '#assignees_list'}
 //     });
 // }
@@ -3204,7 +3127,7 @@ import Pachno from "./classes/pachno";
 // Pachno.Project.removeAssignee = function (url, type, id) {
 //     Pachno.Helpers.fetch(url, {
 //         loading: {
-//             indicator: 'remove_assignee_' + type + '_' + id + '_indicator',
+//             indicator: '#remove_assignee_' + type + '_' + id + '_indicator',
 //             hide: 'assignee_' + type + '_' + id + '_link'
 //         },
 //         success: {
@@ -3222,7 +3145,7 @@ import Pachno from "./classes/pachno";
 // Pachno.Project.workflow = function (url) {
 //     Pachno.Helpers.fetch(url, {
 //         form: 'workflow_form2',
-//         loading: {indicator: 'update_workflow_indicator'},
+//         loading: {indicator: '#update_workflow_indicator'},
 //         success: {callback: function () {
 //             Pachno.Helpers.Backdrop.reset();
 //         }}
@@ -3233,7 +3156,7 @@ import Pachno from "./classes/pachno";
 //     Pachno.Helpers.fetch(url, {
 //         form: 'workflow_form',
 //         loading: {
-//             indicator: 'change_workflow_indicator'
+//             indicator: '#change_workflow_indicator'
 //         },
 //         success: {
 //             update: '#change_workflow_table',
@@ -3309,7 +3232,7 @@ import Pachno from "./classes/pachno";
 // }
 //
 // Pachno.Project.showMilestoneDetails = function (url, milestone_id, force) {
-//     $('#body')[0].css({'overflow': 'auto'});
+//     $('body')[0].css({'overflow': 'auto'});
 //
 //     var force = force || false;
 //
@@ -3325,7 +3248,7 @@ import Pachno from "./classes/pachno";
 //         Pachno.Helpers.fetch(url, {
 //             method: 'GET',
 //             loading: {
-//                 indicator: 'fullpage_backdrop',
+//                 indicator: '#fullpage_backdrop',
 //                 show: 'fullpage_backdrop_indicator',
 //                 hide: ['fullpage_backdrop_content', 'project_roadmap']
 //             },
@@ -3351,7 +3274,7 @@ import Pachno from "./classes/pachno";
 //     Pachno.Helpers.fetch(url, {
 //         form: 'import_csv_form',
 //         loading: {
-//             indicator: 'csv_import_indicator',
+//             indicator: '#csv_import_indicator',
 //             hide: 'csv_import_error'
 //         },
 //         failure: {
@@ -3366,7 +3289,7 @@ import Pachno from "./classes/pachno";
 // Pachno.Config.Import.getImportCsvIds = function (url) {
 //     Pachno.Helpers.fetch(url, {
 //         loading: {
-//             indicator: 'id_zone_indicator',
+//             indicator: '#id_zone_indicator',
 //             hide: 'id_zone_content'
 //         },
 //         success: {
@@ -3379,7 +3302,7 @@ import Pachno from "./classes/pachno";
 // Pachno.Config.updateCheck = function (url) {
 //     Pachno.Helpers.fetch(url, {
 //         loading: {
-//             indicator: 'update_spinner',
+//             indicator: '#update_spinner',
 //             hide: 'update_button'
 //         },
 //         success: {
@@ -3402,7 +3325,7 @@ import Pachno from "./classes/pachno";
 //     $form.find('.error-container').removeClass('invalid');
 //     $form.find('.error-container > .error').html('');
 //     $form.addClass('submitting');
-//     $form.find('.button.primary').attr('disabled', true);
+//     $form.find('.button.primary').prop('disabled', true);
 //
 //     fetch($form.attr('action'), {
 //         method: 'POST',
@@ -3411,7 +3334,7 @@ import Pachno from "./classes/pachno";
 //         .then(function (response) {
 //             response.json().then(function (json) {
 //                 if (response.ok) {
-//                     const $issue_type_container = $('[data-issue-type][data-id='+json.issue_type.id+']');
+//                     const $issue_type_container = $('#[data-issue-type][data-id='+json.issue_type.id+']');
 //                     if ($issue_type_container.length > 0) {
 //                         $issue_type_container.find('[data-name]').html(json.issue_type.name);
 //                     } else {
@@ -3427,7 +3350,7 @@ import Pachno from "./classes/pachno";
 //                 }
 //
 //                 $form.removeClass('submitting');
-//                 $form.find('.button.primary').attr('disabled', false);
+//                 $form.find('.button.primary').prop('disabled', false);
 //             });
 //         });
 // };
@@ -3435,7 +3358,7 @@ import Pachno from "./classes/pachno";
 // Pachno.Config.Issuetype.remove = function (url, id) {
 //     Pachno.Helpers.fetch(url, {
 //         loading: {
-//             indicator: 'fullpage_backdrop',
+//             indicator: '#fullpage_backdrop',
 //             show: 'fullpage_backdrop_indicator',
 //             hide: ['fullpage_backdrop_content', 'dialog_backdrop']
 //         },
@@ -3451,7 +3374,7 @@ import Pachno from "./classes/pachno";
 //         form: 'add_issuetype_form',
 //         loading: {
 //             reset: 'add_issuetype_form',
-//             indicator: 'add_issuetype_indicator'
+//             indicator: '#add_issuetype_indicator'
 //         },
 //         success: {
 //             update: {element: 'issuetypes_list', insertion: true}
@@ -3476,7 +3399,7 @@ import Pachno from "./classes/pachno";
 //     }
 //     Pachno.Helpers.fetch(url, {
 //         loading: {
-//             indicator: 'issuetype_' + issuetype_id + '_indicator',
+//             indicator: '#issuetype_' + issuetype_id + '_indicator',
 //             hide: hide_element
 //         },
 //         success: {
@@ -3509,17 +3432,6 @@ import Pachno from "./classes/pachno";
 //         });
 // };
 //
-// Pachno.Config.IssuetypeScheme.showOptions = function ($item) {
-//     Pachno.Config.loadComponentOptions(
-//         {
-//             container: '#issue-type-configuration-container',
-//             options: '#selected-issue-type-options',
-//             component: '.issue-type-scheme-issue-type'
-//         },
-//         $item
-//     );
-// };
-//
 // Pachno.Config.IssuetypeScheme.addField = function (url, key) {
 //     const $container = $('#issue-type-fields-list'),
 //         $add_list = $('#add-issue-field-list');
@@ -3548,7 +3460,7 @@ import Pachno from "./classes/pachno";
 //     $form.find('.error-container').removeClass('invalid');
 //     $form.find('.error-container > .error').html('');
 //     $form.addClass('submitting');
-//     $form.find('.button.primary').attr('disabled', true);
+//     $form.find('.button.primary').prop('disabled', true);
 //
 //     fetch($form.attr('action'), {
 //         method: 'POST',
@@ -3572,7 +3484,7 @@ import Pachno from "./classes/pachno";
 //     Pachno.Helpers.fetch(url, {
 //         form: 'copy_issuetype_scheme_' + scheme_id + '_form',
 //         loading: {
-//             indicator: 'copy_issuetype_scheme_' + scheme_id + '_indicator'
+//             indicator: '#copy_issuetype_scheme_' + scheme_id + '_indicator'
 //         },
 //         success: {
 //             hide: 'copy_scheme_' + scheme_id + '_popup',
@@ -3585,7 +3497,7 @@ import Pachno from "./classes/pachno";
 //     Pachno.Helpers.fetch(url, {
 //         form: 'delete_issuetype_scheme_' + scheme_id + '_form',
 //         loading: {
-//             indicator: 'delete_issuetype_scheme_' + scheme_id + '_indicator'
+//             indicator: '#delete_issuetype_scheme_' + scheme_id + '_indicator'
 //         },
 //         success: {
 //             remove: ['delete_scheme_' + scheme_id + '_popup', 'copy_scheme_' + scheme_id + '_popup', 'issuetype_scheme_' + scheme_id],
@@ -3606,17 +3518,6 @@ import Pachno from "./classes/pachno";
 //     });
 // };
 //
-// Pachno.Config.Issuefields.showOptions = function ($item) {
-//     Pachno.Config.loadComponentOptions(
-//         {
-//             container: '#issue-fields-configuration-container',
-//             options: '#selected-issue-field-options',
-//             component: '.issue-field'
-//         },
-//         $item
-//     );
-// };
-//
 // Pachno.Config.Issuefields.Options.save = function (form) {
 //     var $form = $(form),
 //         data = new FormData($form[0]);
@@ -3634,7 +3535,7 @@ import Pachno from "./classes/pachno";
 //         .then(function (response) {
 //             response.json().then(function (json) {
 //                 if (response.ok) {
-//                     const $issue_option_container = $('[data-issue-field-option][data-id='+json.item.id+']');
+//                     const $issue_option_container = $('#[data-issue-field-option][data-id='+json.item.id+']');
 //                     if ($issue_option_container.length > 0) {
 //                         $issue_option_container.replaceWith(json.component);
 //                     } else {
@@ -3655,7 +3556,7 @@ import Pachno from "./classes/pachno";
 //                 }
 //
 //                 $form.removeClass('submitting');
-//                 $form.find('.button.primary').attr('disabled', false);
+//                 $form.find('.button.primary').prop('disabled', false);
 //             })
 //                 .catch(function (error) {
 //                     $form.find('.error-container > .error').html(error);
@@ -3669,7 +3570,7 @@ import Pachno from "./classes/pachno";
 // Pachno.Config.Issuefields.Options.update = function (url, type, id) {
 //     Pachno.Helpers.fetch(url, {
 //         form: 'edit_' + type + '_' + id + '_form',
-//         loading: {indicator: 'edit_' + type + '_' + id + '_indicator'},
+//         loading: {indicator: '#edit_' + type + '_' + id + '_indicator'},
 //         success: {
 //             show: 'item_option_' + type + '_' + id + '_content',
 //             hide: 'edit_item_option_' + id,
@@ -3690,7 +3591,7 @@ import Pachno from "./classes/pachno";
 //             response.json().then(function (json) {
 //                 Pachno.Helpers.Dialog.dismiss();
 //                 if (response.ok) {
-//                     $('[data-issue-field-option][data-id=' + id + ']').remove();
+//                     $('#[data-issue-field-option][data-id=' + id + ']').remove();
 //                 } else {
 //                     Pachno.Helpers.Message.error(json.error);
 //                 }
@@ -3711,7 +3612,7 @@ import Pachno from "./classes/pachno";
 //     $form.find('.error-container').removeClass('invalid');
 //     $form.find('.error-container > .error').html('');
 //     $form.addClass('submitting');
-//     $form.find('.button.primary').attr('disabled', true);
+//     $form.find('.button.primary').prop('disabled', true);
 //
 //     fetch($form.attr('action'), {
 //         method: 'POST',
@@ -3720,7 +3621,7 @@ import Pachno from "./classes/pachno";
 //         .then(function (response) {
 //             response.json().then(function (json) {
 //                 if (response.ok) {
-//                     const $issue_option_container = $('[data-issue-field][data-id='+json.item.id+']');
+//                     const $issue_option_container = $('#[data-issue-field][data-id='+json.item.id+']');
 //                     if ($issue_option_container.length > 0) {
 //                         $issue_option_container.replaceWith(json.component);
 //                     } else {
@@ -3737,14 +3638,14 @@ import Pachno from "./classes/pachno";
 //                 }
 //
 //                 $form.removeClass('submitting');
-//                 $form.find('.button.primary').attr('disabled', false);
+//                 $form.find('.button.primary').prop('disabled', false);
 //             })
 //                 .catch(function (error) {
 //                     $form.find('.error-container > .error').html(error);
 //                     $form.find('.error-container').addClass('invalid');
 //
 //                     $form.removeClass('submitting');
-//                     $form.find('.button.primary').attr('disabled', false);
+//                     $form.find('.button.primary').prop('disabled', false);
 //                 });
 //         });
 // }
@@ -3752,7 +3653,7 @@ import Pachno from "./classes/pachno";
 // Pachno.Config.Issuefields.Custom.update = function (url, type) {
 //     Pachno.Helpers.fetch(url, {
 //         form: 'edit_custom_type_' + type + '_form',
-//         loading: {indicator: 'edit_custom_type_' + type + '_indicator'},
+//         loading: {indicator: '#edit_custom_type_' + type + '_indicator'},
 //         success: {
 //             hide: 'edit_custom_type_' + type + '_form',
 //             callback: function (json) {
@@ -3778,7 +3679,7 @@ import Pachno from "./classes/pachno";
 //             response.json().then(function (json) {
 //                 Pachno.Helpers.Dialog.dismiss();
 //                 if (response.ok) {
-//                     $('[data-issue-field][data-id=' + id + ']').remove();
+//                     $('#[data-issue-field][data-id=' + id + ']').remove();
 //                     const $container = $('#issue-fields-configuration-container'),
 //                         $options = $('#selected-issue-field-options');
 //
@@ -3823,7 +3724,7 @@ import Pachno from "./classes/pachno";
 // Pachno.Config.Roles.update = function (url, role_id) {
 //     Pachno.Helpers.fetch(url, {
 //         form: 'role_' + role_id + '_form',
-//         loading: {indicator: 'role_' + role_id + '_form_indicator'},
+//         loading: {indicator: '#role_' + role_id + '_form_indicator'},
 //         success: {
 //             hide: 'role_' + role_id + '_permissions_edit',
 //             callback: function (json) {
@@ -3840,7 +3741,7 @@ import Pachno from "./classes/pachno";
 //     Pachno.Helpers.fetch(url, {
 //         method: 'POST',
 //         loading: {
-//             indicator: 'fullpage_backdrop',
+//             indicator: '#fullpage_backdrop',
 //             show: 'fullpage_backdrop_indicator',
 //             hide: ['fullpage_backdrop_content', 'dialog_backdrop']
 //         },
@@ -3859,7 +3760,7 @@ import Pachno from "./classes/pachno";
 // Pachno.Config.Roles.add = function (url) {
 //     Pachno.Helpers.fetch(url, {
 //         form: 'new_role_form',
-//         loading: {indicator: 'new_role_form_indicator'},
+//         loading: {indicator: '#new_role_form_indicator'},
 //         success: {
 //             update: {element: 'global_roles_list', insertion: true},
 //             hide: ['global_roles_no_roles'],
@@ -3873,7 +3774,7 @@ import Pachno from "./classes/pachno";
 // Pachno.Project.Roles.add = function (url, pid) {
 //     Pachno.Helpers.fetch(url, {
 //         form: 'new_project' + pid + '_role_form',
-//         loading: {indicator: 'new_project' + pid + '_role_form_indicator'},
+//         loading: {indicator: '#new_project' + pid + '_role_form_indicator'},
 //         success: {
 //             update: {element: 'project' + pid + '_roles_list', insertion: true},
 //             hide: ['project' + pid + '_roles_no_roles', 'new_project' + pid + '_role']
@@ -3884,7 +3785,7 @@ import Pachno from "./classes/pachno";
 // Pachno.Config.User.show = function (url, findstring) {
 //     Pachno.Helpers.fetch(url, {
 //         params: '&findstring=' + findstring,
-//         loading: {indicator: 'find_users_indicator'},
+//         loading: {indicator: '#find_users_indicator'},
 //         success: {update: '#users_results'}
 //     });
 // };
@@ -3894,7 +3795,7 @@ import Pachno from "./classes/pachno";
 //     Pachno.Helpers.fetch(url, {
 //         form: f,
 //         loading: {
-//             indicator: 'createuser_form_indicator'
+//             indicator: '#createuser_form_indicator'
 //         },
 //         success: {
 //             hide: ['createuser_form_indicator', 'createuser_form_quick_indicator'],
@@ -3919,7 +3820,7 @@ import Pachno from "./classes/pachno";
 // Pachno.Config.User.addToScope = function (url) {
 //     Pachno.Helpers.fetch(url, {
 //         form: 'createuser_form',
-//         loading: {indicator: 'dialog_indicator'},
+//         loading: {indicator: '#dialog_indicator'},
 //         success: {
 //             update: '#users_results',
 //             callback: function (json) {
@@ -3933,7 +3834,7 @@ import Pachno from "./classes/pachno";
 // Pachno.Config.User.getEditForm = function (url, uid) {
 //     Pachno.Helpers.fetch(url, {
 //         loading: {
-//             indicator: 'user_' + uid + '_edit_spinning',
+//             indicator: '#user_' + uid + '_edit_spinning',
 //             hide: 'users_results_user_' + uid
 //         },
 //         success: {
@@ -3950,7 +3851,7 @@ import Pachno from "./classes/pachno";
 // Pachno.Config.User.remove = function (url, user_id) {
 //     Pachno.Helpers.fetch(url, {
 //         loading: {
-//             indicator: 'fullpage_backdrop',
+//             indicator: '#fullpage_backdrop',
 //             show: 'fullpage_backdrop_indicator',
 //             hide: ['fullpage_backdrop_content', 'dialog_backdrop']
 //         },
@@ -3972,7 +3873,7 @@ import Pachno from "./classes/pachno";
 // Pachno.Config.User.update = function (url, user_id) {
 //     Pachno.Helpers.fetch(url, {
 //         form: 'edit_user_' + user_id + '_form',
-//         loading: {indicator: 'edit_user_' + user_id + '_indicator'},
+//         loading: {indicator: '#edit_user_' + user_id + '_indicator'},
 //         success: {
 //             update: '#users_results_user_' + user_id,
 //             show: 'users_results_user_' + user_id,
@@ -3990,7 +3891,7 @@ import Pachno from "./classes/pachno";
 // Pachno.Config.User.updateScopes = function (url, user_id) {
 //     Pachno.Helpers.fetch(url, {
 //         form: 'edit_user_' + user_id + '_scopes_form',
-//         loading: {indicator: 'edit_user_' + user_id + '_scopes_form_indicator'},
+//         loading: {indicator: '#edit_user_' + user_id + '_scopes_form_indicator'},
 //         success: {
 //             callback: Pachno.Helpers.Backdrop.reset
 //         }
@@ -4002,7 +3903,7 @@ import Pachno from "./classes/pachno";
 //     if ($('#users_results_user_' + user_id + '_permissions').innerHTML == '') {
 //         Pachno.Helpers.fetch(url, {
 //             loading: {
-//                 indicator: 'permissions_' + user_id + '_indicator'
+//                 indicator: '#permissions_' + user_id + '_indicator'
 //             },
 //             success: {
 //                 update: '#users_results_user_' + user_id + '_permissions',
@@ -4015,7 +3916,7 @@ import Pachno from "./classes/pachno";
 // Pachno.Config.Collection.add = function (url, type, callback_function) {
 //     Pachno.Helpers.fetch(url, {
 //         form: 'create_' + type + '_form',
-//         loading: {indicator: 'create_' + type + '_indicator'},
+//         loading: {indicator: '#create_' + type + '_indicator'},
 //         success: {
 //             update: {element: type + 'config_list', insertion: true},
 //             callback: callback_function
@@ -4026,7 +3927,7 @@ import Pachno from "./classes/pachno";
 // Pachno.Config.Collection.remove = function (url, type, cid, callback_function) {
 //     Pachno.Helpers.fetch(url, {
 //         loading: {
-//             indicator: 'fullpage_backdrop',
+//             indicator: '#fullpage_backdrop',
 //             show: 'fullpage_backdrop_indicator',
 //             hide: ['fullpage_backdrop_content', 'dialog_backdrop']
 //         },
@@ -4043,7 +3944,7 @@ import Pachno from "./classes/pachno";
 // Pachno.Config.Collection.clone = function (url, type, cid, callback_function) {
 //     Pachno.Helpers.fetch(url, {
 //         form: 'clone_' + type + '_' + cid + '_form',
-//         loading: {indicator: 'clone_' + type + '_' + cid + '_indicator'},
+//         loading: {indicator: '#clone_' + type + '_' + cid + '_indicator'},
 //         success: {
 //             update: {element: type + 'config_list', insertion: true},
 //             hide: 'clone_' + type + '_' + cid,
@@ -4160,7 +4061,7 @@ import Pachno from "./classes/pachno";
 //         Pachno.Helpers.fetch(url, {
 //             loading: {
 //                 show: 'team_' + team_id + '_permissions_container',
-//                 indicator: 'team_' + team_id + '_permissions_indicator'
+//                 indicator: '#team_' + team_id + '_permissions_indicator'
 //             },
 //             success: {
 //                 update: '#team_' + team_id + '_permissions',
@@ -4219,7 +4120,7 @@ import Pachno from "./classes/pachno";
 // Pachno.Config.Client.update = function (url, client_id) {
 //     Pachno.Helpers.fetch(url, {
 //         form: 'edit_client_' + client_id + '_form',
-//         loading: {indicator: 'edit_client_' + client_id + '_indicator'},
+//         loading: {indicator: '#edit_client_' + client_id + '_indicator'},
 //         success: {
 //             hide: 'edit_client_' + client_id,
 //             update: '#client_' + client_id + '_item'
@@ -4231,7 +4132,7 @@ import Pachno from "./classes/pachno";
 //     return function ([$form, response]) {
 //         response.json().then(function (json) {
 //             if (response.ok) {
-//                 const $scheme_container = $('[data-' + type + '][data-id='+json.item.id+']');
+//                 const $scheme_container = $('#[data-' + type + '][data-id='+json.item.id+']');
 //                 if ($scheme_container.length > 0) {
 //                     $scheme_container.replaceWith(json.component);
 //                 } else {
@@ -4248,14 +4149,14 @@ import Pachno from "./classes/pachno";
 //             }
 //
 //             $form.removeClass('submitting');
-//             $form.find('.button.primary').attr('disabled', false);
+//             $form.find('.button.primary').prop('disabled', false);
 //         })
 //             .catch(function (error) {
 //                 $form.find('.error-container > .error').html(error);
 //                 $form.find('.error-container').addClass('invalid');
 //
 //                 $form.removeClass('submitting');
-//                 $form.find('.button.primary').attr('disabled', false);
+//                 $form.find('.button.primary').prop('disabled', false);
 //             });
 //     };
 // };
@@ -4297,7 +4198,7 @@ import Pachno from "./classes/pachno";
 //             response.json().then(function (json) {
 //                 Pachno.Helpers.Dialog.dismiss();
 //                 if (response.ok) {
-//                     $('[data-workflow-scheme][data-id=' + id + ']').remove();
+//                     $('#[data-workflow-scheme][data-id=' + id + ']').remove();
 //                 } else {
 //                     Pachno.Helpers.Message.error(json.error);
 //                 }
@@ -4317,7 +4218,7 @@ import Pachno from "./classes/pachno";
 // Pachno.Config.Workflows.Workflow.copy = function (url, workflow_id) {
 //     Pachno.Helpers.fetch(url, {
 //         form: 'copy_workflow_' + workflow_id + '_form',
-//         loading: {indicator: 'copy_workflow_' + workflow_id + '_indicator'},
+//         loading: {indicator: '#copy_workflow_' + workflow_id + '_indicator'},
 //         success: {
 //             hide: 'copy_workflow_' + workflow_id + '_popup',
 //             update: {element: 'workflows_list', insertion: true},
@@ -4329,7 +4230,7 @@ import Pachno from "./classes/pachno";
 // Pachno.Config.Workflows.Workflow.remove = function (url, workflow_id) {
 //     Pachno.Helpers.fetch(url, {
 //         form: 'delete_workflow_' + workflow_id + '_form',
-//         loading: {indicator: 'delete_workflow_' + workflow_id + '_indicator'},
+//         loading: {indicator: '#delete_workflow_' + workflow_id + '_indicator'},
 //         success: {
 //             remove: ['delete_workflow_' + workflow_id + '_popup', 'copy_workflow_' + workflow_id + '_popup', 'workflow_' + workflow_id],
 //             update: {element: 'workflows_list', insertion: true},
@@ -4365,7 +4266,7 @@ import Pachno from "./classes/pachno";
 //
 // Pachno.Config.Workflows.Transition.Validations.add = function (url, mode, key) {
 //     Pachno.Helpers.fetch(url, {
-//         loading: {indicator: 'workflowtransition' + mode + 'validationrule_add_indicator'},
+//         loading: {indicator: '#workflowtransition' + mode + 'validationrule_add_indicator'},
 //         success: {
 //             hide: ['no_workflowtransition' + mode + 'validationrules', 'add_workflowtransition' + mode + 'validationrule_' + key],
 //             update: {element: 'workflowtransition' + mode + 'validationrules_list', insertion: true}
@@ -4376,7 +4277,7 @@ import Pachno from "./classes/pachno";
 // Pachno.Config.Workflows.Transition.Validations.update = function (url, rule_id) {
 //     Pachno.Helpers.fetch(url, {
 //         form: 'workflowtransitionvalidationrule_' + rule_id + '_form',
-//         loading: {indicator: 'workflowtransitionvalidationrule_' + rule_id + '_indicator'},
+//         loading: {indicator: '#workflowtransitionvalidationrule_' + rule_id + '_indicator'},
 //         success: {
 //             hide: ['workflowtransitionvalidationrule_' + rule_id + '_cancel_button', 'workflowtransitionvalidationrule_' + rule_id + '_edit'],
 //             update: '#workflowtransitionvalidationrule_' + rule_id + '_value',
@@ -4388,7 +4289,7 @@ import Pachno from "./classes/pachno";
 // Pachno.Config.Workflows.Transition.Validations.remove = function (url, rule_id, type, mode) {
 //     Pachno.Helpers.fetch(url, {
 //         loading: {
-//             indicator: 'fullpage_backdrop',
+//             indicator: '#fullpage_backdrop',
 //             show: 'fullpage_backdrop_indicator',
 //             hide: ['fullpage_backdrop_content', 'dialog_backdrop']
 //         },
@@ -4404,7 +4305,7 @@ import Pachno from "./classes/pachno";
 //
 // Pachno.Config.Workflows.Transition.Actions.add = function (url, key) {
 //     Pachno.Helpers.fetch(url, {
-//         loading: {indicator: 'workflowtransitionaction_add_indicator'},
+//         loading: {indicator: '#workflowtransitionaction_add_indicator'},
 //         success: {
 //             hide: ['no_workflowtransitionactions', 'add_workflowtransitionaction_' + key],
 //             update: {element: 'workflowtransitionactions_list', insertion: true}
@@ -4415,7 +4316,7 @@ import Pachno from "./classes/pachno";
 // Pachno.Config.Workflows.Transition.Actions.update = function (url, action_id) {
 //     Pachno.Helpers.fetch(url, {
 //         form: 'workflowtransitionaction_' + action_id + '_form',
-//         loading: {indicator: 'workflowtransitionaction_' + action_id + '_indicator'},
+//         loading: {indicator: '#workflowtransitionaction_' + action_id + '_indicator'},
 //         success: {
 //             hide: ['workflowtransitionaction_' + action_id + '_cancel_button', 'workflowtransitionaction_' + action_id + '_edit'],
 //             update: '#workflowtransitionaction_' + action_id + '_value',
@@ -4426,7 +4327,7 @@ import Pachno from "./classes/pachno";
 //
 // Pachno.Config.Workflows.Transition.Actions.remove = function (url, action_id, type) {
 //     Pachno.Helpers.fetch(url, {
-//         loading: {indicator: 'workflowtransitionaction_' + action_id + '_delete_indicator'},
+//         loading: {indicator: '#workflowtransitionaction_' + action_id + '_delete_indicator'},
 //         success: {
 //             hide: ['workflowtransitionaction_' + action_id + '_delete', 'workflowtransitionaction_' + action_id],
 //             show: ['add_workflowtransitionaction_' + type],
@@ -4453,7 +4354,7 @@ import Pachno from "./classes/pachno";
 //         $('#report_form').show('block');
 //
 //         Pachno.Helpers.fetch(url, {
-//             loading: {indicator: 'report_issue_more_options_indicator'},
+//             loading: {indicator: '#report_issue_more_options_indicator'},
 //             params: 'issuetype_id=' + issue_type_id,
 //             success: {
 //                 callback: function (json) {
@@ -4555,7 +4456,7 @@ import Pachno from "./classes/pachno";
 //     Pachno.Helpers.fetch(form.action, {
 //         form: form,
 //         loading: {
-//             indicator: 'fullpage_backdrop',
+//             indicator: '#fullpage_backdrop',
 //             show: 'fullpage_backdrop_indicator',
 //             hide: ['fullpage_backdrop_content', 'dialog_backdrop', 'workflow_transition_fullpage']
 //         },
@@ -4573,7 +4474,7 @@ import Pachno from "./classes/pachno";
 //     if ($('#viewissue_log_items').children().length == 0) {
 //         Pachno.Helpers.fetch(url, {
 //             method: 'GET',
-//             loading: {indicator: 'viewissue_log_loading_indicator'},
+//             loading: {indicator: '#viewissue_log_loading_indicator'},
 //             success: {
 //                 update: {element: 'viewissue_log_items'}
 //             }
@@ -4584,7 +4485,7 @@ import Pachno from "./classes/pachno";
 // Pachno.Issues.refreshRelatedIssues = function (url) {
 //     if ($('#related_child_issues_inline')) {
 //         Pachno.Helpers.fetch(url, {
-//             loading: {indicator: 'related_issues_indicator'},
+//             loading: {indicator: '#related_issues_indicator'},
 //             success: {
 //                 hide: 'no_child_issues',
 //                 update: {element: 'related_child_issues_inline'},
@@ -4599,7 +4500,7 @@ import Pachno from "./classes/pachno";
 // Pachno.Issues.findRelated = function (url) {
 //     Pachno.Helpers.fetch(url, {
 //         form: 'viewissue_find_issue_form',
-//         loading: {indicator: 'viewissue_find_issue_indicator'},
+//         loading: {indicator: '#viewissue_find_issue_indicator'},
 //         success: {update: '#viewissue_relation_results'}
 //     });
 //     return false;
@@ -4608,7 +4509,7 @@ import Pachno from "./classes/pachno";
 // Pachno.Issues.findDuplicate = function (url, transition_id) {
 //     Pachno.Helpers.fetch(url, {
 //         additional_params: 'searchfor=' + $('#viewissue_find_issue_' + transition_id + '_input').val(),
-//         loading: {indicator: 'viewissue_find_issue_' + transition_id + '_indicator'},
+//         loading: {indicator: '#viewissue_find_issue_' + transition_id + '_indicator'},
 //         success: {update: '#viewissue_' + transition_id + '_duplicate_results'}
 //     });
 // };
@@ -4618,7 +4519,7 @@ import Pachno from "./classes/pachno";
 //     Pachno.Helpers.fetch(url, {
 //         form: form,
 //         loading: {
-//             indicator: 'fullpage_backdrop_indicator',
+//             indicator: '#fullpage_backdrop_indicator',
 //             hide: 'fullpage_backdrop_content'
 //         },
 //         success: {
@@ -4641,7 +4542,7 @@ import Pachno from "./classes/pachno";
 //
 // Pachno.Issues.deleteTimeEntry = function (url, entry_id) {
 //     Pachno.Helpers.fetch(url, {
-//         loading: {indicator: 'dialog_indicator'},
+//         loading: {indicator: '#dialog_indicator'},
 //         success: {
 //             callback: function (json) {
 //                 Pachno.Helpers.Dialog.dismiss();
@@ -4695,7 +4596,7 @@ import Pachno from "./classes/pachno";
 //
 //     Pachno.Helpers.fetch(url, {
 //         form: 'viewissue_relate_issues_form',
-//         loading: {indicator: 'relate_issues_indicator'},
+//         loading: {indicator: '#relate_issues_indicator'},
 //         success: {
 //             update: {element: 'related_child_issues_inline', insertion: true},
 //             hide: 'no_child_issues',
@@ -4716,7 +4617,7 @@ import Pachno from "./classes/pachno";
 //
 // Pachno.Issues.removeRelated = function (url, issue_id) {
 //     Pachno.Helpers.fetch(url, {
-//         loading: {indicator: 'related_issues_indicator'},
+//         loading: {indicator: '#related_issues_indicator'},
 //         success: {
 //             remove: 'related_issue_' + issue_id,
 //             callback: function () {
@@ -4732,7 +4633,7 @@ import Pachno from "./classes/pachno";
 //
 // Pachno.Issues.removeDuplicated = function (url, issue_id) {
 //     Pachno.Helpers.fetch(url, {
-//         loading: {indicator: 'duplicate_issues_indicator'},
+//         loading: {indicator: '#duplicate_issues_indicator'},
 //         success: {
 //             remove: 'duplicated_issue_' + issue_id,
 //             callback: function () {
@@ -4750,7 +4651,7 @@ import Pachno from "./classes/pachno";
 //     Pachno.Helpers.fetch(form.action, {
 //         form: form,
 //         loading: {
-//             indicator: 'move_issue_indicator'
+//             indicator: '#move_issue_indicator'
 //         },
 //         success: {
 //             remove: 'issue_' + issue_id,
@@ -4764,7 +4665,7 @@ import Pachno from "./classes/pachno";
 //
 //     Pachno.Helpers.fetch(url, {
 //         loading: {
-//             indicator: 'vote_' + direction + '_indicator',
+//             indicator: '#vote_' + direction + '_indicator',
 //             hide: 'vote_' + direction + '_link'},
 //         success: {
 //             update: '#issue_votes',
@@ -4837,7 +4738,7 @@ import Pachno from "./classes/pachno";
 // {
 //     Pachno.Helpers.fetch(url, {
 //         loading: {
-//             indicator: 'fullpage_backdrop',
+//             indicator: '#fullpage_backdrop',
 //             show: 'fullpage_backdrop_indicator',
 //             hide: 'fullpage_backdrop_content'
 //         },
@@ -4861,7 +4762,7 @@ import Pachno from "./classes/pachno";
 //     Pachno.Helpers.fetch(url, {
 //         form: 'attach_link_form',
 //         loading: {
-//             indicator: 'attach_link_indicator',
+//             indicator: '#attach_link_indicator',
 //             callback: function () {
 //                 $('#attach_link_submit').prop('disabled', true);
 //             }
@@ -4887,7 +4788,7 @@ import Pachno from "./classes/pachno";
 // Pachno.Issues.Link.remove = function (url, link_id) {
 //     Pachno.Helpers.fetch(url, {
 //         loading: {
-//             indicator: 'viewissue_links_' + link_id + '_remove_indicator',
+//             indicator: '#viewissue_links_' + link_id + '_remove_indicator',
 //             hide: link_id + '_remove_link',
 //             callback: Pachno.Helpers.Dialog.dismiss
 //         },
@@ -4910,7 +4811,7 @@ import Pachno from "./classes/pachno";
 //
 // Pachno.Issues.Field.setPercent = function (url, mode) {
 //     Pachno.Helpers.fetch(url, {
-//         loading: {indicator: 'percent_complete_spinning'},
+//         loading: {indicator: '#percent_complete_spinning'},
 //         success: {
 //             callback: function (json) {
 //                 Pachno.Main.updatePercentageLayout(json.percent);
@@ -5289,7 +5190,7 @@ import Pachno from "./classes/pachno";
 // Pachno.Issues.ACL.addTarget = function (url, issue_id) {
 //     Pachno.Helpers.fetch(url, {
 //         loading: {
-//             indicator: 'popup_find_acl_' + issue_id + '_spinning'
+//             indicator: '#popup_find_acl_' + issue_id + '_spinning'
 //         },
 //         success: {
 //             update: {},
@@ -5308,7 +5209,7 @@ import Pachno from "./classes/pachno";
 //     Pachno.Helpers.fetch(url, {
 //         form: 'acl_' + issue_id + '_' + mode + 'form',
 //         loading: {
-//             indicator: 'fullpage_backdrop',
+//             indicator: '#fullpage_backdrop',
 //             show: 'fullpage_backdrop_indicator',
 //             hide: ['fullpage_backdrop_content', 'dialog_backdrop']
 //         },
@@ -5346,7 +5247,7 @@ import Pachno from "./classes/pachno";
 // {
 //     Pachno.Helpers.fetch(url, {
 //         loading: {
-//             indicator: 'fullpage_backdrop',
+//             indicator: '#fullpage_backdrop',
 //             show: 'fullpage_backdrop_indicator',
 //             hide: ['fullpage_backdrop_content', 'dialog_backdrop']
 //         },
@@ -5365,7 +5266,7 @@ import Pachno from "./classes/pachno";
 // {
 //     Pachno.Helpers.fetch(url, {
 //         loading: {
-//             indicator: 'affected_' + affected + '_status_spinning'
+//             indicator: '#affected_' + affected + '_status_spinning'
 //         },
 //         success: {
 //             callback: function (json) {
@@ -5391,7 +5292,7 @@ import Pachno from "./classes/pachno";
 //     Pachno.Helpers.fetch(url, {
 //         form: 'viewissue_add_item_form',
 //         loading: {
-//             indicator: 'add_affected_spinning'
+//             indicator: '#add_affected_spinning'
 //         },
 //         success: {
 //             callback: function (json) {
@@ -5411,7 +5312,7 @@ import Pachno from "./classes/pachno";
 //     teamup = (teamup == undefined) ? 0 : 1;
 //     Pachno.Helpers.fetch(url, {
 //         loading: {
-//             indicator: 'popup_assigned_to_name_indicator_' + transition_id,
+//             indicator: '#popup_assigned_to_name_indicator_' + transition_id,
 //             hide: 'popup_no_assigned_to_' + transition_id,
 //             show: 'popup_assigned_to_name_' + transition_id
 //         },
@@ -5445,7 +5346,7 @@ import Pachno from "./classes/pachno";
 //             todo: todo
 //         },
 //         loading: {
-//             indicator: 'dialog_indicator'
+//             indicator: '#dialog_indicator'
 //         },
 //         success: {
 //             update: '#viewissue_todos',
@@ -5460,7 +5361,7 @@ import Pachno from "./classes/pachno";
 //             todo: todo
 //         },
 //         loading: {
-//             indicator: 'todo_' + todo_key + '_mark_indicator',
+//             indicator: '#todo_' + todo_key + '_mark_indicator',
 //             callback: function () {
 //                 $('##todo_' + todo_key + '_mark_wrapper .image i').each(function (element) {
 //                     $(element).hide();
@@ -5482,7 +5383,7 @@ import Pachno from "./classes/pachno";
 //     Pachno.Helpers.fetch(url, {
 //         form: 'todo_form',
 //         loading: {
-//             indicator: 'todo_add_indicator',
+//             indicator: '#todo_add_indicator',
 //             disable: 'todo_add_button'
 //         },
 //         success: {
@@ -5495,7 +5396,7 @@ import Pachno from "./classes/pachno";
 //
 // Pachno.Search.deleteSavedSearch = function (url, id) {
 //     Pachno.Helpers.fetch(url, {
-//         loading: {indicator: 'delete_search_' + id + '_indicator'},
+//         loading: {indicator: '#delete_search_' + id + '_indicator'},
 //         success: {hide: 'saved_search_' + id + '_container'}
 //     });
 // };
@@ -5570,7 +5471,7 @@ import Pachno from "./classes/pachno";
 //         $('#bulk_action_submit').addClass('disabled');
 //     } else {
 //         $('#search-bulk-actions').removeClass('unavailable');
-//         var selected_radio_value = $('input[name=search_bulk_action]:checked', '#search-bulk-action-form').val();
+//         var selected_radio_value = $('#input[name=search_bulk_action]:checked', '#search-bulk-action-form').val();
 //         if (selected_radio_value) {
 //             $('#bulk_action_submit').removeClass('disabled');
 //         }
@@ -5621,7 +5522,7 @@ import Pachno from "./classes/pachno";
 // };
 //
 // Pachno.Search.bulkContainerChanger = function () {
-//     var selected_radio_value = $('input[name=search_bulk_action]:checked', '#search-bulk-action-form').val(),
+//     var selected_radio_value = $('#input[name=search_bulk_action]:checked', '#search-bulk-action-form').val(),
 //         sub_container_id = 'bulk_action_subcontainer_' + selected_radio_value;
 //
 //     $('.bulk_action_subcontainer').each(function (element) {
@@ -5731,7 +5632,7 @@ import Pachno from "./classes/pachno";
 //     Pachno.Helpers.fetch(url, {
 //         form: form,
 //         loading: {
-//             indicator: 'transition_working_' + transition_id + '_indicator',
+//             indicator: '#transition_working_' + transition_id + '_indicator',
 //             callback: function () {
 //                 $('.workflow_transition_submit_button').each(function (element) {
 //                     $(element).addClass('disabled');
@@ -5770,7 +5671,7 @@ import Pachno from "./classes/pachno";
 //     Pachno.Helpers.fetch(url, {
 //         form: 'bulk_workflow_transition_form',
 //         loading: {
-//             indicator: 'transition_working_' + transition_id + '_indicator',
+//             indicator: '#transition_working_' + transition_id + '_indicator',
 //             callback: function () {
 //                 $('.workflow_transition_submit_button').each(function (element) {
 //                     $(element).addClass('disabled');
@@ -5811,7 +5712,7 @@ import Pachno from "./classes/pachno";
 //             form: 'search-bulk-action-form',
 //             additional_params: issues,
 //             loading: {
-//                 indicator: 'fullpage_backdrop',
+//                 indicator: '#fullpage_backdrop',
 //                 show: 'fullpage_backdrop_indicator',
 //                 hide: 'fullpage_backdrop_content'
 //             },
@@ -6016,7 +5917,7 @@ import Pachno from "./classes/pachno";
 //     var element = $(this).closest('.filter');
 //
 //     if ($(element).data('isdate') == '') {
-//         var do_update = ($('filter_' + element.dataset.filterkey + '_value_input', element).val() != '');
+//         var do_update = ($('#filter_' + element.dataset.filterkey + '_value_input', element).val() != '');
 //         element.remove();
 //     }
 //     else {
@@ -6036,7 +5937,7 @@ import Pachno from "./classes/pachno";
 //         var parameters = fif.serialize();
 //         Pachno.Helpers.fetch(scc.data('url'), {
 //             params: parameters,
-//             loading: {indicator: 'search_column_settings_indicator'},
+//             loading: {indicator: '#search_column_settings_indicator'},
 //             success: {hide: 'search_column_settings_indicator'}
 //         });
 //     }
@@ -6292,11 +6193,11 @@ import Pachno from "./classes/pachno";
 //     var results_loaded = (fif.dataset.resultsLoaded != undefined && fif.dataset.resultsLoaded != '');
 //
 //     if (force == true || results_loaded) {
-//         $('nav.sidebar').addClass('collapsed');
+//         $('#nav.sidebar').addClass('collapsed');
 //         Pachno.Helpers.fetch(url, {
 //             params: parameters,
 //             loading: {
-//                 indicator: 'search_results_loading_indicator',
+//                 indicator: '#search_results_loading_indicator',
 //                 callback: function () {
 //                     if (history.pushState) {
 //                         history.pushState({caller: 'liveUpdate'}, '', fif.dataset.historyUrl + '?' + parameters);
@@ -6341,7 +6242,7 @@ import Pachno from "./classes/pachno";
 // Pachno.Search.initializeIssuesPerPageSlider = function () {
 //     var $ipp_slider = $('#issues-per-page-slider');
 //     if (!$ipp_slider.data('initialized')) {
-//         var filter_ipp_value = $('filter_issues_per_page');
+//         var filter_ipp_value = $('#filter_issues_per_page');
 //         var step_start = 1;
 //         switch (parseInt(filter_ipp_value.val())) {
 //             case 25:
@@ -6434,7 +6335,7 @@ import Pachno from "./classes/pachno";
 //     Pachno.Helpers.fetch(ssf.action, {
 //         params: p,
 //         loading: {
-//             indicator: 'save_search_indicator',
+//             indicator: '#save_search_indicator',
 //             callback: function () {
 //                 button.prop('disabled', true);
 //             }
@@ -6737,7 +6638,7 @@ import Pachno from "./classes/pachno";
 //     Pachno.Helpers.fetch(form.action, {
 //         params: $(form).serialize(),
 //         loading: {
-//             indicator: 'parent_selector_container_indicator',
+//             indicator: '#parent_selector_container_indicator',
 //         },
 //         complete: {
 //             callback: function (json) {
@@ -6807,7 +6708,7 @@ import Pachno from "./classes/pachno";
 //                 Pachno.Helpers.fetch(url, {
 //                     method: 'GET',
 //                     loading: {
-//                         indicator: 'user_notifications_loading_indicator'
+//                         indicator: '#user_notifications_loading_indicator'
 //                     },
 //                     success: {
 //                         update: { element: '', insertion: true },
@@ -6976,7 +6877,7 @@ import Pachno from "./classes/pachno";
 // };
 //
 // Pachno.Helpers.initializeColorPicker = function () {
-//     $('input.color').each(function (index, element) {
+//     $('#input.color').each(function (index, element) {
 //         var input = $(element);
 //         input.spectrum({
 //             cancelText: input.data('cancel-text'),
@@ -6999,7 +6900,7 @@ import Pachno from "./classes/pachno";
 //         method: 'GET',
 //         params: 'say=get_'+type+'_updates' + params,
 //         loading: {
-//             indicator: 'installed_'+type+'s_indicator'
+//             indicator: '#installed_'+type+'s_indicator'
 //         },
 //         success: {
 //             update: '#installed_'+type+'s_indicator',
@@ -7067,7 +6968,7 @@ import Pachno from "./classes/pachno";
 //         method: 'GET',
 //         params: '&say=get_'+type,
 //         loading: {
-//             indicator: 'available_'+type+'_loading_indicator'
+//             indicator: '#available_'+type+'_loading_indicator'
 //         },
 //         success: {
 //             update: '#available_'+type+'_container',

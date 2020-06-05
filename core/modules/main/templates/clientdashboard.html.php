@@ -31,7 +31,7 @@
             <?php include_component('main/identifiableselector', [
                 'html_id'       => "addmember_client_{$client->getID()}",
                 'header'        => __('Add a member to this client'),
-                'callback'      => "Pachno.Config.Client.addMember('".make_url('configure_users_add_client_member', ['client_id' => $client->getID(), 'user_id' => '%identifiable_value'])."', ".$client->getID().", '%identifiable_value');$('addmember_client_{$client->getID()}').hide();",
+                'callback'      => "Pachno.Config.Client.addMember('".make_url('configure_users_add_client_member', ['client_id' => $client->getID(), 'user_id' => '%identifiable_value'])."', ".$client->getID().", '%identifiable_value');$('#addmember_client_{$client->getID()}').hide();",
                 'base_id'       => "addmember_client_{$client->getID()}",
                 'include_teams' => false,
                 'style'         => ['right' => '0', 'top' => '30px'],

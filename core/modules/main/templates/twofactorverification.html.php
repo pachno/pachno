@@ -40,7 +40,7 @@
 <script type="text/javascript">
     require(['domReady', 'pachno/index'], function (domReady, Pachno) {
         domReady(function () {
-            $('pachno_2fa_code').focus();
+            $('#pachno_2fa_code').focus();
         });
     });
 </script>

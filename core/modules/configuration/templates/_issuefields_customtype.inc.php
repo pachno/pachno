@@ -3,7 +3,7 @@
         <button class="button dropper" id="<?php echo $type_key; ?>_<?php echo $type->getID(); ?>_more_actions"><?php echo __('Actions'); ?></button>
         <ul id="<?php echo $type_key; ?>_<?php echo $type->getID(); ?>_more_actions_dropdown" style="font-size: 1.1em; width: 200px; top: 23px; margin-top: 0; text-align: right; z-index: 1000;" class="simple-list rounded_box white shadowed popup_box more_actions_dropdown" onclick="$(this).previous().toggleClass('button-pressed');$(this).toggle();">
             <li>
-                <a href="javascript:void(0);" onclick="$('edit_custom_type_<?php echo $type_key; ?>_form').toggle();$('custom_type_<?php echo $type_key; ?>_info').toggle();"><?php echo __('Edit this issue field'); ?></a>
+                <a href="javascript:void(0);" onclick="$('#edit_custom_type_<?php echo $type_key; ?>_form').toggle();$('#custom_type_<?php echo $type_key; ?>_info').toggle();"><?php echo __('Edit this issue field'); ?></a>
             </li>
             <?php
                 if ($type->hasCustomOptions()) {
@@ -31,7 +31,7 @@
             <?php echo __('This will also remove the value of this custom field from all issues, along with any possible options this field can take.')?>
             <div style="text-align: right; font-size: 13px;">
                 <a href="javascript:void(0);" onclick="Pachno.Config.Issuefields.Custom.remove('<?php echo make_url('configure_issuefields_delete_customtype', array('type' => $type_key)); ?>', '<?php echo $type_key; ?>', '<?php echo $type->getID(); ?>');return false;"><?php echo __('Yes'); ?></a> ::
-                <a href="javascript:void(0);" onclick="$('delete_item_<?php echo $type->getID(); ?>').toggle();"><b><?php echo __('No'); ?></b></a>
+                <a href="javascript:void(0);" onclick="$('#delete_item_<?php echo $type->getID(); ?>').toggle();"><b><?php echo __('No'); ?></b></a>
             </div>
             <?php echo image_tag('spinning_20.gif', array('id' => 'delete_'.$type_key.'_'.$type->getID().'_indicator', 'style' => 'margin-left: 5px; display: none;')); ?>
         </div>

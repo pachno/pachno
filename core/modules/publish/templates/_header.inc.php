@@ -127,6 +127,11 @@
                                     </a>
                                 <?php endif; ?>
                                 <div class="list-item separator"></div>
+                                <a href="<?= $article->getLink('edit'); ?>?copy=true" class="list-item">
+                                    <?= fa_image_tag('copy', ['class' => 'icon'], 'far'); ?>
+                                    <span class="name"><?= __('Copy article'); ?></span>
+                                </a>
+                                <div class="list-item separator"></div>
                                 <?php if ($article->canDelete()): ?>
                                     <?= javascript_link_tag(fa_image_tag('times', ['class' => 'icon']) . '<span class="name">'.__('Delete this article').'</span>', ['onclick' => "Pachno.UI.Dialog.show('".__('Please confirm')."', '".__('Do you really want to delete this article?')."', {yes: {click: function () { Pachno.Main.deleteArticle('".make_url('publish_article_delete', ['article_id' => $article->getID()])."') }}, no: {click: Pachno.UI.Dialog.dismiss}})", 'class' => 'list-item danger']); ?>
                                 <?php endif; ?>

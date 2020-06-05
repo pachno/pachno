@@ -1,4 +1,16 @@
-<?php $pachno_response->setTitle(__('Configure uploads & attachments')); ?>
+<?php
+
+    use pachno\core\framework\Settings;
+    use pachno\core\framework\Context;
+
+    /**
+     * @var \pachno\core\framework\Response $pachno_response
+     * @var int $access_level
+     */
+
+    $pachno_response->setTitle(__('Configure uploads & attachments'));
+
+?>
 <div class="content-with-sidebar">
     <?php include_component('configuration/sidebar', ['selected_section' => \pachno\core\framework\Settings::CONFIGURATION_SECTION_UPLOADS]); ?>
     <div class="configuration-container">
@@ -16,7 +28,7 @@
             <?php endif; ?>
             <div class="form-container">
                 <?php if ($access_level == \pachno\core\framework\Settings::ACCESS_FULL): ?>
-                    <form accept-charset="<?php echo \pachno\core\framework\Context::getI18n()->getCharset(); ?>" action="<?php echo make_url('configure_files'); ?>" method="post" onsubmit="Pachno.UI.formSubmit('<?php echo make_url('configure_files'); ?>', 'config_uploads'); return false;" id="config_uploads">
+                    <form accept-charset="<?php echo \pachno\core\framework\Context::getI18n()->getCharset(); ?>" action="<?php echo make_url('configure_files'); ?>" method="post" data-simple-submit id="config_uploads">
                 <?php endif; ?>
                 <?php if (!function_exists('mime_content_type') && !extension_loaded('fileinfo')): ?>
                     <div class="message-box type-warning">
@@ -51,9 +63,9 @@
                         <div class="form-row">
                             <label for="upload-restriction-whitelist"><?php echo __('Upload restrictions'); ?></label>
                             <div class="fancy-label-select">
-                                <input name="upload_restriction_mode" class="fancy-checkbox" id="upload-restriction-whitelist" type="radio" value="whitelist"<?php if (\pachno\core\framework\Settings::getUploadsRestrictionMode() == 'whitelist') echo ' checked'; ?> onchange="$('label_upload_extensions_list').update('<?php echo __('Allowed extensions'); ?>');">
+                                <input name="upload_restriction_mode" class="fancy-checkbox" id="upload-restriction-whitelist" type="radio" value="whitelist"<?php if (\pachno\core\framework\Settings::getUploadsRestrictionMode() == 'whitelist') echo ' checked'; ?> onchange="$('#label_upload_extensions_list').update('<?php echo __('Allowed extensions'); ?>');">
                                 <label for="upload-restriction-whitelist"><?= fa_image_tag('check', ['class' => 'checked']) . __('Whitelist'); ?></label>
-                                <input name="upload_restriction_mode" class="fancy-checkbox" id="upload-restriction-blacklist" type="radio" value="blacklist"<?php if (\pachno\core\framework\Settings::getUploadsRestrictionMode() == 'blacklist') echo ' checked'; ?> onchange="$('label_upload_extensions_list').update('<?php echo __('Denied extensions'); ?>');">
+                                <input name="upload_restriction_mode" class="fancy-checkbox" id="upload-restriction-blacklist" type="radio" value="blacklist"<?php if (\pachno\core\framework\Settings::getUploadsRestrictionMode() == 'blacklist') echo ' checked'; ?> onchange="$('#label_upload_extensions_list').update('<?php echo __('Denied extensions'); ?>');">
                                 <label for="upload-restriction-blacklist"><?= fa_image_tag('check', ['class' => 'checked']) . __('Blacklist'); ?></label>
                             </div>
                         </div>
@@ -70,9 +82,9 @@
                             <div class="form-row">
                                 <label for="upload-storage-database"><?php echo __('File storage'); ?></label>
                                 <div class="fancy-label-select">
-                                    <input name="upload_storage" class="fancy-checkbox" id="upload-storage-filesystem" type="radio" value="files"<?php if (\pachno\core\framework\Settings::getUploadStorage() == 'files') echo ' checked'; ?> onchange="$('upload_localpath').enable();">
+                                    <input name="upload_storage" class="fancy-checkbox" id="upload-storage-filesystem" type="radio" value="files"<?php if (\pachno\core\framework\Settings::getUploadStorage() == 'files') echo ' checked'; ?> onchange="$('#upload_localpath').enable();">
                                     <label for="upload-storage-filesystem"><?= fa_image_tag('check', ['class' => 'checked']) . __('File system'); ?></label>
-                                    <input name="upload_storage" class="fancy-checkbox" id="upload-storage-database" type="radio" value="database"<?php if (\pachno\core\framework\Settings::getUploadStorage() == 'database') echo ' checked'; ?> onchange="$('upload_localpath').disable();">
+                                    <input name="upload_storage" class="fancy-checkbox" id="upload-storage-database" type="radio" value="database"<?php if (\pachno\core\framework\Settings::getUploadStorage() == 'database') echo ' checked'; ?> onchange="$('#upload_localpath').disable();">
                                     <label for="upload-storage-database"><?= fa_image_tag('check', ['class' => 'checked']) . __('Database'); ?></label>
                                 </div>
                             </div>
@@ -144,28 +156,28 @@
 
     function toggleSettings()
     {
-        if ($('enable_uploads_yes').checked)
+        if ($('#enable_uploads_yes').checked)
         {
-            $('upload_restriction_mode').enable();
-            $('upload_extensions_list').enable();
-            if ($('upload_storage')) $('upload_storage').enable();
-            $('upload_max_file_size').enable();
-            if ($('upload_storage').getValue() == 'files')
+            $('#upload_restriction_mode').enable();
+            $('#upload_extensions_list').enable();
+            if ($('#upload_storage')) $('#upload_storage').enable();
+            $('#upload_max_file_size').enable();
+            if ($('#upload_storage').getValue() == 'files')
             {
-                $('upload_localpath').enable();
+                $('#upload_localpath').enable();
             }
-            $('upload_allow_image_caching').enable();
-            $('upload_delivery_use_xsend').enable();
+            $('#upload_allow_image_caching').enable();
+            $('#upload_delivery_use_xsend').enable();
         }
         else
         {
-            $('upload_restriction_mode').disable();
-            $('upload_extensions_list').disable();
-            if ($('upload_storage')) $('upload_storage').disable();
-            $('upload_max_file_size').disable();
-            $('upload_localpath').disable();
-            $('upload_allow_image_caching').disable();
-            $('upload_delivery_use_xsend').disable();
+            $('#upload_restriction_mode').disable();
+            $('#upload_extensions_list').disable();
+            if ($('#upload_storage')) $('#upload_storage').disable();
+            $('#upload_max_file_size').disable();
+            $('#upload_localpath').disable();
+            $('#upload_allow_image_caching').disable();
+            $('#upload_delivery_use_xsend').disable();
         }
     }
 

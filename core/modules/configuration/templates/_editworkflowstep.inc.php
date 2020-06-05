@@ -119,8 +119,8 @@
     <?php elseif ($step->getWorkflow()->getNumberOfSteps() == 1): ?>
         <span class="faded_out"><a href="javascript:void(0);" class="disabled" onclick="Pachno.UI.Message.error('<?php echo __('You cannot delete the last step'); ?>', '<?php echo __('To delete this step, make sure there are other steps available'); ?>');"><?php echo __('Delete step'); ?></a></span><br>
     <?php else: ?>
-        <?php echo javascript_link_tag(__('Delete step'), array('onclick' => "\$('step_{$step->getID()}_delete').toggle();")); ?><br>
+        <?php echo javascript_link_tag(__('Delete step'), array('onclick' => "\$('#step_{$step->getID()}_delete').toggle();")); ?><br>
     <?php endif; ?>
-    <?php echo javascript_link_tag(__('Add transition'), array('onclick' => "$('step_{$step->getID()}_transition_add').toggle()")); ?> |
-    <?php echo javascript_link_tag(__('Delete outgoing transitions'), array('onclick' => "\$('step_{$step->getID()}_transitions_delete').toggle();")); ?>
+    <?php echo javascript_link_tag(__('Add transition'), array('onclick' => "$('#step_{$step->getID()}_transition_add').toggle()")); ?> |
+    <?php echo javascript_link_tag(__('Delete outgoing transitions'), array('onclick' => "\$('#step_{$step->getID()}_transitions_delete').toggle();")); ?>
 </td> */ ?>

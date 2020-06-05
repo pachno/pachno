@@ -462,33 +462,33 @@
                                                             parentElement: 'customfield_<?= $field; ?>_calendar_container',
                                                             valueCallback: function(element, date) {
                                                                 <?php if ($info['type'] == CustomDatatype::DATETIME_PICKER): ?>
-                                                                var value = date.setUTCHours(parseInt($('customfield_<?= $field; ?>_hour').value));
+                                                                var value = date.setUTCHours(parseInt($('#customfield_<?= $field; ?>_hour').value));
                                                                 var date  = new Date(value);
-                                                                var value = Math.floor(date.setUTCMinutes(parseInt($('customfield_<?= $field; ?>_minute').value)) / 1000);
+                                                                var value = Math.floor(date.setUTCMinutes(parseInt($('#customfield_<?= $field; ?>_minute').value)) / 1000);
                                                                 <?php else: ?>
                                                                 var value = Math.floor(date.getTime() / 1000);
                                                                 Pachno.Issues.Field.set('<?= make_url('issue_setfield', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => $field)); ?>?<?= $field; ?>_value='+value, '<?= $field; ?>');
                                                                 <?php endif; ?>
-                                                                $('<?= $field; ?>_value').value = value;
+                                                                $('#<?= $field; ?>_value').value = value;
                                                             }
                                                         });
                                                         <?php if ($info['type'] == CustomDatatype::DATETIME_PICKER): ?>
-                                                        var date = new Date(parseInt($('<?= $field; ?>_value').value) * 1000);
-                                                        $('customfield_<?= $field; ?>_hour').value = date.getUTCHours();
-                                                        $('customfield_<?= $field; ?>_minute').value = date.getUTCMinutes();
-                                                        Event.observe($('customfield_<?= $field; ?>_hour'), 'change', function (event) {
-                                                            var value = parseInt($('<?= $field; ?>_value').value);
+                                                        var date = new Date(parseInt($('#<?= $field; ?>_value').value) * 1000);
+                                                        $('#customfield_<?= $field; ?>_hour').value = date.getUTCHours();
+                                                        $('#customfield_<?= $field; ?>_minute').value = date.getUTCMinutes();
+                                                        Event.observe($('#customfield_<?= $field; ?>_hour'), 'change', function (event) {
+                                                            var value = parseInt($('#<?= $field; ?>_value').value);
                                                             var hours = parseInt(this.value);
                                                             if (value <= 0 || hours < 0 || hours > 24) return;
                                                             var date = new Date(value * 1000);
-                                                            $('<?= $field; ?>_value').value = date.setUTCHours(parseInt(this.value)) / 1000;
+                                                            $('#<?= $field; ?>_value').value = date.setUTCHours(parseInt(this.value)) / 1000;
                                                         });
-                                                        Event.observe($('customfield_<?= $field; ?>_minute'), 'change', function (event) {
-                                                            var value = parseInt($('<?= $field; ?>_value').value);
+                                                        Event.observe($('#customfield_<?= $field; ?>_minute'), 'change', function (event) {
+                                                            var value = parseInt($('#<?= $field; ?>_value').value);
                                                             var minutes = parseInt(this.value);
                                                             if (value <= 0 || minutes < 0 || minutes > 60) return;
                                                             var date = new Date(value * 1000);
-                                                            $('<?= $field; ?>_value').value = date.setUTCMinutes(parseInt(this.value)) / 1000;
+                                                            $('#<?= $field; ?>_value').value = date.setUTCMinutes(parseInt(this.value)) / 1000;
                                                         });
                                                         <?php endif; ?>
                                                     });

@@ -1,6 +1,6 @@
 <?php
     $pachno_response->setTitle(__('Configure data types'));
-    $pachno_response->addStylesheet(make_url('asset_css_unthemed', array('css' => 'spectrum.css')));
+    //$pachno_response->addStylesheet(make_url('asset_css_unthemed', array('css' => 'spectrum.css')));
 ?>
 <div class="content-with-sidebar">
     <?php include_component('configuration/sidebar', ['selected_section' => \pachno\core\framework\Settings::CONFIGURATION_SECTION_ISSUEFIELDS]); ?>
@@ -50,17 +50,3 @@
         </div>
     </div>
 </div>
-<script>
-    require(['domReady', 'pachno/index', 'jquery'], function (domReady, pachno_index_js, jQuery) {
-        domReady(function () {
-            $('body').on('click', '.issue-field .open', function(event) {
-                event.preventDefault();
-                event.stopPropagation();
-
-                const $item = $(this).parents('.issue-field');
-                pachno_index_js.Config.Issuefields.showOptions($item);
-            });
-
-        });
-    });
-</script>

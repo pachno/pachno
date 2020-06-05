@@ -36,7 +36,7 @@
         <?php foreach (\pachno\core\framework\Context::getModules() as $module_key => $module): ?>
             <?php if (!count($module->getAvailablePermissions())) continue; ?>
             <li>
-                <a href="javascript:void(0);" onclick="$('<?php echo $mode.'_'.$base_id; ?>_module_permission_details_<?php echo $module_key; ?>').toggle();"><?php echo image_tag('icon_project_permissions.png', array('style' => 'float: right;')); ?><?php echo $module->getLongName(); ?> <span class="faded_out smaller"><?php echo $module_key; ?></span></a>
+                <a href="javascript:void(0);" onclick="$('#<?php echo $mode.'_'.$base_id; ?>_module_permission_details_<?php echo $module_key; ?>').toggle();"><?php echo image_tag('icon_project_permissions.png', array('style' => 'float: right;')); ?><?php echo $module->getLongName(); ?> <span class="faded_out smaller"><?php echo $module_key; ?></span></a>
                 <ul style="display: none;" id="<?php echo $mode.'_'.$base_id; ?>_module_permission_details_<?php echo $module_key; ?>">
                     <?php include_component('configuration/permissionsblock', array('base_id' => $mode.'_'.$base_id . 'module_' . $module_key . '_permissions', 'permissions_list' => $module->getAvailablePermissions(), 'mode' => 'module_permissions', 'target_id' => 0, 'module' => $module_key, 'user_id' => $user_id, 'team_id' => $team_id, 'access_level' => $access_level)); ?>
                 </ul>
@@ -54,7 +54,7 @@
             <ul>
                 <?php foreach (\pachno\core\entities\Project::getAll() as $project): ?>
                     <li>
-                        <a href="javascript:void(0);" onclick="$('<?php echo $base_id; ?>_project_permission_details_<?php echo $project->getID(); ?>').toggle();"><?php echo image_tag('expand_small.png', array('style' => 'float: left; margin-right: 5px; margin-top: 2px;')); ?><?php echo $project->getName(); ?> <span class="faded_out smaller"><?php echo $project->getKey(); ?></span></a>
+                        <a href="javascript:void(0);" onclick="$('#<?php echo $base_id; ?>_project_permission_details_<?php echo $project->getID(); ?>').toggle();"><?php echo image_tag('expand_small.png', array('style' => 'float: left; margin-right: 5px; margin-top: 2px;')); ?><?php echo $project->getName(); ?> <span class="faded_out smaller"><?php echo $project->getKey(); ?></span></a>
                         <ul style="display: none;" id="<?php echo $base_id; ?>_project_permission_details_<?php echo $project->getID(); ?>">
                             <?php include_component('configuration/permissionsblock', array('base_id' => $base_id . 'project_' . $project->getID() . '_project_permissions', 'permissions_list' => \pachno\core\framework\Context::getAvailablePermissions('project'), 'mode' => 'general', 'target_id' => $project->getID(), 'module' => 'core', 'user_id' => $user_id, 'access_level' => $access_level)); ?>
                             <?php //include_component('configuration/permissionsblock', array('base_id' => $base_id . 'project_' . $project->getID() . '_page_permissions', 'permissions_list' => \pachno\core\framework\Context::getAvailablePermissions('project_pages'), 'mode' => 'project_pages', 'target_id' => $project->getID(), 'module' => 'core', 'user_id' => $user_id, 'access_level' => $access_level)); ?>

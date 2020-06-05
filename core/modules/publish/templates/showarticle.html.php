@@ -63,9 +63,6 @@
         <?php if ($article->getID()): ?>
             <?php $attachments = array_reverse($article->getFiles()); ?>
             <div id="article_attachments">
-                <?php /*if (\pachno\core\framework\Settings::isUploadsEnabled() && $article->canEdit()): ?>
-                    <?php include_component('main/uploader', array('article' => $article, 'mode' => 'article')); ?>
-                <?php endif;*/ ?>
                 <h4>
                     <?= fa_image_tag('paperclip', ['class' => 'icon']); ?>
                     <span class="name">
@@ -73,7 +70,7 @@
                         <span class="count-badge"><?= count($attachments); ?></span>
                     </span>
                     <?php if (\pachno\core\framework\Settings::isUploadsEnabled() && $article->canEdit()): ?>
-                        <button class="button secondary" onclick="Pachno.Main.showUploader('<?php echo make_url('get_partial_for_backdrop', ['key' => 'uploader', 'mode' => 'article', 'article_name' => $article->getName()]); ?>');"><?php echo __('Add attachment'); ?></button>
+                        <button class="button secondary trigger-file-upload"><?php echo __('Add attachment'); ?></button>
                     <?php else: ?>
                         <button class="button secondary disabled" onclick="Pachno.UI.Message.error('<?php echo __('File uploads are not enabled'); ?>');"><?php echo __('Attach a file'); ?></button>
                     <?php endif; ?>
@@ -99,6 +96,9 @@
             </div>
         <?php endif; ?>
     </div>
+    <?php if (\pachno\core\framework\Settings::isUploadsEnabled() && $article->canEdit()): ?>
+        <?php include_component('main/uploader'); ?>
+    <?php endif; ?>
 <?php else: ?>
     <div class="redbox" id="notfound_error">
         <div class="header"><?php echo __("This article can not be displayed"); ?></div>

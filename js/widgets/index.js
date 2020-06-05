@@ -3,6 +3,7 @@ import setupFancyDropdownListeners from "./fancydropdown";
 import setupFancyTagInputListeners from "./fancytaginput";
 import setupEditorListeners from "./editor";
 import setupDynamicMenuListeners from "./dynamic-menu";
+import setupDynamicToggleListeners from "./dynamic-toggle";
 import setupNotificationListeners from "./notifications";
 import Pachno from "../classes/pachno";
 import { EVENTS as FetchEvents } from "../helpers/fetch";
@@ -26,6 +27,11 @@ const updateWidgets = function () {
 }
 
 const clearPopupsAndButtons = function (event) {
+    if (event !== undefined) {
+        if (['INPUT'].indexOf(event.target.nodeName) !== -1) {
+            return;
+        }
+    }
     $('.dropper.active').removeClass('active');
     $('.fancy-dropdown.active').removeClass('active');
 }
@@ -64,10 +70,11 @@ const toggleDropper = function (e) {
 };
 
 const setupListeners = function () {
+    setupDynamicMenuListeners();
+    setupDynamicToggleListeners();
+    setupEditorListeners();
     setupFancyDropdownListeners();
     setupFancyTagInputListeners();
-    setupEditorListeners();
-    setupDynamicMenuListeners();
     setupNotificationListeners();
 
     const $body = $('body');
@@ -103,3 +110,6 @@ const setupListeners = function () {
 };
 
 export default setupListeners;
+export {
+    clearPopupsAndButtons
+}

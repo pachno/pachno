@@ -16,7 +16,7 @@
             <div class="backdrop_box medium">
                 <div class="backdrop_detail_header">
                     <span><?php echo __('Install downloaded theme update file'); ?></span>
-                    <a href="javascript:void(0);" class="closer" onclick="$('update_theme_help_<?php echo $theme['key']; ?>').hide();"><?php echo fa_image_tag('times'); ?></a>
+                    <a href="javascript:void(0);" class="closer" onclick="$('#update_theme_help_<?php echo $theme['key']; ?>').hide();"><?php echo fa_image_tag('times'); ?></a>
                 </div>
                 <div class="backdrop_detail_content">
                     <?php echo __('Please click the download link below and download the update file. Unpack the downloaded archive in the theme folder (%theme_folder), overwriting the current theme (%current_theme_folder) on this server, replacing the old contents. When you are done, refresh this page.',

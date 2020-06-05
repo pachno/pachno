@@ -18,7 +18,7 @@ const loadMoreNotifications = function (event, _loadToTop) {
                 Pachno.fetch(url, {
                     method: 'GET',
                     loading: {
-                        indicator: 'user_notifications_loading_indicator'
+                        indicator: '#user_notifications_loading_indicator'
                     },
                     success: {
                         update: { element: '', insertion: true },

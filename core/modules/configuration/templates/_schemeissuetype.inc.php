@@ -8,7 +8,7 @@
 
 use pachno\core\framework\Context; ?>
 <div class="configurable-component issue-type-scheme-issue-type form-container" data-issue-type data-id="<?= $type->getID(); ?>" id="issuetype_<?php echo $type->getID(); ?>_box" data-options-url="<?= make_url('configure_issuetypes_scheme_options', ['scheme_id' => $scheme->getID(), 'issue_type_id' => $type->getId()]); ?>">
-    <form class="row" accept-charset="<?= Context::getI18n()->getCharset(); ?>" action="<?= make_url('configure_edit_issuetype', ['issuetype_id' => $type->getID()]); ?>" onsubmit="Pachno.Config.Issuetype.save(this);return false;" data-interactive-form>
+    <form class="row" accept-charset="<?= Context::getI18n()->getCharset(); ?>" action="<?= make_url('configure_edit_issuetype', ['issuetype_id' => $type->getID()]); ?>" data-interactive-form>
         <div class="icon">
             <?= fa_image_tag($type->getFontAwesomeIcon(), ['class' => 'issuetype-icon issuetype-' . $type->getType()]); ?>
         </div>
@@ -18,10 +18,10 @@ use pachno\core\framework\Context; ?>
             </div>
         </div>
         <div class="icon">
-            <a href="javascript:void(0);" <?php if ($scheme->isSchemeAssociatedWithIssuetype($type)): ?> style="display: none;"<?php endif; ?> id="type_toggle_<?php echo $type->getID(); ?>_enable" onclick="Pachno.Config.Issuetype.toggleForScheme('<?php echo make_url('configure_issuetypes_enable_issuetype_for_scheme', array('id' => $type->getID(), 'scheme_id' => $scheme->getID())); ?>', <?php echo $type->getID(); ?>, <?php echo $scheme->getID(); ?>, 'enable');return false;" class="button secondary icon"><?= fa_image_tag('toggle-off'); ?></a>
-            <a href="javascript:void(0);" <?php if (!$scheme->isSchemeAssociatedWithIssuetype($type)): ?> style="display: none;"<?php endif; ?> id="type_toggle_<?php echo $type->getID(); ?>_disable" onclick="Pachno.Config.Issuetype.toggleForScheme('<?php echo make_url('configure_issuetypes_disable_issuetype_for_scheme', array('id' => $type->getID(), 'scheme_id' => $scheme->getID())); ?>', <?php echo $type->getID(); ?>, <?php echo $scheme->getID(); ?>, 'disable');return false;" class="button secondary icon enabled"><?= fa_image_tag('toggle-on'); ?></a>
+            <input type="checkbox" class="fancy-checkbox icon dynamic-toggle" id="type_toggle_<?= $type->getId(); ?>" name="is_associated" value="1" <?php if ($scheme->isSchemeAssociatedWithIssuetype($type)) echo 'checked'; ?> data-url="<?php echo make_url('configure_toggle_issuetype_for_scheme', array('issue_type_id' => $type->getID(), 'scheme_id' => $scheme->getID())); ?>">
+            <label class="button icon secondary" for="type_toggle_<?= $type->getId(); ?>"><?php echo fa_image_tag('toggle-on', ['class' => 'checked']) . fa_image_tag('toggle-off', ['class' => 'unchecked']) . fa_image_tag('spinner', ['class' => 'fa-spin indicator']); ?></label>
         </div>
-        <button class="icon open">
+        <button class="icon open trigger-open-component" type="button">
             <?= fa_image_tag('angle-right'); ?>
         </button>
     </form>

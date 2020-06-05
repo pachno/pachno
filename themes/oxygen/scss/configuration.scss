@@ -381,6 +381,12 @@
       width: 100%;
     }
 
+    .message-box {
+      .message {
+        font-size: .85em;
+      }
+    }
+
     &.options-container {
       .form-row {
         padding: .35rem;
@@ -418,8 +424,8 @@
         color: #3c1642;
       }
 
-      .fas:not(.checked):not(.unchecked),
-      .far:not(.checked):not(.unchecked) {
+      .fas:not(.checked):not(.unchecked):not(.indicator),
+      .far:not(.checked):not(.unchecked):not(.indicator) {
         flex: 0 0 auto;
         margin-left: auto;
         margin-right: auto;

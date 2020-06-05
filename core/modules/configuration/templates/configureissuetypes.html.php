@@ -1,6 +1,19 @@
-<?php $pachno_response->setTitle(__('Configure issue types')); ?>
+<?php
+
+    use pachno\core\framework\Response;
+    use pachno\core\entities\Issuetype;
+    use pachno\core\framework\Settings;
+
+    /**
+     * @var Issuetype[] $issue_types
+     * @var Response $pachno_response
+     */
+
+    $pachno_response->setTitle(__('Configure issue types'));
+
+?>
 <div class="content-with-sidebar">
-    <?php include_component('configuration/sidebar', ['selected_section' => \pachno\core\framework\Settings::CONFIGURATION_SECTION_ISSUETYPES]); ?>
+    <?php include_component('configuration/sidebar', ['selected_section' => Settings::CONFIGURATION_SECTION_ISSUETYPES]); ?>
     <div class="configuration-container">
         <div class="configuration-content">
             <h1><?php echo __('Configure issue types'); ?></h1>
@@ -12,7 +25,7 @@
             </div>
             <h3>
                 <span><?php echo __('Existing issue types'); ?></span>
-                <button class="button" onclick="Pachno.UI.Backdrop.show('<?= make_url('get_partial_for_backdrop', ['key' => 'edit_issuetype']); ?>');"><?= __('Create issue type'); ?></button>
+                <button class="button trigger-backdrop" data-url="<?= make_url('get_partial_for_backdrop', ['key' => 'edit_issuetype']); ?>"><?= __('Create issue type'); ?></button>
             </h3>
             <div id="issuetypes_list" class="flexible-table">
                 <div class="row header">
@@ -20,7 +33,7 @@
                     <div class="column header actions"></div>
                 </div>
                 <?php foreach ($issue_types as $type): ?>
-                    <?php include_component('issuetype', ['type' => $type]); ?>
+                    <?php include_component('issuetype', compact('type')); ?>
                 <?php endforeach; ?>
             </div>
         </div>

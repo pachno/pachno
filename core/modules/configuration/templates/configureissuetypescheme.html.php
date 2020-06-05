@@ -35,7 +35,7 @@
                         <?php endforeach; ?>
                     </div>
                     <div class="configurable-components-list">
-                        <a class="configurable-component" href="javascript:void(0);" onclick="Pachno.UI.Backdrop.show('<?= make_url('get_partial_for_backdrop', ['key' => 'edit_issuetype', 'scheme_id' => $scheme->getId()]); ?>');">
+                        <a class="configurable-component trigger-backdrop" href="javascript:void(0);" data-url="<?= make_url('get_partial_for_backdrop', ['key' => 'edit_issuetype', 'scheme_id' => $scheme->getId()]); ?>">
                             <span class="row">
                                 <span class="icon"><?= fa_image_tag('plus'); ?></span>
                                 <span class="name">
@@ -51,30 +51,20 @@
     </div>
 </div>
 <script>
-    require(['domReady', 'pachno/index', 'jquery'], function (domReady, pachno_index_js, jQuery) {
-        domReady(function () {
-            $('body').on('click', '.issue-type-scheme-issue-type .open', function(event) {
-                event.preventDefault();
-                event.stopPropagation();
+    Pachno.on(Pachno.EVENTS.ready, function () {
+        $('body').on('click', '.list-item[data-issue-field]:not(.disabled)', function(event) {
+            const key = $(this).data('id'),
+                url = $(this).data('url');
 
-                const $item = $(this).parents('.issue-type-scheme-issue-type');
-                pachno_index_js.Config.IssuetypeScheme.showOptions($item);
-            });
+            pachno_index_js.Config.IssuetypeScheme.addField(url, key);
+        });
 
-            $('body').on('click', '.list-item[data-issue-field]:not(.disabled)', function(event) {
-                const key = $(this).data('id'),
-                    url = $(this).data('url');
+        $('body').on('click', '.configurable-component[data-issue-field] .remove-item', function(event) {
+            const $item = $(this).parents('.configurable-component'),
+                key = $item.data('id');
 
-                pachno_index_js.Config.IssuetypeScheme.addField(url, key);
-            });
-
-            $('body').on('click', '.configurable-component[data-issue-field] .remove-item', function(event) {
-                const $item = $(this).parents('.configurable-component'),
-                    key = $item.data('id');
-
-                $item.remove();
-                $('.list-item[data-issue-field][data-id=' + key + ']').removeClass('disabled');
-            });
+            $item.remove();
+            $('.list-item[data-issue-field][data-id=' + key + ']').removeClass('disabled');
         });
     });
 </script>

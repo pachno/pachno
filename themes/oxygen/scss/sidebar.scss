@@ -10,7 +10,7 @@
   box-sizing: border-box;
   overflow: hidden;
 
-  > div:not(.sidebar) {
+  > div:not(.sidebar):not(.fixed-position) {
     height: 100%;
     box-sizing: border-box;
     overflow: auto;

@@ -133,7 +133,7 @@
 
                         i = $(that.options.item).attr('data-value', item.username);
 
-                        var _linkHtml = $('<div />');
+                        var _linkHtml = $('#<div />');
 
                         if (item.image) {
                             _linkHtml.append('<img class="mention_image" src="' + item.image + '">');

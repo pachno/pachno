@@ -114,10 +114,10 @@
             <?php echo fa_image_tag('file-alt'); ?>
             <span>Log</span>
         </li>
-        <li onclick="setTimeout(function() { $('debug-bar').removeClass('enabled'); }, 150);" title="Minimize" class="minimizer">
+        <li onclick="setTimeout(function() { $('#debug-bar').removeClass('enabled'); }, 150);" title="Minimize" class="minimizer">
             <?php echo fa_image_tag('arrows-alt-h'); ?>
         </li>
-        <li onclick="event.preventDefault(); event.stopPropagation(); setTimeout(function() { $('debug-bar').toggleClass('minimized');$('debug-bar').removeClass('enabled'); }, 150);" title="Minimize" class="maximizer">
+        <li onclick="event.preventDefault(); event.stopPropagation(); setTimeout(function() { $('#debug-bar').toggleClass('minimized');$('#debug-bar').removeClass('enabled'); }, 150);" title="Minimize" class="maximizer">
             <?php echo fa_image_tag('arrows-alt-h'); ?>
         </li>
     </ul>

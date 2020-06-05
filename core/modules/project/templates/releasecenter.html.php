@@ -10,9 +10,9 @@
         <div class="project_left">
             <h3><?php echo __('Filters'); ?></h3>
             <ul class="simple-list">
-                <li class="selected"><a href="javascript:void(0);" onclick="Pachno.Project.clearReleaseCenterFilters(); $('project_release_center_container').addClass('only_active');Pachno.Project.checkAndToggleNoBuildsMessage();Pachno.Project.toggleLeftSelection(this);"><?php echo __('Active releases'); ?></a></li>
-                <li><a href="javascript:void(0);" onclick="Pachno.Project.clearReleaseCenterFilters(); $('project_release_center_container').addClass('only_archived');Pachno.Project.checkAndToggleNoBuildsMessage();Pachno.Project.toggleLeftSelection(this);"><?php echo __('Archived releases'); ?></a></li>
-                <li><a href="javascript:void(0);" onclick="Pachno.Project.clearReleaseCenterFilters(); $('project_release_center_container').addClass('only_downloads');Pachno.Project.checkAndToggleNoBuildsMessage();Pachno.Project.toggleLeftSelection(this);"><?php echo __('With downloads'); ?></a></li>
+                <li class="selected"><a href="javascript:void(0);" onclick="Pachno.Project.clearReleaseCenterFilters(); $('#project_release_center_container').addClass('only_active');Pachno.Project.checkAndToggleNoBuildsMessage();Pachno.Project.toggleLeftSelection(this);"><?php echo __('Active releases'); ?></a></li>
+                <li><a href="javascript:void(0);" onclick="Pachno.Project.clearReleaseCenterFilters(); $('#project_release_center_container').addClass('only_archived');Pachno.Project.checkAndToggleNoBuildsMessage();Pachno.Project.toggleLeftSelection(this);"><?php echo __('Archived releases'); ?></a></li>
+                <li><a href="javascript:void(0);" onclick="Pachno.Project.clearReleaseCenterFilters(); $('#project_release_center_container').addClass('only_downloads');Pachno.Project.checkAndToggleNoBuildsMessage();Pachno.Project.toggleLeftSelection(this);"><?php echo __('With downloads'); ?></a></li>
                 <li><a href="javascript:void(0);" onclick="Pachno.Project.clearReleaseCenterFilters(); Pachno.Project.checkAndToggleNoBuildsMessage();Pachno.Project.toggleLeftSelection(this);"><?php echo __('Show all releases'); ?></a></li>
             </ul>
         </div>

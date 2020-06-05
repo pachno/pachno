@@ -15,7 +15,7 @@
     </div>
     <div id="backdrop_detail_content" class="backdrop_detail_content">
         <div class="form-container">
-            <form accept-charset="<?= Context::getI18n()->getCharset(); ?>" action="<?= $route; ?>" onsubmit="Pachno.Config.Issuetype.save(this);return false;" id="edit_issuetype_<?= (int) $type->getID(); ?>_form">
+            <form accept-charset="<?= Context::getI18n()->getCharset(); ?>" action="<?= $route; ?>" data-simple-submit data-auto-close data-update-container="#<?= ($type->getId()) ? 'issuetype_'.$type->getId() : 'issuetypes_list'; ?>" <?php echo ($type->getId()) ? 'data-update-replace' : 'data-update-insert'; ?> id="edit_issuetype_<?= $type->getID(); ?>_form">
                 <?php if (isset($scheme) && $scheme instanceof entities\IssuetypeScheme): ?>
                     <input type="hidden" name="scheme_id" value="<?= $scheme->getId(); ?>">
                 <?php endif; ?>
@@ -55,8 +55,8 @@
                 </div>
                 <div class="form-row submit-container">
                     <button type="submit" class="button primary">
-                        <?= fa_image_tag('spinner', ['class' => 'indicator fa-spin']); ?>
                         <span><?= ($type->getID()) ? __('Save issue type') : __('Create issue type'); ?></span>
+                        <?= fa_image_tag('spinner', ['class' => 'indicator fa-spin']); ?>
                     </button>
                 </div>
             </form>

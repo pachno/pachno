@@ -1,15 +1,26 @@
 <?php
 
-/**
- * @var \pachno\core\entities\Project $project
- * @var \pachno\core\entities\Project[] $valid_subproject_targets
- */
+    use pachno\core\framework\Context;
+    use pachno\core\framework\Settings;
+    use pachno\core\framework\Event;
+
+    /**
+     * @var \pachno\core\entities\Project $project
+     * @var int $access_level
+     */
 
 ?>
 <div class="form-container">
-    <?php use pachno\core\framework\Settings;
-    use pachno\core\modules\publish\Publish;if ($access_level == Settings::ACCESS_FULL): ?>
-        <form accept-charset="<?php echo \pachno\core\framework\Context::getI18n()->getCharset(); ?>" action="<?php echo make_url('configure_project_settings', array('project_id' => $project->getID())); ?>" method="post" id="project_links" onsubmit="Pachno.Project.submitLinks('<?php echo make_url('configure_project_settings', array('project_id' => $project->getID())); ?>'); return false;" data-interactive-form>
+    <?php if ($access_level == Settings::ACCESS_FULL): ?>
+    <form
+        accept-charset="<?= Context::getI18n()->getCharset(); ?>"
+        data-submit-project-settings
+        data-project-id="<?= $project->getID(); ?>"
+        action="<?= make_url('configure_project_settings', ['project_id' => $project->getID()]); ?>"
+        method="post"
+        id="project_links"
+        data-interactive-form
+    >
     <?php endif; ?>
         <div class="form-row">
             <h3><?= __('Project links'); ?></h3>
@@ -48,7 +59,7 @@
             <?php endif; ?>
             <label for="wiki_url"><?php echo __('Wiki URL'); ?></label>
         </div>
-    <?php \pachno\core\framework\Event::createNew('core', 'project/projectinfo', $project)->trigger(); ?>
+    <?php Event::createNew('core', 'project/projectinfo', $project)->trigger(); ?>
         <?php if ($access_level == Settings::ACCESS_FULL): ?>
         <div class="form-row submit-container">
             <button type="submit" class="button primary">

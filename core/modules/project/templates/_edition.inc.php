@@ -22,7 +22,7 @@
 <div id="edition_<?php echo $edition->getID(); ?>_permissions" style="display: none;" class="backdrop_box large">
     <div class="backdrop_detail_header">
         <span><?php echo __('Permission details for "%itemname"', array('%itemname' => $edition->getName())); ?></span>
-        <a href="javascript:void(0);" class="closer" onclick="$('edition_<?php echo $edition->getID(); ?>_permissions').toggle();"><?= fa_image_tag('times'); ?></a>
+        <a href="javascript:void(0);" class="closer" onclick="$('#edition_<?php echo $edition->getID(); ?>_permissions').toggle();"><?= fa_image_tag('times'); ?></a>
     </div>
     <div id="backdrop_detail_content" class="backdrop_detail_content">
         <?php echo __('Specify who can access this edition.'); ?>

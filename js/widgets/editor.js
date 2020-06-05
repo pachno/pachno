@@ -89,7 +89,7 @@ const initializeEditorJsArea = function () {
     });
 
     editor.isReady.then(() => {
-        $buttons.removeAttr('disabled');
+        $buttons.removeProp('disabled');
 
         editors[$editor_element.attr('id')] = editor;
         Pachno.on(Pachno.EVENTS.formSubmit, (PachnoApplication, data) => {

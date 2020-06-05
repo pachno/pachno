@@ -1,9 +1,13 @@
 <?php
 
-/**
- * @var \pachno\core\entities\Project $project
- * @var \pachno\core\entities\Role[] $roles
- */
+    use pachno\core\framework\Context;
+    use pachno\core\framework\Settings;
+
+    /**
+     * @var \pachno\core\entities\Project $project
+     * @var \pachno\core\entities\Role[] $roles
+     * @var int $access_level
+     */
 
 ?>
 <div class="backdrop_box large" id="project_config_popup_main_container">
@@ -14,12 +18,19 @@
     <div id="backdrop_detail_content" class="backdrop_detail_content">
         <?php \pachno\core\framework\Event::createNew('core', 'project/editproject::above_content')->trigger(compact('project')); ?>
         <div class="form-container">
-            <?php if ($access_level == \pachno\core\framework\Settings::ACCESS_FULL): ?>
-                <form accept-charset="<?= \pachno\core\framework\Context::getI18n()->getCharset(); ?>" action="<?= make_url('configure_project_settings', ['project_id' => $project->getID()]); ?>" method="post" onsubmit="Pachno.Project.submitInfo('<?= make_url('configure_project_settings', ['project_id' => $project->getID()]); ?>', <?= $project->getID(); ?>); return false;" id="project_info">
+            <?php if ($access_level == Settings::ACCESS_FULL): ?>
+                <form
+                    accept-charset="<?= Context::getI18n()->getCharset(); ?>"
+                    data-submit-project-settings
+                    data-project-id="<?= $project->getID(); ?>"
+                    action="<?= make_url('configure_project_settings', ['project_id' => $project->getID()]); ?>"
+                    method="post"
+                    id="project_info"
+                >
             <?php endif; ?>
             <?php \pachno\core\framework\Event::createNew('core', 'project/editproject::additional_form_elements')->trigger(compact('project')); ?>
                 <div class="form-row">
-                    <?php if ($access_level == \pachno\core\framework\Settings::ACCESS_FULL): ?>
+                    <?php if ($access_level == Settings::ACCESS_FULL): ?>
                         <input type="text" class="name-input-enhance" name="project_name" id="project_name_input" onblur="Pachno.Project.updatePrefix('<?= make_url('configure_project_get_updated_key', ['project_id' => $project->getID()]); ?>', <?= $project->getID(); ?>);" value="<?php print $project->getName(); ?>" placeholder="<?= __('A great project name'); ?>">
                     <?php else: ?>
                         <span class="value"><?= $project->getName(); ?></span>
@@ -28,7 +39,7 @@
                 </div>
                 <?php if ($project->getId()): ?>
                     <div class="form-row">
-                        <?php if ($access_level == \pachno\core\framework\Settings::ACCESS_FULL): ?>
+                        <?php if ($access_level == Settings::ACCESS_FULL): ?>
                             <div id="project_key_indicator" class="semi_transparent" style="position: absolute; height: 23px; background-color: #FFF; width: 210px; text-align: center; display: none;"><?= image_tag('spinning_16.gif'); ?></div>
                             <input type="text" name="project_key" id="project_key_input" value="<?php print $project->getKey(); ?>" style="width: 150px;">
                         <?php else: ?>
@@ -39,7 +50,7 @@
                     </div>
                     <div class="form-row">
                         <label for="project_description_input"><?= __('Project description'); ?></label>
-                        <?php if ($access_level == \pachno\core\framework\Settings::ACCESS_FULL): ?>
+                        <?php if ($access_level == Settings::ACCESS_FULL): ?>
                             <?php include_component('main/textarea', ['area_name' => 'description', 'target_type' => 'project', 'target_id' => $project->getID(), 'area_id' => 'project_description_input', 'height' => '200px', 'width' => '100%', 'value' => $project->getDescription(), 'hide_hint' => true]); ?>
                         <?php else: ?>
                             <span class="value"><?= ($project->hasDescription()) ? $project->getDescription() : __('No description set'); ?></span>
@@ -138,7 +149,7 @@
                         </div>
                     </div>
                 <?php endif; ?>
-            <?php if ($access_level == \pachno\core\framework\Settings::ACCESS_FULL): ?>
+            <?php if ($access_level == Settings::ACCESS_FULL): ?>
                 <div class="form-row submit-container">
                     <button class="button primary" type="submit">
                         <?php if ($project->getId()): ?>

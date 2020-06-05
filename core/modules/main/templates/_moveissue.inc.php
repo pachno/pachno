@@ -20,7 +20,7 @@
         <div class="backdrop_details_submit">
             <span class="explanation"></span>
             <div class="submit_container">
-                <button type="submit" onclick="$('move_issue_indicator').show();"><?= image_tag('spinning_16.gif', array('id' => 'move_issue_indicator', 'style' => 'display: none;')) . __('Move issue'); ?></button>
+                <button type="submit" onclick="$('#move_issue_indicator').show();"><?= image_tag('spinning_16.gif', array('id' => 'move_issue_indicator', 'style' => 'display: none;')) . __('Move issue'); ?></button>
             </div>
         </div>
     </form>

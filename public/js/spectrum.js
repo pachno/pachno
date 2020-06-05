@@ -143,8 +143,8 @@
                 html.push('<span title="' + formattedString + '" data-color="' + tiny.toRgbString() + '" class="' + c + '"><span class="sp-thumb-inner" style="' + swatchStyle + ';" /></span>');
             } else {
                 var cls = 'sp-clear-display';
-                html.push($('<div />')
-                    .append($('<span data-color="" style="background-color:transparent;" class="' + cls + '"></span>')
+                html.push($('#<div />')
+                    .append($('#<span data-color="" style="background-color:transparent;" class="' + cls + '"></span>')
                         .attr('title', opts.noColorSelectedText)
                     )
                     .html()
@@ -927,14 +927,14 @@
 
         function enable() {
             disabled = false;
-            boundElement.attr("disabled", false);
+            boundElement.prop('disabled', false);
             offsetElement.removeClass("sp-disabled");
         }
 
         function disable() {
             hide();
             disabled = true;
-            boundElement.attr("disabled", true);
+            boundElement.prop('disabled', true);
             offsetElement.addClass("sp-disabled");
         }
 
@@ -1184,7 +1184,7 @@
     $.fn.spectrum.defaults = defaultOpts;
     $.fn.spectrum.inputTypeColorSupport = function inputTypeColorSupport() {
         if (typeof inputTypeColorSupport._cachedResult === "undefined") {
-            var colorInput = $("<input type='color' value='!' />")[0];
+            var colorInput = $("#<input type='color' value='!' />")[0];
             inputTypeColorSupport._cachedResult = colorInput.type === "color" && colorInput.value !== "!";
         }
         return inputTypeColorSupport._cachedResult;
@@ -1195,7 +1195,7 @@
     $.spectrum.palettes = { };
 
     $.fn.spectrum.processNativeColorInputs = function () {
-        var colorInputs = $("input[type=color]");
+        var colorInputs = $("#input[type=color]");
         if (colorInputs.length && !inputTypeColorSupport()) {
             colorInputs.spectrum({
                 preferredFormat: "hex6"

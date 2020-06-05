@@ -25,7 +25,7 @@
                     <?php include_component('main/replycomment', ['comment' => $comment, 'mentionable_target_type' => isset($mentionable_target_type) ? $mentionable_target_type : $comment->getTargetType()]); ?>
                     <div class="fake-reply">
                         <div class="avatar-container"><?php echo image_tag($pachno_user->getAvatarURL(), ['alt' => ' ', 'class' => 'avatar small'], true); ?></div>
-                        <a href="javascript:void(0);" onclick="$$('.comment-editor').each(function (elm) { elm.removeClass('active'); });$('comment_reply_<?= $comment->getID(); ?>').addClass('active');$('comment_reply_bodybox_<?= $comment->getID(); ?>').focus();"><?= __('Reply ...'); ?></a>
+                        <a href="javascript:void(0);" onclick="$$('.comment-editor').each(function (elm) { elm.removeClass('active'); });$('#comment_reply_<?= $comment->getID(); ?>').addClass('active');$('#comment_reply_bodybox_<?= $comment->getID(); ?>').focus();"><?= __('Reply ...'); ?></a>
                     </div>
                 </div>
             <?php endif; ?>

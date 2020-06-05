@@ -5,7 +5,7 @@
     </div>
     <div class="backdrop_detail_content">
         <div class="form-container">
-            <form accept-charset="<?php echo \pachno\core\framework\Context::getI18n()->getCharset(); ?>" action="<?php echo make_url('configure_site_icons'); ?>" method="post" id="build_form" onsubmit="$('update_icons_indicator').show();return true;" enctype="multipart/form-data">
+            <form accept-charset="<?php echo \pachno\core\framework\Context::getI18n()->getCharset(); ?>" action="<?php echo make_url('configure_site_icons'); ?>" method="post" id="build_form" onsubmit="$('#update_icons_indicator').show();return true;" enctype="multipart/form-data">
                 <div class="column">
                     <div class="form-row">
                         <h4><?php echo __('Favicon'); ?></h4>

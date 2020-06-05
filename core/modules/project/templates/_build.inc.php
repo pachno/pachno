@@ -3,7 +3,7 @@
         <span><?php echo ($build->getId()) ? __('Edit release details') : __('Add new release'); ?></span>
         <a href="javascript:void(0);" class="closer" onclick="Pachno.UI.Backdrop.reset();"><?= fa_image_tag('times'); ?></a>
     </div>
-    <form accept-charset="<?php echo \pachno\core\framework\Context::getI18n()->getCharset(); ?>" action="<?php echo make_url('configure_projects_build', array('project_id' => $project->getID())); ?>" method="post" id="build_form" onsubmit="$('add_release_indicator').show();return true;" enctype="multipart/form-data">
+    <form accept-charset="<?php echo \pachno\core\framework\Context::getI18n()->getCharset(); ?>" action="<?php echo make_url('configure_projects_build', array('project_id' => $project->getID())); ?>" method="post" id="build_form" onsubmit="$('#add_release_indicator').show();return true;" enctype="multipart/form-data">
         <div id="backdrop_detail_content" class="backdrop_detail_content">
             <table style="clear: both; width: 780px;" class="padded_table" cellpadding=0 cellspacing=0>
                 <tr>
@@ -31,7 +31,7 @@
                 <tr>
                     <td><label for="has_release_date"><?php echo __('Release date'); ?></label></td>
                     <td style="padding: 2px;">
-                        <select name="has_release_date" id="has_release_date" style="width: 70px;" onchange="var val = $(this).getValue(); ['day', 'month', 'year', 'hour', 'minute'].each(function(item) { (val == 1) ? $('release_'+item).enable() : $('release_'+item).disable(); });">
+                        <select name="has_release_date" id="has_release_date" style="width: 70px;" onchange="var val = $(this).getValue(); ['day', 'month', 'year', 'hour', 'minute'].each(function(item) { (val == 1) ? $('#release_'+item).enable() : $('#release_'+item).disable(); });">
                             <option value=1<?php if ($build->hasReleaseDate()): ?> selected<?php endif; ?>><?php echo __('Yes'); ?></option>
                             <option value=0<?php if (!$build->hasReleaseDate()): ?> selected<?php endif; ?>><?php echo __('No'); ?></option>
                         </select>

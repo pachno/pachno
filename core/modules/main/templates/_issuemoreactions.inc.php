@@ -129,7 +129,7 @@
                 <?php if (!isset($times) || $times): ?>
                     <?php if ($issue->canEditEstimatedTime()): ?>
                         <?php if ($issue->isUpdateable()): ?>
-                            <a href="javascript:void(0);" class="list-item" onclick="Pachno.Main.Profile.clearPopupsAndButtons();$('estimated_time_<?php echo $issue->getID(); ?>_change').toggle('block');" title="<?php echo ($issue->hasEstimatedTime()) ? __('Change estimate') : __('Estimate this issue'); ?>"><?php echo fa_image_tag('clock', ['class' => 'icon']); ?><span class="name"><?= (($issue->hasEstimatedTime()) ? __('Change estimate') : __('Estimate this issue')); ?></span></a>
+                            <a href="javascript:void(0);" class="list-item" onclick="Pachno.Main.Profile.clearPopupsAndButtons();$('#estimated_time_<?php echo $issue->getID(); ?>_change').toggle('block');" title="<?php echo ($issue->hasEstimatedTime()) ? __('Change estimate') : __('Estimate this issue'); ?>"><?php echo fa_image_tag('clock', ['class' => 'icon']); ?><span class="name"><?= (($issue->hasEstimatedTime()) ? __('Change estimate') : __('Estimate this issue')); ?></span></a>
                         <?php else: ?>
                             <a href="javascript:void(0);" class="list-item disabled"><?php echo fa_image_tag('clock', ['class' => 'icon']); ?><span class="name"><?= __("Change estimate"); ?></span><div class="tooltip rightie"><?php echo __('This action is not available at this stage in the workflow'); ?></div></a>
                         <?php endif; ?>

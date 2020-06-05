@@ -19,8 +19,8 @@
                     <?php echo __('This page shows all the available details for this step for the selected workflow, as well as transitions to and from this step.'); ?>
                     <?php echo __('You can add and remove transitions from this page, as well as manage properties for this step.'); ?><br>
                     <br>
-                    <b><?php echo javascript_link_tag(__('Edit this step'), array('onclick' => "\$('step_details_form').toggle();\$('step_details_info').toggle();")); ?></b><br>
-                    <b><?php echo javascript_link_tag(__('Add outgoing transition'), array('onclick' => "$('step_{$step->getID()}_transition_add').toggle()")); ?></b>
+                    <b><?php echo javascript_link_tag(__('Edit this step'), array('onclick' => "\$('#step_details_form').toggle();\$('#step_details_info').toggle();")); ?></b><br>
+                    <b><?php echo javascript_link_tag(__('Add outgoing transition'), array('onclick' => "$('#step_{$step->getID()}_transition_add').toggle()")); ?></b>
                 </div>
             </div>
             <div class="lightyellowbox" id="workflow_browser_step">
@@ -84,7 +84,7 @@
                         <?php endif; ?>
                     </dd>
                 </dl>
-                <form accept-charset="<?php echo \pachno\core\framework\Context::getI18n()->getCharset(); ?>" method="post" action="<?php echo make_url('configure_workflow_step', array('workflow_id' => $step->getWorkflow()->getID(), 'step_id' => $step->getID(), 'mode' => 'edit')); ?>" id="step_details_form" style="display: none;" onsubmit="$('step_update_indicator').show();$('update_step_buttons').hide();">
+                <form accept-charset="<?php echo \pachno\core\framework\Context::getI18n()->getCharset(); ?>" method="post" action="<?php echo make_url('configure_workflow_step', array('workflow_id' => $step->getWorkflow()->getID(), 'step_id' => $step->getID(), 'mode' => 'edit')); ?>" id="step_details_form" style="display: none;" onsubmit="$('#step_update_indicator').show();$('#update_step_buttons').hide();">
                     <dl>
                         <dt><label for="step_name"><?php echo __('Name'); ?></label></dt>
                         <dd><input type="text" name="name" id="step_name" value="<?php echo $step->getName(); ?>" style="width: 150px;"></dd>
@@ -115,7 +115,7 @@
                     <div style="text-align: right; clear: both; padding: 10px 0 0 0;" id="update_step_buttons">
                         <input type="submit" value="<?php echo __('Update step details'); ?>" name="edit">
                         <?php echo __('%update_step_details or %cancel', array('%update_step_details' => '', '%cancel' => '')); ?>
-                        <b><?php echo javascript_link_tag(__('cancel'), array('onclick' => "\$('step_details_form').toggle();\$('step_details_info').toggle();")); ?></b>
+                        <b><?php echo javascript_link_tag(__('cancel'), array('onclick' => "\$('#step_details_form').toggle();\$('#step_details_info').toggle();")); ?></b>
                     </div>
                     <div style="text-align: right; padding: 10px 0 10px 0; display: none;" id="step_update_indicator"><span style="float: right;"><?php echo image_tag('spinning_16.gif'); ?></span>&nbsp;<?php echo __('Please wait'); ?></div>
                 </form>

@@ -4,7 +4,7 @@
         <div class="header">
             <span class="name"><?= \pachno\core\framework\Settings::getConfigSectionHeader(pachno\core\framework\Context::getI18n(), $category); ?></span>
             <?php if ($category == \pachno\core\framework\Settings::CONFIGURATION_SECTION_MODULES): ?>
-                <a href="<?= make_url('configure_modules'); ?>" class="icon"><span class="link"><?= fa_image_tag('cog'); ?></span></a>
+                <a href="<?= make_url('configure_modules'); ?>" class="button icon secondary"><?= fa_image_tag('cog', ['class' => 'icon']); ?></a>
             <?php endif; ?>
         </div>
         <?php foreach ($config_info as $section => $info): ?>
@@ -21,7 +21,7 @@
                 <?php elseif (isset($info['module']) && $info['module'] != 'core'): ?>
                     <?= image_tag('cfg_icon_'.$info['icon'].'.png', ['class' => 'icon'], false, $info['module']); ?>
                 <?php else: ?>
-                <?= image_tag('cfg_icon_'.$info['icon'].'.png', ['class' => 'icon']); ?>
+                    <?= image_tag('cfg_icon_'.$info['icon'].'.png', ['class' => 'icon']); ?>
                 <?php endif; ?>
                 <span class="name"><?= $info['description']; ?></span>
             </a>

@@ -10,7 +10,7 @@
         <?php image_tag('spinning_16.gif', array('id' => 'acl_indicator_'.$issue->getID(), 'style' => '')); ?>
         <div id="acl-users-teams-selector" style="<?php if($issue->isUnlocked() && $issue->isUnlockedCategory()): ?> display: none;<?php endif; ?>">
             <h4 style="margin-top: 10px;">
-                <?php echo javascript_link_tag(__('Add a user or team'), array('onclick' => "$('popup_find_acl_{$issue->getID()}').toggle('block');", 'style' => 'float: right;', 'class' => 'button')); ?>
+                <?php echo javascript_link_tag(__('Add a user or team'), array('onclick' => "$('#popup_find_acl_{$issue->getID()}').toggle('block');", 'style' => 'float: right;', 'class' => 'button')); ?>
                 <?php echo __('Users or teams who can see this issue'); ?>
             </h4>
             <?php include_component('main/identifiableselector', array(    'html_id'             => "popup_find_acl_{$issue->getID()}",

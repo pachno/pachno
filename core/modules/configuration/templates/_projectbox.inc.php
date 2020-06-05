@@ -40,7 +40,7 @@
                                 <span class="name"><?= ($access_level == \pachno\core\framework\Settings::ACCESS_FULL) ? __('Edit project') : __('Show project details'); ?></span>
                             </a>
                         <?php endif; ?>
-                        <a class="list-item" href="javascript:void(0);" onclick="$('project_<?= $project->getID(); ?>_permissions').toggle();">
+                        <a class="list-item" href="javascript:void(0);" onclick="$('#project_<?= $project->getID(); ?>_permissions').toggle();">
                             <?= fa_image_tag('lock', ['class' => 'icon']); ?>
                             <span class="name"><?= ($access_level == \pachno\core\framework\Settings::ACCESS_FULL) ? __('Edit project permissions') : __('Show project permissions'); ?></span>
                         </a>
@@ -64,7 +64,7 @@
         <div class="fullpage_backdrop_content backdrop_box large">
             <div class="backdrop_detail_header">
                 <span><?= __('Edit project permissions'); ?></span>
-                <a href="javascript:void(0);" class="closer" onclick="$('project_<?= $project->getID(); ?>_permissions').hide();"><?= fa_image_tag('times'); ?></a>
+                <a href="javascript:void(0);" class="closer" onclick="$('#project_<?= $project->getID(); ?>_permissions').hide();"><?= fa_image_tag('times'); ?></a>
             </div>
             <div class="backdrop_detail_content">
                 <?php include_component('project/projectpermissions', array('access_level' => $access_level, 'project' => $project)); ?>

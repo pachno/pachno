@@ -16,7 +16,7 @@
         <div class="backdrop_box login_page login_popup">
             <div class="backdrop_detail_header">
                 <span><?= __('Changing your password'); ?></span>
-                <a href="javascript:void(0);" class="closer" onclick="$('change_password_div').toggle();"><?= fa_image_tag('times'); ?></a>
+                <a href="javascript:void(0);" class="closer" onclick="$('#change_password_div').toggle();"><?= fa_image_tag('times'); ?></a>
             </div>
             <form accept-charset="<?= \pachno\core\framework\Context::getI18n()->getCharset(); ?>" action="<?= make_url('account_change_password'); ?>" onsubmit="Pachno.Main.Profile.changePassword('<?= make_url('account_change_password'); ?>'); return false;" method="post" id="change_password_form">
                 <div class="backdrop_detail_content login_content">
@@ -66,7 +66,7 @@
             <div class="backdrop_box login_page login_popup">
                 <div class="backdrop_detail_header">
                     <span><?= __('Picking a username'); ?></span>
-                    <a href="javascript:void(0);" class="closer" onclick="$('pick_username_div').toggle();"><?= fa_image_tag('times'); ?></a>
+                    <a href="javascript:void(0);" class="closer" onclick="$('#pick_username_div').toggle();"><?= fa_image_tag('times'); ?></a>
                 </div>
                 <div class="backdrop_detail_content login_content">
                     <div class="logindiv regular active" id="add_application_password_container">
@@ -100,7 +100,7 @@
             <div id="add_application_password_container">
                 <div class="backdrop_detail_header">
                     <span><?= __('Add application-specific password'); ?></span>
-                    <a href="javascript:void(0);" class="closer" onclick="$('add_application_password_div').toggle();"><?= fa_image_tag('times'); ?></a>
+                    <a href="javascript:void(0);" class="closer" onclick="$('#add_application_password_div').toggle();"><?= fa_image_tag('times'); ?></a>
                 </div>
                 <div class="backdrop_detail_content login_content">
                     <div class="logindiv regular active">
@@ -578,13 +578,13 @@
                     <a class="button dropper" id="password_actions" href="javascript:void(0);"><?= __('Actions'); ?></a>
                     <ul id="password_more_actions" style="width: 300px; font-size: 0.8em; text-align: right; top: 29px; margin-top: 0; right: 3px; z-index: 1000;" class="more_actions_dropdown popup_box dropper">
                         <?php if ($pachno_user->canChangePassword() && !$pachno_user->isOpenIdLocked()): ?>
-                            <li><a href="javascript:void(0);" onclick="$('change_password_div').toggle();"><?= __('Change my password'); ?></a></li>
+                            <li><a href="javascript:void(0);" onclick="$('#change_password_div').toggle();"><?= __('Change my password'); ?></a></li>
                         <?php elseif ($pachno_user->isOpenIdLocked()): ?>
-                            <li><a href="javascript:void(0);" onclick="$('pick_username_div').toggle();" id="pick_username_button"><?= __('Pick a username'); ?></a></li>
+                            <li><a href="javascript:void(0);" onclick="$('#pick_username_div').toggle();" id="pick_username_button"><?= __('Pick a username'); ?></a></li>
                         <?php else: ?>
                             <li><a href="javascript:void(0);" onclick="Pachno.UI.Message.error('<?= __('Changing password disabled'); ?>', '<?= __('Changing your password can not be done via this interface. Please contact your administrator to change your password.'); ?>');" class="disabled"><?= __('Change my password'); ?></a></li>
                         <?php endif; ?>
-                        <li><a href="javascript:void(0);" onclick="$('add_application_password_div').toggle();"><?= __('Add application-specific password'); ?></a></li>
+                        <li><a href="javascript:void(0);" onclick="$('#add_application_password_div').toggle();"><?= __('Add application-specific password'); ?></a></li>
                     </ul>
                 </h3>
                 <p><?= __("When authenticating with Pachno you only use your main password on the website - other applications and RSS feeds needs specific access tokens that you can enable / disable on an individual basis. You can control all your passwords and keys from here."); ?></p>

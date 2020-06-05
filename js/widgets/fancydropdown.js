@@ -1,25 +1,27 @@
 import $ from "jquery";
 import Pachno from "../classes/pachno";
-import { EVENTS as WidgetEvents } from "./index";
+import {clearPopupsAndButtons, EVENTS as WidgetEvents} from "./index";
 
 const updateFancyDropdownLabel = function ($dropdown) {
     let $label = $dropdown.find('> .value');
     if ($label.length > 0) {
-        var auto_close = false;
-        var values = [];
+        let auto_close = false;
+        let values = [];
         $dropdown.find('input[type=checkbox],input[type=radio]').each(function () {
-            var $input = $(this);
+            const $input = $(this);
 
             if ($input.attr('type') == 'radio') {
                 auto_close = true;
             }
 
             if ($input.is(':checked')) {
-                var $label = $($input.next('label')),
-                    $value = $($label.find('.value')[0]);
+                const $label = $($input.next('label'));
+                const $value = $($label.find('.value').first());
 
                 if ($value.text() != '') {
                     values.push($value.text());
+                } else {
+                    console.error('Could not find a .value for item', $input);
                 }
             }
         });
@@ -46,17 +48,31 @@ const updateFancyDropdownValues = function (event) {
     updateFancyDropdownLabel($dropdown);
 };
 
+const updateFancyDropdowns = function () {
+    $('.fancy-dropdown').each(function () {
+        updateFancyDropdownLabel($(this));
+    });
+};
+
+const toggleFancyDropdown = function (event) {
+    const $dropdown = $(this);
+    const is_visible = $dropdown.hasClass('active');
+    clearPopupsAndButtons(event);
+
+    if (!is_visible) {
+        $dropdown.toggleClass('active');
+    }
+    event.stopPropagation();
+}
+
 const setupListeners = function () {
     const $body = $('body');
 
     $body.on('change', '.fancy-dropdown input[type=checkbox]', updateFancyDropdownValues);
     $body.on('change', '.fancy-dropdown input[type=radio]', updateFancyDropdownValues);
+    $body.on("click", ".fancy-dropdown", toggleFancyDropdown);
 
-    Pachno.on(WidgetEvents.update, () => {
-        $('.fancy-dropdown').each(function () {
-            updateFancyDropdownLabel($(this));
-        });
-    })
+    Pachno.on(WidgetEvents.update, updateFancyDropdowns);
 };
 
 export default setupListeners;

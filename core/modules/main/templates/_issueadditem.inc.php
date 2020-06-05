@@ -9,13 +9,13 @@
             <br />
             <div class="header_div"><?= __('Item type'); ?></div>
             <?php if ($issue->getProject()->isEditionsEnabled() && $issue->canEditAffectedEditions() && isset($editions) && count($editions)): ?>
-                <input type="radio" name="item_type" id="item_type_edition" value="edition" onclick="$('no_type').hide(); $('which_item_edition').show(); $('which_item_component').hide(); $('which_item_build').hide(); $('item_submit').show();" /><label for="item_type_edition"> <?= __('Edition'); ?></label><br />
+                <input type="radio" name="item_type" id="item_type_edition" value="edition" onclick="$('#no_type').hide(); $('#which_item_edition').show(); $('#which_item_component').hide(); $('#which_item_build').hide(); $('#item_submit').show();" /><label for="item_type_edition"> <?= __('Edition'); ?></label><br />
             <?php endif; ?>
             <?php if ($issue->getProject()->isComponentsEnabled() && $issue->canEditAffectedComponents() && isset($components) && count($components)): ?>
-                <input type="radio" name="item_type" id="item_type_component" value="component" onclick="$('no_type').hide(); $('which_item_edition').hide(); $('which_item_component').show(); $('which_item_build').hide(); $('item_submit').show();" /><label for="item_type_component"> <?= __('Component'); ?></label><br />
+                <input type="radio" name="item_type" id="item_type_component" value="component" onclick="$('#no_type').hide(); $('#which_item_edition').hide(); $('#which_item_component').show(); $('#which_item_build').hide(); $('#item_submit').show();" /><label for="item_type_component"> <?= __('Component'); ?></label><br />
             <?php endif; ?>
             <?php if ($issue->getProject()->isBuildsEnabled() && $issue->canEditAffectedBuilds() && isset($builds) && count($builds)): ?>
-                <input type="radio" name="item_type" id="item_type_build" value="build" onclick="$('no_type').hide(); $('which_item_edition').hide(); $('which_item_component').hide(); $('which_item_build').show(); $('item_submit').show();" /><label for="item_type_build"> <?= __('Release'); ?></label><br />
+                <input type="radio" name="item_type" id="item_type_build" value="build" onclick="$('#no_type').hide(); $('#which_item_edition').hide(); $('#which_item_component').hide(); $('#which_item_build').show(); $('#item_submit').show();" /><label for="item_type_build"> <?= __('Release'); ?></label><br />
             <?php endif; ?>
             <?php if ($issue->getProject()->isBuildsEnabled() || $issue->getProject()->isComponentsEnabled() || $issue->getProject()->isEditionsEnabled()): ?>
                 <div class="header_div"><?= __('Affected item'); ?></div>

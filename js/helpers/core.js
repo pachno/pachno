@@ -15,7 +15,7 @@ const Core = {
         //         paramName: "fs[text][v]",
         //         parameters: "fs[text][o]==",
         //         minChars: 2,
-        //         indicator: 'quicksearch_indicator',
+        //         indicator: '#quicksearch_indicator',
         //         callback: function (element, entry) {
         //             $('#quicksearch_submit').prop('disabled', true);
         //             $('#quicksearch_submit').removeClass('button-blue');
@@ -220,7 +220,7 @@ const Core = {
             $form.find('.error-container').removeClass('invalid');
             $form.find('.error-container > .error').html('');
             $form.addClass('submitting');
-            $form.find('.button.primary').attr('disabled', true);
+            $form.find('.button.primary').prop('disabled', true);
 
             fetch($form.attr('action'), {
                 method: 'POST',

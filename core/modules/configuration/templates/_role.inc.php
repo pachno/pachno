@@ -23,7 +23,7 @@
                 </button>
                 <div class="dropdown-container">
                     <div class="list-mode">
-                        <a href="javascript:void(0);" class="list-item" onclick="$('role_<?= $role->getID(); ?>_permissions_list').toggle();">
+                        <a href="javascript:void(0);" class="list-item" onclick="$('#role_<?= $role->getID(); ?>_permissions_list').toggle();">
                             <?= fa_image_tag('info-circle', ['class' => 'icon']); ?>
                             <span class="name"><?= __('Details'); ?></span>
                         </a>

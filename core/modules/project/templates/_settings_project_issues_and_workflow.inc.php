@@ -1,15 +1,14 @@
 <?php
 
-    use pachno\core\entities\Project;
+    use pachno\core\framework\Context;
     use pachno\core\framework\Settings;
     use pachno\core\modules\publish\Publish;
+    use pachno\core\entities\Project;
 
     /**
-     * @var Project $project
-     * @var Project[] $valid_subproject_targets
+     * @var \pachno\core\entities\Project $project
+     * @var int $access_level
      */
-
-
 
 ?>
 <div class="fancy-tabs" id="project-issues-and-workflow-menu">
@@ -19,7 +18,15 @@
 <div id="project-issues-and-workflow-menu_panes" class="form-container">
     <div id="tab_project_issues_pane" style="display: none;">
         <?php if ($access_level == Settings::ACCESS_FULL): ?>
-        <form accept-charset="<?php echo \pachno\core\framework\Context::getI18n()->getCharset(); ?>" action="<?php echo make_url('configure_project_settings', array('project_id' => $project->getID())); ?>" method="post" id="project_info" onsubmit="Pachno.Project.submitInfo('<?php echo make_url('configure_project_settings', array('project_id' => $project->getID())); ?>'); return false;" data-interactive-form>
+        <form
+            accept-charset="<?= Context::getI18n()->getCharset(); ?>"
+            data-submit-project-settings
+            data-project-id="<?= $project->getID(); ?>"
+            action="<?= make_url('configure_project_settings', ['project_id' => $project->getID()]); ?>"
+            method="post"
+            id="project_issuetypes_and_schemes"
+            data-interactive-form
+        >
             <?php endif; ?>
             <div class="form-row">
                 <h3>
@@ -58,9 +65,9 @@
                 <div class="form-row">
                     <label for="use_prefix_yes"><?php echo __('Prefix issue numbers'); ?></label>
                     <div class="fancy-label-select">
-                        <input name="use_prefix" class="fancy-checkbox" id="use_prefix_yes" type="radio" value="1"<?php if ($project->usePrefix()) echo ' checked'; ?> onchange="$('project_prefix_input').enable();">
+                        <input name="use_prefix" class="fancy-checkbox" id="use_prefix_yes" type="radio" value="1"<?php if ($project->usePrefix()) echo ' checked'; ?> onchange="$('#project_prefix_input').enable();">
                         <label for="use_prefix_yes"><?= fa_image_tag('check', ['class' => 'checked']) . __('Yes'); ?></label>
-                        <input name="use_prefix" class="fancy-checkbox" id="use_prefix_no" type="radio" value="0"<?php if (!$project->usePrefix()) echo ' checked'; ?> onchange="$('project_prefix_input').disable();">
+                        <input name="use_prefix" class="fancy-checkbox" id="use_prefix_no" type="radio" value="0"<?php if (!$project->usePrefix()) echo ' checked'; ?> onchange="$('#project_prefix_input').disable();">
                         <label for="use_prefix_no"><?= fa_image_tag('check', ['class' => 'checked']) . __('No'); ?></label>
                     </div>
                 </div>
@@ -158,8 +165,16 @@
             </div>
         </div>
         <?php if ($access_level == Settings::ACCESS_FULL): ?>
-        <form accept-charset="<?php echo \pachno\core\framework\Context::getI18n()->getCharset(); ?>" action="<?php echo make_url('configure_project_settings', array('project_id' => $project->getID())); ?>" method="post" id="project_info" onsubmit="Pachno.Project.submitInfo('<?php echo make_url('configure_project_settings', array('project_id' => $project->getID())); ?>'); return false;" data-interactive-form>
-            <?php endif; ?>
+        <form
+            accept-charset="<?= Context::getI18n()->getCharset(); ?>"
+            data-submit-project-settings
+            data-project-id="<?= $project->getID(); ?>"
+            action="<?= make_url('configure_project_settings', ['project_id' => $project->getID()]); ?>"
+            method="post"
+            id="project_issues_and_workflow"
+            data-interactive-form
+        >
+        <?php endif; ?>
             <div class="form-row">
                 <label for="strict_workflow_mode_yes"><?php echo __('Strict workflow mode'); ?></label>
                 <div class="fancy-label-select">

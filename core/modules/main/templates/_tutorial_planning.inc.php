@@ -18,7 +18,7 @@
                     messagePosition: 'left',
                     button: "<?php echo __('Got it!'); ?>",
                     cb: function() {
-                        $('header_usermenu_link').addClass('force_dropdown');
+                        $('#header_usermenu_link').addClass('force_dropdown');
                     }
                 },
                 3: {
@@ -26,7 +26,7 @@
                     messageSize: 'medium',
                     button: '<?php echo __('Next'); ?>',
                     cb: function() {
-                        $('header_usermenu_link').removeClass('force_dropdown');
+                        $('#header_usermenu_link').removeClass('force_dropdown');
                     }
                 },
                 4: {
