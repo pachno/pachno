@@ -662,7 +662,7 @@
 
                             return $this->renderJSON([
                                 'item' => $customtype->toJSON(),
-                                'component' => $this->getComponentHTML('configuration/issuefield', ['type_key' => $customtype->getKey(), 'type' => $customtype])
+                                'content' => $this->getComponentHTML('configuration/issuefield', ['type_key' => $customtype->getKey(), 'type' => $customtype])
                             ]);
                         } catch (Exception $e) {
                             $this->getResponse()->setHttpStatus(400);
@@ -1837,7 +1837,7 @@
                     return $this->renderJSON([
                         'message' => $this->getI18n()->__('Workflow associations were updated'),
                         'item' => $workflow_scheme->toJSON(),
-                        'component' => $this->getComponentHTML('configuration/workflowscheme', ['scheme' => $workflow_scheme])
+                        'content' => $this->getComponentHTML('configuration/workflowscheme', ['scheme' => $workflow_scheme])
                     ]);
                 }
             } catch (Exception $e) {

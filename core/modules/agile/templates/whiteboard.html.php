@@ -30,7 +30,7 @@
                             <label><?= ($board->getType() == AgileBoard::TYPE_SCRUM) ? __('Sprint') : __('Milestone'); ?></label>
                             <span class="value"></span>
                             <?= fa_image_tag('angle-down', ['class' => 'expander']); ?>
-                            <div class="dropdown-container list-mode from-left" id="selected_milestone_input" data-status-url="<?php echo make_url('agile_whiteboardmilestonestatus', array('project_key' => $board->getProject()->getKey(), 'board_id' => $board->getID(), 'mode' => 'getmilestonestatus')); ?>">
+                            <div class="dropdown-container list-mode" id="selected_milestone_input" data-status-url="<?php echo make_url('agile_whiteboardmilestonestatus', array('project_key' => $board->getProject()->getKey(), 'board_id' => $board->getID(), 'mode' => 'getmilestonestatus')); ?>">
                                 <div class="list-item disabled" id="milestone-list-no-milestones" style="<?php if (count($board->getMilestones())) echo 'display: none;'; ?>">
                                     <span class="icon"><?= fa_image_tag('info-circle'); ?></span>
                                     <span class="name"><?= __('There are no milestones'); ?></span>

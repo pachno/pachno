@@ -14,7 +14,7 @@
                 <span><?php echo ($step->getLinkedStatus() instanceof Status) ? $step->getLinkedStatus()->getName() : __('Unknown'); ?></span>
             </span>
         </div>
-        <button class="icon open">
+        <button class="icon open trigger-open-component" type="button">
             <?= fa_image_tag('angle-right'); ?>
         </button>
     </div>

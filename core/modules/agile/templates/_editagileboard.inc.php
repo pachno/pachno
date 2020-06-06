@@ -163,7 +163,7 @@
                                 <label><?php echo __('Whiteboard swimlanes'); ?></label>
                                 <span class="value"></span>
                                 <?= fa_image_tag('angle-down', ['class' => 'expander']); ?>
-                                <div class="dropdown-container list-mode from-left">
+                                <div class="dropdown-container list-mode">
                                     <input type="radio" name="use_swimlane" value="0" class="fancy-checkbox" <?php if (!$board->usesSwimlanes()) echo ' checked'; ?> id="agileboard_use_swimlane_<?= $board->getId(); ?>_0" onchange="Pachno.Project.Planning.toggleSwimlaneDetails(this);">
                                     <label for="agileboard_use_swimlane_<?= $board->getId(); ?>_0" class="list-item">
                                         <span class="icon"><?= fa_image_tag('ban'); ?></span>

@@ -8,7 +8,7 @@
 
 use pachno\core\framework\Context; ?>
 <div class="configurable-component issue-type-scheme-issue-type form-container" data-issue-type data-id="<?= $type->getID(); ?>" id="issuetype_<?php echo $type->getID(); ?>_box" data-options-url="<?= make_url('configure_issuetypes_scheme_options', ['scheme_id' => $scheme->getID(), 'issue_type_id' => $type->getId()]); ?>">
-    <form class="row" accept-charset="<?= Context::getI18n()->getCharset(); ?>" action="<?= make_url('configure_edit_issuetype', ['issuetype_id' => $type->getID()]); ?>" data-interactive-form>
+    <form class="row" accept-charset="<?= Context::getI18n()->getCharset(); ?>" action="<?= make_url('configure_edit_issuetype', ['issuetype_id' => $type->getID()]); ?>" data-interactive-form id="edit_issuetype_<?= $type->getID(); ?>_form">
         <div class="icon">
             <?= fa_image_tag($type->getFontAwesomeIcon(), ['class' => 'issuetype-icon issuetype-' . $type->getType()]); ?>
         </div>

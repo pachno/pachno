@@ -11,7 +11,7 @@
     </div>
     <div id="backdrop_detail_content" class="backdrop_detail_content">
         <div class="form-container">
-            <form action="<?php echo make_url('configure_workflow_scheme', ['scheme_id' => $scheme->getID()]); ?>" onsubmit="Pachno.Config.Workflows.Scheme.save(this);return false;" method="post" id="workflow_scheme_form">
+            <form action="<?php echo make_url('configure_workflow_scheme', ['scheme_id' => $scheme->getID()]); ?>" data-auto-close data-simple-submit <?= ($scheme->getID()) ? ' data-update-container="#workflow_scheme_'.$scheme->getID().'" data-update-replace' : ' data-update-container="#workflow-schemes-list" data-update-insert'; ?> method="post" id="workflow_scheme_form">
                 <?php if (isset($clone)): ?>
                     <input type="hidden" name="clone" value="1">
                 <?php endif; ?>
@@ -33,7 +33,7 @@
                                 <label><?= fa_image_tag($issue_type->getFontAwesomeIcon(), ['class' => 'issuetype-icon issuetype-' . $issue_type->getType()]); ?><?php echo $issue_type->getName(); ?></label>
                                 <span class="value"></span>
                                 <?= fa_image_tag('angle-down', ['class' => 'expander']); ?>
-                                <div class="dropdown-container list-mode from-left">
+                                <div class="dropdown-container list-mode">
                                     <input class="fancy-checkbox" type="radio" name="workflow_id[<?php echo $issue_type->getID(); ?>]" id="edit_workflow_id_<?php echo $issue_type->getID(); ?>" value=""<?php if (!$scheme->hasWorkflowAssociatedWithIssuetype($issue_type)) echo 'checked'; ?>>
                                     <label for="edit_workflow_id_<?php echo $issue_type->getID(); ?>" class="list-item">
                                         <?= fa_image_tag('check-circle', ['class' => 'checked'], 'far') . fa_image_tag('circle', ['class' => 'unchecked'], 'far'); ?>

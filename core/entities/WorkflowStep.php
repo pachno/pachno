@@ -181,6 +181,11 @@
             $this->_workflow_id = $workflow;
         }
 
+        public function setWorkflowId($workflow_id)
+        {
+            $this->_workflow_id = $workflow_id;
+        }
+
         public function setLinkedStatusID($status_id)
         {
             $this->_status_id = $status_id;

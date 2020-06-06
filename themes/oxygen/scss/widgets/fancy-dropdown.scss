@@ -39,6 +39,10 @@
     }
 
     > label {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: flex-start;
       flex: 0 0 auto;
       font-weight: $theme-font-weight-regular;
       font-size: .9em;

@@ -2621,10 +2621,6 @@ a.friend {
   z-index: 1;
   background-color: transparent; }
 
-#dialog_yes, #dialog_no, #dialog_okay {
-  font-size: 1em;
-  padding: 5px 10px !important; }
-
 #dialog_indicator {
   display: inline-block;
   margin-right: 5px;
@@ -7848,6 +7844,10 @@ input.icon.danger {
       text-align: center;
       transition: transform .25s ease-in-out; }
     .fancy-dropdown-container .fancy-dropdown > label {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: flex-start;
       flex: 0 0 auto;
       font-weight: 400;
       font-size: .9em;
@@ -8679,7 +8679,7 @@ input[data-interactive-toggle].submitting + label .indicator {
       .form-container form.submitting .form-row > input[type=search].invisible + label,
       .form-container form.submitting .form-row > input[type=url].invisible + label,
       .form-container form.submitting .form-row > input[type=password].invisible + label {
-        opacity: 1;
+        opacity: 0;
         transform: translateY(0); }
     .form-container form.submitting .submit-indicator {
       opacity: 1; }
@@ -8912,11 +8912,7 @@ input[data-interactive-toggle].submitting + label .indicator {
           .form-container .form-row > input[type=search].invisible:focus + label,
           .form-container .form-row > input[type=url].invisible:focus + label,
           .form-container .form-row > input[type=password].invisible:focus + label {
-            opacity: 1;
-            transform: translateY(calc(-100% - 2px));
-            background: transparent;
-            border: 0;
-            padding: .35rem; }
+            display: none; }
       .form-container .form-row > textarea.name-input-enhance,
       .form-container .form-row > input[type=text].name-input-enhance,
       .form-container .form-row > input[type=search].name-input-enhance,

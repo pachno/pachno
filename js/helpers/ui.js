@@ -45,33 +45,33 @@ const UI = {
     },
     Dialog: {
         show: (title, content, options) => {
-            this.Message.clear();
+            UI.Message.clear();
             $('#dialog_title').html(title);
             $('#dialog_content').html(content);
-            $('#dialog_yes').setAttribute('href', 'javascript:void(0)');
-            $('#dialog_no').setAttribute('href', 'javascript:void(0)');
-            $('#dialog_yes').stopObserving('click');
-            $('#dialog_no').stopObserving('click');
+            $('#dialog_yes').attr('href', 'javascript:void(0)');
+            $('#dialog_no').attr('href', 'javascript:void(0)');
+            $('#dialog_yes').off('click');
+            $('#dialog_no').off('click');
             $('#dialog_yes').removeClass('disabled');
             $('#dialog_no').removeClass('disabled');
             if (options.yes.click) {
                 $('#dialog_yes').on('click', options.yes.click);
             }
             if (options.yes.href) {
-                $('#dialog_yes').setAttribute('href', options.yes.href);
+                $('#dialog_yes').attr('href', options.yes.href);
             }
             if (options.no.click) {
                 $('#dialog_no').on('click', options.no.click);
             }
             if (options.no.href) {
-                $('#dialog_no').setAttribute('href', options.no.href);
+                $('#dialog_no').attr('href', options.no.href);
             }
             $('#dialog_backdrop_content').show();
-            $('#dialog_backdrop').appear({duration: 0.2});
+            $('#dialog_backdrop').show();
         },
 
         showModal: (title, content) => {
-            this.Message.clear();
+            UI.Message.clear();
             $('#dialog_modal_title').html(title);
             $('#dialog_modal_content').html(content);
             $('#dialog_backdrop_modal_content').show();

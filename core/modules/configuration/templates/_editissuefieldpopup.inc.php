@@ -11,7 +11,7 @@
     <div id="backdrop_detail_content" class="backdrop_detail_content">
         <?php if ($item instanceof \pachno\core\entities\CustomDatatype && !$item->getId()): ?>
             <div class="form-container">
-                <form action="<?= make_url('configure_issuefields_add_customtype'); ?>" method="post" onsubmit="Pachno.Config.Issuefields.Custom.save(this);return false;">
+                <form action="<?= make_url('configure_issuefields_add_customtype'); ?>" method="post" data-simple-submit data-auto-close data-update-container="#custom-types-list" <?php if (!$item->getID()) echo ' data-update-insert'; ?> id="edit_issue_field_<?= $item->getId(); ?>">
                     <div class="form-row">
                         <input type="text" id="edit_field_field_name" name="name" value="<?= htmlentities($item->getName(), ENT_COMPAT, \pachno\core\framework\Context::getI18n()->getCharset()); ?>" class="name-input-enhance" placeholder="<?= __('Enter a field name'); ?>">
                         <label style for="edit_field_field_name"><?= __('Field name'); ?></label>

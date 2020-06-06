@@ -1905,9 +1905,9 @@ import Pachno from "./classes/pachno";
 //                 if (json.transition_id && json.component) {
 //                     document.stopObserving('keydown', Pachno.Core._escapeWatcher);
 //                     $(document).on('keydown', customEscapeWatcher);
-//                     $('#fullpage_backdrop').appear({duration: 0.2});
+//                     $('#fullpage_backdrop').show();
 //                     $('#fullpage_backdrop_content').html(json.component);
-//                     $('#fullpage_backdrop_content').appear({duration: 0.2});
+//                     $('#fullpage_backdrop_content').show();
 //                     $('#fullpage_backdrop_indicator').fade({duration: 0.2});
 //                     Pachno.Issues.showWorkflowTransition(json.transition_id);
 //                     $('#transition_working_' + json.transition_id + '_cancel').on('click', function (event) {
@@ -1923,9 +1923,9 @@ import Pachno from "./classes/pachno";
 //                 } else if (json.component) {
 //                     document.stopObserving('keydown', Pachno.Core._escapeWatcher);
 //                     $(document).on('keydown', customEscapeWatcher);
-//                     $('#fullpage_backdrop').appear({duration: 0.2});
+//                     $('#fullpage_backdrop').show();
 //                     $('#fullpage_backdrop_content').html(json.component);
-//                     $('#fullpage_backdrop_content').appear({duration: 0.2});
+//                     $('#fullpage_backdrop_content').show();
 //                     $('#fullpage_backdrop_indicator').fade({duration: 0.2});
 //                     $('#transition-selector-close-link').on('click', customEscapeWatcher);
 //                     $('.transition-selector-button').each(function (elem) {
@@ -4438,7 +4438,7 @@ import Pachno from "./classes/pachno";
 //     }
 //     var workflow_div = $('#issue_transition_container_' + transition_id);
 //     $('#workflow_transition_fullpage').append(workflow_div);
-//     $('#workflow_transition_fullpage').appear({duration: 0.2});
+//     $('#workflow_transition_fullpage').show();
 //     workflow_div.appear({duration: 0.2, afterFinish: function () {
 //         if ($('#duplicate_finder_transition_' + transition_id)) {
 //             $('#viewissue_find_issue_' + transition_id + '_input').on('keypress', function (event) {
@@ -5000,11 +5000,11 @@ import Pachno from "./classes/pachno";
 //                     ['points', 'hours', 'minutes'].each(function (unit) {
 //                         if (field == 'estimated_time') {
 //                             Pachno.Issues.Field.updateEstimatedPercentbar(json);
-//                             $('#issue_' + issue_id).setAttribute('data-estimated-' + unit, json.values[unit]);
+//                             $('#issue_' + issue_id).attr('data-estimated-' + unit, json.values[unit]);
 //                             $('#issue_' + issue_id).down('.issue_estimate.' + unit).html(json.values[unit]);
 //                             (parseInt(json.values[unit]) > 0) ? $('#issue_' + issue_id).down('.issue_estimate.' + unit).show() : $('#issue_' + issue_id).down('.issue_estimate.' + unit).hide();
 //                         } else {
-//                             $('#issue_' + issue_id).setAttribute('data-spent-' + unit, json.values[unit]);
+//                             $('#issue_' + issue_id).attr('data-spent-' + unit, json.values[unit]);
 //                             $('#issue_' + issue_id).down('.issue_spent.' + unit).html(json.values[unit]);
 //                             (parseInt(json.values[unit]) > 0) ? $('#issue_' + issue_id).down('.issue_spent.' + unit).show() : $('#issue_' + issue_id).down('.issue_spent.' + unit).hide();
 //                         }
@@ -6910,7 +6910,7 @@ import Pachno from "./classes/pachno";
 //                         if (plugin.dataset.version != json[plugin.dataset[type+'Key']].version) {
 //                             plugin.addClass('can-update');
 //                             var link = $(type + '_'+plugin.dataset[type+'Key']+'_download_location');
-//                             link.setAttribute('href', json[plugin.dataset[type+'Key']].download);
+//                             link.attr('href', json[plugin.dataset[type+'Key']].download);
 //                             $('body').on('click', '.update-'+type+'-menu-item', function (e) {
 //                                 var pluginbox = $(this).parents('li.'+type);
 //                                 $('#update_'+type+'_help_' + pluginbox.data('id')).show();

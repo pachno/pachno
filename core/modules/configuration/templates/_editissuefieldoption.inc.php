@@ -4,7 +4,7 @@
 
 ?>
 <div data-issue-field-option data-id="<?php echo $item->getID(); ?>" class="configurable-component issue-field-option form-container">
-    <form class="row" accept-charset="<?php echo \pachno\core\framework\Context::getI18n()->getCharset(); ?>" action="<?php echo make_url('configure_issuefields_edit', ['type' => $type, 'id' => $item->getID()]); ?>" onsubmit="Pachno.Config.Issuefields.Options.save(this);return false;" data-interactive-form>
+    <form class="row" accept-charset="<?php echo \pachno\core\framework\Context::getI18n()->getCharset(); ?>" action="<?php echo make_url('configure_issuefields_edit', ['type' => $type, 'id' => $item->getID()]); ?>" data-interactive-form id="edit_issue_field_<?= $item->getID(); ?>_form">
         <?= fa_image_tag('grip-vertical', ['class' => 'icon handle']); ?>
         <?php if ($item->getItemtype() == \pachno\core\entities\Datatype::PRIORITY): ?>
             <div class="icon">

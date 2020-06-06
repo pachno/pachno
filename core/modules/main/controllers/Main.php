@@ -3000,8 +3000,23 @@
                         } else {
                             $scheme = new entities\WorkflowScheme();
                         }
-                        $options['clone'] = $request->hasParameter('clone');
+                        if ($request->hasParameter('clone')) {
+                            $options['clone'] = true;
+                        }
                         $options['scheme'] = $scheme;
+                        break;
+                    case 'edit_workflow_step':
+                        $template_name = 'configuration/editworkflowstep';
+                        if ($request['step_id']) {
+                            $step = tables\WorkflowSteps::getTable()->selectById($request['step_id']);
+                        } else {
+                            $step = new entities\WorkflowStep();
+                            $step->setWorkflowId($request['workflow_id']);
+                        }
+                        if ($request->hasParameter('clone')) {
+                            $options['clone'] = true;
+                        }
+                        $options['step'] = $step;
                         break;
                     case 'edit_workflow_transition':
                         $template_name = 'configuration/editworkflowtransitionpopup';
