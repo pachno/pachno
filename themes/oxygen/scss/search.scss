@@ -9,14 +9,16 @@
 
   .fancy-dropdown-container {
     .fancy-dropdown {
-      background: rgb(255, 255, 255);
-      border-color: rgba(200, 200, 200, .3);
-      &:hover {
-        border-color: #0C8990;
-        cursor: pointer;
-      }
-      &.active {
-        border-color: #0C8990;
+      &:not(.shaded) {
+        background: rgb(255, 255, 255);
+        border-color: rgba(200, 200, 200, .3);
+        &:hover {
+          border-color: #0C8990;
+          cursor: pointer;
+        }
+        &.active {
+          border-color: #0C8990;
+        }
       }
     }
   }
@@ -133,8 +135,6 @@
       justify-content: flex-start;
 
       > input[type=search] {
-        background: rgb(255, 255, 255);
-        border: 1px solid rgba(200, 200, 200, .3);
         padding: .5em 1em;
         font-size: 1.1em;
         border-radius: 4px;
@@ -142,8 +142,13 @@
         margin: 0 .35rem 0 0;
         flex: 1 1 65%;
         font-weight: $theme-font-weight-light;
-        &:hover {
-          border-color: #0C8990;
+
+        &:not(.shaded) {
+          background: rgb(255, 255, 255);
+          border: 1px solid rgba(200, 200, 200, .3);
+          &:hover {
+            border-color: #0C8990;
+          }
         }
       }
 

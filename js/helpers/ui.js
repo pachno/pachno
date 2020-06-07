@@ -1,6 +1,31 @@
 import $ from "jquery";
 import {fetchHelper, formSubmitHelper} from "./fetch";
 
+const tabSwitcher = function ($tab, target, $tabSwitcher, change_hash) {
+    if (!change_hash) {
+        change_hash = false;
+    }
+
+    $tabSwitcher.children().removeClass('selected');
+    $tab.addClass('selected');
+    $('#' + $tabSwitcher.prop('id') + '_panes').children().each(function () {
+        const $pane = $(this);
+        if ($pane.data('tab-id') == target) {
+            $pane.show();
+        } else {
+            $pane.hide();
+        }
+    });
+    if (change_hash) {
+        if (history.replaceState) {
+            window.history.replaceState(null, null, '#' + target);
+        }
+        else {
+            window.location.hash = target;
+        }
+    }
+};
+
 const UI = {
     Message: {
         /**
@@ -132,32 +157,9 @@ const UI = {
             // Pachno.Core._resizeWatcher();
             if (callback) callback();
         }
-    }
-};
+    },
 
-const tabSwitcher = function ($tab, target, $tabSwitcher, change_hash) {
-    if (!change_hash) {
-        change_hash = false;
-    }
-
-    $tabSwitcher.children().removeClass('selected');
-    $tab.addClass('selected');
-    $('#' + $tabSwitcher.prop('id') + '_panes').children().each(function () {
-        const $pane = $(this);
-        if ($pane.data('tab-id') == target) {
-            $pane.show();
-        } else {
-            $pane.hide();
-        }
-    });
-    if (change_hash) {
-        if (history.replaceState) {
-            window.history.replaceState(null, null, '#' + target);
-        }
-        else {
-            window.location.hash = target;
-        }
-    }
+    tabSwitcher
 };
 
 const tabSwitchFromHash = function (menu) {

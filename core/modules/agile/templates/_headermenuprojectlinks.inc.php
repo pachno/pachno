@@ -1,8 +1,8 @@
 <?php if ($pachno_user->hasProjectPageAccess('project_planning', $project) || $pachno_user->hasProjectPageAccess('project_only_planning', $project)): ?>
     <div class="list-item expandable <?php if (in_array($pachno_response->getPage(), ['project_planning', 'agile_index', 'agile_board', 'agile_whiteboard'])): ?> expanded<?php endif; ?>">
         <a href="<?= make_url('agile_index', ['project_key' => $project->getKey()]); ?>">
-            <?= fa_image_tag('calendar-check', ['class' => 'icon']); ?>
-            <span class="name"><?= __('Planning & boards'); ?></span>
+            <?= fa_image_tag('chalkboard', ['class' => 'icon']); ?>
+            <span class="name"><?= __('Boards'); ?></span>
         </a>
         <a href="<?= make_url('agile_index', ['project_key' => $project->getKey()]); ?>" class="icon"><?= fa_image_tag('cog'); ?></a>
         <?= fa_image_tag('angle-down', ['class' => 'expander']); ?>

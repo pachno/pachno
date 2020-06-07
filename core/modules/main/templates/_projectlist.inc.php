@@ -6,15 +6,15 @@ use pachno\core\framework;
 
 ?>
 <div class="project_overview">
-    <?php if (!$pachno_user->isGuest()): ?>
-        <div id="projects_list_tabs" class="fancy-tabs">
-            <a class="tab selected" data-project-category="active" id="tab_active" href="javascript:void(0);">
-                <?= fa_image_tag('boxes', ['class' => 'icon']); ?>
-                <?= fa_image_tag('spinner', ['style' => 'display: none;', 'id' => 'project_list_tab_active_indicator', 'class' => 'icon fa-spin']); ?>
-                <span class="name">
-                    <?= __('Active projects'); ?>
-                </span>
-            </a>
+    <div id="projects_list_tabs" class="fancy-tabs">
+        <a class="tab selected" data-project-category="active" id="tab_active" href="javascript:void(0);">
+            <?= fa_image_tag('boxes', ['class' => 'icon']); ?>
+            <?= fa_image_tag('spinner', ['style' => 'display: none;', 'id' => 'project_list_tab_active_indicator', 'class' => 'icon fa-spin']); ?>
+            <span class="name">
+                <?= ($pachno_user->isGuest()) ? __('Projects') : __('Active projects'); ?>
+            </span>
+        </a>
+        <?php if (!$pachno_user->isGuest()): ?>
             <a class="tab" id="tab_archived" data-project-category="archived" href="javascript:void(0);">
                 <?= fa_image_tag('archive', ['class' => 'icon']); ?>
                 <?= fa_image_tag('spinner', ['style' => 'display: none;', 'id' => 'project_list_tab_archived_indicator', 'class' => 'icon fa-spin']); ?>
@@ -31,11 +31,15 @@ use pachno\core\framework;
                     <?php endif; ?>
                 </div>
             <?php endif; ?>
-        </div>
-    <?php endif; ?>
+        <?php else: ?>
+            <div class="spacer"></div>
+        <?php endif; ?>
+    </div>
     <div id="projects_list_tabs_panes">
         <div id="tab_active_pane" data-tab-id="active" style=""></div>
-        <div id="tab_archived_pane" data-tab-id="archived" style="display: none;"></div>
+        <?php if (!$pachno_user->isGuest()): ?>
+            <div id="tab_archived_pane" data-tab-id="archived" style="display: none;"></div>
+        <?php endif; ?>
     </div>
 </div>
 <script type="text/javascript">

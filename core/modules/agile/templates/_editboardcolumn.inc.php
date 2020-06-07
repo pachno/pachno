@@ -32,7 +32,7 @@
                     <label><?php echo __('Status(es)'); ?></label>
                     <span class="value"></span>
                     <?= fa_image_tag('angle-down', ['class' => 'expander']); ?>
-                    <div class="dropdown-container list-mode">
+                    <div class="dropdown-container list-mode" data-simplebar>
                         <?php foreach ($statuses as $status): ?>
                             <input type="checkbox" value="<?php echo $status->getID(); ?>" name="columns[<?php echo $column_id; ?>][status_ids][<?php echo $status->getID(); ?>]" id="editagileboard_column_<?php echo $column_id; ?>_statuss_<?php echo $status->getID(); ?>" class="fancy-checkbox" <?php if ($column->hasStatusId($status->getID())) echo 'checked'; ?>>
                             <label for="editagileboard_column_<?php echo $column_id; ?>_statuss_<?php echo $status->getID(); ?>" class="list-item">

@@ -36,12 +36,14 @@
         <?php endif; */ ?>
     <div class="button-group">
         <?php if (isset($custom_back)): ?>
-            <a href="<?= $custom_back; ?>" class="button secondary icon">
+            <a href="<?= $custom_back; ?>" class="button secondary icon back-button">
                 <?= fa_image_tag('arrow-left', ['class' => 'icon']); ?>
+                <span class="name"><?= __('Back'); ?></span>
             </a>
         <?php elseif (isset($show_back) && $show_back): ?>
-            <a href="<?= make_url('project_dashboard', ['project_key' => $selected_project->getKey()]); ?>" class="button secondary icon">
+            <a href="<?= make_url('project_dashboard', ['project_key' => $selected_project->getKey()]); ?>" class="button secondary icon back-button">
                 <?= fa_image_tag('arrow-left', ['class' => 'icon']); ?>
+                <span class="name"><?= __('Back'); ?></span>
             </a>
         <?php endif; ?>
         <?php if ($pachno_response->getPage() != 'project_settings' && $pachno_user->canEditProjectDetails(framework\Context::getCurrentProject())): ?>

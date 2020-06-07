@@ -61,4 +61,15 @@
             }
         }
 
+        public function fixGuestBoards()
+        {
+            $query = $this->getQuery();
+            $query->where('agileboards.user_id', 2);
+
+            $update = new Update();
+            $update->add('agileboards.is_private', false);
+
+            $this->rawUpdate($update, $query);
+        }
+
     }

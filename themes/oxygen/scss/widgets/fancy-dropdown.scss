@@ -27,6 +27,20 @@
     &.active {
       background-color: rgba(200, 200, 200, 0.3);
     }
+    &.shaded {
+      background-color: rgba(255, 255, 255, .4);
+      border-color: transparent;
+      color: #FFF;
+
+      > label {
+        color: #FFF;
+        font-weight: $theme-font-weight-regular;
+      }
+
+      &.no-value > .value {
+        color: #FFF;
+      }
+    }
     .expander,
     .fas.expander {
       flex: 0 0 40px;
@@ -122,7 +136,6 @@
       &.from-left {
         right: auto;
         left: 0;
-        transform-origin: left;
       }
 
       &.from-bottom {

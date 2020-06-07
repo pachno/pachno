@@ -4,7 +4,9 @@ import Debugger from "./debugger";
 import UI from "../helpers/ui";
 import {fetchHelper, formSubmitHelper, setupListeners as formSetupListeners} from "../helpers/fetch";
 import widgetSetupListeners from "../widgets";
+import profileSetupListeners from "../helpers/profile";
 import {initializeDashboards} from "../helpers/dashboard";
+import Board from "./board";
 
 class PachnoApplication {
 
@@ -12,6 +14,12 @@ class PachnoApplication {
         return {
             ready: 'pachno-ready',
             formSubmit: 'form-submit'
+        }
+    }
+
+    get TRIGGERS() {
+        return {
+            showLogin: '.trigger-show-login'
         }
     }
 
@@ -84,6 +92,7 @@ class PachnoApplication {
         // $(document).on('keydown', Core._escapeWatcher);
         widgetSetupListeners();
         formSetupListeners();
+        profileSetupListeners();
         // $('#fullpage_backdrop_content').on('click', Core._resizeWatcher);
     }
 

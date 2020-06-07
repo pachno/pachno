@@ -55,3 +55,22 @@ input::-webkit-input-placeholder {
 input:-moz-placeholder {
   color: #BBB;
 }
+
+input.shaded {
+  background-color: rgba(255, 255, 255, .4);
+  border-color: transparent;
+  color: #FFF;
+
+  &::placeholder {
+    color: #FFF;
+    opacity: 1;
+  }
+  &::-webkit-input-placeholder {
+    color: #FFF;
+    opacity: 1;
+  }
+  &:-moz-placeholder {
+    color: #FFF;
+    opacity: 1;
+  }
+}

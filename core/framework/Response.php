@@ -631,7 +631,12 @@
         {
             $expiration = ($expiration !== null) ? intval(NOW + $expiration) : null;
             $secure = Context::getScope()->isSecure();
-            setcookie($key, $value, $expiration, Context::getWebroot(), null, $secure);
+            setcookie($key, $value, [
+                'expires' => $expiration,
+                'path' => Context::getWebroot(),
+                'samesite' => 'None',
+                'secure' => $secure
+            ]);
 
             return true;
         }
@@ -645,7 +650,13 @@
          */
         public function deleteCookie($key)
         {
-            setcookie($key, '', NOW - 36000, (Context::getWebroot() != '/') ? Context::getWebroot() : '');
+            $secure = Context::getScope()->isSecure();
+            setcookie($key, '', [
+                'expires' => NOW - 36000,
+                'path' => (Context::getWebroot() != '/') ? Context::getWebroot() : '',
+                'samesite' => 'None',
+                'secure' => $secure
+            ]);
 
             return true;
         }

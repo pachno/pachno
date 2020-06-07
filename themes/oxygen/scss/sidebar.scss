@@ -104,7 +104,8 @@ nav.sidebar {
         border-bottom: 1px solid rgba(100, 100, 100, .3);
         flex-direction: column-reverse;
 
-        .button {
+        .button,
+        button {
           &.secondary {
             display: none;
           }

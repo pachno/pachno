@@ -216,21 +216,46 @@
         /**
          * Whiteboard column edit
          *
-         * @Route(url="/boards/:board_id/whiteboard/column/*")
+         * @Route(url="/boards/:board_id/whiteboard/column/:column_id")
          *
          * @param Request $request
          */
         public function runWhiteboardColumn(Request $request)
         {
             $board = AgileBoards::getTable()->selectById($request['board_id']);
-            $column = BoardColumn::getB2DBTable()->selectById($request['column_id']);
-            if (!$column instanceof BoardColumn) {
-                $column = new BoardColumn();
-                $column->setBoard($board);
-                if ($request->isPost()) {
-                    $column->save();
+            if ($request->isPost()) {
+                if ($request['column_id']) {
+                    $column = BoardColumn::getB2DBTable()->selectById($request['column_id']);
+                } else {
+                    $column = new BoardColumn();
+                    $column->setBoard($board);
                 }
+
+                if (!$column instanceof BoardColumn) {
+                    $this->getResponse()->setHttpStatus(400);
+                    return $this->renderJSON(['error' => $this->getI18n()->__('There was an error trying to save column %column', ['%column' => $request['column_id']])]);
+                }
+
+                $column->setName($request['name']);
+                if ($request->hasParameter('sort_order')) {
+                    $column->setSortOrder($request['sort_order']);
+                }
+                if ($request->hasParameter('min_workitems')) {
+                    $column->setMinWorkitems($request['min_workitems']);
+                }
+                if ($request->hasParameter('max_workitems')) {
+                    $column->setMaxWorkitems($request['max_workitems']);
+                }
+                if ($request->hasParameter('status_ids')) {
+                    $column->setStatusIds($request['status_ids']);
+                }
+
+                $column->save();
+
+                return $this->renderJSON(['saved' => 'ok']);
             }
+
+            $column = BoardColumn::getB2DBTable()->selectById($request['column_id']);
 
             $column_id = $column->getColumnOrRandomID();
 
@@ -240,7 +265,7 @@
         /**
          * The project board whiteboard page
          *
-         * @Route(url="/boards/:board_id/whiteboard/issues/*")
+         * @Route(url="/boards/:board_id/whiteboard/issues/:csrf_token/*")
          * @CsrfProtected
          *
          * @param Request $request

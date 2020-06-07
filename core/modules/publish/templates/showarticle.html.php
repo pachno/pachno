@@ -69,9 +69,9 @@
                         <span><?php echo __('Attachments'); ?></span>
                         <span class="count-badge"><?= count($attachments); ?></span>
                     </span>
-                    <?php if (\pachno\core\framework\Settings::isUploadsEnabled() && $article->canEdit()): ?>
+                    <?php if ($article->canEdit()): ?>
                         <button class="button secondary trigger-file-upload"><?php echo __('Add attachment'); ?></button>
-                    <?php else: ?>
+                    <?php elseif (!\pachno\core\framework\Settings::isUploadsEnabled()): ?>
                         <button class="button secondary disabled" onclick="Pachno.UI.Message.error('<?php echo __('File uploads are not enabled'); ?>');"><?php echo __('Attach a file'); ?></button>
                     <?php endif; ?>
                 </h4>

@@ -77,6 +77,25 @@
     .button-group {
       padding: 0 1.5em 1.5em 1.5em;
       justify-content: flex-end;
+
+      button,
+      .button {
+        &.back-button {
+          .name {
+            display: none;
+          }
+
+          &:first-child {
+            &:last-child {
+              margin-right: auto;
+
+              .name {
+                display: inline-flex;
+              }
+            }
+          }
+        }
+      }
     }
   }
 

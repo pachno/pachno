@@ -9,6 +9,7 @@
     use pachno\core\entities\LogItem;
     use pachno\core\entities\Project;
     use pachno\core\entities\Scope;
+    use pachno\core\entities\tables\AgileBoards;
     use pachno\core\entities\tables\ArticleCategoryLinks;
     use pachno\core\entities\tables\Articles;
     use pachno\core\entities\tables\Issues;
@@ -62,6 +63,9 @@
             $this->cliMoveLeft(8);
             $this->cliEcho('ArticleCategoryLinks', self::COLOR_WHITE, self::STYLE_DEFAULT);
             ArticleCategoryLinks::getTable()->upgrade(tbg\tables\ArticleCategoryLinks::getTable());
+            $this->cliMoveLeft(20);
+            $this->cliEcho(str_pad('AgileBoards', 20), self::COLOR_WHITE, self::STYLE_DEFAULT);
+            AgileBoards::getTable()->fixGuestBoards();
             $this->cliMoveLeft(20);
             $this->cliEcho(str_pad('100%', 20)."\n", self::COLOR_GREEN, self::STYLE_BOLD);
 

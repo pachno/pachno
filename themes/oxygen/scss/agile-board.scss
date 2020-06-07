@@ -1,22 +1,40 @@
 @import 'variables';
 
-.boards-container {
-  display: flex;
-  flex-direction: column;
+#main_container {
+  &.shaded {
+    background-color: #0C8990;
 
-  .fancy-dropdown-container {
-    .fancy-dropdown {
-      background: rgb(255, 255, 255);
-      border-color: rgba(200, 200, 200, .3);
-      &:hover {
-        border-color: #0C8990;
-        cursor: pointer;
+    header {
+      background: rgba(0, 0, 0, .1);
+    }
+
+    button,
+    .button {
+      &.secondary {
+        &,
+        &:hover {
+          color: #FFF;
+        }
       }
-      &.active {
-        border-color: #0C8990;
+    }
+
+    .fancy-tabs {
+      .tab {
+        color: #FFF;
+      }
+    }
+
+    .onboarding {
+      .helper-text {
+        color: rgba(255, 255, 255, .8);
       }
     }
   }
+}
+
+.boards-container {
+  display: flex;
+  flex-direction: column;
 }
 
 .project-boards-list-container {
@@ -96,11 +114,6 @@
   }
 }
 
-.edit-mode-buttons {
-  justify-self: flex-end;
-  margin-left: auto;
-}
-
 .whiteboard-columns-container {
   flex: 1 1 auto;
   overflow-x: auto;
@@ -131,6 +144,10 @@
       margin: 0 0 0 .5rem;
       position: relative;
       box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: stretch;
 
       &.drop-valid {
         background-color: rgba(12, 137, 144, .2);
@@ -151,29 +168,28 @@
         visibility: visible;
       }
 
-      > .header {
+      > .row {
         flex: 0 0 auto;
         display: flex;
-        flex-direction: column;
+        flex-direction: row;
         align-items: stretch;
-        padding: 1rem 0;
+        padding: .5em 0;
 
         .name {
+          flex: 1 1 auto;
+          .form-row {
+            padding: 0;
+
+            input[type=text] {
+              font-weight: $theme-font-weight-bold;
+            }
+          }
+        }
+
+        .statuses-badge {
           flex: 0 0 auto;
           display: flex;
           flex-direction: row;
-
-          > span {
-            flex: 1 1 auto;
-            font-size: 1.2em;
-            font-weight: $theme-font-weight-bold;
-          }
-
-          .statuses-badge {
-            flex: 0 0 auto;
-            display: flex;
-            flex-direction: row;
-          }
         }
 
         .column-count {
