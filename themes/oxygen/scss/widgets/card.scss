@@ -1,0 +1,65 @@
+@import "../variables";
+
+.card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: stretch;
+  padding: 0;
+  margin: 0 0 .35rem 0;
+  opacity: 1;
+  z-index: 1;
+  background-color: #FFF;
+  border: none;
+  box-shadow: rgba(9, 30, 66, 0.25) 0 1px 1px, rgba(9, 30, 66, 0.31) 0 0 1px;
+  border-radius: 4px;
+  transform: translateY(0);
+  color: #141823;
+  transition: box-shadow .25s ease-in-out, background-color .25s ease-in-out;
+  min-width: 20em;
+
+  &,
+  &.form-container {
+    form {
+      .form-row {
+        input[type=text],
+        input[type=search] {
+          background-color: rgba(225, 225, 225, .35);
+          border: 1px solid rgba(225, 225, 225, 0);
+          padding: .4em;
+          border-radius: 4px;
+          cursor: pointer;
+          font-size: 1.1em;
+
+          &:focus {
+            border-color: rgba(225, 225, 225, .85);
+            cursor: text;
+          }
+        }
+      }
+    }
+  }
+}
+
+#main_container.shaded {
+  .card {
+    box-shadow: rgba(9, 30, 66, 0.36) 0 2px 2px, rgba(9, 30, 66, 0.41) 0 0 3px;
+
+    button,
+    .button {
+      background: #44AF69;
+      color: #FFF;
+
+      &.secondary {
+        background: transparent;
+        color: $theme-primary;
+
+        &:hover {
+          background-color: rgba(225, 225, 225, .45);
+          color: $theme-text-color;
+        }
+      }
+    }
+  }
+}

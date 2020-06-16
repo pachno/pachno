@@ -2347,7 +2347,7 @@
                     $files[] = $this->getComponentHTML('main/attachedfile', ['base_id' => $base_id, 'mode' => $request['target'], $request['target'] => $target, $target_identifier => $target_id, 'file' => $file]);
                 }
             }
-            $attachmentcount = ($request['target'] == 'issue') ? $target->countFiles() + $target->countLinks() : $target->countFiles();
+            $attachmentcount = ($request['target'] == 'issue') ? $target->getNumberOfFiles() + $target->countLinks() : $target->getNumberOfFiles();
 
             return $this->renderJSON(['attached' => 'ok', 'container_id' => $container_id, 'files' => array_reverse(array_merge($files, $image_files)), 'attachmentcount' => $attachmentcount, 'comments' => $comments]);
         }
@@ -4101,7 +4101,7 @@
                         }
                         $message = framework\Context::getI18n()->__('Milestone saved');
 
-                        return $this->renderJSON(['message' => $message, 'component' => $component, 'milestone_id' => $milestone->getID()]);
+                        return $this->renderJSON(['message' => $message, 'component' => $component, 'milestone' => $milestone->toJSON(false)]);
                     case $action_option == 'details':
                         throw new Exception('Yikes');
 //                    \pachno\core\framework\Context::performAction(

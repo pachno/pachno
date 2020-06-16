@@ -34,7 +34,7 @@
                 <tr>
                     <td style="width: 200px;"><label for="access_method"><?php echo __('Access method'); ?></label></td>
                     <td style="width: 580px;">
-                        <select name="access_method" id="access_method" style="width: 100%" onchange="if ($('#access_method').getValue() == '1') { $('#http_passkey').show(); } else { $('#http_passkey').hide(); }">
+                        <select name="access_method" id="access_method" style="width: 100%" onchange="if ($('#access_method').val() == '1') { $('#http_passkey').show(); } else { $('#http_passkey').hide(); }">
                             <option value="0"<?php if (\pachno\core\framework\Settings::get('access_method_'.$project->getID(), 'vcs_integration') != 1): ?> selected="selected"<?php endif;?>><?php echo __('Direct Access (via a call to bin/pachno)'); ?></option>
                             <option value="1"<?php if (\pachno\core\framework\Settings::get('access_method_'.$project->getID(), 'vcs_integration') == 1): ?> selected="selected"<?php endif;?>><?php echo __('HTTP Access (via a call to a URL)'); ?> - <?php echo __('Required for Github, Gitorious and Bitbucket users'); ?></option>
                         </select>
@@ -58,7 +58,7 @@
                 <tr>
                     <td style="width: 200px;"><label for="browser_type"><?php echo __('Repository browser type'); ?></label></td>
                     <td style="width: 580px; position: relative;">
-                        <select name="browser_type" id="browser_type" style="width: 100%" onchange="if ($('#browser_type').getValue() == 'websvn' || $('#browser_type').getValue() == 'websvn_mv') { $('#repository_box').show(); } else { $('#repository_box').hide(); } if ($('#browser_type').getValue() == 'other') { $('#vcs_custom_urls').show(); } else { $('#vcs_custom_urls').hide(); }">
+                        <select name="browser_type" id="browser_type" style="width: 100%" onchange="if ($('#browser_type').val() == 'websvn' || $('#browser_type').val() == 'websvn_mv') { $('#repository_box').show(); } else { $('#repository_box').hide(); } if ($('#browser_type').val() == 'other') { $('#vcs_custom_urls').show(); } else { $('#vcs_custom_urls').hide(); }">
                             <option value='other' selected="selected"><?php echo __('Set URLs manually'); ?></option>
                             <optgroup label="<?php echo __('Multi-system'); ?>">
                                 <option value='viewvc'>CVS/SVN - ViewVC</option>

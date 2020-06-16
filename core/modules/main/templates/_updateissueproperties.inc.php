@@ -51,7 +51,7 @@
                     <?php if ($issue instanceof \pachno\core\entities\Issue): ?>
                         <label for="viewissue_find_issue_<?= $transition->getID(); ?>_input"><?= __('Find issue(s)'); ?>&nbsp;</label>
                         <input type="text" name="searchfor" id="viewissue_find_issue_<?= $transition->getID(); ?>_input">
-                        <input class="button button-blue" type="button" onclick="Pachno.Issues.findDuplicate($('#duplicate_finder_transition_<?= $transition->getID(); ?>').getValue(), <?= $transition->getID(); ?>);return false;" value="<?= __('Find'); ?>" id="viewissue_find_issue_<?= $transition->getID(); ?>_submit">
+                        <input class="button button-blue" type="button" onclick="Pachno.Issues.findDuplicate($('#duplicate_finder_transition_<?= $transition->getID(); ?>').val(), <?= $transition->getID(); ?>);return false;" value="<?= __('Find'); ?>" id="viewissue_find_issue_<?= $transition->getID(); ?>_submit">
                         <?= image_tag('spinning_20.gif', array('id' => 'viewissue_find_issue_'.$transition->getID().'_indicator', 'style' => 'display: none;')); ?><br>
                         <div id="viewissue_<?= $transition->getID(); ?>_duplicate_results"></div>
                         <input type="hidden" name="transition_duplicate_ulr[<?= $transition->getID(); ?>]" id="duplicate_finder_transition_<?= $transition->getID(); ?>" value="<?= make_url('viewissue_find_duplicated_issue', array('project_key' => $project->getKey(), 'issue_id' => $issue->getID())); ?>">
@@ -60,7 +60,7 @@
                                 var transition_id = <?= $transition->getID(); ?>;
                                 $('#viewissue_find_issue_' + transition_id + '_input').observe('keypress', function(event) {
                                     if (event.keyCode == Event.KEY_RETURN) {
-                                        Pachno.Issues.findDuplicate($('#duplicate_finder_transition_' + transition_id).getValue(), transition_id);
+                                        Pachno.Issues.findDuplicate($('#duplicate_finder_transition_' + transition_id).val(), transition_id);
                                         event.stop();
                                     }
                                 });

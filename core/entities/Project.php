@@ -1055,6 +1055,20 @@
         }
 
         /**
+         * Returns the current milestone if any
+         *
+         * @return Milestone|null
+         */
+        public function getCurrentMilestone(): ?Milestone
+        {
+            foreach ($this->getOpenMilestones() as $milestone) {
+                if ($milestone->isCurrent()) return $milestone;
+            }
+
+            return null;
+        }
+
+        /**
          * Returns an array with all open milestones
          *
          * @return Milestone[]

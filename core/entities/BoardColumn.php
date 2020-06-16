@@ -175,12 +175,22 @@
 
         public function hasIssue(Issue $issue)
         {
-            return in_array($issue->getStatus()->getID(), $this->getStatusIds());
+            return $issue->getStatus() instanceof Status && in_array($issue->getStatus()->getID(), $this->getStatusIds());
         }
 
         public function getColumnOrRandomID()
         {
             return ($this->getID()) ? $this->getID() : md5(rand(0, 1000000));
+        }
+
+        public function toJSON($detailed = true)
+        {
+            $json = parent::toJSON($detailed);
+            $json['status_ids'] = $this->_status_ids;
+            $json['name'] = $this->_name;
+            $json['sort_order'] = $this->_sort_order;
+
+            return $json;
         }
 
     }

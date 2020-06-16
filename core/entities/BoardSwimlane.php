@@ -3,7 +3,7 @@
     namespace pachno\core\entities;
 
     use b2db\QueryColumnSort;
-    use framework\Context;
+    use pachno\core\framework\Context;
     use pachno\core\entities\common\Identifiable;
     use pachno\core\entities\tables\Issues;
 
@@ -86,17 +86,21 @@
             return false;
         }
 
-        public function getIssues()
+        /**
+         * @param int $column_id
+         * @return Issue[]
+         */
+        public function getIssues($column_id = null)
         {
             if (!$this->getBoard()->usesSwimlanes() || in_array($this->getBoard()->getSwimlaneType(), [AgileBoard::SWIMLANES_EXPEDITE, AgileBoard::SWIMLANES_GROUPING])) {
-                $this->_setupSearchObject();
+                $this->_setupSearchObject($column_id);
 
                 return $this->_search_object->getIssues();
             } else {
                 if ($this->getIdentifierIssue() instanceof Issue) {
                     return $this->getIdentifierIssue()->getChildIssues();
                 } else {
-                    $this->_setupSearchObject();
+                    $this->_setupSearchObject($column_id);
 
                     return $this->_search_object->getIssues();
                 }
@@ -113,20 +117,33 @@
             $this->_board = $board;
         }
 
-        protected function _setupSearchObject()
+        protected function _setupSearchObject($column_id = null)
         {
             if ($this->_search_object === null) {
                 $this->_search_object = new SavedSearch();
                 $this->_search_object->setFilter('project_id', SearchFilter::createFilter('project_id', ['o' => '=', 'v' => $this->getBoard()->getProject()->getID()]));
-                $this->_search_object->setFilter('milestone', SearchFilter::createFilter('milestone', ['o' => '=', 'v' => $this->getMilestone()->getID()]));
+                $this->_search_object->setFilter('milestone', SearchFilter::createFilter('milestone', ['o' => '=', 'v' => ($this->getMilestone() instanceof Milestone) ? $this->getMilestone()->getID() : 0]));
+//                $this->_search_object->setFilter('state', SearchFilter::createFilter('state', ['o' => '=', 'v' => Issue::STATE_OPEN]));
                 $this->_search_object->setFilter('state', SearchFilter::createFilter('state', ['o' => '=', 'v' => [Issue::STATE_CLOSED, Issue::STATE_OPEN]]));
+                $this->_search_object->setFilter('deleted', SearchFilter::createFilter('deleted', ['o' => '=', 'v' => false]));
+                $this->_search_object->setFilter('archived', SearchFilter::createFilter('archived', ['o' => '=', 'v' => false]));
                 $this->_search_object->setFilter('issuetype', SearchFilter::createFilter('issuetype', ['o' => '!=', 'v' => $this->getBoard()->getEpicIssuetypeID()]));
+                if ($column_id === null) {
+                    $this->_search_object->setFilter('status', SearchFilter::createFilter('status', ['o' => '=', 'v' => $this->getBoard()->getStatusIds()]));
+                } else {
+                    foreach ($this->getBoard()->getColumns() as $boardColumn) {
+                        if ($boardColumn->getID() == $column_id) {
+                            $this->_search_object->setFilter('status', SearchFilter::createFilter('status', ['o' => '=', 'v' => $boardColumn->getStatusIds()]));
+                            break;
+                        }
+                    }
+                }
                 if ($this->getBoard()->usesSwimlanes() && $this->getBoard()->getSwimlaneType() == AgileBoard::SWIMLANES_ISSUES) {
                     $values = [];
                     foreach ($this->getBoard()->getMilestoneSwimlanes($this->getMilestone()) as $swimlane) {
                         if ($swimlane->getIdentifier() == $this->getIdentifier()) continue;
                         $values[] = $swimlane->getIdentifierIssue()->getID();
-                        foreach ($swimlane->getIssues() as $issue) $values[] = $issue->getID();
+                        foreach ($swimlane->getIssues($column_id) as $issue) $values[] = $issue->getID();
                     }
                     $this->_search_object->setFilter('id', SearchFilter::createFilter('id', ['o' => '!=', 'v' => $values]));
                 } else {
@@ -136,7 +153,7 @@
                         $this->_search_object->setFilter($this->getBoard()->getSwimlaneIdentifier(), SearchFilter::createFilter($this->getBoard()->getSwimlaneIdentifier(), ['o' => '=', 'v' => $values]));
                     }
                 }
-                $this->_search_object->setIssuesPerPage(0);
+                $this->_search_object->setIssuesPerPage(500);
                 $this->_search_object->setOffset(0);
                 $this->_search_object->setSortFields([Issues::MILESTONE_ORDER => QueryColumnSort::SORT_ASC]);
                 $this->_search_object->setGroupby(null);
@@ -151,7 +168,7 @@
             return $this->_milestone;
         }
 
-        public function setMilestone(Milestone $milestone)
+        public function setMilestone(Milestone $milestone = null)
         {
             $this->_milestone = $milestone;
         }
@@ -175,6 +192,23 @@
         public function getIdentifierIssue()
         {
             return reset($this->_identifiables);
+        }
+
+        public function toJSON($column_id)
+        {
+            $json = [
+                'name' => $this->getName(),
+                'has_identifiables' => $this->hasIdentifiables(),
+                'identifier' => $this->getIdentifier(),
+                'identifier_issue' => ($this->getIdentifierIssue() instanceof Issue) ? $this->getIdentifierIssue()->toJSON(false) : null,
+                'issues' => []
+            ];
+
+            foreach ($this->getIssues($column_id) as $issue) {
+                $json['issues'][] = $issue->toJSON(false);
+            }
+
+            return $json;
         }
 
     }

@@ -94,11 +94,11 @@ $current_spent_time = $current_estimated_time;
     <?php endif; ?>
     <div class="row <?php if ($issue->isClosed()): ?> closed<?php endif; ?><?php if ($issue->isBlocking()): ?> blocking<?php endif; ?> priority_<?php echo ($issue->getPriority() instanceof Priority) ? $issue->getPriority()->getValue() : 0; ?>" id="issue_<?php echo $issue->getID(); ?>">
         <div class="column info-icons invisible">
-            <?php if ($issue->countUserComments()): ?>
+            <?php if ($issue->getNumberOfUserComments()): ?>
                 <?= fa_image_tag('comment', [], 'far'); ?>
             <?php endif; ?>
-            <?php if ($issue->countFiles()): ?>
-                <?php echo fa_image_tag('paperclip', array('title' => __('This issue has %num attachments', array('%num' => $issue->countFiles())))); ?>
+            <?php if ($issue->getNumberOfFiles()): ?>
+                <?php echo fa_image_tag('paperclip', array('title' => __('This issue has %num attachments', array('%num' => $issue->getNumberOfFiles())))); ?>
             <?php endif; ?>
             <?php if ($issue->isLocked()): ?>
                 <?php echo fa_image_tag('lock', array('title' => __('Access to this issue is restricted'))); ?>

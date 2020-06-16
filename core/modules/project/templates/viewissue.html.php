@@ -4,7 +4,7 @@
     <?php
 
         $pachno_response->addBreadcrumb(__('Issues'), make_url('project_issues', ['project_key' => \pachno\core\framework\Context::getCurrentProject()->getKey()]));
-        $pachno_response->addBreadcrumb($issue->getFormattedIssueNo(true, true), make_url('viewissue', ['project_key' => $issue->getProject()->getKey(), 'issue_no' => $issue->getFormattedIssueNo()]));
+        $pachno_response->addBreadcrumb($issue->getFormattedIssueNo(true), make_url('viewissue', ['project_key' => $issue->getProject()->getKey(), 'issue_no' => $issue->getFormattedIssueNo()]));
         $pachno_response->setTitle('['.(($issue->isClosed()) ? mb_strtoupper(__('Closed')) : mb_strtoupper(__('Open'))) .'] ' . $issue->getFormattedIssueNo(true) . ' - ' . \pachno\core\framework\Context::getI18n()->decodeUTF8($issue->getTitle()));
 
     ?>

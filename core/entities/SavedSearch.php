@@ -105,7 +105,7 @@
         /**
          * Quickfound issue
          *
-         * @var array|Issue
+         * @var Issue[]
          */
         protected $_quickfound_issues;
 
@@ -176,7 +176,7 @@
         /**
          * An array of \pachno\core\entities\SearchFilters
          *
-         * @var array|SearchFilter
+         * @var SearchFilter[]
          * @Relates(class="\pachno\core\entities\SearchFilter", collection=true, foreign_column="search_id")
          */
         protected $_filters;
@@ -184,7 +184,7 @@
         /**
          * An array of \pachno\core\entities\Issues
          *
-         * @var array|Issue
+         * @var Issue[]
          */
         protected $_issues;
 

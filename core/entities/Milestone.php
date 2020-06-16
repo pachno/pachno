@@ -867,26 +867,24 @@
                 'closed' => $this->getClosed(),
                 'reached' => $this->isReached(),
                 'visible_issues' => $this->isVisibleIssues(),
-                'visible_rowdmap' => $this->isVisibleRoadmap()
+                'visible_roadmap' => $this->isVisibleRoadmap(),
+                'is_sprint' => $this->isSprint(),
+                'sort_order' => $this->getOrder(),
+                'starting' => $this->isStarting(),
+                'starting_date' => $this->getStartingDate(),
+                'scheduled' => $this->isScheduled(),
+                'scheduled_date' => $this->getScheduledDate(),
+                'current' => $this->isCurrent(),
+                'overdue' => $this->isOverdue(),
+                'reached_date' => $this->getReachedDate(),
+                'percent_complete' => $this->getPercentComplete(),
+                'percentage_type' => $this->getPercentageType(),
             ];
+
             if ($detailed) {
-                $returnJSON['is_sprint'] = $this->isSprint();
-                $returnJSON['sort_order'] = $this->getOrder();
-                $returnJSON['starting'] = $this->isStarting();
-                $returnJSON['starting_date'] = $this->getStartingDate();
-                $returnJSON['scheduled'] = $this->isScheduled();
-                $returnJSON['scheduled_date'] = $this->getScheduledDate();
-                $returnJSON['current'] = $this->isCurrent();
-                $returnJSON['overdue'] = $this->isOverdue();
-
-                //$returnJSON['reached'] = $this->isReached();
-                $returnJSON['reached_date'] = $this->getReachedDate();
-
                 $returnJSON['issues_count'] = $this->countIssues();
                 $returnJSON['issues_count_open'] = $this->countOpenIssues();
                 $returnJSON['issues_count_closed'] = $this->countClosedIssues();
-                $returnJSON['percent_complete'] = $this->getPercentComplete();
-                $returnJSON['percentage_type'] = $this->getPercentageType();
 
                 $this->_populatePointsAndTime();
                 $returnJSON['hours'] = $this->_hours;

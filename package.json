@@ -7,6 +7,7 @@
     "test": "tests"
   },
   "dependencies": {
+    "air-datepicker": "^2.2.3",
     "easymde": "^2.10.1",
     "jquery": "^3.5.1",
     "simplebar": "^5.2.0",

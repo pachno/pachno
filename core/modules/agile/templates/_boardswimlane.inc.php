@@ -1,14 +1,17 @@
 <?php
 
     use pachno\core\entities\AgileBoard;
+    use pachno\core\entities\BoardColumn;
+    use pachno\core\entities\BoardSwimlane;
 
+    /**
+     * @var BoardColumn $column
+     * @var BoardSwimlane $swimlane
+     */
 
-// shows only issues with permissions, useful when if we're including subprojects
-if (isset($issues) && !empty($issues) && !current($issues)->hasAccess())
-    return;
 ?>
-<div class="row <?php if (!count($issues)) echo 'collapsed'; ?>" data-swimlane-identifier="<?php echo $swimlane->getIdentifier(); ?>"<?php if ($swimlane->getBoard()->usesSwimlanes() && $swimlane->hasIdentifiables() && $swimlane->getBoard()->getSwimlaneType() == AgileBoard::SWIMLANES_ISSUES): ?> id="whiteboard_issue_<?php echo $swimlane->getIdentifierIssue()->getID(); ?>" data-issue-id="<?php echo $swimlane->getIdentifierIssue()->getID(); ?>" data-last-updated="<?php echo $swimlane->getIdentifierIssue()->getLastUpdatedTime(); ?>"<?php endif; ?>>
-    <?php if ($swimlane->getBoard()->usesSwimlanes() && $swimlane->hasIdentifiables()): ?>
+<?php if ($swimlane->getBoard()->usesSwimlanes() && $swimlane->hasIdentifiables()): ?>
+    <div class="row <?php if (!count($issues)) echo 'collapsed'; ?>" data-swimlane-identifier="<?php echo $swimlane->getIdentifier(); ?>"<?php if ($swimlane->getBoard()->usesSwimlanes() && $swimlane->hasIdentifiables() && $swimlane->getBoard()->getSwimlaneType() == AgileBoard::SWIMLANES_ISSUES): ?> id="whiteboard_issue_<?php echo $swimlane->getIdentifierIssue()->getID(); ?>" data-issue-id="<?php echo $swimlane->getIdentifierIssue()->getID(); ?>" data-last-updated="<?php echo $swimlane->getIdentifierIssue()->getLastUpdatedTime(); ?>"<?php endif; ?>>
         <div class="swimlane-header">
             <div class="header">
                 <?php echo image_tag('icon-mono-expand.png', array('class' => 'expander', 'onclick' => "$(this).up('.tbody').toggleClass('collapsed');")); ?>
@@ -27,14 +30,25 @@ if (isset($issues) && !empty($issues) && !current($issues)->hasAccess())
         <?php if ($swimlane->getBoard()->getSwimlaneType() == AgileBoard::SWIMLANES_ISSUES): ?>
             <div class="planning_indicator" id="issue_<?php echo $swimlane->getIdentifierIssue()->getID(); ?>_indicator" style="display: none;"><?php echo image_tag('spinning_16.gif'); ?></div>
         <?php endif; ?>
-    <?php endif; ?>
-</div>
+    </div>
+<?php endif; ?>
 <div class="row">
     <?php foreach ($swimlane->getBoard()->getColumns() as $column): ?>
         <div class="column" id="swimlane_<?php echo $swimlane->getIdentifier(); ?>_column_<?php echo $column->getID(); ?>" data-column-id="<?php echo $column->getID(); ?>" data-swimlane-identifier="<?php echo $swimlane->getIdentifier(); ?>" data-status-ids="<?php echo join(',', $column->getStatusIds()); ?>">
             <?php foreach ($issues as $issue): ?>
                 <?php if ($column->hasIssue($issue)) include_component('agile/whiteboardissue', compact('issue', 'column', 'swimlane')); ?>
             <?php endforeach; ?>
+            <div class="form-container">
+                <div class="row">
+                    <div class="form name">
+                        <div class="form-row">
+                            <span class="input invisible trigger-report-issue" data-status-ids="<?= join(',', $column->getStatusIds()); ?>">
+                                <span class="placeholder"><?= fa_image_tag('plus'); ?><span><?= __('Add card'); ?></span></span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     <?php endforeach; ?>
 </div>

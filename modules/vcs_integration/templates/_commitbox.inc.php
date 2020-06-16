@@ -190,7 +190,7 @@
                             echo '<ul>';
                             foreach ($valid_issues as $issue)
                             {
-                                echo '<li>'.link_tag(make_url('viewissue', array('project_key' => $issue->getProject()->getKey(), 'issue_no' => $issue->getFormattedIssueNo())), $issue->getFormattedIssueNo(true, true)).'</li>';
+                                echo '<li>'.link_tag(make_url('viewissue', array('project_key' => $issue->getProject()->getKey(), 'issue_no' => $issue->getFormattedIssueNo())), $issue->getFormattedIssueNo(true)).'</li>';
                             }
                             echo '</ul>';
                         }

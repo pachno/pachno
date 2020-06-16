@@ -40,7 +40,7 @@
                     <ul id="users_more_actions_dropdown" style="width: 400px; font-size: 1.1em; z-index: 1000; margin-top: 21px;" class="simple-list rounded_box white shadowed popup_box more_actions_dropdown">
                         <li class="finduser_container">
                             <label for="findusers"><?= __('Find user(s)'); ?>:</label><br>
-                            <form action="<?= make_url('configure_users_find_user'); ?>" method="post" onsubmit="Pachno.Config.User.show('<?= make_url('configure_users_find_user'); ?>', $('#findusers').getValue());return false;">
+                            <form action="<?= make_url('configure_users_find_user'); ?>" method="post" onsubmit="Pachno.Config.User.show('<?= make_url('configure_users_find_user'); ?>', $('#findusers').val());return false;">
                                 <input type="text" name="findusers" id="findusers" value="<?= $finduser; ?>" placeholder="<?= __('Enter something to search for'); ?>">&nbsp;<input type="submit" value="<?= __('Find'); ?>">
                             </form>
                         </li>

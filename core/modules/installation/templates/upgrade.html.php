@@ -118,7 +118,7 @@
                         Because of this, we need to set a password for the admin account <span class="command_box"><?php echo strtolower($adminusername); ?></span>.<br>
                         <br>
                         <h5><label for="upgrade_password_admin">Please specify a password for the admin account <u>only</u></label></h5>
-                        New password for user with username <span class="command_box"><?php echo strtolower($adminusername); ?></span> <input id="upgrade_password_admin" name="admin_password" class="adminpassword" placeholder="Enter a new admin password here" onkeyup="if ($(this).getValue().length >= 5 && $('#confirm_backup').checked) { $('#start_upgrade').enable(); } else { $('#start_upgrade').disable(); }"><br>
+                        New password for user with username <span class="command_box"><?php echo strtolower($adminusername); ?></span> <input id="upgrade_password_admin" name="admin_password" class="adminpassword" placeholder="Enter a new admin password here" onkeyup="if ($(this).val().length >= 5 && $('#confirm_backup').checked) { $('#start_upgrade').enable(); } else { $('#start_upgrade').disable(); }"><br>
                         <br>
                         Please read the <a href="https://pachno.com/release/3_2#upgrade">upgrade notes</a> before you press "Perform upgrade" to continue.<br>
                         <div style="clear: both; padding: 30px 0 15px 0; text-align: right;">

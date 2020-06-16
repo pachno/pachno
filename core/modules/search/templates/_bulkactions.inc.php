@@ -46,7 +46,7 @@ $actions = [
             </div>
             <?php if (Context::isProjectContext()): ?>
                 <span class="bulk_action_subcontainer" id="bulk_action_subcontainer_assign_milestone" style="display: none;">
-                    <select name="milestone" id="bulk_action_assign_milestone" class="focusable" onchange="Pachno.Search.bulkChanger('<?php echo $mode; ?>'); if ($(this).getValue() == 'new') { ['bulk_action_assign_milestone_top_name', 'bulk_action_assign_milestone_bottom_name'].each(function(element) { $(element).show(); }); } else { ['bulk_action_assign_milestone_top_name', 'bulk_action_assign_milestone_bottom_name'].each(function(element) { $(element).hide(); }); }">
+                    <select name="milestone" id="bulk_action_assign_milestone" class="focusable" onchange="Pachno.Search.bulkChanger('<?php echo $mode; ?>'); if ($(this).val() == 'new') { ['bulk_action_assign_milestone_top_name', 'bulk_action_assign_milestone_bottom_name'].each(function(element) { $(element).show(); }); } else { ['bulk_action_assign_milestone_top_name', 'bulk_action_assign_milestone_bottom_name'].each(function(element) { $(element).hide(); }); }">
                         <option value="0"><?php echo __('No milestone'); ?></option>
                         <option value="new"><?php echo __('Create new milestone from selected issues'); ?></option>
                         <?php foreach (Context::getCurrentProject()->getMilestonesForIssues() as $milestone_id => $milestone): ?>

@@ -31,7 +31,7 @@
                 <tr>
                     <td><label for="has_release_date"><?php echo __('Release date'); ?></label></td>
                     <td style="padding: 2px;">
-                        <select name="has_release_date" id="has_release_date" style="width: 70px;" onchange="var val = $(this).getValue(); ['day', 'month', 'year', 'hour', 'minute'].each(function(item) { (val == 1) ? $('#release_'+item).enable() : $('#release_'+item).disable(); });">
+                        <select name="has_release_date" id="has_release_date" style="width: 70px;" onchange="var val = $(this).val(); ['day', 'month', 'year', 'hour', 'minute'].each(function(item) { (val == 1) ? $('#release_'+item).enable() : $('#release_'+item).disable(); });">
                             <option value=1<?php if ($build->hasReleaseDate()): ?> selected<?php endif; ?>><?php echo __('Yes'); ?></option>
                             <option value=0<?php if (!$build->hasReleaseDate()): ?> selected<?php endif; ?>><?php echo __('No'); ?></option>
                         </select>

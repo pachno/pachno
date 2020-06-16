@@ -1315,19 +1315,6 @@ import Pachno from "./classes/pachno";
 //     }
 // };
 //
-// Pachno.Project.add = function (url) {
-//     Pachno.Helpers.fetch(url, {
-//         form: 'add_project_form',
-//         loading: {indicator: '#project_add_indicator'},
-//         success: {
-//             reset: 'add_project_form',
-//             update: {element: 'project_table', insertion: true},
-//             hide: 'noprojects_tr',
-//             callback: Pachno.Project.updateLinks
-//         }
-//     });
-// };
-//
 // Pachno.Project.remove = function (url, pid) {
 //     Pachno.Helpers.fetch(url, {
 //         loading: {
@@ -1395,19 +1382,6 @@ import Pachno from "./classes/pachno";
 //             show: 'project_' + pid + '_unarchive'
 //         }
 //     });
-// };
-//
-// Pachno.Project.loadList = function (key, url) {
-//     Pachno.Helpers.tabSwitcher('#tab_' + key, '#projects_list_tabs', true);
-//
-//     if ($('#tab_' + key + '_pane').html() == '') {
-//         Pachno.Helpers.fetch(url, {
-//             loading: {indicator: '#project_list_tab_' + key + '_indicator'},
-//             success: {
-//                 update: {element: '#tab_' + key + '_pane'},
-//             }
-//         });
-//     }
 // };
 //
 // Pachno.Project.Planning.initializeMilestoneDragDropSorting = function (milestone) {
@@ -1697,7 +1671,7 @@ import Pachno from "./classes/pachno";
 // };
 //
 // Pachno.Project.Planning.Whiteboard.calculateColumnCounts = function() {
-//     $('##whiteboard-headers .td').each(function (column, index) {
+//     $('##whiteboard-content .td').each(function (column, index) {
 //         var counts = 0;
 //         var status_counts = [];
 //         column.find('.status-badge').each(function (status) {
@@ -1806,7 +1780,7 @@ import Pachno from "./classes/pachno";
 //                 }
 //                 wb.addClass('initialized');
 //                 wb.find('.tbody').each(Element.remove);
-//                 $('#whiteboard-headers').append(json.component);
+//                 $('#whiteboard-content').append(json.component);
 //                 setTimeout(function () {
 //                     Pachno.Project.Planning.Whiteboard.calculateColumnCounts();
 //                     Pachno.Project.Planning.Whiteboard.calculateSwimlaneCounts();
@@ -1842,18 +1816,6 @@ import Pachno from "./classes/pachno";
 //     $('#planning_whiteboard_columns_form_row').children().each(function(column, index) {
 //         column.down('input.sortorder').value(index + 1);
 //     });
-// };
-//
-// Pachno.Project.Planning.Whiteboard.setViewMode = function(button, mode) {
-//     $(button).parents('.button-group').children().each(function (elm) {
-//         $(this).removeClass('button-pressed');
-//     });
-//     $(button).addClass('button-pressed');
-//     var wb = $('#whiteboard');
-//     ['simple', 'detailed'].each(function (viewmode) {
-//         wb.removeClass('viewmode-'+viewmode);
-//     });
-//     wb.addClass('viewmode-'+mode);
 // };
 //
 // Pachno.Project.Planning.Whiteboard.updateIssueColumn = function(event, issue, column, startCoordinates) {
@@ -2073,7 +2035,7 @@ import Pachno from "./classes/pachno";
 //                                 $('#swimlane_'+json.swimlane_identifier+'_column_'+json.column_id).prepend(json.component);
 //                             } else {
 //                                 if (json.child_issue == '0') {
-//                                     $('#whiteboard-headers').append(json.component);
+//                                     $('#whiteboard-content').append(json.component);
 //                                 }
 //                             }
 //                             Pachno.Project.Planning.Whiteboard.initializeDragDrop();
@@ -2096,7 +2058,7 @@ import Pachno from "./classes/pachno";
 //                                 $('#swimlane_'+json.swimlane_identifier+'_column_'+json.column_id).prepend(json.component);
 //                             } else {
 //                                 if (json.child_issue == '0') {
-//                                     $('#whiteboard-headers').append(json.component);
+//                                     $('#whiteboard-content').append(json.component);
 //                                 }
 //                             }
 //                             Pachno.Project.Planning.Whiteboard.initializeDragDrop();

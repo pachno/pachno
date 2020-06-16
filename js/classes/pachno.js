@@ -3,7 +3,7 @@ import OpenID from "../helpers/openid";
 import Debugger from "./debugger";
 import UI from "../helpers/ui";
 import {fetchHelper, formSubmitHelper, setupListeners as formSetupListeners} from "../helpers/fetch";
-import widgetSetupListeners from "../widgets";
+import widgetSetupListeners, { calendars } from "../widgets";
 import profileSetupListeners from "../helpers/profile";
 import {initializeDashboards} from "../helpers/dashboard";
 import Board from "./board";
@@ -13,7 +13,8 @@ class PachnoApplication {
     get EVENTS() {
         return {
             ready: 'pachno-ready',
-            formSubmit: 'form-submit'
+            formSubmit: 'form-submit',
+            formSubmitResponse: 'form-submit-response'
         }
     }
 
@@ -47,7 +48,8 @@ class PachnoApplication {
 
     get UI() {
         return {
-            ...UI
+            ...UI,
+            calendars
         }
     }
 

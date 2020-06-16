@@ -41,11 +41,11 @@
 
             $this->extractAndGenerate(PACHNO_PATH);
 
-            $modules = $this->getModules();
-
-            foreach ($modules as $module) {
-                $this->extractAndGenerate(PACHNO_PATH . 'modules' . DS . $module, $module);
-            }
+//            $modules = $this->getModules();
+//
+//            foreach ($modules as $module) {
+//                $this->extractAndGenerate(PACHNO_PATH . 'modules' . DS . $module, $module);
+//            }
 
             $this->displayFinalReport();
         }
@@ -70,7 +70,6 @@
             $finder = new Finder();
             $finder->files()
                 ->in($path)
-                ->notpath('/^modules/')
                 ->notpath('core/lib')
                 ->notpath('core/cache')
                 ->notpath('i18n')

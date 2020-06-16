@@ -30,13 +30,17 @@
   }
 
   .helper-text {
-    text-align: center;
-    font-size: 1.3rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    font-size: .9em;
     margin-top: 25px;
     font-weight: $theme-font-weight-light;
 
-    &:first-line {
-      font-size: 1.15em;
+    &::first-line,
+    .title {
+      font-size: 1.25em;
       font-weight: $theme-font-weight-regular;
     }
   }
@@ -81,5 +85,14 @@
     flex: 0 0 auto;
     margin: 1rem 0;
     justify-content: space-around;
+  }
+
+  .content-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+    flex: 0 0 auto;
+    margin: 1rem 0;
   }
 }

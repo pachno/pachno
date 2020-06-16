@@ -649,7 +649,7 @@
          *
          * @return array
          */
-        public function countFiles()
+        public function getNumberOfFiles()
         {
             return count($this->getFiles());
         }

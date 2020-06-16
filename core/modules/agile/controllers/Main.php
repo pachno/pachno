@@ -171,10 +171,13 @@
 
                 return $this->renderJSON(['message' => $this->getI18n()->__('The board has been deleted'), 'board_id' => $board_id]);
             } elseif ($request->isPost()) {
-                $this->board->setName($request['name']);
+                if ($request->hasParameter('name')) {
+                    $this->board->setName($request['name']);
+                }
                 $this->board->setType($request['type']);
                 $this->board->setProject($this->selected_project);
                 $this->board->setIsPrivate($request['is_private']);
+                $this->board->setBackgroundColor($request['background_color']);
                 $this->board->setUser(Context::getUser());
 
                 if ($this->board->getId()) {
@@ -187,13 +190,13 @@
                     } else {
                         $this->board->setBacklogSearch($id);
                     }
-                    $this->board->setUseSwimlanes((bool)$request['use_swimlane']);
+                    $this->board->setUseSwimlanes((bool) $request['use_swimlane'] != "");
                     if ($this->board->usesSwimlanes()) {
-                        $details = $request['swimlane_' . $request['swimlane'] . '_details'];
-                        $this->board->setSwimlaneType($request['swimlane']);
-                        $this->board->setSwimlaneIdentifier($request['swimlane_' . $request['swimlane'] . '_identifier']);
+                        $details = $request['swimlane_' . $request['use_swimlane'] . '_details'];
+                        $this->board->setSwimlaneType($request['use_swimlane']);
+                        $this->board->setSwimlaneIdentifier($request['swimlane_' . $request['use_swimlane'] . '_identifier']);
                         if (isset($details[$this->board->getSwimlaneIdentifier()])) {
-                            $this->board->setSwimlaneFieldValues(explode(',', $details[$this->board->getSwimlaneIdentifier()]));
+                            $this->board->setSwimlaneFieldValues($details[$this->board->getSwimlaneIdentifier()]);
                         }
                     } else {
                         $this->board->clearSwimlaneType();
@@ -209,7 +212,11 @@
                 }
                 $this->board->save();
 
-                return $this->renderJSON(['component' => $this->getComponentHTML('agile/boardbox', ['board' => $this->board]), 'id' => $this->board->getID(), 'private' => $this->board->isPrivate(), 'backlog_search' => $this->board->getBacklogSearchIdentifier(), 'saved' => 'ok']);
+                return $this->renderJSON([
+                    'component' => $this->getComponentHTML('agile/boardbox', ['board' => $this->board]),
+                    'board' => $this->board->toJSON(),
+                    'saved' => 'ok'
+                ]);
             }
         }
 
@@ -223,14 +230,14 @@
         public function runWhiteboardColumn(Request $request)
         {
             $board = AgileBoards::getTable()->selectById($request['board_id']);
-            if ($request->isPost()) {
-                if ($request['column_id']) {
-                    $column = BoardColumn::getB2DBTable()->selectById($request['column_id']);
-                } else {
-                    $column = new BoardColumn();
-                    $column->setBoard($board);
-                }
+            if ($request['column_id']) {
+                $column = BoardColumn::getB2DBTable()->selectById($request['column_id']);
+            } else {
+                $column = new BoardColumn();
+                $column->setBoard($board);
+            }
 
+            if ($request->isPost()) {
                 if (!$column instanceof BoardColumn) {
                     $this->getResponse()->setHttpStatus(400);
                     return $this->renderJSON(['error' => $this->getI18n()->__('There was an error trying to save column %column', ['%column' => $request['column_id']])]);
@@ -246,20 +253,30 @@
                 if ($request->hasParameter('max_workitems')) {
                     $column->setMaxWorkitems($request['max_workitems']);
                 }
-                if ($request->hasParameter('status_ids')) {
+                if ($request->hasParameter('status_id')) {
+                    $column->setStatusIds([$request['status_id']]);
+                } elseif ($request->hasParameter('status_ids')) {
                     $column->setStatusIds($request['status_ids']);
                 }
 
                 $column->save();
-
-                return $this->renderJSON(['saved' => 'ok']);
             }
 
-            $column = BoardColumn::getB2DBTable()->selectById($request['column_id']);
+            $options = [
+                'component' => $this->getComponentHTML('agile/boardcolumnheader', compact('column')),
+                'column' => $column->toJSON(),
+            ];
 
-            $column_id = $column->getColumnOrRandomID();
+            if ($request->isPost()) {
+                $milestone = null;
+                if ($request['milestone_id']) {
+                    $milestone = Milestones::getTable()->selectById((int)$request['milestone_id']);
+                }
+                $swimlanes_json = $board->toMilestoneJSON($milestone, $column->getID());
+                $options['swimlanes'] = $swimlanes_json['swimlanes'];
+            }
 
-            return $this->renderJSON(['component' => $this->getComponentHTML('agile/editboardcolumn', compact('column', 'column_id')), 'status_element_id' => 'boardcolumn_' . $column_id . '_status']);
+            return $this->renderJSON($options);
         }
 
         /**
@@ -278,76 +295,11 @@
             $this->forward403unless($this->board instanceof AgileBoard);
 
             try {
-                if ($request->isPost()) {
-                    $issue = Issues::getTable()->selectById((int)$request['issue_id']);
-                    $column = BoardColumn::getB2DBTable()->selectById((int)$request['column_id']);
-                    $milestone = Milestone::getB2DBTable()->selectById((int)$request['milestone_id']);
-
-                    $swimlane = null;
-                    if ($request['swimlane_identifier']) {
-                        foreach ($column->getBoard()->getMilestoneSwimlanes($milestone) as $swimlane) {
-                            if ($swimlane->getIdentifier() == $request['swimlane_identifier']) break;
-                        }
-                    }
-
-                    if ($request->hasParameter('transition_id')) {
-                        $transitions = [WorkflowTransitions::getTable()->selectById((int)$request['transition_id'])];
-
-                        if ($transitions[0]->hasTemplate()) {
-                            return $this->renderJSON(['component' => $this->getComponentHTML('main/issue_workflow_transition', compact('issue')), 'transition_id' => $transitions[0]->getID()]);
-                        }
-
-                        if (!$transitions[0]->transitionIssueToOutgoingStepWithoutRequest($issue)) {
-                            $this->getResponse()->setHttpStatus(400);
-
-                            return $this->renderJSON(['error' => Context::getI18n()->__('There was an error trying to move this issue to the next step in the workflow'), 'message' => preg_replace('/\s+/', ' ', $this->getComponentHTML('main/issue_transition_error'))]);
-                        }
-                    } else {
-                        list ($status_ids, $transitions, $rule_status_valid) = $issue->getAvailableWorkflowStatusIDsAndTransitions();
-                        $available_statuses = array_intersect($status_ids, $column->getStatusIds());
-
-                        if ($rule_status_valid && count($available_statuses) == 1 && count($transitions[reset($available_statuses)]) == 1 && $transitions[reset($available_statuses)][0]->hasTemplate()) {
-                            return $this->renderJSON(['component' => $this->getComponentHTML('main/issue_workflow_transition', compact('issue')), 'transition_id' => $transitions[reset($available_statuses)][0]->getID()]);
-                        }
-
-                        if (empty($available_statuses)) {
-                            $this->getResponse()->setHttpStatus(400);
-
-                            return $this->renderJSON(['error' => $this->getI18n()->__('There are no valid transitions to any states in this column')]);
-                        }
-
-                        if (count($available_statuses) > 1 || (count($available_statuses) == 1 && count($transitions[reset($available_statuses)]) > 1))
-                            return $this->renderJSON(['component' => $this->getComponentHTML('agile/whiteboardtransitionselector', ['issue' => $issue, 'transitions' => $transitions, 'statuses' => $available_statuses, 'new_column' => $column, 'board' => $column->getBoard(), 'swimlane_identifier' => $request['swimlane_identifier']])]);
-
-                        if (count($available_statuses) > 1 || (count($available_statuses) == 1 && count($transitions[reset($available_statuses)]) == 1)) {
-                            if ($transitions[reset($available_statuses)][0]->hasTemplate()) {
-                                return $this->renderJSON(['component' => $this->getComponentHTML('main/issue_workflow_transition', compact('issue')), 'transition_id' => $transitions[reset($available_statuses)][0]->getID()]);
-                            }
-
-                            if (!$transitions[reset($available_statuses)][0]->transitionIssueToOutgoingStepWithoutRequest($issue)) {
-                                $this->getResponse()->setHttpStatus(400);
-
-                                return $this->renderJSON(['error' => Context::getI18n()->__('There was an error trying to move this issue to the next step in the workflow'), 'message' => preg_replace('/\s+/', ' ', $this->getComponentHTML('main/issue_transition_error'))]);
-                            }
-                        }
-
-                        if (!$transitions[reset($available_statuses)][0]->transitionIssueToOutgoingStepWithoutRequest($issue)) {
-                            $this->getResponse()->setHttpStatus(400);
-
-                            return $this->renderJSON(['error' => Context::getI18n()->__('There was an error trying to move this issue to the next step in the workflow'), 'message' => preg_replace('/\s+/', ' ', $this->getComponentHTML('main/issue_transition_error'))]);
-                        }
-                    }
-
-                    return $this->renderJSON(['transition' => 'ok', 'issue' => $this->getComponentHTML('agile/whiteboardissue', ['issue' => $issue, 'column' => $column, 'swimlane' => $swimlane])]);
-                } else {
+                $milestone = null;
+                if ($request['milestone_id']) {
                     $milestone = Milestones::getTable()->selectById((int)$request['milestone_id']);
-                    if (!$milestone instanceof Milestone) {
-                        $milestone = new Milestone();
-                        $milestone->setProject($this->board->getProject());
-                    }
-
-                    return $this->renderJSON(['component' => $this->getComponentHTML('agile/whiteboardcontent', ['board' => $this->board, 'milestone' => $milestone]), 'swimlanes' => $this->board->usesSwimlanes() ? 1 : 0]);
                 }
+                return $this->renderJSON($this->board->toMilestoneJSON($milestone));
             } catch (Exception $e) {
                 $this->getResponse()->setHttpStatus(400);
 
@@ -428,90 +380,11 @@
                 return $this->renderJSON(['error' => $e->getMessage()]);
             }
 
-            $this->selected_milestone = $this->board->getDefaultSelectedMilestone();
-        }
-
-        /**
-         * Issue retriever for the project planning page
-         *
-         * @Route(url="/boards/:board_id/retrieveissue/:mode")
-         *
-         * @param Request $request
-         */
-        public function runRetrieveIssue(Request $request)
-        {
-            $this->forward403unless($this->_checkProjectPageAccess('project_planning'));
-            $board = AgileBoards::getTable()->selectById($request['board_id']);
-            $issue = Issue::getB2DBTable()->selectById($request['issue_id']);
-
-            if ($issue instanceof Issue && !$issue->hasAccess()) return $this->renderJSON(['child_issue' => 0, 'issue_details' => [], 'deleted' => 1]);
-
-            $text = ['child_issue' => 0, 'issue_details' => $issue->toJSON(), 'deleted' => $issue->isDeleted() ? 1 : 0];
-
-            if ($request['mode'] == 'whiteboard') {
-                $text['swimlane_type'] = $board->getSwimlaneType();
-
-                if ($board->getSwimlaneType() == $request['swimlane_type']) {
-                    if ($issue->getMilestone() instanceof Milestone && $issue->getMilestone()->getID() == $request['milestone_id']) {
-                        foreach ($board->getMilestoneSwimlanes($issue->getMilestone()) as $swimlane) {
-                            if ($swimlane->getBoard()->usesSwimlanes()
-                                && $swimlane->hasIdentifiables()
-                                && $swimlane->getBoard()->getSwimlaneType() == AgileBoard::SWIMLANES_ISSUES
-                                && $swimlane->getIdentifierIssue()->getID() == $issue->getID()) {
-                                $text['swimlane_identifier'] = $swimlane->getIdentifier();
-                                $text['column_id'] = $request['column_id'];
-                                $component = $this->getComponentHTML('agile/boardswimlane', compact('swimlane'));
-                                break;
-                            }
-
-                            $issue_in_swimlane = false;
-
-                            foreach ($swimlane->getIssues() as $swimlane_issue) {
-                                if ($swimlane_issue->getID() == $issue->getID()) {
-                                    $issue_in_swimlane = true;
-                                    break;
-                                }
-                            }
-
-                            if (!$issue_in_swimlane) continue;
-
-                            foreach ($swimlane->getBoard()->getColumns() as $column) {
-                                if (!$column->hasIssue($issue)) continue;
-
-                                if ($issue->isChildIssue()) {
-                                    foreach ($issue->getParentIssues() as $parent) {
-                                        if ($parent->getIssueType()->getID() == $board->getEpicIssuetypeID()) continue;
-
-                                        $text['child_issue'] = 1;
-                                    }
-                                }
-
-                                $text['swimlane_identifier'] = $swimlane->getIdentifier();
-                                $text['column_id'] = $column->getID();
-                                $component = $this->getComponentHTML('agile/whiteboardissue', compact('issue', 'column', 'swimlane'));
-                                break 2;
-                            }
-                        }
-                    }
-                }
-            } else {
-                if ($issue->isChildIssue()) {
-                    foreach ($issue->getParentIssues() as $parent) {
-                        if ($parent->getIssueType()->getID() == $board->getEpicIssuetypeID()) continue;
-
-                        return $this->renderJSON(['child_issue' => 1, 'issue_details' => ['milestone' => ['id' => -1]]]);
-                    }
-                } elseif ($issue->getIssueType()->getID() == $board->getEpicIssuetypeID()) {
-                    return $this->renderJSON(['child_issue' => 0, 'epic' => 1, 'component' => $this->getComponentHTML('agile/milestoneepic', ['epic' => $issue, 'board' => $board]), 'issue_details' => $issue->toJSON()]);
-                }
-
-                $text['milestone_percent_complete'] = $issue->getMilestone() instanceof Milestone ? $issue->getMilestone()->getPercentComplete() : 0;
-                $component = $this->getComponentHTML('agile/milestoneissue', compact('issue', 'board'));
+            if ($request->getRequestedFormat() == 'json') {
+                return $this->renderJSON(['board' => $this->board->toJSON()]);
             }
 
-            $text['component'] = isset($component) ? $component : '';
-
-            return $this->renderJSON($text);
+            $this->selected_milestone = $this->board->getDefaultSelectedMilestone();
         }
 
         /**

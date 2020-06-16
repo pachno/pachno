@@ -61,11 +61,12 @@
             $this->cliEcho('Articles', self::COLOR_WHITE, self::STYLE_DEFAULT);
             Articles::getTable()->upgrade(tbg\tables\Articles::getTable());
             $this->cliMoveLeft(8);
+            $this->cliEcho('AgileBoards', self::COLOR_WHITE, self::STYLE_DEFAULT);
+            AgileBoards::getTable()->upgrade(tbg\tables\AgileBoards::getTable());
+            AgileBoards::getTable()->fixGuestBoards();
+            $this->cliMoveLeft(11);
             $this->cliEcho('ArticleCategoryLinks', self::COLOR_WHITE, self::STYLE_DEFAULT);
             ArticleCategoryLinks::getTable()->upgrade(tbg\tables\ArticleCategoryLinks::getTable());
-            $this->cliMoveLeft(20);
-            $this->cliEcho(str_pad('AgileBoards', 20), self::COLOR_WHITE, self::STYLE_DEFAULT);
-            AgileBoards::getTable()->fixGuestBoards();
             $this->cliMoveLeft(20);
             $this->cliEcho(str_pad('100%', 20)."\n", self::COLOR_GREEN, self::STYLE_BOLD);
 

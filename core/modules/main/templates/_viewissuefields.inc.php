@@ -315,6 +315,8 @@
                                 switch ($info['type'])
                                 {
                                     case CustomDatatype::INPUT_TEXTAREA_SMALL:
+                                        var_dump($info);
+                                        break;
                                         ?>
                                         <span id="<?= $field; ?>_name"<?php if (!$info['value']): ?> style="display: none;"<?php endif; ?>>
                                             <?= TextParser::parseText($info['name'], false, null, array('headers' => false)); ?>

@@ -321,6 +321,10 @@
 
             if (is_array($text))
                 array_walk_recursive($text, function (&$item) {
+                    if (is_object($item)) {
+                        var_dump($item);
+                        exit();
+                    }
                     $item = iconv('UTF-8', 'UTF-8//IGNORE', $item);
                 });
             else

@@ -92,14 +92,14 @@
             <input type="hidden" name="import_articles" value="1">
             <div class="greybox" style="margin-bottom: 5px;">
                 <label for="select_article_categories"><?= __('Show articles in namespace'); ?>: </label>
-                <select id="select_article_categories" onchange="$('#import_articles_list').childElements().each(function (elm) { if (elm.hasClass('article_category_' + $('#select_article_categories').getValue())) { elm.show(); var chkval = true; } else { elm.hide(); } elm.select('input[type=checkbox]').each(function (chkbx) { chkbx.enabled = chkval; }); })">
+                <select id="select_article_categories" onchange="$('#import_articles_list').childElements().each(function (elm) { if (elm.hasClass('article_category_' + $('#select_article_categories').val())) { elm.show(); var chkval = true; } else { elm.hide(); } elm.select('input[type=checkbox]').each(function (chkbx) { chkbx.enabled = chkval; }); })">
                     <option value="" selected><?= __('Without namespace'); ?></option>
                     <?php foreach ($categories as $category_key => $category_name): ?>
                         <option value="<?= $category_key; ?>"><?= $category_name; ?></option>
                     <?php endforeach; ?>
                 </select>
                 <br style="clear: both;">
-                <input type="checkbox" id="import_articles_select_all" onchange="$('#import_articles_list').childElements().each(function (elm) { elm.select('input[type=checkbox]').each(function (chkbx) { chkbx.checked = elm.hasClass('article_category_' + $('#select_article_categories').getValue()) && $('#import_articles_select_all').checked; }); })">&nbsp;<?= __('Toggle selection on visible articles'); ?>
+                <input type="checkbox" id="import_articles_select_all" onchange="$('#import_articles_list').childElements().each(function (elm) { elm.select('input[type=checkbox]').each(function (chkbx) { chkbx.checked = elm.hasClass('article_category_' + $('#select_article_categories').val()) && $('#import_articles_select_all').checked; }); })">&nbsp;<?= __('Toggle selection on visible articles'); ?>
             </div>
             <p class="faded_out" style="margin-bottom: 5px;">
                 <?= __('Please select which articles to import, from the list of available articles below. When you are finished, click the %import_articles button at the bottom', array('%import_articles' => __('Import articles'))); ?>

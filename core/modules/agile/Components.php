@@ -51,6 +51,11 @@
             $this->statuses = Status::getAll();
         }
 
+        public function componentMilestoneListItem()
+        {
+            $this->selected_milestone = $this->selected_milestone ?? null;
+        }
+
         public function componentMilestoneBox()
         {
             $this->include_counts = (isset($this->include_counts)) ? $this->include_counts : false;
@@ -59,12 +64,18 @@
 
         public function componentBoardSwimlane()
         {
-            $this->issues = $this->swimlane->getIssues();
+            $this->issues = (count($this->swimlane->getBoard()->getColumns())) ? $this->swimlane->getIssues() : [];
         }
 
         public function componentBoardColumnheader()
         {
             $this->statuses = Status::getAll();
+        }
+
+        public function componentAddBoardColumnheader()
+        {
+            $column = new BoardColumn();
+            $column->setBoard($this->board);
         }
 
         public function componentWhiteboardTransitionSelector()

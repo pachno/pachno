@@ -60,10 +60,6 @@
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/v4-shims.css">
 
-        <link
-                rel="stylesheet"
-                href="https://unpkg.com/simplebar@latest/dist/simplebar.css"
-        />
         <?php \pachno\core\framework\Event::createNew('core', 'layout.php::header-ends')->trigger(); ?>
     </head>
     <body id="pachno-body"
@@ -75,7 +71,6 @@
     <?php foreach ($localjs as $js): ?>
         <script type="text/javascript" src="<?= make_url('home'); ?>js/dist/<?= $js; ?>.js?bust=<?= (Context::isDebugMode()) ? $rand : $pachno_version; ?>"></script>
     <?php endforeach; ?>
-    <script src="https://unpkg.com/simplebar@latest/dist/simplebar.min.js"></script>
     <?php foreach ($externaljs as $js): ?>
         <script type="text/javascript" src="<?= $js; ?>"></script>
     <?php endforeach; ?>

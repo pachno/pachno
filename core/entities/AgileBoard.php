@@ -2,9 +2,9 @@
 
     namespace pachno\core\entities;
 
-    use framework\Context;
     use pachno\core\entities\common\IdentifiableScoped;
     use pachno\core\entities\tables\Issues;
+    use pachno\core\framework\Context;
 
     /**
      * Agile board class
@@ -33,11 +33,22 @@
 
         const TYPE_KANBAN = 2;
 
+        const SWIMLANES_NONE = '';
+
         const SWIMLANES_ISSUES = 'issues';
 
         const SWIMLANES_GROUPING = 'grouping';
 
         const SWIMLANES_EXPEDITE = 'expedite';
+
+        const BACKGROUND_COLOR_DEFAULT = '#0C8990';
+        const BACKGROUND_COLOR_ONE = '#7d7c84';
+        const BACKGROUND_COLOR_TWO = '#00aa7f';
+        const BACKGROUND_COLOR_THREE = '#d62246';
+        const BACKGROUND_COLOR_FOUR = '#4b1d3f';
+        const BACKGROUND_COLOR_FIVE = '#dbd56e';
+        const BACKGROUND_COLOR_SIX = '#88ab75';
+        const BACKGROUND_COLOR_SEVEN = '#de8f6e';
 
         /**
          * The name of the board
@@ -99,6 +110,19 @@
         protected $_backlog_search_id;
 
         /**
+         * @var File
+         * @Column(type="integer", length=10)
+         * @Relates(class="\pachno\core\entities\File")
+         */
+        protected $_background_file_id;
+
+        /**
+         * @var string
+         * @Column(type="string", length=10)
+         */
+        protected $_background_color = '';
+
+        /**
          * @var integer
          * @Column(type="integer", length=10)
          */
@@ -155,14 +179,14 @@
         /**
          * Array of epic issues
          *
-         * @var array|Issue
+         * @var Issue[]
          */
         protected $_epic_issues = null;
 
         /**
          * Board columns
          *
-         * @var array|BoardColumn
+         * @var BoardColumn[]
          * @Relates(class="\pachno\core\entities\BoardColumn", collection=true, foreign_column="board_id", orderby="sort_order")
          */
         protected $_board_columns = null;
@@ -174,6 +198,20 @@
          * @Column(type="serializable", length=500)
          */
         protected $_issue_field_values = [];
+
+        public static function getAvailableColors()
+        {
+            return [
+                self::BACKGROUND_COLOR_DEFAULT,
+                self::BACKGROUND_COLOR_ONE,
+                self::BACKGROUND_COLOR_TWO,
+                self::BACKGROUND_COLOR_THREE,
+                self::BACKGROUND_COLOR_FOUR,
+                self::BACKGROUND_COLOR_FIVE,
+                self::BACKGROUND_COLOR_SIX,
+                self::BACKGROUND_COLOR_SEVEN,
+            ];
+        }
 
         /**
          * Returns the associated user
@@ -475,11 +513,23 @@
         /**
          * Returns an array of board columns
          *
-         * @return array|BoardColumn
+         * @return BoardColumn[]
          */
         public function getColumns()
         {
             return $this->_b2dbLazyLoad('_board_columns');
+        }
+
+        public function getStatusIds()
+        {
+            $status_ids = [];
+            foreach ($this->getColumns() as $column) {
+                foreach ($column->getStatusIds() as $statusId) {
+                    $status_ids[$statusId] = $statusId;
+                }
+            }
+
+            return $status_ids;
         }
 
         /**
@@ -487,88 +537,81 @@
          *
          * @param Milestone $milestone
          *
-         * @return array|BoardSwimlane
+         * @return BoardSwimlane[]
          */
-        public function getMilestoneSwimlanes($milestone)
+        public function getMilestoneSwimlanes(Milestone $milestone = null)
         {
-            if (!($milestone instanceof Milestone)) {
-                return [];
-            }
+            $swimlanes = [];
 
-            $this->_populateMilestoneSwimlanes($milestone);
-
-            return $this->_swimlanes[$milestone->getID()];
-        }
-
-        protected function _populateMilestoneSwimlanes(Milestone $milestone)
-        {
-            if (!array_key_exists($milestone->getID(), $this->_swimlanes)) {
-                $this->_swimlanes[$milestone->getID()] = [];
-                $swimlanes = [];
-                if ($this->usesSwimlanes()) {
-                    switch ($this->getSwimlaneType()) {
-                        case self::SWIMLANES_EXPEDITE:
-                        case self::SWIMLANES_GROUPING:
-                            switch ($this->getSwimlaneIdentifier()) {
-                                case 'priority':
-                                    $items = Priority::getAll();
-                                    break;
-                                case 'severity':
-                                    $items = Severity::getAll();
-                                    break;
-                                case 'category':
-                                    $items = Category::getAll();
-                                    break;
-                                default:
-                                    $items = [];
-                                    break;
-                            }
-                            if ($this->getSwimlaneType() == self::SWIMLANES_EXPEDITE) {
-                                $expedite_items = [];
-                                foreach ($this->getSwimlaneFieldValues() as $value) {
-                                    if (array_key_exists($value, $items)) {
-                                        $expedite_items[$items[$value]->getID()] = $items[$value];
-                                        unset($items[$value]);
-                                    }
+            if ($this->usesSwimlanes() && count($this->getColumns())) {
+                switch ($this->getSwimlaneType()) {
+                    case self::SWIMLANES_EXPEDITE:
+                    case self::SWIMLANES_GROUPING:
+                        switch ($this->getSwimlaneIdentifier()) {
+                            case 'priority':
+                                $items = Priority::getAll();
+                                break;
+                            case 'severity':
+                                $items = Severity::getAll();
+                                break;
+                            case 'category':
+                                $items = Category::getAll();
+                                break;
+                            default:
+                                $items = [];
+                                break;
+                        }
+                        if ($this->getSwimlaneType() == self::SWIMLANES_EXPEDITE) {
+                            $expedite_items = [];
+                            foreach ($this->getSwimlaneFieldValues() as $value) {
+                                if (array_key_exists($value, $items)) {
+                                    $expedite_items[$items[$value]->getID()] = $items[$value];
+                                    unset($items[$value]);
                                 }
+                            }
 
+                            if (count($expedite_items)) {
                                 $swimlanes[] = ['identifiables' => $expedite_items];
-                                $swimlanes[] = ['identifiables' => $items];
-                                $swimlanes[] = ['identifiables' => 0];
-                            } else {
-                                foreach ($items as $item) {
-                                    $swimlanes[] = ['identifiables' => $item];
-                                }
-                                $swimlanes[] = ['identifiables' => 0];
                             }
-                            break;
-                        case self::SWIMLANES_ISSUES:
-                            foreach ($milestone->getIssues() as $issue) {
-                                if ($issue->isChildIssue()) {
-                                    foreach ($issue->getParentIssues() as $parent) {
-                                        if ($parent->getIssueType()->getID() != $this->getEpicIssuetypeID()) continue 2;
-                                    }
-                                }
-
-                                if (in_array($issue->getIssueType()->getID(), $this->getSwimlaneFieldValues())) {
-                                    $swimlanes[] = ['identifiables' => $issue];
-                                }
+                            $swimlanes[] = ['identifiables' => $items];
+                            $swimlanes[] = ['identifiables' => 0];
+                        } else {
+                            foreach ($items as $item) {
+                                $swimlanes[] = ['identifiables' => $item];
                             }
                             $swimlanes[] = ['identifiables' => 0];
-                            break;
-                    }
-                } else {
-                    $swimlanes[] = ['identifiables' => 0];
-                }
+                        }
+                        break;
+                    case self::SWIMLANES_ISSUES:
+                        $issues = ($milestone instanceof Milestone) ? $milestone->getIssues() : $this->getBacklogSearchObject()->getIssues();
+                        foreach ($issues as $issue) {
+                            if ($issue->isChildIssue()) {
+                                foreach ($issue->getParentIssues() as $parent) {
+                                    if ($parent->getIssueType()->getID() != $this->getEpicIssuetypeID()) continue 2;
+                                }
+                            }
 
-                foreach ($swimlanes as $details) {
-                    $swimlane = new BoardSwimlane();
-                    $swimlane->setBoard($this);
-                    $swimlane->setIdentifiables($details['identifiables']);
-                    $swimlane->setMilestone($milestone);
-                    $this->_swimlanes[$milestone->getID()][] = $swimlane;
+                            if (in_array($issue->getIssueType()->getID(), $this->getSwimlaneFieldValues())) {
+                                $swimlanes[] = ['identifiables' => $issue];
+                            }
+                        }
+                        $swimlanes[] = ['identifiables' => 0];
+                        break;
                 }
+            } else {
+                $swimlanes[] = ['identifiables' => 0];
             }
+
+            $boardSwimlanes = [];
+            foreach ($swimlanes as $details) {
+                $swimlane = new BoardSwimlane();
+                $swimlane->setBoard($this);
+                $swimlane->setIdentifiables($details['identifiables']);
+                $swimlane->setMilestone($milestone);
+                $boardSwimlanes[] = $swimlane;
+            }
+
+            return $boardSwimlanes;
         }
 
         public function usesSwimlanes()
@@ -594,6 +637,96 @@
         public function setSwimlaneIdentifier($swimlane_identifier)
         {
             $this->_swimlane_identifier = $swimlane_identifier;
+        }
+
+        /**
+         * Set the file associated with this build
+         *
+         * @param File $file
+         */
+        public function setBackgroundFile(File $file)
+        {
+            $this->_background_file_id = $file;
+        }
+
+        public function clearFile()
+        {
+            $this->_background_file_id = null;
+        }
+
+        /**
+         * Return whether this build has a file associated to it
+         *
+         * @return boolean
+         */
+        public function hasBackgroundFile()
+        {
+            return (bool) ($this->getBackgroundFile() instanceof File);
+        }
+
+        /**
+         * Return the file associated with this build, if any
+         *
+         * @return File
+         */
+        public function getBackgroundFile()
+        {
+            return $this->_b2dbLazyLoad('_background_file_id');
+        }
+
+        /**
+         * @return string
+         */
+        public function getBackgroundColor()
+        {
+            return $this->_background_color;
+        }
+
+        /**
+         * @param string $background_color
+         */
+        public function setBackgroundColor($background_color = '')
+        {
+            $this->_background_color = $background_color;
+        }
+
+        public function hasBackground()
+        {
+            return $this->hasBackgroundFile() || $this->getBackgroundColor() != '';
+        }
+
+        public function toJSON($detailed = true)
+        {
+            $json = parent::toJSON($detailed);
+            $json['background_color'] = $this->getBackgroundColor();
+            $json['background_file_url'] = ($this->_background_file_id) ? Context::getRouting()->generate('showfile', ['id' => $this->_background_file_id]) : '';
+            $json['name'] = $this->getName();
+            $json['type'] = $this->getType();
+            $json['is_private'] = $this->isPrivate();
+            $json['backlog_search'] = $this->getBacklogSearchIdentifier();
+            $json['url'] = Context::getRouting()->generate('agile_whiteboardissues', ['project_key' => $this->getProject()->getKey(), 'board_id' => $this->getID()]) . '?format=json';
+            $json['swimlane_type'] = $this->getSwimlaneType();
+            $json['swimlane_identifier'] = $this->getSwimlaneIdentifier();
+            $json['swimlane_field_values'] = $this->getSwimlaneFieldValues();
+            $json['columns'] = [];
+            foreach ($this->getColumns() as $column) {
+                $json['columns'][] = $column->toJSON();
+            }
+
+            return $json;
+        }
+
+        public function toMilestoneJSON(Milestone $milestone = null, $column_id = null)
+        {
+            $json = ['swimlanes' => []];
+
+            if (count($this->getColumns())) {
+                foreach ($this->getMilestoneSwimlanes($milestone) as $swimlane) {
+                    $json['swimlanes'][] = $swimlane->toJSON($column_id);
+                }
+            }
+
+            return $json;
         }
 
     }

@@ -455,6 +455,14 @@
         protected $_deleted = false;
 
         /**
+         * Whether the issue is deleted
+         *
+         * @var boolean
+         * @Column(type="boolean")
+         */
+        protected $_archived = false;
+
+        /**
          * Whether the issue is blocking the next release
          *
          * @var boolean
@@ -743,7 +751,7 @@
          *
          * @return Project
          */
-        public function getProject()
+        public function getProject(): Project
         {
             return $this->_b2dbLazyLoad('_project_id');
         }
@@ -823,21 +831,13 @@
          *
          * @return string
          */
-        public function getFormattedIssueNo($link_formatted = false, $include_issuetype = false)
+        public function getFormattedIssueNo($link_formatted = false): string
         {
-            try {
-                $issuetype_description = ($this->getIssueType() instanceof Issuetype && $include_issuetype) ? $this->getIssueType()->getName() . ' ' : '';
-            } catch (Exception $e) {
-                $issuetype_description = Context::getI18n()->__('Unknown issuetype') . ' ';
-            }
-
             if ($this->getProject()->usePrefix()) {
-                $issue_no = $this->getProject()->getPrefix() . '-' . $this->getIssueNo();
+                return $this->getProject()->getPrefix() . '-' . $this->getIssueNo();
             } else {
-                $issue_no = (($link_formatted) ? '#' : '') . $this->getIssueNo();
+                return (string) (($link_formatted) ? '#' : '') . $this->getIssueNo();
             }
-
-            return $issuetype_description . $issue_no;
         }
 
         /**
@@ -878,7 +878,7 @@
          *
          * @return string
          */
-        public function getIssueNo()
+        public function getIssueNo(): string
         {
             return $this->_issue_no;
         }
@@ -891,16 +891,6 @@
         public function setIssueNo($no)
         {
             $this->_issue_no = $no;
-        }
-
-        /**
-         * Returns the unique id for this issue
-         *
-         * @return integer
-         */
-        public function getID()
-        {
-            return $this->_id;
         }
 
         /**
@@ -920,7 +910,7 @@
          *
          * @return User
          */
-        public function getPostedBy()
+        public function getPostedBy(): ?User
         {
             $this->_posted_by = $this->_b2dbLazyLoad('_posted_by');
 
@@ -962,7 +952,7 @@
          *
          * @return common\Identifiable
          */
-        public function getAssignee()
+        public function getAssignee(): ?common\Identifiable
         {
             $this->_b2dbLazyLoad('_assignee_team');
             $this->_b2dbLazyLoad('_assignee_user');
@@ -1293,9 +1283,9 @@
          *
          * @return string
          */
-        public function getFormattedTitle($link_formatted = false, $include_issuetype = true)
+        public function getFormattedTitle($link_formatted = false): string
         {
-            return $this->getFormattedIssueNo($link_formatted, $include_issuetype) . ' - ' . $this->getTitle();
+            return $this->getFormattedIssueNo($link_formatted) . ' - ' . $this->getTitle();
         }
 
         /**
@@ -1303,7 +1293,7 @@
          *
          * @return string
          */
-        public function getTitle()
+        public function getTitle(): string
         {
             return htmlentities($this->_title, ENT_COMPAT, Context::getI18n()->getCharset());
         }
@@ -1464,7 +1454,7 @@
             return (bool)($this->getPostedByID() == $user_id || ($this->isAssigned() && $this->getAssignee()->getID() == $user_id && $this->getAssignee() instanceof User) || ($this->isOwned() && $this->getOwner()->getID() == $user_id && $this->getOwner() instanceof User));
         }
 
-        public function isAssigned()
+        public function isAssigned(): bool
         {
             return (bool)($this->getAssignee() instanceof common\Identifiable);
         }
@@ -1708,9 +1698,9 @@
          *
          * @see getState()
          */
-        public function isClosed()
+        public function isClosed(): bool
         {
-            return ($this->getState() == self::STATE_CLOSED) ? true : false;
+            return $this->getState() == self::STATE_CLOSED;
         }
 
         /**
@@ -1718,7 +1708,7 @@
          *
          * @return integer
          */
-        public function getState()
+        public function getState(): int
         {
             return $this->_state;
         }
@@ -2951,7 +2941,7 @@
          *
          * @return integer
          */
-        public function getEstimatedHours($append_minutes = false)
+        public function getEstimatedHours($append_minutes = false): int
         {
             return (int)$this->_estimated_hours + ($append_minutes ? (int)floor($this->getEstimatedMinutes() / 60) : 0);
         }
@@ -2973,7 +2963,7 @@
          *
          * @return integer
          */
-        public function getEstimatedMinutes($subtract_hours = false)
+        public function getEstimatedMinutes($subtract_hours = false): int
         {
             $minutes = (int)$this->_estimated_minutes;
 
@@ -3010,7 +3000,7 @@
          *
          * @return integer
          */
-        public function getSpentHours($append_minutes = false)
+        public function getSpentHours($append_minutes = false): int
         {
             return (int)round($this->_spent_hours / 100, 2) + ($append_minutes ? (int)floor($this->getSpentMinutes() / 60) : 0);
         }
@@ -3032,7 +3022,7 @@
          *
          * @return integer
          */
-        public function getSpentMinutes($subtract_hours = false)
+        public function getSpentMinutes($subtract_hours = false): int
         {
             $minutes = (int)$this->_spent_minutes;
 
@@ -3278,7 +3268,7 @@
          *
          * @return integer
          */
-        public function getEstimatedPoints()
+        public function getEstimatedPoints(): int
         {
             return (int)$this->_estimated_points;
         }
@@ -3298,7 +3288,7 @@
          *
          * @return integer
          */
-        public function getSpentPoints()
+        public function getSpentPoints(): int
         {
             return (int)$this->_spent_points;
         }
@@ -3318,7 +3308,7 @@
          *
          * @return integer
          */
-        public function getEstimatedDays()
+        public function getEstimatedDays(): int
         {
             return (int)$this->_estimated_days;
         }
@@ -3338,7 +3328,7 @@
          *
          * @return integer
          */
-        public function getEstimatedWeeks()
+        public function getEstimatedWeeks(): int
         {
             return (int)$this->_estimated_weeks;
         }
@@ -3358,7 +3348,7 @@
          *
          * @return integer
          */
-        public function getEstimatedMonths()
+        public function getEstimatedMonths(): int
         {
             return (int)$this->_estimated_months;
         }
@@ -3378,7 +3368,7 @@
          *
          * @return integer
          */
-        public function getSpentDays()
+        public function getSpentDays(): int
         {
             return (int)$this->_spent_days;
         }
@@ -3398,7 +3388,7 @@
          *
          * @return integer
          */
-        public function getSpentWeeks()
+        public function getSpentWeeks(): int
         {
             return (int)$this->_spent_weeks;
         }
@@ -3418,7 +3408,7 @@
          *
          * @return integer
          */
-        public function getSpentMonths()
+        public function getSpentMonths(): int
         {
             return (int)$this->_spent_months;
         }
@@ -3853,10 +3843,10 @@
 
         public function countAttachments()
         {
-            return $this->countFiles();
+            return $this->getNumberOfFiles();
         }
 
-        public function countFiles()
+        public function getNumberOfFiles(): int
         {
             if ($this->_num_files === null) {
                 if ($this->_files !== null) {
@@ -3970,7 +3960,7 @@
             }
         }
 
-        public function countUserComments()
+        public function getNumberOfUserComments(): int
         {
             if ($this->_num_user_comments === null) {
                 $this->_num_user_comments = Comment::countComments($this->getID(), Comment::TYPE_ISSUE);
@@ -4212,7 +4202,7 @@
          *
          * @return Priority
          */
-        public function getPriority()
+        public function getPriority(): ?Priority
         {
             return $this->_b2dbLazyLoad('_priority');
         }
@@ -4486,19 +4476,25 @@
         {
             $return_values = [
                 'id' => $this->getID(),
-                'issue_no' => $this->getFormattedIssueNo(),
+                'issue_no' => $this->getFormattedIssueNo(true),
                 'state' => $this->getState(),
                 'closed' => $this->isClosed(),
                 'deleted' => $this->isDeleted(),
+                'archived' => $this->isArchived(),
+                'blocking' => $this->isBlocking(),
                 'created_at' => $this->getPosted(),
                 'created_at_iso' => date('c', $this->getPosted()),
                 'updated_at' => $this->getLastUpdatedTime(),
                 'updated_at_iso' => date('c', $this->getLastUpdatedTime()),
                 'title' => $this->getRawTitle(),
                 'href' => Context::getRouting()->generate('viewissue', ['project_key' => $this->getProject()->getKey(), 'issue_no' => $this->getFormattedIssueNo()], false),
+                'more_actions_url' => Context::getRouting()->generate('issue_moreactions', ['project_key' => $this->getProject()->getKey(), 'issue_id' => $this->getID()]),
                 'posted_by' => ($this->getPostedBy() instanceof common\Identifiable) ? $this->getPostedBy()->toJSON() : null,
                 'assignee' => ($this->getAssignee() instanceof common\Identifiable) ? $this->getAssignee()->toJSON() : null,
                 'status' => ($this->getStatus() instanceof common\Identifiable) ? $this->getStatus()->toJSON() : null,
+                'milestone' => ($this->getMilestone() instanceof common\Identifiable) ? $this->getMilestone()->toJSON() : null,
+                'number_of_comments' => $this->getNumberOfUserComments(),
+                'number_of_files' => $this->getNumberOfFiles()
             ];
 
             if ($detailed) {
@@ -4519,22 +4515,9 @@
                             $method = 'get' . ucfirst($field);
                             $value = $this->$method();
                             break;
-                        case 'milestone':
-                            $method = 'get' . ucfirst($field);
-                            $value = $this->$method();
-                            if (is_numeric($value) && $value == 0) {
-                                $value = new Milestone();
-                                $value->setID(0);
-                            }
-                            if (!$value->getProject() instanceof Project) {
-                                $value->setProject($this->getProject());
-                            }
-                            break;
                         case 'owner':
                             $value = $this->getOwner();
                             break;
-                        case 'assignee':
-                            $value = $this->getAssignee();
                             break;
                         case 'percent_complete':
                             $value = $this->getPercentCompleted();
@@ -4556,6 +4539,8 @@
                             $value = $this->getSpentTime(true, true);
                             $identifiable = false;
                             break;
+                        case 'milestone':
+                        case 'assignee':
                         case 'build':
                         case 'edition':
                         case 'component':
@@ -4597,11 +4582,44 @@
         }
 
         /**
+         * Returns whether or not the issue has been archived
+         *
+         * @return bool
+         */
+        public function isArchived(): bool
+        {
+            return $this->_archived;
+        }
+
+        /**
+         * Archive the issue
+         */
+        public function archive()
+        {
+            $this->setArchived(true);
+        }
+
+        public function unArchive()
+        {
+            $this->setArchived(false);
+        }
+
+        /**
+         * Set whether the issue is archived
+         *
+         * @param bool $archived
+         */
+        public function setArchived(bool $archived)
+        {
+            $this->_archived = $archived;
+        }
+
+        /**
          * Returns the timestamp for when the issue was last updated
          *
          * @return integer
          */
-        public function getLastUpdatedTime()
+        public function getLastUpdatedTime(): int
         {
             return $this->_last_updated;
         }
@@ -5641,7 +5659,7 @@
          *
          * @return Status
          */
-        public function getStatus()
+        public function getStatus(): ?Status
         {
             return $this->_b2dbLazyLoad('_status');
         }
@@ -5771,9 +5789,9 @@
          *
          * @return boolean
          */
-        public function isBlocking()
+        public function isBlocking(): bool
         {
-            return $this->_blocking;
+            return (bool) $this->_blocking;
         }
 
         /**
@@ -6032,7 +6050,7 @@
          *
          * @return integer
          */
-        public function getPosted()
+        public function getPosted(): int
         {
             return $this->_posted;
         }

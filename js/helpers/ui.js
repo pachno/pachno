@@ -115,17 +115,22 @@ const UI = {
     },
 
     Backdrop: {
-        show: (url, callback) => {
+        show: (url, callback, docked) => {
             return new Promise(resolve => {
-                const showBackdrop = () => new Promise(_resolve => {
+                const showBackdrop = (docked) => new Promise(_resolve => {
                     $('#fullpage_backdrop_content').hide();
+                    $('#fullpage_backdrop').removeClass('docked-left');
+                    $('#fullpage_backdrop').removeClass('docked-right');
+                    if (docked !== undefined) {
+                        $('#fullpage_backdrop').addClass('docked-' + docked);
+                    }
                     $('#fullpage_backdrop').show();
                     $('body').css({'overflow': 'hidden'});
                     $('#fullpage_backdrop_indicator').show();
                     _resolve();
                 });
 
-                showBackdrop()
+                showBackdrop(docked)
                     .then(() => {
                         if (url != undefined) {
                             fetchHelper(url, {
@@ -159,7 +164,36 @@ const UI = {
         }
     },
 
-    tabSwitcher
+    tabSwitcher,
+
+    parseHtmlOptions: function (options) {
+        let option_strings = [];
+        for (let [key, value] of Object.entries(options))
+        {
+            if (Array.isArray(value)) {
+                value = value.join(' ');
+            }
+            if (key === 'classes') key = 'class';
+
+            option_strings.push(`${key}="${value}"`);
+        }
+        return option_strings.join(' ');
+    },
+
+    fa_image_tag: function (image, params = {}, mode = 'fas')
+    {
+        if (params.classes === undefined) {
+            params.classes = [];
+        } else if (!Array.isArray(params.classes)) {
+            params.classes = [params.classes];
+        }
+
+        params.classes.push(mode);
+        params.classes.push(`fa-${image}`);
+
+        return `<i ${this.parseHtmlOptions(params)}></i>`;
+    }
+
 };
 
 const tabSwitchFromHash = function (menu) {
@@ -188,14 +222,17 @@ const loadComponentOptions = function ($item) {
 };
 
 const autoBackdropLink = function (event) {
+    if (event) {
+        event.preventDefault();
+    }
     const $button = $(this);
     $button.prop('disabled', true);
     $button.addClass('disabled');
     $button.addClass('submitting');
 
-    UI.Backdrop.show($button.data('url'))
+    UI.Backdrop.show($button.data('url'), undefined, $button.data('docked-backdrop'))
         .then(() => {
-            $button.removeProp('disabled');
+            $button.prop('disabled', false);
             $button.removeClass('submitting');
             $button.removeClass('disabled');
         });
@@ -222,15 +259,35 @@ const submitForm = function ($form) {
     }
 
     return formSubmitHelper(url, $form.attr('id'), options)
-        .then(() => {
+        .then((json) => {
             $form.removeClass('submitting');
-            $form.find('button[type=submit]').removeProp('disabled');
+            $form.find('button[type=submit]').each(function () {
+                var $button = $(this);
+                $button.removeClass('auto-disabled');
+                $button.prop('disabled', false);
+            });
 
             if ($form.data('auto-close') !== undefined) {
                 UI.Backdrop.reset();
             }
+
+            Pachno.trigger(Pachno.EVENTS.formSubmitResponse, { form: $form.attr('id'), json });
         });
 };
+
+const submitInteractiveForm = function (event) {
+    const $form = $(this).parents('form');
+    $form.addClass('submitting');
+    event.preventDefault();
+    submitForm($form)
+        .then(() => {
+            $form.removeClass('submitting');
+        })
+        .catch((error) => {
+            console.error(error);
+            $form.removeClass('submitting');
+        });
+}
 
 $(document).ready(() => {
     const $body = $('body');
@@ -290,19 +347,8 @@ $(document).ready(() => {
         e.preventDefault();
     });
 
-    $body.on('blur', 'form[data-interactive-form] input, form[data-interactive-form] textarea', function (event) {
-        const $form = $(this).parents('form');
-        $form.addClass('submitting');
-        event.preventDefault();
-        submitForm($form)
-            .then(() => {
-                $form.removeClass('submitting');
-            })
-            .catch((error) => {
-                console.error(error);
-                $form.removeClass('submitting');
-            });
-    });
+    $body.on('blur', 'form[data-interactive-form] input[type=text], form[data-interactive-form] textarea', submitInteractiveForm);
+    $body.on('change', 'form[data-interactive-form] input[type=radio], form[data-interactive-form] input[type=checkbox]', submitInteractiveForm);
 })
 
 export default UI;

@@ -106,10 +106,10 @@ define(['pachno/tools', 'pachno/index', 'domReady', 'jquery', 'mention'],
                     if ($filterInput.data('callbackUrl') !== undefined) {
                         if (Pachno.ift_observers[filter_key])
                             clearTimeout(Pachno.ift_observers[filter_key]);
-                        if (($filterInput.getValue().length >= 3 || $filterInput.getValue().length == 0) && $filterInput.getValue() != $filterInput.data('lastValue')) {
+                        if (($filterInput.val().length >= 3 || $filterInput.val().length == 0) && $filterInput.val() != $filterInput.data('lastValue')) {
                             Pachno.ift_observers[filter_key] = setTimeout(function () {
                                 Pachno.Search.getFilterValues($filterInput);
-                                $filterInput.data('lastValue', $filterInput.getValue());
+                                $filterInput.data('lastValue', $filterInput.val());
                             }, 1000);
                         }
                     } else {

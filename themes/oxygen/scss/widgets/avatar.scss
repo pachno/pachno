@@ -1,0 +1,55 @@
+.avatar {
+  border-radius: 100%;
+  display: inline-block;
+  margin: 0 2px 0 0;
+  vertical-align: middle;
+  width: 32px;
+  height: 32px;
+  overflow: hidden;
+
+  &.small {
+    width: 16px;
+    height: 16px;
+  }
+
+  &.medium {
+    width: 24px;
+    height: 24px;
+  }
+
+  img {
+    width: 100%;
+  }
+}
+
+.avatar-list {
+  display: block;
+
+  .avatar {
+    + .avatar {
+      margin-left: -16px;
+
+      &.medium {
+        margin-left: -12px;
+      }
+
+      &.small {
+        margin-left: -8px;
+      }
+    }
+
+    &:hover {
+      &:not(:first-child) {
+        margin-left: .35em;
+      }
+
+      + .avatar {
+        &,
+        &.medium,
+        &.small {
+          margin-left: .35em;
+        }
+      }
+    }
+  }
+}

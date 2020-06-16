@@ -23,7 +23,7 @@
     <div id="backdrop_detail_content" class="backdrop_detail_content edit_milestone">
         <div class="form-container">
             <?php if (!isset($includeform) || $includeform): ?>
-            <form accept-charset="<?= \pachno\core\framework\Context::getI18n()->getCharset(); ?>" action="<?= $action_url; ?>" method="post" id="edit_milestone_form" onsubmit="Pachno.Project.Milestone.save(this, true);return false;">
+            <form accept-charset="<?= \pachno\core\framework\Context::getI18n()->getCharset(); ?>" action="<?= $action_url; ?>" method="post" id="edit_milestone_form" data-simple-submit>
             <?php endif; ?>
                 <div class="form-row">
                     <input type="text" class="name-input-enhance" value="<?= $milestone->getName(); ?>" name="name" id="milestone_name_<?= $milestone->getID(); ?>" placeholder="<?= $milestoneplaceholder; ?>">
@@ -67,20 +67,21 @@
                         </div>
                     </div>
                 <?php endif; ?>
-                <div class="column">
-                    <div class="form-row">
-                        <input type="checkbox" class="fancy-checkbox" value="1" name="is_starting" id="starting_date_<?= $milestone->getID(); ?>" onchange="if ($('#starting_date_<?= $milestone->getID(); ?>').getValue() == '1') { $('#starting_month_<?= $milestone->getID(); ?>').enable(); $('#starting_day_<?= $milestone->getID(); ?>').enable(); $('#starting_year_<?= $milestone->getID(); ?>').enable(); } else { $('#starting_month_<?= $milestone->getID(); ?>').disable(); $('#starting_day_<?= $milestone->getID(); ?>').disable(); $('#starting_year_<?= $milestone->getID(); ?>').disable(); } " <?php if ($milestone->isStarting()) echo 'checked'; ?>>
-                        <label for="starting_date_<?= $milestone->getID(); ?>"><?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far') . __('Planned start date'); ?></label>
-                        <input type="hidden" id="edit_milestone_start_date" name="start_date" value="<?= $milestone->getStartingDate() ?? date('d-m-Y'); ?>">
-                        <div id="edit_milestone_start_date_container"></div>
+                <div class="row">
+                    <div class="column">
+                        <div class="form-row">
+                            <input type="checkbox" class="fancy-checkbox milestone-edit-date-toggle" value="1" name="is_starting" id="starting_date_<?= $milestone->getID(); ?>" <?php if ($milestone->isStarting()) echo 'checked'; ?>>
+                            <label for="starting_date_<?= $milestone->getID(); ?>"><?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far') . __('Planned start date'); ?></label>
+                        </div>
+                        <div class="form-row">
+                            <input type="checkbox" class="fancy-checkbox milestone-edit-date-toggle" value="1" name="is_scheduled" id="end_date_<?= $milestone->getID(); ?>" <?php if ($milestone->isScheduled()) echo 'checked'; ?>>
+                            <label for="end_date_<?= $milestone->getID(); ?>"><?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far') . __('Planned end date'); ?></label>
+                        </div>
                     </div>
-                </div>
-                <div class="column">
-                    <div class="form-row">
-                        <input type="checkbox" class="fancy-checkbox" value="1" name="is_scheduled" id="sch_date_<?= $milestone->getID(); ?>" onchange="if ($('#sch_date_<?= $milestone->getID(); ?>').getValue() == '1') { $('#sch_month_<?= $milestone->getID(); ?>').enable(); $('#sch_day_<?= $milestone->getID(); ?>').enable(); $('#sch_year_<?= $milestone->getID(); ?>').enable(); } else { $('#sch_month_<?= $milestone->getID(); ?>').disable(); $('#sch_day_<?= $milestone->getID(); ?>').disable(); $('#sch_year_<?= $milestone->getID(); ?>').disable(); } " <?php if ($milestone->isScheduled()) echo 'checked'; ?>>
-                        <label for="sch_date_<?= $milestone->getID(); ?>"><?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far') . __('Planned end date'); ?></label>
-                        <input type="hidden" id="edit_milestone_end_date" name="end_date" value="<?= $milestone->getScheduledDate() ?? date('d-m-Y'); ?>">
-                        <div id="edit_milestone_end_date_container"></div>
+                    <div class="column">
+                        <div class="form-row">
+                            <input type="hidden" id="edit_milestone_date_container" class="auto-calendar">
+                        </div>
                     </div>
                 </div>
                 <div id="milestone_include_issues" class="form-row milestone_include_issues" style="display: none;">
@@ -106,16 +107,25 @@
     </div>
 </div>
 <script type="text/javascript">
-    require(['domReady', 'pachno/index', 'calendarview'], function (domReady, pachno_index_js, Calendar) {
-        domReady(function () {
-            Calendar.setup({
-                dateField: 'edit_milestone_start_date',
-                parentElement: 'edit_milestone_start_date_container'
-            });
-            Calendar.setup({
-                dateField: 'edit_milestone_end_date',
-                parentElement: 'edit_milestone_end_date_container'
-            });
-        });
+    $('body').off('click', '.milestone-edit-date-toggle');
+    $('body').on('click', '.milestone-edit-date-toggle', function () {
+        let datepickerInstance = Pachno.UI.calendars['edit_milestone_date_container'];
+        if ($('.milestone-edit-date-toggle:checked').length == 2) {
+            datepickerInstance.update({ range: true });
+        } else {
+            datepickerInstance.update({ range: false });
+        }
     });
+    // require(['domReady', 'pachno/index', 'calendarview'], function (domReady, pachno_index_js, Calendar) {
+    //     domReady(function () {
+    //         Calendar.setup({
+    //             dateField: 'edit_milestone_start_date',
+    //             parentElement: 'edit_milestone_date_container'
+    //         });
+    //         Calendar.setup({
+    //             dateField: 'edit_milestone_end_date',
+    //             parentElement: 'edit_milestone_end_date_container'
+    //         });
+    //     });
+    // });
 </script>

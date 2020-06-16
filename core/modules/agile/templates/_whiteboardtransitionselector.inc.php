@@ -5,7 +5,7 @@
     </div>
     <div id="backdrop_detail_content" class="backdrop_detail_content">
         <div class="table whiteboard-columns transition-selector <?php echo ($board->usesSwimlanes()) ? ' swimlanes' : ' no-swimlanes'; ?>">
-            <div class="thead" id="whiteboard-headers">
+            <div class="thead" id="whiteboard-content">
                 <div class="tr">
                     <?php include_component('agile/boardcolumnheader', array('column' => $current_column)); ?>
                     <?php include_component('agile/boardcolumnheader', array('column' => $new_column)); ?>

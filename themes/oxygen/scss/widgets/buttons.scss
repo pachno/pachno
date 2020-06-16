@@ -34,8 +34,21 @@ button, button:hover,
   align-items: center;
 
   &:active,
-  &.activated {
+  &.activated,
+  &.dropper.active {
     box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.16) inset, 0 0 1px 0 rgba(0, 0, 0, 0.16) inset;
+  }
+
+  &.dropper {
+    .icon.toggler {
+      transition: transform .25s ease-in-out;
+    }
+
+    &.active {
+      .icon.toggler {
+        transform: rotate(180deg);
+      }
+    }
   }
 
   span + .fas,

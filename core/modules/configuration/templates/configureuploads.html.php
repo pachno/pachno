@@ -162,7 +162,7 @@
             $('#upload_extensions_list').enable();
             if ($('#upload_storage')) $('#upload_storage').enable();
             $('#upload_max_file_size').enable();
-            if ($('#upload_storage').getValue() == 'files')
+            if ($('#upload_storage').val() == 'files')
             {
                 $('#upload_localpath').enable();
             }

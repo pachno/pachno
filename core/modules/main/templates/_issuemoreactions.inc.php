@@ -11,7 +11,7 @@
     </div>
 <?php else: ?>
     <div class="dropdown-container">
-        <div class="list-mode">
+        <div class="list-mode" data-simplebar>
             <?php if (!$issue->getProject()->isArchived() && $issue->canEditIssueDetails()): ?>
                 <?php if (!$multi && $show_workflow_transitions): ?>
                     <div class="header"><?php echo __('Workflow transition actions'); ?></div>
@@ -148,7 +148,7 @@
                 <?php endif; ?>
                 <?php if ($issue->canDeleteIssue()): ?>
                     <div class="list-item separator"></div>
-                    <a href="javascript:void(0)" class="list-item delete" onclick="Pachno.Main.Profile.clearPopupsAndButtons();Pachno.UI.Dialog.show('<?php echo __('Permanently delete this issue?'); ?>', '<?php echo __('Are you sure you wish to delete this issue? It will remain in the database for your records, but will not be accessible via Pachno.'); ?>', {yes: {href: '<?php echo make_url('deleteissue', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID())); ?><?php if (isset($_SERVER['HTTP_REFERER'])): ?>?referer=<?php echo \pachno\core\framework\Response::escape($_SERVER['HTTP_REFERER']); ?><?php echo ($issue->getMilestone()) ? '#roadmap_milestone_' . $issue->getMilestone()->getID() : ''; endif; ?>' }, no: {click: Pachno.UI.Dialog.dismiss}});"><?php echo fa_image_tag('times', ['class' => 'icon']); ?><span class="name"><?= __("Permanently delete this issue"); ?></span></a>
+                    <a href="javascript:void(0)" class="list-item danger" onclick="Pachno.Main.Profile.clearPopupsAndButtons();Pachno.UI.Dialog.show('<?php echo __('Permanently delete this issue?'); ?>', '<?php echo __('Are you sure you wish to delete this issue? It will remain in the database for your records, but will not be accessible via Pachno.'); ?>', {yes: {href: '<?php echo make_url('deleteissue', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID())); ?><?php if (isset($_SERVER['HTTP_REFERER'])): ?>?referer=<?php echo \pachno\core\framework\Response::escape($_SERVER['HTTP_REFERER']); ?><?php echo ($issue->getMilestone()) ? '#roadmap_milestone_' . $issue->getMilestone()->getID() : ''; endif; ?>' }, no: {click: Pachno.UI.Dialog.dismiss}});"><?php echo fa_image_tag('times', ['class' => 'icon']); ?><span class="name"><?= __("Permanently delete this issue"); ?></span></a>
                 <?php endif; ?>
             <?php else: ?>
                 <div class="list-item disabled"><span class="name"><?php echo __('No additional actions available'); ?></span></div>

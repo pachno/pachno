@@ -12,7 +12,7 @@
                     <?php endif; ?>
                 </span>
             <?php endif; ?>
-            <?php echo link_tag(make_url('viewissue', array('project_key' => $issue->getProject()->getKey(), 'issue_no' => $issue->getFormattedIssueNo())), $issue->getFormattedIssueNo(true, true) . ' - <span class="issue_title">' . $issue->getTitle() . '</span>'); ?>
+            <?php echo link_tag(make_url('viewissue', array('project_key' => $issue->getProject()->getKey(), 'issue_no' => $issue->getFormattedIssueNo())), $issue->getFormattedIssueNo(true) . ' - <span class="issue_title">' . $issue->getTitle() . '</span>'); ?>
             <?php if ($milestone->isSprint()): ?>
                 <div class="issue_points"><?php echo __('%pts points', array('%pts' => $issue->getEstimatedPoints())); ?></div>
             <?php endif; ?>

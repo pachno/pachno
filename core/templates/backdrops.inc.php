@@ -26,7 +26,7 @@
         <?php echo image_tag('spinning_32.gif'); ?><br>
         <?php echo __('Please wait ...'); ?>
     </div>
-    <div id="fullpage_backdrop_content" class="fullpage_backdrop_content"> </div>
+    <div id="fullpage_backdrop_content" class="fullpage_backdrop_content" data-simplebar> </div>
 </div>
 <?php if (\pachno\core\framework\Context::getRouting()->getCurrentRoute()->getName() != 'login_page' && $pachno_user->isGuest()): ?>
     <div id="login_backdrop" class="fullpage_backdrop" style="display: none;">

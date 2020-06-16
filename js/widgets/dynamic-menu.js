@@ -5,7 +5,6 @@ const loadDynamicMenu = function ($menu) {
     if ($menu.hasClass('populate-once') && $menu.data('is-loaded')) {
         return;
     }
-
     const url = $menu.data('menu-url');
     Pachno.fetch(url, {
         method: 'GET',

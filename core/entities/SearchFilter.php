@@ -279,7 +279,7 @@
 
         public static function getValidSearchFilters()
         {
-            return ['id', 'project_id', 'subprojects', 'text', 'state', 'issuetype', 'status', 'resolution', 'reproducability', 'category', 'severity', 'priority', 'posted_by', 'assignee_user', 'assignee_team', 'owner_user', 'owner_team', 'component', 'build', 'edition', 'posted', 'last_updated', 'milestone', 'blocking', 'votes_total', 'relation', 'time_spent'];
+            return ['id', 'project_id', 'subprojects', 'text', 'archived', 'state', 'issuetype', 'status', 'resolution', 'reproducability', 'category', 'severity', 'priority', 'posted_by', 'assignee_user', 'assignee_team', 'owner_user', 'owner_team', 'component', 'build', 'edition', 'posted', 'last_updated', 'milestone', 'blocking', 'votes_total', 'relation', 'time_spent'];
         }
 
         public function getFilterTitle()

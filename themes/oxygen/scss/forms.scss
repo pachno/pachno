@@ -6,14 +6,17 @@
   flex-wrap: wrap;
   align-items: center;
   font-size: 1rem;
+  flex: 1 1 100%;
 
-  form {
+  form,
+  .form {
+    height: 100%;
     flex: 1 1 auto;
     display: flex;
-    flex-direction: row;
     flex-wrap: wrap;
-    align-items: center;
     width: 100%;
+    flex-direction: column;
+    align-items: stretch;
 
     .submit-indicator {
       opacity: 0;
@@ -25,7 +28,8 @@
         > input[type=text].invisible,
         > input[type=search].invisible,
         > input[type=url].invisible,
-        > input[type=password].invisible {
+        > input[type=password].invisible,
+        > .input.invisible {
           border: 1px dashed $theme-primary;
 
           + label {
@@ -41,9 +45,13 @@
     }
   }
 
+  .measure {
+    display: none;
+  }
+
   > .row,
+  .form > .row,
   form > .row {
-    width: 100%;
     flex-direction: row;
     flex: 0 0 auto;
     display: flex;
@@ -54,7 +62,9 @@
   > .column,
   > .row > .column,
   form > .column,
-  form > .row > .column {
+  form > .row > .column,
+  .form > .column,
+  .form > .row > .column {
     flex: 1 1 50%;
     max-width: 50%;
     min-width: 30%;
@@ -82,7 +92,7 @@
   }
 
   .form-row {
-    flex: 1 0 100%;
+    flex: 0 0 auto;
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
@@ -125,7 +135,8 @@
       input[type=text],
       input[type=search],
       input[type=url],
-      input[type=number] {
+      input[type=number],
+      .input {
         text-align: center;
       }
 
@@ -139,8 +150,15 @@
       > input[type=text],
       > input[type=search],
       > input[type=url],
-      > input[type=password] {
+      > input[type=password],
+      > .input,
+      > .fancy-dropdown-container {
         flex: 1 1 auto;
+      }
+
+      .fancy-dropdown-container {
+        min-width: 20em;
+        max-width: 35em;
       }
 
       button,
@@ -152,6 +170,7 @@
     }
 
     &.submit-container {
+      margin-top: auto;
       justify-content: space-between;
       justify-items: flex-end;
       padding: .8em;
@@ -180,7 +199,8 @@
       > input[type=text],
       > input[type=search],
       > input[type=url],
-      > input[type=password] {
+      > input[type=password],
+      > .input {
         border-color: $theme-text-color-error;
         background-color: rgba(214, 34, 70, 2);
       }
@@ -276,7 +296,8 @@
     > input[type=text],
     > input[type=search],
     > input[type=url],
-    > input[type=password] {
+    > input[type=password],
+    > .input {
       flex: 1 1 100%;
       padding: .2em;
       font-size: 1em;
@@ -306,7 +327,7 @@
 
         &:hover {
           border: 1px solid transparent;
-          background-color: rgba(200, 200, 200, .15);
+          background-color: rgba(0, 0, 0, .05);
           cursor: pointer;
         }
 

@@ -83,7 +83,7 @@
         {
             $board = AgileBoard::getB2DBTable()->selectById(framework\Context::getRequest()->getParameter('board_id'));
             if ($board instanceof AgileBoard) {
-                $component = framework\Action::returnComponentHTML('agile/milestonebox', ['milestone' => $event->getSubject(), 'board' => $board, 'include_counts' => true]);
+                $component = framework\Action::returnComponentHTML('agile/milestonelistitem', ['milestone' => $event->getSubject(), 'board' => $board, 'selected_milestone' => $event->getSubject()]);
                 $event->setReturnValue($component);
                 $event->setProcessed();
             }

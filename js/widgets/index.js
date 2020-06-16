@@ -7,10 +7,16 @@ import setupDynamicToggleListeners from "./dynamic-toggle";
 import setupNotificationListeners from "./notifications";
 import Pachno from "../classes/pachno";
 import { EVENTS as FetchEvents } from "../helpers/fetch";
+import 'simplebar';
+import 'simplebar/dist/simplebar.css';
+import 'air-datepicker/dist/js/datepicker';
+import 'air-datepicker/dist/js/i18n/datepicker.en';
 
 export const EVENTS = {
     update: 'widgets-update'
 };
+
+const calendars = {};
 
 const updateWidgets = function () {
     return new Promise(function (resolve, reject) {
@@ -18,6 +24,12 @@ const updateWidgets = function () {
         $("img[data-src]:not([data-src-processed])").each(function() {
             let $img = $(this);
             $img.attr('src', $img.data('src')).data('src-processed', true);
+        });
+
+        $('.auto-calendar:not([data-processed])').each(function () {
+            $(this).datepicker({ inline: true, language: 'en' });
+            calendars[$(this).attr('id')] = $(this).data('datepicker');
+            $(this).data('processed', true);
         });
 
         Pachno.trigger(EVENTS.update);
@@ -111,5 +123,6 @@ const setupListeners = function () {
 
 export default setupListeners;
 export {
+    calendars,
     clearPopupsAndButtons
 }
