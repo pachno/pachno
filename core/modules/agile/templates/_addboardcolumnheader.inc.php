@@ -32,7 +32,7 @@
                         <?= fa_image_tag('angle-down', ['class' => 'expander']); ?>
                         <div class="dropdown-container list-mode">
                             <?php foreach ($board->getProject()->getAvailableStatuses() as $index => $status): ?>
-                                <input type="radio" value="<?php echo $status->getID(); ?>" name="status_id" id="add_next_column_status_<?php echo $status->getID(); ?>" class="fancy-checkbox" <?php if ($index == 0) echo 'checked'; ?> data-status-id="<?= $status->getID(); ?>" <?php if (in_array($status->getId(), $board->getStatusIds())) echo 'disabled'; ?>>
+                                <input type="checkbox" value="<?php echo $status->getID(); ?>" name="status_ids[<?= $status->getID(); ?>]" id="add_next_column_status_<?php echo $status->getID(); ?>" class="fancy-checkbox" <?php if ($index == 0) echo 'checked'; ?> data-status-id="<?= $status->getID(); ?>" <?php if (in_array($status->getId(), $board->getStatusIds())) echo 'disabled'; ?>>
                                 <label for="add_next_column_status_<?php echo $status->getID(); ?>" class="list-item <?php if (in_array($status->getId(), $board->getStatusIds())) echo 'disabled'; ?>">
                                     <?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far'); ?>
                                     <span class="name value"><?php echo __($status->getName()); ?></span>

@@ -15,6 +15,7 @@
         <div class="top-search-filters-container" id="project_planning_action_strip">
             <div class="header">
                 <div class="name-container">
+                    <span class="project-name"><?= $board->getProject()->getName(); ?></span>
                     <span class="board-name"><?= $board->getName(); ?></span>
                 </div>
                 <div class="stripe-container">
@@ -39,33 +40,35 @@
                             <span class="value"></span>
                             <?= fa_image_tag('angle-down', ['class' => 'expander']); ?>
                             <div class="dropdown-container list-mode" id="selected_milestone_input" data-status-url="<?= make_url('agile_whiteboardmilestonestatus', array('project_key' => $board->getProject()->getKey(), 'board_id' => $board->getID(), 'mode' => 'getmilestonestatus')); ?>">
-                                <div class="list-item disabled" id="milestone-list-no-milestones" style="<?php if (count($board->getMilestones())) echo 'display: none;'; ?>">
-                                    <span class="icon"><?= fa_image_tag('info-circle'); ?></span>
-                                    <span class="name value"><?= __('There are no milestones'); ?></span>
-                                </div>
                                 <input type="radio" name="selected_milestone" id="selected_milestone_0_generic" class="fancy-checkbox" value="0" checked>
                                 <label for="selected_milestone_0_generic" class="list-item label-generic">
                                     <span class="icon"><?= fa_image_tag('money-check'); ?></span>
                                     <span class="name value"><?= __('Any milestones'); ?></span>
                                 </label>
+                                <div class="list-item separator label-generic"></div>
                                 <input type="radio" name="selected_milestone" id="selected_milestone_0_kanban" class="fancy-checkbox" value="0" checked>
                                 <label for="selected_milestone_0_kanban" class="list-item label-kanban">
                                     <span class="icon"><?= fa_image_tag('money-check'); ?></span>
                                     <span class="name value"><?= __('Any milestones'); ?></span>
                                 </label>
+                                <div class="list-item separator label-kanban" id="milestone-list-separator"></div>
+                                <div class="list-item disabled" id="milestone-list-no-milestones" style="<?php if (count($board->getMilestones())) echo 'display: none;'; ?>">
+                                    <span class="icon"><?= fa_image_tag('info-circle'); ?></span>
+                                    <span class="name value"><?= __('There are no milestones'); ?></span>
+                                </div>
                                 <?php foreach ($board->getMilestones() as $milestone): ?>
                                     <?php include_component('agile/milestonelistitem', ['milestone' => $milestone, 'board' => $board, 'selected_milestone' => $selected_milestone]); ?>
                                 <?php endforeach; ?>
                                 <div class="list-item separator"></div>
                                 <a class="list-item trigger-backdrop" href="javascript:void(0);" data-url="<?= make_url('get_partial_for_backdrop', ['key' => 'agilemilestone', 'project_id' => $board->getProject()->getID(), 'board_id' => $board->getID()]); ?>">
                                     <?= fa_image_tag('plus-square', ['class' => 'icon']); ?>
-                                    <span class="name"><span class="label-generic"><?= __('Create an empty milestone'); ?></span><span class="label-kanban"><?= __('Create an empty milestone'); ?></span><span class="label-scrum"><?= __('Create an empty sprint'); ?></span></span>
+                                    <span class="name"><span class="label-generic"><?= __('Create a new milestone'); ?></span><span class="label-kanban"><?= __('Create a new milestone'); ?></span><span class="label-scrum"><?= __('Create an empty sprint'); ?></span></span>
                                 </a>
                             </div>
                         </div>
                     </div>
                     <input type="search" class="planning_filter_title shadeable" id="planning_filter_title_input" disabled placeholder="<?= __('Filter issues by title'); ?>">
-                    <div class="avatar-list"></div>
+                    <div class="avatar-list" id="board-assignees-list"></div>
                     <button class="button secondary icon trigger-backdrop settings" type="button" data-url="<?= make_url('get_partial_for_backdrop', ['key' => 'agileboard', 'project_id' => $board->getProject()->getID(), 'board_id' => $board->getID()]); ?>" data-docked-backdrop="right"><?= fa_image_tag('cog'); ?></button>
                 </div>
             </div>
@@ -158,7 +161,7 @@
                                         <?= fa_image_tag('angle-down', ['class' => 'expander']); ?>
                                         <div class="dropdown-container list-mode">
                                             <?php foreach ($board->getProject()->getAvailableStatuses() as $index => $status): ?>
-                                                <input type="radio" value="<?= $status->getID(); ?>" name="status_id" id="add_first_column_status_<?= $status->getID(); ?>" class="fancy-checkbox" <?php if ($index == 0) echo 'checked'; ?>>
+                                                <input type="checkbox" value="<?= $status->getID(); ?>" name="status_ids[<?= $status->getID(); ?>]" id="add_first_column_status_<?= $status->getID(); ?>" class="fancy-checkbox" <?php if ($index == 0) echo 'checked'; ?>>
                                                 <label for="add_first_column_status_<?= $status->getID(); ?>" class="list-item">
                                                     <?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far'); ?>
                                                     <span class="name value"><?= __($status->getName()); ?></span>

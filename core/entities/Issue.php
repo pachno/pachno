@@ -440,13 +440,6 @@
         protected $_being_worked_on_by_user_since;
 
         /**
-         * List of tags for this issue
-         *
-         * @var array
-         */
-        protected $_tags;
-
-        /**
          * Whether the issue is deleted
          *
          * @var boolean
@@ -590,10 +583,18 @@
         /**
          * Array of users that are subscribed to this issue
          *
-         * @var array
+         * @var User[]
          * @Relates(class="\pachno\core\entities\User", collection=true, manytomany=true, joinclass="\pachno\core\entities\tables\UserIssues")
          */
         protected $_subscribers = null;
+
+        /**
+         * Array of tags attached to this issue
+         *
+         * @var User[]
+         * @Relates(class="\pachno\core\entities\User", collection=true, manytomany=true, joinclass="\pachno\core\entities\tables\UserIssues")
+         */
+        protected $_tags = null;
 
         protected $_new_subscribers = [];
 
@@ -2524,14 +2525,7 @@
          */
         public function getTags()
         {
-            if ($this->_tags == null) {
-                $this->_tags = [];
-                if ($resultset = tables\IssueTags::getTable()->getByIssueID($this->getID())) {
-                    while ($row = $resultset->getNextRow()) {
-                        $this->_tags[$row->get(tables\IssueTags::ID)] = $row->get(tables\IssueTags::TAG_NAME);
-                    }
-                }
-            }
+            $this->_b2dbLazyLoad('_tags');
 
             return $this->_tags;
         }
@@ -2790,19 +2784,6 @@
         public function getAgileColor()
         {
             return $this->_scrumcolor;
-        }
-
-        public function getAgileTextColor()
-        {
-            if (!Context::isCLI()) {
-                Context::loadLibrary('ui');
-            }
-
-            $rgb = pachno_hex_to_rgb($this->_scrumcolor);
-
-            if (!$rgb) return '#333';
-
-            return 0.299 * $rgb['r'] + 0.587 * $rgb['g'] + 0.114 * $rgb['b'] > 170 ? '#333' : '#FFF';
         }
 
         /**
@@ -4487,6 +4468,7 @@
                 'updated_at' => $this->getLastUpdatedTime(),
                 'updated_at_iso' => date('c', $this->getLastUpdatedTime()),
                 'title' => $this->getRawTitle(),
+                'cover_color' => $this->getAgileColor(),
                 'href' => Context::getRouting()->generate('viewissue', ['project_key' => $this->getProject()->getKey(), 'issue_no' => $this->getFormattedIssueNo()], false),
                 'more_actions_url' => Context::getRouting()->generate('issue_moreactions', ['project_key' => $this->getProject()->getKey(), 'issue_id' => $this->getID()]),
                 'posted_by' => ($this->getPostedBy() instanceof common\Identifiable) ? $this->getPostedBy()->toJSON() : null,
@@ -4494,8 +4476,13 @@
                 'status' => ($this->getStatus() instanceof common\Identifiable) ? $this->getStatus()->toJSON() : null,
                 'milestone' => ($this->getMilestone() instanceof common\Identifiable) ? $this->getMilestone()->toJSON() : null,
                 'number_of_comments' => $this->getNumberOfUserComments(),
-                'number_of_files' => $this->getNumberOfFiles()
+                'number_of_files' => $this->getNumberOfFiles(),
+                'tags' => []
             ];
+
+            foreach ($this->getTags() as $tag) {
+                $json['tags'][] = $tag->toJSON(false);
+            }
 
             if ($detailed) {
                 $fields = $this->getProject()->getVisibleFieldsArray($this->getIssueType());

@@ -28,6 +28,7 @@ class Board {
         this.swimlane_field_values = undefined;
         this.swimlanes = undefined;
         this.columns = undefined;
+        this.users = new Set();
 
         this.selected_milestone_id = 0;
 
@@ -74,13 +75,14 @@ class Board {
         }
     }
 
-    updateVisibleWhiteboard() {
+    updateVisibleWhiteboard(selected_milestone_id) {
+        selected_milestone_id = selected_milestone_id || this.selected_milestone_id;
         $('#onboarding-no-board-columns').addClass('hidden');
         $('#onboarding-no-milestones').addClass('hidden');
         $('#onboarding-no-active-sprint').addClass('hidden');
         $('#whiteboard').hide();
-        if (!this.columns.length || (this.selected_milestone_id === 0 && this.type === BoardTypes.SCRUM)) {
-            if (this.selected_milestone_id === 0 && this.type === BoardTypes.SCRUM) {
+        if ((!this.columns || !this.columns.length) || (selected_milestone_id === 0 && this.type === BoardTypes.SCRUM)) {
+            if (selected_milestone_id === 0 && this.type === BoardTypes.SCRUM) {
                 if ($('#selected_milestone_input > .list-item').length > 3) {
                     $('#onboarding-no-active-sprint').removeClass('hidden');
                 } else {
@@ -118,6 +120,7 @@ class Board {
         const previous_milestone_id = this.selected_milestone_id;
         this.selected_milestone_id = ($selectedInput.length) ? parseInt($selectedInput.val()) : 0;
 
+        this.updateVisibleWhiteboard();
         if (this.selected_milestone_id !== previous_milestone_id && trigger_reload) {
             this.fetchSwimlanes();
         }
@@ -132,6 +135,7 @@ class Board {
                 }
             }
         }
+        this.users.clear();
 
         $('#whiteboard_indicator').show();
         if (this.selected_milestone_id !== 0 || this.type !== BoardTypes.SCRUM) {
@@ -215,7 +219,7 @@ class Board {
                                     <div class="form name">
                                         <div class="form-row">
                                             <span class="input invisible trigger-report-issue" data-status-ids="${status_ids}">
-                                                <span class="placeholder">${UI.fa_image_tag('plus')}<span><?= __('Add card'); ?></span></span>
+                                                <span class="placeholder">${UI.fa_image_tag('plus')}<span>${Pachno.T.agile.add_card}</span></span>
                                             </span>
                                         </div>
                                     </div>
@@ -247,6 +251,10 @@ class Board {
                     num_issues[`status_${issue.status.id}`] += 1;
                     if (issue.processed) continue;
 
+                    if (issue.assignee && issue.assignee.type == 'user') {
+                        this.users.add(JSON.stringify(issue.assignee));
+                    }
+
                     $swimlaneContainer.removeClass('empty');
                     if (this.swimlane_type == SwimlaneTypes.NONE) {
                         $add_card_form.before(issue.element);
@@ -256,8 +264,14 @@ class Board {
                     issue.processed = true;
                 }
             }
+            let count_total = 0;
+            const $primary_count = $(`.column[data-column-id=${column.id}] .column-count.primary`);
             for (const status_id of column.status_ids) {
                 $(`.column-count[data-status-id=${status_id}]`).html(num_issues[`status_${status_id}`]);
+                count_total += parseInt(num_issues[`status_${status_id}`]);
+            }
+            if ($primary_count.length) {
+                $primary_count.html(count_total);
             }
         }
     }
@@ -285,12 +299,22 @@ class Board {
             this.verifySwimlanes();
             this.verifyColumns();
             this.verifyIssues();
+            this.updateAssigneesList();
             $whiteboard_indicator.hide();
         } catch (error) {
             console.trace(error);
             console.error(error);
         }
-    };
+    }
+
+    updateAssigneesList() {
+        const $avatar_container = $('#board-assignees-list');
+        $avatar_container.html('');
+        for (const assignee of this.users) {
+            const assignee_json = JSON.parse(assignee);
+            $avatar_container.append(`<span class="avatar-container"><span class="avatar medium"><img src="${assignee_json.avatar_url_small}"></span><span class="name-container"><span class="name">${assignee_json.display_name}</span><span class="username">@${assignee_json.username}</span></span></span>`);
+        }
+    }
 
     filterInput(event) {
         const $filter_input = $(event.target);
@@ -343,7 +367,7 @@ class Board {
 
     addColumn(column, swimlanes) {
         this.columns.push(column);
-        if (this.swimlanes === undefined) {
+        if (this.swimlanes === undefined || !this.swimlanes.length) {
             this.setSwimlanes(swimlanes);
         } else {
             for (const swimlane of swimlanes) {
@@ -410,10 +434,12 @@ class Board {
                     $container.removeClass('toggle-card');
                     board.addColumn(json.column, json.swimlanes);
                     $('#add-another-column-form').trigger("reset");
-                    $('#onboarding-no-board-columns').addClass('hidden');
+                    board.updateVisibleWhiteboard();
                     break;
                 case 'edit_milestone_form':
-                    $('#selected_milestone_input').append(json.component);
+                    $('#milestone-list-no-milestones').hide();
+                    $('#milestone-list-separator').after(json.component);
+                    $(`#selected_milestone_${json.milestone.id}`).prop('checked', true);
                     board.updateSelectedMilestone(true);
                     break;
             }

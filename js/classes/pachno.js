@@ -7,9 +7,13 @@ import widgetSetupListeners, { calendars } from "../widgets";
 import profileSetupListeners from "../helpers/profile";
 import {initializeDashboards} from "../helpers/dashboard";
 import Board from "./board";
+import strings_en_US from "../../i18n/en_US/strings.json";
+
+const translations = {
+    en_US: strings_en_US
+};
 
 class PachnoApplication {
-
     get EVENTS() {
         return {
             ready: 'pachno-ready',
@@ -24,6 +28,10 @@ class PachnoApplication {
         }
     }
 
+    get T() {
+        return translations[this.language] || translations.en_US;
+    }
+
     constructor() {
         this.debug = false;
         this.basepath = '';
@@ -31,6 +39,7 @@ class PachnoApplication {
         this.autocompleter_url = '';
         this.debugger = undefined;
         this.listeners = {};
+        this.language = document.body.dataset.language;
     }
 
     initialize(options) {

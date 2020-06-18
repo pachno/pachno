@@ -6,6 +6,7 @@
   display: flex;
   flex-direction: column;
   text-align: left;
+  box-sizing: border-box;
 
   &.grid-mode {
     flex-direction: row;
@@ -32,6 +33,7 @@
     top: 0;
     z-index: 10;
     background-color: #FFF;
+    box-sizing: border-box;
 
     .header-name {
       display: flex;
@@ -78,6 +80,7 @@
     .button-group {
       padding: 0 1.5em 1.5em 1.5em;
       justify-content: flex-end;
+      box-sizing: border-box;
 
       button,
       .button {
@@ -119,6 +122,7 @@
     white-space: nowrap;
     min-width: 250px;
     transition: color .25s ease-in-out, background-color .25s ease-in-out;
+    box-sizing: border-box;
 
     &:last-child {
       margin-bottom: 0;
@@ -150,6 +154,7 @@
     }
 
     .dropper-container {
+      box-sizing: border-box;
       border-left: 1px solid rgba(100, 100, 100, .1);
 
       .fas,
@@ -210,10 +215,10 @@
         //max-width: 250px;
         display: flex;
         flex-direction: column;
-        font-size: .85em;
+        font-size: 1em;
 
         & .title {
-          font-size: 1.2em;
+          font-size: 1.1em;
           font-weight: $theme-font-weight-bold;
           white-space: normal;
           width: 100%;
@@ -321,6 +326,18 @@
       padding: .35em 0;
       align-self: center;
       text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      flex-direction: row;
+
+      &.large {
+        flex: 0 0 36px;
+      }
+
+      img {
+        width: 100%;
+      }
 
       &:not(.issuetype-icon) {
         color: rgb(100, 100, 100);
@@ -347,7 +364,9 @@
   }
 }
 .submenu {
+  box-sizing: border-box;
   &.columns {
+    box-sizing: border-box;
     flex-direction: row;
 
     &.three-columns .column {

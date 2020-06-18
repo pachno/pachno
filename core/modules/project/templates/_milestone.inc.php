@@ -23,7 +23,7 @@
     <div id="backdrop_detail_content" class="backdrop_detail_content edit_milestone">
         <div class="form-container">
             <?php if (!isset($includeform) || $includeform): ?>
-            <form accept-charset="<?= \pachno\core\framework\Context::getI18n()->getCharset(); ?>" action="<?= $action_url; ?>" method="post" id="edit_milestone_form" data-simple-submit>
+            <form accept-charset="<?= \pachno\core\framework\Context::getI18n()->getCharset(); ?>" action="<?= $action_url; ?>" method="post" id="edit_milestone_form" data-simple-submit data-auto-close>
             <?php endif; ?>
                 <div class="form-row">
                     <input type="text" class="name-input-enhance" value="<?= $milestone->getName(); ?>" name="name" id="milestone_name_<?= $milestone->getID(); ?>" placeholder="<?= $milestoneplaceholder; ?>">

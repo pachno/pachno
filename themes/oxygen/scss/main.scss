@@ -277,7 +277,7 @@ img.smiley {
 
 /* Main header area */
 header {
-  background: #0C8990;
+  background: $theme-primary;
   color: white;
   flex: 0 0 55px;
   display: flex;
@@ -292,7 +292,7 @@ header {
 .backdrop_detail_header {
   box-shadow: none;
   border: none;
-  color: #0C8990;
+  color: $theme-primary;
   font-weight: $theme-font-weight-bold;
   font-size: 1.4em;
   margin: 0;
@@ -323,14 +323,14 @@ header {
   text-align: center;
 
   &:hover {
-    background-color: #0c8990;
+    background-color: $theme-primary;
     color: #FFF;
   }
 }
 
 
 .backdrop_detail_header a {
-  color: #0c8990;
+  color: $theme-primary;
   border: none;
   text-decoration: none;
 }
@@ -700,8 +700,8 @@ img.userstate {
 }
 
 #logo_container .logo {
-  flex: 0 0 32px;
-  min-width: 32px;
+  flex: 0 0 46px;
+  min-width: 46px;
   vertical-align: middle;
   margin: 0;
   text-decoration: none;
@@ -848,7 +848,7 @@ img.userstate {
 
 .header_menu > ul > li.selected > a,
 .header_menu > ul > li.selected > a:hover {
-  color: #0C8990;
+  color: $theme-primary;
   background-color: #FFF;
   text-shadow: none;
 }
@@ -874,7 +874,7 @@ img.userstate {
 }
 
 .header_menu > ul > li > div > ul > li:hover > a > .additional_information .status-badge {
-  color: #0C8990 !important;
+  color: $theme-primary !important;
   background-color: #FFF !important;
   border-color: #FFF !important;
 }
@@ -1710,7 +1710,7 @@ ul.tab_menu_dropdown, .tab_menu_dropdown ul {
   font-size: 1em;
   font-weight: $theme-font-weight-bold;
   text-transform: uppercase;
-  color: #0C8990;
+  color: $theme-primary;
   border: none;
 }
 
@@ -1765,7 +1765,7 @@ ul.tab_menu_dropdown, .tab_menu_dropdown ul {
 .tab_menu_dropdown li a:hover {
   border: none;
   color: #FFF;
-  background-color: #0C8990;
+  background-color: $theme-primary;
 }
 
 .tab_menu_dropdown .fas, .tab_menu_dropdown .far {
@@ -1811,7 +1811,7 @@ ul.tab_menu_dropdown, .tab_menu_dropdown ul {
   border-bottom: 1px solid #FFF;
   border-left: 1px solid #CCC;
   border-right: 1px solid #DDC;
-  border-top: 3px solid #0C8990;
+  border-top: 3px solid $theme-primary;
   margin-bottom: -1px;
 }
 
@@ -2547,7 +2547,7 @@ ul.client_users li, ul.team_users li, ul.project_users li {
 
 .commit-sha, .commit-sha:hover {
   margin: 0 10px;
-  border: 1px solid #0C8990;
+  border: 1px solid $theme-primary;
   padding: 2px 4px;
   border-radius: 3px;
   color: #333;
@@ -4195,7 +4195,7 @@ table.issue_affects td img {
 }
 
 .issuetype-icon.issuetype-enhancement {
-  background-color: #0C8990;
+  background-color: $theme-primary;
 }
 
 .issuetype-icon.issuetype-epic {

@@ -186,7 +186,7 @@
         public function toJSON($detailed = true)
         {
             $json = parent::toJSON($detailed);
-            $json['status_ids'] = $this->_status_ids;
+            $json['status_ids'] = array_values($this->_status_ids);
             $json['name'] = $this->_name;
             $json['sort_order'] = $this->_sort_order;
 

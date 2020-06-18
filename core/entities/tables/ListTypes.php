@@ -23,7 +23,7 @@
      * @Table(name="listtypes")
      * @Entity(class="\pachno\core\entities\DatatypeBase")
      * @Entities(identifier="itemtype")
-     * @SubClasses(status="\pachno\core\entities\Status", category="\pachno\core\entities\Category", priority="\pachno\core\entities\Priority", role="\pachno\core\entities\Role", resolution="\pachno\core\entities\Resolution", reproducability="\pachno\core\entities\Reproducability", severity="\pachno\core\entities\Severity", activitytype="\pachno\core\entities\ActivityType")
+     * @SubClasses(status="\pachno\core\entities\Status", category="\pachno\core\entities\Category", priority="\pachno\core\entities\Priority", role="\pachno\core\entities\Role", resolution="\pachno\core\entities\Resolution", reproducability="\pachno\core\entities\Reproducability", severity="\pachno\core\entities\Severity", activitytype="\pachno\core\entities\ActivityType", tag="\pachno\core\entities\Tag")
      */
     class ListTypes extends ScopedTable
     {
@@ -171,22 +171,6 @@
                 $update->add(self::ORDER, $key + 1);
                 $this->rawUpdateById($update, $option_id);
             }
-        }
-
-        public function getStatusListForUpgrade()
-        {
-            $query = $this->getQuery();
-            $query->where(self::ITEMTYPE, Datatype::STATUS);
-            $query->join(Scopes::getTable(), Scopes::ID, self::SCOPE);
-            $res = $this->rawSelect($query);
-
-            $statuses = [];
-            while ($row = $res->getNextRow()) {
-                if (!array_key_exists($row[self::SCOPE], $statuses)) $statuses[$row[self::SCOPE]] = ['scopename' => $row[Scopes::NAME], 'statuses' => []];
-                $statuses[$row[self::SCOPE]]['statuses'][$row[self::ID]] = $row[self::NAME];
-            }
-
-            return $statuses;
         }
 
         protected function setupIndexes()

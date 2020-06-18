@@ -74,6 +74,12 @@
         const ROLE = 'role';
 
         /**
+         * Item type tag
+         *
+         */
+        const TAG = 'tag';
+
+        /**
          * Item type activity type
          *
          */

@@ -28,8 +28,12 @@
       .header {
         color: #FFF;
         .name-container {
-          color: #FFF;
+          .board-name,
+          .project-name {
+            color: #FFF;
+          }
         }
+
         .stripe-container {
           .stripe {
             background-color: #FFF;
@@ -152,13 +156,23 @@
 
       .name-container {
         display: flex;
-        align-items: center;
-        justify-content: flex-start;
+        flex-direction: column;
+        align-items: flex-start;
+        justify-content: center;
         flex: 0 0 auto;
-        font-size: 1.5em;
-        font-weight: $theme-font-weight-bold;
-        color: $theme-primary;
-        padding: 0 .5em;
+        padding: 1em 0 1em 1em;
+
+        .project-name {
+          font-size: 1em;
+          color: $theme-text-color;
+          font-weight: $theme-font-weight-regular;
+        }
+
+        .board-name {
+          font-size: 1.5em;
+          color: $theme-primary;
+          font-weight: $theme-font-weight-bold;
+        }
       }
 
       .stripe-container {
@@ -249,6 +263,7 @@
     display: flex;
     flex: 1 1 100%;
     padding: 1em;
+    min-height: 50vh;
     box-sizing: border-box;
     flex-direction: column;
     align-items: stretch;
@@ -479,9 +494,16 @@
           padding-bottom: 1em;
         }
 
-        &[data-swimlane-identifier=swimlane_0] {
-          .column {
-            background-image: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255, 255, 255, 0.4) 10px, rgba(255, 255, 255, 0.4) 20px);
+      }
+    }
+
+    &.swimlanes {
+      .row {
+        &.swimlane {
+          &[data-swimlane-identifier=swimlane_0] {
+            .column {
+              background-image: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255, 255, 255, 0.4) 10px, rgba(255, 255, 255, 0.4) 20px);
+            }
           }
         }
       }

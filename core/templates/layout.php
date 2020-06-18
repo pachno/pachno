@@ -65,6 +65,7 @@
     <body id="pachno-body"
       <?php if (Context::isDebugMode()) echo 'data-debug-mode="1" data-debug-url="' . make_url('debugger', array('debug_id' => '___debugid___')) . '"'; ?>
       data-webroot="<?= $webroot; ?>"
+      data-language="<?= Context::getI18n()->getCurrentLanguage(); ?>"
       data-data-url="<?= make_url('userdata'); ?>"
       data-autocompleter-url="<?= (Context::isProjectContext()) ? make_url('project_quicksearch', array('project_key' => Context::getCurrentProject()->getKey())) : make_url('quicksearch'); ?>"
     >
