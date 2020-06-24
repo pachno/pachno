@@ -149,7 +149,7 @@ class Board {
     setSwimlanes(swimlanes) {
         const $whiteboard_indicator = $('#whiteboard_indicator');
         if (swimlanes.length) {
-            this.swimlanes = swimlanes.map(json => new Swimlane(json));
+            this.swimlanes = swimlanes.map(json => new Swimlane(json, this.id));
             this.updateWhiteboard();
         } else {
             this.swimlanes = swimlanes;

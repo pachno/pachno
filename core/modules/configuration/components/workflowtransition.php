@@ -1,0 +1,14 @@
+<div class="workflow_browser_step_transition transition <?php echo $direction; ?>" id="transition_<?php echo $transition->getID(); ?>">
+    <?php if (!$transition->isInitialTransition()): ?>
+        <form accept-charset="<?php echo \pachno\core\framework\Context::getI18n()->getCharset(); ?>" method="post" action="<?php echo make_url('configure_workflow_delete_transition', array('workflow_id' => $transition->getWorkflow()->getID(), 'transition_id' => $transition->getID())); ?>" id="transition_<?php echo $transition->getID(); ?>_delete_form">
+          <input type="hidden" name="direction" value="<?php echo $direction; ?>">
+          <input type="hidden" name="step_id" value="<?php echo $step->getID(); ?>">
+          <?php echo javascript_link_tag(image_tag('icon_delete.png'), array('class' => 'image', 'onclick' => "Pachno.UI.Dialog.show('".__('Delete this transition')."', '".__('Do you really want to delete this transition?').'<br><b>'.__('This action cannot be reverted').'</b>'."', {yes: {click: function() {Pachno.Config.Workflows.Transition.remove('".make_url('configure_workflow_delete_transition', array('workflow_id' => $transition->getWorkflow()->getID(), 'transition_id' => $transition->getID()))."', {$transition->getID()}, '{$direction}'); }}, no: { click: Pachno.UI.Dialog.dismiss }});")); ?>
+        </form>
+    <?php endif; ?>
+    <?php echo link_tag(make_url('configure_workflow_transition', array('workflow_id' => $transition->getWorkflow()->getID(), 'transition_id' => $transition->getID())), $transition->getName()); ?>
+    <?php if ($direction == 'outgoing'): ?>
+        <br>&rarr;
+        <span><?php echo link_tag(make_url('configure_workflow_step', array('workflow_id' => $transition->getWorkflow()->getID(), 'step_id' => $transition->getOutgoingStep()->getID())), $transition->getOutgoingStep()->getName()); ?></span>
+    <?php endif; ?>
+</div>

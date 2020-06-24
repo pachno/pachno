@@ -588,6 +588,10 @@
     box-shadow: 0 5px 16px rgba(0,0,0,0.19);
   }
 
+  &:hover {
+    cursor: pointer;
+  }
+
   &:not(.gs-draggable) {
     transition: box-shadow .25s ease-in-out, transform .25s ease-in-out;
 

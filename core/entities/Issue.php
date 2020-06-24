@@ -57,6 +57,10 @@
          */
         const STATE_CLOSED = 1;
 
+        const COVER_STYLE_NONE = 'none';
+        const COVER_STYLE_SOLID = 'solid';
+        const COVER_STYLE_SHADED = 'shaded';
+
         /**
          * @Column(type="string", name="name", length=1000)
          */
@@ -313,9 +317,26 @@
          * The scrum color
          *
          * @var string
-         * @Column(type="string", length=7, default="#FFFFFF")
+         * @Column(type="string", length=7, default="")
          */
-        protected $_scrumcolor;
+        protected $_cover_color = '';
+
+        /**
+         * The scrum color
+         *
+         * @var string
+         * @Column(type="string", length=10, default="")
+         */
+        protected $_cover_style = self::COVER_STYLE_NONE;
+
+        /**
+         * A cover image, if present
+         *
+         * @var File
+         * @Column(type="integer", length=10)
+         * @Relates(class="\pachno\core\entities\File")
+         */
+        protected $_cover_image_file_id = 0;
 
         /**
          * The estimated time (months) to fix this issue
@@ -2106,7 +2127,7 @@
          */
         public function getUserWorkingOnIssue()
         {
-            return $this->_b2dbLazyLoad('_being_worked_on_by_user');
+            return ($this->getAssignee() instanceof User) ? $this->getAssignee() : null;
         }
 
         /**
@@ -2781,9 +2802,9 @@
          *
          * @return string
          */
-        public function getAgileColor()
+        public function getCoverColor()
         {
-            return $this->_scrumcolor;
+            return $this->_cover_color;
         }
 
         /**
@@ -2791,9 +2812,49 @@
          *
          * @param integer $color The color to change to
          */
-        public function setAgileColor($color)
+        public function setCoverColor($color)
         {
-            $this->_addChangedProperty('_scrumcolor', $color);
+            $this->_addChangedProperty('_cover_color', $color);
+        }
+
+        /**
+         * Returns the agile board style
+         *
+         * @return string
+         */
+        public function getCoverStyle()
+        {
+            return $this->_cover_style;
+        }
+
+        /**
+         * Set the agile board style for this issue
+         *
+         * @param integer $style The style to change to
+         */
+        public function setCoverStyle($style)
+        {
+            $this->_addChangedProperty('_cover_style', $style);
+        }
+
+        /**
+         * Returns the cover image file if any
+         *
+         * @return File
+         */
+        public function getCoverImageFile()
+        {
+            return $this->_b2dbLazyLoad('_cover_image_file_id');
+        }
+
+        /**
+         * Set the cover image file
+         *
+         * @param int|File $cover_image_file_id The cover image file or id
+         */
+        public function setCoverImageFile($cover_image_file_id)
+        {
+            $this->_addChangedProperty('_cover_image_file_id', $cover_image_file_id);
         }
 
         /**
@@ -4468,9 +4529,13 @@
                 'updated_at' => $this->getLastUpdatedTime(),
                 'updated_at_iso' => date('c', $this->getLastUpdatedTime()),
                 'title' => $this->getRawTitle(),
-                'cover_color' => $this->getAgileColor(),
+                'cover_color' => $this->getCoverColor(),
+                'cover_style' => $this->getCoverStyle(),
+                'cover_image_file_id' => ($this->getCoverImageFile() instanceof File) ? $this->getCoverImageFile()->getID() : 0,
+                'cover_image_url' => ($this->getCoverImageFile() instanceof File) ? Context::getRouting()->generate('showfile', ['id' => $this->getCoverImageFile()->getID()]) : '',
                 'href' => Context::getRouting()->generate('viewissue', ['project_key' => $this->getProject()->getKey(), 'issue_no' => $this->getFormattedIssueNo()], false),
                 'more_actions_url' => Context::getRouting()->generate('issue_moreactions', ['project_key' => $this->getProject()->getKey(), 'issue_id' => $this->getID()]),
+                'card_url' => Context::getRouting()->generate('get_partial_for_backdrop', ['key' => 'viewissue', 'issue_id' => $this->getID()]),
                 'posted_by' => ($this->getPostedBy() instanceof common\Identifiable) ? $this->getPostedBy()->toJSON() : null,
                 'assignee' => ($this->getAssignee() instanceof common\Identifiable) ? $this->getAssignee()->toJSON() : null,
                 'status' => ($this->getStatus() instanceof common\Identifiable) ? $this->getStatus()->toJSON() : null,

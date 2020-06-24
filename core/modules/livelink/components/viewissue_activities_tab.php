@@ -1,0 +1,1 @@
+<li id="tab_viewissue_commits"><?php echo javascript_link_tag(fa_image_tag('code-branch').__('Commits %count', array('%count' => '<span class="count-badge">' . $count . '</span>')), array('onclick' => "Pachno.UI.tabSwitcher('tab_viewissue_commits', 'viewissue_activity');")); ?></li>

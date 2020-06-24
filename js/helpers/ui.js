@@ -145,7 +145,7 @@ const UI = {
                                         if (callback)
                                             setTimeout((callback)(), 300);
                                     }},
-                                failure: {hide: 'fullpage_backdrop'}
+                                failure: {hide: '#fullpage_backdrop'}
                             });
                         } else {
                             console.error('Trying to show backdrop but no url');
@@ -235,6 +235,10 @@ const autoBackdropLink = function (event) {
             $button.prop('disabled', false);
             $button.removeClass('submitting');
             $button.removeClass('disabled');
+        })
+        .catch(error => {
+            console.error(error);
+            UI.Backdrop.reset();
         });
 };
 

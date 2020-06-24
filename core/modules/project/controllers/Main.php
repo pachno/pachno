@@ -214,7 +214,7 @@
                     switch ($request['detail']) {
                         case 'color':
                             $this->forward403unless($issue->canEditColor());
-                            $issue->setAgileColor($request['color']);
+                            $issue->setCoverColor($request['color']);
                             $issue->save();
 
                             return $this->renderJSON(['failed' => false, 'text_color' => $issue->getAgileTextColor()]);

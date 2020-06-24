@@ -77,7 +77,7 @@
 
         const REPRODUCABILITY = 'issues.reproducability';
 
-        const SCRUMCOLOR = 'issues.scrumcolor';
+        const cover_color = 'issues.cover_color';
 
         const ESTIMATED_MONTHS = 'issues.estimated_months';
 

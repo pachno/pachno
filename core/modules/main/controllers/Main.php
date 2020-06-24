@@ -3119,6 +3119,10 @@
                     case 'add_dashboard_view':
                         $template_name = 'main/adddashboardview';
                         break;
+                    case 'viewissue':
+                        $template_name = 'project/viewissuecard';
+                        $options['board'] = tables\AgileBoards::getTable()->selectById($request['board_id']);
+                        break;
                     case 'userscopes':
                         if (!framework\Context::getScope()->isDefault())
                             throw new Exception($this->getI18n()->__('This is not allowed outside the default scope'));

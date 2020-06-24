@@ -108,7 +108,7 @@
         {
             if (Context::getRouting()->hasComponentOverride($template)) {
                 $override_details = Context::getRouting()->getComponentOverride($template);
-                $template = strtolower($override_details['module'] . '/' . $override_details['method']);
+                $template = strtolower($override_details['module'] . DS. 'components' . DS . $override_details['method']);
             }
 
             if ($separator_pos = mb_strpos($template, '/')) {
@@ -127,7 +127,7 @@
                 $module_file = self::getModuleAndTemplate($template);
             if (!Context::isReadySetup() || ($template_name = Context::getI18n()->hasTranslatedTemplate($template, true)) === false) {
                 $template_basepath = (Context::isInternalModule($module_file['module'])) ? PACHNO_INTERNAL_MODULES_PATH : PACHNO_MODULES_PATH;
-                $template_name = $template_basepath . $module_file['module'] . DS . 'templates' . DS . "_{$module_file['file']}.inc.php";
+                $template_name = $template_basepath . $module_file['module'] . DS . 'components' . DS . "{$module_file['file']}.php";
             }
 
             return $template_name;

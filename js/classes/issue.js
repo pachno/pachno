@@ -2,8 +2,9 @@ import UI from "../helpers/ui";
 import $ from "jquery";
 
 class Issue {
-    constructor(json) {
+    constructor(json, board_id) {
         this.id = json.id;
+        this.board_id = board_id;
         this.title = json.title;
         this.issue_no = json.issue_no;
         this.state = json.state;
@@ -13,6 +14,7 @@ class Issue {
         this.created_at_iso = json.created_at_iso;
         this.updated_at = json.updated_at;
         this.updated_at_iso = json.updated_at_iso;
+        this.card_url = json.card_url;
         this.href = json.href;
         this.more_actions_url = json.more_actions_url;
         this.posted_by = json.posted_by;
@@ -32,7 +34,7 @@ class Issue {
         if (this.blocking) classes.push('blocking');
 
         let html = `
-<div id="whiteboard_issue_${this.id}" class="whiteboard-issue ${classes.join(',')}" data-issue-id="${this.id}">
+<div id="whiteboard_issue_${this.id}" class="whiteboard-issue trigger-backdrop ${classes.join(',')}" data-issue-id="${this.id}" data-url="${this.card_url}/board_id/${this.board_id}">
     <div class="issue-header">
         <span class="issue-number">${this.issue_no}</span>
         <span class="issue-title">${this.title}</span>

@@ -10701,6 +10701,8 @@ textarea.markItUpEditor:focus {
     margin-top: .75em; }
   .whiteboard-issue.gs-draggable {
     box-shadow: 0 5px 16px rgba(0, 0, 0, 0.19); }
+  .whiteboard-issue:hover {
+    cursor: pointer; }
   .whiteboard-issue:not(.gs-draggable) {
     transition: box-shadow .25s ease-in-out, transform .25s ease-in-out; }
     .whiteboard-issue:not(.gs-draggable):hover {

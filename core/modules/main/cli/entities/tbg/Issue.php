@@ -242,7 +242,7 @@
          * @var string
          * @Column(type="string", length=7, default="#FFFFFF")
          */
-        protected $_scrumcolor;
+        protected $_cover_color;
 
         /**
          * The estimated time (months) to fix this issue
