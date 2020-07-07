@@ -141,64 +141,64 @@
         {
         }
 
-        /**
-         * View an issue
-         *
-         * @param Request $request
-         */
-        public function runViewIssue(Request $request)
-        {
-            framework\Logging::log('Loading issue');
-
-            $issue = $this->_getIssueFromRequest($request);
-
-            if ($issue instanceof Issue) {
-                if (!array_key_exists('viewissue_list', $_SESSION) || !is_array($_SESSION['viewissue_list'])) {
-                    $_SESSION['viewissue_list'] = [];
-                }
-
-                $k = array_search($issue->getID(), $_SESSION['viewissue_list']);
-                if ($k !== false)
-                    unset($_SESSION['viewissue_list'][$k]);
-
-                array_push($_SESSION['viewissue_list'], $issue->getID());
-
-                if (count($_SESSION['viewissue_list']) > 10)
-                    array_shift($_SESSION['viewissue_list']);
-
-                $this->getUser()->markNotificationsRead('issue', $issue->getID());
-
-                framework\Context::getUser()->setNotificationSetting(Settings::SETTINGS_USER_NOTIFY_ITEM_ONCE . '_issue_' . $issue->getID(), false);
-
-                framework\Event::createNew('core', 'viewissue', $issue)->trigger();
-            }
-
-            $message = framework\Context::getMessageAndClear('issue_saved');
-            $uploaded = framework\Context::getMessageAndClear('issue_file_uploaded');
-
-            if (framework\Context::hasMessage('issue_deleted_shown') && (is_null($issue) || ($issue instanceof Issue && $issue->isDeleted()))) {
-                $request_referer = ($request['referer'] ?: (isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : null));
-
-                if ($request_referer) {
-                    return $this->forward($request_referer);
-                }
-            } elseif (framework\Context::hasMessage('issue_deleted')) {
-                $this->issue_deleted = framework\Context::getMessageAndClear('issue_deleted');
-                framework\Context::setMessage('issue_deleted_shown', true);
-            } elseif ($message == true) {
-                $this->issue_saved = true;
-            } elseif ($uploaded == true) {
-                $this->issue_file_uploaded = true;
-            } elseif (framework\Context::hasMessage('issue_error')) {
-                $this->error = framework\Context::getMessageAndClear('issue_error');
-            } elseif (framework\Context::hasMessage('issue_message')) {
-                $this->issue_message = framework\Context::getMessageAndClear('issue_message');
-            }
-
-            $this->issue = $issue;
-            $event = framework\Event::createNew('core', 'viewissue', $issue)->trigger();
-            $this->listenViewIssuePostError($event);
-        }
+//        /**
+//         * View an issue
+//         *
+//         * @param Request $request
+//         */
+//        public function runViewIssue(Request $request)
+//        {
+//            framework\Logging::log('Loading issue');
+//
+//            $issue = $this->_getIssueFromRequest($request);
+//
+//            if ($issue instanceof Issue) {
+//                if (!array_key_exists('viewissue_list', $_SESSION) || !is_array($_SESSION['viewissue_list'])) {
+//                    $_SESSION['viewissue_list'] = [];
+//                }
+//
+//                $k = array_search($issue->getID(), $_SESSION['viewissue_list']);
+//                if ($k !== false)
+//                    unset($_SESSION['viewissue_list'][$k]);
+//
+//                array_push($_SESSION['viewissue_list'], $issue->getID());
+//
+//                if (count($_SESSION['viewissue_list']) > 10)
+//                    array_shift($_SESSION['viewissue_list']);
+//
+//                $this->getUser()->markNotificationsRead('issue', $issue->getID());
+//
+//                framework\Context::getUser()->setNotificationSetting(Settings::SETTINGS_USER_NOTIFY_ITEM_ONCE . '_issue_' . $issue->getID(), false);
+//
+//                framework\Event::createNew('core', 'viewissue', $issue)->trigger();
+//            }
+//
+//            $message = framework\Context::getMessageAndClear('issue_saved');
+//            $uploaded = framework\Context::getMessageAndClear('issue_file_uploaded');
+//
+//            if (framework\Context::hasMessage('issue_deleted_shown') && (is_null($issue) || ($issue instanceof Issue && $issue->isDeleted()))) {
+//                $request_referer = ($request['referer'] ?: (isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : null));
+//
+//                if ($request_referer) {
+//                    return $this->forward($request_referer);
+//                }
+//            } elseif (framework\Context::hasMessage('issue_deleted')) {
+//                $this->issue_deleted = framework\Context::getMessageAndClear('issue_deleted');
+//                framework\Context::setMessage('issue_deleted_shown', true);
+//            } elseif ($message == true) {
+//                $this->issue_saved = true;
+//            } elseif ($uploaded == true) {
+//                $this->issue_file_uploaded = true;
+//            } elseif (framework\Context::hasMessage('issue_error')) {
+//                $this->error = framework\Context::getMessageAndClear('issue_error');
+//            } elseif (framework\Context::hasMessage('issue_message')) {
+//                $this->issue_message = framework\Context::getMessageAndClear('issue_message');
+//            }
+//
+//            $this->issue = $issue;
+//            $event = framework\Event::createNew('core', 'viewissue', $issue)->trigger();
+//            $this->listenViewIssuePostError($event);
+//        }
 
         public function listenViewIssuePostError(framework\Event $event)
         {
@@ -1277,28 +1277,7 @@
                                 tables\IssueFiles::getTable()->addByIssueIDandFileID($issue->getID(), $file->getID());
                             }
                         }
-                        if ($request['return_format'] == 'planning') {
-                            $this->_loadSelectedProjectAndIssueTypeFromRequestForReportIssueAction($request);
-                            $options = [];
-                            $options['selected_issuetype'] = $issue->getIssueType();
-                            $options['selected_project'] = $this->selected_project;
-                            $options['issuetypes'] = $this->issuetypes;
-                            $options['issue'] = $issue;
-                            $options['errors'] = $errors;
-                            $options['permission_errors'] = $permission_errors;
-                            $options['selected_milestone'] = $this->_getMilestoneFromRequest($request);
-                            $options['selected_build'] = $this->_getBuildFromRequest($request);
-                            $options['parent_issue'] = $this->_getParentIssueFromRequest($request);
-                            $options['medium_backdrop'] = 1;
-
-                            return $this->renderJSON(['content' => $this->getComponentHTML('main/reportissuecontainer', $options)]);
-                        }
-                        if ($request->getRequestedFormat() != 'json' && $issue->getProject()->getIssuetypeScheme()->isIssuetypeRedirectedAfterReporting($this->selected_issuetype)) {
-                            $this->forward($this->getRouting()->generate('viewissue', ['project_key' => $issue->getProject()->getKey(), 'issue_no' => $issue->getFormattedIssueNo()]), 303);
-                        } else {
-                            $this->_clearReportIssueProperties();
-                            $this->issue = $issue;
-                        }
+                        return $this->renderJSON(['issue' => $issue->toJSON()]);
                     } catch (Exception $e) {
                         if ($request['return_format'] == 'planning') {
                             $this->getResponse()->setHttpStatus(400);
@@ -1540,9 +1519,9 @@
         {
             $fields_array = $this->selected_project->getReportableFieldsArray($this->issuetype_id);
             $issue = new Issue();
-            $issue->setTitle($this->title);
-            $issue->setIssuetype($this->issuetype_id);
             $issue->setProject($this->selected_project);
+            $issue->setIssuetype($this->issuetype_id);
+            $issue->setTitle($this->title);
             if (isset($fields_array['shortname']))
                 $issue->setShortname($this->selected_shortname);
             if (isset($fields_array['description'])) {

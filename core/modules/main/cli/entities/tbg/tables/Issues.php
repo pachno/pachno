@@ -7,7 +7,7 @@
     /**
      * @static @method Issues getTable() Retrieves an instance of this table
      *
-     * @Table(name="articles")
+     * @Table(name="issues")
      * @Entity(class="\pachno\core\modules\main\cli\entities\tbg\Issue")
      */
     class Issues extends ScopedTable

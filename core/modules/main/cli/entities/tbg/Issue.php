@@ -3,7 +3,9 @@
     namespace pachno\core\modules\main\cli\entities\tbg;
 
     use pachno\core\entities\common\Ownable;
+    use pachno\core\entities\File;
     use pachno\core\entities\traits\Commentable;
+    use pachno\core\entities\User;
     use \pachno\core\framework;
     use pachno\core\helpers\Attachable;
     use pachno\core\helpers\MentionableProvider;
@@ -237,14 +239,6 @@
         protected $_severity;
 
         /**
-         * The scrum color
-         *
-         * @var string
-         * @Column(type="string", length=7, default="#FFFFFF")
-         */
-        protected $_cover_color;
-
-        /**
          * The estimated time (months) to fix this issue
          *
          * @var integer
@@ -464,5 +458,18 @@
          * @Relates(class="\pachno\core\entities\User", collection=true, manytomany=true, joinclass="\pachno\core\entities\tables\UserIssues")
          */
         protected $_subscribers = null;
+
+        public function attachFile(File $file, $file_comment = '', $description = '')
+        {
+        }
+
+        public function detachFile(File $file)
+        {
+        }
+
+        public function getMentionableUsers()
+        {
+        }
+
 
     }

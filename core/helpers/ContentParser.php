@@ -16,7 +16,7 @@
         /**
          * Returns an array of mentioned users
          *
-         * @return array|User
+         * @return User[]
          */
         public function getMentions();
 

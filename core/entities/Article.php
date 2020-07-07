@@ -396,6 +396,10 @@
                 $options['article'] = $this;
             }
 
+            if (!$this->_content) {
+                return '';
+            }
+
             switch ($this->_content_syntax) {
                 case Settings::SYNTAX_EDITOR_JS:
                     $parser = new TextParserEditorJS($this->_content, $options);
@@ -933,12 +937,14 @@
 
         public function hasMentions()
         {
-            return $this->_getParser()->hasMentions();
+            $parser = $this->_getParser();
+            return ($parser instanceof ContentParser) ? $parser->hasMentions() : false;
         }
 
         public function getMentions()
         {
-            return $this->_getParser()->getMentions();
+            $parser = $this->_getParser();
+            return ($parser instanceof ContentParser) ? $parser->getMentions() : [];
         }
 
         public function getLink($mode = 'show')
@@ -1006,8 +1012,8 @@
         protected function _postSave($is_new)
         {
             if ($is_new) {
-                if ($this->_getParser()->hasMentions()) {
-                    foreach ($this->_getParser()->getMentions() as $user) {
+                if ($this->hasMentions()) {
+                    foreach ($this->getMentions() as $user) {
                         if ($user->getID() == framework\Context::getUser()->getID()) continue;
 
                         if (($user->getNotificationSetting(Settings::SETTINGS_USER_NOTIFY_MENTIONED, false)->isOn())) $this->_addNotificationIfNotNotified(Notification::TYPE_ARTICLE_MENTIONED, $user, $this->getAuthor());
@@ -1033,7 +1039,7 @@
          *
          * @return ContentParser
          */
-        protected function _getParser()
+        protected function _getParser(): ?ContentParser
         {
             if (!isset($this->_parser)) {
                 $this->_parseContent();

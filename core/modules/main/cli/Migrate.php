@@ -61,6 +61,9 @@
             $this->cliEcho('Articles', self::COLOR_WHITE, self::STYLE_DEFAULT);
             Articles::getTable()->upgrade(tbg\tables\Articles::getTable());
             $this->cliMoveLeft(8);
+            $this->cliEcho('Issues', self::COLOR_WHITE, self::STYLE_DEFAULT);
+            Issues::getTable()->upgrade(tbg\tables\Issues::getTable());
+            $this->cliMoveLeft(6);
             $this->cliEcho('AgileBoards', self::COLOR_WHITE, self::STYLE_DEFAULT);
             AgileBoards::getTable()->upgrade(tbg\tables\AgileBoards::getTable());
             AgileBoards::getTable()->fixGuestBoards();

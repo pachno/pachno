@@ -54,6 +54,10 @@
 
         protected $_identifier;
 
+        protected $_identifier_type;
+        
+        protected $_identifier_grouping;
+
         public function getIdentifiables()
         {
             return $this->_identifiables;
@@ -173,6 +177,26 @@
             $this->_milestone = $milestone;
         }
 
+        public function getIdentifierType()
+        {
+            return $this->_identifier_type;
+        }
+
+        public function setIdentifierType($identifier_type)
+        {
+            $this->_identifier_type = $identifier_type;
+        }
+
+        public function getIdentifierGrouping()
+        {
+            return $this->_identifier_grouping;
+        }
+
+        public function setIdentifierGrouping($identifier_grouping)
+        {
+            $this->_identifier_grouping = $identifier_grouping;
+        }
+
         public function getIdentifier()
         {
             if ($this->_identifier === null) {
@@ -180,7 +204,7 @@
                 foreach ($this->_identifiables as $identifiable) {
                     $identifiers[] = ($identifiable instanceof Identifiable) ? $identifiable->getId() : $identifiable;
                 }
-                $this->_identifier = 'swimlane_' . join('_', $identifiers);
+                $this->_identifier = 'swimlane_' . implode('_', $identifiers);
             }
 
             return $this->_identifier;
@@ -200,6 +224,9 @@
                 'name' => $this->getName(),
                 'has_identifiables' => $this->hasIdentifiables(),
                 'identifier' => $this->getIdentifier(),
+                'identifier_type' => $this->_identifier_type,
+                'identifier_grouping' => $this->_identifier_grouping,
+                'identifiables' => array_map(fn($identifiable) => ($identifiable instanceof Identifiable) ? $identifiable->toJSON(false) : 0, $this->getIdentifiables()),
                 'identifier_issue' => ($this->getIdentifierIssue() instanceof Issue) ? $this->getIdentifierIssue()->toJSON(false) : null,
                 'issues' => []
             ];

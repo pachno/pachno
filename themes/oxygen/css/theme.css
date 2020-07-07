@@ -8173,7 +8173,7 @@ input[data-interactive-toggle].submitting + label .indicator {
       text-align: center;
       display: flex;
       align-items: center;
-      justify-content: flex-start;
+      justify-content: center;
       flex-direction: row; }
       .list-mode .list-item .icon.large,
       .list-mode .list-item:hover .icon.large {
@@ -8517,6 +8517,8 @@ input[data-interactive-toggle].submitting + label .indicator {
   align-items: center;
   font-size: 1rem;
   flex: 1 1 100%; }
+  .form-container.hidden {
+    display: none; }
   .form-container form,
   .form-container .form {
     height: 100%;

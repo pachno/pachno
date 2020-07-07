@@ -36,169 +36,7 @@
 
 ?>
 <?php if (!empty($errors) || !(empty($permission_errors))): ?>
-    <div class="message-box type-error">
-        <?= fa_image_tag('exclamation-triangle'); ?>
-        <span class="message">
-            <?php foreach ($errors as $key => $error): ?>
-                <?php if (is_array($error)): ?>
-                    <?php foreach ($error as $suberror): ?>
-                        <?= $suberror; ?>
-                    <?php endforeach; ?>
-                <?php elseif (is_bool($error)): ?>
-                    <?php if ($key == 'title' || in_array($key, Datatype::getAvailableFields(true)) || in_array($key, ['pain_bug_type', 'pain_likelihood', 'pain_effect'])): ?>
-                        <?php
-
-                            switch ($key)
-                            {
-                                case 'title':
-                                    echo __('You have to specify a title');
-                                    break;
-                                case 'description':
-                                    echo __('You have to enter a description in the "%description" field', ['%description' => __('Description')]);
-                                    break;
-                                case 'shortname':
-                                    echo __('You have to enter a label in the "%issue_label" field', ['%issue_label' => __('Issue label')]);
-                                    break;
-                                case 'reproduction_steps':
-                                    echo __('You have to enter something in the "%steps_to_reproduce" field', ['%steps_to_reproduce' => __('Steps to reproduce')]);
-                                    break;
-                                case 'edition':
-                                    echo __("Please specify a valid edition");
-                                    break;
-                                case 'build':
-                                    echo __("Please specify a valid version / release");
-                                    break;
-                                case 'component':
-                                    echo __("Please specify a valid component");
-                                    break;
-                                case 'category':
-                                    echo __("Please specify a valid category");
-                                    break;
-                                case 'status':
-                                    echo __("Please specify a valid status");
-                                    break;
-                                case 'priority':
-                                    echo __("Please specify a valid priority");
-                                    break;
-                                case 'reproducability':
-                                    echo __("Please specify a valid reproducability");
-                                    break;
-                                case 'severity':
-                                    echo __("Please specify a valid severity");
-                                    break;
-                                case 'resolution':
-                                    echo __("Please specify a valid resolution");
-                                    break;
-                                case 'milestone':
-                                    echo __("Please specify a valid milestone");
-                                    break;
-                                case 'estimated_time':
-                                    echo __("Please enter a valid estimate");
-                                    break;
-                                case 'spent_time':
-                                    echo __("Please enter time already spent working on this issue");
-                                    break;
-                                case 'percent_complete':
-                                    echo __("Please enter how many percent complete the issue already is");
-                                    break;
-                                case 'pain_bug_type':
-                                    echo __("Please enter a valid triaged bug type");
-                                    break;
-                                case 'pain_likelihood':
-                                    echo __("Please enter a valid triaged likelihood");
-                                    break;
-                                case 'pain_effect':
-                                    echo __("Please enter a valid triaged effect");
-                                    break;
-                                default:
-                                    echo __("Please triage the reported issue, so the user pain score can be properly calculated");
-                                    break;
-                            }
-
-                        ?>
-                    <?php elseif (CustomDatatype::doesKeyExist($key)): ?>
-                        <?= __('Required field "%field_name" is missing or invalid', array('%field_name' => CustomDatatype::getByKey($key)->getDescription())); ?>
-                    <?php else:
-
-                        $event = new Event('core', 'reportissue.validationerror', $key);
-                        $event->setReturnValue($key);
-                        $event->triggerUntilProcessed();
-                        echo __('A validation error occured: %error', array('%error' => $event->getReturnValue()));
-
-                    ?>
-                    <?php endif; ?>
-                <?php else: ?>
-                    <?= $error; ?>
-                <?php endif; ?>
-            <?php endforeach; ?>
-            <?php foreach ($permission_errors as $key => $p_error): ?>
-                <?php if (is_array($p_error)): ?>
-                    <?php foreach ($p_error as $p_suberror): ?>
-                        <?= $p_suberror; ?>
-                    <?php endforeach; ?>
-                <?php elseif (is_bool($p_error)): ?>
-                    <?php if (in_array($key, Datatype::getAvailableFields(true))): ?>
-                        <?php
-
-                            switch ($key)
-                            {
-                                case 'description':
-                                    echo __("You don't have access to enter a description");
-                                    break;
-                                case 'shortname':
-                                    echo __("You don't have access to enter an issue label");
-                                    break;
-                                case 'reproduction_steps':
-                                    echo __("You don't have access to enter steps to reproduce");
-                                    break;
-                                case 'edition':
-                                    echo __("You don't have access to add edition information");
-                                    break;
-                                case 'build':
-                                    echo __("You don't have access to enter release information");
-                                    break;
-                                case 'component':
-                                    echo __("You don't have access to enter component information");
-                                    break;
-                                case 'category':
-                                    echo __("You don't have access to specify a category");
-                                    break;
-                                case 'status':
-                                    echo __("You don't have access to specify a status");
-                                    break;
-                                case 'priority':
-                                    echo __("You don't have access to specify a priority");
-                                    break;
-                                case 'reproducability':
-                                    echo __("You don't have access to specify reproducability");
-                                    break;
-                                case 'severity':
-                                    echo __("You don't have access to specify a severity");
-                                    break;
-                                case 'resolution':
-                                    echo __("You don't have access to specify a resolution");
-                                    break;
-                                case 'estimated_time':
-                                    echo __("You don't have access to estimate the issue");
-                                    break;
-                                case 'spent_time':
-                                    echo __("You don't have access to specify time already spent working on the issue");
-                                    break;
-                                case 'percent_complete':
-                                    echo __("You don't have access to specify how many percent complete the issue is");
-                                    break;
-                            }
-
-                        ?>
-                    <?php else: ?>
-                        <?= __('You don\'t have access to enter "%field_name"', array('%field_name' => CustomDatatype::getByKey($key)->getDescription())); ?>
-                    <?php endif; ?>
-                <?php else: ?>
-                    <?= $p_error; ?>
-                <?php endif; ?>
-            <?php endforeach; ?>
-        </span>
-    </div>
+    <?php include_component('main/reportissueerrors', ['errors' => $errors, 'permission_errors' => $permission_errors]); ?>
 <?php elseif ($issue instanceof Issue): ?>
     <div class="message-box type-info" id="report_issue_reported_issue_details">
         <div class="message">
@@ -209,10 +47,9 @@
         </div>
     </div>
 <?php endif; ?>
-
-<div class="form-container" id="report_form_issue_type_selector">
+<div class="form-container <?php if ($selected_issuetype instanceof Issuetype) echo 'hidden'; ?>" id="report_form_issue_type_selector">
     <?php if (count($issuetypes) > 0): ?>
-        <div class="form-row" id="issuetype_list" <?php if ($selected_issuetype instanceof Issuetype) echo 'style="display: none;"'; ?>>
+        <div class="form-row" id="issuetype_list">
             <div class="list-mode">
                 <?php if ($introarticle instanceof Article): ?>
                     <?php include_component('publish/articledisplay', array('article' => $introarticle, 'show_title' => false, 'show_details' => false, 'show_actions' => false, 'embedded' => true)); ?>
@@ -220,53 +57,34 @@
                 <?php foreach ($issuetypes as $issuetype): ?>
                     <?php if (!$selected_project->getIssuetypeScheme()->isIssuetypeReportable($issuetype)) continue; ?>
                     <?php if (isset($board) && $issuetype->getID() == $board->getEpicIssuetypeID()) continue; ?>
-                    <a class="list-item" data-key="<?= $issuetype->getKey(); ?>" data-id="<?= $issuetype->getID(); ?>" href="javascript:void(0);">
+                    <a class="list-item multiline" data-key="<?= $issuetype->getKey(); ?>" data-id="<?= $issuetype->getID(); ?>" href="javascript:void(0);">
                         <?= fa_image_tag($issuetype->getFontAwesomeIcon(), ['class' => 'icon issuetype-icon issuetype-' . $issuetype->getType()]); ?>
-                        <span class="name"><?= __('Choose %issuetype_name', array('%issuetype_name' => $issuetype->getName())); ?></span>
+                        <span class="name">
+                            <span class="title"><?= __('Create a new %issuetype_name', array('%issuetype_name' => $issuetype->getName())); ?></span>
+                            <span class="description"><?= $issuetype->getDescription(); ?></span>
+                        </span>
                     </a>
                 <?php endforeach; ?>
             </div>
         </div>
-        <div id="report_more_here" class="form-row" <?php if ($selected_issuetype instanceof Issuetype && $selected_project instanceof Project): ?> style="display: none;"<?php endif; ?>>
-            <span id="issuetype_description_help" class="helper-text"><?= __("Hold your mouse over an issuetype to see what it's used for"); ?></span>
-        </div>
-        <script type="text/javascript">
-            require(['domReady', 'pachno/index', 'jquery'], function (domReady, pachno_index_js, $) {
-                domReady(function () {
-                    var issueDescriptions = {
-                        <?php foreach ($issuetypes as $issuetype): ?>
-                        <?php if (!$selected_project->getIssuetypeScheme()->isIssuetypeReportable($issuetype) && !$pachno_request->isAjaxCall()) continue; ?>
-                        "<?= $issuetype->getKey(); ?>" : "<?= addslashes(html_entity_decode($issuetype->getDescription(),ENT_QUOTES)); ?>",
-                        <?php endforeach; ?>
-                    };
-
-                    var cachedHelp = $("#issuetype_description_help").text();
-
-                    $("#issuetype_list a").each(function() {
-                        var issueType = $(this);
-                        var issueKey = issueType.attr("data-key");
-
-                        issueType
-                            .click(function() {
-                                document.getElementById('report_issue_issue_type_' + issueType.attr("data-id")).checked = true;
-                                $('#reportissue_container').addClass('huge');
-                                $('#reportissue_container').removeClass('large');
-                                Pachno.Issues.updateFields('<?= make_url('getreportissuefields', array('project_key' => $selected_project->getKey())); ?>');
-                            })
-                            .mouseover(function() {
-                                $('#issuetype_description_help').text(issueDescriptions[issueKey]);
-                            })
-                            .mouseout(function() {
-                                $('#issuetype_description_help').text(cachedHelp);
-                            });
-                    });
-                });
-            });
-        </script>
     <?php endif; ?>
 </div>
-<div class="form-container" id="report_form" style="display: none;">
-    <form action="<?= make_url('project_reportissue', array('project_key' => $selected_project->getKey())); ?>" method="post" accept-charset="<?= Context::getI18n()->getCharset(); ?>" <?php if ($pachno_request->isAjaxCall()): ?>onsubmit="Pachno.Main.submitIssue('<?= make_url('project_reportissue', array('project_key' => $selected_project->getKey(), 'return_format' => 'planning')); ?>');return false;" id="report_issue_form" style="<?php if (isset($issue) && $issue instanceof Issue) echo 'display: none;'; ?>"<?php endif; ?>>
+<div class="form-container hidden" id="issue-reported-confirmation">
+    <div class="form">
+        <div class="form-row header"><?= __('The following issue was created'); ?></div>
+        <div class="form-row">
+            <div class="list-mode">
+                <a href="#" class="list-item" id="reported-issue-container" target="_blank"></a>
+            </div>
+        </div>
+        <div class="form-row submit-container">
+            <button class="secondary closer"><?= __('Done'); ?></button>
+            <button class="button primary restart-reportissue-form"><?= __('Add another'); ?></button>
+        </div>
+    </div>
+</div>
+<div class="form-container hidden" id="report_form" data-fields-url="<?= make_url('getreportissuefields', array('project_key' => $selected_project->getKey())); ?>">
+    <form action="<?= make_url('project_reportissue', array('project_key' => $selected_project->getKey(), 'return_format' => 'planning')); ?>" method="post" accept-charset="<?= Context::getI18n()->getCharset(); ?>" id="report_issue_form" data-simple-submit>
         <input type="hidden" name="project_id" id="project_id" value="<?= $selected_project->getID(); ?>">
         <?php if (isset($selected_milestone) || isset($selected_build) || isset($parent_issue)): ?>
             <div class="message-box type-info">
@@ -281,11 +99,11 @@
                         <input type="hidden" name="parent_issue_id" id="reportissue_parent_issue_id" value="<?= $parent_issue->getID(); ?>">
                         <?php if ($issue instanceof Issue): ?>
                         <script>
-                            require(['domReady', 'pachno/index'], function (domReady, Pachno) {
-                                domReady(function () {
-                                    Pachno.Issues.refreshRelatedIssues('<?= make_url('viewissue_related_issues', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $parent_issue->getID())); ?>');
-                                });
-                            });
+                            //require(['domReady', 'pachno/index'], function (domReady, Pachno) {
+                            //    domReady(function () {
+                            //        Pachno.Issues.refreshRelatedIssues('<?//= make_url('viewissue_related_issues', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $parent_issue->getID())); ?>//');
+                            //    });
+                            //});
                         </script>
                         <?php endif; ?>
                     <?php endif; ?>
@@ -310,7 +128,7 @@
                             <div class="dropdown-container list-mode">
                                 <?php foreach ($issuetypes as $issuetype): ?>
                                     <?php if (!$selected_project->getIssuetypeScheme()->isIssuetypeReportable($issuetype)) continue; ?>
-                                    <input type="radio" class="fancy-checkbox" id="report_issue_issue_type_<?= $issuetype->getId(); ?>" name="issuetype_id" value="<?= $issuetype->getId(); ?>" <?php if ($selected_issuetype instanceof Issuetype && $selected_issuetype->getID() == $issuetype->getID()) echo 'checked'; ?> onchange="Pachno.Issues.updateFields('<?= make_url('getreportissuefields', array('project_key' => $selected_project->getKey())); ?>');">
+                                    <input type="radio" class="fancy-checkbox report-issue-type-selector" id="report_issue_issue_type_<?= $issuetype->getId(); ?>" name="issuetype_id" value="<?= $issuetype->getId(); ?>" <?php if ($selected_issuetype instanceof Issuetype && $selected_issuetype->getID() == $issuetype->getID()) echo 'checked'; ?>>
                                     <label for="report_issue_issue_type_<?= $issuetype->getId(); ?>" class="list-item multiline">
                                         <span class="icon"><?= fa_image_tag($issuetype->getFontAwesomeIcon(), ['class' => 'issuetype-icon issuetype-' . $issuetype->getIcon()]); ?></span>
                                         <span class="name">
@@ -626,58 +444,58 @@
                                         </li>
                                     <?php endif; ?>
                                     <script type="text/javascript">
-                                        require(['domReady', 'pachno/index', 'calendarview'], function (domReady, pachno_index_js, Calendar) {
-                                            domReady(function () {
-                                                Calendar.setup({
-                                                    dateField: '<?= $customdatatype->getKey(); ?>_name',
-                                                    parentElement: 'customfield_<?= $customdatatype->getKey(); ?>_calendar_container',
-                                                    valueCallback: function(element, date) {
-                                                        <?php if ($customdatatype->getType() == CustomDatatype::DATETIME_PICKER) { ?>
-                                                            var value = date.setHours(parseInt($('#customfield_<?= $customdatatype->getKey(); ?>_hour').value));
-                                                            var date  = new Date(value);
-                                                            var value = Math.floor(date.setMinutes(parseInt($('#customfield_<?= $customdatatype->getKey(); ?>_minute').value)) / 1000);
-                                                            $('#<?= $customdatatype->getKey(); ?>_name').dataset.dateStr = $('#<?= $customdatatype->getKey(); ?>_name').innerText;
-                                                            $('#<?= $customdatatype->getKey(); ?>_name').update(
-                                                                $('#<?= $customdatatype->getKey(); ?>_name').dataset.dateStr + ' '
-                                                                + parseInt($('#customfield_<?= $customdatatype->getKey(); ?>_hour').value) + ':'
-                                                                + parseInt($('#customfield_<?= $customdatatype->getKey(); ?>_minute').value)
-                                                            );
-                                                        <?php } else { ?>
-                                                            var value = Math.floor(date.getTime() / 1000);
-                                                        <?php } ?>
-                                                        $('#<?= $customdatatype->getKey(); ?>_name').show();
-                                                        $('#<?= $customdatatype->getKey(); ?>_value').value = value;
-                                                        $('#no_<?= $customdatatype->getKey(); ?>').hide();
-                                                    }
-                                                });
-                                                <?php if ($customdatatype->getType() == CustomDatatype::DATETIME_PICKER): ?>
-                                                    Event.observe($('#customfield_<?= $customdatatype->getKey(); ?>_hour'), 'change', function (event) {
-                                                        var value = parseInt($('#<?= $customdatatype->getKey(); ?>_value').value);
-                                                        var hours = parseInt(this.value);
-                                                        if (value <= 0 || hours < 0 || hours > 24) return;
-                                                        var date = new Date(value * 1000);
-                                                        $('#<?= $customdatatype->getKey(); ?>_value').value = date.setHours(parseInt(this.value)) / 1000;
-                                                        $('#<?= $customdatatype->getKey(); ?>_name').update(
-                                                            $('#<?= $customdatatype->getKey(); ?>_name').dataset.dateStr + ' '
-                                                            + parseInt($('#customfield_<?= $customdatatype->getKey(); ?>_hour').value) + ':'
-                                                            + parseInt($('#customfield_<?= $customdatatype->getKey(); ?>_minute').value)
-                                                        );
-                                                    });
-                                                    Event.observe($('#customfield_<?= $customdatatype->getKey(); ?>_minute'), 'change', function (event) {
-                                                        var value = parseInt($('#<?= $customdatatype->getKey(); ?>_value').value);
-                                                        var minutes = parseInt(this.value);
-                                                        if (value <= 0 || minutes < 0 || minutes > 60) return;
-                                                        var date = new Date(value * 1000);
-                                                        $('#<?= $customdatatype->getKey(); ?>_value').value = date.setMinutes(parseInt(this.value)) / 1000;
-                                                        $('#<?= $customdatatype->getKey(); ?>_name').update(
-                                                            $('#<?= $customdatatype->getKey(); ?>_name').dataset.dateStr + ' '
-                                                            + parseInt($('#customfield_<?= $customdatatype->getKey(); ?>_hour').value) + ':'
-                                                            + parseInt($('#customfield_<?= $customdatatype->getKey(); ?>_minute').value)
-                                                        );
-                                                    });
-                                                <?php endif; ?>
-                                            });
-                                        });
+                                        //require(['domReady', 'pachno/index', 'calendarview'], function (domReady, pachno_index_js, Calendar) {
+                                        //    domReady(function () {
+                                        //        Calendar.setup({
+                                        //            dateField: '<?//= $customdatatype->getKey(); ?>//_name',
+                                        //            parentElement: 'customfield_<?//= $customdatatype->getKey(); ?>//_calendar_container',
+                                        //            valueCallback: function(element, date) {
+                                        //                <?php //if ($customdatatype->getType() == CustomDatatype::DATETIME_PICKER) { ?>
+                                        //                    var value = date.setHours(parseInt($('#customfield_<?//= $customdatatype->getKey(); ?>//_hour').value));
+                                        //                    var date  = new Date(value);
+                                        //                    var value = Math.floor(date.setMinutes(parseInt($('#customfield_<?//= $customdatatype->getKey(); ?>//_minute').value)) / 1000);
+                                        //                    $('#<?//= $customdatatype->getKey(); ?>//_name').dataset.dateStr = $('#<?//= $customdatatype->getKey(); ?>//_name').innerText;
+                                        //                    $('#<?//= $customdatatype->getKey(); ?>//_name').update(
+                                        //                        $('#<?//= $customdatatype->getKey(); ?>//_name').dataset.dateStr + ' '
+                                        //                        + parseInt($('#customfield_<?//= $customdatatype->getKey(); ?>//_hour').value) + ':'
+                                        //                        + parseInt($('#customfield_<?//= $customdatatype->getKey(); ?>//_minute').value)
+                                        //                    );
+                                        //                <?php //} else { ?>
+                                        //                    var value = Math.floor(date.getTime() / 1000);
+                                        //                <?php //} ?>
+                                        //                $('#<?//= $customdatatype->getKey(); ?>//_name').show();
+                                        //                $('#<?//= $customdatatype->getKey(); ?>//_value').value = value;
+                                        //                $('#no_<?//= $customdatatype->getKey(); ?>//').hide();
+                                        //            }
+                                        //        });
+                                        //        <?php //if ($customdatatype->getType() == CustomDatatype::DATETIME_PICKER): ?>
+                                        //            Event.observe($('#customfield_<?//= $customdatatype->getKey(); ?>//_hour'), 'change', function (event) {
+                                        //                var value = parseInt($('#<?//= $customdatatype->getKey(); ?>//_value').value);
+                                        //                var hours = parseInt(this.value);
+                                        //                if (value <= 0 || hours < 0 || hours > 24) return;
+                                        //                var date = new Date(value * 1000);
+                                        //                $('#<?//= $customdatatype->getKey(); ?>//_value').value = date.setHours(parseInt(this.value)) / 1000;
+                                        //                $('#<?//= $customdatatype->getKey(); ?>//_name').update(
+                                        //                    $('#<?//= $customdatatype->getKey(); ?>//_name').dataset.dateStr + ' '
+                                        //                    + parseInt($('#customfield_<?//= $customdatatype->getKey(); ?>//_hour').value) + ':'
+                                        //                    + parseInt($('#customfield_<?//= $customdatatype->getKey(); ?>//_minute').value)
+                                        //                );
+                                        //            });
+                                        //            Event.observe($('#customfield_<?//= $customdatatype->getKey(); ?>//_minute'), 'change', function (event) {
+                                        //                var value = parseInt($('#<?//= $customdatatype->getKey(); ?>//_value').value);
+                                        //                var minutes = parseInt(this.value);
+                                        //                if (value <= 0 || minutes < 0 || minutes > 60) return;
+                                        //                var date = new Date(value * 1000);
+                                        //                $('#<?//= $customdatatype->getKey(); ?>//_value').value = date.setMinutes(parseInt(this.value)) / 1000;
+                                        //                $('#<?//= $customdatatype->getKey(); ?>//_name').update(
+                                        //                    $('#<?//= $customdatatype->getKey(); ?>//_name').dataset.dateStr + ' '
+                                        //                    + parseInt($('#customfield_<?//= $customdatatype->getKey(); ?>//_hour').value) + ':'
+                                        //                    + parseInt($('#customfield_<?//= $customdatatype->getKey(); ?>//_minute').value)
+                                        //                );
+                                        //            });
+                                        //        <?php //endif; ?>
+                                        //    });
+                                        //});
                                     </script>
                                 </ul>
                                 <span id="<?= $customdatatype->getKey(); ?>_name" style="display: none;"><?= __('Not set'); ?></span><span class="faded_out" id="no_<?= $customdatatype->getKey(); ?>"><?= __('Not set'); ?></span>
@@ -793,11 +611,11 @@
             <?php endforeach; ?>
             <?php if ($selected_issuetype != null && $selected_project != null): ?>
                 <script type="text/javascript">
-                    require(['domReady', 'pachno/index'], function (domReady, Pachno) {
-                        domReady(function () {
-                            Pachno.Issues.updateFields('<?= make_url('getreportissuefields', array('project_key' => $selected_project->getKey())); ?>');
-                        });
-                    });
+                    //require(['domReady', 'pachno/index'], function (domReady, Pachno) {
+                    //    domReady(function () {
+                    //        Pachno.Issues.updateFields('<?//= make_url('getreportissuefields', array('project_key' => $selected_project->getKey())); ?>//');
+                    //    });
+                    //});
                 </script>
             <?php endif; ?>
             <?php Event::createNew('core', 'reportissue.prefile')->trigger(); ?>
@@ -808,9 +626,9 @@
                         <input type="radio" name="issue_access" id="issue_access_public_category" onchange="Pachno.Issues.ACL.toggle_checkboxes(this, '', 'public_category');" value="public_category"<?php if ($selected_project->getIssuesLockType() === Project::ISSUES_LOCK_TYPE_PUBLIC_CATEGORY) echo ' checked'; ?>><label for="issue_access_public_category"><?= __('Available to anyone with access to project, category and those listed below'); ?></label><br>
                         <input type="radio" name="issue_access" id="issue_access_restricted" onchange="Pachno.Issues.ACL.toggle_checkboxes(this, '', 'restricted');" value="restricted"<?php if ($selected_project->getIssuesLockType() === Project::ISSUES_LOCK_TYPE_RESTRICTED) echo ' checked'; ?>><label for="issue_access_restricted"><?= __('Available only to you and those listed below'); ?></label><br>
                         <script>
-                            require(['domReady', 'jquery'], function (domReady, jQuery) {
-                                domReady(function () { $('#input[name=issue_access]').trigger('change'); });
-                            });
+                            // require(['domReady', 'jquery'], function (domReady, jQuery) {
+                            //     domReady(function () { $('#input[name=issue_access]').trigger('change'); });
+                            // });
                         </script>
                         <?php image_tag('spinning_16.gif', array('id' => 'acl_indicator_', 'style' => '')); ?>
                         <div id="acl-users-teams-selector" style="display: none;">

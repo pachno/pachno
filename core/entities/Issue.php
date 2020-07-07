@@ -4531,6 +4531,7 @@
                 'title' => $this->getRawTitle(),
                 'cover_color' => $this->getCoverColor(),
                 'cover_style' => $this->getCoverStyle(),
+                'issue_type' => $this->getIssueType()->toJSON(false),
                 'cover_image_file_id' => ($this->getCoverImageFile() instanceof File) ? $this->getCoverImageFile()->getID() : 0,
                 'cover_image_url' => ($this->getCoverImageFile() instanceof File) ? Context::getRouting()->generate('showfile', ['id' => $this->getCoverImageFile()->getID()]) : '',
                 'href' => Context::getRouting()->generate('viewissue', ['project_key' => $this->getProject()->getKey(), 'issue_no' => $this->getFormattedIssueNo()], false),
@@ -4539,11 +4540,20 @@
                 'posted_by' => ($this->getPostedBy() instanceof common\Identifiable) ? $this->getPostedBy()->toJSON() : null,
                 'assignee' => ($this->getAssignee() instanceof common\Identifiable) ? $this->getAssignee()->toJSON() : null,
                 'status' => ($this->getStatus() instanceof common\Identifiable) ? $this->getStatus()->toJSON() : null,
+                'category' => ($this->getCategory() instanceof common\Identifiable) ? $this->getCategory()->toJSON() : null,
+                'priority' => ($this->getPriority() instanceof common\Identifiable) ? $this->getPriority()->toJSON() : null,
+                'severity' => ($this->getSeverity() instanceof common\Identifiable) ? $this->getSeverity()->toJSON() : null,
                 'milestone' => ($this->getMilestone() instanceof common\Identifiable) ? $this->getMilestone()->toJSON() : null,
                 'number_of_comments' => $this->getNumberOfUserComments(),
                 'number_of_files' => $this->getNumberOfFiles(),
                 'tags' => []
             ];
+
+            if ($this->isChildIssue()) {
+                foreach ($this->getParentIssues() as $parentIssue) {
+                    $json['parent_issue_id'] = $parentIssue->getID();
+                }
+            }
 
             foreach ($this->getTags() as $tag) {
                 $json['tags'][] = $tag->toJSON(false);

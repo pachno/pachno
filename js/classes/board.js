@@ -2,7 +2,7 @@ import {debounce} from "../tools/tools";
 import Swimlane from "./swimlane";
 import UI from "../helpers/ui";
 
-const SwimlaneTypes = {
+export const SwimlaneTypes = {
     NONE: '',
     ISSUES: 'issues',
     GROUPING: 'grouping',
@@ -26,6 +26,11 @@ class Board {
         this.swimlane_type = undefined;
         this.swimlane_identifier = undefined;
         this.swimlane_field_values = undefined;
+
+        /**
+         * Swimlanes
+         * @type {Swimlane[]}
+         */
         this.swimlanes = undefined;
         this.columns = undefined;
         this.users = new Set();
@@ -365,6 +370,28 @@ class Board {
         }
     }
 
+    addIssue(issue_json) {
+        const issue = new Issue(issue_json, this.id);
+        if (this.swimlane_type === SwimlaneTypes.ISSUES && this.swimlane_identifier === issue.issue_type.id) {
+            const swimlane = new Swimlane({
+                issues: [],
+                name: issue.title,
+                has_identifiables: true,
+                identifier_issue: issue_json,
+                identifier: 'swimlane_' + issue.id
+            }, this.id);
+
+            this.swimlanes.push(swimlane);
+        } else {
+            for (const swimlane of this.swimlanes) {
+                if (swimlane.has(issue)) {
+                    swimlane.addIssue(issue);
+                }
+            }
+        }
+        this.updateWhiteboard();
+    }
+
     addColumn(column, swimlanes) {
         this.columns.push(column);
         if (this.swimlanes === undefined || !this.swimlanes.length) {
@@ -426,6 +453,9 @@ class Board {
             switch (data.form) {
                 case 'edit-agileboard-form':
                     board.setJson(json.board);
+                    break;
+                case 'report_issue_form':
+                    board.addIssue(json.issue);
                     break;
                 case 'add-first-column-form':
                 case 'add-another-column-form':

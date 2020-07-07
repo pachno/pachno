@@ -15,7 +15,7 @@
         "MPL-2.0"
     ],
     "require" : {
-        "php": "^7.1|^7.2",
+        "php": "^7.4",
         "thebuggenie/b2db" : "^3.0",
         "swiftmailer/swiftmailer" : "4.2.*",
         "webit/eval-math" : "^1.0",

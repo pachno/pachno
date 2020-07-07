@@ -606,6 +606,8 @@
             foreach ($swimlanes as $details) {
                 $swimlane = new BoardSwimlane();
                 $swimlane->setBoard($this);
+                $swimlane->setIdentifierType($this->getSwimlaneType());
+                $swimlane->setIdentifierGrouping($this->getSwimlaneIdentifier());
                 $swimlane->setIdentifiables($details['identifiables']);
                 $swimlane->setMilestone($milestone);
                 $boardSwimlanes[] = $swimlane;

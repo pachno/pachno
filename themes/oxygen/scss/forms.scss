@@ -8,6 +8,10 @@
   font-size: 1rem;
   flex: 1 1 100%;
 
+  &.hidden {
+    display: none;
+  }
+
   form,
   .form {
     height: 100%;

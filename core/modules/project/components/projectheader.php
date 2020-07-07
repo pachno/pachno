@@ -53,7 +53,10 @@
             </a>
         <?php endif; ?>
         <?php if (framework\Context::isProjectContext() && !framework\Context::getCurrentProject()->isArchived() && !framework\Context::getCurrentProject()->isLocked() && $pachno_user->canReportIssues(framework\Context::getCurrentProject())): ?>
-            <?= javascript_link_tag(fa_image_tag('plus') . '<span>'.__('Report an issue').'</span>', array('onclick' => "Pachno.Issues.Add('" . make_url('get_partial_for_backdrop', array('key' => 'reportissue', 'project_id' => framework\Context::getCurrentProject()->getId())) . "');", 'class' => 'button button-report-issue', 'id' => 'reportissue_button')); ?>
+            <button class="button button-report-issue trigger-backdrop" data-url="<?= make_url('get_partial_for_backdrop', ['key' => 'reportissue', 'project_id' => framework\Context::getCurrentProject()->getId()]); ?>" id="reportissue_button">
+                <?= fa_image_tag('plus', ['class' => 'icon']); ?>
+                <span><?= __('Report an issue'); ?></span>
+            </button>
         <?php endif; ?>
     </div>
     <?php if ($pachno_response->getPage() == 'project_summary'): ?>

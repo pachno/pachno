@@ -36,6 +36,9 @@
         {
             $configuration_file = PACHNO_CONFIGURATION_PATH . 'editorjs.config.json';
 //            framework\Context::getDebugger()->watch('content', $content);
+            if (empty($content)) {
+                $content = json_encode([]);
+            }
             $parser = new EditorJS($content, file_get_contents($configuration_file));
             $this->parser = $parser;
         }

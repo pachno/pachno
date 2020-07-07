@@ -244,6 +244,7 @@
                 'icon' => $this->getIcon(),
                 'type' => $this->getType(),
                 'is_task' => $this->isTask(),
+                'fa_icon' => $this->getFontAwesomeIcon(),
                 'description' => $this->getDescription()
             ];
 

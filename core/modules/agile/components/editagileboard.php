@@ -134,7 +134,7 @@
                                         <div class="dropdown-container list-mode">
                                             <?php foreach ($issuetypes as $issuetype): ?>
                                                 <input type="radio" value="<?php echo $issuetype->getID(); ?>" name="epic_issuetype_id" id="epic_issuetype_id_<?php echo $issuetype->getID(); ?>" class="fancy-checkbox" <?php if ($board->getEpicIssuetypeID() == $issuetype->getID()) echo 'checked'; ?>>
-                                                <label for="epic_issuetype_value_<?php echo $issuetype->getID(); ?>" class="list-item">
+                                                <label for="epic_issuetype_id_<?php echo $issuetype->getID(); ?>" class="list-item">
                                                     <?= fa_image_tag('check-circle', ['class' => 'checked'], 'far') . fa_image_tag('circle', ['class' => 'unchecked'], 'far'); ?>
                                                     <?= fa_image_tag($issuetype->getFontAwesomeIcon(), ['class' => 'issuetype-icon issuetype-' . $issuetype->getIcon()]); ?>
                                                     <span class="name value"><?php echo __($issuetype->getName()); ?></span>

@@ -105,7 +105,6 @@
             }
 
             $this->issue = $issue;
-            $this->issuetypes = $this->issue->getProject()->getIssuetypeScheme()->getIssuetypes();
             $event = Event::createNew('core', 'viewissue', $issue)->trigger();
             $this->listenViewIssuePostError($event);
         }

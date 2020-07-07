@@ -60,6 +60,10 @@
                                     <?php include_component('agile/milestonelistitem', ['milestone' => $milestone, 'board' => $board, 'selected_milestone' => $selected_milestone]); ?>
                                 <?php endforeach; ?>
                                 <div class="list-item separator"></div>
+                                <a class="list-item label-scrum" href="<?= make_url('agile_board', array('project_key' => $board->getProject()->getKey(), 'board_id' => $board->getID())); ?>">
+                                    <?= fa_image_tag('stream', ['class' => 'icon']); ?>
+                                    <span class="name"><?= __('Plan a sprint from the backlog'); ?></span>
+                                </a>
                                 <a class="list-item trigger-backdrop" href="javascript:void(0);" data-url="<?= make_url('get_partial_for_backdrop', ['key' => 'agilemilestone', 'project_id' => $board->getProject()->getID(), 'board_id' => $board->getID()]); ?>">
                                     <?= fa_image_tag('plus-square', ['class' => 'icon']); ?>
                                     <span class="name"><span class="label-generic"><?= __('Create a new milestone'); ?></span><span class="label-kanban"><?= __('Create a new milestone'); ?></span><span class="label-scrum"><?= __('Create an empty sprint'); ?></span></span>

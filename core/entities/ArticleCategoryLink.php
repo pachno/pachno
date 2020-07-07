@@ -93,7 +93,7 @@
 
         public function setCategoryName($category_name)
         {
-            $this->_category_name = $category_name;
+            $this->_category_name = substr($category_name, 0, 299);
         }
 
     }
