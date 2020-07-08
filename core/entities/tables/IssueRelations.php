@@ -119,6 +119,8 @@
             $insertion->add(self::SCOPE, framework\Context::getScope()->getID());
             $res = $this->rawInsert($insertion);
 
+            unset($this->_relations_cache[$issue_id], $this->_relations_cache[$parent_id]);
+
             return $res;
         }
 
@@ -129,6 +131,8 @@
             $query->where(self::PARENT_ID, $parent_id);
             $query->where(self::SCOPE, framework\Context::getScope()->getID());
             $res = $this->rawDelete($query);
+
+            unset($this->_relations_cache[$issue_id], $this->_relations_cache[$parent_id]);
 
             return $res;
         }
@@ -141,6 +145,8 @@
             $insertion->add(self::SCOPE, framework\Context::getScope()->getID());
             $res = $this->rawInsert($insertion);
 
+            unset($this->_relations_cache[$issue_id], $this->_relations_cache[$parent_id]);
+
             return $res;
         }
 
@@ -151,6 +157,8 @@
             $query->where(self::CHILD_ID, $child_id);
             $query->where(self::SCOPE, framework\Context::getScope()->getID());
             $res = $this->rawDelete($query);
+
+            unset($this->_relations_cache[$issue_id], $this->_relations_cache[$parent_id]);
 
             return $res;
         }

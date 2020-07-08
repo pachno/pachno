@@ -396,9 +396,9 @@
                 $options['article'] = $this;
             }
 
-            if (!$this->_content) {
-                return '';
-            }
+//            if (!$this->_content) {
+//                return '';
+//            }
 
             switch ($this->_content_syntax) {
                 case Settings::SYNTAX_EDITOR_JS:

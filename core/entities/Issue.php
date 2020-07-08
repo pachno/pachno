@@ -4551,12 +4551,12 @@
 
             if ($this->isChildIssue()) {
                 foreach ($this->getParentIssues() as $parentIssue) {
-                    $json['parent_issue_id'] = $parentIssue->getID();
+                    $return_values['parent_issue_id'] = $parentIssue->getID();
                 }
             }
 
             foreach ($this->getTags() as $tag) {
-                $json['tags'][] = $tag->toJSON(false);
+                $return_values['tags'][] = $tag->toJSON(false);
             }
 
             if ($detailed) {

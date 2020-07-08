@@ -14,6 +14,7 @@ import InlineCode from '@editorjs/inline-code';
 import Delimiter from '@editorjs/delimiter';
 
 import EasyMDE from "easymde";
+import {EVENTS as WidgetEvents} from "./index";
 
 const editors = {};
 
@@ -146,6 +147,9 @@ const initializeEasyMde = function () {
 const setupListeners = function() {
     Pachno.on(Pachno.EVENTS.ready, () => {
         $('.wysiwyg-editor:not([data-processed])').each(initializeEditorJsArea);
+        $('.markuppable:not([data-processed])').each(initializeEasyMde);
+    });
+    Pachno.on(WidgetEvents.update, () => {
         $('.markuppable:not([data-processed])').each(initializeEasyMde);
     });
 };

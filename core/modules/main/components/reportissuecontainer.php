@@ -8,5 +8,5 @@
     </div>
 </div>
 <script>
-    let reporter = new IssueReporter();
+    new IssueReporter();
 </script>

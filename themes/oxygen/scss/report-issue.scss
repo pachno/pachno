@@ -12,4 +12,14 @@
       justify-content: flex-end;
     }
   }
+
+  .row {
+    &.additional-information-container {
+      flex-wrap: wrap;
+
+      .form-row {
+        flex: 0 0 33%;
+      }
+    }
+  }
 }

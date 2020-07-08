@@ -25,7 +25,7 @@ use pachno\core\framework\Context; ?>
     </div>
     <div id="title-field" class="title-container">
         <span class="title-crumbs">
-            <?php include_component('issueparent_crumbs', array('issue' => $issue)); ?>
+            <?php include_component('project/issueparent_crumbs', array('issue' => $issue)); ?>
         </span>
         <div id="title_content">
             <span class="faded_out" id="no_title" <?php if ($issue->getTitle() != ''):?> style="display: none;" <?php endif; ?>><?php echo __('Nothing entered.'); ?></span>

@@ -2,7 +2,7 @@
 
 .fullpage_backdrop {
   background-color: rgba(255, 255, 255, 0.7);
-  z-index: 100000;
+  z-index: 1000;
   width: 100%;
   height: 100%;
   overflow: auto;
@@ -74,6 +74,8 @@
   .fullpage_backdrop_content {
     position: relative;
     z-index: 100001;
+    max-height: 100%;
+
     .backdrop_box {
       z-index: 100001;
       margin: 5px auto;

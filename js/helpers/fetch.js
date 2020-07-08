@@ -150,6 +150,11 @@ export const fetchHelper = function (url, options) {
             }
 
             fetch_options.body = data;
+        } else if (method === 'GET') {
+            if (options.additional_params) {
+                const concatenator = (url.indexOf('?') !== -1) ? '&' : '?';
+                url += concatenator + options.additional_params;
+            }
         }
 
         fetch(url, fetch_options)

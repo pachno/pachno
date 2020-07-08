@@ -17,22 +17,21 @@ class IssueReporter {
 
             Pachno.fetch(url, {
                 loading: {indicator: '#report_issue_more_options_indicator'},
-                params: 'issuetype_id=' + issue_type_id,
+                additional_params: 'issuetype_id=' + issue_type_id,
             }).then(json => {
                 for (const fieldname of json.available_fields) {
-                    if ($(fieldname + '_div')) {
+                    let $field_container = $(`#${fieldname}_div`);
+                    if ($field_container.length) {
                         if (json.fields[fieldname]) {
-                            if ($(fieldname + '_div')) {
-                                $(fieldname + '_div').show('block');
+                            $field_container.removeClass('hidden');
+                            if ($(`#${fieldname}_id`)) {
+                                $(`#${fieldname}_id`).prop('disabled', false);
                             }
-                            if ($(fieldname + '_id')) {
-                                $(fieldname + '_id').prop('disabled', false);
-                            }
-                            if ($(fieldname + '_value')) {
-                                $(fieldname + '_value').prop('disabled', false);
+                            if ($(`#${fieldname}_value`)) {
+                                $(`#${fieldname}_value`).prop('disabled', false);
                             }
                             if (json.fields[fieldname].values) {
-                                let container = $(fieldname + '_div').find('.dropdown-container')[0];
+                                let container = $(`#${fieldname}_div`).find('.dropdown-container');
                                 if (container) {
                                     container.html('');
                                     let markup = `<input type="radio" value="" name="${fieldname}_id" id="report_issue_${fieldname}_id_0" class="fancy-checkbox">
@@ -51,16 +50,16 @@ class IssueReporter {
                                     }
                                 }
                             }
-                            (json.fields[fieldname].required) ? $(fieldname + '_label').addClass('required') : $(fieldname + '_label').removeClass('required');
+                            (json.fields[fieldname].required) ? $(`#${fieldname}_label`).addClass('required') : $(`#${fieldname}_label`).removeClass('required');
                         } else {
-                            if ($(fieldname + '_div')) {
-                                $(fieldname + '_div').hide();
+                            if ($(`#${fieldname}_div`)) {
+                                $(`#${fieldname}_div`).addClass('hidden');
                             }
-                            if ($(fieldname + '_id')) {
-                                $(fieldname + '_id').prop('disabled', true);
+                            if ($(`#${fieldname}_id`)) {
+                                $(`#${fieldname}_id`).prop('disabled', true);
                             }
-                            if ($(fieldname + '_value')) {
-                                $(fieldname + '_value').prop('disabled', true);
+                            if ($(`#${fieldname}_value`)) {
+                                $(`#${fieldname}_value`).prop('disabled', true);
                             }
                         }
                     }

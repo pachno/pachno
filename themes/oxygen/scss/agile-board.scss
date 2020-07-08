@@ -464,12 +464,20 @@
 
           .header {
             display: flex;
-            flex-direction: column;
-            align-items: stretch;
+            flex-direction: row;
+            align-items: center;
             justify-content: center;
             background-color: rgba(255, 255, 255, .85);
             padding: .75em;
             border-top: 1px solid rgba(100, 100, 100, 0.3);
+
+            .issue-container {
+              flex: 1 1 auto;
+              display: flex;
+              flex-direction: column;
+              align-items: stretch;
+              justify-content: center;
+            }
 
             .name {
               font-size: 1.1em;

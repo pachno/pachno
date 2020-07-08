@@ -707,6 +707,7 @@
             $json['is_private'] = $this->isPrivate();
             $json['backlog_search'] = $this->getBacklogSearchIdentifier();
             $json['url'] = Context::getRouting()->generate('agile_whiteboardissues', ['project_key' => $this->getProject()->getKey(), 'board_id' => $this->getID()]) . '?format=json';
+            $json['report_issue_url'] = Context::getRouting()->generate('get_partial_for_backdrop', ['key' => 'reportissue', 'project_id' => $this->getProject()->getId()]) . '?board_id=' . $this->getID();
             $json['swimlane_type'] = $this->getSwimlaneType();
             $json['swimlane_identifier'] = $this->getSwimlaneIdentifier();
             $json['swimlane_field_values'] = $this->getSwimlaneFieldValues();
