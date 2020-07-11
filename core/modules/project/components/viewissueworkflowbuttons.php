@@ -27,9 +27,5 @@
                 <?php endforeach; ?>
             </li>
         <?php endif; ?>
-        <li class="dropper-container">
-            <button class="dropper button secondary icon" id="more_actions_<?php echo $issue->getID(); ?>_button"><?= fa_image_tag('ellipsis-v'); ?></button>
-            <?php include_component('main/issuemoreactions', array('issue' => $issue, 'times' => false, 'show_workflow_transitions' => false)); ?>
-        </li>
     </ul>
 </div>

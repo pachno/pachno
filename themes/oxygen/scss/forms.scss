@@ -28,6 +28,7 @@
     }
 
     &.submitting {
+      &.form-row,
       .form-row {
         > input[type=text].invisible,
         > input[type=search].invisible,
@@ -82,6 +83,15 @@
     align-items: flex-start;
     justify-content: flex-start;
 
+    &.large {
+      flex: 1 1 70%;
+      max-width: none;
+
+      + .column {
+        flex: 0 1 30%;
+      }
+    }
+
     &.small {
       flex: 0 1 35%;
 
@@ -114,6 +124,10 @@
     box-sizing: border-box;
     padding: .5em;
     width: 100%;
+
+    &.align-right {
+      justify-content: flex-end;
+    }
 
     &.hidden {
       display: none;
@@ -369,8 +383,11 @@
       &.name-input-enhance {
         font-size: 1.25em;
         padding: .5em .2em;
-        border-bottom-width: 2px;
         font-weight: $theme-font-weight-regular;
+
+        &:not(.invisible) {
+          border-bottom-width: 2px;
+        }
       }
 
       &.code-input-6 {

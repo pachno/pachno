@@ -4,6 +4,7 @@
 
     /**
      * @var \pachno\core\framework\Response $pachno_response
+     * @var \pachno\core\framework\Routing $pachno_routing
      * @var string $webroot
      */
 
@@ -11,7 +12,7 @@
 
 ?>
 <!DOCTYPE html>
-<html lang="<?= \pachno\core\framework\Settings::getHTMLLanguage(); ?>" style="cursor: progress;">
+<html lang="<?= \pachno\core\framework\Settings::getHTMLLanguage(); ?>" style="cursor: progress;" data-route-name="<?= $pachno_routing->getCurrentRoute()->getName(); ?>">
     <head>
         <meta charset="<?= Context::getI18n()->getCharset(); ?>">
         <?php \pachno\core\framework\Event::createNew('core', 'layout.php::header-begins')->trigger(); ?>

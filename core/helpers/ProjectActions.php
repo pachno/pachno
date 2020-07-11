@@ -114,14 +114,18 @@
             $issue = null;
             if ($issue_no = framework\Context::getRequest()->getParameter('issue_no')) {
                 $issue = entities\Issue::getIssueFromLink($issue_no);
-                if ($issue instanceof entities\Issue) {
-                    if (!$this->selected_project instanceof entities\Project || $issue->getProjectID() != $this->selected_project->getID()) {
-                        $issue = null;
-                    }
-                } else {
-                    framework\Logging::log("Issue no [$issue_no] not a valid issue no", 'main', framework\Logging::LEVEL_WARNING_RISK);
-                }
+            } elseif ($issue_id = framework\Context::getRequest()->getParameter('issue_id')) {
+                $issue = entities\tables\Issues::getTable()->selectById($request['issue_id']);
             }
+
+            if ($issue instanceof entities\Issue) {
+                if (!$this->selected_project instanceof entities\Project || $issue->getProjectID() != $this->selected_project->getID()) {
+                    $issue = null;
+                }
+            } else {
+                framework\Logging::log("Issue no [$issue_no] not a valid issue no", 'main', framework\Logging::LEVEL_WARNING_RISK);
+            }
+
             framework\Logging::log('done (Loading issue)');
             if ($issue instanceof entities\Issue && (!$issue->hasAccess() || $issue->isDeleted()))
                 $issue = null;

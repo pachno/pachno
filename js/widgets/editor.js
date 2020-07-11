@@ -8,7 +8,6 @@ import Checklist from '@editorjs/checklist';
 import Quote from '@editorjs/quote';
 import CodeTool from '@editorjs/code';
 import TableTool from '@editorjs/table';
-import Marker from '@editorjs/marker';
 import Warning from '@editorjs/warning';
 import InlineCode from '@editorjs/inline-code';
 import Delimiter from '@editorjs/delimiter';
@@ -142,6 +141,16 @@ const initializeEasyMde = function () {
             "image"
         ]
     });
+    editors[$editor_element.attr('id')] = editor;
+}
+
+/**
+ *
+ * @param editor
+ * @returns {EasyMDE}
+ */
+export const getEditor = function (editor) {
+    return editors[editor];
 }
 
 const setupListeners = function() {

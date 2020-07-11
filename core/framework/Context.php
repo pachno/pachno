@@ -590,7 +590,7 @@
         {
             Logging::log('Loading event listeners');
             foreach ($event_listeners as $listener) {
-                list($event_module, $event_identifier, $module, $method) = $listener;
+                [$event_module, $event_identifier, $module, $method] = $listener;
                 Event::listen($event_module, $event_identifier, [self::getModule($module), $method]);
             }
             Logging::log('... done (loading event listeners)');
@@ -2044,10 +2044,10 @@
                     self::generateDebugInfo();
                 }
 
-                self::getResponse()->setHttpStatus(301);
+                self::getResponse()->setHttpStatus(403);
                 $message = $e->getMessage();
 
-                if (self::getRequest()->getRequestedFormat() == 'json') {
+                if (self::getRequest()->isResponseFormatAccepted('application/json', false)) {
                     self::getResponse()->setContentType('application/json');
                     $message = json_encode(['message' => $message]);
                 }
@@ -2189,6 +2189,7 @@
          *
          * @return bool
          * @throws Exception
+         * @throws CSRFFailureException
          */
         public static function performAction()
         {
@@ -2395,6 +2396,10 @@
             self::$_selected_project = $project;
         }
 
+        /**
+         * @return bool
+         * @throws CSRFFailureException
+         */
         public static function checkCsrfToken()
         {
             $token = self::getCsrfToken();
@@ -2434,7 +2439,7 @@
         public static function loadLibrary($lib_name)
         {
             if (mb_strpos($lib_name, '/') !== false) {
-                list($module, $lib_name) = explode('/', $lib_name);
+                [$module, $lib_name] = explode('/', $lib_name);
             }
 
             // Skip the library if it already exists
@@ -2487,7 +2492,7 @@
                 }
             }
 
-            list ($localjs, $externaljs) = self::getResponse()->getJavascripts();
+            [$localjs, $externaljs] = self::getResponse()->getJavascripts();
             $webroot = self::getWebroot();
 
             $values = compact('content', 'localjs', 'externaljs', 'webroot');

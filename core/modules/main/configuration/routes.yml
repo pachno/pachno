@@ -507,11 +507,11 @@ issue_gettempfieldvalue:
     csrf_enabled: false
 
 issue_setfield:
-    route: '/:project_key/issues/:issue_id/set/:field/*'
+    route: '/:project_key/issues/:issue_id/set/field'
     module: main
     action: issueSetField
     parameters: [ ]
-    csrf_enabled: false
+    csrf_enabled: true
 
 issue_edittimespent:
     route: /:project_key/issues/:issue_id/timespent/:entry_id
@@ -627,4 +627,5 @@ viewissue:
     module: project
     action: viewIssue
     parameters: [ ]
+    methods: ['GET']
     csrf_enabled: false

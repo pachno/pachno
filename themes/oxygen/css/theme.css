@@ -7760,6 +7760,18 @@ input[data-interactive-toggle].submitting + label .indicator {
   opacity: 1;
   width: auto; }
 
+.issuetype-field {
+  flex: 0 0 auto;
+  align-items: flex-start;
+  justify-content: center;
+  margin-bottom: .35rem; }
+  .issuetype-field > .issuetype-icon {
+    display: inline-block;
+    width: auto;
+    padding: .5em 1.6em .5em 1em;
+    border-radius: 1.5em;
+    border: 1px solid rgba(0, 0, 0, 0.15); }
+
 .list-mode {
   padding: 0;
   margin: 0;
@@ -8016,7 +8028,8 @@ input[data-interactive-toggle].submitting + label .indicator {
       border-bottom: 1px solid rgba(100, 100, 100, 0.2);
       background-color: transparent;
       cursor: default;
-      border-radius: 0; }
+      border-radius: 0;
+      flex: 0 0 1px; }
     .list-mode .list-item .icon,
     .list-mode .list-item:hover .icon {
       flex: 0 0 25px;
@@ -8384,22 +8397,42 @@ input[data-interactive-toggle].submitting + label .indicator {
     .form-container .form .submit-indicator {
       opacity: 0;
       transition: opacity .25s ease-in-out; }
+    .form-container form.submitting.form-row > input[type=text].invisible,
+    .form-container form.submitting.form-row > input[type=search].invisible,
+    .form-container form.submitting.form-row > input[type=url].invisible,
+    .form-container form.submitting.form-row > input[type=password].invisible,
+    .form-container form.submitting.form-row > .input.invisible,
     .form-container form.submitting .form-row > input[type=text].invisible,
     .form-container form.submitting .form-row > input[type=search].invisible,
     .form-container form.submitting .form-row > input[type=url].invisible,
     .form-container form.submitting .form-row > input[type=password].invisible,
     .form-container form.submitting .form-row > .input.invisible,
+    .form-container .form.submitting.form-row > input[type=text].invisible,
+    .form-container .form.submitting.form-row > input[type=search].invisible,
+    .form-container .form.submitting.form-row > input[type=url].invisible,
+    .form-container .form.submitting.form-row > input[type=password].invisible,
+    .form-container .form.submitting.form-row > .input.invisible,
     .form-container .form.submitting .form-row > input[type=text].invisible,
     .form-container .form.submitting .form-row > input[type=search].invisible,
     .form-container .form.submitting .form-row > input[type=url].invisible,
     .form-container .form.submitting .form-row > input[type=password].invisible,
     .form-container .form.submitting .form-row > .input.invisible {
       border: 1px dashed #0c8990; }
+      .form-container form.submitting.form-row > input[type=text].invisible + label,
+      .form-container form.submitting.form-row > input[type=search].invisible + label,
+      .form-container form.submitting.form-row > input[type=url].invisible + label,
+      .form-container form.submitting.form-row > input[type=password].invisible + label,
+      .form-container form.submitting.form-row > .input.invisible + label,
       .form-container form.submitting .form-row > input[type=text].invisible + label,
       .form-container form.submitting .form-row > input[type=search].invisible + label,
       .form-container form.submitting .form-row > input[type=url].invisible + label,
       .form-container form.submitting .form-row > input[type=password].invisible + label,
       .form-container form.submitting .form-row > .input.invisible + label,
+      .form-container .form.submitting.form-row > input[type=text].invisible + label,
+      .form-container .form.submitting.form-row > input[type=search].invisible + label,
+      .form-container .form.submitting.form-row > input[type=url].invisible + label,
+      .form-container .form.submitting.form-row > input[type=password].invisible + label,
+      .form-container .form.submitting.form-row > .input.invisible + label,
       .form-container .form.submitting .form-row > input[type=text].invisible + label,
       .form-container .form.submitting .form-row > input[type=search].invisible + label,
       .form-container .form.submitting .form-row > input[type=url].invisible + label,
@@ -8438,6 +8471,21 @@ input[data-interactive-toggle].submitting + label .indicator {
     flex-wrap: wrap;
     align-items: flex-start;
     justify-content: flex-start; }
+    .form-container > .column.large,
+    .form-container > .row > .column.large,
+    .form-container form > .column.large,
+    .form-container form > .row > .column.large,
+    .form-container .form > .column.large,
+    .form-container .form > .row > .column.large {
+      flex: 1 1 70%;
+      max-width: none; }
+      .form-container > .column.large + .column,
+      .form-container > .row > .column.large + .column,
+      .form-container form > .column.large + .column,
+      .form-container form > .row > .column.large + .column,
+      .form-container .form > .column.large + .column,
+      .form-container .form > .row > .column.large + .column {
+        flex: 0 1 30%; }
     .form-container > .column.small,
     .form-container > .row > .column.small,
     .form-container form > .column.small,
@@ -8476,6 +8524,8 @@ input[data-interactive-toggle].submitting + label .indicator {
     box-sizing: border-box;
     padding: .5em;
     width: 100%; }
+    .form-container .form-row.align-right {
+      justify-content: flex-end; }
     .form-container .form-row.hidden {
       display: none; }
     .form-container .form-row h1, .form-container .form-row h2, .form-container .form-row h3, .form-container .form-row h4, .form-container .form-row h5, .form-container .form-row h6 {
@@ -8688,8 +8738,14 @@ input[data-interactive-toggle].submitting + label .indicator {
       .form-container .form-row > .input.name-input-enhance {
         font-size: 1.25em;
         padding: .5em .2em;
-        border-bottom-width: 2px;
         font-weight: 400; }
+        .form-container .form-row > textarea.name-input-enhance:not(.invisible),
+        .form-container .form-row > input[type=text].name-input-enhance:not(.invisible),
+        .form-container .form-row > input[type=search].name-input-enhance:not(.invisible),
+        .form-container .form-row > input[type=url].name-input-enhance:not(.invisible),
+        .form-container .form-row > input[type=password].name-input-enhance:not(.invisible),
+        .form-container .form-row > .input.name-input-enhance:not(.invisible) {
+          border-bottom-width: 2px; }
       .form-container .form-row > textarea.code-input-6,
       .form-container .form-row > input[type=text].code-input-6,
       .form-container .form-row > input[type=search].code-input-6,
@@ -11169,17 +11225,6 @@ textarea.markItUpEditor:focus {
       align-items: center;
       padding: 0;
       margin-bottom: 1.5em; }
-      .viewissue-container .issue-card .issue-card-main .card-header .issuetype-field {
-        flex: 0 0 auto;
-        align-items: flex-start;
-        justify-content: center;
-        margin-bottom: .35rem; }
-        .viewissue-container .issue-card .issue-card-main .card-header .issuetype-field > .issuetype-icon {
-          display: inline-block;
-          width: auto;
-          padding: .5em 1.6em .5em 1em;
-          border-radius: 1.5em;
-          border: 1px solid rgba(0, 0, 0, 0.15); }
       .viewissue-container .issue-card .issue-card-main .card-header .workflow-actions-container {
         flex: 1 1 auto;
         display: flex;
@@ -13604,3 +13649,79 @@ DEL {
     margin-right: 5px;
     vertical-align: middle;
     float: none; }
+
+#issue-card-popup .backdrop_detail_header {
+  text-transform: none;
+  align-items: center; }
+  #issue-card-popup .backdrop_detail_header span {
+    flex: 0 0 auto;
+    padding: 0; }
+    #issue-card-popup .backdrop_detail_header span.issue-state {
+      padding: .15em .25em; }
+      #issue-card-popup .backdrop_detail_header span.issue-state:not(:first-child) {
+        margin-left: .35em; }
+      #issue-card-popup .backdrop_detail_header span.issue-state + a {
+        margin-left: .25em; }
+  #issue-card-popup .backdrop_detail_header .dropper-container {
+    margin-right: .35em; }
+  #issue-card-popup .backdrop_detail_header > span {
+    flex: 1 1 auto; }
+    #issue-card-popup .backdrop_detail_header > span.title-crumbs {
+      padding: .75em;
+      font-size: .75em;
+      font-weight: 300;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start; }
+      #issue-card-popup .backdrop_detail_header > span.title-crumbs a:last-child {
+        font-weight: 600; }
+
+#issue-card-popup .backdrop_detail_content .form-container .row {
+  height: auto; }
+  #issue-card-popup .backdrop_detail_content .form-container .row .column {
+    flex-direction: row;
+    flex-wrap: wrap; }
+    #issue-card-popup .backdrop_detail_content .form-container .row .column .form-row {
+      width: 100%;
+      padding: 0 .5em;
+      height: auto; }
+      #issue-card-popup .backdrop_detail_content .form-container .row .column .form-row.header {
+        color: rgba(0, 0, 0, 0.6); }
+        #issue-card-popup .backdrop_detail_content .form-container .row .column .form-row.header .icon {
+          color: #c8c8c8; }
+      #issue-card-popup .backdrop_detail_content .form-container .row .column .form-row:not(.header) + .form-row {
+        margin-top: 1em; }
+      #issue-card-popup .backdrop_detail_content .form-container .row .column .form-row .name-input-enhance {
+        font-weight: 600; }
+  #issue-card-popup .backdrop_detail_content .form-container .row[data-simple-submit] .formatted-text-container {
+    min-height: 7em;
+    border-radius: .5em;
+    padding: .5em;
+    width: 100%;
+    box-sizing: border-box;
+    font-family: "Source Sans Pro", "Open Sans", sans-serif;
+    font-weight: 300; }
+    #issue-card-popup .backdrop_detail_content .form-container .row[data-simple-submit] .formatted-text-container:hover {
+      background-color: rgba(0, 0, 0, 0.05);
+      cursor: pointer; }
+  #issue-card-popup .backdrop_detail_content .form-container .row[data-simple-submit] .editor-container {
+    height: 1px;
+    overflow: hidden;
+    opacity: 0;
+    transition: opacity .25s ease-in-out;
+    width: 100%; }
+  #issue-card-popup .backdrop_detail_content .form-container .row[data-simple-submit] .form-row.submit-container {
+    height: 1px;
+    overflow: hidden;
+    opacity: 0;
+    transition: opacity .25s ease-in-out; }
+  #issue-card-popup .backdrop_detail_content .form-container .row[data-simple-submit].editing .formatted-text-container {
+    display: none; }
+  #issue-card-popup .backdrop_detail_content .form-container .row[data-simple-submit].editing .editor-container {
+    height: auto;
+    opacity: 1;
+    min-height: 15em; }
+  #issue-card-popup .backdrop_detail_content .form-container .row[data-simple-submit].editing .form-row.submit-container {
+    height: auto;
+    opacity: 1;
+    overflow: visible; }

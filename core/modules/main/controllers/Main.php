@@ -1757,6 +1757,8 @@
 
         /**
          * Sets an issue field to a specified value
+         * @Route(name="edit_issue", url="/:project_key/issues/:issue_id/:csrf_token", methods="POST")
+         * @CsrfProtected
          *
          * @param Request $request
          */

@@ -1,0 +1,133 @@
+@import 'variables';
+
+#issue-card-popup {
+  .backdrop_detail_header {
+    text-transform: none;
+    align-items: center;
+
+    span {
+      flex: 0 0 auto;
+      padding: 0;
+
+      &.issue-state {
+        padding: .15em .25em;
+        &:not(:first-child) {
+          margin-left: .35em;
+        }
+
+        + a {
+          margin-left: .25em;
+        }
+      }
+    }
+
+    .dropper-container {
+      margin-right: .35em;
+    }
+
+    > span {
+      flex: 1 1 auto;
+
+      &.title-crumbs {
+        padding: .75em;
+        font-size: .75em;
+        font-weight: $theme-font-weight-light;
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+
+        a:last-child {
+          font-weight: $theme-font-weight-bold;
+        }
+      }
+    }
+  }
+
+  .backdrop_detail_content {
+    .form-container {
+      .row {
+        height: auto;
+
+        .column {
+          flex-direction: row;
+          flex-wrap: wrap;
+
+          .form-row {
+            width: 100%;
+            padding: 0 .5em;
+            height: auto;
+
+            &.header {
+              color: rgba(0, 0, 0, 0.6);
+
+              .icon {
+                color: #c8c8c8;
+              }
+            }
+
+            &:not(.header) {
+              + .form-row {
+                margin-top: 1em;
+              }
+            }
+
+            .name-input-enhance {
+              font-weight: $theme-font-weight-bold;
+            }
+          }
+        }
+
+        &[data-simple-submit] {
+          .formatted-text-container {
+            min-height: 7em;
+            border-radius: .5em;
+            padding: .5em;
+            width: 100%;
+            box-sizing: border-box;
+            font-family: $theme-font-family;
+            font-weight: $theme-font-weight-light;
+
+            &:hover {
+              background-color: rgba(0, 0, 0, .05);
+              cursor: pointer;
+            }
+          }
+
+          .editor-container {
+            height: 1px;
+            overflow: hidden;
+            opacity: 0;
+            transition: opacity .25s ease-in-out;
+            width: 100%;
+          }
+
+          .form-row.submit-container {
+            height: 1px;
+            overflow: hidden;
+            opacity: 0;
+            transition: opacity .25s ease-in-out;
+          }
+
+          &.editing {
+            .formatted-text-container {
+              display: none;
+            }
+
+            .editor-container {
+              height: auto;
+              opacity: 1;
+              min-height: 15em;
+            }
+
+            .form-row.submit-container {
+              height: auto;
+              opacity: 1;
+              overflow: visible;
+            }
+          }
+        }
+      }
+    }
+  }
+
+}

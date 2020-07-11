@@ -161,21 +161,6 @@
         padding: 0;
         margin-bottom: 1.5em;
 
-        .issuetype-field {
-          flex: 0 0 auto;
-          align-items: flex-start;
-          justify-content: center;
-          margin-bottom: .35rem;
-
-          > .issuetype-icon {
-            display: inline-block;
-            width: auto;
-            padding: .5em 1.6em .5em 1em;
-            border-radius: 1.5em;
-            border: 1px solid rgba(0, 0, 0, .15);
-          }
-        }
-
         .workflow-actions-container {
           flex: 1 1 auto;
           display: flex;
