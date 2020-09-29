@@ -1,25 +1,35 @@
 <?php include_component('installation/header'); ?>
 <div class="installation_box">
     <div class="message-box type-info">
-        <?= fa_image_tag('grin-hearts', [], 'far'); ?>
+        <?= fa_image_tag('grin-hearts', ['class' => 'icon large'], 'far'); ?>
         <span class="message">
-            The key to success for any open source project is listening to feedback from users - both positive feedback <b>and</b> constructive criticism.<br>
-            <b>If you have anything you would like to tell us,</b> please let us know by emailing us: <a href="mailto:feedback@pachno.com">feedback@pachno.com</a>
+            <span class="title">
+                Thank you for installing Pachno
+            </span>
+            <span>
+                Our recipe for success is simple: <b>listening to feedback!</b> If you have anything you would like to tell us, please let us know.
+            </span>
         </span>
     </div>
     <h2>License information</h2>
-    This software is Open Source Initiative approved Open Source Software. Open Source Initiative Approved is a trademark of the Open Source Initiative.<br>
-    True to the <a target="_blank" href="http://opensource.org/docs/definition.php">the Open Source Definition</a>, Pachno is released under the MPL 2.0.<br>
+    This software is Open Source Initiative approved Open Source Software. Open Source Initiative Approved is a trademark of the Open Source Initiative.
+    True to the <a target="_blank" href="http://opensource.org/docs/definition.php"><span>the Open Source Definition</span><?= fa_image_tag('external-link-alt', ['class' => 'icon external'], 'fas'); ?></a>, Pachno is released under the MPL 2.0.<br>
     <br>
-    <a target="_blank" href="http://opensource.org/licenses/MPL-2.0" target="_blank" style="font-weight: bold;">Read the license here</a>. <i>(opens in a new window)</i><br>
+    <span class="button-container">
+        <a target="_blank" href="http://opensource.org/licenses/MPL-2.0" class="button secondary"><span>Read the license</span><?= fa_image_tag('external-link-alt', ['class' => 'icon'], 'fas'); ?></a><br>
+    </span>
     <br>
     Before you can continue the installation, you need to confirm that you agree to be bound by the terms in this license.<br>
     <br>
     <br>
-    <form accept-charset="utf-8" action="index.php" method="post" style="display: block; text-align: right;">
+    <form accept-charset="utf-8" action="index.php" method="post" style="display: flex; width: 100%; align-items: center; justify-content: center; flex-direction: row;">
         <input type="hidden" name="step" value="1">
         <input type="hidden" name="agree_license" value="1">
-        <input type="submit" style="margin: 0 15px 15px 0;" value="Agree and continue" id="start_installation">
+        <div class="contact-container">
+            <a href="mailto:feedback@pachno.com" class="button secondary"><?= fa_image_tag('at', ['class' => 'icon']); ?><span>feedback@pachno.com</span></a>
+            <a href="https://twitter.com/pachno" class="button secondary" target="_blank"><?= fa_image_tag('twitter', ['class' => 'icon'], 'fab'); ?><span>@pachno</span></a>
+        </div>
+        <input type="submit" style="margin-left: auto;" value="Agree and continue" id="start_installation">
     </form>
 </div>
 <?php include_component('installation/footer'); ?>

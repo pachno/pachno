@@ -91,7 +91,9 @@ table, img, a img {
 
 a {
   color: rgb(12, 137, 144);
-  display: inline-block;
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
   text-decoration: none;
   border-bottom: 1px dotted rgba(12, 137, 144, .5);
 
@@ -119,6 +121,23 @@ a {
 
   &.image {
     border: 0;
+  }
+
+  &:not(.button):not(.list-item) {
+    .icon,
+    .fas,
+    .far {
+      margin-right: .3em;
+
+      &.external {
+        font-size: .9em;
+      }
+
+      &:last-child {
+        margin-right: 0;
+        margin-left: .5em;
+      }
+    }
   }
 }
 
@@ -2192,74 +2211,6 @@ a.shadowed:active {
 
 .profile_syntax_table tbody tr td:first-child {
   text-align: left;
-}
-
-#account_tabs_panes table {
-  width: 100%;
-  margin-bottom: 25px;
-}
-
-#account_tabs_panes td {
-  padding: 5px 0;
-}
-
-#account_tabs_panes label {
-  padding: 0;
-}
-
-#account_tabs_panes h3, #project_config_menu_panes h3 {
-  font-weight: $theme-font-weight-regular;
-  font-size: 1.4em;
-  color: #888;
-  border-bottom: 1px dotted #CCC;
-  position: relative;
-}
-
-#account_tabs_panes h3 + p {
-  color: #888;
-  padding: 5px 0 15px;
-}
-
-label[for=profile_prefer_wiki_markdown] {
-  font-weight: $theme-font-weight-regular;
-}
-
-#gravatar_change {
-  font-weight: $theme-font-weight-regular;
-  font-size: 1em;
-  margin: 8px 0;
-  padding: 4px 6px !important;
-}
-
-#account_tabs_panes h4 {
-  font-size: 1em;
-  font-weight: $theme-font-weight-regular;
-  padding: 0;
-  margin: 0;
-}
-
-#account_tabs_panes ul.access_keys_list {
-  margin: 0 0 15px 0;
-  padding: 0;
-  list-style: none;
-}
-
-#account_tabs_panes ul.access_keys_list li {
-  display: block;
-  clear: both;
-  margin: 0 0 10px;
-  transition: background-color 0.3s ease;
-}
-
-#account_tabs_panes ul.access_keys_list li:hover {
-  background-color: #F5F5F5;
-}
-
-#account_tabs_panes .access_keys_list p {
-  color: #888;
-  font-weight: $theme-font-weight-regular;
-  font-size: 0.9em;
-  font-style: italic;
 }
 
 .application_password_preview {

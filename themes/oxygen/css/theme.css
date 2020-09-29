@@ -77,7 +77,9 @@ table, img, a img {
 
 a {
   color: #0c8990;
-  display: inline-block;
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
   text-decoration: none;
   border-bottom: 1px dotted rgba(12, 137, 144, 0.5); }
   a.missing_wiki_page {
@@ -93,6 +95,19 @@ a {
       border: 0; }
   a.image {
     border: 0; }
+  a:not(.button):not(.list-item) .icon,
+  a:not(.button):not(.list-item) .fas,
+  a:not(.button):not(.list-item) .far {
+    margin-right: .3em; }
+    a:not(.button):not(.list-item) .icon.external,
+    a:not(.button):not(.list-item) .fas.external,
+    a:not(.button):not(.list-item) .far.external {
+      font-size: .9em; }
+    a:not(.button):not(.list-item) .icon:last-child,
+    a:not(.button):not(.list-item) .fas:last-child,
+    a:not(.button):not(.list-item) .far:last-child {
+      margin-right: 0;
+      margin-left: .5em; }
 
 form, p {
   margin: 0;
@@ -1922,62 +1937,6 @@ a.shadowed:active {
 
 .profile_syntax_table tbody tr td:first-child {
   text-align: left; }
-
-#account_tabs_panes table {
-  width: 100%;
-  margin-bottom: 25px; }
-
-#account_tabs_panes td {
-  padding: 5px 0; }
-
-#account_tabs_panes label {
-  padding: 0; }
-
-#account_tabs_panes h3, #project_config_menu_panes h3 {
-  font-weight: 400;
-  font-size: 1.4em;
-  color: #888;
-  border-bottom: 1px dotted #CCC;
-  position: relative; }
-
-#account_tabs_panes h3 + p {
-  color: #888;
-  padding: 5px 0 15px; }
-
-label[for=profile_prefer_wiki_markdown] {
-  font-weight: 400; }
-
-#gravatar_change {
-  font-weight: 400;
-  font-size: 1em;
-  margin: 8px 0;
-  padding: 4px 6px !important; }
-
-#account_tabs_panes h4 {
-  font-size: 1em;
-  font-weight: 400;
-  padding: 0;
-  margin: 0; }
-
-#account_tabs_panes ul.access_keys_list {
-  margin: 0 0 15px 0;
-  padding: 0;
-  list-style: none; }
-
-#account_tabs_panes ul.access_keys_list li {
-  display: block;
-  clear: both;
-  margin: 0 0 10px;
-  transition: background-color 0.3s ease; }
-
-#account_tabs_panes ul.access_keys_list li:hover {
-  background-color: #F5F5F5; }
-
-#account_tabs_panes .access_keys_list p {
-  color: #888;
-  font-weight: 400;
-  font-size: 0.9em;
-  font-style: italic; }
 
 .application_password_preview {
   background-color: #F1F1F1;
@@ -7246,7 +7205,9 @@ input.icon.danger {
   transition: box-shadow .25s ease-in-out, background-color .25s ease-in-out;
   min-width: 20em; }
   .card form .form-row input[type=text],
+  .card form .form-row input[type=email],
   .card form .form-row input[type=search], .card.form-container form .form-row input[type=text],
+  .card.form-container form .form-row input[type=email],
   .card.form-container form .form-row input[type=search] {
     background-color: rgba(225, 225, 225, 0.35);
     border: 1px solid rgba(225, 225, 225, 0);
@@ -7255,7 +7216,9 @@ input.icon.danger {
     cursor: pointer;
     font-size: 1.1em; }
     .card form .form-row input[type=text]:focus,
+    .card form .form-row input[type=email]:focus,
     .card form .form-row input[type=search]:focus, .card.form-container form .form-row input[type=text]:focus,
+    .card.form-container form .form-row input[type=email]:focus,
     .card.form-container form .form-row input[type=search]:focus {
       border-color: rgba(225, 225, 225, 0.85);
       cursor: text; }
@@ -7640,14 +7603,15 @@ input.icon.danger {
     display: none; }
     .fancy-label-select input:disabled + label {
       color: #DDD; }
-    .fancy-label-select input:checked:not(:disabled) + label {
+    .fancy-label-select input:checked:not(:disabled) + label, .fancy-label-select input.fancy-checkbox:checked:not(:disabled) + label {
       background-color: #0c8990;
       color: #FFF; }
       .fancy-label-select input:checked:not(:disabled) + label .fas,
-      .fancy-label-select input:checked:not(:disabled) + label .far {
+      .fancy-label-select input:checked:not(:disabled) + label .far, .fancy-label-select input.fancy-checkbox:checked:not(:disabled) + label .fas,
+      .fancy-label-select input.fancy-checkbox:checked:not(:disabled) + label .far {
         font-size: .85em;
         margin: 0 1em 0 0; }
-      .fancy-label-select input:checked:not(:disabled) + label + input + label::after {
+      .fancy-label-select input:checked:not(:disabled) + label + input + label::after, .fancy-label-select input.fancy-checkbox:checked:not(:disabled) + label + input + label::after {
         border-right: none; }
   .fancy-label-select label {
     flex: 0 0 auto;
@@ -8091,7 +8055,7 @@ input[data-interactive-toggle].submitting + label .indicator {
   .filtered .list-item:not(.sticky):not(.separator):not(.filter-container).separator, .filtered .list-item:not(.sticky):not(.separator):not(.filter-container).hidden {
     display: none; }
   .filtered .list-item:not(.sticky):not(.separator):not(.filter-container).visible {
-    display: block; }
+    display: flex; }
   .filtered .list-item:not(.sticky):not(.separator):not(.filter-container).highlighted {
     color: #0C8990; }
 
@@ -8398,42 +8362,50 @@ input[data-interactive-toggle].submitting + label .indicator {
       opacity: 0;
       transition: opacity .25s ease-in-out; }
     .form-container form.submitting.form-row > input[type=text].invisible,
+    .form-container form.submitting.form-row > input[type=email].invisible,
     .form-container form.submitting.form-row > input[type=search].invisible,
     .form-container form.submitting.form-row > input[type=url].invisible,
     .form-container form.submitting.form-row > input[type=password].invisible,
     .form-container form.submitting.form-row > .input.invisible,
     .form-container form.submitting .form-row > input[type=text].invisible,
+    .form-container form.submitting .form-row > input[type=email].invisible,
     .form-container form.submitting .form-row > input[type=search].invisible,
     .form-container form.submitting .form-row > input[type=url].invisible,
     .form-container form.submitting .form-row > input[type=password].invisible,
     .form-container form.submitting .form-row > .input.invisible,
     .form-container .form.submitting.form-row > input[type=text].invisible,
+    .form-container .form.submitting.form-row > input[type=email].invisible,
     .form-container .form.submitting.form-row > input[type=search].invisible,
     .form-container .form.submitting.form-row > input[type=url].invisible,
     .form-container .form.submitting.form-row > input[type=password].invisible,
     .form-container .form.submitting.form-row > .input.invisible,
     .form-container .form.submitting .form-row > input[type=text].invisible,
+    .form-container .form.submitting .form-row > input[type=email].invisible,
     .form-container .form.submitting .form-row > input[type=search].invisible,
     .form-container .form.submitting .form-row > input[type=url].invisible,
     .form-container .form.submitting .form-row > input[type=password].invisible,
     .form-container .form.submitting .form-row > .input.invisible {
       border: 1px dashed #0c8990; }
       .form-container form.submitting.form-row > input[type=text].invisible + label,
+      .form-container form.submitting.form-row > input[type=email].invisible + label,
       .form-container form.submitting.form-row > input[type=search].invisible + label,
       .form-container form.submitting.form-row > input[type=url].invisible + label,
       .form-container form.submitting.form-row > input[type=password].invisible + label,
       .form-container form.submitting.form-row > .input.invisible + label,
       .form-container form.submitting .form-row > input[type=text].invisible + label,
+      .form-container form.submitting .form-row > input[type=email].invisible + label,
       .form-container form.submitting .form-row > input[type=search].invisible + label,
       .form-container form.submitting .form-row > input[type=url].invisible + label,
       .form-container form.submitting .form-row > input[type=password].invisible + label,
       .form-container form.submitting .form-row > .input.invisible + label,
       .form-container .form.submitting.form-row > input[type=text].invisible + label,
+      .form-container .form.submitting.form-row > input[type=email].invisible + label,
       .form-container .form.submitting.form-row > input[type=search].invisible + label,
       .form-container .form.submitting.form-row > input[type=url].invisible + label,
       .form-container .form.submitting.form-row > input[type=password].invisible + label,
       .form-container .form.submitting.form-row > .input.invisible + label,
       .form-container .form.submitting .form-row > input[type=text].invisible + label,
+      .form-container .form.submitting .form-row > input[type=email].invisible + label,
       .form-container .form.submitting .form-row > input[type=search].invisible + label,
       .form-container .form.submitting .form-row > input[type=url].invisible + label,
       .form-container .form.submitting .form-row > input[type=password].invisible + label,
@@ -8546,6 +8518,7 @@ input[data-interactive-toggle].submitting + label .indicator {
     .form-container .form-row.centered {
       justify-content: center; }
       .form-container .form-row.centered input[type=text],
+      .form-container .form-row.centered input[type=email],
       .form-container .form-row.centered input[type=search],
       .form-container .form-row.centered input[type=url],
       .form-container .form-row.centered input[type=number],
@@ -8556,6 +8529,7 @@ input[data-interactive-toggle].submitting + label .indicator {
         text-align: center; }
     .form-container .form-row.unified > input[type=text],
     .form-container .form-row.unified > input[type=search],
+    .form-container .form-row.unified > input[type=email],
     .form-container .form-row.unified > input[type=url],
     .form-container .form-row.unified > input[type=password],
     .form-container .form-row.unified > .input,
@@ -8588,6 +8562,7 @@ input[data-interactive-toggle].submitting + label .indicator {
       flex: 0 0 auto; }
     .form-container .form-row.invalid > textarea,
     .form-container .form-row.invalid > input[type=text],
+    .form-container .form-row.invalid > input[type=email],
     .form-container .form-row.invalid > input[type=search],
     .form-container .form-row.invalid > input[type=url],
     .form-container .form-row.invalid > input[type=password],
@@ -8652,6 +8627,7 @@ input[data-interactive-toggle].submitting + label .indicator {
     .form-container .form-row > input[type=search],
     .form-container .form-row > input[type=url],
     .form-container .form-row > input[type=password],
+    .form-container .form-row > input[type=email],
     .form-container .form-row > .input {
       flex: 1 1 100%;
       padding: .2em;
@@ -8663,6 +8639,7 @@ input[data-interactive-toggle].submitting + label .indicator {
       .form-container .form-row > input[type=search].invisible,
       .form-container .form-row > input[type=url].invisible,
       .form-container .form-row > input[type=password].invisible,
+      .form-container .form-row > input[type=email].invisible,
       .form-container .form-row > .input.invisible {
         background-color: transparent;
         border: 1px solid transparent;
@@ -8674,6 +8651,7 @@ input[data-interactive-toggle].submitting + label .indicator {
         .form-container .form-row > input[type=search].invisible.title,
         .form-container .form-row > input[type=url].invisible.title,
         .form-container .form-row > input[type=password].invisible.title,
+        .form-container .form-row > input[type=email].invisible.title,
         .form-container .form-row > .input.invisible.title {
           font-weight: 400; }
         .form-container .form-row > textarea.invisible.inline,
@@ -8681,6 +8659,7 @@ input[data-interactive-toggle].submitting + label .indicator {
         .form-container .form-row > input[type=search].invisible.inline,
         .form-container .form-row > input[type=url].invisible.inline,
         .form-container .form-row > input[type=password].invisible.inline,
+        .form-container .form-row > input[type=email].invisible.inline,
         .form-container .form-row > .input.invisible.inline {
           flex: 0 0 auto; }
         .form-container .form-row > textarea.invisible + label,
@@ -8688,6 +8667,7 @@ input[data-interactive-toggle].submitting + label .indicator {
         .form-container .form-row > input[type=search].invisible + label,
         .form-container .form-row > input[type=url].invisible + label,
         .form-container .form-row > input[type=password].invisible + label,
+        .form-container .form-row > input[type=email].invisible + label,
         .form-container .form-row > .input.invisible + label {
           opacity: 0;
           transform: translateY(-100%);
@@ -8697,6 +8677,7 @@ input[data-interactive-toggle].submitting + label .indicator {
         .form-container .form-row > input[type=search].invisible:hover,
         .form-container .form-row > input[type=url].invisible:hover,
         .form-container .form-row > input[type=password].invisible:hover,
+        .form-container .form-row > input[type=email].invisible:hover,
         .form-container .form-row > .input.invisible:hover {
           border: 1px solid transparent;
           background-color: rgba(0, 0, 0, 0.05);
@@ -8706,6 +8687,7 @@ input[data-interactive-toggle].submitting + label .indicator {
         .form-container .form-row > input[type=search].invisible:focus,
         .form-container .form-row > input[type=url].invisible:focus,
         .form-container .form-row > input[type=password].invisible:focus,
+        .form-container .form-row > input[type=email].invisible:focus,
         .form-container .form-row > .input.invisible:focus {
           background: #FFF;
           border-color: #0c8990; }
@@ -8714,6 +8696,7 @@ input[data-interactive-toggle].submitting + label .indicator {
           .form-container .form-row > input[type=search].invisible:focus.with-label,
           .form-container .form-row > input[type=url].invisible:focus.with-label,
           .form-container .form-row > input[type=password].invisible:focus.with-label,
+          .form-container .form-row > input[type=email].invisible:focus.with-label,
           .form-container .form-row > .input.invisible:focus.with-label {
             padding-bottom: 2rem; }
           .form-container .form-row > textarea.invisible:focus:hover,
@@ -8721,6 +8704,7 @@ input[data-interactive-toggle].submitting + label .indicator {
           .form-container .form-row > input[type=search].invisible:focus:hover,
           .form-container .form-row > input[type=url].invisible:focus:hover,
           .form-container .form-row > input[type=password].invisible:focus:hover,
+          .form-container .form-row > input[type=email].invisible:focus:hover,
           .form-container .form-row > .input.invisible:focus:hover {
             cursor: text; }
           .form-container .form-row > textarea.invisible:focus + label,
@@ -8728,6 +8712,7 @@ input[data-interactive-toggle].submitting + label .indicator {
           .form-container .form-row > input[type=search].invisible:focus + label,
           .form-container .form-row > input[type=url].invisible:focus + label,
           .form-container .form-row > input[type=password].invisible:focus + label,
+          .form-container .form-row > input[type=email].invisible:focus + label,
           .form-container .form-row > .input.invisible:focus + label {
             display: none; }
       .form-container .form-row > textarea.name-input-enhance,
@@ -8735,6 +8720,7 @@ input[data-interactive-toggle].submitting + label .indicator {
       .form-container .form-row > input[type=search].name-input-enhance,
       .form-container .form-row > input[type=url].name-input-enhance,
       .form-container .form-row > input[type=password].name-input-enhance,
+      .form-container .form-row > input[type=email].name-input-enhance,
       .form-container .form-row > .input.name-input-enhance {
         font-size: 1.25em;
         padding: .5em .2em;
@@ -8744,6 +8730,7 @@ input[data-interactive-toggle].submitting + label .indicator {
         .form-container .form-row > input[type=search].name-input-enhance:not(.invisible),
         .form-container .form-row > input[type=url].name-input-enhance:not(.invisible),
         .form-container .form-row > input[type=password].name-input-enhance:not(.invisible),
+        .form-container .form-row > input[type=email].name-input-enhance:not(.invisible),
         .form-container .form-row > .input.name-input-enhance:not(.invisible) {
           border-bottom-width: 2px; }
       .form-container .form-row > textarea.code-input-6,
@@ -8751,6 +8738,7 @@ input[data-interactive-toggle].submitting + label .indicator {
       .form-container .form-row > input[type=search].code-input-6,
       .form-container .form-row > input[type=url].code-input-6,
       .form-container .form-row > input[type=password].code-input-6,
+      .form-container .form-row > input[type=email].code-input-6,
       .form-container .form-row > .input.code-input-6 {
         max-width: 10rem; }
       .form-container .form-row > textarea.number, .form-container .form-row > textarea.prefix-and-key, .form-container .form-row > textarea:not(.invisible).number,
@@ -8766,6 +8754,9 @@ input[data-interactive-toggle].submitting + label .indicator {
       .form-container .form-row > input[type=password].number,
       .form-container .form-row > input[type=password].prefix-and-key,
       .form-container .form-row > input[type=password]:not(.invisible).number,
+      .form-container .form-row > input[type=email].number,
+      .form-container .form-row > input[type=email].prefix-and-key,
+      .form-container .form-row > input[type=email]:not(.invisible).number,
       .form-container .form-row > .input.number,
       .form-container .form-row > .input.prefix-and-key,
       .form-container .form-row > .input:not(.invisible).number {
@@ -8784,6 +8775,9 @@ input[data-interactive-toggle].submitting + label .indicator {
         .form-container .form-row > input[type=password].number.small,
         .form-container .form-row > input[type=password].prefix-and-key.small,
         .form-container .form-row > input[type=password]:not(.invisible).number.small,
+        .form-container .form-row > input[type=email].number.small,
+        .form-container .form-row > input[type=email].prefix-and-key.small,
+        .form-container .form-row > input[type=email]:not(.invisible).number.small,
         .form-container .form-row > .input.number.small,
         .form-container .form-row > .input.prefix-and-key.small,
         .form-container .form-row > .input:not(.invisible).number.small {
@@ -8797,6 +8791,8 @@ input[data-interactive-toggle].submitting + label .indicator {
       .form-container .form-row > input[type=url]:not(.invisible).medium,
       .form-container .form-row > input[type=password].medium,
       .form-container .form-row > input[type=password]:not(.invisible).medium,
+      .form-container .form-row > input[type=email].medium,
+      .form-container .form-row > input[type=email]:not(.invisible).medium,
       .form-container .form-row > .input.medium,
       .form-container .form-row > .input:not(.invisible).medium {
         width: 20rem;
@@ -8811,6 +8807,8 @@ input[data-interactive-toggle].submitting + label .indicator {
       .form-container .form-row > input[type=url]:active + label,
       .form-container .form-row > input[type=password]:focus + label,
       .form-container .form-row > input[type=password]:active + label,
+      .form-container .form-row > input[type=email]:focus + label,
+      .form-container .form-row > input[type=email]:active + label,
       .form-container .form-row > .input:focus + label,
       .form-container .form-row > .input:active + label {
         color: #0c8990; }
@@ -9890,6 +9888,11 @@ textarea.markItUpEditor:focus {
   .message-box .fab,
   .message-box .far {
     margin-right: 5px; }
+    .message-box .fas.icon.large,
+    .message-box .fab.icon.large,
+    .message-box .far.icon.large {
+      font-size: 2.4em;
+      margin-right: .5em; }
   .message-box .title {
     flex: 1 1 auto;
     font-size: 1.1em;
@@ -9902,7 +9905,9 @@ textarea.markItUpEditor:focus {
     .message-box .message + .actions {
       margin-left: 10px; }
   .message-box .actions {
-    flex: 0 0 auto; }
+    flex: 0 0 auto;
+    flex-direction: column;
+    align-items: flex-end; }
   .message-box .image-container {
     flex: 0 0 60px;
     box-sizing: border-box;
@@ -12108,9 +12113,11 @@ dl.info {
         border-color: #0c8990; }
     .configuration-container > .form-container input[type=search],
     .configuration-container > .form-container input[type=url],
+    .configuration-container > .form-container input[type=email],
     .configuration-container > .form-container input[type=text],
     .configuration-container > .configuration-content > .form-container input[type=search],
     .configuration-container > .configuration-content > .form-container input[type=url],
+    .configuration-container > .configuration-content > .form-container input[type=email],
     .configuration-container > .configuration-content > .form-container input[type=text] {
       font-size: 1.1em;
       border-radius: 4px;
@@ -12118,9 +12125,11 @@ dl.info {
       transition: border-color .2s ease-in-out; }
       .configuration-container > .form-container input[type=search]:not(.invisible),
       .configuration-container > .form-container input[type=url]:not(.invisible),
+      .configuration-container > .form-container input[type=email]:not(.invisible),
       .configuration-container > .form-container input[type=text]:not(.invisible),
       .configuration-container > .configuration-content > .form-container input[type=search]:not(.invisible),
       .configuration-container > .configuration-content > .form-container input[type=url]:not(.invisible),
+      .configuration-container > .configuration-content > .form-container input[type=email]:not(.invisible),
       .configuration-container > .configuration-content > .form-container input[type=text]:not(.invisible) {
         background: white;
         border: 1px solid rgba(200, 200, 200, 0.3);
@@ -12128,25 +12137,31 @@ dl.info {
         margin: 0 .35rem 0 0; }
         .configuration-container > .form-container input[type=search]:not(.invisible):disabled,
         .configuration-container > .form-container input[type=url]:not(.invisible):disabled,
+        .configuration-container > .form-container input[type=email]:not(.invisible):disabled,
         .configuration-container > .form-container input[type=text]:not(.invisible):disabled,
         .configuration-container > .configuration-content > .form-container input[type=search]:not(.invisible):disabled,
         .configuration-container > .configuration-content > .form-container input[type=url]:not(.invisible):disabled,
+        .configuration-container > .configuration-content > .form-container input[type=email]:not(.invisible):disabled,
         .configuration-container > .configuration-content > .form-container input[type=text]:not(.invisible):disabled {
           background: rgba(255, 255, 255, 0.6);
           border-color: rgba(200, 200, 200, 0.15);
           color: #AAA; }
         .configuration-container > .form-container input[type=search]:not(.invisible):not(.number):not(.medium):not(.prefix-and-key),
         .configuration-container > .form-container input[type=url]:not(.invisible):not(.number):not(.medium):not(.prefix-and-key),
+        .configuration-container > .form-container input[type=email]:not(.invisible):not(.number):not(.medium):not(.prefix-and-key),
         .configuration-container > .form-container input[type=text]:not(.invisible):not(.number):not(.medium):not(.prefix-and-key),
         .configuration-container > .configuration-content > .form-container input[type=search]:not(.invisible):not(.number):not(.medium):not(.prefix-and-key),
         .configuration-container > .configuration-content > .form-container input[type=url]:not(.invisible):not(.number):not(.medium):not(.prefix-and-key),
+        .configuration-container > .configuration-content > .form-container input[type=email]:not(.invisible):not(.number):not(.medium):not(.prefix-and-key),
         .configuration-container > .configuration-content > .form-container input[type=text]:not(.invisible):not(.number):not(.medium):not(.prefix-and-key) {
           flex: 1 1 65%; }
         .configuration-container > .form-container input[type=search]:not(.invisible):not(:disabled):hover,
         .configuration-container > .form-container input[type=url]:not(.invisible):not(:disabled):hover,
+        .configuration-container > .form-container input[type=email]:not(.invisible):not(:disabled):hover,
         .configuration-container > .form-container input[type=text]:not(.invisible):not(:disabled):hover,
         .configuration-container > .configuration-content > .form-container input[type=search]:not(.invisible):not(:disabled):hover,
         .configuration-container > .configuration-content > .form-container input[type=url]:not(.invisible):not(:disabled):hover,
+        .configuration-container > .configuration-content > .form-container input[type=email]:not(.invisible):not(:disabled):hover,
         .configuration-container > .configuration-content > .form-container input[type=text]:not(.invisible):not(:disabled):hover {
           border-color: #0c8990; }
 

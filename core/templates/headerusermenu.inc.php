@@ -30,7 +30,7 @@
                 </div>
             </li>
         <?php endif; ?>
-        <li class="with-dropdown <?php if ($pachno_request->hasCookie('original_username')): ?>temporarily_switched<?php endif; ?> <?php if ($pachno_routing->getCurrentRoute()->getName() == 'account') echo 'selected'; ?>" id="header_usermenu_link">
+        <li class="with-dropdown dropper-container <?php if ($pachno_request->hasCookie('original_username')): ?>temporarily_switched<?php endif; ?> <?php if ($pachno_routing->getCurrentRoute()->getName() == 'account') echo 'selected'; ?>" id="header_usermenu_link">
             <?php if ($pachno_user->isGuest()): ?>
                 <a href="javascript:void(0);" <?php if (\pachno\core\framework\Context::getRouting()->getCurrentRoute()->getName() != 'login_page'): ?>data-login-section="#regular_login_container" class="trigger-show-login"<?php endif; ?>><?= fa_image_tag('user'); ?><span><?= __('Log in'); ?></span></a>
             <?php else: ?>
@@ -52,29 +52,60 @@
             <?php if (\pachno\core\framework\Context::getRouting()->getCurrentRoute()->getName() != 'login_page'): ?>
                 <?php if (\pachno\core\framework\Event::createNew('core', 'header_usermenu_decider')->trigger()->getReturnValue() !== false): ?>
                     <?php if (!$pachno_user->isGuest()): ?>
-                        <ul class="tab_menu_dropdown user_menu_dropdown popup_box" id="user_menu">
-                            <li class="header userinfo">
-                                <span class="user_name"><?= $pachno_user->getRealname(); ?></span>
-                                <span class="user_username">@<?= $pachno_user->getUsername(); ?></span>
-                            </li>
-                            <li><?= link_tag(make_url('dashboard'), fa_image_tag('columns').__('Your dashboard')); ?></li>
-                            <?php if ($pachno_response->getPage() == 'dashboard'): ?>
-                                <li><?= javascript_link_tag(fa_image_tag('edit').__('Customize your dashboard'), array('title' => __('Customize your dashboard'), 'onclick' => "$$('.dashboard').each(function (elm) { elm.toggleClass('editable');});")); ?></li>
-                            <?php endif; ?>
-                            <li><?= link_tag(make_url('account'), fa_image_tag('user-md').__('Your account')); ?></li>
-                            <?php if ($pachno_request->hasCookie('original_username')): ?>
-                                <li class="header"><?= __('You are temporarily this user'); ?></li>
-                                <li><?= link_tag(make_url('switch_back_user'), image_tag('switchuser.png').__('Switch back to original user')); ?></li>
-                            <?php endif; ?>
-                            <?php \pachno\core\framework\Event::createNew('core', 'user_dropdown_reg')->trigger(); ?>
-                            <li class="help"><?= link_tag('https://pachno.com/help/'.\pachno\core\framework\Context::getRouting()->getCurrentRoute()->getName(), fa_image_tag('question-circle').__('Help for this page'), array('id' => 'global_help_link')); ?></li>
-                            <li class="header"><?= __('Your issues'); ?></li>
-                            <li><?= link_tag(make_url('my_reported_issues'), fa_image_tag('search') . __('Issues reported by me')); ?></li>
-                            <li><?= link_tag(make_url('my_assigned_issues'), fa_image_tag('search') . __('Open issues assigned to me')); ?></li>
-                            <li><?= link_tag(make_url('my_teams_assigned_issues'), fa_image_tag('search') . __('Open issues assigned to my teams')); ?></li>
-                            <li class="separator"></li>
-                            <li class="delete"><a href="<?= make_url('logout'); ?>"><?= fa_image_tag('sign-out-alt').__('Logout'); ?></a></li>
-                        </ul>
+                        <div class="dropdown-container popup_box" id="user_menu">
+                            <div class="list-mode">
+                                <div class="list-item header multiline user-info">
+                                    <span class="name">
+                                        <span class="title"><?= $pachno_user->getRealname(); ?></span>
+                                        <span class="description">@<?= $pachno_user->getUsername(); ?></span>
+                                    </span>
+                                </div>
+                                <a href="<?= make_url('dashboard'); ?>" class="list-item">
+                                    <?= fa_image_tag('columns', ['class' => 'icon']); ?>
+                                    <span class="name"><?= __('Your dashboard'); ?></span>
+                                </a>
+                                <?php if ($pachno_response->getPage() == 'dashboard'): ?>
+                                    <a href="javascript:void(0);" onclick="$$('.dashboard').each(function (elm) { elm.toggleClass('editable');});" class="list-item">
+                                        <?= fa_image_tag('edit', ['class' => 'icon']); ?>
+                                        <span class="name"><?= __('Customize your dashboard'); ?></span>
+                                    </a>
+                                <?php endif; ?>
+                                <a href="<?= make_url('account'); ?>" class="list-item">
+                                    <?= fa_image_tag('user-md', ['class' => 'icon']); ?>
+                                    <span class="name"><?= __('Your account'); ?></span>
+                                </a>
+                                <?php if ($pachno_request->hasCookie('original_username')): ?>
+                                    <div class="header"><?= __('You are temporarily this user'); ?></div>
+                                    <a href="<?= make_url('switch_back_user'); ?>" class="list-item">
+                                        <?= fa_image_tag('switchuser.png'); ?>
+                                        <span class="name"><?= __('Switch back to original user'); ?></span>
+                                    </a>
+                                <?php endif; ?>
+                                <?php \pachno\core\framework\Event::createNew('core', 'user_dropdown_reg')->trigger(); ?>
+                                <a href="https://pachno.com/help/<?= \pachno\core\framework\Context::getRouting()->getCurrentRoute()->getName(); ?>" id="global_help_link" class="list-item">
+                                    <?= fa_image_tag('question-circle', ['class' => 'icon']); ?>
+                                    <span class="name"><?= __('Help for this page'); ?></span>
+                                </a>
+                                <div class="list-item header"><?= __('Your issues'); ?></div>
+                                <a href="<?= make_url('my_reported_issues'); ?>" class="list-item">
+                                    <?= fa_image_tag('search', ['class' => 'icon']); ?>
+                                    <span class="name"><?=  __('Issues reported by me'); ?></span>
+                                </a>
+                                <a href="<?= make_url('my_assigned_issues'); ?>" class="list-item">
+                                    <?= fa_image_tag('search', ['class' => 'icon']); ?>
+                                    <span class="name"><?=  __('Open issues assigned to me') ; ?></span>
+                                </a>
+                                <a href="<?= make_url('my_teams_assigned_issues'); ?>" class="list-item">
+                                    <?= fa_image_tag('search', ['class' => 'icon']); ?>
+                                    <span class="name"><?=  __('Open issues assigned to my teams'); ?></span>
+                                </a>
+                                <div class="list-item separator"></div>
+                                <a href="<?= make_url('logout'); ?>" class="list-item">
+                                    <?= fa_image_tag('sign-out-alt', ['class' => 'icon']); ?>
+                                    <span class="name"><?= __('Logout'); ?></span>
+                                </a>
+                            </div>
+                        </div>
                     <?php endif; ?>
                 <?php endif; ?>
             <?php endif; ?>

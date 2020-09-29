@@ -53,7 +53,7 @@
             .installation_progress h5 {
                 border: none;
                 text-align: center;
-                margin: 0;
+                margin: 5px 0 0 15px;
             }
             .installpage .installation_progress {
                 margin-bottom: 15px;
@@ -71,9 +71,10 @@
             .feature { border: 1px solid #DDD; background-color: #F5F5F5; padding: 10px; margin-bottom: 5px; }
             .feature .description { background-color: #FFF; padding: 10px; }
             .feature .content { background-color: transparent; padding: 10px; border-top: 1px solid #EEE; }
-            .install_list dd { padding: 2px 0 5px 0; width: 760px; display: inline-block; float: none; }
+            .install_list { display: flex; flex-direction: column; align-items: flex-start; justify-content: center; }
+            .install_list dd { padding: 2px 0 5px 0; }
             .helptext { color: #AAA; vertical-align: middle; display: inline-block; margin-left: 5px; }
-            .install_list dt { width: 200px; padding: 7px 0; display: inline-block; float: none; }
+            .install_list dt { width: 200px; padding: 7px 0; }
             .install_list dt .faded_out { font-weight: 300; }
             .install_list select { padding: 5px; font-weight: 1.1em; height: auto; vertical-align: middle; border: 1px solid #BEBEBE; border-radius: 4px; }
             .main_header_print
@@ -230,12 +231,37 @@
             }
             .message-box .actions {
                 flex: 0 0 auto;
+                align-items: flex-end;
             }
             .message-box .message + .actions {
                 margin-left: 10px;
             }
+
+            .message-box .icon.large {
+                font-size: 2.5em;
+                margin: 0 .5em 0 .25em;
+            }
+
             .message-box .actions .button {
-                padding: 4px 7px;
+                /*padding: 4px 7px;*/
+            }
+            .message-box .actions .button + .button {
+                /*padding: 4px 7px;*/
+                margin-top: .5em;
+            }
+
+            .contact-container {
+                flex: 1 1 100%;
+                display: flex;
+                align-items: center;
+                flex-direction: row;
+            }
+
+            .button-container {
+                flex: 1 1 100%;
+                display: flex;
+                align-items: flex-start;
+                flex-direction: row;
             }
 
             .installation_container {
@@ -261,6 +287,7 @@
             }
             .logo_image_container {
                 flex: 0 0 36px;
+                padding-right: 15px;
             }
             .logo_image_container img {
                 width: 100%;

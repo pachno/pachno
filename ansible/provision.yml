@@ -40,15 +40,15 @@
           - python-mysqldb
           # Apache + PHP base requirements.
           - apache2
-          - libapache2-mod-php7.2
+          - libapache2-mod-php7.4
           - libapache2-mod-ruid2
           - php-apcu-bc
-          - php7.2-gd
-          - php7.2-curl
-          - php7.2-mysql
-          - php7.2-mbstring
-          - php7.2-xml
-          - php7.2-zip
+          - php7.4-gd
+          - php7.4-curl
+          - php7.4-mysql
+          - php7.4-mbstring
+          - php7.4-xml
+          - php7.4-zip
           # Composer dependencies.
           - unzip
           # HTTPS/TLS.
@@ -439,8 +439,8 @@
         group: root
         mode: 0644
       with_items:
-        - /etc/php/7.2/apache2/conf.d/99-local.ini
-        - /etc/php/7.2/cli/conf.d/99-local.ini
+        - /etc/php/7.4/apache2/conf.d/99-local.ini
+        - /etc/php/7.4/cli/conf.d/99-local.ini
       notify:
         - Restart apache2
 

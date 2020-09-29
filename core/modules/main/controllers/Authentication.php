@@ -18,7 +18,7 @@
         /**
          * Static login page
          *
-         * @Route(name="login_page", url="/login")
+         * @Route(name="login_page", url="/login", methods="GET")
          * @AnonymousRoute
          *
          * @param framework\Request $request
@@ -181,7 +181,7 @@
         /**
          * Do login (AJAX call)
          *
-         * @Route(name="login", url="/do/login", methods="POST")
+         * @Route(name="login", url="/login", methods="POST")
          * @AnonymousRoute
          *
          * @param framework\Request $request

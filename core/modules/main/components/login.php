@@ -2,7 +2,7 @@
     <?php if ($loginintro instanceof \pachno\core\entities\Article): ?>
         <?php include_component('publish/articledisplay', array('article' => $loginintro, 'show_title' => false, 'show_details' => false, 'show_actions' => false, 'embedded' => true)); ?>
     <?php endif; ?>
-    <form accept-charset="<?= \pachno\core\framework\Context::getI18n()->getCharset(); ?>" action="<?= make_url('login'); ?>" method="post" id="login_form" onsubmit="Pachno.Main.Login.login(); return false;">
+    <form accept-charset="<?= \pachno\core\framework\Context::getI18n()->getCharset(); ?>" action="<?= make_url('login'); ?>" method="post" id="login-form" data-simple-submit>
         <?php if (!\pachno\core\framework\Context::hasMessage('login_force_redirect') || \pachno\core\framework\Context::getMessage('login_force_redirect') !== true): ?>
             <input type="hidden" id="pachno_referer" name="referer" value="<?= $referer; ?>" />
         <?php else: ?>

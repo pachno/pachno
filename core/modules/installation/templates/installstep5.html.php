@@ -27,12 +27,9 @@
         Don't worry, that password is securely stored in your database with full encryption. The password displayed is the input you typed on the previous page.<br>
         You can change all these details from the "Account" page, after logging in.
         <div class="installation_box">
-            <form accept-charset="utf-8" action="index.php" method="post" id="finalize_settings">
+            <form accept-charset="utf-8" action="index.php" method="post" style="display: flex; width: 100%; align-items: center; justify-content: center; flex-direction: row;">
                 <input type="hidden" name="step" value="6">
-                <div style="padding-top: 20px; clear: both; text-align: center;">
-                    <img src="images/spinning_30.gif" id="next_indicator" style="display: none;">
-                    <input type="submit" id="continue_button" onclick="$('#continue_button').hide();$('#next_indicator').show();" value="Finalize installation">
-                </div>
+                <input type="submit" style="margin-left: auto;" value="Finalize installation" id="continue_button">
             </form>
         </div>
     <?php endif; ?>

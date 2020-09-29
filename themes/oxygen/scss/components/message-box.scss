@@ -31,6 +31,13 @@
   .fab,
   .far {
     margin-right: 5px;
+
+    &.icon {
+      &.large {
+        font-size: 2.4em;
+        margin-right: .5em;
+      }
+    }
   }
 
   .title {
@@ -52,6 +59,8 @@
 
   .actions {
     flex: 0 0 auto;
+    flex-direction: column;
+    align-items: flex-end;
   }
 
   .image-container {

@@ -139,6 +139,42 @@
     </div>
 </div>
 <div id="account_info_container">
+    <?php if ($error): ?>
+        <div class="message-box type-error">
+            <?= fa_image_tag('exclamation-circle'); ?>
+            <span class="message">
+                <span class="title"><?= __('An error occurred'); ?></span>
+                <span class="description"><?= $error; ?></span>
+            </span>
+        </div>
+    <?php endif; ?>
+    <?php if ($rsskey_generated): ?>
+        <div class="message-box type-success">
+            <?= fa_image_tag('exclamation-circle'); ?>
+            <span class="message">
+                <span class="title"><?= __('Your RSS key has been regenerated'); ?></span>
+                <span class="description"><?= __('All previous RSS links have been invalidated.'); ?></span>
+            </span>
+        </div>
+    <?php endif; ?>
+    <?php if ($username_chosen): ?>
+        <div class="message-box type-success">
+            <?= fa_image_tag('exclamation-circle'); ?>
+            <span class="message">
+                <span class="title"><?= __("You\'ve chosen the username \'%username\'", array('%username' => $pachno_user->getUsername())); ?></span>
+                <span class="description"><?= __('Before you can use the new username to log in, you must pick a password via the "%change_password" button.', array('%change_password' => __('Change password'))); ?></span>
+            </span>
+        </div>
+    <?php endif; ?>
+    <?php if ($openid_used): ?>
+        <div class="message-box type-error">
+            <?= fa_image_tag('exclamation-circle'); ?>
+            <span class="message">
+                <span class="title"><?= __('This OpenID identity is already in use'); ?></span>
+                <span class="description"><?= __('Someone is already using this identity. Check to see if you have already added this account.'); ?></span>
+            </span>
+        </div>
+    <?php endif; ?>
     <div id="account_user_info">
         <?= image_tag($pachno_user->getAvatarURL(false), array('style' => 'float: left; margin-right: 5px;', 'alt' => '[avatar]'), true); ?>
         <span id="user_name_span">
@@ -149,16 +185,16 @@
         </span>
     </div>
     <div id="account_details_container">
-        <div id="account_tabs" class="fancy-tabs">
-            <a class="tab <?php if ($selected_tab == 'profile'): ?> selected<?php endif; ?>" id="tab_profile" onclick="Pachno.UI.tabSwitcher('tab_profile', 'account_tabs', true);" href="javascript:void(0);">
+        <div id="account_tabs" class="fancy-tabs tab-switcher">
+            <a class="tab tab-switcher-trigger <?php if ($selected_tab == 'profile'): ?> selected<?php endif; ?>" id="tab_profile" data-tab-target="profile">
                 <?= fa_image_tag('edit', ['class' => 'icon']); ?>
                 <span class="name"><?= __('Profile'); ?></span>
             </a>
-            <a class="tab" id="tab_settings" onclick="Pachno.UI.tabSwitcher('tab_settings', 'account_tabs', true);" href="javascript:void(0);">
+            <a class="tab tab-switcher-trigger" id="tab_settings" href="javascript:void(0);" data-tab-target="settings">
                 <?= fa_image_tag('cog', ['class' => 'icon']); ?>
                 <span class="name"><?= __('Settings'); ?></span>
             </a>
-            <a class="tab" id="tab_notificationsettings" onclick="Pachno.UI.tabSwitcher('tab_notificationsettings', 'account_tabs', true);" href="javascript:void(0);">
+            <a class="tab tab-switcher-trigger" id="tab_notificationsettings" href="javascript:void(0);" data-tab-target="notificationsettings">
                 <?= fa_image_tag('bell', ['class' => 'icon']); ?>
                 <span class="name"><?= __('Notification settings'); ?></span>
             </a>
@@ -166,127 +202,136 @@
             <?php foreach (\pachno\core\framework\Context::getAllModules() as $modules): ?>
                 <?php foreach ($modules as $module_name => $module): ?>
                     <?php if ($module->hasAccountSettings()): ?>
-                        <a class="tab" id="tab_settings_<?= $module_name; ?>" onclick="Pachno.UI.tabSwitcher('tab_settings_<?= $module_name; ?>', 'account_tabs', true);" href="javascript:void(0);">
+                        <a class="tab tab-switcher-trigger" id="tab_settings_<?= $module_name; ?>" href="javascript:void(0);" data-tab-target="<?= $module_name; ?>">
                             <?= fa_image_tag($module->getAccountSettingsLogo(), ['class' => 'icon']); ?>
                             <span class="name"><?= __($module->getAccountSettingsName()); ?></span>
                         </a>
                     <?php endif; ?>
                 <?php endforeach; ?>
             <?php endforeach; ?>
-            <a class="tab <?php if ($selected_tab == 'security'): ?> selected<?php endif; ?>" id="tab_security" onclick="Pachno.UI.tabSwitcher('tab_security', 'account_tabs', true);" href="javascript:void(0);">
+            <a class="tab tab-switcher-trigger <?php if ($selected_tab == 'security'): ?> selected<?php endif; ?>" id="tab_security" href="javascript:void(0);" data-tab-target="security">
                 <?= fa_image_tag('lock', ['class' => 'icon']); ?>
                 <span class="name"><?= __('Security'); ?></span>
             </a>
             <?php if (count($pachno_user->getScopes()) > 1): ?>
-                <a class="tab" id="tab_scopes" onclick="Pachno.UI.tabSwitcher('tab_scopes', 'account_tabs', true);" href="javascript:void(0);">
+                <a class="tab tab-switcher-trigger" id="tab_scopes" href="javascript:void(0);" data-tab-target="scopes">
                     <?= fa_image_tag('clone', ['class' => 'icon']); ?>
                     <span class="name"><?= __('Scope memberships'); ?></span>
                 </a>
             <?php endif; ?>
         </div>
         <div id="account_tabs_panes">
-            <div id="tab_profile_pane" style="<?php if ($selected_tab != 'profile'): ?> display: none;<?php endif; ?>">
+            <div id="tab_profile_pane" style="<?php if ($selected_tab != 'profile'): ?> display: none;<?php endif; ?>" data-tab-id="profile" class="form-container">
                 <?php if (\pachno\core\framework\Settings::isUsingExternalAuthenticationBackend()): ?>
                     <?= \pachno\core\helpers\TextParser::parseText(\pachno\core\framework\Settings::get('changedetails_message'), false, null, array('embedded' => true)); ?>
                 <?php else: ?>
                     <form accept-charset="<?= \pachno\core\framework\Context::getI18n()->getCharset(); ?>" action="<?= make_url('account_save_information'); ?>" onsubmit="Pachno.Main.Profile.updateInformation('<?= make_url('account_save_information'); ?>'); return false;" method="post" id="profile_information_form">
-                        <h3><?= __('About yourself'); ?></h3>
-                        <p><?= __('Edit your profile details here, including additional information (Required fields are marked with a little star). Keep in mind that some of this information may be seen by other users.'); ?></p>
-                        <table class="padded_table" cellpadding=0 cellspacing=0>
-                            <tr>
-                                <td style="width: 300px;"><label for="profile_buddyname">* <?= __('Display name'); ?></label></td>
-                                <td>
-                                    <input type="text" name="buddyname" id="profile_buddyname" value="<?= $pachno_user->getBuddyname(); ?>" style="width: 200px;">
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="config-explanation" colspan="2"><?= __('This name is what other people will see you as.'); ?></td>
-                            </tr>
-                            <tr>
-                                <td ><label for="profile_email">* <?= __('Email address'); ?></label></td>
-                                <td>
-                                    <input type="email" name="email" id="profile_email" value="<?= $pachno_user->getEmail(); ?>" style="width: 300px;">
-                                </td>
-                            </tr>
-                            <tr>
-                                <td ><label for="profile_email_private_yes">* <?= __('Show my email address to others'); ?></label></td>
-                                <td>
-                                    <input type="radio" name="email_private" value="0" id="profile_email_private_no"<?php if ($pachno_user->isEmailPublic()): ?> checked<?php endif; ?>>&nbsp;<label for="profile_email_private_no"><?= __('Yes'); ?></label>&nbsp;&nbsp;
-                                    <input type="radio" name="email_private" value="1" id="profile_email_private_yes"<?php if ($pachno_user->isEmailPrivate()): ?> checked<?php endif; ?>>&nbsp;<label for="profile_email_private_yes"><?= __('No'); ?></label>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="config-explanation" colspan="2"><?= __('Whether your email address is visible to other users in your profile information card. The email address is always visible to admins.'); ?></td>
-                            </tr>
-                            <tr>
-                                <td ><label for="profile_use_gravatar_yes"><?= __('Use Gravatar avatar'); ?></label></td>
-                                <td>
-                                    <input type="radio" name="use_gravatar" value="1" id="profile_use_gravatar_yes"<?php if ($pachno_user->usesGravatar()): ?> checked<?php endif; ?>>&nbsp;<label for="profile_use_gravatar_yes"><?= __('Yes'); ?></label>&nbsp;&nbsp;
-                                    <input type="radio" name="use_gravatar" value="0" id="profile_use_gravatar_no"<?php if (!$pachno_user->usesGravatar()): ?> checked<?php endif; ?>>&nbsp;<label for="profile_use_gravatar_no"><?= __('No'); ?></label>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="config-explanation" colspan="2">
-                                    <?= __("Pachno can use your %link_to_gravatar profile picture, if you have one. If you don't have one but still want to use Gravatar for profile pictures, Pachno will use a Gravatar %auto_generated_image_unique_for_your_email_address. Don't have a Gravatar yet? %link_to_get_one_now",
-                                                    array('%link_to_gravatar' => link_tag('http://www.gravatar.com', 'Gravatar', ['target' => '_blank']),
-                                                        '%auto_generated_image_unique_for_your_email_address' => link_tag('http://blog.gravatar.com/2008/04/22/identicons-monsterids-and-wavatars-oh-my', __('auto-generated image unique for your email address'), ['target' => '_blank']),
-                                                        '%link_to_get_one_now' => link_tag('http://en.gravatar.com/site/signup/'.urlencode($pachno_user->getEmail()), __('Get one now!'), array('target' => '_blank')))); ?>
-                                    <br>
-                                    <a style="<?php if (!$pachno_user->usesGravatar()): ?>display: none; <?php endif; ?>" id="gravatar_change" href="http://en.gravatar.com/emails/" class="button">
-                                        <?= image_tag('gravatar.png'); ?>
-                                        <?= __('Change my profile picture / avatar'); ?>
-                                    </a>
-                                </td>
-                            </tr>
-                        </table>
-                        <h3><?= __('Language and location'); ?></h3>
-                        <p><?= __('This information is used to provide a more localized experience based on your location and language preferences. Items such as timestamps will be displayed in your local timezone, and you can choose to use Pachno in your own language.'); ?></p>
-                        <table class="padded_table" cellpadding=0 cellspacing=0>
-                            <tr>
-                                <td style="width: 300px;"><label for="profile_timezone"><?= __('Current timezone'); ?></label></td>
-                                <td>
-                                    <select name="timezone" id="profile_timezone" style="width: 300px;">
-                                        <option value="sys"<?php if (in_array($pachno_user->getTimezoneIdentifier(), array('sys', null))): ?> selected<?php endif; ?>><?= __('Use server timezone'); ?></option>
-                                        <?php foreach ($timezones as $timezone => $description): ?>
-                                            <option value="<?= $timezone; ?>"<?php if ($pachno_user->getTimezoneIdentifier() == $timezone): ?> selected<?php endif; ?>><?= $description; ?></option>
-                                        <?php endforeach; ?>
-                                    </select>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="config-explanation" colspan="2">
-                                    <?= __('Based on this information, the time at your location should be: %time', array('%time' => \pachno\core\framework\Context::getI18n()->formatTime(time(), 1))); ?>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td ><label for="profile_timezone"><?= __('Language'); ?></label></td>
-                                <td>
-                                    <select name="profile_language" id="profile_language" style="width: 300px;">
-                                        <option value="sys"<?php if ($pachno_user->getLanguage() == 'sys'): ?> selected<?php endif; ?>><?= __('Use global setting - %lang', array('%lang' => \pachno\core\framework\Settings::getLanguage())); ?></option>
-                                    <?php foreach ($languages as $lang_code => $lang_desc): ?>
-                                        <option value="<?= $lang_code; ?>" <?php if ($pachno_user->getLanguage() == $lang_code): ?> selected<?php endif; ?>><?= $lang_desc; ?><?php if (\pachno\core\framework\Settings::getLanguage() == $lang_code): ?> <?= __('(site default)'); endif;?></option>
-                                    <?php endforeach; ?>
-                                    </select>
-                                </td>
-                            </tr>
-                        </table>
-                        <h3><?= __('Additional information'); ?></h3>
-                        <p><?= __('You may want to provide more information about yourself here. This is completely optional, and only used to show more information about yourself to other users.'); ?></p>
-                        <table class="padded_table" cellpadding=0 cellspacing=0>
-                            <tr>
-                                <td style="width: 200px;"><label for="profile_realname"><?= __('Full name'); ?></label></td>
-                                <td>
+                        <div class="row">
+                            <div class="column large">
+                                <div class="form-row header"><h3><?= __('About yourself'); ?></h3></div>
+                                <div class="form-row">
+                                    <label for="profile_buddyname">* <?= __('Display name'); ?></label>
+                                    <input type="text" class="name-input-enhance" name="buddyname" id="profile_buddyname" value="<?= $pachno_user->getBuddyname(); ?>">
+                                    <div class="helper-text">
+                                        <?= __('This name is what other people will see you as.'); ?>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <label for="profile_realname"><span><?= __('Full name'); ?></span><span class="status-badge"><?= __('Optional'); ?></span></label>
                                     <input type="text" name="realname" id="profile_realname" value="<?= $pachno_user->getRealname(); ?>" style="width: 300px;">
-                                </td>
-                            </tr>
-                            <tr>
-                                <td ><label for="profile_homepage"><?= __('Homepage'); ?></label></td>
-                                <td>
+                                </div>
+                                <div class="form-row">
+                                    <label for="profile_homepage"><span><?= __('Homepage'); ?></span><span class="status-badge"><?= __('Optional'); ?></span></label>
                                     <input type="url" name="homepage" id="profile_homepage" value="<?= $pachno_user->getHomepage(); ?>" style="width: 300px;">
-                                </td>
-                            </tr>
-                        </table>
-                        <div class="save-button-container">
+                                </div>
+                                <div class="form-row">
+                                    <label for="profile_email">* <?= __('Email address'); ?></label>
+                                    <input type="email" name="email" id="profile_email" value="<?= $pachno_user->getEmail(); ?>">
+                                    <input type="checkbox" class="fancy-checkbox" name="email_private" value="1" id="profile_email_private_yes"<?php if (!$pachno_user->isEmailPublic()): ?> checked<?php endif; ?>>
+                                    <label for="profile_email_private_yes"><?php echo fa_image_tag('toggle-on', ['class' => 'checked']) . fa_image_tag('toggle-off', ['class' => 'unchecked']); ?><?= __('Hide my email address from other users'); ?></label>
+                                </div>
+                                <div class="form-row">
+                                    <label for="profile_use_gravatar_yes"><?= __('Use %gravatar avatar', ['%gravatar' => link_tag('https://gravatar.com', 'gravatar.com', ['target' => '_blank'])]); ?></label>
+                                    <div class="fancy-label-select">
+                                        <input type="radio" name="use_gravatar" value="1" class="fancy-checkbox" id="profile_use_gravatar_yes"<?php if ($pachno_user->usesGravatar()): ?> checked<?php endif; ?>>
+                                        <label for="profile_use_gravatar_yes"><?= fa_image_tag('check', ['class' => 'checked']) . __('Yes'); ?></label>&nbsp;&nbsp;
+                                        <input type="radio" name="use_gravatar" value="0" class="fancy-checkbox" id="profile_use_gravatar_no"<?php if (!$pachno_user->usesGravatar()): ?> checked<?php endif; ?>>
+                                        <label for="profile_use_gravatar_no"><?= fa_image_tag('check', ['class' => 'checked']) . __('No'); ?></label>
+                                    </div>
+                                    <div class="helper-text">
+                                        <span><?= __("Pachno can use your %link_to_gravatar profile picture, if you have one.", ['%link_to_gravatar' => link_tag('http://www.gravatar.com', 'Gravatar', ['target' => '_blank'])]); ?></span>
+                                        <a id="gravatar_change" href="http://en.gravatar.com/emails/" class="button secondary" target="_blank" style="margin-left: auto">
+                                            <?= image_tag('gravatar.png', ['class' => 'icon']); ?>
+                                            <span><?= __('Change my profile picture / avatar'); ?></span>
+                                            <?= fa_image_tag('external-link-alt', ['class' => 'icon external'], 'fas'); ?>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="column">
+                                <div class="form-row header">
+                                    <h3><?= __('Language and location'); ?></h3>
+                                    <div class="helper-text"><?= __('This information is used to provide a more localized experience based on your location and language preferences. Items such as timestamps will be displayed in your local timezone, and you can choose to use Pachno in your own language.'); ?></div>
+                                </div>
+                                <div class="form-row">
+                                    <label><?= __('Preferred timezone'); ?></label>
+                                    <div class="fancy-dropdown-container">
+                                        <div class="fancy-dropdown" data-default-label="<?= __('Use server timezone'); ?>">
+                                            <span class="value"><?= __('No client assigned'); ?></span>
+                                            <?= fa_image_tag('angle-down', ['class' => 'expander']); ?>
+                                            <div class="dropdown-container list-mode">
+                                                <div class="list-item filter-container">
+                                                    <input type="search" placeholder="<?= __('Filter available timezones'); ?>">
+                                                </div>
+                                                <div class="filter-values-container">
+                                                    <input type="radio" name="timezone" class="fancy-checkbox" id="user-timezone-sys" value="sys"<?php if (in_array($pachno_user->getTimezoneIdentifier(), ['sys', null])): ?> checked<?php endif; ?>>
+                                                    <label class="list-item filtervalue" for="user-timezone-sys">
+                                                        <span class="icon"><?= fa_image_tag('check-circle', ['class' => 'checked'], 'far') . fa_image_tag('circle', ['class' => 'unchecked'], 'far'); ?></span>
+                                                        <span class="name value"><?= __('Use server timezone'); ?></span>
+                                                    </label>
+                                                    <?php foreach ($timezones as $timezone => $description): ?>
+                                                        <input type="radio" name="timezone" class="fancy-checkbox" id="user-timezone-<?= $timezone; ?>" value="<?= $timezone; ?>"<?php if ($pachno_user->getTimezoneIdentifier() == $timezone): ?> checked<?php endif; ?>>
+                                                        <label class="list-item filtervalue" for="user-timezone-<?= $timezone; ?>">
+                                                            <span class="icon"><?= fa_image_tag('check-circle', ['class' => 'checked'], 'far') . fa_image_tag('circle', ['class' => 'unchecked'], 'far'); ?></span>
+                                                            <span class="name value"><?= $description; ?></span>
+                                                        </label>
+                                                    <?php endforeach; ?>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="helper-text">
+                                        <?= __('Based on this information, the time at your location should be: %time', array('%time' => \pachno\core\framework\Context::getI18n()->formatTime(time(), 1))); ?>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <label><?= __('Language'); ?></label>
+                                    <div class="fancy-dropdown-container">
+                                        <div class="fancy-dropdown" data-default-label="<?= __('Default'); ?>">
+                                            <span class="value"><?= __('Default'); ?></span>
+                                            <?= fa_image_tag('angle-down', ['class' => 'expander']); ?>
+                                            <div class="dropdown-container list-mode">
+                                                <div class="filter-values-container">
+                                                    <input type="radio" name="profile_language" class="fancy-checkbox" id="profile_language_sys" value="sys"<?php if ($pachno_user->getLanguage() == 'sys'): ?> checked<?php endif; ?>>
+                                                    <label class="list-item filtervalue" for="profile_language_sys">
+                                                        <span class="icon"><?= fa_image_tag('check-circle', ['class' => 'checked'], 'far') . fa_image_tag('circle', ['class' => 'unchecked'], 'far'); ?></span>
+                                                        <span class="name value"><?= __('Use global setting - %lang', array('%lang' => \pachno\core\framework\Settings::getLanguage())); ?></span>
+                                                    </label>
+                                                    <?php foreach ($languages as $lang_code => $lang_desc): ?>
+                                                        <input type="radio" name="profile_language" class="fancy-checkbox" id="profile_language_<?= $lang_code; ?>" value="<?= $lang_code; ?>"<?php if ($pachno_user->getLanguage() == $lang_code): ?> checked<?php endif; ?>>
+                                                        <label class="list-item" for="profile_language_<?= $lang_code; ?>">
+                                                            <span class="icon"><?= fa_image_tag('check-circle', ['class' => 'checked'], 'far') . fa_image_tag('circle', ['class' => 'unchecked'], 'far'); ?></span>
+                                                            <span class="name value"><?= $lang_desc; ?> <?php if (\pachno\core\framework\Settings::getLanguage() == $lang_code): ?> <?= __('(site default)'); endif;?></span>
+                                                        </label>
+                                                    <?php endforeach; ?>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-row submit-container">
                             <div class="message"><?= __('Click "%save" to save your account information', array('%save' => __('Save'))); ?></div>
                             <span id="profile_save_indicator" style="display: none;"><?= image_tag('spinning_20.gif'); ?></span>
                             <input type="submit" id="submit_information_button" value="<?= __('Save'); ?>">
@@ -294,7 +339,7 @@
                     </form>
                 <?php endif; ?>
             </div>
-            <div id="tab_settings_pane" style="display: none;">
+            <div id="tab_settings_pane" data-tab-id="settings" style="display: none;" class="form-container">
                 <form accept-charset="<?= \pachno\core\framework\Context::getI18n()->getCharset(); ?>" action="<?= make_url('account_save_settings'); ?>" onsubmit="Pachno.Main.Profile.updateSettings('<?= make_url('account_save_settings'); ?>'); return false;" method="post" id="profile_settings_form">
                     <h3><?= __('Navigation'); ?></h3>
                     <p><?= __('These settings apply to all areas of Pachno, and lets you customize your experience to fit your own style.'); ?></p>
@@ -357,7 +402,7 @@
                     </div>
                 </form>
             </div>
-            <div id="tab_notificationsettings_pane" style="display: none;">
+            <div id="tab_notificationsettings_pane" data-tab-id="notificationsettings" style="display: none;" class="form-container">
                 <form accept-charset="<?= \pachno\core\framework\Context::getI18n()->getCharset(); ?>" action="<?= make_url('account_save_settings'); ?>" onsubmit="Pachno.Main.Profile.updateNotificationSettings('<?= make_url('account_save_notificationsettings'); ?>'); return false;" method="post" id="profile_notificationsettings_form">
                     <h3><?= __('Subscriptions'); ?></h3>
                     <p><?= __('Pachno can subscribe you to issues, articles and other items in the system, so you can receive notifications when they are updated. Please select when you would like Pachno to subscribe you.'); ?></p>
@@ -558,7 +603,7 @@
                     </div>
                 </form>
             </div>
-            <div id="tab_security_pane" style="<?php if ($selected_tab != 'security'): ?> display: none;<?php endif; ?>">
+            <div id="tab_security_pane" data-tab-id="security" style="<?php if ($selected_tab != 'security'): ?> display: none;<?php endif; ?>">
                 <h3 style="position: relative;"><?= __('Two-factor authentication'); ?></h3>
                 <p><?= __("Enabling two-factor authentication increases account security by requiring that you provide a one-time code every time you log in on a new device."); ?></p>
                 <ul class="access_keys_list">
@@ -607,14 +652,14 @@
             <?php foreach (\pachno\core\framework\Context::getAllModules() as $modules): ?>
                 <?php foreach ($modules as $module_name => $module): ?>
                     <?php if ($module->hasAccountSettings()): ?>
-                        <div id="tab_settings_<?= $module_name; ?>_pane" style="display: none;">
+                        <div id="tab_settings_<?= $module_name; ?>_pane" data-tab-id="<?= $module_name; ?>" style="display: none;">
                             <?php include_component("{$module_name}/accountsettings", array('module' => $module)); ?>
                         </div>
                     <?php endif; ?>
                 <?php endforeach; ?>
             <?php endforeach; ?>
             <?php if (count($pachno_user->getScopes()) > 1): ?>
-                <div id="tab_scopes_pane" style="display: none;">
+                <div id="tab_scopes_pane" data-tab-id="scopes" style="display: none;">
                     <h3><?= __('Pending memberships'); ?></h3>
                     <ul class="simple-list" id="pending_scope_memberships">
                         <?php foreach ($pachno_user->getUnconfirmedScopes() as $scope): ?>
@@ -633,30 +678,3 @@
         </div>
     </div>
 </div>
-<script type="text/javascript">
-    var Pachno, jQuery;
-    require(['domReady', 'pachno/index', 'jquery', 'jquery.nanoscroller'], function (domReady, pachno_index_js, jquery, nanoscroller) {
-        domReady(function () {
-            Pachno = pachno_index_js;
-
-            Pachno.UI.tabSwitchFromHash('account_tabs');
-
-            $$('.filter').each(function (filter) {
-                Pachno.Search.initializeFilterField(filter);
-            });
-
-            <?php if ($error): ?>
-                Pachno.UI.Message.error('<?= __('An error occurred'); ?>', '<?= $error; ?>');
-            <?php endif; ?>
-            <?php if ($rsskey_generated): ?>
-                Pachno.UI.Message.success('<?= __('Your RSS key has been regenerated'); ?>', '<?= __('All previous RSS links have been invalidated.'); ?>');
-            <?php endif; ?>
-            <?php if ($username_chosen): ?>
-                Pachno.UI.Message.success('<?= __("You\'ve chosen the username \'%username\'", array('%username' => $pachno_user->getUsername())); ?>', '<?= __('Before you can use the new username to log in, you must pick a password via the "%change_password" button.', array('%change_password' => __('Change password'))); ?>');
-            <?php endif; ?>
-            <?php if ($openid_used): ?>
-                Pachno.UI.Message.error('<?= __('This OpenID identity is already in use'); ?>', '<?= __('Someone is already using this identity. Check to see if you have already added this account.'); ?>');
-            <?php endif; ?>
-        });
-    });
-</script>
