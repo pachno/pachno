@@ -101,6 +101,12 @@
       &.invisible {
         border-bottom-color: transparent;
       }
+
+      &.info-icons {
+        &.large {
+          font-size: 1.2em;
+        }
+      }
     }
 
     &.invisible {
@@ -133,14 +139,28 @@
 
     &.info-icons {
       flex: 0 0 40px;
-      justify-content: flex-end;
       align-items: center;
 
-      .fas,
-      .far {
-        + .fas,
-        + .far {
-          margin-left: -.2em;
+      &.centered {
+        justify-content: center;
+
+        .fas,
+        .far,
+        .fab {
+          margin-left: 0;
+          margin-right: 0;
+        }
+      }
+
+      &:not(.centered) {
+        justify-content: flex-end;
+
+        .fas,
+        .far {
+          + .fas,
+          + .far {
+            margin-left: -.2em;
+          }
         }
       }
 

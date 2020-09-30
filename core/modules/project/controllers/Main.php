@@ -951,7 +951,7 @@
                     $response = ['message' => $this->getI18n()->__('Settings saved')];
 
                     if (!$request['project_id'] && !$request['project_key']) {
-                        $response['forward'] = $this->getRouting()->generate('project_dashboard', ['project_key' => $this->selected_project->getKey()]);
+                        return $this->forward($this->getRouting()->generate('project_dashboard', ['project_key' => $this->selected_project->getKey()]));
                     }
                 } catch (Exception $e) {
                     $this->getResponse()->setHttpStatus(400);

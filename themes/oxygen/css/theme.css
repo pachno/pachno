@@ -52,6 +52,9 @@ h1, h2, h3, h4, h5, h6 {
     flex-direction: row;
     align-items: center;
     justify-content: flex-start; }
+    h1 > span.actions, h2 > span.actions, h3 > span.actions, h4 > span.actions, h5 > span.actions, h6 > span.actions {
+      flex: 0 0 auto;
+      white-space: nowrap; }
     h1 > span.multiline, h2 > span.multiline, h3 > span.multiline, h4 > span.multiline, h5 > span.multiline, h6 > span.multiline {
       flex-direction: column;
       align-items: flex-start;
@@ -217,9 +220,6 @@ input.shaded,
     color: #FFF;
     opacity: 1; }
   input.shaded:-ms-input-placeholder, .input.shaded:-ms-input-placeholder {
-    color: #FFF;
-    opacity: 1; }
-  input.shaded::-ms-input-placeholder, .input.shaded::-ms-input-placeholder {
     color: #FFF;
     opacity: 1; }
   input.shaded::placeholder,
@@ -7350,8 +7350,7 @@ input.icon.danger {
     .fancy-checkbox + label .far.unchecked,
     .fancy-checkbox + .list-item .fas.unchecked,
     .fancy-checkbox + .list-item .far.unchecked {
-      display: inline-flex;
-      margin-right: .3em; }
+      display: inline-flex; }
     .fancy-checkbox + label .fas.checked,
     .fancy-checkbox + label .far.checked,
     .fancy-checkbox + .list-item .fas.checked,
@@ -7362,6 +7361,13 @@ input.icon.danger {
     .fancy-checkbox + .list-item .fas.indicator,
     .fancy-checkbox + .list-item .far.indicator {
       display: none; }
+    .fancy-checkbox + label .fas:not(.icon) + span,
+    .fancy-checkbox + label .far:not(.icon) + span,
+    .fancy-checkbox + label .fab:not(.icon) + span,
+    .fancy-checkbox + .list-item .fas:not(.icon) + span,
+    .fancy-checkbox + .list-item .far:not(.icon) + span,
+    .fancy-checkbox + .list-item .fab:not(.icon) + span {
+      margin-left: .3em; }
   .fancy-checkbox.submitting + label .fas.unchecked,
   .fancy-checkbox.submitting + label .far.unchecked,
   .fancy-checkbox.submitting + label .fas.checked,
@@ -7397,8 +7403,7 @@ input.icon.danger {
   .fancy-checkbox:checked:not(:disabled):not(.submitting) + label .far.checked,
   .fancy-checkbox:checked:not(:disabled):not(.submitting) + .list-item .fas.checked,
   .fancy-checkbox:checked:not(:disabled):not(.submitting) + .list-item .far.checked {
-    display: inline-block;
-    margin-right: .3em; }
+    display: inline-block; }
   .fancy-checkbox:checked:not(:disabled):not(.submitting) + label .fas.unchecked,
   .fancy-checkbox:checked:not(:disabled):not(.submitting) + label .far.unchecked,
   .fancy-checkbox:checked:not(:disabled):not(.submitting) + .list-item .fas.unchecked,
@@ -7406,6 +7411,9 @@ input.icon.danger {
     display: none; }
   .fancy-checkbox:focus + label {
     color: #558; }
+
+.form-container .form-row > .fancy-checkbox + label:not(.button) {
+  font-size: .95em; }
 
 .fancy-checkbox-grid {
   display: flex;
@@ -8820,6 +8828,14 @@ input[data-interactive-toggle].submitting + label .indicator {
       border-bottom-width: 2px; }
       .form-container .form-row.search-container input[type=search] + button {
         flex: 0 0 auto; }
+    .form-container .form-row .message {
+      flex: 1 1 auto;
+      margin-right: 1em; }
+      .form-container .form-row .message h1, .form-container .form-row .message h2, .form-container .form-row .message h3, .form-container .form-row .message h4, .form-container .form-row .message h5, .form-container .form-row .message h6 {
+        font-weight: 400;
+        font-size: 1.1em; }
+      .form-container .form-row .message + button {
+        flex: 0 0 auto; }
     .form-container .form-row.add-placeholder > .icon {
       color: rgba(0, 0, 0, 0.4); }
       .form-container .form-row.add-placeholder > .icon + textarea,
@@ -9529,6 +9545,8 @@ nav.sidebar {
       color: #0C8990; }
       .flexible-table .column.header.invisible {
         border-bottom-color: transparent; }
+      .flexible-table .column.header.info-icons.large {
+        font-size: 1.2em; }
     .flexible-table .column.invisible {
       border-bottom-color: transparent; }
     .flexible-table .column.disabled {
@@ -9547,13 +9565,21 @@ nav.sidebar {
         margin: .15rem; }
     .flexible-table .column.info-icons {
       flex: 0 0 40px;
-      justify-content: flex-end;
       align-items: center; }
-      .flexible-table .column.info-icons .fas + .fas,
-      .flexible-table .column.info-icons .fas + .far,
-      .flexible-table .column.info-icons .far + .fas,
-      .flexible-table .column.info-icons .far + .far {
-        margin-left: -.2em; }
+      .flexible-table .column.info-icons.centered {
+        justify-content: center; }
+        .flexible-table .column.info-icons.centered .fas,
+        .flexible-table .column.info-icons.centered .far,
+        .flexible-table .column.info-icons.centered .fab {
+          margin-left: 0;
+          margin-right: 0; }
+      .flexible-table .column.info-icons:not(.centered) {
+        justify-content: flex-end; }
+        .flexible-table .column.info-icons:not(.centered) .fas + .fas,
+        .flexible-table .column.info-icons:not(.centered) .fas + .far,
+        .flexible-table .column.info-icons:not(.centered) .far + .fas,
+        .flexible-table .column.info-icons:not(.centered) .far + .far {
+          margin-left: -.2em; }
       .flexible-table .column.info-icons img {
         width: 100%; }
     .flexible-table .column .button.secondary {

@@ -27,7 +27,7 @@
             </div>
             <div class="helper-text">
                 <?= __('Understand the full picture'); ?><br>
-                <?= __('Boards lets you organize issues and tasks the way you want'); ?>
+                <?= __('Boards let you organize issues and tasks the way you want'); ?>
             </div>
         </div>
     </div>

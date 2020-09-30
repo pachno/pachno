@@ -21,8 +21,8 @@
             <form accept-charset="<?= \pachno\core\framework\Context::getI18n()->getCharset(); ?>" action="<?= make_url('account_change_password'); ?>" onsubmit="Pachno.Main.Profile.changePassword('<?= make_url('account_change_password'); ?>'); return false;" method="post" id="change_password_form">
                 <div class="backdrop_detail_content login_content">
                     <div class="logindiv regular active" id="change_password_container">
-                        <?php if (\pachno\core\framework\Settings::isUsingExternalAuthenticationBackend()): ?>
-                            <?= \pachno\core\helpers\TextParser::parseText(\pachno\core\framework\Settings::get('changepw_message'), false, null, array('embedded' => true)); ?>
+                        <?php if (Settings::isUsingExternalAuthenticationBackend()): ?>
+                            <?= \pachno\core\helpers\TextParser::parseText(Settings::get('changepw_message'), false, null, array('embedded' => true)); ?>
                         <?php else: ?>
                             <div class="article"><?= __('Enter your current password in the first box, then enter your new password twice (to prevent you from typing mistakes). Press the "%change_password" button to change your password.', array('%change_password' => __('Change password'))); ?></div>
                             <ul class="login_formlist">
@@ -48,7 +48,7 @@
                         <?php endif; ?>
                     </div>
                 </div>
-                <?php if (!\pachno\core\framework\Settings::isUsingExternalAuthenticationBackend()): ?>
+                <?php if (!Settings::isUsingExternalAuthenticationBackend()): ?>
                     <div class="backdrop_details_submit">
                         <span class="explanation"></span>
                         <div class="submit_container">
@@ -190,9 +190,9 @@
                 <?= fa_image_tag('edit', ['class' => 'icon']); ?>
                 <span class="name"><?= __('Profile'); ?></span>
             </a>
-            <a class="tab tab-switcher-trigger" id="tab_settings" href="javascript:void(0);" data-tab-target="settings">
-                <?= fa_image_tag('cog', ['class' => 'icon']); ?>
-                <span class="name"><?= __('Settings'); ?></span>
+            <a class="tab tab-switcher-trigger <?php if ($selected_tab == 'security'): ?> selected<?php endif; ?>" id="tab_security" href="javascript:void(0);" data-tab-target="security">
+                <?= fa_image_tag('lock', ['class' => 'icon']); ?>
+                <span class="name"><?= __('Security'); ?></span>
             </a>
             <a class="tab tab-switcher-trigger" id="tab_notificationsettings" href="javascript:void(0);" data-tab-target="notificationsettings">
                 <?= fa_image_tag('bell', ['class' => 'icon']); ?>
@@ -209,10 +209,6 @@
                     <?php endif; ?>
                 <?php endforeach; ?>
             <?php endforeach; ?>
-            <a class="tab tab-switcher-trigger <?php if ($selected_tab == 'security'): ?> selected<?php endif; ?>" id="tab_security" href="javascript:void(0);" data-tab-target="security">
-                <?= fa_image_tag('lock', ['class' => 'icon']); ?>
-                <span class="name"><?= __('Security'); ?></span>
-            </a>
             <?php if (count($pachno_user->getScopes()) > 1): ?>
                 <a class="tab tab-switcher-trigger" id="tab_scopes" href="javascript:void(0);" data-tab-target="scopes">
                     <?= fa_image_tag('clone', ['class' => 'icon']); ?>
@@ -222,8 +218,8 @@
         </div>
         <div id="account_tabs_panes">
             <div id="tab_profile_pane" style="<?php if ($selected_tab != 'profile'): ?> display: none;<?php endif; ?>" data-tab-id="profile" class="form-container">
-                <?php if (\pachno\core\framework\Settings::isUsingExternalAuthenticationBackend()): ?>
-                    <?= \pachno\core\helpers\TextParser::parseText(\pachno\core\framework\Settings::get('changedetails_message'), false, null, array('embedded' => true)); ?>
+                <?php if (Settings::isUsingExternalAuthenticationBackend()): ?>
+                    <?= \pachno\core\helpers\TextParser::parseText(Settings::get('changedetails_message'), false, null, array('embedded' => true)); ?>
                 <?php else: ?>
                     <form accept-charset="<?= \pachno\core\framework\Context::getI18n()->getCharset(); ?>" action="<?= make_url('account_save_information'); ?>" onsubmit="Pachno.Main.Profile.updateInformation('<?= make_url('account_save_information'); ?>'); return false;" method="post" id="profile_information_form">
                         <div class="row">
@@ -248,16 +244,11 @@
                                     <label for="profile_email">* <?= __('Email address'); ?></label>
                                     <input type="email" name="email" id="profile_email" value="<?= $pachno_user->getEmail(); ?>">
                                     <input type="checkbox" class="fancy-checkbox" name="email_private" value="1" id="profile_email_private_yes"<?php if (!$pachno_user->isEmailPublic()): ?> checked<?php endif; ?>>
-                                    <label for="profile_email_private_yes"><?php echo fa_image_tag('toggle-on', ['class' => 'checked']) . fa_image_tag('toggle-off', ['class' => 'unchecked']); ?><?= __('Hide my email address from other users'); ?></label>
+                                    <label for="profile_email_private_yes"><?php echo fa_image_tag('check-square', ['class' => 'checked']) . fa_image_tag('square', ['class' => 'unchecked'], 'far'); ?><span><?= __('Hide my email address from other users'); ?></span></label>
                                 </div>
                                 <div class="form-row">
-                                    <label for="profile_use_gravatar_yes"><?= __('Use %gravatar avatar', ['%gravatar' => link_tag('https://gravatar.com', 'gravatar.com', ['target' => '_blank'])]); ?></label>
-                                    <div class="fancy-label-select">
-                                        <input type="radio" name="use_gravatar" value="1" class="fancy-checkbox" id="profile_use_gravatar_yes"<?php if ($pachno_user->usesGravatar()): ?> checked<?php endif; ?>>
-                                        <label for="profile_use_gravatar_yes"><?= fa_image_tag('check', ['class' => 'checked']) . __('Yes'); ?></label>&nbsp;&nbsp;
-                                        <input type="radio" name="use_gravatar" value="0" class="fancy-checkbox" id="profile_use_gravatar_no"<?php if (!$pachno_user->usesGravatar()): ?> checked<?php endif; ?>>
-                                        <label for="profile_use_gravatar_no"><?= fa_image_tag('check', ['class' => 'checked']) . __('No'); ?></label>
-                                    </div>
+                                    <input type="checkbox" name="use_gravatar" value="1" class="fancy-checkbox" id="profile_use_gravatar_yes"<?php if ($pachno_user->usesGravatar()): ?> checked<?php endif; ?>>
+                                    <label for="profile_use_gravatar_yes"><?= fa_image_tag('check-square', ['class' => 'checked']) . fa_image_tag('square', ['class' => 'unchecked'], 'far'); ?><span><?= __('Use my email avatar from %link_to_gravatar', ['%link_to_gravatar' => link_tag('https://gravatar.com', 'gravatar.com', ['target' => '_blank'])]); ?></span></label>&nbsp;&nbsp;
                                     <div class="helper-text">
                                         <span><?= __("Pachno can use your %link_to_gravatar profile picture, if you have one.", ['%link_to_gravatar' => link_tag('http://www.gravatar.com', 'Gravatar', ['target' => '_blank'])]); ?></span>
                                         <a id="gravatar_change" href="http://en.gravatar.com/emails/" class="button secondary" target="_blank" style="margin-left: auto">
@@ -315,13 +306,13 @@
                                                     <input type="radio" name="profile_language" class="fancy-checkbox" id="profile_language_sys" value="sys"<?php if ($pachno_user->getLanguage() == 'sys'): ?> checked<?php endif; ?>>
                                                     <label class="list-item filtervalue" for="profile_language_sys">
                                                         <span class="icon"><?= fa_image_tag('check-circle', ['class' => 'checked'], 'far') . fa_image_tag('circle', ['class' => 'unchecked'], 'far'); ?></span>
-                                                        <span class="name value"><?= __('Use global setting - %lang', array('%lang' => \pachno\core\framework\Settings::getLanguage())); ?></span>
+                                                        <span class="name value"><?= __('Use global setting - %lang', array('%lang' => Settings::getLanguage())); ?></span>
                                                     </label>
                                                     <?php foreach ($languages as $lang_code => $lang_desc): ?>
                                                         <input type="radio" name="profile_language" class="fancy-checkbox" id="profile_language_<?= $lang_code; ?>" value="<?= $lang_code; ?>"<?php if ($pachno_user->getLanguage() == $lang_code): ?> checked<?php endif; ?>>
                                                         <label class="list-item" for="profile_language_<?= $lang_code; ?>">
                                                             <span class="icon"><?= fa_image_tag('check-circle', ['class' => 'checked'], 'far') . fa_image_tag('circle', ['class' => 'unchecked'], 'far'); ?></span>
-                                                            <span class="name value"><?= $lang_desc; ?> <?php if (\pachno\core\framework\Settings::getLanguage() == $lang_code): ?> <?= __('(site default)'); endif;?></span>
+                                                            <span class="name value"><?= $lang_desc; ?> <?php if (Settings::getLanguage() == $lang_code): ?> <?= __('(site default)'); endif;?></span>
                                                         </label>
                                                     <?php endforeach; ?>
                                                 </div>
@@ -339,201 +330,152 @@
                     </form>
                 <?php endif; ?>
             </div>
-            <div id="tab_settings_pane" data-tab-id="settings" style="display: none;" class="form-container">
-                <form accept-charset="<?= \pachno\core\framework\Context::getI18n()->getCharset(); ?>" action="<?= make_url('account_save_settings'); ?>" onsubmit="Pachno.Main.Profile.updateSettings('<?= make_url('account_save_settings'); ?>'); return false;" method="post" id="profile_settings_form">
-                    <h3><?= __('Navigation'); ?></h3>
-                    <p><?= __('These settings apply to all areas of Pachno, and lets you customize your experience to fit your own style.'); ?></p>
-                    <table class="padded_table" cellpadding=0 cellspacing=0>
-                        <tr>
-                            <td style="width: 200px;"><label for="profile_enable_keyboard_navigation_yes"><?= __('Enable keyboard navigation'); ?></label></td>
-                            <td>
-                                <input type="radio" name="enable_keyboard_navigation" value="1" id="profile_enable_keyboard_navigation_yes"<?php if ($pachno_user->isKeyboardNavigationEnabled()): ?> checked<?php endif; ?>>&nbsp;<label for="profile_use_gravatar_yes"><?= __('Yes'); ?></label>&nbsp;&nbsp;
-                                <input type="radio" name="enable_keyboard_navigation" value="0" id="profile_enable_keyboard_navigation_no"<?php if (!$pachno_user->isKeyboardNavigationEnabled()): ?> checked<?php endif; ?>>&nbsp;<label for="profile_use_gravatar_no"><?= __('No'); ?></label>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="config-explanation" colspan="2">
-                                <?= __('Lets you use arrow up / down in issue lists to navigate'); ?><br>
-                            </td>
-                        </tr>
-                    </table>
-                    <h3><?= __('Editing'); ?></h3>
-                    <p><?= __('The settings you select here will be used as the default formatting syntax for comments you post, issues you create and articles you write. Remember that you can switch this on a case by case basis - look for the syntax selector next to any text area with formatting buttons.'); ?></p>
-                    <table class="padded_table" cellpadding=0 cellspacing=0>
-                        <tr>
-                            <td colspan="2">
-                                <table class="profile_syntax_table">
-                                    <thead>
-                                        <tr>
-                                            <th></th>
-                                            <th><?= __('Mediawiki'); ?></th>
-                                            <th><?= __('Markdown'); ?></th>
-                                            <th><?= __('Plain text'); ?></th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td><label for="syntax_issues_md"><?= __('Preferred syntax when creating issues'); ?></label></td>
-                                            <td><input type="radio" name="syntax_issues" value="<?= \pachno\core\framework\Settings::SYNTAX_MW; ?>" id="syntax_issues_mw" <?php if ($pachno_user->getPreferredIssuesSyntax(true) == \pachno\core\framework\Settings::SYNTAX_MW) echo 'checked'; ?>></td>
-                                            <td><input type="radio" name="syntax_issues" value="<?= \pachno\core\framework\Settings::SYNTAX_MD; ?>" id="syntax_issues_md" <?php if ($pachno_user->getPreferredIssuesSyntax(true) == \pachno\core\framework\Settings::SYNTAX_MD) echo 'checked'; ?>></td>
-                                            <td><input type="radio" name="syntax_issues" value="<?= \pachno\core\framework\Settings::SYNTAX_PT; ?>" id="syntax_issues_pt" <?php if ($pachno_user->getPreferredIssuesSyntax(true) == \pachno\core\framework\Settings::SYNTAX_PT) echo 'checked'; ?>></td>
-                                        </tr>
-                                        <tr>
-                                            <td><label for="syntax_articles_mw"><?= __('Preferred syntax when creating articles'); ?></label></td>
-                                            <td><input type="radio" name="syntax_articles" value="<?= \pachno\core\framework\Settings::SYNTAX_MW; ?>" id="syntax_articles_mw" <?php if ($pachno_user->getPreferredWikiSyntax(true) == \pachno\core\framework\Settings::SYNTAX_MW) echo 'checked'; ?>></td>
-                                            <td><input type="radio" name="syntax_articles" value="<?= \pachno\core\framework\Settings::SYNTAX_MD; ?>" id="syntax_articles_md" <?php if ($pachno_user->getPreferredWikiSyntax(true) == \pachno\core\framework\Settings::SYNTAX_MD) echo 'checked'; ?>></td>
-                                            <td><input type="radio" name="syntax_articles" value="<?= \pachno\core\framework\Settings::SYNTAX_PT; ?>" id="syntax_articles_pt" <?php if ($pachno_user->getPreferredWikiSyntax(true) == \pachno\core\framework\Settings::SYNTAX_PT) echo 'checked'; ?>></td>
-                                        </tr>
-                                        <tr>
-                                            <td><label for="syntax_comments_md"><?= __('Preferred syntax when posting comments'); ?></label></td>
-                                            <td><input type="radio" name="syntax_comments" value="<?= \pachno\core\framework\Settings::SYNTAX_MW; ?>" id="syntax_comments_mw" <?php if ($pachno_user->getPreferredCommentsSyntax(true) == \pachno\core\framework\Settings::SYNTAX_MW) echo 'checked'; ?>></td>
-                                            <td><input type="radio" name="syntax_comments" value="<?= \pachno\core\framework\Settings::SYNTAX_MD; ?>" id="syntax_comments_md" <?php if ($pachno_user->getPreferredCommentsSyntax(true) == \pachno\core\framework\Settings::SYNTAX_MD) echo 'checked'; ?>></td>
-                                            <td><input type="radio" name="syntax_comments" value="<?= \pachno\core\framework\Settings::SYNTAX_PT; ?>" id="syntax_comments_pt" <?php if ($pachno_user->getPreferredCommentsSyntax(true) == \pachno\core\framework\Settings::SYNTAX_PT) echo 'checked'; ?>></td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </td>
-                        </tr>
-                    </table>
-                    <div class="save-button-container">
-                        <div class="message"><?= __('Click "%save" to update the settings on this tab', array('%save' => __('Save'))); ?></div>
-                        <span id="profile_settings_save_indicator"><?= image_tag('spinning_20.gif'); ?></span>
-                        <input type="submit" id="submit_settings_button" value="<?= __('Save'); ?>">
+            <div id="tab_security_pane" data-tab-id="security" class="form-container" style="<?php if ($selected_tab != 'security'): ?> display: none;<?php endif; ?>">
+                <div class="form">
+                    <div class="form-row header" id="account_2fa_disabled" style="<?php if ($pachno_user->is2FaEnabled()) echo 'display: none;'; ?>">
+                        <h5>
+                            <?= fa_image_tag('exclamation-triangle', ['class' => 'icon']); ?>
+                            <span><?= __('Two-factor authentication is not enabled'); ?></span>
+                            <button class="button primary" onclick="Pachno.UI.Backdrop.show('<?= make_url('get_partial_for_backdrop', ['key' => 'enable_2fa']); ?>');"><?= __('Enable'); ?></button>
+                        </h5>
+                        <div class="helper-text"><?= __("Enabling two-factor authentication increases account security by requiring that you provide a one-time code every time you log in on a new device."); ?></div>
                     </div>
-                </form>
-            </div>
+                    <div class="form-row" id="account_2fa_enabled" style="<?php if (!$pachno_user->is2FaEnabled()) echo 'display: none;'; ?>">
+                        <span class="message">
+                            <h3><?= fa_image_tag('check', ['class' => 'icon']); ?><span><?= __('Two-factor authentication is enabled'); ?></span></h3>
+                            <span><?= __('A one-time code is required to log in on a new device'); ?></span>
+                        </span>
+                        <button class="button secondary" onclick="Pachno.UI.Dialog.show('<?= __('Really disable two-factor authentication?'); ?>', '<?= __('Do you really want to two-factor authentication? By doing this, only your username and password is required when logging in.'); ?>', {yes: {click: function () { Pachno.Main.Login.disable2Fa('<?= make_url('account_disable_2fa', array('csrf_token' => \pachno\core\framework\Context::getCsrfToken())); ?>') }}, no: {click: Pachno.UI.Dialog.dismiss}});"><?= __('Disable 2FA'); ?></button>
+                    </div>
+                    <div class="form-row separator"></div>
+                    <div class="form-row header">
+                        <h5>
+                            <?= fa_image_tag('key', ['class' => 'icon']); ?>
+                            <span><?= __('Passwords and keys'); ?></span>
+                            <span class="actions">
+                                <?php if ($pachno_user->canChangePassword() && !$pachno_user->isOpenIdLocked()): ?>
+                                    <button class="button secondary" onclick="$('#change_password_div').toggle();"><?= fa_image_tag('key', ['class' => 'icon']); ?><span><?= __('Change my password'); ?></span></button>
+                                <?php elseif ($pachno_user->isOpenIdLocked()): ?>
+                                    <button class="button secondary" onclick="$('#pick_username_div').toggle();" id="pick_username_button"><?= fa_image_tag('user-tag', ['class' => 'icon']); ?><span><?= __('Pick a username'); ?></span></button>
+                                <?php else: ?>
+                                    <button class="button secondary" onclick="Pachno.UI.Message.error('<?= __('Changing password disabled'); ?>', '<?= __('Changing your password can not be done via this interface. Please contact your administrator to change your password.'); ?>');" class="disabled"><?= fa_image_tag('key', ['class' => 'icon']); ?><span><?= __('Change my password'); ?></span></button>
+                                <?php endif; ?>
+                                <button class="button secondary" onclick="$('#add_application_password_div').toggle();"><?= fa_image_tag('handshake', ['class' => 'icon'], 'far'); ?><span><?= __('Add application-specific password'); ?></span></button>
+                            </span>
+                        </h5>
+                        <div class="helper-text"><?= __("When authenticating with Pachno you only use your main password on the website - other applications and RSS feeds needs specific access tokens that you can enable / disable on an individual basis. You can control all your passwords and keys from here."); ?></div>
+                    </div>
+                    <div class="form-row">
+                        <h4>
+                            <?= fa_image_tag('rss', ['class' => 'icon']); ?>
+                            <span><?= __('RSS feeds access key'); ?></span>
+                            <button class="button secondary" onclick="Pachno.UI.Dialog.show('<?= __('Regenerate your RSS key?'); ?>', '<?= __('Do you really want to regenerate your RSS access key? By doing this all your previously bookmarked or linked RSS feeds will stop working and you will have to get the link from inside Pachno again.'); ?>', {yes: {href: '<?= make_url('account_regenerate_rss_key', array('csrf_token' => \pachno\core\framework\Context::getCsrfToken())); ?>'}, no: {click: Pachno.UI.Dialog.dismiss}});"><?= __('Reset'); ?></button>
+                        </h4>
+                        <div class="helper-text"><?= __('Automatically used as part of RSS feed URLs. Regenerating this key prevents your previous RSS feed links from working.'); ?></div>
+                    </div>
+                    <?php foreach ($pachno_user->getApplicationPasswords() as $password): ?>
+                        <div class="form-row" id="application_password_<?= $password->getID(); ?>">
+                            <h4>
+                                <span><?= __('Application password: %password_name', array('%password_name' => $password->getName())); ?></span>
+                                <button class="button" onclick="Pachno.UI.Dialog.show('<?= __('Remove this application-specific password?'); ?>', '<?= __('Do you really want to remove this application-specific password? By doing this, that application will no longer have access, and you will have to generate a new application password for the application to regain access.'); ?>', {yes: {click: function() {Pachno.Main.Profile.removeApplicationPassword('<?= make_url('account_remove_application_password', array('id' => $password->getID(), 'csrf_token' => \pachno\core\framework\Context::getCsrfToken())); ?>', <?= $password->getID(); ?>);}}, no: {click: Pachno.UI.Dialog.dismiss}});"><?= __('Delete'); ?></button>
+                            </h4>
+                            <div class="helper-text"><?= __('Last used: %last_used_time, created at: %created_at_time', array('%last_used_time' => ($password->getLastUsedAt()) ? \pachno\core\framework\Context::getI18n()->formatTime($password->getLastUsedAt(), 20) : __('never used'), '%created_at_time' => \pachno\core\framework\Context::getI18n()->formatTime($password->getCreatedAt(), 20))); ?></div>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+                </div>
             <div id="tab_notificationsettings_pane" data-tab-id="notificationsettings" style="display: none;" class="form-container">
                 <form accept-charset="<?= \pachno\core\framework\Context::getI18n()->getCharset(); ?>" action="<?= make_url('account_save_settings'); ?>" onsubmit="Pachno.Main.Profile.updateNotificationSettings('<?= make_url('account_save_notificationsettings'); ?>'); return false;" method="post" id="profile_notificationsettings_form">
-                    <h3><?= __('Subscriptions'); ?></h3>
-                    <p><?= __('Pachno can subscribe you to issues, articles and other items in the system, so you can receive notifications when they are updated. Please select when you would like Pachno to subscribe you.'); ?></p>
-                    <table class="padded_table" cellpadding=0 cellspacing=0>
+                    <div class="form-row">
+                        <h3><?= __('Subscriptions'); ?></h3>
+                        <div class="helper-text"><?= __('Pachno can subscribe you to issues, articles and other items in the system, so you can receive notifications when they are updated. Please select when you would like Pachno to subscribe you.'); ?></div>
+                    </div>
+                    <div class="row">
+                        <div class="column">
                         <?php foreach ($subscriptionssettings as $key => $description): ?>
-                            <?php if (in_array($key, [Settings::SETTINGS_USER_SUBSCRIBE_NEW_ISSUES_MY_PROJECTS_CATEGORY, Settings::SETTINGS_USER_SUBSCRIBE_NEW_ISSUES_MY_PROJECTS])) continue; ?>
-                            <tr>
-                                <td style="width: auto; border-bottom: 1px solid #DDD;"><label for="<?= $key; ?>_yes"><?= $description ?></label></td>
-                                <?php if ($key == \pachno\core\framework\Settings::SETTINGS_USER_SUBSCRIBE_NEW_ISSUES_MY_PROJECTS_CATEGORY): ?>
-                                    <td style="width: 50px; text-align: center; border-bottom: 1px solid #DDD;" valign="middle">
-                                        <div class="filter interactive_dropdown" data-filterkey="<?= $key; ?>" data-value="" data-all-value="<?= __('All'); ?>">
-                                            <input type="hidden" name="core_<?= $key; ?>" value="" id="filter_<?= $key; ?>_value_input">
-                                            <label><?= __('Category'); ?></label>
-                                            <span class="value"><?php if (true || !$filter->hasValue()) echo __('All'); ?></span>
-                                            <div class="interactive_menu">
-                                                <h1><?= __('Select category'); ?></h1>
-                                                <input type="search" placeholder="<?= __('Filter values'); ?>">
-                                                <div class="interactive_values_container">
-                                                    <ul class="interactive_menu_values">
-                                                        <?php foreach (\pachno\core\entities\Category::getAll() as $category_id => $category): ?>
-                                                            <li data-value="<?= $category_id; ?>" class="filtervalue<?php if (false && $filter->hasValue($category_id)) echo ' selected'; ?>">
-                                                                <?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far') ?>
-                                                                <input type="checkbox" value="<?= $category_id; ?>" name="core_<?= $key; ?>_value_<?= $category_id; ?>" data-text="<?= __($category->getName()); ?>" id="core_<?= $key; ?>_value_<?= $category_id; ?>" <?php if (false && $filter->hasValue($category_id)) echo 'checked'; ?>>
-                                                                <label for="core_<?= $key; ?>_value_<?= $category_id; ?>"><?= __($category->getName()); ?></label>
-                                                            </li>
-                                                        <?php endforeach; ?>
-                                                    </ul>
+                            <?php if (in_array($key, [Settings::SETTINGS_USER_SUBSCRIBE_NEW_ISSUES_MY_PROJECTS_CATEGORY, Settings::SETTINGS_USER_SUBSCRIBE_NEW_ISSUES_MY_PROJECTS_CATEGORY, Settings::SETTINGS_USER_SUBSCRIBE_NEW_ISSUES_MY_PROJECTS])) continue; ?>
+                            <div class="form-row">
+                                <input type="checkbox" class="fancy-checkbox" name="core_<?= $key; ?>" value="1" id="<?= $key; ?>_yes"<?php if (!$pachno_user->getNotificationSetting($key, true)->isOff()): ?> checked<?php endif; ?>><label for="<?= $key; ?>_yes"><?= fa_image_tag('check-square', ['class' => 'icon checked']) . fa_image_tag('square', ['class' => 'icon unchecked'], 'far'); ?><span><?= $description ?></span></label>
+                            </div>
+                        <?php endforeach; ?>
+                        </div>
+                        <div class="column">
+                            <?php $category_key = Settings::SETTINGS_USER_SUBSCRIBE_NEW_ISSUES_MY_PROJECTS_CATEGORY; ?>
+                            <?php foreach ($subscriptionssettings as $key => $description): ?>
+                                <?php if (!in_array($key, [Settings::SETTINGS_USER_SUBSCRIBE_NEW_ISSUES_MY_PROJECTS_CATEGORY])) continue; ?>
+                                <div class="form-row">
+                                    <input type="checkbox" class="fancy-checkbox" name="core_<?= $key; ?>" value="1" id="<?= $key; ?>_yes"<?php if (!$pachno_user->getNotificationSetting($key, true)->isOff()): ?> checked<?php endif; ?>><label for="<?= $key; ?>_yes"><?= fa_image_tag('check-square', ['class' => 'icon checked']) . fa_image_tag('square', ['class' => 'icon unchecked'], 'far'); ?><span><?= $description ?></span></label>
+                                    <div class="fancy-dropdown-container">
+                                        <div class="fancy-dropdown" data-default-label="<?= __('All categories'); ?>">
+                                            <span class="value"><?= __('All categories'); ?></span>
+                                            <?= fa_image_tag('angle-down', ['class' => 'expander']); ?>
+                                            <div class="dropdown-container list-mode">
+                                                <div class="filter-values-container">
+                                                    <?php foreach ($categories as $category_id => $category): ?>
+                                                        <input type="checkbox" class="fancy-checkbox" value="<?= $category_id; ?>" name="core_<?= $category_key; ?>_<?= $category_id; ?>" data-text="<?= __($category->getName()); ?>" id="core_<?= $key; ?>_value_<?= $category_id; ?>" <?php if (in_array($category_id, $selected_category_subscriptions)) echo 'checked'; ?>>
+                                                        <label class="list-item" for="core_<?= $key; ?>_value_<?= $category_id; ?>">
+                                                            <span class="icon"><?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far'); ?></span>
+                                                            <span class="name value"><?= __($category->getName()); ?></span>
+                                                        </label>
+                                                    <?php endforeach; ?>
                                                 </div>
                                             </div>
                                         </div>
-                                    </td>
-                                <?php else: ?>
-                                    <td style="width: 50px; text-align: center; border-bottom: 1px solid #DDD;" valign="middle">
-                                        <input type="checkbox" class="fancy-checkbox" name="core_<?= $key; ?>" value="1" id="<?= $key; ?>_yes"<?php if (!$pachno_user->getNotificationSetting($key, true)->isOff()): ?> checked<?php endif; ?>><label for="<?= $key; ?>_yes"><?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far'); ?></label>
-                                    </td>
-                                <?php endif; ?>
-                            </tr>
-                        <?php endforeach; ?>
-                    </table>
-                    <?php $category_key = \pachno\core\framework\Settings::SETTINGS_USER_SUBSCRIBE_NEW_ISSUES_MY_PROJECTS_CATEGORY; ?>
-                    <?php $project_issues_key = \pachno\core\framework\Settings::SETTINGS_USER_SUBSCRIBE_NEW_ISSUES_MY_PROJECTS; ?>
-                    <table class="padded_table" cellpadding="0" cellspacing="0">
-                        <tr>
-                            <td style="width: auto; border-bottom: 1px solid #DDD;"><label for="<?= $project_issues_key; ?>_yes"><?= __('Automatically subscribe to new issues that are created in my project(s)'); ?></label></td>
-                            <td style="width: 350px; text-align: right; border-bottom: 1px solid #DDD; vertical-align: middle;">
-                                <div class="filter interactive_dropdown rightie" data-filterkey="<?= $project_issues_key; ?>" data-value="" data-all-value="<?= __('No projects'); ?>">
-                                    <input type="hidden" name="core_<?= $project_issues_key; ?>" value="<?= join(',', $selected_project_subscriptions); ?>" id="filter_<?= $project_issues_key; ?>_value_input">
-                                    <label><?= __('Projects'); ?></label>
-                                    <span class="value"><?= (empty($selected_project_subscriptions) && !$all_projects_subscription) ? __('No projects') : __('All my projects'); ?></span>
-                                    <div class="interactive_menu">
-                                        <h1><?= __('Select which projects to subscribe to'); ?></h1>
-                                        <input type="search" placeholder="<?= __('Filter projects'); ?>">
-                                        <div class="interactive_values_container">
-                                            <ul class="interactive_menu_values">
-                                                <li data-value="0" class="filtervalue <?php if ($all_projects_subscription) echo ' selected'; ?>" data-exclusive data-selection-group="1" data-exclude-group="2">
-                                                    <?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far'); ?>
-                                                    <input type="checkbox" value="all" name="core_<?= $project_issues_key; ?>_all" data-text="<?= __('All my projects'); ?>" id="core_<?= $project_issues_key; ?>_value_all" <?php if ($all_projects_subscription) echo 'checked'; ?>>
-                                                    <label for="core_<?= $project_issues_key; ?>_value_all"><?= __('All my projects'); ?></label>
-                                                </li>
-                                                <li class="separator"></li>
+                                    </div>
+                                </div>
+                            <?php endforeach; ?>
+                            <?php $project_issues_key = Settings::SETTINGS_USER_SUBSCRIBE_NEW_ISSUES_MY_PROJECTS; ?>
+                            <div class="form-row">
+                                <input type="checkbox" class="fancy-checkbox" name="core_<?= $project_issues_key; ?>" value="1" id="<?= $project_issues_key; ?>_yes"<?php if (!$pachno_user->getNotificationSetting($project_issues_key, true)->isOff()): ?> checked<?php endif; ?>><label for="<?= $project_issues_key; ?>_yes"><?= fa_image_tag('check-square', ['class' => 'icon checked']) . fa_image_tag('square', ['class' => 'icon unchecked'], 'far'); ?><span><?= __('New issues in my project(s)') ?></span></label>
+                                <div class="fancy-dropdown-container">
+                                    <div class="fancy-dropdown" data-default-label="<?= __('All my projects'); ?>">
+                                        <span class="value"><?= __('All my projects'); ?></span>
+                                        <?= fa_image_tag('angle-down', ['class' => 'expander']); ?>
+                                        <div class="dropdown-container list-mode">
+                                            <div class="filter-values-container">
+                                                <input type="checkbox" class="fancy-checkbox" value="all" name="core_<?= $project_issues_key; ?>_all" id="core_<?= $project_issues_key; ?>_value_all" <?php if ($all_projects_subscription) echo 'checked'; ?> class="fancy-checkbox" data-exclusive data-selection-group="1" data-exclude-group="2">
+                                                <label class="list-item" for="core_<?= $project_issues_key; ?>_value_all">
+                                                    <span class="icon"><?= fa_image_tag('check-circle', ['class' => 'checked'], 'far') . fa_image_tag('circle', ['class' => 'unchecked'], 'far'); ?></span>
+                                                    <span class="name value"><?= __('All my projects'); ?></span>
+                                                </label>
+                                                <div class="list-item separator"></div>
                                                 <?php foreach ($projects as $project_id => $project): ?>
-                                                    <li data-value="<?= $project_id; ?>" class="filtervalue<?php if (in_array($project_id, $selected_project_subscriptions)) echo ' selected'; ?>" data-selection-group="2" data-exclude-group="1">
-                                                        <?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far'); ?>
-                                                        <input type="checkbox" value="<?= $project_id; ?>" name="core_<?= $project_issues_key; ?>_<?= $project_id; ?>" data-text="<?= __($project->getName()); ?>" id="core_<?= $project_issues_key; ?>_value_<?= $project_id; ?>" <?php if (in_array($project_id, $selected_project_subscriptions)) echo 'checked'; ?>>
-                                                        <label for="core_<?= $project_issues_key; ?>_value_<?= $project_id; ?>"><?= __($project->getName()); ?></label>
-                                                    </li>
+                                                    <input type="checkbox" class="fancy-checkbox" value="<?= $category_id; ?>" name="core_<?= $category_key; ?>_<?= $category_id; ?>" id="core_<?= $key; ?>_value_<?= $category_id; ?>" <?php if (in_array($category_id, $selected_category_subscriptions)) echo 'checked'; ?> data-selection-group="2" data-exclude-group="1">
+                                                    <label class="list-item" for="core_<?= $project_issues_key; ?>_value_<?= $project_id; ?>">
+                                                        <span class="icon"><?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far'); ?></span>
+                                                        <span class="icon"><?= image_tag($project->getIconName(), ['class' => 'icon', 'alt' => '[i]'], true); ?></span>
+                                                        <span class="name value"><?= $project->getName(); ?></span>
+                                                    </label>
                                                 <?php endforeach; ?>
-                                            </ul>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td style="border-bottom: 1px solid #DDD;">
-                                <label for="<?= $category_key; ?>_yes"><?= __('Automatically subscribe to new issues in selected categories'); ?></label><br>
-                                <?= __("If you don't want to set up automatic subscriptions for all projects you're participating in, you can choose to subscribe to categories, instead. Note that if '%all_my_projects' is selected in the project subscriptions dropdown, the category subscription will have no further effect.", ['%all_my_projects' => __('All my projects')]); ?>
-                            </td>
-                            <td style="text-align: right; border-bottom: 1px solid #DDD; vertical-align: middle;">
-                                <div class="filter interactive_dropdown rightie" data-filterkey="<?= $category_key; ?>" data-value="" data-all-value="<?= __('None selected'); ?>">
-                                    <input type="hidden" name="core_<?= $category_key; ?>" value="<?= join(',', $selected_category_subscriptions); ?>" id="filter_<?= $category_key; ?>_value_input">
-                                    <label><?= __('Categories'); ?></label>
-                                    <span class="value"><?php if (empty($selected_category_subscriptions)) echo __('None selected'); ?></span>
-                                    <div class="interactive_menu">
-                                        <h1><?= __('Select which categories to subscribe to'); ?></h1>
-                                        <input type="search" placeholder="<?= __('Filter categories'); ?>">
-                                        <div class="interactive_values_container">
-                                            <ul class="interactive_menu_values">
-                                                <?php foreach ($categories as $category_id => $category): ?>
-                                                    <li data-value="<?= $category_id; ?>" class="filtervalue<?php if (in_array($category_id, $selected_category_subscriptions)) echo ' selected'; ?>">
-                                                        <?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far'); ?>
-                                                        <input type="checkbox" value="<?= $category_id; ?>" name="core_<?= $category_key; ?>_<?= $category_id; ?>" data-text="<?= __($category->getName()); ?>" id="core_<?= $category_key; ?>_value_<?= $category_id; ?>" <?php if (in_array($category_id, $selected_category_subscriptions)) echo 'checked'; ?>>
-                                                        <label for="core_<?= $category_key; ?>_value_<?= $category_id; ?>"><?= __($category->getName()); ?></label>
-                                                    </li>
-                                                <?php endforeach; ?>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </div>
-                            </td>
-                        </tr>
-                    </table>
-                    <h3><?= __('Notifications'); ?></h3>
-                    <p><?= __('Pachno will send you notifications based on system actions and/or your subscriptions. Notifications can be received in the notifications box (the counter visible next to your avatar in the top menu) and/or via email.'); ?></p>
-                    <table class="padded_table" cellpadding=0 cellspacing=0>
-                        <thead>
-                            <tr>
-                                <th></th>
-                                <th style="white-space: nowrap; width: 120px;"><?= __('Notifications box'); ?></th>
-                                <?php \pachno\core\framework\Event::createNew('core', 'account_pane_notificationsettings_thead')->trigger(); ?>
-                            </tr>
-                        </thead>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <h3><?= __('Notifications'); ?></h3>
+                        <div class="helper-text"><?= __('Pachno will send you notifications based on system actions and/or your subscriptions. Notifications can be received in the notifications box so you only have to deal with them after logging in, and/or via email for those important notifications you want to be alerted of right away.'); ?></div>
+                    </div>
+                    <div class="flexible-table" cellpadding=0 cellspacing=0>
+                        <div class="row header">
+                            <div class="column header name-container"></div>
+                            <div class="column header info-icons large centered"><?= fa_image_tag('bell', ['class' => 'icon'], 'far'); ?></div>
+                            <?php \pachno\core\framework\Event::createNew('core', 'account_pane_notificationsettings_table_header')->trigger(); ?>
+                        </div>
                         <?php foreach ($notificationsettings as $key => $description): ?>
-                            <?php if ($key == \pachno\core\framework\Settings::SETTINGS_USER_NOTIFY_NEW_ISSUES_MY_PROJECTS_CATEGORY) continue; ?>
-                            <tr>
-                                <td style="width: auto; border-bottom: 1px solid #DDD;"><label for="<?= $key; ?>_yes"><?= $description ?></label></td>
-                                <?php if ($key == \pachno\core\framework\Settings::SETTINGS_USER_NOTIFY_GROUPED_NOTIFICATIONS): ?>
-                                    <td style="text-align: center; border-bottom: 1px solid #DDD;" valign="middle">
-                                        <input type="text" name="core_<?= $key; ?>" id="<?= $key; ?>_yes" value="<?= $pachno_user->getNotificationSetting($key, false, 'core')->getValue(); ?>" style="width:30px;">
-                                    </td>
-                                    <td style="text-align: center; border-bottom: 1px solid #DDD;" valign="middle"></td>
-                                <?php else: ?>
-                                    <td style="text-align: center; border-bottom: 1px solid #DDD;" valign="middle">
-                                        <input type="checkbox" class="fancy-checkbox" name="core_<?= $key; ?>" value="1" id="<?= $key; ?>_yes"<?php if ($pachno_user->getNotificationSetting($key, $key == Settings::SETTINGS_USER_NOTIFY_MENTIONED, 'core')->isOn()) echo ' checked'; ?>><label for="<?= $key; ?>_yes"><?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far'); ?></label>
-                                    </td>
-                                    <?php \pachno\core\framework\Event::createNew('core', 'account_pane_notificationsettings_cell')->trigger(compact('key')); ?>
-                                <?php endif; ?>
-                            </tr>
+                            <?php if (in_array($key, [Settings::SETTINGS_USER_NOTIFY_NEW_ISSUES_MY_PROJECTS_CATEGORY, Settings::SETTINGS_USER_NOTIFY_GROUPED_NOTIFICATIONS])) continue; ?>
+                            <div class="row">
+                                <div class="column name-container"><label for="<?= $key; ?>_yes"><?= $description ?></label></div>
+                                <div class="column info-icons centered">
+                                    <input type="checkbox" class="fancy-checkbox" name="core_<?= $key; ?>" value="1" id="<?= $key; ?>_yes"<?php if ($pachno_user->getNotificationSetting($key, $key == Settings::SETTINGS_USER_NOTIFY_MENTIONED, 'core')->isOn()) echo ' checked'; ?>><label for="<?= $key; ?>_yes"><?= fa_image_tag('check-square', ['class' => 'icon checked']) . fa_image_tag('square', ['class' => 'icon unchecked'], 'far'); ?></label>
+                                </div>
+                                <?php \pachno\core\framework\Event::createNew('core', 'account_pane_notificationsettings_cell')->trigger(compact('key')); ?>
+                            </div>
                         <?php endforeach; ?>
-                    </table>
-                    <?php $category_key = \pachno\core\framework\Settings::SETTINGS_USER_NOTIFY_NEW_ISSUES_MY_PROJECTS_CATEGORY; ?>
+                    </div>
+                    <?php /* $category_key = Settings::SETTINGS_USER_NOTIFY_NEW_ISSUES_MY_PROJECTS_CATEGORY; ?>
                     <table class="padded_table" cellpadding="0" cellspacing="0">
                         <tr>
                             <td style="width: auto; border-bottom: 1px solid #DDD; vertical-align: middle;">
@@ -567,86 +509,24 @@
                             </td>
                         </tr>
                     </table>
-                    <?php \pachno\core\framework\Event::createNew('core', 'account_pane_notificationsettings_subscriptions')->trigger(compact('categories')); ?>
-                    <h3><?= __('Desktop notifications'); ?></h3>
-                    <p><?= __('You can receive desktop notifications based on system actions or your subscriptions. Choose your desktop notification preferences from this section.'); ?></p>
-                    <table class="padded_table desktop-notifications-settings" cellpadding=0 cellspacing=0>
-                        <tr>
-                            <td><label for="profile_enable_desktop_notifications"><?= __('Enable desktop notifications'); ?></label></td>
-                            <td>
-                                <input type="button" class="button" value="<?= __('Grant Permission'); ?>" id="profile_enable_desktop_notifications" onclick="Pachno.Main.Notifications.Web.GrantPermissionOrSendTest('<?= __('Test notification'); ?>', '<?= __('This is a test notification.'); ?>', '<?= \pachno\core\framework\Settings::isUsingCustomFavicon() ? \pachno\core\framework\Settings::getFaviconURL() : image_url('favicon.png'); ?>');">
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="config-explanation" colspan="2">
-                                <?= __('If your web browser supports desktop notification, Pachno can show a desktop notification whenever a new notification is received. To allow this, please click the "%grant_permission" button', ['%grant_permission' => __('Grant permission')]); ?>
-                            </td>
-                        </tr>
-                    </table>
-                    <table class="padded_table desktop-notifications-settings" cellpadding=0 cellspacing=0>
-                        <tr>
-                            <td>
-                                <input type="checkbox" class="fancy-checkbox" name="enable_desktop_notifications_new_tab" value="1" id="profile_enable_desktop_notifications_new_tab"<?php if ($pachno_user->isDesktopNotificationsNewTabEnabled()): ?> checked<?php endif; ?>>
-                                <label for="profile_enable_desktop_notifications_new_tab"><?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far') . __('Open desktop notifications in new tab'); ?></label>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="config-explanation" colspan="2">
-                                <?= __('Whether clicking on notification will open target url in new or current tab. Notifications which target is backdrop will not be affected and will open in current tab. By default browsers will block opening of new tab programmatically, unless you enable pop-ups.'); ?>
-                            </td>
-                        </tr>
-                    </table>
-                    <div class="save-button-container">
-                        <div class="message"><?= __('Click "%save" to update the settings on this tab', array('%save' => __('Save'))); ?></div>
-                        <span id="profile_notificationsettings_save_indicator"><?= image_tag('spinning_20.gif'); ?></span>
-                        <input type="submit" id="submit_notificationsettings_button" value="<?= __('Save'); ?>">
+                    <?php \pachno\core\framework\Event::createNew('core', 'account_pane_notificationsettings_subscriptions')->trigger(compact('categories')); */ ?>
+                    <div class="form-row header">
+                        <h3>
+                            <span class="name"><?= __('Desktop notifications'); ?></span>
+                            <span class="actions">
+                                <input type="checkbox" class="fancy-checkbox" data-interactive-toggle value="1" id="toggle_enable_desktop_notifications" data-event-key="profile-toggle-desktop-notifications"><label class="button secondary" for="toggle_enable_desktop_notifications"><?= fa_image_tag('spinner', ['class' => 'fa-spin icon indicator']) . fa_image_tag('toggle-on', ['class' => 'icon checked']) . fa_image_tag('toggle-off', ['class' => 'icon unchecked']); ?><span><?= __('Desktop notifications enabled'); ?></span></label>
+                            </span>
+                        </h3>
+                        <div class="helper-text"><?= __('You can receive desktop notifications based on system actions or your subscriptions. Choose your desktop notification preferences from this section.'); ?></div>
+                    </div>
+                    <div class="form-row submit-container">
+                        <div class="message"><?= __('Click "%save" to save your notification settings', array('%save' => __('Save'))); ?></div>
+                        <button type="submit" class="primary">
+                            <span class="name"><?= __('Save'); ?></span>
+                            <?= fa_image_tag('spinner', ['class' => 'fa-spin icon indicator']); ?>
+                        </button>
                     </div>
                 </form>
-            </div>
-            <div id="tab_security_pane" data-tab-id="security" style="<?php if ($selected_tab != 'security'): ?> display: none;<?php endif; ?>">
-                <h3 style="position: relative;"><?= __('Two-factor authentication'); ?></h3>
-                <p><?= __("Enabling two-factor authentication increases account security by requiring that you provide a one-time code every time you log in on a new device."); ?></p>
-                <ul class="access_keys_list">
-                    <li id="account_2fa_disabled" style="<?php if ($pachno_user->is2FaEnabled()) echo 'display: none;'; ?>">
-                        <h4><?= fa_image_tag('times', ['class' => 'icon']); ?><span><?= __('Two-factor authentication is not enabled'); ?></span></h4>
-                        <p><?= __('Enable two-factor authentication to increase account security'); ?></p>
-                        <button class="button" onclick="Pachno.UI.Backdrop.show('<?= make_url('get_partial_for_backdrop', ['key' => 'enable_2fa']); ?>');"><?= __('Enable'); ?></button>
-                    </li>
-                    <li id="account_2fa_enabled" style="<?php if (!$pachno_user->is2FaEnabled()) echo 'display: none;'; ?>">
-                        <h4><?= fa_image_tag('check', ['class' => 'icon']); ?><span><?= __('Two-factor authentication is enabled'); ?></span></h4>
-                        <p><?= __('A one-time code is required to log in on a new device'); ?></p>
-                        <button class="button" onclick="Pachno.UI.Dialog.show('<?= __('Really disable two-factor authentication?'); ?>', '<?= __('Do you really want to two-factor authentication? By doing this, only your username and password is required when logging in.'); ?>', {yes: {click: function () { Pachno.Main.Login.disable2Fa('<?= make_url('account_disable_2fa', array('csrf_token' => \pachno\core\framework\Context::getCsrfToken())); ?>') }}, no: {click: Pachno.UI.Dialog.dismiss}});"><?= __('Disable 2FA'); ?></button>
-                    </li>
-                </ul>
-                <h3 style="position: relative;">
-                    <?= __('Passwords and keys'); ?>
-                    <a class="button dropper" id="password_actions" href="javascript:void(0);"><?= __('Actions'); ?></a>
-                    <ul id="password_more_actions" style="width: 300px; font-size: 0.8em; text-align: right; top: 29px; margin-top: 0; right: 3px; z-index: 1000;" class="more_actions_dropdown popup_box dropper">
-                        <?php if ($pachno_user->canChangePassword() && !$pachno_user->isOpenIdLocked()): ?>
-                            <li><a href="javascript:void(0);" onclick="$('#change_password_div').toggle();"><?= __('Change my password'); ?></a></li>
-                        <?php elseif ($pachno_user->isOpenIdLocked()): ?>
-                            <li><a href="javascript:void(0);" onclick="$('#pick_username_div').toggle();" id="pick_username_button"><?= __('Pick a username'); ?></a></li>
-                        <?php else: ?>
-                            <li><a href="javascript:void(0);" onclick="Pachno.UI.Message.error('<?= __('Changing password disabled'); ?>', '<?= __('Changing your password can not be done via this interface. Please contact your administrator to change your password.'); ?>');" class="disabled"><?= __('Change my password'); ?></a></li>
-                        <?php endif; ?>
-                        <li><a href="javascript:void(0);" onclick="$('#add_application_password_div').toggle();"><?= __('Add application-specific password'); ?></a></li>
-                    </ul>
-                </h3>
-                <p><?= __("When authenticating with Pachno you only use your main password on the website - other applications and RSS feeds needs specific access tokens that you can enable / disable on an individual basis. You can control all your passwords and keys from here."); ?></p>
-                <ul class="access_keys_list">
-                    <li>
-                        <button class="button" onclick="Pachno.UI.Dialog.show('<?= __('Regenerate your RSS key?'); ?>', '<?= __('Do you really want to regenerate your RSS access key? By doing this all your previously bookmarked or linked RSS feeds will stop working and you will have to get the link from inside Pachno again.'); ?>', {yes: {href: '<?= make_url('account_regenerate_rss_key', array('csrf_token' => \pachno\core\framework\Context::getCsrfToken())); ?>'}, no: {click: Pachno.UI.Dialog.dismiss}});"><?= __('Reset'); ?></button>
-                        <h4><?= __('RSS feeds access key'); ?></h4>
-                        <p><?= __('Automatically used as part of RSS feed URLs. Regenerating this key prevents your previous RSS feed links from working.'); ?></p>
-                    </li>
-                    <?php foreach ($pachno_user->getApplicationPasswords() as $password): ?>
-                        <li id="application_password_<?= $password->getID(); ?>">
-                            <button class="button" onclick="Pachno.UI.Dialog.show('<?= __('Remove this application-specific password?'); ?>', '<?= __('Do you really want to remove this application-specific password? By doing this, that application will no longer have access, and you will have to generate a new application password for the application to regain access.'); ?>', {yes: {click: function() {Pachno.Main.Profile.removeApplicationPassword('<?= make_url('account_remove_application_password', array('id' => $password->getID(), 'csrf_token' => \pachno\core\framework\Context::getCsrfToken())); ?>', <?= $password->getID(); ?>);}}, no: {click: Pachno.UI.Dialog.dismiss}});"><?= __('Delete'); ?></button>
-                            <h4><?= __('Application password: %password_name', array('%password_name' => $password->getName())); ?></h4>
-                            <p><?= __('Last used: %last_used_time, created at: %created_at_time', array('%last_used_time' => ($password->getLastUsedAt()) ? \pachno\core\framework\Context::getI18n()->formatTime($password->getLastUsedAt(), 20) : __('never used'), '%created_at_time' => \pachno\core\framework\Context::getI18n()->formatTime($password->getCreatedAt(), 20))); ?></p>
-                        </li>
-                    <?php endforeach; ?>
-                </ul>
             </div>
             <?php \pachno\core\framework\Event::createNew('core', 'account_tab_panes')->trigger(); ?>
             <?php foreach (\pachno\core\framework\Context::getAllModules() as $modules): ?>

@@ -1036,12 +1036,12 @@
         {
             $i18n = Context::getI18n();
             $subscriptions_settings = [
-                self::SETTINGS_USER_SUBSCRIBE_CREATED_UPDATED_COMMENTED_ISSUES => $i18n->__('Automatically subscribe to issues I posted'),
-                self::SETTINGS_USER_SUBSCRIBE_CREATED_UPDATED_COMMENTED_ARTICLES => $i18n->__('Automatically subscribe to article I posted'),
-                self::SETTINGS_USER_SUBSCRIBE_NEW_ISSUES_MY_PROJECTS => $i18n->__('Automatically subscribe to new issues that are created in my project(s)'),
-                self::SETTINGS_USER_SUBSCRIBE_NEW_ARTICLES_MY_PROJECTS => $i18n->__('Automatically subscribe to new articles that are created in my project(s)'),
-                self::SETTINGS_USER_SUBSCRIBE_NEW_ISSUES_MY_PROJECTS_CATEGORY => $i18n->__('Automatically subscribe to new issues in selected categories'),
-                self::SETTINGS_USER_SUBSCRIBE_ASSIGNED_ISSUES => $i18n->__('Automatically subscribe to issues I get assigned to'),
+                self::SETTINGS_USER_SUBSCRIBE_CREATED_UPDATED_COMMENTED_ISSUES => $i18n->__('Issues posted by me'),
+                self::SETTINGS_USER_SUBSCRIBE_CREATED_UPDATED_COMMENTED_ARTICLES => $i18n->__('Articles / pages written by me'),
+                self::SETTINGS_USER_SUBSCRIBE_NEW_ISSUES_MY_PROJECTS => $i18n->__('New issues in my project(s)'),
+                self::SETTINGS_USER_SUBSCRIBE_NEW_ARTICLES_MY_PROJECTS => $i18n->__('New articles / pages in my project(s)'),
+                self::SETTINGS_USER_SUBSCRIBE_NEW_ISSUES_MY_PROJECTS_CATEGORY => $i18n->__('New issues in selected categories'),
+                self::SETTINGS_USER_SUBSCRIBE_ASSIGNED_ISSUES => $i18n->__('Issues I am involved in'),
             ];
 
             return $subscriptions_settings;

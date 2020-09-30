@@ -43,6 +43,7 @@
           - libapache2-mod-php7.4
           - libapache2-mod-ruid2
           - php-apcu-bc
+          - php-imagick
           - php7.4-gd
           - php7.4-curl
           - php7.4-mysql

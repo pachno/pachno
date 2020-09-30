@@ -23,7 +23,7 @@
                                 <th><?php echo __('Comment'); ?></th>
                                 <?php if ($revision_count > 1): ?>
                                     <th style="width: 60px;" colspan="2"><?php echo __('Compare'); ?></th>
-                                    <?php if (\pachno\core\framework\Context::getModule('publish')->canUserEditArticle($article_name)): ?>
+                                    <?php if (\pachno\core\framework\Context::getModule('publish')->canUserEditArticle($article)): ?>
                                         <th style="width: 150px;"><?php echo __('Actions'); ?></th>
                                     <?php endif; ?>
                                 <?php endif; ?>

@@ -70,6 +70,11 @@ h1, h2, h3, h4, h5, h6 {
     align-items: center;
     justify-content: flex-start;
 
+    &.actions {
+      flex: 0 0 auto;
+      white-space: nowrap;
+    }
+
     &.multiline {
       flex-direction: column;
       align-items: flex-start;

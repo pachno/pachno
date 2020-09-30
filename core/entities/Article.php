@@ -3,6 +3,7 @@
     namespace pachno\core\entities;
 
     use b2db\Row;
+    use EditorJS\EditorJS;
     use Exception;
     use pachno\core\entities\common\Identifiable;
     use pachno\core\entities\common\IdentifiableScoped;
@@ -740,7 +741,7 @@
                 }
             }
 
-            return framework\Context::getModule('publish')->canUserDeleteArticle($this->getName());
+            return framework\Context::getModule('publish')->canUserDeleteArticle($this);
         }
 
         public function canEdit()
@@ -756,7 +757,7 @@
                 }
             }
 
-            return framework\Context::getModule('publish')->canUserEditArticle($this->getName());
+            return framework\Context::getModule('publish')->canUserEditArticle($this);
         }
 
         public function getProjectFromName()
@@ -785,7 +786,7 @@
 
         public function canRead()
         {
-            return framework\Context::getModule('publish')->canUserReadArticle($this->getName());
+            return framework\Context::getModule('publish')->canUserReadArticle($this);
         }
 
         /**

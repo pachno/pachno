@@ -233,7 +233,9 @@
 
         public function listen_createNewProject(Event $event)
         {
-            Article::createNew("Main Page", "This is the frontpage for {$event->getSubject()->getName()}", null, ['noauthor' => true], $event->getSubject());
+            $fixtures_path = PACHNO_CORE_PATH . 'modules' . DS . 'publish' . DS . 'fixtures' . DS;
+            $data = file_get_contents($fixtures_path . 'project.json');
+            Article::createNew("Main Page", str_replace('%projectname', $event->getSubject()->getName(), $data), null, ['noauthor' => true], $event->getSubject());
         }
 
         public function getTabKey()
@@ -241,12 +243,13 @@
             return (framework\Context::isProjectContext()) ? parent::getTabKey() : 'wiki';
         }
 
-        public function canUserReadArticle($article_name)
+        public function canUserReadArticle(Article $article_name)
         {
-            return $this->_checkArticlePermissions($article_name, self::PERMISSION_READ_ARTICLE);
+            return true;
+            return $this->_checkArticlePermissions($article, self::PERMISSION_READ_ARTICLE);
         }
 
-        protected function _checkArticlePermissions($article_name, $permission_name)
+        protected function _checkArticlePermissions(Article $article, $permission_name)
         {
             $user = framework\Context::getUser();
             switch ($this->getSetting('free_edit')) {
@@ -261,36 +264,31 @@
                     $permissive = false;
                     break;
             }
-            $retval = $user->hasPermission($permission_name, $article_name, 'publish');
+            $retval = $user->hasPermission($permission_name, $article->getID(), 'publish');
             if ($retval !== null) {
                 return $retval;
             }
-            $namespaces = explode(':', $article_name);
-            if (count($namespaces) > 1) {
-                array_pop($namespaces);
-                $composite_ns = '';
-                foreach ($namespaces as $namespace) {
-                    $composite_ns .= ($composite_ns != '') ? ":{$namespace}" : $namespace;
-                    $retval = $user->hasPermission($permission_name, $composite_ns, 'publish');
-                    if ($retval !== null) {
-                        return $retval;
-                    }
-                }
+            $retval = $user->hasPermission($permission_name, $article->getProject()->getID(), 'publish');
+            if ($retval !== null) {
+                return $retval;
             }
+
             $permissive = ($permission_name == self::PERMISSION_READ_ARTICLE) ? false : $permissive;
             $retval = $user->hasPermission($permission_name, 0, 'publish');
 
             return ($retval !== null) ? $retval : $permissive;
         }
 
-        public function canUserEditArticle($article_name)
+        public function canUserEditArticle(Article $article)
         {
-            return $this->_checkArticlePermissions($article_name, self::PERMISSION_EDIT_ARTICLE);
+            return true;
+            return $this->_checkArticlePermissions($article, self::PERMISSION_EDIT_ARTICLE);
         }
 
-        public function canUserDeleteArticle($article_name)
+        public function canUserDeleteArticle(Article $article)
         {
-            return $this->_checkArticlePermissions($article_name, self::PERMISSION_DELETE_ARTICLE);
+            return true;
+            return $this->_checkArticlePermissions($article, self::PERMISSION_DELETE_ARTICLE);
         }
 
         public function listen_quicksearchDropdownFirstItems(Event $event)
