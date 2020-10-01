@@ -588,15 +588,19 @@
                 $acceptedFormatParts = explode('/', $acceptedFormat);
 
                 if (count($acceptedFormatParts) > 1) {
-                    if ($acceptedFormatParts[0] == '*' && $acceptedFormatParts[1] == '*' && $allow_accept_all) {
-                        return true;
+                    if ($acceptedFormatParts[0] == '*' && $acceptedFormatParts[1] == '*') {
+                        if ($allow_accept_all) {
+                            return true;
+                        } else {
+                            continue;
+                        }
                     }
 
-                    if ($formatParts[0] != $acceptedFormatParts[0] && $acceptedFormatParts[1] != '*') {
+                    if ($formatParts[0] != $acceptedFormatParts[0] && $acceptedFormatParts[0] != '*') {
                         continue;
                     }
 
-                    if ($formatParts[0] != $acceptedFormatParts[0] && $acceptedFormatParts[1] != '*') {
+                    if ($formatParts[1] != $acceptedFormatParts[1] && $acceptedFormatParts[1] != '*') {
                         continue;
                     }
 

@@ -148,16 +148,16 @@
         {
             $permissions = [];
             $permissions['editwikimenu'] = ['description' => framework\Context::getI18n()->__('Can edit the wiki lefthand menu'), 'permission' => 'editwikimenu'];
-            $permissions['readarticle'] = ['description' => framework\Context::getI18n()->__('Can access the project wiki'), 'permission' => 'readarticle'];
-            $permissions['editarticle'] = ['description' => framework\Context::getI18n()->__('Can write articles in project wiki'), 'permission' => 'editarticle'];
-            $permissions['deletearticle'] = ['description' => framework\Context::getI18n()->__('Can delete articles from project wiki'), 'permission' => 'deletearticle'];
+            $permissions[self::PERMISSION_READ_ARTICLE] = ['description' => framework\Context::getI18n()->__('Can access the project wiki'), 'permission' => self::PERMISSION_READ_ARTICLE];
+            $permissions[self::PERMISSION_EDIT_ARTICLE] = ['description' => framework\Context::getI18n()->__('Can write articles in project wiki'), 'permission' => self::PERMISSION_EDIT_ARTICLE];
+            $permissions[self::PERMISSION_DELETE_ARTICLE] = ['description' => framework\Context::getI18n()->__('Can delete articles from project wiki'), 'permission' => self::PERMISSION_DELETE_ARTICLE];
 
             return $permissions;
         }
 
         public function listen_rolePermissionsEdit(Event $event)
         {
-            framework\ActionComponent::includeComponent('configuration/rolepermissionseditlist', ['role' => $event->getSubject(), 'permissions_list' => $this->_getPermissionslist(), 'module' => 'publish', 'target_id' => '%project_key%']);
+            framework\ActionComponent::includeComponent('configuration/rolepermissionseditlist', ['role' => $event->getSubject(), 'permissions_list' => $this->_getPermissionslist(), 'module' => 'publish', 'target_id' => '%project_id%']);
         }
 
         public function listen_BreadcrumbMainLinks(Event $event)
@@ -236,6 +236,10 @@
             $fixtures_path = PACHNO_CORE_PATH . 'modules' . DS . 'publish' . DS . 'fixtures' . DS;
             $data = file_get_contents($fixtures_path . 'project.json');
             Article::createNew("Main Page", str_replace('%projectname', $event->getSubject()->getName(), $data), null, ['noauthor' => true], $event->getSubject());
+
+            framework\Context::setPermission(self::PERMISSION_READ_ARTICLE, 'project_' . $event->getSubject()->getID(), "publish", framework\Context::getUser()->getID(), 0, 0, true);
+            framework\Context::setPermission(self::PERMISSION_EDIT_ARTICLE, 'project_' . $event->getSubject()->getID(), "publish", framework\Context::getUser()->getID(), 0, 0, true);
+            framework\Context::setPermission(self::PERMISSION_DELETE_ARTICLE, 'project_' . $event->getSubject()->getID(), "publish", framework\Context::getUser()->getID(), 0, 0, true);
         }
 
         public function getTabKey()
@@ -243,9 +247,8 @@
             return (framework\Context::isProjectContext()) ? parent::getTabKey() : 'wiki';
         }
 
-        public function canUserReadArticle(Article $article_name)
+        public function canUserReadArticle(Article $article)
         {
-            return true;
             return $this->_checkArticlePermissions($article, self::PERMISSION_READ_ARTICLE);
         }
 
@@ -268,7 +271,7 @@
             if ($retval !== null) {
                 return $retval;
             }
-            $retval = $user->hasPermission($permission_name, $article->getProject()->getID(), 'publish');
+            $retval = $user->hasPermission($permission_name, 'project_' . $article->getProject()->getID(), 'publish');
             if ($retval !== null) {
                 return $retval;
             }
@@ -281,13 +284,11 @@
 
         public function canUserEditArticle(Article $article)
         {
-            return true;
             return $this->_checkArticlePermissions($article, self::PERMISSION_EDIT_ARTICLE);
         }
 
         public function canUserDeleteArticle(Article $article)
         {
-            return true;
             return $this->_checkArticlePermissions($article, self::PERMISSION_DELETE_ARTICLE);
         }
 

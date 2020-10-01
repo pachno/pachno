@@ -218,8 +218,6 @@
                 $this->getResponse()->setHttpStatus(401);
                 framework\Logging::log($e->getMessage(), 'auth', framework\Logging::LEVEL_WARNING_RISK);
 
-                return $this->renderJSON(["error" => $e->getMessage()]);
-
                 return $this->renderJSON(["error" => $this->getI18n()->__("Invalid login details")]);
             }
 
@@ -230,8 +228,11 @@
             }
 
             $forward_url = $this->_getLoginForwardUrl($request);
-
-            return $this->renderJSON(['forward' => $forward_url]);
+            if ($request->isResponseFormatAccepted('application/json', false)) {
+                return $this->renderJSON(['forward' => $forward_url]);
+            } else {
+                return $this->forward($forward_url);
+            }
         }
 
         /**

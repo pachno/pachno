@@ -109,7 +109,7 @@
 
         public function getReplacedTargetID(Project $project)
         {
-            return str_replace('%project_key%', $project->getKey(), $this->_target_id);
+            return str_replace(['%project_id%', '%project_key%'], [$project->getID(), $project->getKey()], $this->_target_id);
         }
 
     }
