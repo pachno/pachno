@@ -71,6 +71,9 @@
                     }
                     $content[] = "<h{$level} id='{$toc_id}' name='{$toc_id}'>{$text}</h{$level}>";
                     break;
+                case 'quote':
+                    $content[] = "<blockquote class='block align-{$block['data']['alignment']}'><span class='quote'>{$block['data']['text']}</span><span class='author'>{$block['data']['caption']}</span></blockquote>";
+                    break;
                 case 'code':
                     $code = $block['data']['code'];
 

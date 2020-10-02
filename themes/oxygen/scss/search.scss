@@ -150,11 +150,10 @@
             border-color: #0C8990;
           }
         }
-      }
 
-      .button + input[type=search],
-      .dropper-container + input[type=search] {
-        margin-left: .35rem;
+        + .dropper-container {
+          margin-left: auto;
+        }
       }
 
       button.settings {

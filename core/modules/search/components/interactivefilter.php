@@ -116,7 +116,7 @@ if ($filter instanceof SearchFilter): ?>
                                     <?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far'); ?>
                                     <span class="name value"><?= __('None'); ?></span>
                                 </label>
-                                <li class="list-item separator"></li>
+                                <div class="list-item separator"></div>
                                 <?php foreach ($filter->getAvailableValues() as $subproject): ?>
                                     <input type="checkbox" value="<?= $subproject->getID(); ?>" name="filters_subprojects_value_<?= $subproject->getID(); ?>" class="fancy-checkbox" id="filters_subprojects_value_<?= $subproject->getID(); ?>" <?php if ($filter->hasValue($subproject->getID())) echo 'checked'; ?>>
                                     <label for="filters_subprojects_value_<?= $subproject->getID(); ?>" class="list-item filtervalue" data-selection-group="2" data-exclude-group="1">

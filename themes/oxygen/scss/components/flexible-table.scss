@@ -12,6 +12,10 @@
     display: flex;
     flex: 0 0 auto;
 
+    &.hidden {
+      display: none;
+    }
+
     & + .row.header {
       margin-top: 1em;
     }
@@ -75,6 +79,10 @@
     padding: .35rem;
     box-sizing: border-box;
     border-bottom: 1px dashed rgba(12, 137, 144, .4);
+
+    &.hidden {
+      display: none;
+    }
 
     a,
     a:hover {
@@ -178,18 +186,30 @@
       flex: 0 0 50px;
       display: flex;
       justify-content: center;
+
+      &.hidden {
+        display: none;
+      }
     }
 
     &.actions {
       flex: 0 0 100px;
       display: flex;
       justify-content: center;
+
+      &.hidden {
+        display: none;
+      }
     }
 
     &.numeric {
       flex: 0 0 75px;
       display: flex;
       justify-content: center;
+
+      &.hidden {
+        display: none;
+      }
     }
 
     &.sc_title_container,
@@ -208,6 +228,10 @@
       align-items: flex-start;
       justify-content: center;
 
+      &.hidden {
+        display: none;
+      }
+
       .title {
         font-weight: $theme-font-weight-regular;
         flex: 0 0 auto;
@@ -224,6 +248,10 @@
       display: flex;
       justify-content: flex-end;
       position: relative;
+
+      &.hidden {
+        display: none;
+      }
     }
 
     &.smaller {

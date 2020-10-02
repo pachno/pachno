@@ -323,22 +323,27 @@
 
         public static function isTemplateValid($template_name)
         {
-            return in_array($template_name, array_keys(self::getTemplates(false)));
+            return array_key_exists($template_name, self::getTemplates(false));
         }
 
         public static function getTemplates($display_only = true)
         {
             $i18n = framework\Context::getI18n();
             $templates = [];
-            $templates['results_normal'] = ['title' => $i18n->__('Standard'), 'description' => $i18n->__('Standard search results'), 'grouping' => true, 'parameter' => false];
-            $templates['results_todo'] = ['title' => $i18n->__('Todo-list'), 'description' => $i18n->__('Todo-list with progress indicator'), 'grouping' => false, 'parameter' => false];
-            $templates['results_votes'] = ['title' => $i18n->__('Voting results'), 'description' => $i18n->__('Most voted-for issues'), 'grouping' => false, 'parameter' => false];
-            $templates['results_userpain_singlepainthreshold'] = ['title' => $i18n->__('User pain with threshold'), 'description' => $i18n->__('User pain indicator with custom single bug pain threshold'), 'grouping' => false, 'parameter' => true, 'parameter_text' => $i18n->__('Specify user pain threshold')];
+            $templates['results_normal'] = ['title' => $i18n->__('Standard'), 'icon' => 'list', 'description' => $i18n->__('Standard search results'), 'grouping' => true, 'parameter' => false];
+            $templates['results_todo'] = ['title' => $i18n->__('Todo-list'), 'icon' => 'clipboard-check', 'description' => $i18n->__('Todo-list with progress indicator'), 'grouping' => false, 'parameter' => false];
+            $templates['results_votes'] = ['title' => $i18n->__('Voting results'), 'icon' => 'vote-yea', 'description' => $i18n->__('Most voted-for issues'), 'grouping' => false, 'parameter' => false];
+            $templates['results_userpain_singlepainthreshold'] = ['title' => $i18n->__('User pain with threshold'), 'icon' => 'meh', 'description' => $i18n->__('User pain indicator with custom single bug pain threshold'), 'grouping' => false, 'parameter' => true, 'parameter_header' => $i18n->__('User pain threshold'), 'parameter_text' => $i18n->__('Pain threshold (0 - 100)')];
             if (!$display_only) {
                 $templates['results_rss'] = $i18n->__('RSS feed');
             }
 
             return $templates;
+        }
+
+        public static function getTemplate($template)
+        {
+            return self::getTemplates(true)[$template];
         }
 
         /**
@@ -765,7 +770,7 @@
         {
             $this->_initializeColumns();
 
-            return $this->_columns;
+            return array_values($this->_columns);
         }
 
         /**
@@ -804,6 +809,19 @@
         public function setTemplateName($template_name)
         {
             $this->_templatename = self::isTemplateValid($template_name) ? $template_name : 'results_normal';
+        }
+
+        public static function getDefaultColumns()
+        {
+            return ['title', 'issuetype', 'assigned_to', 'status', 'resolution', 'category', 'severity', 'percent_complete', 'reproducability', 'priority', 'components', 'milestone', 'estimated_time', 'spent_time', 'last_updated', 'comments'];
+        }
+
+        public static function getAvailableColumns()
+        {
+            $default_columns = self::getDefaultColumns();
+            $custom_columns = array_map(function ($customfield) { return $customfield->getKey(); }, CustomDatatype::getAll());
+
+            return array_merge($default_columns, $custom_columns);
         }
 
         public static function getDefaultVisibleColumns()

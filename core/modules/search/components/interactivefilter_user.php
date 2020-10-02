@@ -41,6 +41,6 @@
                 </div>
             </div>
         </div>
-        <div class="remove-button"><?= fa_image_tag('times'); ?></div>
+        <div class="remove-button icon"><?= fa_image_tag('times'); ?></div>
     </div>
 </div>

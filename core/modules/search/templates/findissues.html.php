@@ -91,28 +91,39 @@
                 </div>
             </div>
         </div>
-        <script>
-            var Pachno;
-            require(['domReady', 'pachno/index'], function (domReady, pachno_index_js) {
-                domReady(function () {
-                    Pachno = pachno_index_js;
-                    Pachno.Search.initializeFilters();
-                    <?php if ($pachno_user->isKeyboardNavigationEnabled()): ?>
-                        Pachno.Search.initializeKeyboardNavigation();
-                    <?php endif; ?>
-                    <?php if ($show_results): ?>
-                        setTimeout(function() { Pachno.Search.liveUpdate(true); }, 250);
-                    <?php else: ?>
-                        Pachno.Search.updateSavedSearchCounts();
-                    <?php endif; ?>
-
-                    var hash = window.location.hash;
-
-                    if (hash != undefined && hash.indexOf('edit_modal') == 1) {
-                        $('#saved_search_details').toggle('block');
-                    }
+        <script type="text/javascript">
+            Pachno.on(Pachno.EVENTS.ready, function () {
+                const search = new Search({
+                    save_columns_url: "<?= make_url('search_save_column_settings'); ?>",
+                    history_url: "<?= (Context::isProjectContext()) ? make_url('project_issues', array('project_key' => Context::getCurrentProject()->getKey())) : make_url('search'); ?>",
+                    dynamic_callback_url: "<?= make_url('search_filter_getdynamicchoices'); ?>",
+                    project_id: <?= (Context::isProjectContext()) ? Context::getCurrentProject()->getID() : 0; ?>,
+                    show_results: <?= ($show_results) ? 'true' : 'false'; ?>
                 });
+                window.currentSearch = search;
             });
+
+            //var Pachno;
+            //require(['domReady', 'pachno/index'], function (domReady, pachno_index_js) {
+            //    domReady(function () {
+            //        Pachno = pachno_index_js;
+            //        Pachno.Search.initializeFilters();
+            //        <?php //if ($pachno_user->isKeyboardNavigationEnabled()): ?>
+            //            Pachno.Search.initializeKeyboardNavigation();
+            //        <?php //endif; ?>
+            <!--        --><?php //if ($show_results): ?>
+            //            setTimeout(function() { Pachno.Search.liveUpdate(true); }, 250);
+            //        <?php //else: ?>
+            //            Pachno.Search.updateSavedSearchCounts();
+            //        <?php //endif; ?>
+            //
+            //        var hash = window.location.hash;
+            //
+            //        if (hash != undefined && hash.indexOf('edit_modal') == 1) {
+            //            $('#saved_search_details').toggle('block');
+            //        }
+            //    });
+            //});
         </script>
     </div>
 </div>

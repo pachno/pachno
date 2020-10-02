@@ -62,7 +62,6 @@
         </div>
         <span class="value"><?php if (!$filter->hasValue()) echo __('Any time'); ?></span>
 
-        <div class="filter_remove_button"
-             onclick="Pachno.Search.removeFilter($(this).up());"><?php echo fa_image_tag('times'); ?></div>
+        <div class="remove-button"><?php echo fa_image_tag('times'); ?></div>
     </div>
 <?php

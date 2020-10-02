@@ -8,12 +8,12 @@
     $selected_tab = (!$project->isComponentsEnabled() && $project->isEditionsEnabled()) ? 'editions' : 'components';
 
 ?>
-<div class="fancy-tabs" id="project-hierarchy-menu">
-    <a id="tab_project_components" class="tab <?php if ($selected_tab == 'components') echo 'selected'; ?>" onclick="Pachno.UI.tabSwitcher('tab_project_components', 'project-hierarchy-menu');"><?= fa_image_tag('boxes', ['class' => 'icon']); ?><span><?= __('Components'); ?></span></a>
-    <a id="tab_project_editions" class="tab <?php if ($selected_tab == 'editions') echo 'selected'; ?>" onclick="Pachno.UI.tabSwitcher('tab_project_editions', 'project-hierarchy-menu');"><?= fa_image_tag('layer-group', ['class' => 'icon']); ?><span><?= __('Editions'); ?></span></a>
+<div class="fancy-tabs tab-switcher" id="project-hierarchy-menu">
+    <a id="tab_project_components" class="tab <?php if ($selected_tab == 'components') echo 'selected'; ?> tab-switcher-trigger" data-tab-target="components"><?= fa_image_tag('boxes', ['class' => 'icon']); ?><span><?= __('Components'); ?></span></a>
+    <a id="tab_project_editions" class="tab <?php if ($selected_tab == 'editions') echo 'selected'; ?> tab-switcher-trigger" data-tab-target="editions"><?= fa_image_tag('layer-group', ['class' => 'icon']); ?><span><?= __('Editions'); ?></span></a>
 </div>
 <div id="project-hierarchy-menu_panes">
-    <div id="tab_project_editions_pane" style="<?php if ($selected_tab != 'editions') echo 'display: none;'; ?>">
+    <div id="tab_project_editions_pane" style="<?php if ($selected_tab != 'editions') echo 'display: none;'; ?>" data-tab-id="editions">
         <div class="helper-text">
             <div class="image-container"><?= image_tag('/unthemed/onboarding_project_editions_icon.png', [], true); ?></div>
             <span class="description"><?= __('Use editions when you have variations of a project or product which include different components. This lets you keep track of the different editions without setting up multiple projects.') ;?></span>
@@ -46,7 +46,7 @@
             <div class="configurable-component-options" id="selected-edition-options"></div>
         </div>
     </div>
-    <div id="tab_project_components_pane" style="<?php if ($selected_tab != 'components') echo 'display: none;'; ?>">
+    <div id="tab_project_components_pane" style="<?php if ($selected_tab != 'components') echo 'display: none;'; ?>" data-tab-id="components">
         <div class="helper-text">
             <div class="image-container"><?= image_tag('/unthemed/onboarding_project_components_icon.png', [], true); ?></div>
             <span class="description"><?= __('Components are a great way to split a project into parts, to separate and keep track of different parts of the project individually.') ;?></span>

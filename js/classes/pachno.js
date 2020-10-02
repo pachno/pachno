@@ -7,6 +7,7 @@ import widgetSetupListeners, { calendars } from "../widgets";
 import profileSetupListeners from "../helpers/profile";
 import {initializeDashboards} from "../helpers/dashboard";
 import Board from "./board";
+import Search from "./search";
 import Issuereporter from "./issuereporter";
 import strings_en_US from "../../i18n/en_US/strings.json";
 
