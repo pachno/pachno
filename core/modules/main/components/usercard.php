@@ -5,10 +5,13 @@
 ?>
 <div class="backdrop_box x-large usercard" id="user_details_popup">
     <div class="backdrop_detail_header">
+        <div class="avatar-container">
+            <?php echo image_tag($user->getAvatarURL(false), array('alt' => ' '), true); ?>
+        </div>
         <span><?php echo (!$user->isScopeConfirmed()) ? $user->getUsername() : $user->getRealname() . '(' . $user->getUsername() . ')'; ?></span>
         <a href="javascript:void(0);" class="closer" onclick="Pachno.UI.Backdrop.reset();"><?= fa_image_tag('times'); ?></a>
     </div>
-    <div id="backdrop_detail_content" class="backdrop_detail_content rounded_top usercard_content">
+    <div id="backdrop_detail_content" class="backdrop_detail_content">
         <?php if (!$user->isScopeConfirmed()): ?>
             <div class="user_details">
                 <div class="user_realname">
@@ -18,10 +21,6 @@
             </div>
         <?php else: ?>
             <div class="user_profile">
-                <div class="user_id"><?php echo $user->getID(); ?></div>
-                <div style="padding: 2px; width: 48px; height: 48px; text-align: center; background-color: #FFF; border: 1px solid #DDD; float: left;">
-                    <?php echo image_tag($user->getAvatarURL(false), array('alt' => ' ', 'style' => "width: 48px; height: 48px;"), true); ?>
-                </div>
                 <div class="user_realname">
                     <?php echo $user->getRealname(); ?> <span class="user_username">(<?php echo $user->getUsername(); ?>)</span>
                     <div class="user_status"><?php echo pachno_get_userstate_image($user) . __($user->getState()->getName()); ?></div>

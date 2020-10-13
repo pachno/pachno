@@ -536,7 +536,7 @@
                     Context::setMessage('issue_error', 'transition_error');
                     Context::setMessage('issue_workflow_errors', $transition->getValidationErrors());
 
-                    if ($request->isAjaxCall()) {
+                    if ($request->isResponseFormatAccepted('application/json', false)) {
                         $this->getResponse()->setHttpStatus(400);
 
                         return $this->renderJSON(['error' => Context::getI18n()->__('There was an error trying to move this issue to the next step in the workflow'), 'message' => preg_replace('/\s+/', ' ', $this->getComponentHTML('main/issue_transition_error'))]);
@@ -1361,27 +1361,35 @@
             return $this->renderJSON(['error' => $this->getI18n()->__("You don't have access to perform this action")]);
         }
 
+        /**
+         * @Route(url="/configure/project/:project_id/icons/:csrf_token", name="configure_projects_icons")
+         * @CsrfProtected
+         *
+         * @param framework\Request $request
+         */
         public function runProjectIcons(framework\Request $request)
         {
-            if ($this->getUser()->canManageProject($this->selected_project) || $this->getUser()->canManageProjectReleases($this->selected_project)) {
-                if ($request->isPost()) {
-                    switch ($request['large_icon_action']) {
-                        case 'upload_file':
-                            $file = $request->handleUpload('large_icon');
-                            $this->selected_project->setIcon($file);
-                            break;
-                    }
-                    $this->selected_project->save();
-                }
-                $route = Context::getRouting()->generate('project_settings', ['project_key' => $this->selected_project->getKey()]);
-                if ($request->isAjaxCall()) {
-                    return $this->renderJSON(['forward' => $route]);
-                } else {
-                    $this->forward($route);
-                }
+            if (!$this->getUser()->canManageProject($this->selected_project)) {
+                return $this->forward403($this->getI18n()->__("You don't have access to perform this action"));
             }
 
-            return $this->forward403($this->getI18n()->__("You don't have access to perform this action"));
+            if ($request->isPost()) {
+                if ($request['file_id']) {
+                    $file = tables\Files::getTable()->selectById($request['file_id']);
+                    $this->selected_project->setIcon($file);
+                } else {
+                    $this->selected_project->setIcon(null);
+                    $this->selected_project->setIconName($request['project_icon']);
+                }
+                $this->selected_project->save();
+            }
+
+            if ($request->isResponseFormatAccepted('application/json', false)) {
+                return $this->renderJSON(['project' => $this->selected_project->toJSON(false)]);
+            }
+
+            $route = $this->getRouting()->generate('project_settings', ['project_key' => $this->selected_project->getKey()]);
+            $this->forward($route);
         }
 
         public function runProjectWorkflow(framework\Request $request)

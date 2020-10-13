@@ -2357,13 +2357,18 @@
                 } else {
                     framework\Logging::log('Upload complete and ok, storing upload status and returning filename ' . $new_filename);
                     $content_type = entities\File::getMimeType($filename);
+                    $saved_file = new entities\File();
+                    $saved_file->setRealFilename($new_filename);
+                    $saved_file->setOriginalFilename(basename($file['name']));
+                    $saved_file->setContentType($content_type);
+                    $saved_file->setType($request['type']);
+                    $saved_file->setProject($request['project_id']);
                     if (Settings::getUploadStorage() == 'database') {
-                        $file_object_id = tables\Files::getTable()->saveFile($new_filename, basename($file['name']), $content_type, null, file_get_contents($filename));
-                    } else {
-                        $file_object_id = tables\Files::getTable()->saveFile($new_filename, basename($file['name']), $content_type);
+                        $saved_file->setContent(file_get_contents($filename));
                     }
+                    $saved_file->save();
 
-                    return $this->renderJSON(['file_id' => $file_object_id, 'data' => ['filePath' => $this->getRouting()->generate('showfile', ['id' => $file_object_id])]]);
+                    return $this->renderJSON(['file' => $saved_file->toJSON()]);
                 }
             }
 

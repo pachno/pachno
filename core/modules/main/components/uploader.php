@@ -10,7 +10,7 @@
 <div class="upload-container fixed-position hidden" id="upload_drop_zone">
     <div class="wrapper">
         <span class="image-container"><?= image_tag('/unthemed/icon-upload.png', [], true); ?></span>
-        <span class="message"><?= __('Drop the file to upload it'); ?></span>
+        <span class="message"><?= $message ?? __('Drop the file to upload it'); ?></span>
     </div>
 </div>
 <div class="upload-status-container fixed-position expandable" id="upload_status_container">

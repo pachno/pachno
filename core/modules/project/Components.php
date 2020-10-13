@@ -240,7 +240,7 @@
 
         public function componentProjecticons()
         {
-
+            $this->custom_icons = tables\Files::getTable()->getByType(entities\File::TYPE_PROJECT_ICON);
         }
 
         public function componentProjectworkflow()

@@ -9,17 +9,8 @@
     use b2db\Row;
     use b2db\Table;
     use b2db\Update;
+    use pachno\core\entities\File;
     use pachno\core\framework;
-
-    /**
-     * Files table
-     *
-     * @author Daniel Andre Eikeland <zegenie@zegeniestudios.net>
-     * @version 3.1
-     * @license http://opensource.org/licenses/MPL-2.0 Mozilla Public License 2.0 (MPL 2.0)
-     * @package pachno
-     * @subpackage tables
-     */
 
     /**
      * Files table
@@ -28,6 +19,8 @@
      * @subpackage tables
      *
      * @method static Files getTable()
+     *
+     * @method File[] select(Query $query, $join = 'all')
      *
      * @Table(name="files")
      * @Entity(class="\pachno\core\entities\File")
@@ -182,6 +175,18 @@
                     $fixRow($row);
                 }
             }
+        }
+
+        /**
+         * @param $type
+         * @return File[]
+         */
+        public function getByType($type): array
+        {
+            $query = $this->getQuery();
+            $query->where('files.type', $type);
+
+            return $this->select($query);
         }
 
         protected function migrateData(Table $old_table)

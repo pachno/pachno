@@ -26,8 +26,9 @@
         <input type="hidden" name="step" value="1">
         <input type="hidden" name="agree_license" value="1">
         <div class="contact-container">
-            <a href="mailto:feedback@pachno.com" class="button secondary"><?= fa_image_tag('at', ['class' => 'icon']); ?><span>feedback@pachno.com</span></a>
+            <a href="https://pachno.zulipchat.com" class="button secondary" target="_blank"><?= fa_image_tag('comments', ['class' => 'icon'], 'far'); ?><span>Zulip chat</span></a>
             <a href="https://twitter.com/pachno" class="button secondary" target="_blank"><?= fa_image_tag('twitter', ['class' => 'icon'], 'fab'); ?><span>@pachno</span></a>
+            <a href="mailto:feedback@pachno.com" class="button secondary"><?= fa_image_tag('at', ['class' => 'icon']); ?><span>feedback@pachno.com</span></a>
         </div>
         <input type="submit" style="margin-left: auto;" value="Agree and continue" id="start_installation">
     </form>

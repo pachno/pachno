@@ -76,13 +76,6 @@ configure_projects_build:
     parameters: [ ]
     csrf_enabled: false
 
-configure_projects_icons:
-    route: /configure/project/:project_id/icons
-    module: project
-    action: projectIcons
-    parameters: [ ]
-    csrf_enabled: false
-
 configure_projects_workflow:
     route: /configure/project/:project_id/workflow
     module: project

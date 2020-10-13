@@ -9,18 +9,18 @@ use pachno\core\framework;
     <div id="projects_list_tabs" class="fancy-tabs">
         <a class="tab selected" data-project-category="active" id="tab_active" href="javascript:void(0);">
             <?= fa_image_tag('boxes', ['class' => 'icon']); ?>
-            <?= fa_image_tag('spinner', ['style' => 'display: none;', 'id' => 'project_list_tab_active_indicator', 'class' => 'icon fa-spin']); ?>
             <span class="name">
                 <?= ($pachno_user->isGuest()) ? __('Projects') : __('Active projects'); ?>
             </span>
+            <?= fa_image_tag('spinner', ['style' => 'display: none;', 'id' => 'project_list_tab_active_indicator', 'class' => 'icon fa-spin']); ?>
         </a>
         <?php if (!$pachno_user->isGuest()): ?>
             <a class="tab" id="tab_archived" data-project-category="archived" href="javascript:void(0);">
                 <?= fa_image_tag('archive', ['class' => 'icon']); ?>
-                <?= fa_image_tag('spinner', ['style' => 'display: none;', 'id' => 'project_list_tab_archived_indicator', 'class' => 'icon fa-spin']); ?>
                 <span class="name">
                     <?= __('Archived projects'); ?>
                 </span>
+                <?= fa_image_tag('spinner', ['style' => 'display: none;', 'id' => 'project_list_tab_archived_indicator', 'class' => 'icon fa-spin']); ?>
             </a>
             <?php if ($pachno_user->isAuthenticated()): ?>
                 <div class="spacer"></div>

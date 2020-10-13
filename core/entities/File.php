@@ -4,6 +4,7 @@
 
     use pachno\core\entities\common\IdentifiableScoped;
     use pachno\core\entities\tables\ArticleFiles;
+    use pachno\core\framework\Context;
     use pachno\core\framework\Event;
     use pachno\core\framework\Settings;
 
@@ -12,6 +13,8 @@
      */
     class File extends IdentifiableScoped
     {
+
+        const TYPE_PROJECT_ICON = 'project_icon';
 
         /**
          * @Column(type="string", length=200)
@@ -49,10 +52,24 @@
         protected $_size;
 
         /**
+         * @Column(type="type", length=200)
+         */
+        protected $_type;
+
+        /**
          * @Column(type="integer", length=10)
          * @Relates(class="\pachno\core\entities\User")
          */
         protected $_uid;
+
+        /**
+         * The project
+         *
+         * @var Project
+         * @Column(type="integer", length=10)
+         * @Relates(class="\pachno\core\entities\Project")
+         */
+        protected $_project_id;
 
         public static function getByIssueID($issue_id)
         {
@@ -67,6 +84,21 @@
         public static function getByArticleID($article_id)
         {
             return ArticleFiles::getTable()->getByArticleID($article_id);
+        }
+
+        /**
+         * Returns the parent project
+         *
+         * @return Project
+         */
+        public function getProject()
+        {
+            return $this->_b2dbLazyLoad('_project_id');
+        }
+
+        public function setProject($project)
+        {
+            $this->_project_id = $project;
         }
 
         public static function getMimeType($filename)
@@ -198,15 +230,20 @@
 
             foreach ($issue_ids as $issue_id) {
                 $issue = new Issue($issue_id);
-                if ($issue->hasAccess())
-                    return true;
+                if (!$issue->hasAccess())
+                    return false;
             }
 
-            $event = Event::createNew('core', 'pachno\core\entities\File::hasAccess', $this);
-            $event->setReturnValue(false);
-            $event->triggerUntilProcessed();
+            if ($this->getProject() instanceof Project) {
+                return $this->getProject()->hasAccess();
+            }
 
-            return $event->getReturnValue();
+            return false;
+//            $event = Event::createNew('core', 'pachno\core\entities\File::hasAccess', $this);
+//            $event->setReturnValue(false);
+//            $event->triggerUntilProcessed();
+//
+//            return $event->getReturnValue();
         }
 
         protected function _preDelete()
@@ -236,12 +273,44 @@
             $this->_real_filename = $real_filename;
         }
 
+        /**
+         * @return mixed
+         */
+        public function getType()
+        {
+            return $this->_type;
+        }
+
+        /**
+         * @param mixed $type
+         */
+        public function setType($type)
+        {
+            $this->_type = $type;
+        }
+
         protected function _preSave($is_new)
         {
             parent::_preSave($is_new);
+            if ($is_new) {
+                $this->_uploaded_at = NOW;
+            }
             if ($this->doesFileExistOnDisk()) {
                 $this->_size = filesize($this->getFullpath());
             }
+        }
+
+        public function getURL($relative = true)
+        {
+            return Context::getRouting()->generate('showfile', ['id' => $this->getID()], $relative);
+        }
+
+        public function toJSON($detailed = true)
+        {
+            return [
+                'id' => $this->getID(),
+                'url' => $this->getUrl(true)
+            ];
         }
 
     }

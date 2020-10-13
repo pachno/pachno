@@ -98,17 +98,17 @@ a {
       border: 0; }
   a.image {
     border: 0; }
-  a:not(.button):not(.list-item) .icon,
-  a:not(.button):not(.list-item) .fas,
-  a:not(.button):not(.list-item) .far {
+  a:not(.button):not(.list-item):not(.closer) .icon,
+  a:not(.button):not(.list-item):not(.closer) .fas,
+  a:not(.button):not(.list-item):not(.closer) .far {
     margin-right: .3em; }
-    a:not(.button):not(.list-item) .icon.external,
-    a:not(.button):not(.list-item) .fas.external,
-    a:not(.button):not(.list-item) .far.external {
+    a:not(.button):not(.list-item):not(.closer) .icon.external,
+    a:not(.button):not(.list-item):not(.closer) .fas.external,
+    a:not(.button):not(.list-item):not(.closer) .far.external {
       font-size: .9em; }
-    a:not(.button):not(.list-item) .icon:last-child,
-    a:not(.button):not(.list-item) .fas:last-child,
-    a:not(.button):not(.list-item) .far:last-child {
+    a:not(.button):not(.list-item):not(.closer) .icon:last-child,
+    a:not(.button):not(.list-item):not(.closer) .fas:last-child,
+    a:not(.button):not(.list-item):not(.closer) .far:last-child {
       margin-right: 0;
       margin-left: .5em; }
 
@@ -703,42 +703,32 @@ img.userstate {
   flex: 0 1 auto;
   display: flex;
   align-items: center; }
-
-#logo_container .logo {
-  flex: 0 0 46px;
-  min-width: 46px;
-  vertical-align: middle;
-  margin: 0;
-  text-decoration: none;
-  border: 0;
-  line-height: 0; }
-
-#logo_container .logo img {
-  max-height: 32px; }
-
-#logo_container a.logo:hover {
-  text-decoration: none;
-  border: 0; }
-
-#logo_container .logo_name,
-#logo_container .logo_name:hover {
-  font-family: "Simplifica", sans-serif;
-  font-size: 1.8rem;
-  color: #FFF;
-  font-weight: 400;
-  margin: 0 5px 0 0;
-  padding: 4px 8px 4px 3px;
-  line-height: 1em;
-  text-shadow: none;
-  flex: 1 1 auto;
-  vertical-align: middle;
-  border: none;
-  border-radius: 3px;
-  background-color: transparent;
-  transition: background-color 0.3s ease-in-out; }
-
-#logo_container a.logo_name:hover {
-  background-color: rgba(255, 255, 255, 0.25); }
+  #logo_container .logo {
+    flex: 0 0 46px;
+    min-width: 46px;
+    vertical-align: middle;
+    margin: 0;
+    line-height: 0; }
+    #logo_container .logo, #logo_container .logo:hover {
+      text-decoration: none;
+      border: 0; }
+    #logo_container .logo img {
+      max-height: 32px; }
+  #logo_container .logo_name,
+  #logo_container .logo_name:hover {
+    font-family: "Lilita One", sans-serif;
+    font-size: 1.5rem;
+    color: #FFF;
+    font-weight: 400;
+    margin: 0 5px 0 0;
+    padding: 4px 8px 4px 3px;
+    line-height: 1em;
+    text-shadow: none;
+    flex: 1 1 auto;
+    vertical-align: middle;
+    border: none;
+    border-radius: 3px;
+    background-color: transparent; }
 
 .project-context #logo_name {
   display: none; }
@@ -1813,53 +1803,6 @@ a.shadowed:active {
   width: 240px;
   float: left; }
 
-.usercard_content {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: nowrap;
-  font-size: 0.8em; }
-
-#user_details_popup .user_realname {
-  font-size: 1.5em;
-  font-weight: 400;
-  padding: 2px 0 0 0;
-  line-height: 1.2; }
-
-.usercard .user_profile {
-  font-size: 1.0em;
-  font-weight: 400;
-  padding: 10px;
-  flex: 0 0 250px; }
-
-.usercard .user_details {
-  line-height: 1.7;
-  font-weight: 400;
-  padding: 5px 15px;
-  margin-left: 10px;
-  clear: both;
-  flex: 1 1 auto;
-  border-left: 1px solid #DDD;
-  box-shadow: -10px 0 15px -18px rgba(0, 0, 0, 0.8); }
-
-.account_details {
-  margin: 10px 0 10px 10px;
-  padding: 10px;
-  font-size: 1em; }
-
-.account_details .user_realname {
-  font-size: 1.2em;
-  font-weight: 400;
-  line-height: 1.3;
-  padding-bottom: 2px; }
-
-.account_details .user_username {
-  font-size: 0.9em;
-  line-height: 1.2; }
-
-.account_details .user_status {
-  font-size: 0.9em;
-  line-height: 1.2; }
-
 #account_user_info img {
   float: left;
   margin: -3px 5px 0 0; }
@@ -1951,44 +1894,6 @@ a.shadowed:active {
 .application_password_preview span {
   display: inline;
   margin: 0 0 0 8px; }
-
-.usercard .user_username {
-  font-weight: 400;
-  font-size: 0.9em;
-  color: #AAA;
-  font-style: italic;
-  line-height: 1.2;
-  display: block;
-  margin-top: 3px; }
-
-.usercard .user_id {
-  float: right;
-  font-size: 2.3em;
-  font-weight: 400;
-  color: #C4CAE9; }
-
-.user_dropdown .user_realname .user_status, .usercard .user_realname .user_status {
-  font-size: 0.8em;
-  font-weight: 400;
-  color: #AAA; }
-
-.usercard .user_realname .user_email {
-  font-size: 0.7em;
-  font-weight: 400;
-  color: #AAA;
-  display: block;
-  margin-top: 7px; }
-
-.usercard .user_realname .edit_user {
-  font-size: 0.75em;
-  display: block;
-  margin-top: 10px; }
-
-.usercard .user_realname .friends_link {
-  font-size: 0.75em;
-  display: block;
-  margin-top: 10px;
-  margin-left: -2px; }
 
 .user_dropdown .user_avatar {
   padding: 2px;

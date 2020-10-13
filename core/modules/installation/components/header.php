@@ -26,15 +26,7 @@
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/v4-shims.css">
         <style type="text/css">
-            @import url('https://fonts.googleapis.com/css?family=Fira+Mono:400,500,700|Source+Sans+Pro:400,400i,600,600i&subset=cyrillic,cyrillic-ext,latin-ext');
-
-            @font-face {
-                font-family: 'Simplifica';
-                src: url('/fonts/simplifica_typeface-webfont.woff2') format('woff2'),
-                url('/fonts/simplifica_typeface-webfont.woff') format('woff');
-                font-weight: normal;
-                font-style: normal;
-            }
+            @import url('https://fonts.googleapis.com/css?family=Fira+Mono:400,500,700|Source+Sans+Pro:400,400i,600,600i|Lilita+One:400&subset=cyrillic,cyrillic-ext,latin-ext&display=swap');
 
             body { overflow: hidden; }
 
@@ -300,7 +292,7 @@
             .header_container .logo_name_container {
                 color: #FFF;
                 font-size: 1.6rem;
-                font-family: Simplifica;
+                font-family: "Lilita One";
             }
             .logo_name {
                 font-size: 1.6em;

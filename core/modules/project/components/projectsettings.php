@@ -17,7 +17,7 @@
         data-project-id="<?= $project->getID(); ?>"
         action="<?= make_url('configure_project_settings', ['project_id' => $project->getID()]); ?>"
         method="post"
-        id="project_settings"
+        id="project_settings_form"
         data-interactive-form
     >
     <?php endif; ?>
@@ -54,10 +54,7 @@
         </div>
     <?php if ($access_level == Settings::ACCESS_FULL): ?>
         <div class="form-row submit-container">
-            <button type="submit" class="button primary">
-                <span><?php echo __('Save'); ?></span>
-                <?= fa_image_tag('spinner', ['class' => 'fa-spin icon indicator']); ?>
-            </button>
+            <?= fa_image_tag('spinner', ['class' => 'fa-spin icon indicator submit-indicator']); ?>
         </div>
     </form>
     <?php endif; ?>
