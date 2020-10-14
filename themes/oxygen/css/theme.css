@@ -1793,7 +1793,7 @@ a.shadowed:active {
   display: none;
   position: absolute; }
 
-.user_dropdown, #user_details_popup {
+.user_dropdown {
   color: #555; }
 
 .user_dropdown .user_realname {
@@ -1922,9 +1922,6 @@ a.shadowed:active {
 .user_dropdown .user_details:first-line {
   font-size: 1.7em;
   font-weight: 400; }
-
-.user_details ul.teamlist {
-  list-style-type: none; }
 
 /* end user popups */
 /* sidebar formatting */
@@ -5516,39 +5513,6 @@ div.calendar tr.days td.otherDay {
 
 input[type=checkbox][name=send_login_details] {
   margin-top: -2px; }
-
-/* Backdrop -> User details popup */
-#user_details_popup {
-  width: 900px;
-  margin: 0 -450px 200px -450px; }
-
-#user_details_popup .user_realname {
-  font-weight: 400;
-  margin-top: 5px;
-  clear: both; }
-
-#user_details_popup .user_status {
-  display: block;
-  margin-top: 10px;
-  font-size: 0.7em; }
-
-#user_details_popup .user_details i:after {
-  display: block;
-  content: "";
-  margin-top: -15px; }
-
-#user_details_popup .user_details h4 {
-  margin: 10px 0 0 0;
-  padding: 0;
-  font-size: 1.1em; }
-
-#user_details_popup .user_issues_list li {
-  margin-bottom: 5px;
-  margin-left: 7px; }
-
-#user_details_popup .teamlist {
-  padding: 0;
-  margin-top: 5px; }
 
 /* Configure users, teams and clients -> Search button */
 #users_more_actions_container {
@@ -10005,9 +9969,10 @@ textarea.markItUpEditor:focus {
     flex: 0 0 32px;
     padding: .5rem 0;
     display: flex;
-    align-items: center; }
+    align-items: center;
+    border-radius: 100%; }
     .project-strip .icon-container .icon-large {
-      background-color: rgba(0, 0, 0, 0.1);
+      background-color: white;
       border: 1px solid rgba(0, 0, 0, 0.1);
       border-radius: 100%;
       display: inline-block;
@@ -10017,7 +9982,8 @@ textarea.markItUpEditor:focus {
       padding: 3px;
       text-align: center;
       vertical-align: middle;
-      width: 32px; }
+      width: 32px;
+      overflow: hidden; }
       .project-strip .icon-container .icon-large img {
         width: 100%; }
   .project-strip .button-group {
@@ -10221,6 +10187,26 @@ textarea.markItUpEditor:focus {
         background: #0c8990; }
     .upload-status-container .list-mode .list-item.confirmed .progress-container {
       display: none; }
+
+.fullpage_backdrop .fullpage_backdrop_content .backdrop_box.usercard {
+  width: 450px; }
+  .fullpage_backdrop .fullpage_backdrop_content .backdrop_box.usercard .avatar-container {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%) translateY(-80%);
+    border-radius: 100%;
+    border: 3px solid white;
+    overflow: hidden;
+    width: 76px;
+    height: 76px; }
+    .fullpage_backdrop .fullpage_backdrop_content .backdrop_box.usercard .avatar-container img {
+      width: 100%; }
+  .fullpage_backdrop .fullpage_backdrop_content .backdrop_box.usercard .backdrop_detail_header {
+    padding-top: 50px;
+    align-items: center;
+    justify-content: center; }
+    .fullpage_backdrop .fullpage_backdrop_content .backdrop_box.usercard .backdrop_detail_header span {
+      text-align: center; }
 
 #main_container {
   transition: background-color .25s ease-in-out; }

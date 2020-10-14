@@ -1,0 +1,32 @@
+.fullpage_backdrop {
+  .fullpage_backdrop_content {
+    .backdrop_box.usercard {
+      width: 450px;
+
+      .avatar-container {
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%) translateY(-80%);
+        border-radius: 100%;
+        border: 3px solid rgb(255, 255, 255);
+        overflow: hidden;
+        width: 76px;
+        height: 76px;
+
+        img {
+          width: 100%;
+        }
+      }
+
+      .backdrop_detail_header {
+        padding-top: 50px;
+        align-items: center;
+        justify-content: center;
+
+        span {
+          text-align: center;
+        }
+      }
+    }
+  }
+}

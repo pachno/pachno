@@ -64,9 +64,10 @@
     padding: .5rem 0;
     display: flex;
     align-items: center;
+    border-radius: 100%;
 
     .icon-large {
-      background-color: rgba(0, 0, 0, 0.1);
+      background-color: rgb(255, 255, 255);
       border: 1px solid rgba(0, 0, 0, 0.1);
       border-radius: 100%;
       display: inline-block;
@@ -77,6 +78,7 @@
       text-align: center;
       vertical-align: middle;
       width: 32px;
+      overflow: hidden;
 
       img {
         width: 100%;
