@@ -9,6 +9,10 @@
             <?php echo image_tag($user->getAvatarURL(false), array('alt' => ' '), true); ?>
         </div>
         <span><?php echo (!$user->isScopeConfirmed()) ? $user->getUsername() : $user->getRealname(); ?></span>
+        <?php /* <div class="status-badge">
+            <span class="icon"><?php echo pachno_get_userstate_image($user); ?></span>
+            <span class="name"><?= __($user->getState()->getName()); ?></span>
+        </div> */ ?>
     </div>
     <div id="backdrop_detail_content" class="backdrop_detail_content">
         <?php if (!$user->isScopeConfirmed()): ?>
@@ -20,20 +24,31 @@
             </div>
         <?php else: ?>
             <div class="list-mode">
-                <div class="list-item">
+                <div class="list-item not-selectable">
                     <?= fa_image_tag('at', ['class' => 'icon']); ?>
                     <span class="name"><?php echo $user->getUsername(); ?></span>
                 </div>
-                <div class="list-item">
-                    <span class="icon"><?php echo pachno_get_userstate_image($user); ?></span>
-                    <span class="name"><?= __($user->getState()->getName()); ?></span>
-                </div>
                 <?php if ($user->isEmailPublic() || $pachno_user->canAccessConfigurationPage(\pachno\core\framework\Settings::CONFIGURATION_SECTION_USERS)): ?>
-                    <div class="list-item">
+                    <a class="list-item" href="mailto:<?= $user->getEmail(); ?>">
                         <?= fa_image_tag('envelope', ['class' => 'icon']); ?>
-                        <span class="name"><?php echo link_tag('mailto:'.$user->getEmail(), $user->getEmail()); ?></span>
-                    </div>
+                        <span class="name"><?= $user->getEmail(); ?></span>
+                    </a>
                 <?php endif; ?>
+                <div class="list-item not-selectable multiline">
+                    <?= fa_image_tag('calendar', ['class' => 'icon']); ?>
+                    <span class="name">
+                        <?php if (!$user->getJoinedDate()): ?>
+                            <span class="description"><?php echo __('This user has been a member for a while'); ?></span>
+                        <?php else: ?>
+                            <span class="description"><?php echo __('This user has been a member since %date', ['%date' => \pachno\core\framework\Context::getI18n()->formatTime($user->getJoinedDate(), 11)]); ?></span>
+                        <?php endif; ?>
+                        <?php if (!$user->getLastSeen()): ?>
+                            <span class="description"><?php echo __('This user has not logged in yet'); ?></span>
+                        <?php else: ?>
+                            <span class="value"><?php echo __('This user was last seen online at %time', ['%time' => \pachno\core\framework\Context::getI18n()->formatTime($user->getLastSeen(), 11)]); ?></span>
+                        <?php endif; ?>
+                    </span>
+                </div>
                 <?php if (\pachno\core\entities\User::isThisGuest() == false): ?>
                     <div id="friends_message_<?php echo $user->getUsername() . '_' . $rnd_no; ?>" style="padding: 10px 0 0 0; font-size: 0.75em;"></div>
                     <?php if ($user->getID() != \pachno\core\framework\Context::getUser()->getID() && !(\pachno\core\framework\Context::getUser()->isFriend($user)) && !$user->isGuest()): ?>
@@ -47,43 +62,6 @@
                         </span>
                             </div>
                     <?php endif; ?>
-                <?php endif; ?>
-                <?php if ($pachno_user->canAccessConfigurationPage(\pachno\core\framework\Settings::CONFIGURATION_SECTION_USERS)): ?>
-                    <div class="list-item">
-                        <form action="<?php echo make_url('configure_users'); ?>">
-                            <input type="hidden" name="finduser" value="<?php echo $user->getUsername(); ?>">
-                            <a href="javascript:void(0);" onclick="$(this).up('form').submit();"><?php echo __('Edit this user'); ?></a>
-                        </form>
-                    </div>
-                <?php endif; ?>
-                <?php if (!$user->getJoinedDate()): ?>
-                    <div class="list-item disabled">
-                        <span class="name"><?php echo __('This user has been a member for a while'); ?></span>
-                    </div>
-                <?php else: ?>
-                    <div class="list-item">
-                        <span class="name"><?php echo __('This user has been a member since %date', ['%date' => \pachno\core\framework\Context::getI18n()->formatTime($user->getJoinedDate(), 11)]); ?></span>
-                    </div>
-                <?php endif; ?>
-                <?php if (!$user->getLastSeen()): ?>
-                    <div class="list-item disabled">
-                        <span class="name"><?php echo __('This user has not logged in yet'); ?></span>
-                    </div>
-                <?php else: ?>
-                    <div class="list-item">
-                        <span class="name"><?php echo __('This user was last seen online at %time', ['%time' => \pachno\core\framework\Context::getI18n()->formatTime($user->getLastSeen(), 11)]); ?></span>
-                    </div>
-                <?php endif; ?>
-                <?php if (!$user->getLatestActions(1)): ?>
-                    <div class="list-item disabled">
-                        <span class="name"><?php echo __('There is no recent activity available for this user'); ?></span>
-                    </div>
-                <?php else: ?>
-                    <?php foreach ($user->getLatestActions(1) as $action): ?>
-                        <div class="list-item">
-                            <span class="name"><?php echo __('Last user activity was at %time', ['%time' => \pachno\core\framework\Context::getI18n()->formatTime($action->getTime(), 11)]); ?></span>
-                        </div>
-                    <?php endforeach; ?>
                 <?php endif; ?>
                 <div class="header">
                     <h3><?= __('Recently reported issues'); ?></h3>
@@ -115,6 +93,14 @@
             </div>
             <?php \pachno\core\framework\Event::createNew('core', 'usercardactions_top', $user)->trigger(); ?>
             <?php \pachno\core\framework\Event::createNew('core', 'usercardactions_bottom', $user)->trigger(); ?>
+        <?php endif; ?>
+    </div>
+    <div class="backdrop_buttons">
+        <?php if ($pachno_user->canAccessConfigurationPage(\pachno\core\framework\Settings::CONFIGURATION_SECTION_USERS)): ?>
+            <button class="button secondary trigger-backdrop" data-url="<?= make_url('configure_users_edit_user_form', ['user_id' => $user->getID()]); ?>">
+                <?= fa_image_tag('edit', ['class' => 'icon']); ?>
+                <span><?php echo __('Edit this user'); ?></span>
+            </button>
         <?php endif; ?>
         <button class="button secondary closer"><?= __('Close popup'); ?></button>
     </div>

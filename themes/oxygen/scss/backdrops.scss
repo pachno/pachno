@@ -134,6 +134,22 @@
         text-align: right;
         background-color: transparent;
       }
+
+      .backdrop_buttons {
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-end;
+        align-content: center;
+        padding: 10px;
+
+        button,
+        .button {
+          + button,
+          + .button {
+            margin-left: auto;
+          }
+        }
+      }
     }
   }
 }

@@ -697,24 +697,6 @@ img.userstate {
   color: rgb(200, 200, 200);
 }
 
-#usermenu_changestate_toggler {
-  float: right;
-  margin-left: 5px;
-  padding: 1px 3px !important;
-  font-size: 1em !important;
-  border: 1px solid rgba(0, 0, 0, 0.2) !important;
-}
-
-#usermenu_changestate {
-  clear: both;
-  margin: -5px 10px 10px 10px;
-}
-
-#change_userstate_dropdown {
-  float: right;
-  margin: -2px 5px 2px;
-}
-
 #logo_container {
   padding: 0 0 0 10px;
   margin: 5px;
@@ -1645,10 +1627,6 @@ a.not_clickable:hover {
 #header_userinfo .tab_menu_dropdown a {
   font-weight: $theme-font-weight-regular;
   font-size: 1em;
-}
-
-#header_userinfo .tab_menu_dropdown .userstate {
-  font-weight: $theme-font-weight-regular;
 }
 
 #header_userinfo:hover img.dropdown {
@@ -6533,10 +6511,6 @@ div.calendar tr.days td.otherDay {
 
 #createuser_form_quick a {
   margin-top: 5px;
-}
-
-#tab_users_pane img.userstate {
-  margin: 0 2px 2px 0;
 }
 
 /* Backdrop -> Add a user */

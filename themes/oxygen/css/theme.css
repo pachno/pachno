@@ -682,21 +682,6 @@ img.userstate {
 .far.userstate.offline {
   color: #c8c8c8; }
 
-#usermenu_changestate_toggler {
-  float: right;
-  margin-left: 5px;
-  padding: 1px 3px !important;
-  font-size: 1em !important;
-  border: 1px solid rgba(0, 0, 0, 0.2) !important; }
-
-#usermenu_changestate {
-  clear: both;
-  margin: -5px 10px 10px 10px; }
-
-#change_userstate_dropdown {
-  float: right;
-  margin: -2px 5px 2px; }
-
 #logo_container {
   padding: 0 0 0 10px;
   margin: 5px;
@@ -1459,9 +1444,6 @@ a.not_clickable:hover {
 #header_userinfo .tab_menu_dropdown a {
   font-weight: 400;
   font-size: 1em; }
-
-#header_userinfo .tab_menu_dropdown .userstate {
-  font-weight: 400; }
 
 #header_userinfo:hover img.dropdown {
   background-color: #669BDA; }
@@ -5504,9 +5486,6 @@ div.calendar tr.days td.otherDay {
 #createuser_form_quick a {
   margin-top: 5px; }
 
-#tab_users_pane img.userstate {
-  margin: 0 2px 2px 0; }
-
 /* Backdrop -> Add a user */
 .teamlist_container input[type=checkbox] {
   margin-top: 3px; }
@@ -7701,6 +7680,11 @@ input[data-interactive-toggle].submitting + label .indicator {
       padding: 0 1.5em 1.5em 1.5em;
       justify-content: flex-end;
       box-sizing: border-box; }
+      .list-mode .header-banner .button-group button + button,
+      .list-mode .header-banner .button-group button + .button,
+      .list-mode .header-banner .button-group .button + button,
+      .list-mode .header-banner .button-group .button + .button {
+        margin-left: auto; }
       .list-mode .header-banner .button-group button.back-button .name,
       .list-mode .header-banner .button-group .button.back-button .name {
         display: none; }
@@ -10198,7 +10182,8 @@ textarea.markItUpEditor:focus {
     border: 3px solid white;
     overflow: hidden;
     width: 76px;
-    height: 76px; }
+    height: 76px;
+    box-shadow: 0 -3px 6px -6px rgba(0, 0, 0, 0.36); }
     .fullpage_backdrop .fullpage_backdrop_content .backdrop_box.usercard .avatar-container img {
       width: 100%; }
   .fullpage_backdrop .fullpage_backdrop_content .backdrop_box.usercard .backdrop_detail_header {
@@ -13593,6 +13578,17 @@ DEL {
         padding: 5px;
         text-align: right;
         background-color: transparent; }
+      .fullpage_backdrop .fullpage_backdrop_content .backdrop_box .backdrop_buttons {
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-end;
+        align-content: center;
+        padding: 10px; }
+        .fullpage_backdrop .fullpage_backdrop_content .backdrop_box .backdrop_buttons button + button,
+        .fullpage_backdrop .fullpage_backdrop_content .backdrop_box .backdrop_buttons button + .button,
+        .fullpage_backdrop .fullpage_backdrop_content .backdrop_box .backdrop_buttons .button + button,
+        .fullpage_backdrop .fullpage_backdrop_content .backdrop_box .backdrop_buttons .button + .button {
+          margin-left: auto; }
 
 #dialog_backdrop_content,
 #dialog_backdrop_modal_content {

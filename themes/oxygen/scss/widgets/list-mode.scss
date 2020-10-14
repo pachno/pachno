@@ -84,6 +84,11 @@
 
       button,
       .button {
+        + button,
+        + .button {
+          margin-left: auto;
+        }
+
         &.back-button {
           .name {
             display: none;
