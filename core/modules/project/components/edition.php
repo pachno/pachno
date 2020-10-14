@@ -14,7 +14,7 @@
                 <div class="description"><?= $edition->getDescription(); ?></div>
             <?php endif; ?>
         </div>
-        <button class="icon open">
+        <button class="icon open trigger-open-component">
             <?= fa_image_tag('angle-right'); ?>
         </button>
     </div>

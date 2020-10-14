@@ -279,8 +279,7 @@ const submitForm = function ($form) {
         });
 };
 
-const submitInteractiveForm = function (event) {
-    const $form = $(this).parents('form');
+const submitInteractiveForm = function (event, $form) {
     $form.addClass('submitting');
     event.preventDefault();
     submitForm($form)
@@ -370,8 +369,9 @@ $(document).ready(() => {
         e.preventDefault();
     });
 
-    $body.on('blur', 'form[data-interactive-form] input[type=text], form[data-interactive-form] textarea', submitInteractiveForm);
-    $body.on('change', 'form[data-interactive-form] input[type=radio], form[data-interactive-form] input[type=checkbox]', submitInteractiveForm);
+    $body.on('submit', 'form[data-interactive-form]', (event) => submitInteractiveForm(event, $(event.target)));
+    $body.on('blur', 'form[data-interactive-form] input[type=text], form[data-interactive-form] textarea', (event) => submitInteractiveForm(event, $(event.target).parents('form')));
+    $body.on('change', 'form[data-interactive-form] input[type=radio], form[data-interactive-form] input[type=checkbox]', (event) => submitInteractiveForm(event, $(event.target).parents('form')));
 })
 
 export default UI;

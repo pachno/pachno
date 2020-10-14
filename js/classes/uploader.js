@@ -52,7 +52,6 @@ class Uploader {
 
     uploadFile(url, file) {
         return new Promise((resolve, reject) => {
-            debugger;
             const is_image = (file.type.indexOf("image") == 0);
 
             if (this.only_images && !is_image) {
