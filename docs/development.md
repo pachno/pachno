@@ -46,7 +46,11 @@ The vagrant box comes with xdebug ready to use. Configure your development envir
 vagrant for full php debugging.
 
 # JS or CSS changes
-Javascript and css files are compiled and bundled before use. From inside the pachno main directory, run 
+Javascript and css files are compiled and bundled before use. From inside the pachno main directory, first install webpack if not yet available
+```shell script
+npm install webpack
+```
+and then, run 
 ```shell script
 npm run build
 ```
