@@ -12,6 +12,6 @@
         <?php echo __('Show %project project dashboard:', array('%project' => $issue->getProject()->getName())) . ' ' . link_tag($module->generateURL('project_dashboard', array('project_key' => $issue->getProject()->getKey()))); ?><br>
         <br>
         <?php echo __('You were sent this notification email because you are related to the issue mentioned in this email.'); ?><br>
-        <?php echo __('To change when and how often we send these emails, update your account settings:') . ' ' . link_tag($module->generateURL('account'), $module->generateURL('account')); ?>
+        <?php echo __('To change when and how often we send these emails, update your account settings:') . ' ' . link_tag($module->generateURL('profile_account'), $module->generateURL('profile_account')); ?>
     </div>
 <?php endif; ?>

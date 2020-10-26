@@ -613,15 +613,6 @@
                         </tr>
                     </table>
                 <?php endforeach; ?>
-                <?php if ($selected_issuetype != null && $selected_project != null): ?>
-                    <script type="text/javascript">
-                        //require(['domReady', 'pachno/index'], function (domReady, Pachno) {
-                        //    domReady(function () {
-                        //        Pachno.Issues.updateFields('<?//= make_url('getreportissuefields', array('project_key' => $selected_project->getKey())); ?>//');
-                        //    });
-                        //});
-                    </script>
-                <?php endif; ?>
                 <?php Event::createNew('core', 'reportissue.prefile')->trigger(); ?>
             </div>
             <?php if ($selected_project instanceof Project && $selected_project->permissionCheck('canlockandeditlockedissues')): ?>

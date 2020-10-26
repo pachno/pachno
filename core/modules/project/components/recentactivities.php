@@ -14,7 +14,7 @@ use pachno\core\framework\Context;
         <?php foreach ($issues as $issue): ?>
             <?php if ($issue->isDeleted()): continue; endif; ?>
             <tr>
-                <td class="imgtd"><?php echo fa_image_tag($issue->getIssueType()->getFontAwesomeIcon(), ['title' => $issue->getIssueType()->getName()]); ?></td>
+                <td class="imgtd"><?= fa_image_tag(($issue->hasIssueType()) ? $issue->getIssueType()->getFontAwesomeIcon() : 'unknown', ['class' => (($issue->hasIssueType()) ? 'icon issuetype-icon issuetype-' . $issue->getIssueType()->getIcon() : 'icon issuetype-icon issuetype-unknown')]); ?></td>
                 <td>
                     <?php echo link_tag(make_url('viewissue', array('project_key' => $issue->getProject()->getKey(), 'issue_no' => $issue->getFormattedIssueNo())), '<b>' . $issue->getFormattedIssueNo(true) . ' - ' . $issue->getTitle() . '</b>', array('class' => (($issue->isClosed()) ? 'issue_closed' : 'issue_open'))); ?><br>
                     <span class="faded_out dark recent_activities_details">

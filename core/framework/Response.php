@@ -744,7 +744,7 @@
                         $links[] = ['url' => make_url('configure'), 'title' => $i18n->__('Configure %sitename', ['%sitename' => Settings::getSiteHeaderName()])];
                     }
                     $links[] = ['url' => Context::getRouting()->generate('about'), 'title' => $i18n->__('About %sitename', ['%sitename' => Settings::getSiteHeaderName()])];
-                    $links[] = ['url' => Context::getRouting()->generate('account'), 'title' => $i18n->__('Account details')];
+                    $links[] = ['url' => Context::getRouting()->generate('profile_account'), 'title' => $i18n->__('Account details')];
 
                     $root_projects = array_merge(Project::getAllRootProjects(true), Project::getAllRootProjects(false));
                     $first = true;

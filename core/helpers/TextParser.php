@@ -11,7 +11,6 @@
     use pachno\core\entities\Project;
     use pachno\core\entities\tables\Articles;
     use pachno\core\entities\tables\Users;
-    use pachno\core\entities\traits\TextParserTodo;
     use pachno\core\entities\User;
     use pachno\core\framework;
     use pachno\core\framework\Context;
@@ -27,7 +26,6 @@
      */
     class TextParser implements ContentParser
     {
-        use TextParserTodo;
 
         protected static $additional_regexes = null;
 

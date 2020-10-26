@@ -8,7 +8,7 @@
      */
 
     $pachno_response->setTitle(__('Your account details'));
-    $pachno_response->addBreadcrumb(__('Account details'), make_url('account'));
+    $pachno_response->addBreadcrumb(__('Account details'), make_url('profile_account'));
 
 ?>
 <?php if ($pachno_user->canChangePassword()): ?>
@@ -18,7 +18,7 @@
                 <span><?= __('Changing your password'); ?></span>
                 <a href="javascript:void(0);" class="closer" onclick="$('#change_password_div').toggle();"><?= fa_image_tag('times'); ?></a>
             </div>
-            <form accept-charset="<?= \pachno\core\framework\Context::getI18n()->getCharset(); ?>" action="<?= make_url('account_change_password'); ?>" onsubmit="Pachno.Main.Profile.changePassword('<?= make_url('account_change_password'); ?>'); return false;" method="post" id="change_password_form">
+            <form accept-charset="<?= \pachno\core\framework\Context::getI18n()->getCharset(); ?>" action="<?= make_url('account_change_password'); ?>" data-simple-submit data-auto-close-container method="post" id="change_password_form">
                 <div class="backdrop_detail_content login_content">
                     <div class="logindiv regular active" id="change_password_container">
                         <?php if (Settings::isUsingExternalAuthenticationBackend()): ?>
@@ -62,7 +62,7 @@
 <?php endif; ?>
 <?php if ($pachno_user->isOpenIdLocked()): ?>
     <div class="fullpage_backdrop" id="pick_username_div" style="display: none;">
-        <form accept-charset="<?= \pachno\core\framework\Context::getI18n()->getCharset(); ?>" action="<?= make_url('account_check_username'); ?>" onsubmit="Pachno.Main.Profile.checkUsernameAvailability('<?= make_url('account_check_username'); ?>'); return false;" method="post" id="check_username_form">
+        <form accept-charset="<?= \pachno\core\framework\Context::getI18n()->getCharset(); ?>" action="<?= make_url('account_check_username'); ?>" method="post" id="check_username_form" data-simple-submit>
             <div class="backdrop_box login_page login_popup">
                 <div class="backdrop_detail_header">
                     <span><?= __('Picking a username'); ?></span>
@@ -131,7 +131,7 @@
                 <div class="backdrop_details_submit">
                     <span class="explanation"></span>
                     <div class="submit_container">
-                        <a href="<?= make_url('account'); ?>" class="button"><?= __('Done'); ?></a>
+                        <a href="<?= make_url('profile_account'); ?>" class="button"><?= __('Done'); ?></a>
                     </div>
                 </div>
             </div>
@@ -186,7 +186,7 @@
     </div>
     <div id="account_details_container">
         <div id="account_tabs" class="fancy-tabs tab-switcher">
-            <a class="tab tab-switcher-trigger <?php if ($selected_tab == 'profile'): ?> selected<?php endif; ?>" id="tab_profile" data-tab-target="profile">
+            <a class="tab tab-switcher-trigger <?php if ($selected_tab == 'profile'): ?> selected<?php endif; ?>" id="tab_profile" href="javascript:void(0);" data-tab-target="profile">
                 <?= fa_image_tag('edit', ['class' => 'icon']); ?>
                 <span class="name"><?= __('Profile'); ?></span>
             </a>
@@ -221,7 +221,7 @@
                 <?php if (Settings::isUsingExternalAuthenticationBackend()): ?>
                     <?= \pachno\core\helpers\TextParser::parseText(Settings::get('changedetails_message'), false, null, array('embedded' => true)); ?>
                 <?php else: ?>
-                    <form accept-charset="<?= \pachno\core\framework\Context::getI18n()->getCharset(); ?>" action="<?= make_url('account_save_information'); ?>" onsubmit="Pachno.Main.Profile.updateInformation('<?= make_url('account_save_information'); ?>'); return false;" method="post" id="profile_information_form">
+                    <form accept-charset="<?= \pachno\core\framework\Context::getI18n()->getCharset(); ?>" action="<?= make_url('profile_account', ['mode' => 'information']); ?>" data-simple-submit method="post" id="profile_information_form">
                         <div class="row">
                             <div class="column large">
                                 <div class="form-row header"><h3><?= __('About yourself'); ?></h3></div>
@@ -324,8 +324,12 @@
                         </div>
                         <div class="form-row submit-container">
                             <div class="message"><?= __('Click "%save" to save your account information', array('%save' => __('Save'))); ?></div>
-                            <span id="profile_save_indicator" style="display: none;"><?= image_tag('spinning_20.gif'); ?></span>
-                            <input type="submit" id="submit_information_button" value="<?= __('Save'); ?>">
+                            <button type="submit" id="submit_information_button">
+                                <span class="name-add
+                                åpenbar anledning utlyses internt
+"><?= __('Save'); ?></span>
+                                <?= fa_image_tag('spinner', ['class' => 'fa-spin icon indicator']); ?>
+                            </button>
                         </div>
                     </form>
                 <?php endif; ?>
@@ -345,7 +349,7 @@
                             <h3><?= fa_image_tag('check', ['class' => 'icon']); ?><span><?= __('Two-factor authentication is enabled'); ?></span></h3>
                             <span><?= __('A one-time code is required to log in on a new device'); ?></span>
                         </span>
-                        <button class="button secondary" onclick="Pachno.UI.Dialog.show('<?= __('Really disable two-factor authentication?'); ?>', '<?= __('Do you really want to two-factor authentication? By doing this, only your username and password is required when logging in.'); ?>', {yes: {click: function () { Pachno.Main.Login.disable2Fa('<?= make_url('account_disable_2fa', array('csrf_token' => \pachno\core\framework\Context::getCsrfToken())); ?>') }}, no: {click: Pachno.UI.Dialog.dismiss}});"><?= __('Disable 2FA'); ?></button>
+                        <button class="button secondary" onclick="Pachno.UI.Dialog.show('<?= __('Really disable two-factor authentication?'); ?>', '<?= __('Do you really want to two-factor authentication? By doing this, only your username and password is required when logging in.'); ?>', {yes: {click: function () { Pachno.trigger('template_trigger_disable_2fa', { url: '<?= make_url('account_disable_2fa', array('csrf_token' => \pachno\core\framework\Context::getCsrfToken())); ?>'}) }}, no: {click: Pachno.UI.Dialog.dismiss}});"><?= __('Disable 2FA'); ?></button>
                     </div>
                     <div class="form-row separator"></div>
                     <div class="form-row header">
@@ -385,7 +389,7 @@
                 </div>
                 </div>
             <div id="tab_notificationsettings_pane" data-tab-id="notificationsettings" style="display: none;" class="form-container">
-                <form accept-charset="<?= \pachno\core\framework\Context::getI18n()->getCharset(); ?>" action="<?= make_url('account_save_settings'); ?>" onsubmit="Pachno.Main.Profile.updateNotificationSettings('<?= make_url('account_save_notificationsettings'); ?>'); return false;" method="post" id="profile_notificationsettings_form">
+                <form accept-charset="<?= \pachno\core\framework\Context::getI18n()->getCharset(); ?>" action="<?= make_url('profile_account', ['mode' => 'settings']); ?>" method="post" id="profile_notificationsettings_form" data-simple-submit>
                     <div class="form-row">
                         <h3><?= __('Subscriptions'); ?></h3>
                         <div class="helper-text"><?= __('Pachno can subscribe you to issues, articles and other items in the system, so you can receive notifications when they are updated. Please select when you would like Pachno to subscribe you.'); ?></div>
@@ -558,3 +562,30 @@
         </div>
     </div>
 </div>
+<script type="text/javascript">
+    Pachno.on('template_trigger_disable_2fa', function (PachnoApplication, data) {
+        const url = data.url;
+        Pachno.fetch(url, {method: 'POST'})
+            .then((json) => {
+                if (json.disabled === 'ok') {
+                    $('#account_2fa_enabled').hide();
+                    $('#account_2fa_disabled').show();
+                }
+                Pachno.UI.Dialog.dismiss();
+            })
+            .catch((error) => {
+                console.error(error);
+            });
+    });
+    Pachno.on(Pachno.EVENTS.formSubmitResponse, function (PachnoApplication, data) {
+        switch (data.form) {
+            case 'check_username_form':
+                const json = data.json;
+                if (json.available) {
+                    Pachno.UI.Backdrop.show(json.url);
+                }
+                break;
+        }
+    });
+
+</script>

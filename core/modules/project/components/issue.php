@@ -104,30 +104,6 @@
                     </div>
                 </div>
                 <?php include_component('main/issuemaincustomfields', ['issue' => $issue]); ?>
-                <?php /*
-                        <fieldset class="todos" id="viewissue_todos_container">
-                            <div id="viewissue_todos">
-                                <?php include_component('main/todos', compact('issue')); ?>
-                            </div>
-                            <div id="todo_add" class="todo_add todo_editor" style="<?php if (!(isset($todo_error) && $todo_error)): ?>display: none; <?php endif; ?>margin-top: 5px;">
-                                <div class="backdrop_detail_header">
-                                    <span><?php echo __('Create a todo'); ?></span>
-                                    <?= javascript_link_tag(fa_image_tag('times'), ['onclick' => "$('#todo_add').hide();$('#todo_add_button').show();", 'class' => 'closer']); ?>
-                                </div>
-                                <div class="todo_add_main">
-                                    <form class="viewissue-form" id="todo_form" accept-charset="<?php echo mb_strtoupper(\pachno\core\framework\Context::getI18n()->getCharset()); ?>" action="<?php echo make_url('todo_add', ['project_key' => $issue->getProject()->getKey(), 'issue_no' => $issue->getFormattedIssueNo()]); ?>" method="post" onSubmit="Pachno.Issues.addTodo('<?php echo make_url('todo_add', ['project_key' => $issue->getProject()->getKey(), 'issue_no' => $issue->getFormattedIssueNo()]); ?>');return false;">
-                                        <label for="todo_bodybox"><?php echo __('Todo'); ?></label><br />
-                                        <?php include_component('main/textarea', ['area_name' => 'todo_body', 'target_type' => 'issue', 'target_id' => $issue->getID(), 'area_id' => 'todo_bodybox', 'height' => '250px', 'width' => '100%', 'syntax' => $pachno_user->getPreferredCommentsSyntax(true), 'value' => ((isset($todo_error) && $todo_error) ? $todo_error : '')]); ?>
-                                        <input type="hidden" name="forward_url" value="<?php echo make_url('viewissue', ['project_key' => $issue->getProject()->getKey(), 'issue_no' => $issue->getFormattedIssueNo()], false); ?>">
-                                        <div id="todo_add_controls" class="backdrop_details_submit">
-                                            <span class="explanation"></span>
-                                            <div class="submit_container"><button type="submit" class="button"><?= image_tag('spinning_16.gif', ['id' => 'todo_add_indicator', 'style' => 'display: none;']) . __('Create todo'); ?></button></div>
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
-                        </fieldset>
-                         */ ?>
             </div>
             <?php \pachno\core\framework\Event::createNew('core', 'viewissue::afterMainDetails', $issue)->trigger(); ?>
             <?php /*

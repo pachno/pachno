@@ -1,6 +1,6 @@
 <?php
 
-    namespace pachno\core\modules\main\controllers;
+    namespace pachno\core\modules\auth\controllers;
 
     use Exception;
     use pachno\core\entities;
@@ -11,6 +11,7 @@
 
     /**
      * Login actions
+     * @Routes(name_prefix="auth_")
      */
     class Authentication extends framework\Action
     {
@@ -71,7 +72,7 @@
         public function runElevatedLogin(framework\Request $request)
         {
             if ($this->getUser()->isGuest()) {
-                return $this->forward($this->getRouting()->generate('login_page'));
+                return $this->forward($this->getRouting()->generate('auth_login_page'));
             }
         }
 
@@ -86,10 +87,10 @@
         public function runTwoFactorVerification(framework\Request $request)
         {
             if (!$this->getUser()->isAuthenticated()) {
-                return $this->forward($this->getRouting()->generate('login'));
+                return $this->forward($this->getRouting()->generate('auth_login'));
             }
             if ($this->getUser()->isVerified()) {
-                return $this->forward($this->getRouting()->generate('account'));
+                return $this->forward($this->getRouting()->generate('profile_account'));
             }
 
             $this->session_token = framework\Context::getRequest()->getCookie('session_token');

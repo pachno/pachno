@@ -1,4 +1,4 @@
-<form accept-charset="<?= \pachno\core\framework\Context::getI18n()->getCharset(); ?>" action="<?= make_url('account_save_module_settings', array('target_module' => $module_name)); ?>" onsubmit="Pachno.Main.Profile.updateModuleSettings('<?= make_url('account_save_module_settings', array('target_module' => $module_name)); ?>', '<?= $module_name; ?>'); return false;" method="post" id="profile_<?= $module_name; ?>_form">
+<form accept-charset="<?= \pachno\core\framework\Context::getI18n()->getCharset(); ?>" action="<?= make_url('profile_account', ['mode' => 'module_settings', 'target_module' => $module_name]); ?>" data-simple-submit method="post" id="profile_<?= $module_name; ?>_form">
     <h3><?php echo __('Email notifications'); ?></h3>
     <p><?php echo __('In addition to being notified when logging in, you can choose to also be notified via email for issues or articles you subscribe to. The following settings control when you receive emails.'); ?></p>
     <table class="padded_table" cellpadding=0 cellspacing=0>
@@ -11,5 +11,5 @@
             </tr>
         <?php endforeach; ?>
     </table>
-    <?php include_component('main/myaccountsettingsformsubmit', array('module' => $module)); ?>
+    <?php include_component('profile/myaccountsettingsformsubmit', array('module' => $module)); ?>
 </form>

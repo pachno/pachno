@@ -55,12 +55,3 @@
         <?php endif; ?>
     </div>
 </div>
-<?php if ($build_error): ?>
-    <script type="text/javascript">
-        require(['domReady', 'pachno/index'], function (domReady, Pachno) {
-            domReady(function () {
-                Pachno.UI.Message.error(__('An error occured when adding or updating the release'), $build_error);
-            });
-        });
-    </script>
-<?php endif; ?>

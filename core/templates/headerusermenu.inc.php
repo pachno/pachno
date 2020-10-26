@@ -32,11 +32,11 @@
         <?php endif; ?>
         <li class="with-dropdown dropper-container <?php if ($pachno_request->hasCookie('original_username')): ?>temporarily_switched<?php endif; ?> <?php if ($pachno_routing->getCurrentRoute()->getName() == 'account') echo 'selected'; ?>" id="header_usermenu_link">
             <?php if ($pachno_user->isGuest()): ?>
-                <a href="javascript:void(0);" <?php if (\pachno\core\framework\Context::getRouting()->getCurrentRoute()->getName() != 'login_page'): ?>data-login-section="#regular_login_container" class="trigger-show-login"<?php endif; ?>><?= fa_image_tag('user'); ?><span><?= __('Log in'); ?></span></a>
+                <a href="javascript:void(0);" <?php if (\pachno\core\framework\Context::getRouting()->getCurrentRoute()->getName() != 'auth_login_page'): ?>data-login-section="#regular_login_container" class="trigger-show-login"<?php endif; ?>><?= fa_image_tag('user'); ?><span><?= __('Log in'); ?></span></a>
             <?php else: ?>
                 <a href="javascript:void(0);" class="dropper header-user-info">
                     <span class="header_avatar">
-                        <?php if (\pachno\core\framework\Context::getRouting()->getCurrentRoute()->getName() != 'login_page'): ?>
+                        <?php if (\pachno\core\framework\Context::getRouting()->getCurrentRoute()->getName() != 'auth_login_page'): ?>
                             <?= image_tag($pachno_user->getAvatarURL(true), array('alt' => '[avatar]', 'id' => 'header_avatar'), true); ?>
                         <?php else: ?>
                             <?= image_tag($pachno_user->getAvatarURL(true), array('alt' => '[avatar]', 'id' => 'header_avatar'), true); ?>
@@ -46,10 +46,10 @@
                         <span class="header-user-name-name"><?= $pachno_user->getName(); ?></span>
                         <span class="header-user-name-username">@<?= $pachno_user->getUsername(); ?></span>
                     </span>
-                    <?php if (\pachno\core\framework\Context::getRouting()->getCurrentRoute()->getName() != 'login_page') echo fa_image_tag('angle-down', ['class' => 'dropdown-indicator']); ?>
+                    <?php if (\pachno\core\framework\Context::getRouting()->getCurrentRoute()->getName() != 'auth_login_page') echo fa_image_tag('angle-down', ['class' => 'dropdown-indicator']); ?>
                 </a>
             <?php endif; ?>
-            <?php if (\pachno\core\framework\Context::getRouting()->getCurrentRoute()->getName() != 'login_page'): ?>
+            <?php if (\pachno\core\framework\Context::getRouting()->getCurrentRoute()->getName() != 'auth_login_page'): ?>
                 <?php if (\pachno\core\framework\Event::createNew('core', 'header_usermenu_decider')->trigger()->getReturnValue() !== false): ?>
                     <?php if (!$pachno_user->isGuest()): ?>
                         <div class="dropdown-container popup_box" id="user_menu">
@@ -70,7 +70,7 @@
                                         <span class="name"><?= __('Customize your dashboard'); ?></span>
                                     </a>
                                 <?php endif; ?>
-                                <a href="<?= make_url('account'); ?>" class="list-item">
+                                <a href="<?= make_url('profile_account'); ?>" class="list-item">
                                     <?= fa_image_tag('user-md', ['class' => 'icon']); ?>
                                     <span class="name"><?= __('Your account'); ?></span>
                                 </a>
@@ -100,7 +100,7 @@
                                     <span class="name"><?=  __('Open issues assigned to my teams'); ?></span>
                                 </a>
                                 <div class="list-item separator"></div>
-                                <a href="<?= make_url('logout'); ?>" class="list-item">
+                                <a href="<?= make_url('auth_logout'); ?>" class="list-item">
                                     <?= fa_image_tag('sign-out-alt', ['class' => 'icon']); ?>
                                     <span class="name"><?= __('Logout'); ?></span>
                                 </a>

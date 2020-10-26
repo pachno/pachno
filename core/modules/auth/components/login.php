@@ -2,11 +2,19 @@
     <?php if ($loginintro instanceof \pachno\core\entities\Article): ?>
         <?php include_component('publish/articledisplay', array('article' => $loginintro, 'show_title' => false, 'show_details' => false, 'show_actions' => false, 'embedded' => true)); ?>
     <?php endif; ?>
-    <form accept-charset="<?= \pachno\core\framework\Context::getI18n()->getCharset(); ?>" action="<?= make_url('login'); ?>" method="post" id="login-form" data-simple-submit>
+    <form accept-charset="<?= \pachno\core\framework\Context::getI18n()->getCharset(); ?>" action="<?= make_url('auth_login'); ?>" method="post" id="login-form" data-simple-submit>
         <?php if (!\pachno\core\framework\Context::hasMessage('login_force_redirect') || \pachno\core\framework\Context::getMessage('login_force_redirect') !== true): ?>
             <input type="hidden" id="pachno_referer" name="referer" value="<?= $referer; ?>" />
         <?php else: ?>
             <input type="hidden" id="return_to" name="return_to" value="<?= $referer; ?>" />
+        <?php endif; ?>
+        <?php if (isset($error)): ?>
+            <div class="form-row">
+                <div class="message-box type-error">
+                    <?= fa_image_tag('exclamation-triangle'); ?>
+                    <span class="message"><?php echo $error; ?></span>
+                </div>
+            </div>
         <?php endif; ?>
         <div class="form-row">
             <input type="text" id="pachno_username" name="username">
@@ -39,14 +47,5 @@
         </fieldset>
         <a href="javascript:void(0);" class="button secondary highlight" id="create-account-button" onclick="$('#register').addClass('active');$('#registration-button-container').removeClass('active');$('#regular_login_container').removeClass('active');"><?= __('Create an account'); ?></a>
     </div>
-    <?php include_component('main/loginregister', compact('registrationintro')); ?>
-<?php endif; ?>
-<?php if (isset($error)): ?>
-    <script type="text/javascript">
-        require(['domReady', 'pachno/index'], function (domReady, Pachno) {
-            domReady(function () {
-                Pachno.UI.Message.error('<?= $error; ?>');
-            });
-        });
-    </script>
+    <?php include_component('auth/loginregister', compact('registrationintro')); ?>
 <?php endif; ?>

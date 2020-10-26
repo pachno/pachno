@@ -1,5 +1,5 @@
 <div class="backdrop_box login_page login_popup" id="reset_popup">
-    <form accept-charset="<?= \pachno\core\framework\Context::getI18n()->getCharset(); ?>" action="<?= make_url('reset_password', array('user' => $user->getUsername(), 'reset_hash' => $user->getActivationKey())); ?>" method="post" onsubmit="['reset_button', 'reset_indicator'].each(Element.toggle);">
+    <form accept-charset="<?= \pachno\core\framework\Context::getI18n()->getCharset(); ?>" action="<?= make_url('auth_reset_password', array('user' => $user->getUsername(), 'reset_hash' => $user->getActivationKey())); ?>" method="post" onsubmit="['reset_button', 'reset_indicator'].each(Element.toggle);">
         <div class="backdrop_detail_header">
             <span><?= __('Reset your password'); ?></span>
         </div>

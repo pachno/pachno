@@ -19,4 +19,4 @@
         <td class="config-explanation" colspan="2"><?php echo __('This is required to access private repositories, and features such as Pachno Link.'); ?></td>
     </tr>
 </table>
-<?php include_component('main/myaccountsettingsformsubmit', array('module' => $module)); ?>
+<?php include_component('profile/myaccountsettingsformsubmit', array('module' => $module)); ?>

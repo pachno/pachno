@@ -128,23 +128,25 @@
                 <?php if (!$pachno_user->isGuest()): ?>
                     <div class="dropper-container">
                         <a href="javascript:void(0);" class="button icon secondary dropper" id="interactive_save_button" style="<?php if (!$show_results) echo 'display: none;'; ?>"><span class="expander"><?= fa_image_tag('save'); ?></span></a>
-                        <div class="dropdown-container list-mode from-right">
-                            <div class="header"><?= __('Save or download search results'); ?></div>
-                            <div class="list-item" onclick="$('#saved_search_details').toggle();">
-                                <?= fa_image_tag('bookmark', array('class' => 'icon')); ?>
-                                <span class="name"><?= __('Save search filters'); ?></span>
-                            </div>
-                            <div class="list-item" onclick="Pachno.Search.download('ods');">
-                                <?= fa_image_tag('download', array('class' => 'icon')); ?>
-                                <span class="name"><?= __('Download as OpenDocument spreadsheet (.ods)'); ?></span>
-                            </div>
-                            <div class="list-item" onclick="Pachno.Search.download('xlsx');">
-                                <?= fa_image_tag('file-excel', array('class' => 'icon')); ?>
-                                <span class="name"><?= __('Download as Microsoft Excel spreadsheet (.xlsx)'); ?></span>
-                            </div>
-                            <div class="list-item" onclick="Pachno.Search.download('rss-square');">
-                                <?= fa_image_tag('rss', array('class' => 'icon')); ?>
-                                <span class="name"><?= __('Download as RSS feed'); ?></span>
+                        <div class="dropdown-container from-right">
+                            <div class="list-mode">
+                                <div class="header"><?= __('Save or download search results'); ?></div>
+                                <div class="list-item" onclick="$('#saved_search_details').toggle();">
+                                    <?= fa_image_tag('bookmark', array('class' => 'icon')); ?>
+                                    <span class="name"><?= __('Save search filters'); ?></span>
+                                </div>
+                                <div class="list-item" onclick="Pachno.Search.download('ods');">
+                                    <?= fa_image_tag('download', array('class' => 'icon')); ?>
+                                    <span class="name"><?= __('Download as OpenDocument spreadsheet (.ods)'); ?></span>
+                                </div>
+                                <div class="list-item" onclick="Pachno.Search.download('xlsx');">
+                                    <?= fa_image_tag('file-excel', array('class' => 'icon')); ?>
+                                    <span class="name"><?= __('Download as Microsoft Excel spreadsheet (.xlsx)'); ?></span>
+                                </div>
+                                <div class="list-item" onclick="Pachno.Search.download('rss-square');">
+                                    <?= fa_image_tag('rss', array('class' => 'icon')); ?>
+                                    <span class="name"><?= __('Download as RSS feed'); ?></span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -295,3 +297,13 @@
         </div>
     </div>
 <?php endif; ?>
+<script type="text/javascript">
+    Pachno.on('template_trigger_download_search', function (PachnoApplication, data) {
+        const format = data.format;
+        //     var fif = $('#find_issues_form');
+        //     var parameters = fif.serialize();
+        //     window.location = fif.dataset.historyUrl + '?' + parameters + '&format=' + format;
+    });
+    function (format) {
+    // }
+</script>

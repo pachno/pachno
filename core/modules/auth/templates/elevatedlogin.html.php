@@ -7,7 +7,7 @@
     <div class="backdrop_box login_page login_popup" id="login_popup">
         <div id="backdrop_detail_content" class="backdrop_detail_content rounded_top login_content">
             <div class="logindiv form-container active" id="regular_login_container">
-                <form accept-charset="<?php echo \pachno\core\framework\Context::getI18n()->getCharset(); ?>" action="<?php echo make_url('elevated_login'); ?>" method="post" id="login_form" onsubmit="Pachno.Main.Login.login();return false;">
+                <form accept-charset="<?php echo \pachno\core\framework\Context::getI18n()->getCharset(); ?>" action="<?php echo make_url('auth_elevated_login'); ?>" method="post" id="login_form" onsubmit="Pachno.Main.Login.login();return false;">
                     <div class="form-row">
                         <h3><?php echo __('Authentication required'); ?></h3>
                     </div>
@@ -49,14 +49,12 @@
     </div>
 </div>
 <script type="text/javascript">
-    require(['domReady', 'pachno/index'], function (domReady, Pachno) {
-        domReady(function () {
+    Pachno.on(Pachno.EVENTS.ready, () => {
         <?php if (\pachno\core\framework\Context::hasMessage('elevated_login_message')): ?>
             Pachno.UI.Message.success('<?php echo \pachno\core\framework\Context::getMessageAndClear('elevated_login_message'); ?>');
         <?php elseif (\pachno\core\framework\Context::hasMessage('elevated_login_message_err')): ?>
             Pachno.UI.Message.error('<?php echo \pachno\core\framework\Context::getMessageAndClear('elevated_login_message_err'); ?>');
         <?php endif; ?>
-            $('#pachno_password').focus();
-        });
+        $('#pachno_password').focus();
     });
 </script>

@@ -9,7 +9,7 @@
                     <?php include_component($template, $options); ?>
                 </div>
                 <div class="form-container">
-                    <form id="close_me_<?= $key; ?>_form" action="<?= make_url('hide_infobox', array('key' => $key)); ?>" method="post" accept-charset="<?= \pachno\core\framework\Settings::getCharset(); ?>" data-key="<?= $key;?>" data-simple-submit data-auto-close>
+                    <form id="close_me_<?= $key; ?>_form" action="<?= make_url('hide_infobox', array('key' => $key)); ?>" method="post" accept-charset="<?= \pachno\core\framework\Settings::getCharset(); ?>" data-key="<?= $key;?>" data-simple-submit data-auto-close-container>
                         <div class="form-row submit-container">
                             <span class="explanation">
                                 <input type="checkbox" value="1" class="fancy-checkbox" name="dont_show" id="close_me_<?= $key; ?>"><label for="close_me_<?= $key; ?>"><?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far') . __("Don't show this again"); ?></label>

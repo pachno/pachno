@@ -4,7 +4,6 @@
 
     use Highlight\Highlighter;
     use pachno\core\entities\tables\Users;
-    use pachno\core\entities\traits\TextParserTodo;
     use pachno\core\entities\User;
     use pachno\core\framework;
     use Parsedown;
@@ -17,7 +16,6 @@
      */
     class TextParserMarkdown extends Parsedown implements ContentParser
     {
-        use TextParserTodo;
 
         /**
          * An array of mentioned users

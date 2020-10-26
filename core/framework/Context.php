@@ -1981,16 +1981,16 @@
                 if (self::$_redirect_login == 'login') {
 
                     Logging::log('An error occurred setting up the user object, redirecting to login', 'main', Logging::LEVEL_NOTICE);
-                    if (self::getRouting()->getCurrentRoute()->getName() != 'login') {
+                    if (self::getRouting()->getCurrentRoute()->getName() != 'auth_login') {
                         self::setMessage('login_message_err', self::geti18n()->__('Please log in'));
                         self::setMessage('login_referer', self::getRouting()->generate(self::getRouting()->getCurrentRoute()->getName(), self::getRequest()->getParameters()));
                     }
-                    self::getResponse()->headerRedirect(self::getRouting()->generate('login_page'), 403);
+                    self::getResponse()->headerRedirect(self::getRouting()->generate('auth_login_page'), 403);
                 }
 
-                if (self::$_redirect_login == 'elevated_login') {
+                if (self::$_redirect_login == 'auth_elevated_login') {
                     Logging::log('Elevated permissions required', 'main', Logging::LEVEL_NOTICE);
-                    if (self::getRouting()->getCurrentRoute()->getName() != 'elevated_login') {
+                    if (self::getRouting()->getCurrentRoute()->getName() != 'auth_elevated_login') {
                         self::setMessage('elevated_login_message_err', self::geti18n()->__('Please re-enter your password to continue'));
                     }
 
@@ -2002,7 +2002,7 @@
                 if (self::$_redirect_login == '2fa_login') {
                     Logging::log('2FA verification required', 'main', Logging::LEVEL_NOTICE);
 
-                    self::getResponse()->headerRedirect(self::getRouting()->generate('2fa_code_input'));
+                    self::getResponse()->headerRedirect(self::getRouting()->generate('auth_2fa_code_input'));
 
                     return true;
                 }
@@ -2097,7 +2097,7 @@
             } catch (exceptions\ElevatedLoginException $e) {
                 Logging::log("Could not reauthenticate elevated permissions: " . $e->getMessage(), 'main', Logging::LEVEL_INFO);
                 self::setMessage('elevated_login_message_err', $e->getMessage());
-                self::$_redirect_login = 'elevated_login';
+                self::$_redirect_login = 'auth_elevated_login';
             } catch (Exception $e) {
                 Logging::log("Something happened while setting up user: " . $e->getMessage(), 'main', Logging::LEVEL_WARNING);
 
@@ -2142,7 +2142,7 @@
                     if (!self::getRequest()->hasCookie('original_username')) {
                         self::$_user->updateLastSeen();
                     }
-                    if (!self::getScope()->isDefault() && !self::getRequest()->isAjaxCall() && !in_array(self::getRouting()->getCurrentRoute()->getName(), ['add_scope', 'debugger', 'logout']) && !self::$_user->isGuest() && !self::$_user->isConfirmedMemberOfScope(self::getScope())) {
+                    if (!self::getScope()->isDefault() && !self::getRequest()->isAjaxCall() && !in_array(self::getRouting()->getCurrentRoute()->getName(), ['auth_add_scope', 'debugger', 'auth_logout']) && !self::$_user->isGuest() && !self::$_user->isConfirmedMemberOfScope(self::getScope())) {
                         self::getResponse()->headerRedirect(self::getRouting()->generate('add_scope'));
                     }
                     self::$_user->save();

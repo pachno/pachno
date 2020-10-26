@@ -4,7 +4,7 @@
         if (function_exists('imagecreatetruecolor'))
         {
                 // use of timestamped paramter in the captcha route for preventing image cache
-                echo image_tag(\pachno\core\framework\Context::getRouting()->generate('captcha', array(time())), array(), true, 'core', true);
+                echo image_tag(\pachno\core\framework\Context::getRouting()->generate('auth_captcha', array(time())), array(), true, 'core', true);
         }
         else
         {

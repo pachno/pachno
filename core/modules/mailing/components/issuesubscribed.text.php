@@ -13,4 +13,4 @@
 
 <?php echo __('Depending on your notification settings, you may or may not be notified again when this issue is updated in the future.'); ?>
 
-<?php echo __('To change when and how often we send these emails, update your account settings:') . ' ' . $module->generateURL('account'); ?>
+<?php echo __('To change when and how often we send these emails, update your account settings:') . ' ' . $module->generateURL('profile_account'); ?>

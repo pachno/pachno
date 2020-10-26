@@ -273,6 +273,8 @@ const submitForm = function ($form) {
 
             if ($form.data('auto-close') !== undefined) {
                 UI.Backdrop.reset();
+            } else if ($form.data('auto-close-container') !== undefined) {
+                $form.parents('.fullpage_backdrop').hide();
             }
 
             Pachno.trigger(Pachno.EVENTS.formSubmitResponse, { form: $form.attr('id'), json });
@@ -291,25 +293,6 @@ const submitInteractiveForm = function (event, $form) {
             $form.removeClass('submitting');
         });
 }
-
-const hideInfobox = function (url, boxkey) {
-    if ($('#close_me_' + boxkey).checked) {
-        var $form = $('#close_me_' + boxkey + '_form');
-        $form.addClass('submitting');
-        $form.find('.button.primary').prop('disabled', true);
-
-        fetch(url)
-            .then(function (response) {
-                setTimeout(function () {
-                    $form.removeClass('submitting');
-                    $form.find('.button.primary').prop('disabled', false);
-                }, 300);
-                $('#infobox_' + boxkey).fade({duration: 0.25});
-            });
-    } else {
-        $('#infobox_' + boxkey).fade({duration: 0.3});
-    }
-};
 
 $(document).ready(() => {
     const $body = $('body');

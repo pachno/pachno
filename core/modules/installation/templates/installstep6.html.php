@@ -22,7 +22,7 @@
         <h2>Getting involved</h2>
         If you want to get involved with Pachno, don't hesitate to visit our community website <a target="_new" href="http://pachno.com/community">pachno.com/community</a> to see how you can join our growing community.
     </div>
-    <form accept-charset="utf-8" action="<?php echo make_url('login'); ?>" method="post" id="installation_form" style="display: flex; width: 100%; align-items: center; justify-content: center; flex-direction: row; margin: 30px 0 20px;">
+    <form accept-charset="utf-8" action="<?php echo make_url('auth_login'); ?>" method="post" id="installation_form" style="display: flex; width: 100%; align-items: center; justify-content: center; flex-direction: row; margin: 30px 0 20px;">
         <input type="hidden" name="username" value="administrator">
         <input type="hidden" name="password" value="admin">
         <input type="hidden" name="referer" value="<?php echo make_url('about'); ?>">

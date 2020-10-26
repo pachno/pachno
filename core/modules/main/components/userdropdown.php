@@ -51,7 +51,7 @@
                     </a>
                 <?php endif; ?>
                 <?php if (!$pachno_request->hasCookie('original_username')): ?>
-                    <a class="list-item" href="<?= make_url('switch_to_user', array('user_id' => $user->getID())); ?>">
+                    <a class="list-item" href="<?= make_url('auth_switch_to_user', array('user_id' => $user->getID())); ?>">
                         <?= fa_image_tag('random', ['class' => 'icon']); ?>
                         <span class="name"><?= __('Switch to this user'); ?></span>
                     </a>

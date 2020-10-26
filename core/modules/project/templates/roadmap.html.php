@@ -54,16 +54,3 @@
         </div>
     </div>
 </div>
-
-<?php if ($mode != 'milestone') : ?>
-    <script type="text/javascript">
-        var Pachno;
-
-        require(['domReady', 'pachno/index', 'jquery'], function (domReady, pachno_index_js, jQuery) {
-            domReady(function () {
-                Pachno = pachno_index_js;
-                Pachno.Project.Milestone.selectFromHash();
-            });
-        });
-    </script>
-<?php endif; ?>

@@ -9,7 +9,7 @@
     <div style="margin-top: 25px;">
         <form action="<?php echo make_url('add_scope'); ?>" method="post">
             <input type="submit" style="font-size: 1.1em !important; padding: 2px 10px !important;" class="button button-green" value="<?php echo __('Yes, link my account'); ?>">&nbsp;&nbsp;
-            <a style="font-size: 1.1em !important; padding: 4px 10px !important;" class="button" href="<?php echo make_url('logout'); ?>"><?php echo __("No, that's not what I want"); ?></a>
+            <a style="font-size: 1.1em !important; padding: 4px 10px !important;" class="button" href="<?php echo make_url('auth_logout'); ?>"><?php echo __("No, that's not what I want"); ?></a>
         </form>
         <p class="faded_out"><?php echo __('You can cancel this membership at any time from your account page'); ?></p>
     </div>

@@ -102,28 +102,6 @@
                 });
                 window.currentSearch = search;
             });
-
-            //var Pachno;
-            //require(['domReady', 'pachno/index'], function (domReady, pachno_index_js) {
-            //    domReady(function () {
-            //        Pachno = pachno_index_js;
-            //        Pachno.Search.initializeFilters();
-            //        <?php //if ($pachno_user->isKeyboardNavigationEnabled()): ?>
-            //            Pachno.Search.initializeKeyboardNavigation();
-            //        <?php //endif; ?>
-            <!--        --><?php //if ($show_results): ?>
-            //            setTimeout(function() { Pachno.Search.liveUpdate(true); }, 250);
-            //        <?php //else: ?>
-            //            Pachno.Search.updateSavedSearchCounts();
-            //        <?php //endif; ?>
-            //
-            //        var hash = window.location.hash;
-            //
-            //        if (hash != undefined && hash.indexOf('edit_modal') == 1) {
-            //            $('#saved_search_details').toggle('block');
-            //        }
-            //    });
-            //});
         </script>
     </div>
 </div>

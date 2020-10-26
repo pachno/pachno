@@ -52,7 +52,7 @@
 
                 if ($userSession instanceof UserSession) {
                     $user->setAuthenticated(true);
-                    $must_verify_2fa = !in_array(Context::getRouting()->getCurrentRoute()->getName(), ['logout', '2fa_verify_code', 'user_verify_2fa']);
+                    $must_verify_2fa = !in_array(Context::getRouting()->getCurrentRoute()->getName(), ['auth_logout', 'auth_2fa_verify_code', 'auth_user_verify_2fa']);
 
                     if ($user->is2FaEnabled() && !$userSession->is2FaVerified() && !Context::getRouting()->getCurrentRoute()->isAnonymous()) {
                         if ($must_verify_2fa) {
