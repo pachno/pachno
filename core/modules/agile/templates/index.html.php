@@ -1,18 +1,24 @@
 <?php
 
-    $pachno_response->addBreadcrumb(__('Planning'), make_url('agile_index', array('project_key' => $selected_project->getKey())));
     $pachno_response->setTitle(__('"%project_name" project planning', array('%project_name' => $selected_project->getName())));
 
 ?>
 <div class="content-with-sidebar">
     <?php include_component('project/sidebar'); ?>
     <div class="project-boards-list-container boards-container">
-        <h3>
-            <span class="name"><?php echo __('Project boards'); ?></span>
+        <div id="roadmap-header" class="top-search-filters-container">
+            <div class="header">
+                <div class="name-container">
+                    <span class="board-name"><?= __('Project boards'); ?></span>
+                </div>
+                <div class="stripe-container">
+                    <div class="stripe"></div>
+                </div>
             <?php if (!$pachno_user->isGuest()): ?>
                 <button class="button primary" onclick="Pachno.UI.Backdrop.show('<?php echo make_url('get_partial_for_backdrop', array('key' => 'agileboard', 'project_id' => $selected_project->getID(), 'is_private' => 0)); ?>');"><?= fa_image_tag('plus-square'); ?><span><?= __('Create board'); ?></span></button>
             <?php endif; ?>
-        </h3>
+            </div>
+        </div>
         <div id="agileboards" class="project-boards-list">
             <?php foreach ($project_boards as $board): ?>
                 <?php include_component('agile/boardbox', compact('board')); ?>

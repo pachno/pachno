@@ -14,36 +14,14 @@
           data-dynamic-callback-url="<?= make_url('search_filter_getdynamicchoices'); ?>"
           onsubmit="Pachno.Search.liveUpdate(true);return false;">
         <div class="search-and-filters-strip">
-            <div class="search-strip">
-                <?php include_component('search/interactivefilter', array('filter' => $search_object->getFilter('project_id'))); ?>
-                <input type="hidden" name="sortfields" value="<?= $search_object->getSortFieldsAsString(); ?>" id="search_sortfields_input">
-                <input type="hidden" name="fs[text][o]" value="=">
-                <input type="search" name="fs[text][v]" id="interactive_filter_text" value="<?= htmlentities($search_object->getSearchTerm(), ENT_QUOTES, \pachno\core\framework\Context::getI18n()->getCharset()); ?>" class="filter_searchfield" placeholder="<?= __('Enter a search term here'); ?>">
-                <div class="dropper-container">
-                    <a href="javascript:void(0);" class="button icon secondary dropper" id="interactive_grouping_button"><?= fa_image_tag('th-list'); ?></a>
-                    <div class="dropdown-container" id="search_columns_container" data-url="<?= make_url('search_save_column_settings'); ?>">
-                        <div id="search_column_settings_container" class="list-mode">
-                            <div class="header"><?= __('Select columns to show'); ?></div>
-                            <div class="list-item filter-container">
-                                <input type="search" placeholder="<?= __('Filter values'); ?>">
-                            </div>
-                            <div class="interactive_menu_values">
-                                <?php foreach ($columns as $c_key => $c_name): ?>
-                                    <input id="search_column_<?= $c_key; ?>_toggler_checkbox" type="checkbox" value="<?= $c_key; ?>" name="columns[<?= $c_key; ?>]" class="fancy-checkbox search_column_toggler">
-                                    <label for="search_column_<?= $c_key; ?>_toggler_checkbox" data-value="<?= $c_key; ?>" class="list-item search_column filtervalue scs_<?= $c_key; ?>">
-                                        <?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far'); ?>
-                                        <span class="name value"><?= $c_name; ?></span>
-                                    </label>
-                                <?php endforeach; ?>
-                            </div>
-                            <?php if (!$pachno_user->isGuest()): ?>
-                                <div class="button-group">
-                                    <?= fa_image_tag('spinner', ['id' => 'search_column_settings_indicator', 'class' => 'fa-spin', 'style' => 'display: none;']); ?>
-                                    <?= javascript_link_tag(__('Reset columns'), ['onclick' => 'Pachno.Search.resetColumns();return false;', 'class' => 'button secondary']); ?>
-                                </div>
-                            <?php endif; ?>
-                        </div>
-                    </div>
+            <div class="header">
+                <div class="name-container">
+                    <span class="board-name" id="findissues_search_title" style="<?php if (!$searchtitle) echo 'display: none'; ?>"><?php echo $searchtitle; ?></span>
+                    <span class="board-name" id="findissues_search_generictitle" style="<?php if ($searchtitle) echo 'display: none'; ?>"><?php echo __("Find issues"); ?></span>
+                    <span id="findissues_num_results" class="project-name" style="<?php if (!$show_results) echo 'display: none;'; ?>"><?php echo __('%number_of issue(s)', array('%number_of' => '<span id="findissues_num_results_span">-</span>')); ?></span>
+                </div>
+                <div class="stripe-container">
+                    <div class="stripe"></div>
                 </div>
                 <div class="dropper-container">
                     <a href="javascript:void(0);" class="button icon secondary dropper" id="interactive_template_button"><?= fa_image_tag('layer-group'); ?></a>
@@ -125,9 +103,35 @@
                         </div>
                     </div>
                 </div>
+                <div class="dropper-container">
+                    <a href="javascript:void(0);" class="button icon secondary dropper" id="interactive_grouping_button"><?= fa_image_tag('th-list'); ?></a>
+                    <div class="dropdown-container" id="search_columns_container" data-url="<?= make_url('search_save_column_settings'); ?>">
+                        <div id="search_column_settings_container" class="list-mode">
+                            <div class="header"><?= __('Select columns to show'); ?></div>
+                            <div class="list-item filter-container">
+                                <input type="search" placeholder="<?= __('Filter values'); ?>">
+                            </div>
+                            <div class="interactive_menu_values">
+                                <?php foreach ($columns as $c_key => $c_name): ?>
+                                    <input id="search_column_<?= $c_key; ?>_toggler_checkbox" type="checkbox" value="<?= $c_key; ?>" name="columns[<?= $c_key; ?>]" class="fancy-checkbox search_column_toggler">
+                                    <label for="search_column_<?= $c_key; ?>_toggler_checkbox" data-value="<?= $c_key; ?>" class="list-item search_column filtervalue scs_<?= $c_key; ?>">
+                                        <?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far'); ?>
+                                        <span class="name value"><?= $c_name; ?></span>
+                                    </label>
+                                <?php endforeach; ?>
+                            </div>
+                            <?php if (!$pachno_user->isGuest()): ?>
+                                <div class="button-group">
+                                    <?= fa_image_tag('spinner', ['id' => 'search_column_settings_indicator', 'class' => 'fa-spin', 'style' => 'display: none;']); ?>
+                                    <?= javascript_link_tag(__('Reset columns'), ['onclick' => 'Pachno.Search.resetColumns();return false;', 'class' => 'button secondary']); ?>
+                                </div>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                </div>
                 <?php if (!$pachno_user->isGuest()): ?>
-                    <div class="dropper-container">
-                        <a href="javascript:void(0);" class="button icon secondary dropper" id="interactive_save_button" style="<?php if (!$show_results) echo 'display: none;'; ?>"><span class="expander"><?= fa_image_tag('save'); ?></span></a>
+                    <div class="dropper-container" id="interactive_save_button" style="<?php if (!$show_results) echo 'display: none;'; ?>">
+                        <a href="javascript:void(0);" class="button icon secondary dropper"><span class="expander"><?= fa_image_tag('save'); ?></span></a>
                         <div class="dropdown-container from-right">
                             <div class="list-mode">
                                 <div class="header"><?= __('Save or download search results'); ?></div>
@@ -156,6 +160,12 @@
                         <?= fa_image_tag('save', ['class' => 'icon']); ?>
                     </button>
                 <?php endif; ?>
+            </div>
+            <div class="search-strip">
+                <?php include_component('search/interactivefilter', array('filter' => $search_object->getFilter('project_id'))); ?>
+                <input type="hidden" name="sortfields" value="<?= $search_object->getSortFieldsAsString(); ?>" id="search_sortfields_input">
+                <input type="hidden" name="fs[text][o]" value="=">
+                <input type="search" name="fs[text][v]" id="interactive_filter_text" value="<?= htmlentities($search_object->getSearchTerm(), ENT_QUOTES, \pachno\core\framework\Context::getI18n()->getCharset()); ?>" class="filter_searchfield" placeholder="<?= __('Enter a search term here'); ?>">
             </div>
             <div class="filters-strip">
                 <div id="search-filters" class="filters">
@@ -300,10 +310,8 @@
 <script type="text/javascript">
     Pachno.on('template_trigger_download_search', function (PachnoApplication, data) {
         const format = data.format;
-        //     var fif = $('#find_issues_form');
-        //     var parameters = fif.serialize();
-        //     window.location = fif.dataset.historyUrl + '?' + parameters + '&format=' + format;
+        const $find_issu = $('#find_issues_form');
+        var parameters = fif.serialize();
+        window.location = fif.dataset.historyUrl + '?' + parameters + '&format=' + format;
     });
-    function (format) {
-    // }
 </script>

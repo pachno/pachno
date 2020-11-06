@@ -5,7 +5,6 @@
      * @var \pachno\core\entities\Project $selected_project
      */
 
-    $pachno_response->addBreadcrumb(__('Project settings'), make_url('project_settings', array('project_key' => $selected_project->getKey())));
     $pachno_response->setTitle(__('"%project_name" settings', array('%project_name' => $selected_project->getName())));
     $selected_tab = ($selected_tab) ?? 'info';
 

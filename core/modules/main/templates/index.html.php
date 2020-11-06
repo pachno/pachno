@@ -1,7 +1,6 @@
 <?php 
 
     $pachno_response->setTitle(__('Frontpage'));
-    $pachno_response->addBreadcrumb(__('Frontpage'), make_url('home'));
 
 /**
  * @var \pachno\core\entities\User $pachno_user

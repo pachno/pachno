@@ -1,0 +1,135 @@
+@import 'variables';
+#project_planning {
+  display: flex;
+  flex-direction: column;
+}
+
+#project_roadmap {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+
+  .indicator {
+    display: none;
+  }
+
+  &.loading {
+    .indicator {
+      display: block;
+    }
+  }
+}
+
+.milestone-cards-container {
+  display: flex;
+  flex-direction: row;
+  overflow: auto;
+  box-sizing: border-box;
+  min-width: 100%;
+  flex: 1 1 100%;
+  height: 100%;
+}
+
+.milestone-container {
+  flex: 0 0 300px;
+  display: flex;
+  flex-direction: row;
+  justify-content: stretch;
+  align-content: stretch;
+  align-items: flex-start;
+  padding: 1em .5em;
+
+  .milestone-card {
+    flex: 1 1 auto;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    padding: .5em 0;
+    margin: 0;
+    opacity: 1;
+    z-index: 1;
+    background: #FFF;
+    border: none;
+    box-shadow: rgba(9, 30, 66, 0.25) 0 1px 1px, rgba(9, 30, 66, 0.31) 0 0 1px;
+    border-radius: 3px;
+    transform: translateY(0);
+    color: #141823;
+    transition: box-shadow .25s ease-in-out;
+
+    .header {
+      display: flex;
+      flex-direction: column;
+
+      .name {
+        font-size: 1.3em;
+        font-weight: $theme-font-weight-bold;
+        padding: .5em;
+        line-height: 1em;
+      }
+
+      .info {
+        padding: .5em;
+        font-weight: $theme-font-weight-bold;
+        border-bottom: 1px solid rgba(100, 100, 100, 0.2);
+        color: $theme-text-color-lightest;
+        display: flex;
+        flex-direction: row;
+
+        > span {
+          flex: 0 0 auto;
+
+          &:last-child {
+            margin-left: auto;
+          }
+        }
+      }
+    }
+  }
+}
+
+.milestone_virtual_status {
+  .statusblocks {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  .statusblock {
+    display: block;
+    float: left;
+    clear: none;
+    height: 27px;
+    opacity: 0.2;
+    transition: opacity 0.3s ease;
+    margin-top: 0;
+    margin-left: 0;
+
+    &:hover {
+      opacity: 0.35;
+    }
+  }
+
+  .milestonename {
+    position: absolute;
+    width: 100%;
+    left: 6px;
+    top: 7px;
+    font-size: 0.9em;
+    line-height: 1em;
+    padding: 0;
+  }
+
+  .milestone_percentage {
+    width: 100%;
+    position: absolute;
+    bottom: -5px;
+    left: 0;
+  }
+
+  .tooltip {
+    font-size: 0.9em;
+    opacity: 1;
+  }
+}
+
+

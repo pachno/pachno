@@ -1,5 +1,5 @@
-<div class="fancy-dropdown-container filter" data-filterkey="<?php echo $filter->getFilterKey(); ?>" data-value="<?php echo $filter->getValue(); ?>" data-all-value="<?php echo __('All'); ?>">
-    <div class="fancy-dropdown">
+<div class="fancy-dropdown-container filter" data-filterkey="<?php echo $filter->getFilterKey(); ?>">
+    <div class="fancy-dropdown" data-default-label="<?php echo __('All'); ?>">
         <input type="hidden" name="fs[<?php echo $filter->getFilterKey(); ?>][o]" value="<?php echo $filter->getOperator(); ?>">
         <label><?php
 

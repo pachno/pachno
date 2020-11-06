@@ -1,16 +1,12 @@
 <?php
 
-    $pachno_response->addBreadcrumb(__('Teams'), null, pachno_get_breadcrumblinks('team_list'));
     if ($team instanceof \pachno\core\entities\Team)
     {
         $pachno_response->setTitle(__('Team dashboard for %team_name', array('%team_name' => $team->getName())));
-        $pachno_response->setPage('team');
-        $pachno_response->addBreadcrumb(__($team->getName()), make_url('team_dashboard', array('team_id' => $team->getID())));
     }
     else
     {
         $pachno_response->setTitle(__('Team dashboard'));
-        $pachno_response->addBreadcrumb(__('Team dashboard'));
     }
 
 ?>

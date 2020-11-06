@@ -1,6 +1,5 @@
 <?php
 
-    include_component('publish/wikibreadcrumbs');
     $pachno_response->setTitle($article_name);
 
 ?>

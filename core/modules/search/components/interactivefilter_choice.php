@@ -24,8 +24,8 @@
             break;
     }
 ?>
-<div class="fancy-dropdown-container filter" id="interactive_filter_<?php echo $filter->getFilterKey(); ?>" data-filterkey="<?php echo $filter->getFilterKey(); ?>" data-value="<?php echo $filter->getValue(); ?>" data-all-value="<?php echo __('Any'); ?>">
-    <div class="fancy-dropdown">
+<div class="fancy-dropdown-container filter" id="interactive_filter_<?php echo $filter->getFilterKey(); ?>" data-filterkey="<?php echo $filter->getFilterKey(); ?>">
+    <div class="fancy-dropdown" data-default-label="<?php echo __('Any'); ?>">
         <input type="hidden" name="fs[<?php echo $key; ?>][o]" value="<?php echo $filter->getOperator(); ?>">
         <input type="hidden" name="fs[<?php echo $key; ?>][v]" value="" id="filter_<?php echo $key; ?>_value_input">
         <label><?php echo $title; ?></label>

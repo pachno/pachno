@@ -323,8 +323,8 @@
     .dashboard.layout_standard ul.dashboard_column { width: 100%; }
 
     #find_issues { padding: 0; }
-    #find_issues .results_header { padding: 6px; }
-    #find_issues .results_header .button { display: none; }
+    #find_issues .results-header { padding: 6px; }
+    #find_issues .results-header .button { display: none; }
     .search-results h5 { font-size: 1em; text-transform: uppercase; color: rgba(48, 48, 48, 0.7); padding: 6px; }
     .search-results h5 img { width: 16px; height: 16px; float: left; margin: 3px 5px -5px; }
     #find_issues .bulk-action-container { display: none; }
@@ -485,12 +485,6 @@
     }
     .project_information_sidebar {
         display: none;
-    }
-    .project_stuff li.breadcrumb {
-        padding: 3px 0;
-    }
-    .project_stuff li.breadcrumb:first-child {
-        padding-left: 7px;
     }
 
     #searchbuilder_filterstrip .filter {

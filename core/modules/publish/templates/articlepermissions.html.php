@@ -1,6 +1,5 @@
 <?php
 
-    include_component('publish/wikibreadcrumbs', array('article_name' => $article_name));
     $pachno_response->setTitle(__('%article_name permissions', array('%article_name' => $article_name)));
 
 ?>

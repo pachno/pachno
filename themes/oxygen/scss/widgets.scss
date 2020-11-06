@@ -38,4 +38,8 @@
   }
 }
 
+.rotate-90 {
+  transform: rotate(-90deg);
+}
+
 @import '~air-datepicker/dist/css/datepicker.min.css';

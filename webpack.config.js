@@ -92,5 +92,3 @@ module.exports = {
         })
     ]
 };
-
-// const jQueryPath = 'jquery/dist/jquery.js';

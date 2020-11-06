@@ -191,44 +191,4 @@
             $this->addIndex('type_target_deleted_system', [self::TARGET_TYPE, self::TARGET_ID, self::DELETED, self::SYSTEM_COMMENT]);
         }
 
-        protected function migrateData(Table $old_table)
-        {
-            switch ($old_table::B2DB_TABLE_VERSION) {
-                case 3:
-                    $ids = [];
-                    $query = $this->getQuery();
-                    $query->addSelectionColumn(self::ID, 'id');
-                    $res = $this->rawSelect($query);
-                    if ($res) {
-                        while ($row = $res->getNextRow()) {
-                            $ids[$row['id']] = $row['id'];
-                        }
-                    }
-
-                    $log_table = LogItems::getTable();
-                    $ids_count = count($ids);
-                    if ($ids_count > 0) {
-                        $step = ceil($ids_count / 100);
-                        $cc = 0;
-                        $pct = 0;
-                        foreach ($ids as $id) {
-                            $log_query = $log_table->getQuery();
-                            $log_query->where(LogItems::COMMENT_ID, $id);
-                            if ($log_table->count($log_query)) {
-                                $update = new Update();
-                                $update->add(self::HAS_ASSOCIATED_CHANGES, true);
-                                $this->rawUpdateById($update, $id);
-                            }
-                            $cc++;
-
-                            if (defined('bin/pachno') && $step > 10 && $cc % $step == 0) {
-                                $pct += 1;
-                                framework\cli\Command::cli_echo("{$cc} / {$ids_count} ({$pct}%)\n");
-                            }
-                        }
-                    }
-                    break;
-            }
-        }
-
     }

@@ -2,7 +2,6 @@
 
     use pachno\core\entities\Dashboard;
 
-    $pachno_response->addBreadcrumb(__('Dashboard'), make_url('project_dashboard', array('project_key' => $selected_project->getKey())));
     $pachno_response->setTitle(__('"%project_name" project dashboard', array('%project_name' => $selected_project->getName())));
     $pachno_response->addFeed(make_url('project_timeline', array('project_key' => $selected_project->getKey(), 'format' => 'rss')), __('"%project_name" project timeline', array('%project_name' => $selected_project->getName())));
 ?>

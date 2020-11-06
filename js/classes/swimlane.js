@@ -3,6 +3,9 @@ import {SwimlaneTypes} from "./board";
 
 class Swimlane {
     constructor(json, board_id) {
+        /**
+         * @type {Issue[]}
+         */
         this.issues = [];
         this.name = json.name;
         this.board_id = board_id;

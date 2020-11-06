@@ -534,7 +534,6 @@
             $line_regexes['tablerowcontent'] = '\|{1,2}\s?(.*?)';
             $line_regexes['headers'] = '(={1,6})(.*?)(={1,6})';
             $line_regexes['horizontalrule'] = '----';
-            $line_regexes['todo'] = $this->todo_regex;
 
             $char_regexes = [];
             $char_regexes[] = ['/(\'{2,5})/i', [$this, '_parse_emphasize']];

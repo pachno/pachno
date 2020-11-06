@@ -14,6 +14,8 @@
     /**
      * actions for the project module
      *
+     * @Routes(name_prefix="project_", url_prefix="/:project_key")
+     *
      * @property entities\Client $selected_client
      */
     class Main extends helpers\ProjectActions
@@ -65,17 +67,53 @@
 
         /**
          * The project roadmap page
+         * @Route(name="roadmap", url="/roadmap/*")
          *
          * @param framework\Request $request
          */
         public function runRoadmap(framework\Request $request)
         {
-            $this->mode = $request->getParameter('mode', 'upcoming');
-            if ($this->mode == 'milestone' && $request['milestone_id']) {
-                $this->selected_milestone = Milestones::getTable()->selectById((int)$request['milestone_id']);
-            }
             $this->forward403unless($this->_checkProjectPageAccess('project_roadmap'));
-            $this->milestones = $this->selected_project->getMilestonesForRoadmap();
+        }
+
+        /**
+         * @Route(name="milestone", url="/milestones/:milestone_id")
+         * @param framework\Request $request
+         */
+        public function runGetMilestone(framework\Request $request)
+        {
+            $milestone = Milestones::getTable()->selectById($request['milestone_id']);
+            return $this->renderJSON(['milestone' => $milestone->toJSON(true)]);
+        }
+
+        /**
+         * @Route(name="milestones", url="/milestones")
+         * @param framework\Request $request
+         */
+        public function runGetMilestones(framework\Request $request)
+        {
+            $json = ['milestones' => []];
+            try {
+                foreach ($this->selected_project->getMilestones() as $milestone) {
+                    if (!$request['milestone_type'] || $request['milestone_type'] == 'all') {
+                        $json['milestones'][] = $milestone->toJSON(false);
+                        continue;
+                    }
+
+                    if ($request['milestone_type'] == 'sprint' && $milestone->isSprint()) {
+                        $json['milestones'][] = $milestone->toJSON(false);
+                    }
+
+                    if ($request['milestone_type'] == 'regular' && !$milestone->isSprint()) {
+                        $json['milestones'][] = $milestone->toJSON(false);
+                    }
+                }
+            } catch (\Exception $e) {
+                $this->getResponse()->setHttpStatus(400);
+                return $this->renderJSON(['error' => $e->getMessage()]);
+            }
+
+            return $this->renderJSON($json);
         }
 
         /**
@@ -103,7 +141,7 @@
         /**
          * Sorting milestones
          *
-         * @Route(url="/:project_key/milestones/sort/:csrf_token", name="project_sort_milestones")
+         * @Route(url="/milestones/sort/:csrf_token", name="sort_milestones")
          * @CsrfProtected
          *
          * @param framework\Request $request
@@ -132,22 +170,6 @@
             }
 
             return $this->renderJSON(['sorted' => 'ok']);
-        }
-
-        /**
-         * The project scrum page
-         *
-         * @param framework\Request $request
-         */
-        public function runMilestoneDetails(framework\Request $request)
-        {
-            $this->forward403unless($this->_checkProjectPageAccess('project_scrum'));
-            $milestone = null;
-            if ($m_id = $request['milestone_id']) {
-                $milestone = Milestones::getTable()->selectById((int)$m_id);
-            }
-
-            return $this->renderComponent('project/milestonedetails', compact('milestone'));
         }
 
         /**

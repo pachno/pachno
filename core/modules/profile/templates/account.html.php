@@ -8,7 +8,6 @@
      */
 
     $pachno_response->setTitle(__('Your account details'));
-    $pachno_response->addBreadcrumb(__('Account details'), make_url('profile_account'));
 
 ?>
 <?php if ($pachno_user->canChangePassword()): ?>

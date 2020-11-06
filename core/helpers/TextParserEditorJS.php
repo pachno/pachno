@@ -35,9 +35,9 @@
         public function __construct($content, $options)
         {
             $configuration_file = PACHNO_CONFIGURATION_PATH . 'editorjs.config.json';
-//            framework\Context::getDebugger()->watch('content', $content);
             if (empty($content)) {
-                $content = json_encode([]);
+                $fixtures_path = PACHNO_CORE_PATH . 'modules' . DS . 'publish' . DS . 'fixtures' . DS;
+                $content = file_get_contents($fixtures_path . 'empty.json');
             }
             $parser = new EditorJS($content, file_get_contents($configuration_file));
             $this->parser = $parser;

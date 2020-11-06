@@ -4,7 +4,6 @@
     use pachno\core\entities\AgileBoard;
     use pachno\core\entities\Milestone;
 
-    $pachno_response->addBreadcrumb(__('Planning'), make_url('agile_whiteboard', array('project_key' => $selected_project->getKey(), 'board_id' => $board->getId())));
     $pachno_response->setTitle(__('"%project_name" agile whiteboard', array('%project_name' => $selected_project->getName())));
 
 ?>

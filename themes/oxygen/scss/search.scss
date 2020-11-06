@@ -7,23 +7,7 @@
   width: 100%;
   flex-direction: column;
 
-  .fancy-dropdown-container {
-    .fancy-dropdown {
-      &:not(.shaded) {
-        background: rgb(255, 255, 255);
-        border-color: rgba(200, 200, 200, .3);
-        &:hover {
-          border-color: #0C8990;
-          cursor: pointer;
-        }
-        &.active {
-          border-color: #0C8990;
-        }
-      }
-    }
-  }
-
-  .results_header {
+  .results-header {
     font-weight: $theme-font-weight-bold;
     font-size: 1.4em;
     padding: 10px;
@@ -98,6 +82,7 @@
   width: 100%;
   flex-direction: row;
   flex-wrap: wrap;
+  box-sizing: border-box;
 
   form {
     display: flex;
@@ -106,11 +91,57 @@
     flex-wrap: wrap;
   }
 
-  > .header {
+  > .header,
+  .search-and-filters-strip > .header {
     flex: 0 0 auto;
     width: 100%;
-    padding: 0 0 .5rem 0;
+    padding: 0 1em;
+    box-sizing: border-box;
     text-align: center;
+    align-items: center;
+    display: flex;
+
+    .name-container {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: center;
+      flex: 0 0 auto;
+      padding: 1em 0;
+
+      .project-name {
+        font-size: 1em;
+        color: $theme-text-color;
+        font-weight: $theme-font-weight-regular;
+      }
+
+      .board-name {
+        font-size: 1.5em;
+        color: $theme-primary;
+        font-weight: $theme-font-weight-bold;
+      }
+    }
+
+    .stripe-container {
+      flex: 1 1 auto;
+      padding: 0 2.5em;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      .stripe {
+        height: .3em;
+        border-radius: .3em;
+        background-color: $theme-primary;
+        flex: 1 1 100%;
+      }
+    }
+
+    .fancy-tabs {
+      width: auto;
+      flex: 0 0 auto;
+      //margin-left: auto;
+    }
   }
 
   .search-and-filters-strip {
@@ -124,6 +155,22 @@
     width: 100%;
     box-sizing: border-box;
     flex-wrap: nowrap;
+
+    .fancy-dropdown-container {
+      .fancy-dropdown {
+        &:not(.shaded) {
+          background: rgb(255, 255, 255);
+          border: 1px solid rgba(200, 200, 200, .3);
+          &:hover {
+            border-color: #0C8990;
+            cursor: pointer;
+          }
+          &.active {
+            border-color: #0C8990;
+          }
+        }
+      }
+    }
 
     .search-strip {
       flex: 0 0 auto;
@@ -156,7 +203,8 @@
         }
       }
 
-      button.settings {
+      button.settings,
+      button.primary {
         margin-left: auto;
       }
     }

@@ -45,13 +45,6 @@
         protected $_page;
 
         /**
-         * Breadcrumb trail for the current page
-         *
-         * @var array
-         */
-        protected $_breadcrumb;
-
-        /**
          * Current page title
          *
          * @var string
@@ -300,34 +293,6 @@
         }
 
         /**
-         * Set the breadcrumb trail for the current page
-         *
-         * @param array $breadcrumb
-         */
-        public function setBreadcrumb($breadcrumb)
-        {
-            $this->_breadcrumb = $breadcrumb;
-        }
-
-        /**
-         * Add to the breadcrumb trail for the current page
-         *
-         * @param string $breadcrumb
-         * @param string $url [optional] The menu item's url if any
-         * @param array $subitems [optional] An array of submenu items to add
-         * @param string $class [optional] An optional class
-         */
-        public function addBreadcrumb($breadcrumb, $url = null, $subitems = null, $class = null)
-        {
-            if ($this->_breadcrumb === null) {
-                $this->_breadcrumb = [];
-                Context::populateBreadcrumbs();
-            }
-
-            $this->_breadcrumb[] = ['title' => $breadcrumb, 'url' => $url, 'subitems' => $subitems, 'class' => $class];
-        }
-
-        /**
          * Get the current title
          *
          * @return string
@@ -405,21 +370,6 @@
         public function setPage($page)
         {
             $this->_page = $page;
-        }
-
-        /**
-         * Return the breadcrumb trail for the current page
-         *
-         * @return array
-         */
-        public function getBreadcrumbs()
-        {
-            if (!is_array($this->_breadcrumb)) {
-                $this->_breadcrumb = [];
-                Context::populateBreadcrumbs();
-            }
-
-            return $this->_breadcrumb;
         }
 
         /**
@@ -725,80 +675,6 @@
         public function getFeeds()
         {
             return $this->_feeds;
-        }
-
-        public function getPredefinedBreadcrumbLinks($type, $project = null)
-        {
-            $i18n = Context::getI18n();
-            $links = [];
-            switch ($type) {
-                case 'main_links':
-                    $links[] = ['url' => Context::getRouting()->generate('home'), 'title' => $i18n->__('Frontpage')];
-                    $links[] = ['url' => Context::getRouting()->generate('dashboard'), 'title' => $i18n->__('Personal dashboard')];
-                    $links[] = ['title' => $i18n->__('Issues')];
-                    $links[] = ['title' => $i18n->__('Teams')];
-                    $links[] = ['title' => $i18n->__('Clients')];
-                    $links = Event::createNew('core', 'breadcrumb_main_links', null, [], $links)->trigger()->getReturnList();
-
-                    if (Context::getUser()->canAccessConfigurationPage()) {
-                        $links[] = ['url' => make_url('configure'), 'title' => $i18n->__('Configure %sitename', ['%sitename' => Settings::getSiteHeaderName()])];
-                    }
-                    $links[] = ['url' => Context::getRouting()->generate('about'), 'title' => $i18n->__('About %sitename', ['%sitename' => Settings::getSiteHeaderName()])];
-                    $links[] = ['url' => Context::getRouting()->generate('profile_account'), 'title' => $i18n->__('Account details')];
-
-                    $root_projects = array_merge(Project::getAllRootProjects(true), Project::getAllRootProjects(false));
-                    $first = true;
-                    foreach ($root_projects as $project) {
-                        if (!$project->hasAccess())
-                            continue;
-                        if ($first) {
-                            $first = false;
-                            $links[] = ['separator' => true];
-                        }
-                        $links[] = ['url' => Context::getRouting()->generate('project_dashboard', ['project_key' => $project->getKey()]), 'title' => $project->getName()];
-                    }
-
-                    break;
-                case 'project_summary':
-                    $links['project_dashboard'] = ['url' => Context::getRouting()->generate('project_dashboard', ['project_key' => $project->getKey()]), 'title' => $i18n->__('Dashboard')];
-                    $links['project_releases'] = ['url' => Context::getRouting()->generate('project_releases', ['project_key' => $project->getKey()]), 'title' => $i18n->__('Releases')];
-                    $links['project_roadmap'] = ['url' => Context::getRouting()->generate('project_roadmap', ['project_key' => $project->getKey()]), 'title' => $i18n->__('Roadmap')];
-                    $links['project_team'] = ['url' => Context::getRouting()->generate('project_team', ['project_key' => $project->getKey()]), 'title' => $i18n->__('Team overview')];
-                    $links['project_statistics'] = ['url' => Context::getRouting()->generate('project_statistics', ['project_key' => $project->getKey()]), 'title' => $i18n->__('Statistics')];
-                    $links['project_timeline'] = ['url' => Context::getRouting()->generate('project_timeline', ['project_key' => $project->getKey()]), 'title' => $i18n->__('Timeline')];
-                    $links['project_issues'] = ['url' => Context::getRouting()->generate('project_issues', ['project_key' => $project->getKey()]), 'title' => $i18n->__('Issues')];
-                    $links = Event::createNew('core', 'breadcrumb_project_links', null, [], $links)->trigger()->getReturnList();
-                    $links['project_release_center'] = ['url' => Context::getRouting()->generate('project_release_center', ['project_key' => $project->getKey()]), 'title' => $i18n->__('Release center')];
-                    $links['project_settings'] = ['url' => Context::getRouting()->generate('project_settings', ['project_key' => $project->getKey()]), 'title' => $i18n->__('Settings')];
-                    break;
-                case 'client_list':
-                    foreach (Client::getAll() as $client) {
-                        if ($client->hasAccess())
-                            $links[] = ['url' => Context::getRouting()->generate('client_dashboard', ['client_id' => $client->getID()]), 'title' => $client->getName()];
-                    }
-                    break;
-                case 'team_list':
-                    foreach (Team::getAll() as $team) {
-                        if ($team->hasAccess())
-                            $links[] = ['url' => Context::getRouting()->generate('team_dashboard', ['team_id' => $team->getID()]), 'title' => $team->getName()];
-                    }
-                    break;
-                case 'configure':
-                    $config_sections = Settings::getConfigSections($i18n);
-                    foreach ($config_sections as $key => $sections) {
-                        foreach ($sections as $section) {
-                            if ($key == Settings::CONFIGURATION_SECTION_MODULES) {
-                                $url = (is_array($section['route'])) ? make_url($section['route'][0], $section['route'][1]) : make_url($section['route']);
-                                $links[] = ['url' => $url, 'title' => $section['description']];
-                            } else {
-                                $links[] = ['url' => make_url($section['route']), 'title' => $section['description']];
-                            }
-                        }
-                    }
-                    break;
-            }
-
-            return $links;
         }
 
         public function getAllHeaders()

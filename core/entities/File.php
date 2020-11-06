@@ -52,7 +52,7 @@
         protected $_size;
 
         /**
-         * @Column(type="type", length=200)
+         * @Column(type="string", length=200)
          */
         protected $_type;
 

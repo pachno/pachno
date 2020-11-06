@@ -134,7 +134,7 @@ $current_spent_time = $current_estimated_time;
         </div>
         <div class="column sc_posted_by<?php if (!$issue->isPostedBy()): ?> faded_out<?php endif; ?> <?php if (!in_array('posted_by', $visible_columns)) echo 'hidden'; ?>">
             <?php if ($issue->isPostedBy()): ?>
-                <?php include_component('main/userdropdown', array('user' => $issue->getPostedBy())); ?>
+                <?php include_component('main/userdropdown', ['user' => $issue->getPostedBy(), 'size' => 'small']); ?>
             <?php else: ?>
                 -
             <?php endif; ?>

@@ -1,6 +1,5 @@
 <?php 
 
-    $pachno_response->addBreadcrumb(__('Report an issue'), make_url('project_reportissue', array('project_key' => \pachno\core\framework\Context::getCurrentProject()->getKey())));
     $pachno_response->setTitle(__('Report an issue'));
     
 ?>

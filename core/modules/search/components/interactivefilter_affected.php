@@ -1,7 +1,7 @@
-<div class="fancy-dropdown-container filter " id="interactive_filter_<?php echo $filter->getFilterKey(); ?>" data-filterkey="<?php echo $filter->getFilterKey(); ?>" data-value="<?php echo $filter->getValue(); ?>" data-all-value="<?= __('All'); ?>">
+<div class="fancy-dropdown-container filter " id="interactive_filter_<?php echo $filter->getFilterKey(); ?>" data-filterkey="<?php echo $filter->getFilterKey(); ?>">
     <input type="hidden" name="fs[<?php echo $filter->getFilterKey(); ?>][o]" value="<?php echo $filter->getOperator(); ?>">
     <input type="hidden" name="fs[<?php echo $filter->getFilterKey(); ?>][v]" value="" id="filter_<?php echo $filter->getFilterKey(); ?>_value_input">
-    <div class="fancy-dropdown">
+    <div class="fancy-dropdown" data-default-label="<?php echo __('All'); ?>">
         <label><?php
 
                 switch ($filter->getFilterKey())

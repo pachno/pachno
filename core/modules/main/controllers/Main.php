@@ -3805,8 +3805,6 @@
         /**
          * Milestone actions
          *
-         * @Route(url="/:project_key/milestone/:milestone_id/actions/*", name='project_milestone')
-         *
          * @param Request $request
          */
         public function runMilestone(Request $request)
@@ -3890,114 +3888,6 @@
                 $milestone->setStartingDate(0);
 
             $milestone->save();
-        }
-
-        /**
-         * Delete an issue todos item.
-         *
-         * @param Request $request
-         */
-        public function runDeleteTodo(Request $request)
-        {
-            if ($issue_id = $request['issue_id']) {
-                try {
-                    $issue = Issues::getTable()->selectById($issue_id);
-                } catch (Exception $e) {
-                    return $this->renderJSON(['failed' => true, 'error' => framework\Context::getI18n()->__('This issue does not exist')]);
-                }
-            } else {
-                return $this->renderJSON(['failed' => true, 'error' => framework\Context::getI18n()->__('This issue does not exist')]);
-            }
-
-            if (!isset($request['comment_id']) || !is_numeric($request['comment_id'])) {
-                return $this->renderJSON(['failed' => true, 'error' => framework\Context::getI18n()->__('Invalid "comment_id" parameter')]);
-            }
-
-            $this->forward403unless(($request['comment_id'] == 0 && $issue->canEditDescription()) || ($request['comment_id'] != 0 && $issue->getComments()[$request['comment_id']]->canUserEditComment()));
-
-            if (!isset($request['todo']) || $request['todo'] == '') {
-                return $this->renderJSON(['failed' => true, 'error' => framework\Context::getI18n()->__('Invalid "todo" parameter')]);
-            }
-
-            framework\Context::loadLibrary('common');
-            $issue->deleteTodo($request['comment_id'], $request['todo']);
-
-            return $this->renderJSON([
-                'content' => $this->getComponentHTML('todos', compact('issue'))
-            ]);
-        }
-
-        /**
-         * Toggle done for issue todos item.
-         *
-         * @param Request $request
-         */
-        public function runToggleDoneTodo(Request $request)
-        {
-            if ($issue_id = $request['issue_id']) {
-                try {
-                    $issue = Issues::getTable()->selectById($issue_id);
-                } catch (Exception $e) {
-                    return $this->renderJSON(['failed' => true, 'error' => framework\Context::getI18n()->__('This issue does not exist')]);
-                }
-            } else {
-                return $this->renderJSON(['failed' => true, 'error' => framework\Context::getI18n()->__('This issue does not exist')]);
-            }
-
-            if (!isset($request['comment_id']) || !is_numeric($request['comment_id'])) {
-                return $this->renderJSON(['failed' => true, 'error' => framework\Context::getI18n()->__('Invalid "comment_id" parameter')]);
-            }
-
-            if (!isset($request['todo']) || $request['todo'] == '') {
-                return $this->renderJSON(['failed' => true, 'error' => framework\Context::getI18n()->__('Invalid "todo" parameter')]);
-            }
-
-            if (!isset($request['mark']) || !in_array($request['mark'], ['done', 'not_done'])) {
-                return $this->renderJSON(['failed' => true, 'error' => framework\Context::getI18n()->__('Invalid "mark" parameter')]);
-            }
-
-            framework\Context::loadLibrary('common');
-            $issue->markTodo($request['comment_id'], $request['todo'], $request['mark']);
-
-            return $this->renderJSON([
-                'content' => $this->getComponentHTML('todos', compact('issue'))
-            ]);
-        }
-
-        /**
-         * Add an issue todos item.
-         *
-         * @param Request $request
-         */
-        public function runAddTodo(Request $request)
-        {
-            // If todos item is submitted via form and not ajax forward 403 error.
-            $this->forward403unless($request->isAjaxCall());
-
-            if ($issue_id = $request['issue_id']) {
-                try {
-                    $issue = Issues::getTable()->selectById($issue_id);
-                } catch (Exception $e) {
-                    return $this->renderJSON(['failed' => true, 'error' => framework\Context::getI18n()->__('This issue does not exist')]);
-                }
-            } else {
-                return $this->renderJSON(['failed' => true, 'error' => framework\Context::getI18n()->__('This issue does not exist')]);
-            }
-
-            if (!$issue->canEditDescription()) {
-                return $this->renderJSON(['failed' => true, 'error' => framework\Context::getI18n()->__('You do not have permission to perform this action')]);
-            }
-
-            if (!isset($request['todo_body']) || !trim($request['todo_body'])) {
-                return $this->renderJSON(['failed' => true, 'error' => framework\Context::getI18n()->__('Invalid "todo_body" parameter')]);
-            }
-
-            framework\Context::loadLibrary('common');
-            $issue->addTodo($request['todo_body']);
-
-            return $this->renderJSON([
-                'content' => $this->getComponentHTML('todos', compact('issue'))
-            ]);
         }
 
         /**

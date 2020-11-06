@@ -1,15 +1,17 @@
 <?php
 
-    $pachno_response->addBreadcrumb(__('Roadmap'), make_url('project_roadmap', array('project_key' => $selected_project->getKey())));
+    use pachno\core\framework;
+    use pachno\core\entities;
+
+    /**
+     * @var framework\Response $pachno_response
+     * @var entities\Project $selected_project
+     */
+
     $pachno_response->setTitle(__('"%project_name" roadmap', array('%project_name' => $selected_project->getName())));
-    $pachno_response->addJavascript('excanvas');
-    $pachno_response->addJavascript('jquery.flot');
-    $pachno_response->addJavascript('jquery.flot.resize');
-    $pachno_response->addJavascript('jquery.flot.dashes');
-    $pachno_response->addJavascript('jquery.flot.time');
 
 ?>
-<div id="project_roadmap_page" class="content-with-sidebar <?php if ($mode == 'upcoming') echo 'upcoming'; ?>">
+<div id="project_roadmap_page" class="content-with-sidebar">
     <?php include_component('project/sidebar', ['dashboard' => __('Roadmap')]); ?>
     <?php /* <h3><?php echo __('Roadmap filters'); ?></h3>
             <ul class="simple-list">
@@ -21,36 +23,81 @@
                 <?php endforeach; ?>
             </ul> */ ?>
     <div id="project_planning">
-        <?php if ($pachno_user->canManageProjectReleases($selected_project)): ?>
-            <div class="planning_indicator" id="milestone_0_indicator" style="display: none;"><?php echo image_tag('spinning_30.gif'); ?></div>
-            <div class="project_save_container" id="project_planning_action_strip">
-                <?php echo javascript_link_tag(__('New milestone'), array('class' => 'button', 'onclick' => "Pachno.UI.Backdrop.show('".make_url('get_partial_for_backdrop', array('key' => 'milestone', 'project_id' => $selected_project->getId()))."');")); ?>
-                <?php echo image_tag('spinning_16.gif', array('id' => 'retrieve_indicator', 'class' => 'indicator', 'style' => 'display: none;')); ?>
-                <?php echo fa_image_tag('cog', array('class' => 'dropper dropdown_link planning_board_settings_gear', 'id' => 'planning_board_settings_gear')); ?>
-                <ul class="more_actions_dropdown popup_box">
-                    <li class="roadmap_sort_milestones_action"><?php echo javascript_link_tag(__('Sort milestones'), array('onclick' => "Pachno.Project.Planning.toggleMilestoneSorting();")); ?></li>
-                </ul>
-            </div>
-            <div class="project_save_container" id="milestone-sort-actions">
-                <button class="button" id="milestone_sort_toggler_button" onclick="Pachno.Project.Planning.toggleMilestoneSorting();"><?php echo __('Done sorting'); ?></button>
-            </div>
-        <?php endif; ?>
-        <div id="project_roadmap" style="<?php if (isset($selected_milestone) && $selected_milestone instanceof \pachno\core\entities\Milestone) echo 'display: none'; ?>">
-            <?php if (count($milestones) == 0): ?>
-                <div style="padding: 15px; color: #AAA; font-size: 12px;"><?php echo __('There is no roadmap to be shown for this project, as it does not have any available milestones'); ?></div>
-            <?php else: ?>
-                <div id="milestone_list" class="jsortable" data-sort-url="<?php echo make_url('project_sort_milestones', array('project_key' => $selected_project->getKey())); ?>">
-                    <?php foreach ($milestones as $milestone): ?>
-                        <?php include_component('project/milestonebox', array('milestone' => $milestone, 'include_counts' => true, 'include_buttons' => true)); ?>
-                    <?php endforeach; ?>
+        <div id="roadmap-header" class="top-search-filters-container">
+            <div class="header">
+                <div class="name-container">
+                    <span class="board-name"><?= __('Roadmap'); ?></span>
                 </div>
-            <?php endif; ?>
+                <div class="stripe-container">
+                    <div class="stripe"></div>
+                </div>
+                <?php if ($pachno_user->canManageProjectReleases($selected_project)): ?>
+                    <button class="button primary trigger-backdrop" data-url="<?php echo make_url('get_partial_for_backdrop', ['key' => 'milestone', 'project_id' => $selected_project->getID()]); ?>');"><?= fa_image_tag('plus-square'); ?><span><?= __('Create milestone'); ?></span></button>
+                <?php endif; ?>
+                <div class="fancy-tabs" style="display: none;">
+                    <span class="tab selected">
+                        <span class="icon"><?= fa_image_tag('columns'); ?></span>
+                        <span class="name"><?= __('Column view'); ?></span>
+                    </span>
+                </div>
+            </div>
+            <div class="search-and-filters-strip">
+                <div class="search-strip">
+                    <div class="fancy-dropdown-container from-left"">
+                        <div class="fancy-dropdown data-default-label="<?= __('Show all'); ?>">
+                            <label><?= __('Filter'); ?></label>
+                            <span class="value"><?php echo __('Show all'); ?></span>
+                            <?= fa_image_tag('angle-down', ['class' => 'expander']); ?>
+                            <div class="dropdown-container list-mode filter-values-container">
+                                <input type="radio" value="all" class="fancy-checkbox" name="milestone_type" id="filter_milestone_type_all">
+                                <label for="filter_milestone_type_all" class="list-item">
+                                    <?= fa_image_tag('list', ['class' => 'icon']); ?>
+                                    <span class="name value"><?= __('Show all milestones') ?></span>
+                                </label>
+                                <div class="list-item separator"></div>
+                                <input type="radio" value="sprint" class="fancy-checkbox" name="milestone_type" id="filter_milestone_type_sprint">
+                                <label for="filter_milestone_type_sprint" class="list-item">
+                                    <?= fa_image_tag('undo', ['class' => 'icon rotate-90']); ?>
+                                    <span class="name value"><?= __('Show only sprints') ?></span>
+                                </label>
+                                <input type="radio" value="regular" class="fancy-checkbox" name="milestone_type" id="filter_milestone_type_regular" checked>
+                                <label for="filter_milestone_type_regular" class="list-item">
+                                    <?= fa_image_tag('tasks', ['class' => 'icon']); ?>
+                                    <span class="name value"><?= __('Only regular milestones') ?></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div id="milestone_details_overview" style="<?php if (!(isset($selected_milestone) && $selected_milestone instanceof \pachno\core\entities\Milestone)) echo 'display: none'; ?>">
-            <?php if (isset($selected_milestone) && $selected_milestone instanceof \pachno\core\entities\Milestone) include_component('project/milestonedetails', array('milestone' => $selected_milestone)); ?>
-        </div>
-        <div id="milestone_details_loading_indicator" class="fullpage_backdrop" style="display: none;">
-            <?php echo image_tag('spinning_30.gif'); ?>
+        <div id="project_roadmap" class="loading">
+            <div id="milestone-cards-container" class="milestone-cards-container">
+            </div>
+            <div class="indicator"><?= fa_image_tag('spinner', ['class' => 'fa-spin']); ?></div>
+            <div id="onboarding-no-milestones" style="display: none;">
+                <?= image_tag('/unthemed/navigation/turn.png', ['id' => 'indicate-button'], true); ?>
+                <div class="onboarding large">
+                    <div class="image-container">
+                        <?= image_tag('/unthemed/no-roadmap.png', [], true); ?>
+                    </div>
+                    <div class="helper-text">
+                        <?= __('Plan ahead with confidence'); ?><br>
+                        <?= __('Track milestones and their progress'); ?>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
+<script type="text/javascript">
+    Pachno.on(Pachno.EVENTS.ready, function () {
+        let roadmap;
+
+        roadmap = new Roadmap({
+            milestones_url: '<?= make_url('project_milestones', ['project_key' => $selected_project->getKey()]); ?>',
+            sort_url: '<?php echo make_url('project_sort_milestones', ['project_key' => $selected_project->getKey()]); ?>'
+        });
+        window.currentRoadmap = roadmap;
+    });
+</script>

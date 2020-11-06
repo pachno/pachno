@@ -1,16 +1,12 @@
 <?php
 
-    $pachno_response->addBreadcrumb(__('Clients'), null, pachno_get_breadcrumblinks('client_list'));
     if ($client instanceof \pachno\core\entities\Client)
     {
         $pachno_response->setTitle(__('Client dashboard for %client_name', array('%client_name' => $client->getName())));
-        $pachno_response->setPage('client');
-        $pachno_response->addBreadcrumb($client->getName(), make_url('client_dashboard', array('client_id' => $client->getID())));
     }
     else
     {
         $pachno_response->setTitle(__('Client dashboard'));
-        $pachno_response->addBreadcrumb(__('Client dashboard'));
     }
 
 ?>

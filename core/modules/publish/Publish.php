@@ -160,12 +160,6 @@
             framework\ActionComponent::includeComponent('configuration/rolepermissionseditlist', ['role' => $event->getSubject(), 'permissions_list' => $this->_getPermissionslist(), 'module' => 'publish', 'target_id' => '%project_id%']);
         }
 
-        public function listen_BreadcrumbMainLinks(Event $event)
-        {
-            $link = ['url' => self::getArticleLink('Main Page'), 'title' => $this->getMenuTitle(false)];
-            $event->addToReturnList($link);
-        }
-
         public function getMenuTitle($project_context = null)
         {
             $project_context = ($project_context !== null) ? $project_context : framework\Context::isProjectContext();
@@ -198,12 +192,6 @@
                     break;
                 }
             }
-        }
-
-        public function listen_BreadcrumbProjectLinks(Event $event)
-        {
-            $link = ['url' => self::getArticleLink('Main Page', framework\Context::getCurrentProject()), 'title' => $this->getMenuTitle(true)];
-            $event->addToReturnList($link);
         }
 
         /**
@@ -457,8 +445,6 @@
         {
             if (!framework\Context::isInstallmode() && $this->isWikiTabsEnabled()) {
                 Event::listen('core', 'project_overview_item_links', [$this, 'listen_projectLinks']);
-                Event::listen('core', 'breadcrumb_main_links', [$this, 'listen_BreadcrumbMainLinks']);
-                Event::listen('core', 'breadcrumb_project_links', [$this, 'listen_BreadcrumbProjectLinks']);
             }
             Event::listen('core', 'pachno\core\entities\Project::_postSave', [$this, 'listen_createNewProject']);
             Event::listen('core', 'pachno\core\entities\File::hasAccess', [$this, 'listen_fileHasAccess']);

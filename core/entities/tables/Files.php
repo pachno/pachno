@@ -189,14 +189,4 @@
             return $this->select($query);
         }
 
-        protected function migrateData(Table $old_table)
-        {
-            switch ($old_table::B2DB_TABLE_VERSION) {
-                case 1:
-                    foreach ($this->selectAll() as $file) {
-                        $file->save();
-                    }
-            }
-        }
-
     }

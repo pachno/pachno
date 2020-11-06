@@ -12,6 +12,7 @@
     use pachno\core\entities\tables\AgileBoards;
     use pachno\core\entities\tables\ArticleCategoryLinks;
     use pachno\core\entities\tables\Articles;
+    use pachno\core\entities\tables\Files;
     use pachno\core\entities\tables\Issues;
     use pachno\core\entities\tables\IssueSpentTimes;
     use pachno\core\entities\tables\ListTypes;
@@ -58,6 +59,12 @@
             UserSessions::getTable()->upgrade(tbg\tables\UserSessions::getTable());
 
             $this->cliMoveLeft(5);
+            $this->cliEcho('Files', self::COLOR_WHITE, self::STYLE_DEFAULT);
+            Files::getTable()->upgrade(tbg\tables\Files::getTable());
+            $this->cliMoveLeft(5);
+            $this->cliEcho('Projects', self::COLOR_WHITE, self::STYLE_DEFAULT);
+            Projects::getTable()->upgrade(tbg\tables\Projects::getTable());
+            $this->cliMoveLeft(8);
             $this->cliEcho('Articles', self::COLOR_WHITE, self::STYLE_DEFAULT);
             Articles::getTable()->upgrade(tbg\tables\Articles::getTable());
             $this->cliMoveLeft(8);
