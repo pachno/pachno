@@ -1278,7 +1278,7 @@ EOT;
             Event::listen('core', 'config_project_tabs_other', [$this, 'listen_projectconfig_tab_other']);
             Event::listen('core', 'config_project_panes', [$this, 'listen_projectconfig_panel']);
             Event::listen('core', 'account_pane_notificationsettings', [$this, 'listen_accountNotificationSettings']);
-            Event::listen('core', 'account_pane_notificationsettings_thead', [$this, 'listen_accountNotificationSettingsThead']);
+            Event::listen('core', 'account_pane_notificationsettings_table_header', [$this, 'listen_accountNotificationSettingsThead']);
             Event::listen('core', 'account_pane_notificationsettings_cell', [$this, 'listen_accountNotificationSettingsCell']);
             Event::listen('core', 'account_pane_notificationsettings_notification_categories', [$this, 'listen_accountNotificationSettingsNotificationCategories']);
             Event::listen('core', 'account_pane_notificationsettings_subscriptions', [$this, 'listen_accountNotificationSettingsSubscriptions']);

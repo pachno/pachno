@@ -59,7 +59,7 @@
             </tbody>
         </table>
         <script type="text/javascript">
-            require(['domReady', 'pachno/index', 'jquery', 'jquery.flot', 'jquery.flot.time', 'jquery.flot.dashes'], function (domReady, Pachno, jQuery) {
+            <?php /* require(['domReady', 'pachno/index', 'jquery', 'jquery.flot', 'jquery.flot.time', 'jquery.flot.dashes'], function (domReady, Pachno, jQuery) {
                 domReady(function () {
                     $(function () {
 
@@ -192,6 +192,20 @@
                     });
                 });
             });
+
+ // Pachno.Chart.config = {
+//     y_config: {color: '#AAA', min: 0, tickDecimals: 0},
+//     x_config: {color: '#AAA', tickDecimals: 0},
+//     grid_config: {
+//         color: '#CCC',
+//         borderWidth: 1,
+//         backgroundColor: {colors: ["#FFF", "#EEE"]},
+//         hoverable: true,
+//         autoHighlight: true
+//     }
+// };
+
+  */ ?>
         </script>
     </div>
 <?php else: ?>

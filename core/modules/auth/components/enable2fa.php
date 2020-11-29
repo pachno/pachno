@@ -12,7 +12,7 @@
     </div>
     <div id="backdrop_detail_content" class="backdrop_detail_content">
         <div class="form-container">
-            <form accept-charset="<?= \pachno\core\framework\Context::getI18n()->getCharset(); ?>" action="<?= make_url('user_verify_2fa'); ?>" method="post" onsubmit="Pachno.Main.Login.verify2FaToken(this); return false;">
+            <form accept-charset="<?= \pachno\core\framework\Context::getI18n()->getCharset(); ?>" action="<?= make_url('auth_user_verify_2fa'); ?>" method="post" id="enable_2fa_form" data-simple-submit>
                 <div class="form-row centered">
                     <img src="<?= $qr_code_inline; ?>">
                 </div>
@@ -43,3 +43,18 @@
         </div>
     </div>
 </div>
+<script type="application/javascript">
+    Pachno.on(Pachno.EVENTS.formSubmitResponse, function (PachnoApplication, data) {
+        const json = data.json;
+        switch (data.form) {
+            case 'enable_2fa_form':
+                if (json.result === 'verified') {
+                    $('#account_2fa_enabled').show();
+                    $('#account_2fa_disabled').hide();
+                }
+                Pachno.UI.Backdrop.reset();
+                break;
+        }
+    });
+
+</script>

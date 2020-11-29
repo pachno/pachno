@@ -8,12 +8,12 @@ import Checklist from '@editorjs/checklist';
 import Quote from '@editorjs/quote';
 import CodeTool from '@editorjs/code';
 import TableTool from '@editorjs/table';
-import Marker from '@editorjs/marker';
 import Warning from '@editorjs/warning';
 import InlineCode from '@editorjs/inline-code';
 import Delimiter from '@editorjs/delimiter';
 
 import EasyMDE from "easymde";
+import {EVENTS as WidgetEvents} from "./index";
 
 const editors = {};
 
@@ -141,11 +141,24 @@ const initializeEasyMde = function () {
             "image"
         ]
     });
+    editors[$editor_element.attr('id')] = editor;
+}
+
+/**
+ *
+ * @param editor
+ * @returns {EasyMDE}
+ */
+export const getEditor = function (editor) {
+    return editors[editor];
 }
 
 const setupListeners = function() {
     Pachno.on(Pachno.EVENTS.ready, () => {
         $('.wysiwyg-editor:not([data-processed])').each(initializeEditorJsArea);
+        $('.markuppable:not([data-processed])').each(initializeEasyMde);
+    });
+    Pachno.on(WidgetEvents.update, () => {
         $('.markuppable:not([data-processed])').each(initializeEasyMde);
     });
 };

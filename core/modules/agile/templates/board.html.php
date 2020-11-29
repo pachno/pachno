@@ -2,7 +2,6 @@
 
     use pachno\core\entities\AgileBoard;
 
-    $pachno_response->addBreadcrumb(__('Planning'), make_url('agile_board', array('project_key' => $selected_project->getKey(), 'board_id' => $board->getId())));
     $pachno_response->setTitle(__('"%project_name" project planning', array('%project_name' => $selected_project->getName())));
 
     switch ($board->getType())

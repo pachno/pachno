@@ -11,6 +11,9 @@ Vagrant.configure("2") do |config|
   config.vm.network "forwarded_port", guest: 80, host: 8080
   config.vm.network "forwarded_port", guest: 443, host: 8443
 
+  # Forward ports for accessing the database.
+  config.vm.network "forwarded_port", guest: 3306, host: 13306
+
   # Forward ports for accessing the LDAP server.
   config.vm.network "forwarded_port", guest: 389, host: 8389
   config.vm.network "forwarded_port", guest: 636, host: 8636

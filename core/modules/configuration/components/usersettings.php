@@ -62,7 +62,7 @@
     <div class="helper-text"><?= __('If anonymous access is turned off, a valid user account is required to access any content in this installation'); ?></div>
 </div>
 <div class="form-row">
-    <label for="<?= Settings::SETTING_ENABLE_GRAVATARS; ?>_yes"><?= __('Enable %gravatar user icons', ['%gravatar' => link_tag('https://gravatar.com', 'gravatar.com')]); ?></label>
+    <label for="<?= Settings::SETTING_ENABLE_GRAVATARS; ?>_yes"><?= __('Enable %gravatar user icons', ['%gravatar' => link_tag('https://gravatar.com', 'gravatar.com', ['target' => '_blank'])]); ?></label>
     <div class="fancy-label-select">
         <input type="radio" name="<?= Settings::SETTING_ENABLE_GRAVATARS; ?>" class="fancy-checkbox" <?php if ($access_level != Settings::ACCESS_FULL): ?> disabled<?php endif; ?> id="<?= Settings::SETTING_ENABLE_GRAVATARS; ?>_yes" value=1<?php if (Settings::isGravatarsEnabled()): ?> checked<?php endif; ?>>
         <label for="<?= Settings::SETTING_ENABLE_GRAVATARS; ?>_yes"><?= fa_image_tag('check', ['class' => 'checked']) . __('Yes, enable Gravatars'); ?></label>

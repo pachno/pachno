@@ -9,6 +9,6 @@
         <?php echo __('Show comment:') . ' ' . link_tag($module->generateURL('publish_article', array('article_name' => $article->getTitle())).'#comment_'.$comment->getID()); ?><br>
         <br>
         <?php echo __('You were sent this notification email because you are related to the article mentioned in this email.')?><br>
-        <?php echo __('To change when and how often we send these emails, update your account settings:') . ' ' . link_tag($module->generateURL('account'), $module->generateURL('account')); ?>
+        <?php echo __('To change when and how often we send these emails, update your account settings:') . ' ' . link_tag($module->generateURL('profile_account'), $module->generateURL('profile_account')); ?>
     </div>
 <?php endif; ?>

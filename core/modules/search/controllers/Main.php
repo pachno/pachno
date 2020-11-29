@@ -10,6 +10,8 @@
 
     /**
      * actions for the search module
+     *
+     * @property entities\SavedSearch $search_object
      */
     class Main extends framework\Action
     {
@@ -358,6 +360,12 @@
 
             return $this->renderJSON([
                 'content' => $this->getComponentHTML('search/issues_paginated', ['search_object' => $this->search_object, 'cc' => 1, 'prevgroup_id' => null]),
+                'default_columns' => entities\SavedSearch::getDefaultVisibleColumns(),
+                'available_columns' => entities\SavedSearch::getAvailableColumns(),
+                'visible_columns' => $this->search_object->getColumns(),
+                'applied_filters' => array_keys($this->search_object->getFilters()),
+                'template' => entities\SavedSearch::getTemplate($this->search_object->getTemplateName()),
+                'template_parameter' => $this->search_object->getTemplateParameter(),
                 'num_issues' => $this->search_object->getTotalNumberOfIssues()
             ]);
         }

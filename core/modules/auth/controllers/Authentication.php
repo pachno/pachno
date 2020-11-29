@@ -1,6 +1,6 @@
 <?php
 
-    namespace pachno\core\modules\main\controllers;
+    namespace pachno\core\modules\auth\controllers;
 
     use Exception;
     use pachno\core\entities;
@@ -11,6 +11,7 @@
 
     /**
      * Login actions
+     * @Routes(name_prefix="auth_")
      */
     class Authentication extends framework\Action
     {
@@ -18,7 +19,7 @@
         /**
          * Static login page
          *
-         * @Route(name="login_page", url="/login")
+         * @Route(name="login_page", url="/login", methods="GET")
          * @AnonymousRoute
          *
          * @param framework\Request $request
@@ -71,7 +72,7 @@
         public function runElevatedLogin(framework\Request $request)
         {
             if ($this->getUser()->isGuest()) {
-                return $this->forward($this->getRouting()->generate('login_page'));
+                return $this->forward($this->getRouting()->generate('auth_login_page'));
             }
         }
 
@@ -86,10 +87,10 @@
         public function runTwoFactorVerification(framework\Request $request)
         {
             if (!$this->getUser()->isAuthenticated()) {
-                return $this->forward($this->getRouting()->generate('login'));
+                return $this->forward($this->getRouting()->generate('auth_login'));
             }
             if ($this->getUser()->isVerified()) {
-                return $this->forward($this->getRouting()->generate('account'));
+                return $this->forward($this->getRouting()->generate('profile_account'));
             }
 
             $this->session_token = framework\Context::getRequest()->getCookie('session_token');
@@ -181,7 +182,7 @@
         /**
          * Do login (AJAX call)
          *
-         * @Route(name="login", url="/do/login", methods="POST")
+         * @Route(name="login", url="/login", methods="POST")
          * @AnonymousRoute
          *
          * @param framework\Request $request
@@ -218,8 +219,6 @@
                 $this->getResponse()->setHttpStatus(401);
                 framework\Logging::log($e->getMessage(), 'auth', framework\Logging::LEVEL_WARNING_RISK);
 
-                return $this->renderJSON(["error" => $e->getMessage()]);
-
                 return $this->renderJSON(["error" => $this->getI18n()->__("Invalid login details")]);
             }
 
@@ -230,8 +229,11 @@
             }
 
             $forward_url = $this->_getLoginForwardUrl($request);
-
-            return $this->renderJSON(['forward' => $forward_url]);
+            if ($request->isResponseFormatAccepted('application/json', false)) {
+                return $this->renderJSON(['forward' => $forward_url]);
+            } else {
+                return $this->forward($forward_url);
+            }
         }
 
         /**

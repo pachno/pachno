@@ -148,22 +148,16 @@
         {
             $permissions = [];
             $permissions['editwikimenu'] = ['description' => framework\Context::getI18n()->__('Can edit the wiki lefthand menu'), 'permission' => 'editwikimenu'];
-            $permissions['readarticle'] = ['description' => framework\Context::getI18n()->__('Can access the project wiki'), 'permission' => 'readarticle'];
-            $permissions['editarticle'] = ['description' => framework\Context::getI18n()->__('Can write articles in project wiki'), 'permission' => 'editarticle'];
-            $permissions['deletearticle'] = ['description' => framework\Context::getI18n()->__('Can delete articles from project wiki'), 'permission' => 'deletearticle'];
+            $permissions[self::PERMISSION_READ_ARTICLE] = ['description' => framework\Context::getI18n()->__('Can access the project wiki'), 'permission' => self::PERMISSION_READ_ARTICLE];
+            $permissions[self::PERMISSION_EDIT_ARTICLE] = ['description' => framework\Context::getI18n()->__('Can write articles in project wiki'), 'permission' => self::PERMISSION_EDIT_ARTICLE];
+            $permissions[self::PERMISSION_DELETE_ARTICLE] = ['description' => framework\Context::getI18n()->__('Can delete articles from project wiki'), 'permission' => self::PERMISSION_DELETE_ARTICLE];
 
             return $permissions;
         }
 
         public function listen_rolePermissionsEdit(Event $event)
         {
-            framework\ActionComponent::includeComponent('configuration/rolepermissionseditlist', ['role' => $event->getSubject(), 'permissions_list' => $this->_getPermissionslist(), 'module' => 'publish', 'target_id' => '%project_key%']);
-        }
-
-        public function listen_BreadcrumbMainLinks(Event $event)
-        {
-            $link = ['url' => self::getArticleLink('Main Page'), 'title' => $this->getMenuTitle(false)];
-            $event->addToReturnList($link);
+            framework\ActionComponent::includeComponent('configuration/rolepermissionseditlist', ['role' => $event->getSubject(), 'permissions_list' => $this->_getPermissionslist(), 'module' => 'publish', 'target_id' => '%project_id%']);
         }
 
         public function getMenuTitle($project_context = null)
@@ -200,12 +194,6 @@
             }
         }
 
-        public function listen_BreadcrumbProjectLinks(Event $event)
-        {
-            $link = ['url' => self::getArticleLink('Main Page', framework\Context::getCurrentProject()), 'title' => $this->getMenuTitle(true)];
-            $event->addToReturnList($link);
-        }
-
         /**
          * Header wiki menu and search dropdown / list
          *
@@ -233,7 +221,13 @@
 
         public function listen_createNewProject(Event $event)
         {
-            Article::createNew("Main Page", "This is the frontpage for {$event->getSubject()->getName()}", null, ['noauthor' => true], $event->getSubject());
+            $fixtures_path = PACHNO_CORE_PATH . 'modules' . DS . 'publish' . DS . 'fixtures' . DS;
+            $data = file_get_contents($fixtures_path . 'project.json');
+            Article::createNew("Main Page", str_replace('%projectname', $event->getSubject()->getName(), $data), null, ['noauthor' => true], $event->getSubject());
+
+            framework\Context::setPermission(self::PERMISSION_READ_ARTICLE, 'project_' . $event->getSubject()->getID(), "publish", framework\Context::getUser()->getID(), 0, 0, true);
+            framework\Context::setPermission(self::PERMISSION_EDIT_ARTICLE, 'project_' . $event->getSubject()->getID(), "publish", framework\Context::getUser()->getID(), 0, 0, true);
+            framework\Context::setPermission(self::PERMISSION_DELETE_ARTICLE, 'project_' . $event->getSubject()->getID(), "publish", framework\Context::getUser()->getID(), 0, 0, true);
         }
 
         public function getTabKey()
@@ -241,12 +235,12 @@
             return (framework\Context::isProjectContext()) ? parent::getTabKey() : 'wiki';
         }
 
-        public function canUserReadArticle($article_name)
+        public function canUserReadArticle(Article $article)
         {
-            return $this->_checkArticlePermissions($article_name, self::PERMISSION_READ_ARTICLE);
+            return $this->_checkArticlePermissions($article, self::PERMISSION_READ_ARTICLE);
         }
 
-        protected function _checkArticlePermissions($article_name, $permission_name)
+        protected function _checkArticlePermissions(Article $article, $permission_name)
         {
             $user = framework\Context::getUser();
             switch ($this->getSetting('free_edit')) {
@@ -261,36 +255,29 @@
                     $permissive = false;
                     break;
             }
-            $retval = $user->hasPermission($permission_name, $article_name, 'publish');
+            $retval = $user->hasPermission($permission_name, $article->getID(), 'publish');
             if ($retval !== null) {
                 return $retval;
             }
-            $namespaces = explode(':', $article_name);
-            if (count($namespaces) > 1) {
-                array_pop($namespaces);
-                $composite_ns = '';
-                foreach ($namespaces as $namespace) {
-                    $composite_ns .= ($composite_ns != '') ? ":{$namespace}" : $namespace;
-                    $retval = $user->hasPermission($permission_name, $composite_ns, 'publish');
-                    if ($retval !== null) {
-                        return $retval;
-                    }
-                }
+            $retval = $user->hasPermission($permission_name, 'project_' . $article->getProject()->getID(), 'publish');
+            if ($retval !== null) {
+                return $retval;
             }
+
             $permissive = ($permission_name == self::PERMISSION_READ_ARTICLE) ? false : $permissive;
             $retval = $user->hasPermission($permission_name, 0, 'publish');
 
             return ($retval !== null) ? $retval : $permissive;
         }
 
-        public function canUserEditArticle($article_name)
+        public function canUserEditArticle(Article $article)
         {
-            return $this->_checkArticlePermissions($article_name, self::PERMISSION_EDIT_ARTICLE);
+            return $this->_checkArticlePermissions($article, self::PERMISSION_EDIT_ARTICLE);
         }
 
-        public function canUserDeleteArticle($article_name)
+        public function canUserDeleteArticle(Article $article)
         {
-            return $this->_checkArticlePermissions($article_name, self::PERMISSION_DELETE_ARTICLE);
+            return $this->_checkArticlePermissions($article, self::PERMISSION_DELETE_ARTICLE);
         }
 
         public function listen_quicksearchDropdownFirstItems(Event $event)
@@ -458,8 +445,6 @@
         {
             if (!framework\Context::isInstallmode() && $this->isWikiTabsEnabled()) {
                 Event::listen('core', 'project_overview_item_links', [$this, 'listen_projectLinks']);
-                Event::listen('core', 'breadcrumb_main_links', [$this, 'listen_BreadcrumbMainLinks']);
-                Event::listen('core', 'breadcrumb_project_links', [$this, 'listen_BreadcrumbProjectLinks']);
             }
             Event::listen('core', 'pachno\core\entities\Project::_postSave', [$this, 'listen_createNewProject']);
             Event::listen('core', 'pachno\core\entities\File::hasAccess', [$this, 'listen_fileHasAccess']);

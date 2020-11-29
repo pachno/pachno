@@ -61,6 +61,9 @@
                 $this->_hasfiles = true;
             }
             $this->_is_ajax_call = (array_key_exists("HTTP_X_REQUESTED_WITH", $_SERVER) && mb_strtolower($_SERVER["HTTP_X_REQUESTED_WITH"]) == 'xmlhttprequest');
+            if ($this->isResponseFormatAccepted('application/json', false)) {
+                $this->_is_ajax_call = true;
+            }
 
             if (isset($_SESSION) && !array_key_exists('__upload_status', $_SESSION)) {
                 $_SESSION['__upload_status'] = [];
@@ -588,15 +591,19 @@
                 $acceptedFormatParts = explode('/', $acceptedFormat);
 
                 if (count($acceptedFormatParts) > 1) {
-                    if ($acceptedFormatParts[0] == '*' && $acceptedFormatParts[1] == '*' && $allow_accept_all) {
-                        return true;
+                    if ($acceptedFormatParts[0] == '*' && $acceptedFormatParts[1] == '*') {
+                        if ($allow_accept_all) {
+                            return true;
+                        } else {
+                            continue;
+                        }
                     }
 
-                    if ($formatParts[0] != $acceptedFormatParts[0] && $acceptedFormatParts[1] != '*') {
+                    if ($formatParts[0] != $acceptedFormatParts[0] && $acceptedFormatParts[0] != '*') {
                         continue;
                     }
 
-                    if ($formatParts[0] != $acceptedFormatParts[0] && $acceptedFormatParts[1] != '*') {
+                    if ($formatParts[1] != $acceptedFormatParts[1] && $acceptedFormatParts[1] != '*') {
                         continue;
                     }
 

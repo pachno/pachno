@@ -204,6 +204,14 @@
         protected $_large_icon = null;
 
         /**
+         * The project icon name
+         *
+         * @var string
+         * @Column(type="string", length=100)
+         */
+        protected $_icon_name = '/unthemed/mono/project-icon-generic.png';
+
+        /**
          * The projects documentation URL
          *
          * @var string
@@ -472,6 +480,8 @@
             return [
                 '/unthemed/mono/project-icon-generic.png',
                 '/unthemed/mono/project-icon-code.png',
+                '/unthemed/mono/project-icon-code-2.png',
+                '/unthemed/mono/project-icon-packages.png',
                 '/unthemed/mono/project-icon-cd.png',
                 '/unthemed/mono/project-icon-servicedesk.png',
                 '/unthemed/mono/project-icon-phone-1.png',
@@ -481,11 +491,16 @@
                 '/unthemed/mono/project-icon-globe-map.png',
                 '/unthemed/mono/project-icon-checklist.png',
                 '/unthemed/project-icon-picture.png',
+                '/unthemed/project-icon-book.png',
+                '/unthemed/project-icon-archive.png',
                 '/unthemed/project-icon-globe-hand.png',
                 '/unthemed/project-icon-phone-1.png',
                 '/unthemed/project-icon-phone-2.png',
                 '/unthemed/project-icon-cloud-heart.png',
                 '/unthemed/project-icon-webpage.png',
+                '/unthemed/project-icon-shopping.png',
+                '/unthemed/project-icon-diamonds.png',
+                '/unthemed/project-icon-gaming.png',
                 '/unthemed/project-icon-person-computer.png',
             ];
         }
@@ -2395,7 +2410,7 @@
 
         public function getIconName()
         {
-            return ($this->hasIcon()) ? framework\Context::getRouting()->generate('showfile', ['id' => $this->getIcon()->getID()]) : '/unthemed/mono/project-icon-generic.png';
+            return ($this->hasIcon()) ? framework\Context::getRouting()->generate('showfile', ['id' => $this->getIcon()->getID()]) : $this->_icon_name;
         }
 
         public function hasIcon()
@@ -2404,16 +2419,21 @@
         }
 
         /**
-         * @return mixed
+         * @return File
          */
         public function getIcon()
         {
             return $this->_b2dbLazyLoad('_large_icon');
         }
 
-        public function setIcon(File $icon)
+        public function setIcon(File $icon = null)
         {
             $this->_large_icon = $icon;
+        }
+
+        public function setIconName($icon_name)
+        {
+            $this->_icon_name = $icon_name;
         }
 
         /**

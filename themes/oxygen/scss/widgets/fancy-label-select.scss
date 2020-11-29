@@ -18,19 +18,22 @@
       }
     }
 
-    &:checked:not(:disabled) {
-      + label {
-        background-color: $theme-primary;
-        color: #FFF;
+    &,
+    &.fancy-checkbox {
+      &:checked:not(:disabled) {
+        + label {
+          background-color: $theme-primary;
+          color: #FFF;
 
-        .fas,
-        .far {
-          font-size: .85em;
-          margin: 0 1em 0 0;
-        }
+          .fas,
+          .far {
+            font-size: .85em;
+            margin: 0 1em 0 0;
+          }
 
-        + input + label::after {
-          border-right: none;
+          + input + label::after {
+            border-right: none;
+          }
         }
       }
     }

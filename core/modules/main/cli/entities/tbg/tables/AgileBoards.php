@@ -7,7 +7,7 @@
     /**
      * @static @method AgileBoards getTable() Retrieves an instance of this table
      *
-     * @Table(name="articles")
+     * @Table(name="agileboards")
      * @Entity(class="\pachno\core\modules\main\cli\entities\tbg\AgileBoard")
      */
     class AgileBoards extends ScopedTable

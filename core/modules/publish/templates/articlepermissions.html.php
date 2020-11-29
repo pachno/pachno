@@ -1,6 +1,5 @@
 <?php
 
-    include_component('publish/wikibreadcrumbs', array('article_name' => $article_name));
     $pachno_response->setTitle(__('%article_name permissions', array('%article_name' => $article_name)));
 
 ?>
@@ -12,7 +11,7 @@
     <div class="article" style="width: auto; padding: 5px; position: relative;">
         <?php include_component('publish/header', array('article' => $article, 'article_name' => $article_name, 'show_actions' => true, 'mode' => 'permissions')); ?>
         <?php if ($article instanceof \pachno\core\entities\Article): ?>
-            <?php if (\pachno\core\framework\Context::getModule('publish')->canUserEditArticle($article_name)): ?>
+            <?php if (\pachno\core\framework\Context::getModule('publish')->canUserEditArticle($article)): ?>
                 <ul class="simple-list">
                 <?php foreach ($namespaces as $namespace): ?>
                     <li class="rounded_box <?php if (!(is_numeric($namespace) && $namespace == 0) && $namespace == $article->getName()): ?>verylightyellow<?php else: ?>invisible borderless<?php endif; ?>" style="padding: 10px;">

@@ -1,6 +1,5 @@
 <?php
 
-    $pachno_response->addBreadcrumb(__('Timeline'), make_url('project_timeline', array('project_key' => $selected_project->getKey())));
     $pachno_response->setTitle(__('"%project_name" project timeline', array('%project_name' => $selected_project->getName())));
     $pachno_response->addFeed(make_url('project_timeline', array('project_key' => $selected_project->getKey(), 'format' => 'rss')), __('"%project_name" project timeline', array('%project_name' => $selected_project->getName())));
 

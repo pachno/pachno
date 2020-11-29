@@ -3,6 +3,7 @@
     namespace pachno\core\entities;
 
     use b2db\Row;
+    use EditorJS\EditorJS;
     use Exception;
     use pachno\core\entities\common\Identifiable;
     use pachno\core\entities\common\IdentifiableScoped;
@@ -396,6 +397,10 @@
                 $options['article'] = $this;
             }
 
+//            if (!$this->_content) {
+//                return '';
+//            }
+
             switch ($this->_content_syntax) {
                 case Settings::SYNTAX_EDITOR_JS:
                     $parser = new TextParserEditorJS($this->_content, $options);
@@ -736,7 +741,7 @@
                 }
             }
 
-            return framework\Context::getModule('publish')->canUserDeleteArticle($this->getName());
+            return framework\Context::getModule('publish')->canUserDeleteArticle($this);
         }
 
         public function canEdit()
@@ -752,7 +757,7 @@
                 }
             }
 
-            return framework\Context::getModule('publish')->canUserEditArticle($this->getName());
+            return framework\Context::getModule('publish')->canUserEditArticle($this);
         }
 
         public function getProjectFromName()
@@ -781,7 +786,7 @@
 
         public function canRead()
         {
-            return framework\Context::getModule('publish')->canUserReadArticle($this->getName());
+            return framework\Context::getModule('publish')->canUserReadArticle($this);
         }
 
         /**
@@ -933,12 +938,14 @@
 
         public function hasMentions()
         {
-            return $this->_getParser()->hasMentions();
+            $parser = $this->_getParser();
+            return ($parser instanceof ContentParser) ? $parser->hasMentions() : false;
         }
 
         public function getMentions()
         {
-            return $this->_getParser()->getMentions();
+            $parser = $this->_getParser();
+            return ($parser instanceof ContentParser) ? $parser->getMentions() : [];
         }
 
         public function getLink($mode = 'show')
@@ -1006,8 +1013,8 @@
         protected function _postSave($is_new)
         {
             if ($is_new) {
-                if ($this->_getParser()->hasMentions()) {
-                    foreach ($this->_getParser()->getMentions() as $user) {
+                if ($this->hasMentions()) {
+                    foreach ($this->getMentions() as $user) {
                         if ($user->getID() == framework\Context::getUser()->getID()) continue;
 
                         if (($user->getNotificationSetting(Settings::SETTINGS_USER_NOTIFY_MENTIONED, false)->isOn())) $this->_addNotificationIfNotNotified(Notification::TYPE_ARTICLE_MENTIONED, $user, $this->getAuthor());
@@ -1033,7 +1040,7 @@
          *
          * @return ContentParser
          */
-        protected function _getParser()
+        protected function _getParser(): ?ContentParser
         {
             if (!isset($this->_parser)) {
                 $this->_parseContent();

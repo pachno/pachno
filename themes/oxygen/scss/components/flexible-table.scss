@@ -12,6 +12,10 @@
     display: flex;
     flex: 0 0 auto;
 
+    &.hidden {
+      display: none;
+    }
+
     & + .row.header {
       margin-top: 1em;
     }
@@ -76,6 +80,10 @@
     box-sizing: border-box;
     border-bottom: 1px dashed rgba(12, 137, 144, .4);
 
+    &.hidden {
+      display: none;
+    }
+
     a,
     a:hover {
       display: flex;
@@ -100,6 +108,12 @@
 
       &.invisible {
         border-bottom-color: transparent;
+      }
+
+      &.info-icons {
+        &.large {
+          font-size: 1.2em;
+        }
       }
     }
 
@@ -133,14 +147,28 @@
 
     &.info-icons {
       flex: 0 0 40px;
-      justify-content: flex-end;
       align-items: center;
 
-      .fas,
-      .far {
-        + .fas,
-        + .far {
-          margin-left: -.2em;
+      &.centered {
+        justify-content: center;
+
+        .fas,
+        .far,
+        .fab {
+          margin-left: 0;
+          margin-right: 0;
+        }
+      }
+
+      &:not(.centered) {
+        justify-content: flex-end;
+
+        .fas,
+        .far {
+          + .fas,
+          + .far {
+            margin-left: -.2em;
+          }
         }
       }
 
@@ -158,18 +186,30 @@
       flex: 0 0 50px;
       display: flex;
       justify-content: center;
+
+      &.hidden {
+        display: none;
+      }
     }
 
     &.actions {
       flex: 0 0 100px;
       display: flex;
       justify-content: center;
+
+      &.hidden {
+        display: none;
+      }
     }
 
     &.numeric {
       flex: 0 0 75px;
       display: flex;
       justify-content: center;
+
+      &.hidden {
+        display: none;
+      }
     }
 
     &.sc_title_container,
@@ -188,6 +228,10 @@
       align-items: flex-start;
       justify-content: center;
 
+      &.hidden {
+        display: none;
+      }
+
       .title {
         font-weight: $theme-font-weight-regular;
         flex: 0 0 auto;
@@ -204,6 +248,10 @@
       display: flex;
       justify-content: flex-end;
       position: relative;
+
+      &.hidden {
+        display: none;
+      }
     }
 
     &.smaller {

@@ -106,4 +106,26 @@ const setupListeners = function () {
     });
 };
 
+// Pachno.Main.Notifications.Web.GrantPermissionOrSendTest = function (title, body, icon) {
+//     if (!Notify.needsPermission) {
+//         Pachno.Main.Notifications.Web.Send(title, body, 'test', icon);
+//     } else if (Notify.isSupported()) {
+//         Notify.requestPermission();
+//     }
+// }
+//
+// Pachno.Main.Notifications.Web.Send = function (title, body, tag, icon, click_callback) {
+//     if (Notify.needsPermission) return;
+//
+//     new Notify(title, {
+//         body: body,
+//         tag: tag,
+//         icon: icon,
+//         timeout: 8,
+//         closeOnClick: true,
+//         notifyClick: click_callback
+//     }).show();
+// }
+//
+
 export default setupListeners;

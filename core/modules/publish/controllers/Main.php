@@ -129,7 +129,7 @@
             if ($this->article instanceof Article) {
                 if (!$this->article->hasAccess()) {
                     $this->error = framework\Context::getI18n()->__("You don't have access to read this article");
-                    $this->article = null;
+//                    $this->article = null;
                 } else {
                     $this->getUser()->markNotificationsRead('article', $this->article->getID());
 
@@ -148,8 +148,8 @@
                     } catch (Exception $e) {
                         $this->error = framework\Context::getI18n()->__('There was an error trying to show this revision');
                     }
+                    $this->comment_count = Comment::countComments($this->article->getID(), Comment::TYPE_ARTICLE);
                 }
-                $this->comment_count = Comment::countComments($this->article->getID(), Comment::TYPE_ARTICLE);
             }
         }
 
@@ -204,7 +204,7 @@
                         break;
                     case 'revert':
                         $article_name = $this->article->getName();
-                        if (!framework\Context::getModule('publish')->canUserEditArticle($article_name)) {
+                        if (!framework\Context::getModule('publish')->canUserEditArticle($this)) {
                             framework\Context::setMessage('publish_article_error', framework\Context::getI18n()->__('You do not have permission to edit this article'));
                             $this->forward(framework\Context::getRouting()->generate('publish_article_history', ['article_name' => $article_name]));
                         }
@@ -231,7 +231,7 @@
                 if (!$this->article instanceof Article) {
                     throw new Exception($this->getI18n()->__('This article does not exist'));
                 }
-                if (!framework\Context::getModule('publish')->canUserDeleteArticle($this->article->getName())) {
+                if (!framework\Context::getModule('publish')->canUserDeleteArticle($this->article)) {
                     throw new Exception($this->getI18n()->__('You do not have permission to delete this article'));
                 }
                 if (!$request['article_name']) {

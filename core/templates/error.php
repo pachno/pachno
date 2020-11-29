@@ -2,15 +2,7 @@
 <html>
     <head>
         <style>
-            @import url('https://fonts.googleapis.com/css?family=Fira+Mono:400,500,700|Source+Sans+Pro:400,400i,600,600i&subset=cyrillic,cyrillic-ext,latin-ext');
-
-            @font-face {
-                font-family: 'Simplifica';
-                src: url('/fonts/simplifica_typeface-webfont.woff2') format('woff2'),
-                url('/fonts/simplifica_typeface-webfont.woff') format('woff');
-                font-weight: normal;
-                font-style: normal;
-            }
+            @import url('https://fonts.googleapis.com/css?family=Fira+Mono:400,500,700|Source+Sans+Pro:400,400i,600,600i|Lilita+One:400&subset=cyrillic,cyrillic-ext,latin-ext&display=swap');
 
             body, td, th {
                 padding: 0;
@@ -33,13 +25,13 @@
                 padding: 0;
             }
             h1.logo {
-                font-family: 'Simplifica', sans-serif;
+                font-family: 'Lilita One', sans-serif;
                 margin: 0;
                 padding: 10px;
                 background: #0C8990;
                 color: #FFF;
                 font-weight: 400;
-                font-size: 1.8rem;
+                font-size: 1.7rem;
                 border-radius: 2px 2px 0 0;
             }
             h1 span, h2 span, h3 span {
@@ -49,7 +41,7 @@
             .image-container {
                 flex: 0 0 36px;
                 padding: 0;
-                margin-right: 2px;
+                margin-right: 7px;
             }
             .image-container img {
                 width: 100%;
@@ -88,7 +80,7 @@
     </head>
     <body>
         <div class="rounded_box" style="margin: 30px auto 0 auto; width: 700px;">
-            <h1 class="logo"><span class="image-container"><img src="/logo_128.png"></span><span>Pachno</span></h1>
+            <h1 class="logo"><span class="image-container"><img src="/logo_white_192.png"></span><span>Pachno</span></h1>
             <div class="error_content">
                 <h2><span>The following error occurred:</span></h2>
                 <?php if (isset($exception)): ?>

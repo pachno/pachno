@@ -76,13 +76,6 @@ configure_projects_build:
     parameters: [ ]
     csrf_enabled: false
 
-configure_projects_icons:
-    route: /configure/project/:project_id/icons
-    module: project
-    action: projectIcons
-    parameters: [ ]
-    csrf_enabled: false
-
 configure_projects_workflow:
     route: /configure/project/:project_id/workflow
     module: project
@@ -235,14 +228,6 @@ project_release_center:
     parameters: [ ]
     csrf_enabled: false
 
-project_milestone_details:
-    route: /:project_key/milestone/:milestone_id
-    module: project
-    action: roadmap
-    parameters:
-      mode: milestone
-    csrf_enabled: false
-
 project_scrum_release_burndown:
     route: /:project_key/scrum/burndown/release
     module: project
@@ -367,13 +352,6 @@ project_roadmap_all:
     action: roadmap
     parameters:
       mode: all
-    csrf_enabled: false
-
-project_roadmap:
-    route: '/:project_key/roadmap/*'
-    module: project
-    action: roadmap
-    parameters: [ ]
     csrf_enabled: false
 
 project_roadmap_milestone_details:

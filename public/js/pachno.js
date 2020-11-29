@@ -33,24 +33,33 @@ define(['pachno/tools', 'pachno/index', 'domReady', 'jquery', 'mention'],
                     $input.addClass('submitting');
                     $input.prop('disabled', true);
 
-                    let data = new FormData();
-                    data.append('value', value);
-
-                    fetch($input.data('url'), {
-                        method: 'POST',
-                        body: data
-                    })
-                        .then(function(response) {
+                    if ($input.data('event-key')) {
+                        Pachno.listen($input.data('event-key'), () => {
                             $input.removeClass('submitting');
                             $input.prop('disabled', false);
-                            // response.json().then(resolve);
-                            // res = response;
-                            // console.log(response);
-                            // resolve($form, res);
-                            // response.json()
-                            //     .then(function (json) {
-                            //     });
+                        });
+                        Pachno.trigger($input.data('event-key'), $input);
+                    } else {
+                        let data = new FormData();
+                        data.append('value', value);
+
+                        fetch($input.data('url'), {
+                            method: 'POST',
+                            body: data
                         })
+                            .then(function(response) {
+                                $input.removeClass('submitting');
+                                $input.prop('disabled', false);
+                                // response.json().then(resolve);
+                                // res = response;
+                                // console.log(response);
+                                // resolve($form, res);
+                                // response.json()
+                                //     .then(function (json) {
+                                //     });
+                            })
+                    }
+
                 });
 
                 jQuery('body').on('change', 'form[data-interactive-form] input[type=checkbox],form[data-interactive-form] input[type=radio]', function () {
@@ -151,16 +160,6 @@ define(['pachno/tools', 'pachno/index', 'domReady', 'jquery', 'mention'],
                     }
                     e.stopPropagation();
                 });
-                // jQuery("body").on("click", ".dynamic_menu_link", function (e) {
-                //     var menu = jQuery(this).next()[0];
-                //     if (menu === undefined) {
-                //         var menu = jQuery(this).parent().next()[0];
-                //     }
-                //     if (menu !== undefined && menu.hasClass('dynamic_menu')) {
-                //         Pachno.Helpers.loadDynamicMenu(menu);
-                //     }
-                // });
-                // jQuery("#user_notifications_container").on("click", Pachno.Main.Profile.toggleNotifications);
                 jQuery("#disable-tutorial-button").on("click", Pachno.Tutorial.disable);
 
                 // jQuery("body").on("click", function (e) {

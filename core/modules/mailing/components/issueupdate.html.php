@@ -114,6 +114,6 @@ if ($issue instanceof \pachno\core\entities\Issue): ?>
         <br>
         <?php echo __('You were sent this notification email because you are related to, subscribed to, or commented on the issue mentioned in this email.');?><br>
         <?php echo __('Depending on your notification settings, you may or may not be notified again when this issue is updated in the future.');?><br>
-        <?php echo __('To change when and how often we send these emails, update your account settings:') . ' ' . link_tag($module->generateURL('account'), $module->generateURL('account')); ?>
+        <?php echo __('To change when and how often we send these emails, update your account settings:') . ' ' . link_tag($module->generateURL('profile_account'), $module->generateURL('profile_account')); ?>
     </div>
 <?php endif; ?>

@@ -3,6 +3,7 @@
     namespace pachno\core\entities;
 
     use pachno\core\entities\tables\Permissions;
+    use pachno\core\modules\publish\Publish;
 
     /**
      * @Table(name="\pachno\core\entities\tables\ListTypes")
@@ -38,9 +39,9 @@
                 ['permission' => 'caneditissuecustomfields'],
                 ['permission' => 'canaddextrainformationtoissues'],
                 ['permission' => 'canpostseeandeditallcomments'],
-                ['permission' => 'readarticle', 'module' => 'publish', 'target_id' => '%project_key%'],
-                ['permission' => 'editarticle', 'module' => 'publish', 'target_id' => '%project_key%'],
-                ['permission' => 'deletearticle', 'module' => 'publish', 'target_id' => '%project_key%'],
+                ['permission' => Publish::PERMISSION_READ_ARTICLE, 'module' => 'publish', 'target_id' => 'project_%project_id%'],
+                ['permission' => Publish::PERMISSION_EDIT_ARTICLE, 'module' => 'publish', 'target_id' => 'project_%project_id%'],
+                ['permission' => Publish::PERMISSION_DELETE_ARTICLE, 'module' => 'publish', 'target_id' => 'project_%project_id%'],
             ];
             $roles['Project manager'] = [
                 ['permission' => 'page_project_allpages_access'],
@@ -54,9 +55,9 @@
                 ['permission' => 'caneditissuecustomfields'],
                 ['permission' => 'canaddextrainformationtoissues'],
                 ['permission' => 'canpostseeandeditallcomments'],
-                ['permission' => 'readarticle', 'module' => 'publish', 'target_id' => '%project_key%'],
-                ['permission' => 'editarticle', 'module' => 'publish', 'target_id' => '%project_key%'],
-                ['permission' => 'deletearticle', 'module' => 'publish', 'target_id' => '%project_key%'],
+                ['permission' => Publish::PERMISSION_READ_ARTICLE, 'module' => 'publish', 'target_id' => 'project_%project_id%'],
+                ['permission' => Publish::PERMISSION_EDIT_ARTICLE, 'module' => 'publish', 'target_id' => 'project_%project_id%'],
+                ['permission' => Publish::PERMISSION_DELETE_ARTICLE, 'module' => 'publish', 'target_id' => 'project_%project_id%'],
             ];
             $roles['Tester'] = [
                 ['permission' => 'page_project_allpages_access'],
@@ -68,8 +69,8 @@
                 ['permission' => 'caneditissuecustomfields'],
                 ['permission' => 'canaddextrainformationtoissues'],
                 ['permission' => 'canpostandeditcomments'],
-                ['permission' => 'readarticle', 'module' => 'publish', 'target_id' => '%project_key%'],
-                ['permission' => 'editarticle', 'module' => 'publish', 'target_id' => '%project_key%'],
+                ['permission' => Publish::PERMISSION_READ_ARTICLE, 'module' => 'publish', 'target_id' => 'project_%project_id%'],
+                ['permission' => Publish::PERMISSION_EDIT_ARTICLE, 'module' => 'publish', 'target_id' => 'project_%project_id%'],
             ];
             $roles['Documentation editor'] = [
                 ['permission' => 'page_project_allpages_access'],
@@ -80,8 +81,8 @@
                 ['permission' => 'cancreateandeditissues'],
                 ['permission' => 'canaddextrainformationtoissues'],
                 ['permission' => 'canpostandeditcomments'],
-                ['permission' => 'readarticle', 'module' => 'publish', 'target_id' => '%project_key%'],
-                ['permission' => 'editarticle', 'module' => 'publish', 'target_id' => '%project_key%'],
+                ['permission' => Publish::PERMISSION_READ_ARTICLE, 'module' => 'publish', 'target_id' => 'project_%project_id%'],
+                ['permission' => Publish::PERMISSION_EDIT_ARTICLE, 'module' => 'publish', 'target_id' => 'project_%project_id%'],
             ];
 
             foreach ($roles as $name => $permissions) {

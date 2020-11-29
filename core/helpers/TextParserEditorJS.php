@@ -35,7 +35,10 @@
         public function __construct($content, $options)
         {
             $configuration_file = PACHNO_CONFIGURATION_PATH . 'editorjs.config.json';
-//            framework\Context::getDebugger()->watch('content', $content);
+            if (empty($content)) {
+                $fixtures_path = PACHNO_CORE_PATH . 'modules' . DS . 'publish' . DS . 'fixtures' . DS;
+                $content = file_get_contents($fixtures_path . 'empty.json');
+            }
             $parser = new EditorJS($content, file_get_contents($configuration_file));
             $this->parser = $parser;
         }
@@ -67,6 +70,9 @@
                         $this->toc[] = ['level' => 1, 'content' => $text, 'id' => $toc_id];
                     }
                     $content[] = "<h{$level} id='{$toc_id}' name='{$toc_id}'>{$text}</h{$level}>";
+                    break;
+                case 'quote':
+                    $content[] = "<blockquote class='block align-{$block['data']['alignment']}'><span class='quote'>{$block['data']['text']}</span><span class='author'>{$block['data']['caption']}</span></blockquote>";
                     break;
                 case 'code':
                     $code = $block['data']['code'];

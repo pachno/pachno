@@ -1,8 +1,9 @@
 import {debounce} from "../tools/tools";
 import Swimlane from "./swimlane";
 import UI from "../helpers/ui";
+import {getEditor} from "../widgets/editor";
 
-const SwimlaneTypes = {
+export const SwimlaneTypes = {
     NONE: '',
     ISSUES: 'issues',
     GROUPING: 'grouping',
@@ -26,6 +27,12 @@ class Board {
         this.swimlane_type = undefined;
         this.swimlane_identifier = undefined;
         this.swimlane_field_values = undefined;
+        this.report_issue_url = undefined;
+
+        /**
+         * Swimlanes
+         * @type {Swimlane[]}
+         */
         this.swimlanes = undefined;
         this.columns = undefined;
         this.users = new Set();
@@ -63,6 +70,7 @@ class Board {
         this.swimlane_identifier = board_json.swimlane_identifier;
         this.swimlane_field_values = board_json.swimlane_field_values;
         this.columns = board_json.columns;
+        this.report_issue_url = board_json.report_issue_url;
 
         this.updateBackgroundColor();
         this.updateBoardClass();
@@ -175,8 +183,12 @@ class Board {
 
     verifySwimlanes() {
         const $whiteboard_content = $('#whiteboard-content');
+        let has_swimlanes = false;
         for (const swimlane of this.swimlanes) {
-            if ($(`.swimlane[data-swimlane-identifier=${swimlane.identifier}]`).length) continue;
+            if ($(`.swimlane[data-swimlane-identifier=${swimlane.identifier}]`).length) {
+                has_swimlanes = true;
+                continue;
+            }
 
             const swimlane_html = `<div class="row swimlane empty" data-swimlane-identifier="${swimlane.identifier}"></div>`;
             const $swimlane = $(swimlane_html);
@@ -184,8 +196,11 @@ class Board {
                 let header_name = '';
                 if (swimlane.identifier_issue) {
                     const closed_class = (swimlane.identifier_issue.closed) ? 'closed' : '';
-                    header_name = `<a class="issue-number" href="${swimlane.identifier_issue.href}">${swimlane.identifier_issue.issue_no}</a>`;
+                    header_name = '<span class="issue-container">';
+                    header_name += `<a class="issue-number" href="${swimlane.identifier_issue.href}">${swimlane.identifier_issue.issue_no}</a>`;
                     header_name += `<span class="name issue_header ${closed_class}">${swimlane.identifier_issue.title}</span>`;
+                    header_name += '</span>';
+                    header_name += `<button class="button secondary highlight button-report-issue trigger-backdrop" data-additional-params="parent_issue_id=${swimlane.identifier_issue.id}">${Pachno.T.agile.add_card_here}</button>`
                 } else {
                     header_name = `<span class="name">${swimlane.name}</span>`;
                 }
@@ -193,7 +208,11 @@ class Board {
                 $swimlane.append(header_html);
             }
             $swimlane.append(`<div class="columns-container scroll-sync" id="${swimlane.identifier}-columns"><div class="columns"></div></div>`);
-            $whiteboard_content.append($swimlane);
+            if (has_swimlanes && $(`.swimlane[data-swimlane-identifier="swimlane_0"]`).length) {
+                $(`.swimlane[data-swimlane-identifier="swimlane_0"]`).prepend($swimlane);
+            } else {
+                $whiteboard_content.append($swimlane);
+            }
         }
     }
 
@@ -300,6 +319,18 @@ class Board {
             this.verifyColumns();
             this.verifyIssues();
             this.updateAssigneesList();
+            const $buttons = $('.button-report-issue');
+            const url = (this.selected_milestone_id) ? this.report_issue_url + `&milestone_id=${this.selected_milestone_id}` : this.report_issue_url;
+            $buttons.each(function () {
+                const $button = $(this);
+                $button.data('original-url', $button.data('url'));
+                if ($button.data('additional-params')) {
+                    $button.data('url', url + '&' + $button.data('additional-params'));
+                } else {
+                    $button.data('url', url);
+                }
+            });
+
             $whiteboard_indicator.hide();
         } catch (error) {
             console.trace(error);
@@ -348,7 +379,7 @@ class Board {
         const milestone_id = $milestone_input.data('selected-value');
         if (milestone_id) {
             Pachno.fetch($milestone_input.data('status-url'), {
-                additional_params: '&milestone_id=' + parseInt(milestone_id) + '&board_id=' + this.id,
+                additional_params: 'milestone_id=' + parseInt(milestone_id) + '&board_id=' + this.id,
                 method: 'GET',
                 loading: {
                     hide: 'selected_milestone_status_details',
@@ -363,6 +394,30 @@ class Board {
                 }
             });
         }
+    }
+
+    addIssue(issue_json) {
+        const issue = new Issue(issue_json, this.id);
+        if (this.swimlane_type === SwimlaneTypes.ISSUES && this.swimlane_identifier === "issuetype" && this.swimlane_field_values.includes(issue.issue_type.id)) {
+            const swimlane = new Swimlane({
+                issues: [],
+                name: issue.title,
+                identifier_type: "issues",
+                identifier_grouping: "issuetype",
+                has_identifiables: true,
+                identifier_issue: issue_json,
+                identifier: 'swimlane_' + issue.id
+            }, this.id);
+
+            this.swimlanes.splice(this.swimlanes.length - 1, 0, swimlane);
+        } else {
+            for (const swimlane of this.swimlanes) {
+                if (swimlane.has(issue)) {
+                    swimlane.addIssue(issue);
+                }
+            }
+        }
+        this.updateWhiteboard();
     }
 
     addColumn(column, swimlanes) {
@@ -387,6 +442,7 @@ class Board {
     setupListeners() {
         const board = this;
         const $body = $('body');
+
         $body.on('click', '#selected_milestone_input li', function (event) {
             const $input = $(event.target);
             const milestone_id = $input.data('input-value');
@@ -419,6 +475,35 @@ class Board {
             }
         });
 
+        const watchedForms = new Set();
+
+        $body.off('click', '#issue-card-popup .formatted-text-container');
+        $body.on('click', '#issue-card-popup .formatted-text-container', function () {
+            const $editorContainer = $(this).next();
+            const $textarea = $editorContainer.find('textarea');
+            const $form = $(this).parents('form');
+            const editor = getEditor($textarea.attr('id'));
+            // debugger;
+            // editor.focus();
+            editor.codemirror.off('blur');
+            editor.codemirror.on('blur', () => {
+                $editorContainer.parents('form').submit();
+            });
+            $form.addClass('editing');
+            watchedForms.add($form.attr('id'));
+            setTimeout(() => {
+                editor.codemirror.focus();
+            }, 250);
+        });
+        Pachno.on(Pachno.EVENTS.formSubmitResponse, function (PachnoApplication, data) {
+            const json = data.json;
+            if (watchedForms.has(data.form)) {
+                const $form = $(`#${data.form}`);
+                $form.find('.formatted-text-container').html(json.changed[$form.data('field')].value);
+                $form.removeClass('editing');
+            }
+        });
+
         const $filter_input = $('#planning_filter_title_input');
         $filter_input.on('keyup', debounce(this.filterInput, 250).bind(this));
         Pachno.on(Pachno.EVENTS.formSubmitResponse, function (PachnoApplication, data) {
@@ -426,6 +511,9 @@ class Board {
             switch (data.form) {
                 case 'edit-agileboard-form':
                     board.setJson(json.board);
+                    break;
+                case 'report_issue_form':
+                    board.addIssue(json.issue);
                     break;
                 case 'add-first-column-form':
                 case 'add-another-column-form':

@@ -114,17 +114,6 @@
         return preg_match("/" . ($exact_match ? '^' : '') . $regex . ($exact_match ? '$' : '') . "/" . ($case_sensitive ? '' : 'i'), $str);
     }
 
-    function pachno_get_breadcrumblinks($type, $project = null)
-    {
-        return \pachno\core\framework\Context::getResponse()->getPredefinedBreadcrumbLinks($type, $project);
-    }
-
-    function pachno_get_pagename($page)
-    {
-        $links = pachno_get_breadcrumblinks('project_summary', \pachno\core\framework\Context::getCurrentProject());
-        return (isset($links[$page]) && $page != 'project_issues') ? $links[$page]['title'] : __('Dashboard');
-    }
-
     function pachno_hex_to_rgb($hex)
     {
         $hex = preg_replace("/[^0-9A-Fa-f]/", '', $hex);

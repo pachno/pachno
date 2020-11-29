@@ -98,7 +98,6 @@
         protected function _addListeners()
         {
             framework\Event::listen('core', 'project_sidebar_links', array($this, 'listen_project_links'));
-            framework\Event::listen('core', 'breadcrumb_project_links', array($this, 'listen_breadcrumb_links'));
             framework\Event::listen('core', 'get_backdrop_partial', array($this, 'listen_getcommit'));
             framework\Event::listen('core', 'viewissue_before_tabs', array($this, 'listen_viewissue_panel_tab'));
             framework\Event::listen('core', 'viewissue_after_tabs', array($this, 'listen_viewissue_panel'));
@@ -171,11 +170,6 @@
             {
                 include_component('vcs_integration/menustriplinks', array('project' => framework\Context::getCurrentProject(), 'module' => $this, 'submenu' => $event->getParameter('submenu')));
             }
-        }
-
-        public function listen_breadcrumb_links(framework\Event $event)
-        {
-            $event->addToReturnList(array('url' => framework\Context::getRouting()->generate('vcs_commitspage', array('project_key' => framework\Context::getCurrentProject()->getKey())), 'title' => framework\Context::getI18n()->__('Commits')));
         }
 
         public function listen_project_links(framework\Event $event)

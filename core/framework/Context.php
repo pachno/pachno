@@ -252,12 +252,12 @@
             if (self::isDebugMode() && !self::isInstallmode())
                 self::generateDebugInfo();
 
-            if (self::getRequest() instanceof Request && self::getRequest()->isAjaxCall()) {
-                self::getResponse()->ajaxResponseText(404, $exception->getMessage());
-            }
-
             if (self::isCLI()) {
                 self::cliError($exception->getMessage(), $exception);
+            }
+
+            if (self::getRequest() instanceof Request && self::getRequest()->isAjaxCall()) {
+                self::getResponse()->ajaxResponseText(404, $exception->getMessage());
             } else {
                 self::getResponse()->cleanBuffer();
                 require PACHNO_CORE_PATH . 'templates' . DS . 'error.php';
@@ -590,7 +590,7 @@
         {
             Logging::log('Loading event listeners');
             foreach ($event_listeners as $listener) {
-                list($event_module, $event_identifier, $module, $method) = $listener;
+                [$event_module, $event_identifier, $module, $method] = $listener;
                 Event::listen($event_module, $event_identifier, [self::getModule($module), $method]);
             }
             Logging::log('... done (loading event listeners)');
@@ -1474,72 +1474,6 @@
             }
         }
 
-        public static function populateBreadcrumbs()
-        {
-            $childbreadcrumbs = [];
-
-            if (self::$_selected_project instanceof Project) {
-                $t = self::$_selected_project;
-
-                $hierarchy_breadcrumbs = [];
-                $projects_processed = [];
-
-                while ($t instanceof Project) {
-                    if (array_key_exists($t->getKey(), $projects_processed)) {
-                        // We have a cyclic dependency! Oh no!
-                        // If this happens, throw an exception
-
-                        throw new Exception(self::geti18n()->__('A loop has been found in the project heirarchy. Go to project configuration, and alter the subproject setting for this project so that this project is not a subproject of one which is a subproject of this one.'));
-                    }
-
-                    $projects_processed[$t->getKey()] = $t;
-
-                    $itemsubmenulinks = self::getResponse()->getPredefinedBreadcrumbLinks('project_summary', $t);
-
-                    if ($t->hasChildren()) {
-                        $itemsubmenulinks[] = ['separator' => true];
-                        foreach ($t->getChildren() as $child) {
-                            if (!$child->hasAccess())
-                                continue;
-                            $itemsubmenulinks[] = ['url' => self::getRouting()->generate('project_dashboard', ['project_key' => $child->getKey()]), 'title' => $child->getName()];
-                        }
-                    }
-
-                    $hierarchy_breadcrumbs[] = [$t, $itemsubmenulinks];
-
-                    if ($t->hasParent()) {
-                        $parent = $t->getParent();
-                        $t = $t->getParent();
-                    } else {
-                        $t = null;
-                    }
-                }
-
-                if (self::$_selected_project->hasClient()) {
-                    self::setCurrentClient(self::$_selected_project->getClient());
-                }
-                if (mb_strtolower(Settings::getSiteHeaderName()) != mb_strtolower(self::$_selected_project->getName()) || self::isClientContext()) {
-                    self::getResponse()->addBreadcrumb(Settings::getSiteHeaderName(), self::getRouting()->generate('home'), self::getResponse()->getPredefinedBreadcrumbLinks('main_links', self::$_selected_project));
-                    if (self::isClientContext()) {
-                        self::getResponse()->addBreadcrumb(self::getCurrentClient()->getName(), self::getRouting()->generate('client_dashboard', ['client_id' => self::getCurrentClient()->getID()]), self::getResponse()->getPredefinedBreadcrumbLinks('client_list'));
-                    }
-                }
-
-                // Add root breadcrumb first, so reverse order
-                $hierarchy_breadcrumbs = array_reverse($hierarchy_breadcrumbs);
-
-                foreach ($hierarchy_breadcrumbs as $breadcrumb) {
-                    $class = null;
-                    if ($breadcrumb[0]->getKey() == self::getCurrentProject()->getKey()) {
-                        $class = 'selected_project';
-                    }
-                    self::getResponse()->addBreadcrumb($breadcrumb[0]->getName(), self::getRouting()->generate('project_dashboard', ['project_key' => $breadcrumb[0]->getKey()]), $breadcrumb[1], $class);
-                }
-            } else {
-                self::getResponse()->addBreadcrumb(Settings::getSiteHeaderName(), self::getRouting()->generate('home'), self::getResponse()->getPredefinedBreadcrumbLinks('main_links'));
-            }
-        }
-
         /**
          * Set the currently selected client
          *
@@ -1981,16 +1915,16 @@
                 if (self::$_redirect_login == 'login') {
 
                     Logging::log('An error occurred setting up the user object, redirecting to login', 'main', Logging::LEVEL_NOTICE);
-                    if (self::getRouting()->getCurrentRoute()->getName() != 'login') {
+                    if (self::getRouting()->getCurrentRoute()->getName() != 'auth_login') {
                         self::setMessage('login_message_err', self::geti18n()->__('Please log in'));
                         self::setMessage('login_referer', self::getRouting()->generate(self::getRouting()->getCurrentRoute()->getName(), self::getRequest()->getParameters()));
                     }
-                    self::getResponse()->headerRedirect(self::getRouting()->generate('login_page'), 403);
+                    self::getResponse()->headerRedirect(self::getRouting()->generate('auth_login_page'), 403);
                 }
 
-                if (self::$_redirect_login == 'elevated_login') {
+                if (self::$_redirect_login == 'auth_elevated_login') {
                     Logging::log('Elevated permissions required', 'main', Logging::LEVEL_NOTICE);
-                    if (self::getRouting()->getCurrentRoute()->getName() != 'elevated_login') {
+                    if (self::getRouting()->getCurrentRoute()->getName() != 'auth_elevated_login') {
                         self::setMessage('elevated_login_message_err', self::geti18n()->__('Please re-enter your password to continue'));
                     }
 
@@ -2002,7 +1936,7 @@
                 if (self::$_redirect_login == '2fa_login') {
                     Logging::log('2FA verification required', 'main', Logging::LEVEL_NOTICE);
 
-                    self::getResponse()->headerRedirect(self::getRouting()->generate('2fa_code_input'));
+                    self::getResponse()->headerRedirect(self::getRouting()->generate('auth_2fa_code_input'));
 
                     return true;
                 }
@@ -2044,10 +1978,10 @@
                     self::generateDebugInfo();
                 }
 
-                self::getResponse()->setHttpStatus(301);
+                self::getResponse()->setHttpStatus(403);
                 $message = $e->getMessage();
 
-                if (self::getRequest()->getRequestedFormat() == 'json') {
+                if (self::getRequest()->isResponseFormatAccepted('application/json', false)) {
                     self::getResponse()->setContentType('application/json');
                     $message = json_encode(['message' => $message]);
                 }
@@ -2097,7 +2031,7 @@
             } catch (exceptions\ElevatedLoginException $e) {
                 Logging::log("Could not reauthenticate elevated permissions: " . $e->getMessage(), 'main', Logging::LEVEL_INFO);
                 self::setMessage('elevated_login_message_err', $e->getMessage());
-                self::$_redirect_login = 'elevated_login';
+                self::$_redirect_login = 'auth_elevated_login';
             } catch (Exception $e) {
                 Logging::log("Something happened while setting up user: " . $e->getMessage(), 'main', Logging::LEVEL_WARNING);
 
@@ -2142,7 +2076,7 @@
                     if (!self::getRequest()->hasCookie('original_username')) {
                         self::$_user->updateLastSeen();
                     }
-                    if (!self::getScope()->isDefault() && !self::getRequest()->isAjaxCall() && !in_array(self::getRouting()->getCurrentRoute()->getName(), ['add_scope', 'debugger', 'logout']) && !self::$_user->isGuest() && !self::$_user->isConfirmedMemberOfScope(self::getScope())) {
+                    if (!self::getScope()->isDefault() && !self::getRequest()->isAjaxCall() && !in_array(self::getRouting()->getCurrentRoute()->getName(), ['auth_add_scope', 'debugger', 'auth_logout']) && !self::$_user->isGuest() && !self::$_user->isConfirmedMemberOfScope(self::getScope())) {
                         self::getResponse()->headerRedirect(self::getRouting()->generate('add_scope'));
                     }
                     self::$_user->save();
@@ -2189,6 +2123,7 @@
          *
          * @return bool
          * @throws Exception
+         * @throws CSRFFailureException
          */
         public static function performAction()
         {
@@ -2391,10 +2326,13 @@
          */
         public static function setCurrentProject($project)
         {
-            self::getResponse()->setBreadcrumb(null);
             self::$_selected_project = $project;
         }
 
+        /**
+         * @return bool
+         * @throws CSRFFailureException
+         */
         public static function checkCsrfToken()
         {
             $token = self::getCsrfToken();
@@ -2434,7 +2372,7 @@
         public static function loadLibrary($lib_name)
         {
             if (mb_strpos($lib_name, '/') !== false) {
-                list($module, $lib_name) = explode('/', $lib_name);
+                [$module, $lib_name] = explode('/', $lib_name);
             }
 
             // Skip the library if it already exists
@@ -2487,7 +2425,7 @@
                 }
             }
 
-            list ($localjs, $externaljs) = self::getResponse()->getJavascripts();
+            [$localjs, $externaljs] = self::getResponse()->getJavascripts();
             $webroot = self::getWebroot();
 
             $values = compact('content', 'localjs', 'externaljs', 'webroot');

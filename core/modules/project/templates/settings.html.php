@@ -5,7 +5,6 @@
      * @var \pachno\core\entities\Project $selected_project
      */
 
-    $pachno_response->addBreadcrumb(__('Project settings'), make_url('project_settings', array('project_key' => $selected_project->getKey())));
     $pachno_response->setTitle(__('"%project_name" settings', array('%project_name' => $selected_project->getName())));
     $selected_tab = ($selected_tab) ?? 'info';
 
@@ -40,21 +39,36 @@
         <?php \pachno\core\framework\Event::createNew('core', 'config_project_panes')->trigger(['selected_tab' => $selected_tab, 'access_level' => $access_level, 'project' => $selected_project]); ?>
     </div>
 </div>
-<script>
-    $(document).ready(() => {
-        $('body').on('click', '.project-edition .open', function(event) {
-            event.preventDefault();
-            event.stopPropagation();
-
-            const $item = $(this).parents('.project-edition');
-            Pachno.Config.loadComponentOptions(
-                {
-                    container: '#project-editions-list-container',
-                    options: '#selected-edition-options',
-                    component: '.project-edition'
-                },
-                $item
-            );
+<script type="text/javascript">
+    Pachno.on(Pachno.EVENTS.ready, function () {
+        Pachno.on(Pachno.EVENTS.formSubmitResponse, function (PachnoApplication, data) {
+            const json = data.json;
+            const project = json.project;
+            switch (data.form) {
+                case 'project_config_icon_form':
+                    const $project_icons = $(`.project-icon[data-project-id=${project.id}]`);
+                    $project_icons.attr('src', project.icon);
+                    $project_icons.prop('data-src', project.icon);
+                    $project_icons.data('src', project.icon);
+                    break;
+            }
         });
     });
+
+    // $(document).ready(() => {
+    //     $('body').on('click', '.project-edition .open', function(event) {
+    //         event.preventDefault();
+    //         event.stopPropagation();
+    //
+    //         const $item = $(this).parents('.project-edition');
+    //         Pachno.Config.loadComponentOptions(
+    //             {
+    //                 container: '#project-editions-list-container',
+    //                 options: '#selected-edition-options',
+    //                 component: '.project-edition'
+    //             },
+    //             $item
+    //         );
+    //     });
+    // });
 </script>

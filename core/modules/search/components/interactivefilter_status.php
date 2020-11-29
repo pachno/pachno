@@ -1,5 +1,5 @@
-<div class="fancy-dropdown-container filter" data-filterkey="<?php echo $filter->getFilterKey(); ?>" data-value="<?php echo $filter->getValue(); ?>" data-all-value="<?php echo __('All'); ?>">
-    <div class="fancy-dropdown">
+<div class="fancy-dropdown-container filter" data-filterkey="<?php echo $filter->getFilterKey(); ?>">
+    <div class="fancy-dropdown" data-default-label="<?php echo __('All'); ?>">
         <input type="hidden" name="fs[<?php echo $filter->getFilterKey(); ?>][o]" value="<?php echo $filter->getOperator(); ?>">
         <label><?php
 
@@ -38,7 +38,6 @@
                 <?php foreach ($filter->getAvailableValues() as $status): ?>
                     <input type="checkbox" class="fancy-checkbox" name="fs[<?php echo $filter->getFilterKey(); ?>][v]" value="<?= $status->getID(); ?>" id="filters_<?php echo $filter->getFilterKey(); ?>_value_<?php echo $status->getID(); ?>" <?php if ($filter->hasValue($status->getID())) echo ' checked'; ?>>
                     <label class="list-item filtervalue" for="filters_<?php echo $filter->getFilterKey(); ?>_value_<?php echo $status->getID(); ?>">
-                        <?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far'); ?>
                         <span class="name value"><?php echo __($status->getName()); ?></span>
                     </label>
                 <?php endforeach; ?>

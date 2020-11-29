@@ -4,6 +4,7 @@
 
     /**
      * @var \pachno\core\framework\Response $pachno_response
+     * @var \pachno\core\framework\Routing $pachno_routing
      * @var string $webroot
      */
 
@@ -11,7 +12,7 @@
 
 ?>
 <!DOCTYPE html>
-<html lang="<?= \pachno\core\framework\Settings::getHTMLLanguage(); ?>" style="cursor: progress;">
+<html lang="<?= \pachno\core\framework\Settings::getHTMLLanguage(); ?>" style="cursor: progress;" data-route-name="<?= $pachno_routing->getCurrentRoute()->getName(); ?>">
     <head>
         <meta charset="<?= Context::getI18n()->getCharset(); ?>">
         <?php \pachno\core\framework\Event::createNew('core', 'layout.php::header-begins')->trigger(); ?>
@@ -23,14 +24,7 @@
         <base href="<?= rtrim(Context::getWebroot(), '/'); ?>">
         <title><?= ($pachno_response->hasTitle()) ? strip_tags($header_name . ' ~ ' . $pachno_response->getTitle()) : strip_tags(\pachno\core\framework\Settings::getSiteHeaderName()); ?></title>
         <style>
-            @import url('https://fonts.googleapis.com/css?family=Fira+Mono:400,500,700|Source+Sans+Pro:300,300i,400,400i,600,600i|Catamaran:300,300i,400,400i,600,600i&subset=cyrillic,cyrillic-ext,latin-ext');
-            @font-face {
-                font-family: 'Simplifica';
-                src: url('/fonts/simplifica_typeface-webfont.woff2') format('woff2'),
-                url('/fonts/simplifica_typeface-webfont.woff') format('woff');
-                font-weight: normal;
-                font-style: normal;
-            }
+            @import url('https://fonts.googleapis.com/css?family=Fira+Mono:400,500,700|Source+Sans+Pro:300,300i,400,400i,600,600i|Lilita+One:400&subset=cyrillic,cyrillic-ext,latin-ext&display=swap');
         </style>
         <?php $pachno_version = \pachno\core\framework\Settings::getVersion(); ?>
         <link rel="shortcut icon" href="<?= (Context::isProjectContext()) ? Context::getCurrentProject()->getIconName() : (\pachno\core\framework\Settings::isUsingCustomFavicon() ? \pachno\core\framework\Settings::getFaviconURL() : '/favicon.png?bust=' . $pachno_version); ?>">

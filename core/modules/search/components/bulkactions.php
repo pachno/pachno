@@ -162,13 +162,4 @@ $actions = [
             <input type="submit" class="button disabled" value="<?php echo __('Apply'); ?>" id="bulk_action_submit">
         </div>
     </form>
-    <?php if ($mode == 'bottom'): ?>
-        <script type="text/javascript">
-            require(['domReady', 'pachno/index'], function (domReady, pachno_index_js) {
-                domReady(function () {
-                    pachno_index_js.Search.checkToggledCheckboxes();
-                });
-            });
-        </script>
-    <?php endif; ?>
 </div>

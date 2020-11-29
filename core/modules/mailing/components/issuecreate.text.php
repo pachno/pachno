@@ -17,4 +17,4 @@
 
 <?php echo __('You were sent this notification email because you are related to the issue mentioned in this email.'); ?>
 
-<?php echo __('To change when and how often we send these emails, update your account settings:') . ' ' . $module->generateURL('account'); ?>
+<?php echo __('To change when and how often we send these emails, update your account settings:') . ' ' . $module->generateURL('profile_account'); ?>

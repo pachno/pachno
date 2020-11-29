@@ -60,12 +60,9 @@
             <label for="wiki_url"><?php echo __('Wiki URL'); ?></label>
         </div>
     <?php Event::createNew('core', 'project/projectinfo', $project)->trigger(); ?>
-        <?php if ($access_level == Settings::ACCESS_FULL): ?>
+    <?php if ($access_level == Settings::ACCESS_FULL): ?>
         <div class="form-row submit-container">
-            <button type="submit" class="button primary">
-                <span><?php echo __('Save'); ?></span>
-                <?= fa_image_tag('spinner', ['class' => 'fa-spin icon indicator']); ?>
-            </button>
+            <?= fa_image_tag('spinner', ['class' => 'fa-spin icon indicator submit-indicator']); ?>
         </div>
     </form>
     <?php endif; ?>

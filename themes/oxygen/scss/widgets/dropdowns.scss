@@ -35,6 +35,19 @@
       right: auto;
       left: 0;
 
+      &.slide-out {
+        position: fixed;
+        left: 0;
+        top: 55px;
+        height: calc(100% - 55px);
+        transform-origin: left;
+        transform: translateX(-110%);
+        width: 350px;
+        border-radius: 0;
+        max-height: none;
+
+      }
+
       &.pop-out {
         left: 20px;
         top: 0;
@@ -56,6 +69,12 @@
 
     &.columns {
       flex-direction: row;
+
+      .column {
+        &.hidden {
+          display: none;
+        }
+      }
 
       &.three-columns .column {
         flex: 1 1 33%;
@@ -113,6 +132,11 @@
     &.active + .dropdown-container {
       transform: scaleY(1);
       opacity: 1;
+
+      &.slide-out {
+        transform-origin: left;
+        transform: translateX(0);
+      }
 
       &.from-center {
         transform: scaleY(1) translateX(-50%);

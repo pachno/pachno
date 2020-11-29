@@ -1,6 +1,5 @@
 <?php
 
-    $pachno_response->addBreadcrumb(__('Team overview'), make_url('project_team', array('project_key' => $selected_project->getKey())));
     $pachno_response->setTitle(__('"%project_name" project team', array('%project_name' => $selected_project->getName())));
 
 ?>

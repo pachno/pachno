@@ -146,7 +146,7 @@
                 $scope_id = framework\Context::getScope()->getID();
             }
             $this->_populateItemCache($scope_id);
-            $items = (array_key_exists($itemtype, self::$_item_cache[$scope_id])) ? self::$_item_cache[$itemtype] : [];
+            $items = (array_key_exists($itemtype, self::$_item_cache[$scope_id])) ? self::$_item_cache[$scope_id][$itemtype] : [];
             foreach ($items as $id => $item) {
                 if ($item->getItemdata() != $itemdata) unset($items[$id]);
             }

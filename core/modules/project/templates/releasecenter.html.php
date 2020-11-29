@@ -1,6 +1,5 @@
 <?php
 
-    $pachno_response->addBreadcrumb(__('Release center'), make_url('project_release_center', array('project_key' => $selected_project->getKey())));
     $pachno_response->setTitle(__('"%project_name" release center', array('%project_name' => $selected_project->getName())));
 
 ?>
@@ -55,12 +54,3 @@
         <?php endif; ?>
     </div>
 </div>
-<?php if ($build_error): ?>
-    <script type="text/javascript">
-        require(['domReady', 'pachno/index'], function (domReady, Pachno) {
-            domReady(function () {
-                Pachno.UI.Message.error(__('An error occured when adding or updating the release'), $build_error);
-            });
-        });
-    </script>
-<?php endif; ?>

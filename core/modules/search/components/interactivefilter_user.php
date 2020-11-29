@@ -1,6 +1,6 @@
-<div class="fancy-dropdown-container filter " id="interactive_filter_<?php echo $filter->getFilterKey(); ?>" data-filterkey="<?php echo $filter->getFilterKey(); ?>" data-value="<?php echo $filter->getValue(); ?>">
+<div class="fancy-dropdown-container filter " id="interactive_filter_<?php echo $filter->getFilterKey(); ?>">
     <input type="hidden" name="fs[<?php echo $filter->getFilterKey(); ?>][o]" value="<?php echo $filter->getOperator(); ?>">
-    <div class="fancy-dropdown">
+    <div class="fancy-dropdown" data-default-label="<?php echo __('Any'); ?>">
         <label><?php
 
             switch ($filter->getFilterKey())
@@ -41,6 +41,6 @@
                 </div>
             </div>
         </div>
-        <div class="remove-button"><?= fa_image_tag('times'); ?></div>
+        <div class="remove-button icon"><?= fa_image_tag('times'); ?></div>
     </div>
 </div>

@@ -60,9 +60,11 @@
                 <dt><label for="admin_password_repeat">Repeat password</label></dt>
                 <dd><input type="password" id="admin_password_repeat" class="password small" value="admin" name="password_repeat"></dd>
             </dl>
-            <div style="clear: both; padding: 30px 0 15px 0; text-align: right;">
-                <img src="images/spinning_30.gif" id="next_indicator" style="display: none; vertical-align: middle; margin-left: 10px;">
-                <input type="submit" id="continue_button" onclick="$('#continue_button').hide();$('#next_indicator').show();" value="Continue">
+            <div style="display: flex; width: 100%; align-items: center; justify-content: center; flex-direction: row; margin: 30px 0 20px;">
+                <button type="submit" onclick="document.getElementById('continue_button').classList.add('disabled');document.getElementById('pachno_settings').classList.add('submitting');" id="continue_button" style="margin-left: auto;">
+                    <span class="name"><?= __('Continue'); ?></span>
+                    <?= fa_image_tag('spinner', ['class' => 'fa-spin icon indicator']); ?>
+                </button>
             </div>
         </form>
     <?php endif; ?>

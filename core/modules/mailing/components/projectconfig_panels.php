@@ -1,4 +1,4 @@
-<div id="tab_mailing_settings_pane"<?php if ($selected_tab != 'mailing_settings'): ?> style="display: none;"<?php endif; ?>>
+<div id="tab_mailing_settings_pane"<?php if ($selected_tab != 'mailing_settings'): ?> style="display: none;"<?php endif; ?> data-tab-id="mailing">
     <form accept-charset="<?php echo \pachno\core\framework\Context::getI18n()->getCharset(); ?>" action="<?php echo make_url('mailing_configure_settings', array('project_id' => $project->getID())); ?>" method="post" onsubmit="Pachno.UI.formSubmit('<?php echo make_url('mailing_configure_settings', array('project_id' => $project->getID())); ?>', 'mailing'); return false;" id="mailing">
         <div class="project_save_container">
             <span id="mailing_indicator" style="display: none;"><?php echo image_tag('spinning_20.gif'); ?></span>

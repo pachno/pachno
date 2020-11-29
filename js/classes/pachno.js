@@ -7,6 +7,10 @@ import widgetSetupListeners, { calendars } from "../widgets";
 import profileSetupListeners from "../helpers/profile";
 import {initializeDashboards} from "../helpers/dashboard";
 import Board from "./board";
+import Search from "./search";
+import Issuereporter from "./issuereporter";
+import Uploader from "./uploader";
+import Roadmap from "./roadmap";
 import strings_en_US from "../../i18n/en_US/strings.json";
 
 const translations = {
@@ -18,7 +22,8 @@ class PachnoApplication {
         return {
             ready: 'pachno-ready',
             formSubmit: 'form-submit',
-            formSubmitResponse: 'form-submit-response'
+            formSubmitResponse: 'form-submit-response',
+            formSubmitError: 'form-submit-error'
         }
     }
 

@@ -314,45 +314,6 @@ account_remove_scope:
     parameters: [ ]
     csrf_enabled: true
 
-account_save_information:
-    route: '/account/save/information/*'
-    module: main
-    action: myAccount
-    parameters:
-      mode: information
-    csrf_enabled: true
-
-account_save_settings:
-    route: '/account/save/settings/*'
-    module: main
-    action: myAccount
-    parameters:
-      mode: settings
-    csrf_enabled: true
-
-account_save_notificationsettings:
-    route: '/account/save/notificationsettings/*'
-    module: main
-    action: myAccount
-    parameters:
-      mode: notificationsettings
-    csrf_enabled: true
-
-account_save_module_settings:
-    route: '/account/save/module/:target_module/settings/*'
-    module: main
-    action: myAccount
-    parameters:
-      mode: module
-    csrf_enabled: true
-
-account:
-    route: '/account/*'
-    module: main
-    action: myAccount
-    parameters: [ ]
-    csrf_enabled: false
-
 toggle_friend:
     route: /friends/:mode/:user_id
     module: main
@@ -507,11 +468,11 @@ issue_gettempfieldvalue:
     csrf_enabled: false
 
 issue_setfield:
-    route: '/:project_key/issues/:issue_id/set/:field/*'
+    route: '/:project_key/issues/:issue_id/set/field'
     module: main
     action: issueSetField
     parameters: [ ]
-    csrf_enabled: false
+    csrf_enabled: true
 
 issue_edittimespent:
     route: /:project_key/issues/:issue_id/timespent/:entry_id
@@ -601,30 +562,10 @@ asset_module_image:
     action: Asset::resolve
     anonymous_route: true
 
-todo_delete:
-    route: /:project_key/issues/:issue_id/delete-todo/:comment_id
-    module: main
-    action: deleteTodo
-    parameters: [ ]
-    csrf_enabled: false
-
-todo_mark:
-    route: /:project_key/issues/:issue_id/mark-todo/:comment_id/:mark
-    module: main
-    action: toggleDoneTodo
-    parameters: [ ]
-    csrf_enabled: false
-
-todo_add:
-    route: /:project_key/issues/:issue_id/add-todo
-    module: main
-    action: addTodo
-    parameters: [ ]
-    csrf_enabled: false
-
 viewissue:
     route: '/:project_key/issues/:issue_no'
     module: project
     action: viewIssue
     parameters: [ ]
+    methods: ['GET']
     csrf_enabled: false

@@ -147,7 +147,6 @@
             if (!$request->isAjaxCall()) {
                 $this->getResponse()->setPage('config');
                 framework\Context::loadLibrary('ui');
-                $this->getResponse()->addBreadcrumb(framework\Context::getI18n()->__('Configure %pachno_name', ['%pachno_name' => framework\Settings::getSiteHeaderName()]), framework\Context::getRouting()->generate('configure'), $this->getResponse()->getPredefinedBreadcrumbLinks('configure'));
             }
         }
 

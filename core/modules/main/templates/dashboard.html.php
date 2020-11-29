@@ -5,7 +5,6 @@
  */
 
     $pachno_response->setTitle(__('Dashboard'));
-    $pachno_response->addBreadcrumb(__('Personal dashboard'), make_url('dashboard'));
     $pachno_response->addFeed(make_url('my_reported_issues', ['format' => 'rss']), __('Issues reported by me'));
     $pachno_response->addFeed(make_url('my_assigned_issues', ['format' => 'rss']), __('Open issues assigned to you'));
     $pachno_response->addFeed(make_url('my_teams_assigned_issues', ['format' => 'rss']), __('Open issues assigned to your teams'));

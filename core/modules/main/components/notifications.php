@@ -135,7 +135,7 @@
                 if (($notification_text = strip_tags(html_entity_decode(trim(preg_replace('!\s+!', ' ', get_component_html('main/notification_text', compact('notification')))), ENT_COMPAT, \pachno\core\framework\Context::getI18n()->getCharset()))) != ''):
             ?>
                 <script>
-                    require(['domReady', 'pachno/index'], function (domReady, Pachno) {
+                    <?php /* require(['domReady', 'pachno/index'], function (domReady, Pachno) {
                         domReady(function () {
                             Pachno.Main.Notifications.Web.Send("<?= __('New notification'); ?>", "<?= $notification_text; ?>", '<?= $notification->getID(); ?>', '<?= $notification->getTriggeredByUser()->getAvatarURL(); ?>', function () {
                                 var target_url = "<?= $notification->getTargetUrl(); ?>";
@@ -153,7 +153,7 @@
                                 }
                             });
                         });
-                    });
+                    }); */ ?>
                 </script>
             <?php endif; ?>
         <?php endforeach; ?>

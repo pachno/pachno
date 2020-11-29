@@ -43,8 +43,8 @@ if ($filter instanceof SearchFilter): ?>
                 break;
             case 'issuetype':
                 ?>
-                <div class="fancy-dropdown-container filter" data-filterkey="issuetype" data-value="<?= $filter->getValue(); ?>" data-all-value="<?= __('All'); ?>">
-                    <div class="fancy-dropdown">
+                <div class="fancy-dropdown-container filter" data-filterkey="issuetype">
+                    <div class="fancy-dropdown" data-default-label="<?php echo __('All'); ?>">
                         <input type="hidden" name="fs[issuetype][o]" value="<?= $filter->getOperator(); ?>">
                         <label><?= __('Issuetype'); ?></label>
                         <span class="value"><?php if (!$filter->hasValue()) echo __('All'); ?></span>
@@ -93,8 +93,8 @@ if ($filter instanceof SearchFilter): ?>
                 break;
             case 'subprojects':
                 ?>
-                <div class="fancy-dropdown-container filter" id="interactive_filter_subprojects" data-filterkey="subprojects" data-value="<?= $filter->getValue(); ?>" data-all-value="<?= __('All'); ?>">
-                    <div class="fancy-dropdown">
+                <div class="fancy-dropdown-container filter" id="interactive_filter_subprojects" data-filterkey="subprojects">
+                    <div class="fancy-dropdown" data-default-label="<?php echo __('All'); ?>">
                         <input type="hidden" name="fs[subprojects][o]" value="<?= $filter->getOperator(); ?>">
                         <input type="hidden" name="fs[subprojects][v]" value="" id="filter_subprojects_value_input">
                         <label><?= __('Subproject(s)'); ?></label>
@@ -116,7 +116,7 @@ if ($filter instanceof SearchFilter): ?>
                                     <?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far'); ?>
                                     <span class="name value"><?= __('None'); ?></span>
                                 </label>
-                                <li class="list-item separator"></li>
+                                <div class="list-item separator"></div>
                                 <?php foreach ($filter->getAvailableValues() as $subproject): ?>
                                     <input type="checkbox" value="<?= $subproject->getID(); ?>" name="filters_subprojects_value_<?= $subproject->getID(); ?>" class="fancy-checkbox" id="filters_subprojects_value_<?= $subproject->getID(); ?>" <?php if ($filter->hasValue($subproject->getID())) echo 'checked'; ?>>
                                     <label for="filters_subprojects_value_<?= $subproject->getID(); ?>" class="list-item filtervalue" data-selection-group="2" data-exclude-group="1">
@@ -133,8 +133,8 @@ if ($filter instanceof SearchFilter): ?>
                 break;
             case 'blocking':
                 ?>
-                <div class="fancy-dropdown-container filter" id="interactive_filter_blocking" data-filterkey="blocking" data-default-value="<?= __('Any'); ?>">
-                    <div class="fancy-dropdown">
+                <div class="fancy-dropdown-container filter" id="interactive_filter_blocking" data-filterkey="blocking">
+                    <div class="fancy-dropdown" data-default-label="<?php echo __('Any'); ?>">
                         <input type="hidden" name="fs[blocking][o]" value="<?= $filter->getOperator(); ?>">
                         <label><?= __('Blocker status'); ?></label>
                         <span class="value"><?php if (!$filter->hasValue()) echo __('Any'); ?></span>
@@ -171,7 +171,7 @@ if ($filter instanceof SearchFilter): ?>
             case 'relation':
                 ?>
                 <div class="fancy-dropdown-container filter" id="interactive_filter_relation" data-filterkey="relation">
-                    <div class="fancy-dropdown">
+                    <div class="fancy-dropdown" data-default-label="<?php echo __('Any'); ?>">
                         <input type="hidden" name="fs[relation][o]" value="<?= $filter->getOperator(); ?>">
                         <input type="hidden" name="fs[relation][v]" value="" id="filter_relation_value_input">
                         <label><?= __('Relation'); ?></label>

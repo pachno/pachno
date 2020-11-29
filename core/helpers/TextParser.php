@@ -11,7 +11,6 @@
     use pachno\core\entities\Project;
     use pachno\core\entities\tables\Articles;
     use pachno\core\entities\tables\Users;
-    use pachno\core\entities\traits\TextParserTodo;
     use pachno\core\entities\User;
     use pachno\core\framework;
     use pachno\core\framework\Context;
@@ -27,7 +26,6 @@
      */
     class TextParser implements ContentParser
     {
-        use TextParserTodo;
 
         protected static $additional_regexes = null;
 
@@ -536,7 +534,6 @@
             $line_regexes['tablerowcontent'] = '\|{1,2}\s?(.*?)';
             $line_regexes['headers'] = '(={1,6})(.*?)(={1,6})';
             $line_regexes['horizontalrule'] = '----';
-            $line_regexes['todo'] = $this->todo_regex;
 
             $char_regexes = [];
             $char_regexes[] = ['/(\'{2,5})/i', [$this, '_parse_emphasize']];

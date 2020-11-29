@@ -4,7 +4,6 @@
 
     use Highlight\Highlighter;
     use pachno\core\entities\tables\Users;
-    use pachno\core\entities\traits\TextParserTodo;
     use pachno\core\entities\User;
     use pachno\core\framework;
     use Parsedown;
@@ -17,7 +16,6 @@
      */
     class TextParserMarkdown extends Parsedown implements ContentParser
     {
-        use TextParserTodo;
 
         /**
          * An array of mentioned users
@@ -31,8 +29,7 @@
         public function transform($text)
         {
             $text = preg_replace_callback(TextParser::getIssueRegex(), [$this, '_parse_issuelink'], $text);
-            $text = parent::text($text);
-            $text = preg_replace_callback('/^(?:\<(.*?)\>)?' . $this->todo_regex . '(?:\<(.*?)\>)?$/mi', [$this, '_parse_todo'], $text);
+            $text = $this->text($text);
             $text = preg_replace_callback(TextParser::getMentionsRegex(), [$this, '_parse_mention'], $text);
             $text = preg_replace_callback(self::getStrikethroughRegex(), [$this, '_parse_strikethrough'], $text);
             $text = preg_replace_callback('/(<pre><code class="language-(\w*)">)(.*)<\/code><\/pre>/misU', [$this, 'highlightCode'], $text);

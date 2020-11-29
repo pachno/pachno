@@ -141,64 +141,64 @@
         {
         }
 
-        /**
-         * View an issue
-         *
-         * @param Request $request
-         */
-        public function runViewIssue(Request $request)
-        {
-            framework\Logging::log('Loading issue');
-
-            $issue = $this->_getIssueFromRequest($request);
-
-            if ($issue instanceof Issue) {
-                if (!array_key_exists('viewissue_list', $_SESSION) || !is_array($_SESSION['viewissue_list'])) {
-                    $_SESSION['viewissue_list'] = [];
-                }
-
-                $k = array_search($issue->getID(), $_SESSION['viewissue_list']);
-                if ($k !== false)
-                    unset($_SESSION['viewissue_list'][$k]);
-
-                array_push($_SESSION['viewissue_list'], $issue->getID());
-
-                if (count($_SESSION['viewissue_list']) > 10)
-                    array_shift($_SESSION['viewissue_list']);
-
-                $this->getUser()->markNotificationsRead('issue', $issue->getID());
-
-                framework\Context::getUser()->setNotificationSetting(Settings::SETTINGS_USER_NOTIFY_ITEM_ONCE . '_issue_' . $issue->getID(), false);
-
-                framework\Event::createNew('core', 'viewissue', $issue)->trigger();
-            }
-
-            $message = framework\Context::getMessageAndClear('issue_saved');
-            $uploaded = framework\Context::getMessageAndClear('issue_file_uploaded');
-
-            if (framework\Context::hasMessage('issue_deleted_shown') && (is_null($issue) || ($issue instanceof Issue && $issue->isDeleted()))) {
-                $request_referer = ($request['referer'] ?: (isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : null));
-
-                if ($request_referer) {
-                    return $this->forward($request_referer);
-                }
-            } elseif (framework\Context::hasMessage('issue_deleted')) {
-                $this->issue_deleted = framework\Context::getMessageAndClear('issue_deleted');
-                framework\Context::setMessage('issue_deleted_shown', true);
-            } elseif ($message == true) {
-                $this->issue_saved = true;
-            } elseif ($uploaded == true) {
-                $this->issue_file_uploaded = true;
-            } elseif (framework\Context::hasMessage('issue_error')) {
-                $this->error = framework\Context::getMessageAndClear('issue_error');
-            } elseif (framework\Context::hasMessage('issue_message')) {
-                $this->issue_message = framework\Context::getMessageAndClear('issue_message');
-            }
-
-            $this->issue = $issue;
-            $event = framework\Event::createNew('core', 'viewissue', $issue)->trigger();
-            $this->listenViewIssuePostError($event);
-        }
+//        /**
+//         * View an issue
+//         *
+//         * @param Request $request
+//         */
+//        public function runViewIssue(Request $request)
+//        {
+//            framework\Logging::log('Loading issue');
+//
+//            $issue = $this->_getIssueFromRequest($request);
+//
+//            if ($issue instanceof Issue) {
+//                if (!array_key_exists('viewissue_list', $_SESSION) || !is_array($_SESSION['viewissue_list'])) {
+//                    $_SESSION['viewissue_list'] = [];
+//                }
+//
+//                $k = array_search($issue->getID(), $_SESSION['viewissue_list']);
+//                if ($k !== false)
+//                    unset($_SESSION['viewissue_list'][$k]);
+//
+//                array_push($_SESSION['viewissue_list'], $issue->getID());
+//
+//                if (count($_SESSION['viewissue_list']) > 10)
+//                    array_shift($_SESSION['viewissue_list']);
+//
+//                $this->getUser()->markNotificationsRead('issue', $issue->getID());
+//
+//                framework\Context::getUser()->setNotificationSetting(Settings::SETTINGS_USER_NOTIFY_ITEM_ONCE . '_issue_' . $issue->getID(), false);
+//
+//                framework\Event::createNew('core', 'viewissue', $issue)->trigger();
+//            }
+//
+//            $message = framework\Context::getMessageAndClear('issue_saved');
+//            $uploaded = framework\Context::getMessageAndClear('issue_file_uploaded');
+//
+//            if (framework\Context::hasMessage('issue_deleted_shown') && (is_null($issue) || ($issue instanceof Issue && $issue->isDeleted()))) {
+//                $request_referer = ($request['referer'] ?: (isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : null));
+//
+//                if ($request_referer) {
+//                    return $this->forward($request_referer);
+//                }
+//            } elseif (framework\Context::hasMessage('issue_deleted')) {
+//                $this->issue_deleted = framework\Context::getMessageAndClear('issue_deleted');
+//                framework\Context::setMessage('issue_deleted_shown', true);
+//            } elseif ($message == true) {
+//                $this->issue_saved = true;
+//            } elseif ($uploaded == true) {
+//                $this->issue_file_uploaded = true;
+//            } elseif (framework\Context::hasMessage('issue_error')) {
+//                $this->error = framework\Context::getMessageAndClear('issue_error');
+//            } elseif (framework\Context::hasMessage('issue_message')) {
+//                $this->issue_message = framework\Context::getMessageAndClear('issue_message');
+//            }
+//
+//            $this->issue = $issue;
+//            $event = framework\Event::createNew('core', 'viewissue', $issue)->trigger();
+//            $this->listenViewIssuePostError($event);
+//        }
 
         public function listenViewIssuePostError(framework\Event $event)
         {
@@ -864,188 +864,7 @@
             } else {
                 framework\Context::setMessage('login_message_err', framework\Context::getI18n()->__('This activation link is not valid'));
             }
-            $this->forward($this->getRouting()->generate('login_page'));
-        }
-
-        /**
-         * "My account" page
-         *
-         * @param Request $request
-         */
-        public function runMyAccount(Request $request)
-        {
-            $this->forward403unless($this->getUser()->hasPageAccess('account'));
-            $categories = Category::getAll();
-            $projects = [];
-            $project_subscription_key = Settings::SETTINGS_USER_SUBSCRIBE_NEW_ISSUES_MY_PROJECTS;
-            $category_subscription_key = Settings::SETTINGS_USER_SUBSCRIBE_NEW_ISSUES_MY_PROJECTS_CATEGORY;
-            $category_notification_key = Settings::SETTINGS_USER_NOTIFY_NEW_ISSUES_MY_PROJECTS_CATEGORY;
-            $subscriptionssettings = Settings::getSubscriptionsSettings();
-            $notificationsettings = Settings:: getNotificationSettings();
-            $selected_project_subscriptions = [];
-            $selected_category_subscriptions = [];
-            $selected_category_notifications = [];
-            $this->all_projects_subscription = $this->getUser()->getNotificationSetting($project_subscription_key, false)->isOn();
-            foreach (Project::getAll() as $project_id => $project) {
-                if ($project->hasAccess()) {
-                    $projects[$project_id] = $project;
-                    if ($this->getUser()->getNotificationSetting($project_subscription_key . '_' . $project_id, false)->isOn()) {
-                        $selected_project_subscriptions[] = $project_id;
-                    }
-                }
-            }
-            foreach ($categories as $category_id => $category) {
-                if ($this->getUser()->getNotificationSetting($category_subscription_key . '_' . $category_id, false)->isOn()) {
-                    $selected_category_subscriptions[] = $category_id;
-                }
-                if ($this->getUser()->getNotificationSetting($category_notification_key . '_' . $category_id, false)->isOn()) {
-                    $selected_category_notifications[] = $category_id;
-                }
-            }
-            $this->selected_project_subscriptions = ($this->all_projects_subscription) ? [] : $selected_project_subscriptions;
-            $this->projects = $projects;
-            $this->selected_category_subscriptions = $selected_category_subscriptions;
-            $this->selected_category_notifications = $selected_category_notifications;
-            $this->categories = $categories;
-            $this->subscriptionssettings = $subscriptionssettings;
-            $this->notificationsettings = $notificationsettings;
-            $this->has_autopassword = framework\Context::hasMessage('auto_password');
-            if ($this->has_autopassword) {
-                $this->autopassword = framework\Context::getMessage('auto_password');
-            }
-
-            if ($request->isPost() && $request->hasParameter('mode')) {
-                switch ($request['mode']) {
-                    case 'information':
-                        if (!$request['buddyname'] || !$request['email']) {
-                            $this->getResponse()->setHttpStatus(400);
-
-                            return $this->renderJSON(['error' => framework\Context::getI18n()->__('Please fill out all the required fields')]);
-                        }
-                        $this->getUser()->setBuddyname($request['buddyname']);
-                        $this->getUser()->setRealname($request['realname']);
-                        $this->getUser()->setHomepage($request['homepage']);
-                        $this->getUser()->setEmailPrivate((bool)$request['email_private']);
-                        $this->getUser()->setUsesGravatar((bool)$request['use_gravatar']);
-                        $this->getUser()->setTimezone($request->getRawParameter('timezone'));
-                        $this->getUser()->setLanguage($request['profile_language']);
-
-                        if ($this->getUser()->getEmail() != $request['email']) {
-                            if (framework\Event::createNew('core', 'changeEmail', $this->getUser(), ['email' => $request['email']])->triggerUntilProcessed()->isProcessed() == false) {
-                                $this->getUser()->setEmail($request['email']);
-                            }
-                        }
-
-                        $this->getUser()->save();
-
-                        return $this->renderJSON(['title' => framework\Context::getI18n()->__('Profile information saved')]);
-                        break;
-                    case 'settings':
-                        $this->getUser()->setPreferredWikiSyntax($request['syntax_articles']);
-                        $this->getUser()->setPreferredIssuesSyntax($request['syntax_issues']);
-                        $this->getUser()->setPreferredCommentsSyntax($request['syntax_comments']);
-                        $this->getUser()->setKeyboardNavigationEnabled($request['enable_keyboard_navigation']);
-                        $this->getUser()->save();
-
-                        return $this->renderJSON(['title' => framework\Context::getI18n()->__('Profile settings saved')]);
-                        break;
-                    case 'notificationsettings':
-                        $this->getUser()->setDesktopNotificationsNewTabEnabled($request['enable_desktop_notifications_new_tab']);
-                        foreach ($subscriptionssettings as $setting => $description) {
-                            if ($setting == Settings::SETTINGS_USER_SUBSCRIBE_NEW_ISSUES_MY_PROJECTS_CATEGORY) {
-                                foreach ($categories as $category_id => $category) {
-                                    if ($request->hasParameter('core_' . $setting . '_' . $category_id)) {
-                                        $this->getUser()->setNotificationSetting($setting . '_' . $category_id, true);
-                                    } else {
-                                        $this->getUser()->setNotificationSetting($setting . '_' . $category_id, false);
-                                    }
-                                }
-                            } elseif ($setting == Settings::SETTINGS_USER_SUBSCRIBE_NEW_ISSUES_MY_PROJECTS) {
-                                if ($request->hasParameter('core_' . $setting . '_all')) {
-                                    $this->getUser()->setNotificationSetting($setting, true);
-                                    foreach (Project::getAll() as $project_id => $project) {
-                                        $this->getUser()->setNotificationSetting($setting . '_' . $project_id, false);
-                                    }
-                                } else {
-                                    $this->getUser()->setNotificationSetting($setting, false);
-                                    foreach (Project::getAll() as $project_id => $project) {
-                                        if ($request->hasParameter('core_' . $setting . '_' . $project_id)) {
-                                            $this->getUser()->setNotificationSetting($setting . '_' . $project_id, true);
-                                        } else {
-                                            $this->getUser()->setNotificationSetting($setting . '_' . $project_id, false);
-                                        }
-                                    }
-                                }
-                            } else {
-                                if ($request->hasParameter('core_' . $setting)) {
-                                    $this->getUser()->setNotificationSetting($setting, true);
-                                } else {
-                                    $this->getUser()->setNotificationSetting($setting, false);
-                                }
-                            }
-                        }
-
-                        foreach ($notificationsettings as $setting => $description) {
-                            if ($setting == Settings::SETTINGS_USER_NOTIFY_NEW_ISSUES_MY_PROJECTS_CATEGORY) {
-                                foreach ($categories as $category_id => $category) {
-                                    if ($request->hasParameter('core_' . $setting . '_' . $category_id)) {
-                                        $this->getUser()->setNotificationSetting($setting . '_' . $category_id, true);
-                                    } else {
-                                        $this->getUser()->setNotificationSetting($setting . '_' . $category_id, false);
-                                    }
-                                }
-                            } else {
-                                if ($request->hasParameter('core_' . $setting)) {
-                                    if ($setting == Settings::SETTINGS_USER_NOTIFY_GROUPED_NOTIFICATIONS) {
-                                        $this->getUser()->setNotificationSetting($setting, $request->getParameter('core_' . $setting));
-                                    } else {
-                                        $this->getUser()->setNotificationSetting($setting, true);
-                                    }
-                                } else {
-                                    $this->getUser()->setNotificationSetting($setting, false);
-                                }
-                            }
-                        }
-
-                        framework\Event::createNew('core', 'mainActions::myAccount::saveNotificationSettings')->trigger(compact('request', 'categories'));
-                        $this->getUser()->save();
-
-                        return $this->renderJSON(['title' => framework\Context::getI18n()->__('Notification settings saved')]);
-                        break;
-                    case 'module':
-                        foreach (framework\Context::getAllModules() as $modules) {
-                            foreach ($modules as $module_name => $module) {
-                                if ($request['target_module'] == $module_name && $module->hasAccountSettings()) {
-                                    try {
-                                        if ($module->postAccountSettings($request)) {
-                                            return $this->renderJSON(['title' => framework\Context::getI18n()->__('Settings saved')]);
-                                        } else {
-                                            $this->getResponse()->setHttpStatus(400);
-
-                                            return $this->renderJSON(['error' => framework\Context::getI18n()->__('An error occured')]);
-                                        }
-                                    } catch (Exception $e) {
-                                        $this->getResponse()->setHttpStatus(400);
-
-                                        return $this->renderJSON(['error' => framework\Context::getI18n()->__($e->getMessage())]);
-                                    }
-                                }
-                            }
-                        }
-                        break;
-                }
-            }
-            $this->rnd_no = rand();
-            $this->languages = framework\I18n::getLanguages();
-            $this->timezones = framework\I18n::getTimezones();
-            $this->error = framework\Context::getMessageAndClear('error');
-            $this->username_chosen = framework\Context::getMessageAndClear('username_chosen');
-            $this->openid_used = framework\Context::getMessageAndClear('openid_used');
-            $this->rsskey_generated = framework\Context::getMessageAndClear('rsskey_generated');
-
-            $this->selected_tab = 'profile';
-            if ($this->rsskey_generated)
-                $this->selected_tab = 'security';
+            $this->forward($this->getRouting()->generate('auth_login_page'));
         }
 
         /**
@@ -1058,7 +877,7 @@
             $this->getUser()->regenerateRssKey();
             framework\Context::setMessage('rsskey_generated', true);
 
-            return $this->forward($this->getRouting()->generate('account'));
+            return $this->forward($this->getRouting()->generate('profile_account'));
         }
 
         /**
@@ -1277,28 +1096,7 @@
                                 tables\IssueFiles::getTable()->addByIssueIDandFileID($issue->getID(), $file->getID());
                             }
                         }
-                        if ($request['return_format'] == 'planning') {
-                            $this->_loadSelectedProjectAndIssueTypeFromRequestForReportIssueAction($request);
-                            $options = [];
-                            $options['selected_issuetype'] = $issue->getIssueType();
-                            $options['selected_project'] = $this->selected_project;
-                            $options['issuetypes'] = $this->issuetypes;
-                            $options['issue'] = $issue;
-                            $options['errors'] = $errors;
-                            $options['permission_errors'] = $permission_errors;
-                            $options['selected_milestone'] = $this->_getMilestoneFromRequest($request);
-                            $options['selected_build'] = $this->_getBuildFromRequest($request);
-                            $options['parent_issue'] = $this->_getParentIssueFromRequest($request);
-                            $options['medium_backdrop'] = 1;
-
-                            return $this->renderJSON(['content' => $this->getComponentHTML('main/reportissuecontainer', $options)]);
-                        }
-                        if ($request->getRequestedFormat() != 'json' && $issue->getProject()->getIssuetypeScheme()->isIssuetypeRedirectedAfterReporting($this->selected_issuetype)) {
-                            $this->forward($this->getRouting()->generate('viewissue', ['project_key' => $issue->getProject()->getKey(), 'issue_no' => $issue->getFormattedIssueNo()]), 303);
-                        } else {
-                            $this->_clearReportIssueProperties();
-                            $this->issue = $issue;
-                        }
+                        return $this->renderJSON(['issue' => $issue->toJSON()]);
                     } catch (Exception $e) {
                         if ($request['return_format'] == 'planning') {
                             $this->getResponse()->setHttpStatus(400);
@@ -1540,9 +1338,9 @@
         {
             $fields_array = $this->selected_project->getReportableFieldsArray($this->issuetype_id);
             $issue = new Issue();
-            $issue->setTitle($this->title);
-            $issue->setIssuetype($this->issuetype_id);
             $issue->setProject($this->selected_project);
+            $issue->setIssuetype($this->issuetype_id);
+            $issue->setTitle($this->title);
             if (isset($fields_array['shortname']))
                 $issue->setShortname($this->selected_shortname);
             if (isset($fields_array['description'])) {
@@ -1778,6 +1576,8 @@
 
         /**
          * Sets an issue field to a specified value
+         * @Route(name="edit_issue", url="/:project_key/issues/:issue_id/:csrf_token", methods="POST")
+         * @CsrfProtected
          *
          * @param Request $request
          */
@@ -2266,7 +2066,9 @@
          */
         public function runHideInfobox(Request $request)
         {
-            Settings::hideInfoBox($request['key']);
+            if ($request['dont_show'] == 1) {
+                Settings::hideInfoBox($request['key']);
+            }
 
             return $this->renderJSON(['hidden' => true]);
         }
@@ -2376,13 +2178,18 @@
                 } else {
                     framework\Logging::log('Upload complete and ok, storing upload status and returning filename ' . $new_filename);
                     $content_type = entities\File::getMimeType($filename);
+                    $saved_file = new entities\File();
+                    $saved_file->setRealFilename($new_filename);
+                    $saved_file->setOriginalFilename(basename($file['name']));
+                    $saved_file->setContentType($content_type);
+                    $saved_file->setType($request['type']);
+                    $saved_file->setProject($request['project_id']);
                     if (Settings::getUploadStorage() == 'database') {
-                        $file_object_id = tables\Files::getTable()->saveFile($new_filename, basename($file['name']), $content_type, null, file_get_contents($filename));
-                    } else {
-                        $file_object_id = tables\Files::getTable()->saveFile($new_filename, basename($file['name']), $content_type);
+                        $saved_file->setContent(file_get_contents($filename));
                     }
+                    $saved_file->save();
 
-                    return $this->renderJSON(['file_id' => $file_object_id, 'data' => ['filePath' => $this->getRouting()->generate('showfile', ['id' => $file_object_id])]]);
+                    return $this->renderJSON(['file' => $saved_file->toJSON()]);
                 }
             }
 
@@ -2863,19 +2670,6 @@
                     $options = [];
                 }
                 switch ($request['key']) {
-                    case 'usercard':
-                        $template_name = 'main/usercard';
-                        if ($user_id = $request['user_id']) {
-                            $user = tables\Users::getTable()->selectById($user_id);
-                            $options['user'] = $user;
-                        }
-                        break;
-                    case 'login':
-                        $template_name = 'main/loginpopup';
-                        $options = $request->getParameters();
-                        $options['content'] = $this->getComponentHTML('login', ['section' => $request->getParameter('section', 'login')]);
-                        $options['mandatory'] = false;
-                        break;
                     case 'attachlink':
                         $template_name = 'main/attachlink';
                         break;
@@ -3072,9 +2866,6 @@
                         }
                         $options['scope'] = $scope;
                         break;
-                    case 'enable_2fa':
-                        $template_name = 'main/enable2fa';
-                        break;
                     case 'project_config':
                         $template_name = 'project/editproject';
                         if ($request['project_id']) {
@@ -3137,7 +2928,7 @@
                             $options['milestone'] = Milestones::getTable()->selectById($request['milestone_id']);
                         break;
                     default:
-                        $event = new framework\Event('core', 'get_backdrop_partial', $request['key']);
+                        $event = new framework\Event('core', 'get_backdrop_partial', $request['key'], ['request' => $request]);
                         $event->triggerUntilProcessed();
                         $options = $event->getReturnList();
                         $template_name = $event->getReturnValue();
@@ -3859,59 +3650,6 @@
             }
         }
 
-        /**
-         * Reset user password
-         *
-         * @Route(name="reset_password", url="/reset/password/:user/:reset_hash")
-         * @AnonymousRoute
-         *
-         * @param Request $request The request object
-         */
-        public function runResetPassword(Request $request)
-        {
-            $i18n = framework\Context::getI18n();
-
-            try {
-                if ($request->hasParameter('user') && $request->hasParameter('reset_hash')) {
-                    $user = entities\User::getByUsername(str_replace('%2E', '.', $request['user']));
-                    if ($user instanceof entities\User) {
-                        if ($request['reset_hash'] == $user->getActivationKey()) {
-                            $this->error = false;
-                            if ($request->isPost()) {
-                                $p1 = trim($request['password_1']);
-                                $p2 = trim($request['password_2']);
-
-                                if ($p1 && $p2 && $p1 == $p2) {
-                                    $user->setPassword($p1);
-                                    $user->regenerateActivationKey();
-                                    $user->save();
-                                    framework\Context::setMessage('login_message', $i18n->__('Your password has been reset. Please log in.'));
-                                    framework\Context::setMessage('login_referer', $this->getRouting()->generate('home'));
-
-                                    return $this->forward($this->getRouting()->generate('login_page'));
-                                } else {
-                                    $this->error = true;
-                                }
-                            } else {
-                                $user->regenerateActivationKey();
-                            }
-                            $this->user = $user;
-                        } else {
-                            throw new Exception('Your password recovery token is either invalid or has expired');
-                        }
-                    } else {
-                        throw new Exception('User is invalid or does not exist');
-                    }
-                } else {
-                    throw new Exception('An internal error has occured');
-                }
-            } catch (Exception $e) {
-                framework\Context::setMessage('login_message_err', $i18n->__($e->getMessage()));
-
-                return $this->forward($this->getRouting()->generate('login_page'));
-            }
-        }
-
         public function runIssueGetTempFieldValue(Request $request)
         {
             switch ($request['field']) {
@@ -3959,11 +3697,11 @@
                 }
 
                 framework\Context::setMessage('username_chosen', true);
-                $this->forward($this->getRouting()->generate('account'));
+                $this->forward($this->getRouting()->generate('profile_account'));
             }
 
             framework\Context::setMessage('error', $this->getI18n()->__('Could not pick the username "%username"', ['%username' => $request['selected_username']]));
-            $this->forward($this->getRouting()->generate('account'));
+            $this->forward($this->getRouting()->generate('profile_account'));
         }
 
         public function runDashboardView(Request $request)
@@ -4067,8 +3805,6 @@
         /**
          * Milestone actions
          *
-         * @Route(url="/:project_key/milestone/:milestone_id/actions/*", name='project_milestone')
-         *
          * @param Request $request
          */
         public function runMilestone(Request $request)
@@ -4152,114 +3888,6 @@
                 $milestone->setStartingDate(0);
 
             $milestone->save();
-        }
-
-        /**
-         * Delete an issue todos item.
-         *
-         * @param Request $request
-         */
-        public function runDeleteTodo(Request $request)
-        {
-            if ($issue_id = $request['issue_id']) {
-                try {
-                    $issue = Issues::getTable()->selectById($issue_id);
-                } catch (Exception $e) {
-                    return $this->renderJSON(['failed' => true, 'error' => framework\Context::getI18n()->__('This issue does not exist')]);
-                }
-            } else {
-                return $this->renderJSON(['failed' => true, 'error' => framework\Context::getI18n()->__('This issue does not exist')]);
-            }
-
-            if (!isset($request['comment_id']) || !is_numeric($request['comment_id'])) {
-                return $this->renderJSON(['failed' => true, 'error' => framework\Context::getI18n()->__('Invalid "comment_id" parameter')]);
-            }
-
-            $this->forward403unless(($request['comment_id'] == 0 && $issue->canEditDescription()) || ($request['comment_id'] != 0 && $issue->getComments()[$request['comment_id']]->canUserEditComment()));
-
-            if (!isset($request['todo']) || $request['todo'] == '') {
-                return $this->renderJSON(['failed' => true, 'error' => framework\Context::getI18n()->__('Invalid "todo" parameter')]);
-            }
-
-            framework\Context::loadLibrary('common');
-            $issue->deleteTodo($request['comment_id'], $request['todo']);
-
-            return $this->renderJSON([
-                'content' => $this->getComponentHTML('todos', compact('issue'))
-            ]);
-        }
-
-        /**
-         * Toggle done for issue todos item.
-         *
-         * @param Request $request
-         */
-        public function runToggleDoneTodo(Request $request)
-        {
-            if ($issue_id = $request['issue_id']) {
-                try {
-                    $issue = Issues::getTable()->selectById($issue_id);
-                } catch (Exception $e) {
-                    return $this->renderJSON(['failed' => true, 'error' => framework\Context::getI18n()->__('This issue does not exist')]);
-                }
-            } else {
-                return $this->renderJSON(['failed' => true, 'error' => framework\Context::getI18n()->__('This issue does not exist')]);
-            }
-
-            if (!isset($request['comment_id']) || !is_numeric($request['comment_id'])) {
-                return $this->renderJSON(['failed' => true, 'error' => framework\Context::getI18n()->__('Invalid "comment_id" parameter')]);
-            }
-
-            if (!isset($request['todo']) || $request['todo'] == '') {
-                return $this->renderJSON(['failed' => true, 'error' => framework\Context::getI18n()->__('Invalid "todo" parameter')]);
-            }
-
-            if (!isset($request['mark']) || !in_array($request['mark'], ['done', 'not_done'])) {
-                return $this->renderJSON(['failed' => true, 'error' => framework\Context::getI18n()->__('Invalid "mark" parameter')]);
-            }
-
-            framework\Context::loadLibrary('common');
-            $issue->markTodo($request['comment_id'], $request['todo'], $request['mark']);
-
-            return $this->renderJSON([
-                'content' => $this->getComponentHTML('todos', compact('issue'))
-            ]);
-        }
-
-        /**
-         * Add an issue todos item.
-         *
-         * @param Request $request
-         */
-        public function runAddTodo(Request $request)
-        {
-            // If todos item is submitted via form and not ajax forward 403 error.
-            $this->forward403unless($request->isAjaxCall());
-
-            if ($issue_id = $request['issue_id']) {
-                try {
-                    $issue = Issues::getTable()->selectById($issue_id);
-                } catch (Exception $e) {
-                    return $this->renderJSON(['failed' => true, 'error' => framework\Context::getI18n()->__('This issue does not exist')]);
-                }
-            } else {
-                return $this->renderJSON(['failed' => true, 'error' => framework\Context::getI18n()->__('This issue does not exist')]);
-            }
-
-            if (!$issue->canEditDescription()) {
-                return $this->renderJSON(['failed' => true, 'error' => framework\Context::getI18n()->__('You do not have permission to perform this action')]);
-            }
-
-            if (!isset($request['todo_body']) || !trim($request['todo_body'])) {
-                return $this->renderJSON(['failed' => true, 'error' => framework\Context::getI18n()->__('Invalid "todo_body" parameter')]);
-            }
-
-            framework\Context::loadLibrary('common');
-            $issue->addTodo($request['todo_body']);
-
-            return $this->renderJSON([
-                'content' => $this->getComponentHTML('todos', compact('issue'))
-            ]);
         }
 
         /**

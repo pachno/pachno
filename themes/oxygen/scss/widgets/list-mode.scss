@@ -84,6 +84,11 @@
 
       button,
       .button {
+        + button,
+        + .button {
+          margin-left: auto;
+        }
+
         &.back-button {
           .name {
             display: none;
@@ -319,6 +324,7 @@
       background-color: transparent;
       cursor: default;
       border-radius: 0;
+      flex: 0 0 1px;
     }
 
     .icon {
@@ -328,7 +334,7 @@
       text-align: center;
       display: flex;
       align-items: center;
-      justify-content: flex-start;
+      justify-content: center;
       flex-direction: row;
 
       &.large {
@@ -402,7 +408,7 @@
     }
 
     &.visible {
-      display: block;
+      display: flex;
     }
 
     &.highlighted {

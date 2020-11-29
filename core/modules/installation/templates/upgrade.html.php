@@ -177,7 +177,7 @@
             Remember to remove the file <span class="command_box"><?php echo PACHNO_PATH . 'upgrade'; ?></span> before you click the "Finish" button below.
         </p>
         <div class="progress_buttons">
-            <a href="<?php echo make_url('logout'); ?>" class="button button-next">Finish</a>
+            <a href="<?php echo make_url('auth_logout'); ?>" class="button button-next">Finish</a>
         </div>
     <?php else: ?>
         <h4>No upgrade necessary!</h4>

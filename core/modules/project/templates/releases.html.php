@@ -1,6 +1,5 @@
 <?php
 
-    $pachno_response->addBreadcrumb(__('Releases'), make_url('project_releases', array('project_key' => $selected_project->getKey())));
     $pachno_response->setTitle(__('"%project_name" releases', array('%project_name' => $selected_project->getName())));
 
 ?>

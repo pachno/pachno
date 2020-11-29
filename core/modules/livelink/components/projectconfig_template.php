@@ -16,7 +16,9 @@
     <div class="message-box type-info">
         <div class="image-container"><?= image_tag('/unthemed/onboarding_livelink_intro_icon.png', [], true); ?></div>
         <div class="message">
-            <?= __('Import and/or link an existing project from %github, %gitlab, %bitbucket and more', ['%github' => fa_image_tag('github', [], 'fab') . ' GitHub', '%gitlab' => fa_image_tag('gitlab', [], 'fab') . ' GitLab', '%bitbucket' => fa_image_tag('bitbucket', [], 'fab') . ' BitBucket']); ?>
+            <span class="description">
+                <?= __('Import and/or link an existing project from %github, %gitlab, %bitbucket and more', ['%github' => fa_image_tag('github', [], 'fab') . ' GitHub', '%gitlab' => fa_image_tag('gitlab', [], 'fab') . ' GitLab', '%bitbucket' => fa_image_tag('bitbucket', [], 'fab') . ' BitBucket']); ?>
+            </span>
         </div>
     </div>
     <?php if (isset($connector)): ?>

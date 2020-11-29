@@ -3,15 +3,15 @@
 <?php elseif (!$user->isScopeConfirmed()): ?>
     <span class="faded_out" title="<?php echo __('This user has not been confirmed yet'); ?>"><?php echo $user->getUsername() ?></span>
 <?php else: ?>
-<div class="dropper-container">
-    <a href="javascript:void(0);" class="dropper userlink<?php if ($pachno_user->isFriend($user)): ?> friend" title="<?php echo __('This is one of your friends'); ?><?php endif; ?>">
-        <?php if (!isset($userstate) || $userstate): ?><span class="userstate"><?php echo pachno_get_userstate_image($user); ?></span><?php endif; ?>
-        <?php if ($show_avatar): ?>
-            <?php $extraClass = (isset($size)) ? $size : ""; ?>
-            <?php echo image_tag($user->getAvatarURL(), array('alt' => ' ', 'class' => 'avatar '.$extraClass), true); ?>
-        <?php endif; ?>
-        <?php echo (isset($displayname)) ? $displayname : $user->getName(); ?>
-    </a>
+<a href="javascript:void(0);" class="userlink trigger-backdrop <?php if ($pachno_user->isFriend($user)): ?>friend<?php endif; ?>" data-url="<?php echo make_url('get_partial_for_backdrop', ['key' => 'usercard', 'user_id' => $user->getID()]); ?>">
+    <?php if (!isset($userstate) || $userstate): ?><span class="userstate"><?php echo pachno_get_userstate_image($user); ?></span><?php endif; ?>
+    <?php if ($show_avatar): ?>
+        <?php $extraClass = (isset($size)) ? $size : ""; ?>
+        <?php echo image_tag($user->getAvatarURL(), array('alt' => ' ', 'class' => 'avatar '.$extraClass), true); ?>
+    <?php endif; ?>
+    <?php echo (isset($displayname)) ? $displayname : $user->getName(); ?>
+</a>
+<div class="dropper-container" style="display: none;">
     <div class="dropdown-container from-left">
         <div class="list-mode">
             <div class="header-banner">
@@ -51,7 +51,7 @@
                     </a>
                 <?php endif; ?>
                 <?php if (!$pachno_request->hasCookie('original_username')): ?>
-                    <a class="list-item" href="<?= make_url('switch_to_user', array('user_id' => $user->getID())); ?>">
+                    <a class="list-item" href="<?= make_url('auth_switch_to_user', array('user_id' => $user->getID())); ?>">
                         <?= fa_image_tag('random', ['class' => 'icon']); ?>
                         <span class="name"><?= __('Switch to this user'); ?></span>
                     </a>

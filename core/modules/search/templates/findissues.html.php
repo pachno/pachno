@@ -23,7 +23,6 @@
     }
     if (Context::isProjectContext())
     {
-        $pachno_response->addBreadcrumb(__('Issues'), make_url('project_issues', ['project_key' => Context::getCurrentProject()->getKey()]));
         $pachno_response->addFeed(make_url('project_open_issues', ['project_key' => Context::getCurrentProject()->getKey(), 'format' => 'rss']), __('Open issues for %project_name', ['%project_name' => Context::getCurrentProject()->getName()]));
         $pachno_response->addFeed(make_url('project_allopen_issues', ['project_key' => Context::getCurrentProject()->getKey(), 'format' => 'rss']), __('Open issues for %project_name (including subprojects)', array('%project_name' => Context::getCurrentProject()->getName())));
         $pachno_response->addFeed(make_url('project_closed_issues', ['project_key' => Context::getCurrentProject()->getKey(), 'format' => 'rss']), __('Closed issues for %project_name', array('%project_name' => Context::getCurrentProject()->getName())));
@@ -41,7 +40,6 @@
     }
     else
     {
-        $pachno_response->addBreadcrumb(__('Issues'), make_url('search'));
         if (!$pachno_user->isGuest())
         {
             $pachno_response->addFeed(make_url('my_reported_issues', array('format' => 'rss')), __('Issues reported by me'));
@@ -70,13 +68,7 @@
                 <div class="header"><?php echo $search_message; ?></div>
             </div>
         <?php endif; ?>
-        <div class="results_header">
-            <span id="findissues_search_title" style="<?php if (!$searchtitle) echo 'display: none'; ?>"><?php echo $searchtitle; ?></span>
-            <span id="findissues_search_generictitle" style="<?php if ($searchtitle) echo 'display: none'; ?>"><?php echo __("Find issues"); ?></span>
-            <span id="findissues_num_results" class="count-badge" style="<?php if (!$show_results) echo 'display: none;'; ?>"><?php echo __('%number_of issue(s)', array('%number_of' => '<span id="findissues_num_results_span">-</span>')); ?></span>
-            <?php if (!$pachno_user->isGuest()) include_component('search/bulkactions', array('mode' => 'bottom')); ?>
-        </div>
-        <?php include_component('search/searchbuilder', compact('search_object', 'show_results')); ?>
+        <?php include_component('search/searchbuilder', compact('search_object', 'show_results', 'searchtitle')); ?>
         <div id="search_results_container">
             <div id="search_results_loading_indicator" style="display: none;"><?php echo image_tag('spinning_30.gif'); ?></div>
             <div id="search-results" class="search-results">
@@ -91,27 +83,17 @@
                 </div>
             </div>
         </div>
-        <script>
-            var Pachno;
-            require(['domReady', 'pachno/index'], function (domReady, pachno_index_js) {
-                domReady(function () {
-                    Pachno = pachno_index_js;
-                    Pachno.Search.initializeFilters();
-                    <?php if ($pachno_user->isKeyboardNavigationEnabled()): ?>
-                        Pachno.Search.initializeKeyboardNavigation();
-                    <?php endif; ?>
-                    <?php if ($show_results): ?>
-                        setTimeout(function() { Pachno.Search.liveUpdate(true); }, 250);
-                    <?php else: ?>
-                        Pachno.Search.updateSavedSearchCounts();
-                    <?php endif; ?>
-
-                    var hash = window.location.hash;
-
-                    if (hash != undefined && hash.indexOf('edit_modal') == 1) {
-                        $('#saved_search_details').toggle('block');
-                    }
+        <?php if (!$pachno_user->isGuest()) include_component('search/bulkactions', array('mode' => 'bottom')); ?>
+        <script type="text/javascript">
+            Pachno.on(Pachno.EVENTS.ready, function () {
+                const search = new Search({
+                    save_columns_url: "<?= make_url('search_save_column_settings'); ?>",
+                    history_url: "<?= (Context::isProjectContext()) ? make_url('project_issues', array('project_key' => Context::getCurrentProject()->getKey())) : make_url('search'); ?>",
+                    dynamic_callback_url: "<?= make_url('search_filter_getdynamicchoices'); ?>",
+                    project_id: <?= (Context::isProjectContext()) ? Context::getCurrentProject()->getID() : 0; ?>,
+                    show_results: <?= ($show_results) ? 'true' : 'false'; ?>
                 });
+                window.currentSearch = search;
             });
         </script>
     </div>

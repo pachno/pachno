@@ -28,25 +28,27 @@
     </div>
     <div id="fullpage_backdrop_content" class="fullpage_backdrop_content" data-simplebar> </div>
 </div>
-<?php if (\pachno\core\framework\Context::getRouting()->getCurrentRoute()->getName() != 'login_page' && $pachno_user->isGuest()): ?>
+<?php if (\pachno\core\framework\Context::getRouting()->getCurrentRoute()->getName() != 'auth_login_page' && $pachno_user->isGuest()): ?>
     <div id="login_backdrop" class="fullpage_backdrop" style="display: none;">
         <div id="login_content" class="fullpage_backdrop_content">
-            <?php include_component('main/loginpopup', array('content' => get_component_html('main/login'), 'mandatory' => false)); ?>
+            <?php include_component('auth/loginpopup', array('content' => get_component_html('auth/login'), 'mandatory' => false)); ?>
         </div>
     </div>
 <?php endif; ?>
 <div class="fullpage_backdrop" id="dialog_backdrop" style="display: none;">
-    <div id="dialog_backdrop_content" class="backdrop_box">
-        <div class="backdrop_detail_header"><span id="dialog_title"></span></div>
-        <div class="backdrop_detail_content">
-            <p id="dialog_content"></p>
-        </div>
-        <div class="backdrop_details_submit">
-            <span class="explanation"></span>
-            <div class="dialog-query-buttons">
-                <?php echo image_tag('spinning_20.gif', array('style' => 'display: none;', 'id' => 'dialog_indicator')); ?>
-                <a href="javascript:void(0)" id="dialog_no" class="button secondary"><?php echo __('No'); ?></a>
-                <a href="javascript:void(0)" id="dialog_yes" class="button primary"><?php echo __('Yes'); ?></a>
+    <div id="dialog_backdrop_content" class="fullpage_backdrop_content">
+        <div class="backdrop_box small">
+            <div class="backdrop_detail_header"><span id="dialog_title"></span></div>
+            <div class="backdrop_detail_content">
+                <p id="dialog_content"></p>
+            </div>
+            <div class="backdrop_details_submit">
+                <span class="explanation"></span>
+                <div class="dialog-query-buttons">
+                    <?php echo image_tag('spinning_20.gif', array('style' => 'display: none;', 'id' => 'dialog_indicator')); ?>
+                    <a href="javascript:void(0)" id="dialog_no" class="button secondary"><?php echo __('No'); ?></a>
+                    <a href="javascript:void(0)" id="dialog_yes" class="button primary"><?php echo __('Yes'); ?></a>
+                </div>
             </div>
         </div>
     </div>

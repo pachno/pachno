@@ -51,8 +51,12 @@
         <div class="message-box type-info">
             <?= fa_image_tag('wrench', [], 'fas'); ?>
             <span class="message">
-                <b>Your web server must be correctly set up with URL rewriting enabled for Pachno to work.</b><br>
-                For information on how to configure URL rewriting for your web server, see <a href="https://pachno.com/support">pachno.com &raquo; Support</a>
+                <span class="title">
+                    Your web server must be correctly set up with URL rewriting enabled
+                </span>
+                <span>
+                    For information on how to configure URL rewriting for your web server, see <a href="https://pachno.com/support" target="_blank"><span>pachno.com &raquo; Support</span><?= fa_image_tag('external-link-alt', ['class' => 'icon external'], 'fas'); ?></a>
+                </span>
             </span>
         </div>
         Pachno uses URL rewriting to make URLs look more readable. URL rewriting is what makes it possible to use pretty URLs such as <u><i>/projectname/issue/123</i></u> instead of longer, unreadable URLs like <u><i>viewissue.php?project_key=projectname&amp;issue_id=123</i></u>.<br>
@@ -86,10 +90,11 @@
                 </div>
             </div>
             <div class="error" id="continue_error" style="display: none;"> </div>
-            <br style="clear: both;">
-            <div style="clear: both; padding: 30px 0 15px 0; text-align: right;">
-                <img src="images/spinning_30.gif" id="next_indicator" style="display: none; vertical-align: middle; margin-left: 10px;">
-                <input type="submit" id="continue_button" onclick="$('#continue_button').hide();$('#next_indicator').show();" value="Continue">
+            <div style="display: flex; width: 100%; align-items: center; justify-content: center; flex-direction: row; margin: 30px 0 20px;">
+                <button type="submit" onclick="document.getElementById('continue_button').classList.add('disabled');document.getElementById('pachno_settings').classList.add('submitting');" id="continue_button" style="margin-left: auto;">
+                    <span class="name"><?= __('Continue'); ?></span>
+                    <?= fa_image_tag('spinner', ['class' => 'fa-spin icon indicator']); ?>
+                </button>
             </div>
         </form>
     <?php endif; ?>

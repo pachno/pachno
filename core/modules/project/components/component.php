@@ -6,7 +6,7 @@
 
 ?>
 <div class="configurable-component form-container project-component" data-component data-id="<?= $component->getId(); ?>">
-    <form class="row" accept-charset="<?php echo \pachno\core\framework\Context::getI18n()->getCharset(); ?>" action="<?php echo make_url('configure_project_component_post', ['project_id' => $component->getProject()->getId(), 'component_id' => $component->getID()]); ?>" onsubmit="Pachno.Project.Component.save(this);return false;" data-interactive-form>
+    <form class="row" id="project-component-form-<?= $component->getID(); ?>" accept-charset="<?php echo \pachno\core\framework\Context::getI18n()->getCharset(); ?>" action="<?php echo make_url('configure_project_component_post', ['project_id' => $component->getProject()->getId(), 'component_id' => $component->getID()]); ?>" data-interactive-form>
         <div class="icon">
             <?php echo fa_image_tag('puzzle-piece'); ?>
         </div>

@@ -863,6 +863,7 @@
         {
             $returnJSON = [
                 'id' => $this->getID(),
+                'url' => Context::getRouting()->generate('project_milestone', ['project_key' => $this->getProject()->getKey(), 'milestone_id' => $this->getID()]),
                 'name' => $this->getName(),
                 'closed' => $this->getClosed(),
                 'reached' => $this->isReached(),
@@ -879,12 +880,17 @@
                 'reached_date' => $this->getReachedDate(),
                 'percent_complete' => $this->getPercentComplete(),
                 'percentage_type' => $this->getPercentageType(),
+                'issues_count' => $this->countIssues(),
+                'issues_count_open' => $this->countOpenIssues(),
+                'issues_count_closed' => $this->countClosedIssues(),
             ];
 
+
             if ($detailed) {
-                $returnJSON['issues_count'] = $this->countIssues();
-                $returnJSON['issues_count_open'] = $this->countOpenIssues();
-                $returnJSON['issues_count_closed'] = $this->countClosedIssues();
+                $returnJSON['issues'] = [];
+                foreach ($this->getIssues() as $issue) {
+                    $returnJSON['issues'][] = $issue->toJSON(false);
+                }
 
                 $this->_populatePointsAndTime();
                 $returnJSON['hours'] = $this->_hours;

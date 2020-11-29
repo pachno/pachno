@@ -130,11 +130,13 @@ export const fetchHelper = function (url, options) {
         onLoading();
         let response;
         let fetch_options = {
-            method: method
+            method: method,
+            headers: {
+                "Accept": "application/json"
+            }
         };
 
         if (['POST', 'PUT'].indexOf(method) !== -1) {
-
             let data;
             if ($form !== undefined && $form.length) {
                 data = new FormData($form[0]);
@@ -150,6 +152,11 @@ export const fetchHelper = function (url, options) {
             }
 
             fetch_options.body = data;
+        } else if (method === 'GET') {
+            if (options.additional_params) {
+                const concatenator = (url.indexOf('?') !== -1) ? '&' : '?';
+                url += concatenator + options.additional_params;
+            }
         }
 
         fetch(url, fetch_options)
@@ -253,6 +260,9 @@ export const fetchHelper = function (url, options) {
                         var json = (response.responseJSON) ? response.responseJSON : undefined;
                         options.complete.callback(json);
                     }
+                }
+                if ($form !== undefined && $form.data('reset-backdrop') !== undefined) {
+                    UI.Backdrop.reset();
                 }
                 Pachno.trigger(EVENTS.updated);
                 resolve(json);

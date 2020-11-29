@@ -6,7 +6,6 @@
     use Exception;
     use pachno\core\entities\common\Identifiable;
     use pachno\core\entities\common\IdentifiableScoped;
-    use pachno\core\entities\traits\TextParserTodo;
     use pachno\core\framework;
     use pachno\core\framework\Event;
     use pachno\core\helpers\ContentParser;
@@ -238,7 +237,7 @@
         /**
          * Returns the associated parser object
          *
-         * @return ContentParser|TextParserTodo
+         * @return ContentParser
          */
         protected function _getParser()
         {
@@ -673,26 +672,6 @@
         public function getMentions()
         {
             return $this->_getParser()->getMentions();
-        }
-
-        /**
-         * Get todos from comment content.
-         *
-         * @return array
-         */
-        public function getTodos()
-        {
-            return $this->_getParser()->getTodos();
-        }
-
-        /**
-         * Reset "cached" todos.
-         *
-         * @return void
-         */
-        public function resetTodos()
-        {
-            $this->_parser = null;
         }
 
         protected function _preSave($is_new)

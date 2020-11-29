@@ -37,7 +37,10 @@
         <?php if ($pachno_user->canSearchForIssues() && $pachno_user->hasPageAccess('project_issues', $project->getID())): ?>
             <?= link_tag(make_url('project_open_issues', array('project_key' => $project->getKey())), fa_image_tag('file-alt') . '<span>'.__('Issues').'</span>', ['class' => 'button secondary']); ?>
         <?php endif; ?><?php if (!$project->isLocked() && $pachno_user->canReportIssues($project)): ?>
-            <?= javascript_link_tag(fa_image_tag('plus-square') . '<span>'.__('New issue').'</span>', ['onclick' => "Pachno.Issues.Add('" . make_url('get_partial_for_backdrop', ['key' => 'reportissue', 'project_id' => $project->getId()]) . "', this);", 'class' => 'button secondary highlight']); ?>
+            <button class="button secondary highlight trigger-backdrop" data-url="<?= make_url('get_partial_for_backdrop', ['key' => 'reportissue', 'project_id' => $project->getId()]); ?>">
+                <?= fa_image_tag('plus-square', ['class' => 'icon']); ?>
+                <span><?= __('New issue'); ?></span>
+            </button>
         <?php endif; ?>
     </nav>
 </div>

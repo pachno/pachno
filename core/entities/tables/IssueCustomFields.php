@@ -178,32 +178,6 @@
             parent::addText(self::OPTION_VALUE, false);
         }
 
-        protected function migrateData(Table $old_table)
-        {
-            switch ($old_table->getVersion()) {
-                case 1:
-                    if ($res = $old_table->rawSelectAll()) {
-                        $customfields = CustomDatatype::getB2DBTable()->selectAll();
-                        while ($row = $res->getNextRow()) {
-                            $customfield_id = $row->get(self::CUSTOMFIELDS_ID);
-                            $customfield = (array_key_exists($customfield_id, $customfields)) ? $customfields[$customfield_id] : null;
-                            if ($customfield instanceof CustomDatatype && $customfield->hasCustomOptions()) {
-                                $customfieldoption = CustomFieldOptions::getTable()->getByValueAndCustomfieldID((int)$row->get(self::OPTION_VALUE), $customfield->getID());
-                                if ($customfieldoption instanceof CustomDatatypeOption) {
-                                    $update = new Update();
-                                    $update->add(self::CUSTOMFIELDOPTION_ID, $customfieldoption->getID());
-                                    $update->add(self::OPTION_VALUE, null);
-                                    $this->rawUpdateById($update, $row->get(self::ID));
-                                } elseif ($row->get(self::ID)) {
-                                    $this->rawDeleteById($row->get(self::ID));
-                                }
-                            }
-                        }
-                    }
-                    break;
-            }
-        }
-
         protected function setupIndexes()
         {
             $this->addIndex('issueid_scope', [self::ISSUE_ID, self::SCOPE]);

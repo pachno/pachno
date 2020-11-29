@@ -1,6 +1,5 @@
 <?php
 
-    $pachno_response->addBreadcrumb(__('Statistics'), make_url('project_statistics', array('project_key' => $selected_project->getKey())));
     $pachno_response->setTitle(__('"%project_name" project team', array('%project_name' => $selected_project->getName())));
     include_component('project/projectheader', array('selected_project' => $selected_project, 'subpage' => __('Statistics')));
 

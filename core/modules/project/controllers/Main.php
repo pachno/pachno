@@ -14,6 +14,8 @@
     /**
      * actions for the project module
      *
+     * @Routes(name_prefix="project_", url_prefix="/:project_key")
+     *
      * @property entities\Client $selected_client
      */
     class Main extends helpers\ProjectActions
@@ -65,17 +67,53 @@
 
         /**
          * The project roadmap page
+         * @Route(name="roadmap", url="/roadmap/*")
          *
          * @param framework\Request $request
          */
         public function runRoadmap(framework\Request $request)
         {
-            $this->mode = $request->getParameter('mode', 'upcoming');
-            if ($this->mode == 'milestone' && $request['milestone_id']) {
-                $this->selected_milestone = Milestones::getTable()->selectById((int)$request['milestone_id']);
-            }
             $this->forward403unless($this->_checkProjectPageAccess('project_roadmap'));
-            $this->milestones = $this->selected_project->getMilestonesForRoadmap();
+        }
+
+        /**
+         * @Route(name="milestone", url="/milestones/:milestone_id")
+         * @param framework\Request $request
+         */
+        public function runGetMilestone(framework\Request $request)
+        {
+            $milestone = Milestones::getTable()->selectById($request['milestone_id']);
+            return $this->renderJSON(['milestone' => $milestone->toJSON(true)]);
+        }
+
+        /**
+         * @Route(name="milestones", url="/milestones")
+         * @param framework\Request $request
+         */
+        public function runGetMilestones(framework\Request $request)
+        {
+            $json = ['milestones' => []];
+            try {
+                foreach ($this->selected_project->getMilestones() as $milestone) {
+                    if (!$request['milestone_type'] || $request['milestone_type'] == 'all') {
+                        $json['milestones'][] = $milestone->toJSON(false);
+                        continue;
+                    }
+
+                    if ($request['milestone_type'] == 'sprint' && $milestone->isSprint()) {
+                        $json['milestones'][] = $milestone->toJSON(false);
+                    }
+
+                    if ($request['milestone_type'] == 'regular' && !$milestone->isSprint()) {
+                        $json['milestones'][] = $milestone->toJSON(false);
+                    }
+                }
+            } catch (\Exception $e) {
+                $this->getResponse()->setHttpStatus(400);
+                return $this->renderJSON(['error' => $e->getMessage()]);
+            }
+
+            return $this->renderJSON($json);
         }
 
         /**
@@ -103,7 +141,7 @@
         /**
          * Sorting milestones
          *
-         * @Route(url="/:project_key/milestones/sort/:csrf_token", name="project_sort_milestones")
+         * @Route(url="/milestones/sort/:csrf_token", name="sort_milestones")
          * @CsrfProtected
          *
          * @param framework\Request $request
@@ -132,22 +170,6 @@
             }
 
             return $this->renderJSON(['sorted' => 'ok']);
-        }
-
-        /**
-         * The project scrum page
-         *
-         * @param framework\Request $request
-         */
-        public function runMilestoneDetails(framework\Request $request)
-        {
-            $this->forward403unless($this->_checkProjectPageAccess('project_scrum'));
-            $milestone = null;
-            if ($m_id = $request['milestone_id']) {
-                $milestone = Milestones::getTable()->selectById((int)$m_id);
-            }
-
-            return $this->renderComponent('project/milestonedetails', compact('milestone'));
         }
 
         /**
@@ -536,7 +558,7 @@
                     Context::setMessage('issue_error', 'transition_error');
                     Context::setMessage('issue_workflow_errors', $transition->getValidationErrors());
 
-                    if ($request->isAjaxCall()) {
+                    if ($request->isResponseFormatAccepted('application/json', false)) {
                         $this->getResponse()->setHttpStatus(400);
 
                         return $this->renderJSON(['error' => Context::getI18n()->__('There was an error trying to move this issue to the next step in the workflow'), 'message' => preg_replace('/\s+/', ' ', $this->getComponentHTML('main/issue_transition_error'))]);
@@ -951,7 +973,7 @@
                     $response = ['message' => $this->getI18n()->__('Settings saved')];
 
                     if (!$request['project_id'] && !$request['project_key']) {
-                        $response['forward'] = $this->getRouting()->generate('project_dashboard', ['project_key' => $this->selected_project->getKey()]);
+                        return $this->forward($this->getRouting()->generate('project_dashboard', ['project_key' => $this->selected_project->getKey()]));
                     }
                 } catch (Exception $e) {
                     $this->getResponse()->setHttpStatus(400);
@@ -1361,27 +1383,35 @@
             return $this->renderJSON(['error' => $this->getI18n()->__("You don't have access to perform this action")]);
         }
 
+        /**
+         * @Route(url="/configure/project/:project_id/icons/:csrf_token", name="configure_projects_icons")
+         * @CsrfProtected
+         *
+         * @param framework\Request $request
+         */
         public function runProjectIcons(framework\Request $request)
         {
-            if ($this->getUser()->canManageProject($this->selected_project) || $this->getUser()->canManageProjectReleases($this->selected_project)) {
-                if ($request->isPost()) {
-                    switch ($request['large_icon_action']) {
-                        case 'upload_file':
-                            $file = $request->handleUpload('large_icon');
-                            $this->selected_project->setIcon($file);
-                            break;
-                    }
-                    $this->selected_project->save();
-                }
-                $route = Context::getRouting()->generate('project_settings', ['project_key' => $this->selected_project->getKey()]);
-                if ($request->isAjaxCall()) {
-                    return $this->renderJSON(['forward' => $route]);
-                } else {
-                    $this->forward($route);
-                }
+            if (!$this->getUser()->canManageProject($this->selected_project)) {
+                return $this->forward403($this->getI18n()->__("You don't have access to perform this action"));
             }
 
-            return $this->forward403($this->getI18n()->__("You don't have access to perform this action"));
+            if ($request->isPost()) {
+                if ($request['file_id']) {
+                    $file = tables\Files::getTable()->selectById($request['file_id']);
+                    $this->selected_project->setIcon($file);
+                } else {
+                    $this->selected_project->setIcon(null);
+                    $this->selected_project->setIconName($request['project_icon']);
+                }
+                $this->selected_project->save();
+            }
+
+            if ($request->isResponseFormatAccepted('application/json', false)) {
+                return $this->renderJSON(['project' => $this->selected_project->toJSON(false)]);
+            }
+
+            $route = $this->getRouting()->generate('project_settings', ['project_key' => $this->selected_project->getKey()]);
+            $this->forward($route);
         }
 
         public function runProjectWorkflow(framework\Request $request)

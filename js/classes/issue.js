@@ -5,6 +5,7 @@ class Issue {
     constructor(json, board_id) {
         this.id = json.id;
         this.board_id = board_id;
+        this.href = json.href;
         this.title = json.title;
         this.issue_no = json.issue_no;
         this.state = json.state;
@@ -14,16 +15,20 @@ class Issue {
         this.created_at_iso = json.created_at_iso;
         this.updated_at = json.updated_at;
         this.updated_at_iso = json.updated_at_iso;
-        this.card_url = json.card_url;
-        this.href = json.href;
+        this.category = json.category;
+        this.priority = json.priority;
+        this.severity = json.severity;
         this.more_actions_url = json.more_actions_url;
         this.posted_by = json.posted_by;
         this.assignee = json.assignee;
         this.status = json.status;
+        this.card_url = json.card_url;
         this.blocking = json.blocking;
         this.milestone = json.milestone;
         this.number_of_files = json.number_of_files;
         this.number_of_comments = json.number_of_comments;
+        this.issue_type = json.issue_type;
+        this.parent_issue_id = json.parent_issue_id;
         this.processed = false;
         this.element = this.createHtmlElement();
     }

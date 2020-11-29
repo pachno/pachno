@@ -46,6 +46,16 @@
             $this->prev_issue = null;
         }
 
+        public function componentViewIssueCard()
+        {
+            $this->set_field_route = framework\Context::getRouting()->generate('edit_issue', array('project_key' => $this->issue->getProject()->getKey(), 'issue_id' => $this->issue->getID()));
+        }
+
+        public function componentIssueFieldStatus()
+        {
+            $this->statuses = ($this->issue->getProject()->useStrictWorkflowMode()) ? $this->issue->getProject()->getAvailableStatuses() : $this->issue->getAvailableStatuses();
+        }
+
         public function componentViewIssueHeader()
         {
             $this->statuses = ($this->issue->getProject()->useStrictWorkflowMode()) ? $this->issue->getProject()->getAvailableStatuses() : $this->issue->getAvailableStatuses();
@@ -230,7 +240,7 @@
 
         public function componentProjecticons()
         {
-
+            $this->custom_icons = tables\Files::getTable()->getByType(entities\File::TYPE_PROJECT_ICON);
         }
 
         public function componentProjectworkflow()

@@ -22,13 +22,14 @@
         <h2>Getting involved</h2>
         If you want to get involved with Pachno, don't hesitate to visit our community website <a target="_new" href="http://pachno.com/community">pachno.com/community</a> to see how you can join our growing community.
     </div>
-    <form action="<?php echo make_url('login'); ?>" method="post">
+    <form accept-charset="utf-8" action="<?php echo make_url('auth_login'); ?>" method="post" id="installation_form" style="display: flex; width: 100%; align-items: center; justify-content: center; flex-direction: row; margin: 30px 0 20px;">
         <input type="hidden" name="username" value="administrator">
         <input type="hidden" name="password" value="admin">
         <input type="hidden" name="referer" value="<?php echo make_url('about'); ?>">
-        <div style="font-size: 15px; text-align: center; padding: 25px;">
-            <input type="submit" value="Got it!" style="font-size: 15px; margin-top: 10px; padding: 8px; height: 40px; font-weight: normal;">
-        </div>
+        <button type="submit" onclick="document.getElementById('start_install').classList.add('disabled');document.getElementById('installation_form').classList.add('submitting');" id="start_install" style="margin-left: auto;">
+            <span class="name"><?= __('Got it!'); ?></span>
+            <?= fa_image_tag('spinner', ['class' => 'fa-spin icon indicator']); ?>
+        </button>
     </form>
 <?php endif; ?>
 <?php include_component('installation/footer'); ?>

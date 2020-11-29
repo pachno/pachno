@@ -1,7 +1,6 @@
 <?php
 
     $pachno_response->setTitle(__('About %sitename', array('%sitename' => \pachno\core\framework\Settings::getSiteHeaderName())));
-    $pachno_response->addBreadcrumb(__('About %sitename', array('%sitename' => \pachno\core\framework\Settings::getSiteHeaderName())), make_url('about'));
 
 ?>
 <div class="rounded_box borderless mediumgrey" style="margin: 10px auto 0 auto; width: 500px; padding: 5px 5px 15px 5px; font-size: 13px; text-align: center;">

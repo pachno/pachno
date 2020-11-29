@@ -14,18 +14,15 @@
         <div class="message-box type-info">
             <?= fa_image_tag('exclamation-circle'); ?>
             <span class="message">
-                It looks like you've already completed this step<br>
-                Please review the details and the click "Continue" to go the next step
+                <span class="title">
+                    It looks like you've already completed this step
+                </span>
+                <span>
+                    Please review the details and the click "Continue" to go the next step
+                </span>
             </span>
         </div>
     <?php endif; ?>
-    <div class="message-box type-warning">
-        <?= fa_image_tag('exclamation-triangle'); ?>
-        <span class="message">
-            The installation routine will overwrite any pre-existing tables from previous installations, if pointed to an existing Pachno database<br>
-            Pressing <b>Continue</b> on this page will write to your database.
-        </span>
-    </div>
     <p>Pachno uses a database to store information. To be able to connect to - and store information in - your database, we need some connection information.<br>
     <form accept-charset="utf-8" action="index.php" method="post" id="database_connection">
         <input type="hidden" name="step" value="3">
@@ -86,9 +83,20 @@
                 <span class="helptext">The database used to store Pachno tables <i>(must already exist!)</i></span>
             </dd>
         </dl>
-        <div style="clear: both; padding: 30px 0 15px 0; text-align: right;">
-            <img src="images/spinning_30.gif" id="next_indicator" style="display: none; vertical-align: middle; margin-left: 10px;">
-            <input type="submit" id="continue_button" onclick="$('#continue_button').hide();$('#next_indicator').show();" value="Continue">
+        <div class="message-box type-warning">
+            <?= fa_image_tag('exclamation-triangle'); ?>
+            <span class="message">
+            <span class="title">
+                Pressing "Continue" on this page will write to your database.
+            </span>
+            The installation routine will overwrite any pre-existing tables from previous installations, if pointed to an existing Pachno database
+        </span>
+        </div>
+        <div style="display: flex; width: 100%; align-items: center; justify-content: center; flex-direction: row; margin: 30px 0 20px;">
+            <button type="submit" onclick="document.getElementById('continue_button').classList.add('disabled');document.getElementById('database_connection').classList.add('submitting');" id="continue_button" style="margin-left: auto;">
+                <span class="name"><?= __('Continue'); ?></span>
+                <?= fa_image_tag('spinner', ['class' => 'fa-spin icon indicator']); ?>
+            </button>
         </div>
     </form>
     <p id="connection_status"></p>

@@ -2,21 +2,13 @@
 <html>
     <head>
         <style>
-            @import url('https://fonts.googleapis.com/css?family=Fira+Mono:400,500,700|Source+Sans+Pro:400,400i,600,600i&subset=cyrillic,cyrillic-ext,latin-ext');
-
-            @font-face {
-                font-family: 'Simplifica';
-                src: url('/fonts/simplifica_typeface-webfont.woff2') format('woff2'),
-                url('/fonts/simplifica_typeface-webfont.woff') format('woff');
-                font-weight: normal;
-                font-style: normal;
-            }
+            @import url('https://fonts.googleapis.com/css?family=Fira+Mono:400,500,700|Source+Sans+Pro:400,400i,600,600i|Lilita+One:400&subset=cyrillic,cyrillic-ext,latin-ext&display=swap');
 
             body, td, th {
                 padding: 0px;
                 margin: 0px;
                 background-color: #FFF;
-                font-family: 'Simplifica', 'Open Sans', sans-serif;
+                font-family: 'Source Sans Pro', 'Open Sans', sans-serif;
                 font-style: normal;
                 font-weight: normal;
                 text-align: left;
@@ -33,7 +25,7 @@
                 padding: 0;
             }
             h1.logo {
-                font-family: 'Simplifica', 'Open Sans', sans-serif;
+                font-family: 'Lilita One', 'Open Sans', sans-serif;
                 margin: 0;
                 padding: 10px;
                 background: #0C8990;

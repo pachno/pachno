@@ -65,12 +65,50 @@ const toggleFancyDropdown = function (event) {
     event.stopPropagation();
 }
 
+const filterFilterOptionsElement = function (element) {
+    const filtervalue = element.val().toLowerCase(),
+        $filterContainer = $(element.closest('.filter-container').siblings('.filter-values-container'));
+
+    if (filtervalue !== element.data('previousValue')) {
+        if (filtervalue !== '') {
+            $filterContainer.addClass('filtered');
+        } else {
+            $filterContainer.removeClass('filtered');
+        }
+
+        $filterContainer.find('.filtervalue').each(function () {
+            var $filterElement = $(this);
+            if ($filterElement.hasClass('sticky'))
+                return;
+
+            if (filtervalue !== '') {
+                if ($filterElement.text().toLowerCase().indexOf(filtervalue) !== -1 || $filterElement.hasClass('selected')) {
+                    $filterElement.addClass('visible');
+                } else {
+                    $filterElement.removeClass('visible');
+                }
+            } else {
+                $filterElement.addClass('visible');
+            }
+            $filterElement.removeClass('highlighted');
+        });
+        element.data('previousValue', filtervalue);
+    }
+};
+
 const setupListeners = function () {
     const $body = $('body');
 
     $body.on('change', '.fancy-dropdown input[type=checkbox]', updateFancyDropdownValues);
     $body.on('change', '.fancy-dropdown input[type=radio]', updateFancyDropdownValues);
     $body.on("click", ".fancy-dropdown", toggleFancyDropdown);
+
+    $body.on("keyup", ".fancy-dropdown .filter-container input[type=search]", function (e) {
+        var $filterInput = jQuery(this);
+
+        $filterInput.data('previousValue', '');
+        filterFilterOptionsElement($filterInput);
+    });
 
     Pachno.on(WidgetEvents.update, updateFancyDropdowns);
 };

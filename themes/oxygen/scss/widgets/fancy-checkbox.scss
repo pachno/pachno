@@ -17,7 +17,7 @@
     .fas.unchecked,
     .far.unchecked {
       display: inline-flex;
-      margin-right: .3em;
+      //margin-right: .3em;
     }
 
     .fas.checked,
@@ -28,6 +28,16 @@
     .fas.indicator,
     .far.indicator {
       display: none;
+    }
+
+    .fas,
+    .far,
+    .fab {
+      &:not(.icon) {
+        + span {
+          margin-left: .3em;
+        }
+      }
     }
   }
 
@@ -85,7 +95,7 @@
       .fas.checked,
       .far.checked {
         display: inline-block;
-        margin-right: .3em;
+        //margin-right: .3em;
       }
 
       .fas.unchecked,
@@ -98,6 +108,16 @@
   &:focus {
     + label {
       color: #558;
+    }
+  }
+}
+
+.form-container {
+  .form-row {
+    > .fancy-checkbox {
+      + label:not(.button) {
+        font-size: .95em;
+      }
     }
   }
 }

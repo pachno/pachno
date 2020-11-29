@@ -24,6 +24,7 @@
     form {
       .form-row {
         input[type=text],
+        input[type=email],
         input[type=search] {
           background-color: rgba(225, 225, 225, .35);
           border: 1px solid rgba(225, 225, 225, 0);

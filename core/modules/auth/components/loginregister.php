@@ -23,7 +23,7 @@
                     <input type="email" class="required" id="email_confirm" name="email_confirm">
                     <label for="email_confirm">*&nbsp;<?php echo __('Confirm e-mail'); ?></label>
                 </div>
-                <?php include_component('main/captcha'); ?>
+                <?php include_component('auth/captcha'); ?>
                 <div class="form-row submit-container">
                     <a class="button secondary" href="javascript:void(0);" onclick="Pachno.Main.Login.showLogin('#regular_login_container');">
                         <?= fa_image_tag('angle-left', ['class' => 'icon']); ?>
@@ -44,10 +44,10 @@
             <div class="form-row">
                 <span class="helper-text" id="register_message"></span>
             </div>
-            <form accept-charset="<?php echo \pachno\core\framework\Context::getI18n()->getCharset(); ?>" action="<?php echo make_url('login'); ?>" method="post" id="register_auto_form" onsubmit="Pachno.Main.Login.registerAutologin('<?php echo make_url('login'); ?>'); return false;">
+            <form accept-charset="<?php echo \pachno\core\framework\Context::getI18n()->getCharset(); ?>" action="<?php echo make_url('auth_login'); ?>" method="post" id="register_auto_form" onsubmit="Pachno.Main.Login.registerAutologin('<?php echo make_url('auth_login'); ?>'); return false;">
                 <input id="register_username_hidden" name="username" type="hidden" value="">
                 <input id="register_password_hidden" name="password" type="hidden" value="">
-                <input type="hidden" name="return_to" value="<?php echo make_url('account'); ?>">
+                <input type="hidden" name="return_to" value="<?php echo make_url('profile_account'); ?>">
                 <div class="form-row submit-container">
                     <button type="submit" class="button" id="register_autologin_button">
                         <?= fa_image_tag('angle-right', ['class' => 'icon indicator']); ?>

@@ -2,8 +2,12 @@
 <div class="installation_box">
     <h2 style="margin-top: 0px;">Pre-installation checks</h2>
     <p style="margin-bottom: 10px;">
-    Before we can start the installation, we need to check a few things.<br>
-    Please look through the list of prerequisites below, and take the necessary steps to correct any errors that may have been highlighted.</p>
+    <?php if ($all_well): ?>
+        We've just done a requirements check. All prerequisite requirements are met, so you're good to continue.
+    <?php else: ?>
+        Before we can start the installation the requirements below need to be satisfied.<br>
+        Please look through the list, and take the necessary steps to correct any errors that may have been highlighted.</p>
+    <?php endif; ?>
     <div id="installation_main_box">
         <div class="prereq type-ok"><?= fa_image_tag('check-square', [], 'far'); ?><span class="message">Mozilla Public License 2.0 accepted</span></div>
         <?php if ($php_ok): ?>
@@ -177,15 +181,15 @@
             </div>
         <?php endif; ?>
         <?php if ($all_well): ?>
-            <div style="clear: both; padding: 30px 0 15px 0; text-align: right;">
-                <form accept-charset="utf-8" action="index.php" method="post">
-                    <input type="hidden" name="step" value="2">
-                    <img src="images/spinning_30.gif" id="next_indicator" style="display: none; vertical-align: middle; margin-left: 10px;" >
-                    <input type="submit" onclick="$('#start_install').hide();$('#next_indicator').show();" id="start_install" value="Continue" style="margin-left: 10px;">
-                </form>
-            </div>
+            <form accept-charset="utf-8" action="index.php" method="post" id="installation_form" style="display: flex; width: 100%; align-items: center; justify-content: center; flex-direction: row; margin: 30px 0 20px;">
+                <input type="hidden" name="step" value="2">
+                <button type="submit" onclick="document.getElementById('start_install').classList.add('disabled');document.getElementById('installation_form').classList.add('submitting');" id="start_install" style="margin-left: auto;">
+                    <span class="name"><?= __('Continue'); ?></span>
+                    <?= fa_image_tag('spinner', ['class' => 'fa-spin icon indicator']); ?>
+                </button>
+            </form>
         <?php else: ?>
-            <div style="clear: both; padding-top: 20px; text-align: right;">
+            <div style="clear: both; padding-top: 20px; text-align: right; ">
                 <form accept-charset="utf-8" action="index.php" method="post">
                     <input type="hidden" name="step" value="1">
                     <input type="hidden" name="agree_license" value="1">
