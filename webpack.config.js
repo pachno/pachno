@@ -8,8 +8,8 @@ module.exports = {
     entry: glob.sync('./js/**.js').reduce(function(obj, el){
         obj[path.parse(el).name] = el;
         return obj
-    },{
-        mainCss: './themes/oxygen/scss/main.scss'
+    // },{
+    //     mainCss: './themes/oxygen/scss/main.scss'
     }),
     output: {
         filename: 'public/js/dist/pachno/[name].js',
@@ -21,7 +21,7 @@ module.exports = {
         },
         extensions: ['.js', '.ts', '.svg']
     },
-    devtool: 'inline-source-map',
+    devtool: 'source-map',
     module: {
         rules: [
             {
@@ -33,29 +33,43 @@ module.exports = {
                         presets: ['@babel/preset-env']
                     }
                 }
-            },
-            {
-                test: /\.scss$/,
-                use: [
-                    {
-                        loader: 'file-loader',
-                        options: {
-                            name: 'themes/oxygen/css/theme.css',
-                        }
-                    },
-                    {
-                        loader: 'extract-loader'
-                    },
-                    {
-                        loader: 'css-loader?-url'
-                    },
-                    {
-                        loader: 'postcss-loader'
-                    },
-                    {
-                        loader: 'sass-loader'
-                    }
-                ]
+            // },
+            // {
+            //     test: /\.scss$/,
+            //     use: [
+            //         {
+            //             loader: 'file-loader',
+            //             options: {
+            //                 name: 'themes/oxygen/css/theme.css',
+            //                 minimize: false
+            //             }
+            //         },
+            //         {
+            //             loader: 'extract-loader',
+            //             options: {
+            //                 sourceMap: true,
+            //                 minimize: false
+            //             }
+            //         },
+            //         {
+            //             loader: 'css-loader?-url',
+            //             options: {
+            //                 sourceMap: true
+            //             }
+            //         },
+            //         {
+            //             loader: 'postcss-loader',
+            //             options: {
+            //                 sourceMap: true
+            //             }
+            //         },
+            //         {
+            //             loader: 'sass-loader',
+            //             options: {
+            //                 sourceMap: true
+            //             }
+            //         }
+            //     ]
             },
             {
                 test: /\.svg$/,
@@ -79,7 +93,7 @@ module.exports = {
                 test: /\.css$/,
                 use: [
                     { loader: 'style-loader' },
-                    { loader: 'css-loader' }
+                    { loader: 'css-loader?sourceMap' }
                 ]
             }
         ]

@@ -1,0 +1,5 @@
+<ruleset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" name="PSR2" xsi:noNamespaceSchemaLocation="../../../phpcs.xsd">
+    <rule ref="Generic.PHP.DisallowShortOpenTag">
+        <exclude name="Generic.PHP.DisallowShortOpenTag.EchoFound" />
+    </rule>
+</ruleset>

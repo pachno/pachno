@@ -468,7 +468,8 @@ issue_gettempfieldvalue:
     csrf_enabled: false
 
 issue_setfield:
-    route: '/:project_key/issues/:issue_id/set/field'
+    route: '/:project_key/issues/:issue_id/:field/:csrf_token/*'
+    methods: ['POST']
     module: main
     action: issueSetField
     parameters: [ ]

@@ -11,7 +11,7 @@
         <span><?php echo __('Choose project icon'); ?></span>
         <a href="javascript:void(0);" class="closer" onclick="Pachno.UI.Backdrop.reset();"><?= fa_image_tag('times'); ?></a>
     </div>
-    <form accept-charset="<?php echo \pachno\core\framework\Context::getI18n()->getCharset(); ?>" action="<?php echo make_url('configure_projects_icons', array('project_id' => $project->getID())); ?>" method="post" id="project_config_icon_form" enctype="multipart/form-data" data-simple-submit data-reset-backdrop>
+    <form accept-charset="<?php echo \pachno\core\framework\Context::getI18n()->getCharset(); ?>" action="<?php echo make_url('project_configure_icons', array('project_key' => $project->getKey(), 'project_id' => $project->getID())); ?>" method="post" id="project_config_icon_form" enctype="multipart/form-data" data-simple-submit data-reset-backdrop>
         <div id="backdrop_detail_content" class="backdrop_detail_content">
             <div class="form-container">
                 <div class="form-row">

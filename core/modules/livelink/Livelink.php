@@ -336,7 +336,7 @@
         /**
          * Header wiki menu and search dropdown / list
          *
-         * @Listener(module="core", identifier="templates/headermainmenu::projectmenulinks")
+         * @Listener(module="core", identifier="templates/header::projectmenulinks")
          *
          * @param Event $event
          */

@@ -66,6 +66,9 @@ class Issue {
         if (this.number_of_comments > 0) {
             $info.append(`<span class="attachments">${UI.fa_image_tag('comments', [], 'far')}<span>${this.number_of_comments}</span></span>`);
         }
+
+        $info.append(`<span class="status-badge" style="background-color: ${this.status.color}; color: ${this.status.text_color};"><span>${this.status.name}</span></span>`);
+
         if (this.assignee !== undefined) {
             if (this.assignee.type == 'user') {
                 $info.append(`<span class="assignee"><span class="avatar medium"><img src="${this.assignee.avatar_url_small}"></span></span>`)

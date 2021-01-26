@@ -853,13 +853,14 @@
         {
             $this->_visible_issues = $visible;
         }
+        
 
         public function setOrder($order)
         {
             $this->_sort_order = $order;
         }
 
-        public function toJSON($detailed = true)
+        public function toJSON($detailed = false)
         {
             $returnJSON = [
                 'id' => $this->getID(),
@@ -884,7 +885,6 @@
                 'issues_count_open' => $this->countOpenIssues(),
                 'issues_count_closed' => $this->countClosedIssues(),
             ];
-
 
             if ($detailed) {
                 $returnJSON['issues'] = [];

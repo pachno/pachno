@@ -765,7 +765,7 @@
          *
          * @return Project
          */
-        public function getProject(): Project
+        public function getProject(): ?Project
         {
             return $this->_b2dbLazyLoad('_project_id');
         }
@@ -847,7 +847,7 @@
          */
         public function getFormattedIssueNo($link_formatted = false): string
         {
-            if ($this->getProject()->usePrefix()) {
+            if ($this->getProject() instanceof Project && $this->getProject()->usePrefix()) {
                 return $this->getProject()->getPrefix() . '-' . $this->getIssueNo();
             } else {
                 return (string) (($link_formatted) ? '#' : '') . $this->getIssueNo();

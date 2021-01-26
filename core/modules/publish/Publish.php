@@ -45,6 +45,11 @@
 
         protected $_has_config_settings = true;
 
+        /**
+         * @var Article
+         */
+        protected $_current_article;
+
         public static function getArticleLink($article_name, $project = null, $mode = 'show', $legacy_name = false)
         {
             $article = Articles::getTable()->getArticleByName($article_name, $project, $legacy_name);
@@ -58,6 +63,16 @@
             }
 
             return $article->getLink($mode);
+        }
+
+        public function setCurrentArticle(Article $article)
+        {
+            $this->_current_article = $article;
+        }
+
+        public function getCurrentArticle(): ?Article
+        {
+            return $this->_current_article;
         }
 
         public function postConfigSettings(Request $request)
@@ -195,9 +210,52 @@
         }
 
         /**
+         * Header "Publish" page names
+         *
+         * @Listener(module="core", identifier="project/templates/projectheader::pagename")
+         *
+         * @param Event $event
+         */
+        public function dashboardProjectHeaderPagename(Event $event)
+        {
+            switch (framework\Context::getRouting()->getCurrentRoute()->getModuleName()) {
+                case 'publish':
+                    $event->setReturnValue(framework\Context::getI18n()->__('Documentation'));
+                    $event->setProcessed(true);
+                    break;
+            }
+        }
+
+        /**
          * Header wiki menu and search dropdown / list
          *
-         * @Listener(module="core", identifier="templates/headermainmenu::projectmenulinks")
+         * @Listener(module="core", identifier="header_menu_entries")
+         *
+         * @param Event $event
+         */
+        public function listen_HeaderMenuLink(Event $event)
+        {
+            framework\ActionComponent::includeComponent('publish/headermenulink');
+        }
+
+        /**
+         * Header wiki menu and search dropdown / list
+         *
+         * @Listener(module="core", identifier="project_header_sections")
+         *
+         * @param Event $event
+         */
+        public function listen_ProjectHeaderSections(Event $event)
+        {
+            if (framework\Context::getRouting()->getCurrentRoute()->getModuleName() == 'publish') {
+                framework\ActionComponent::includeComponent('publish/headeractions');
+            }
+        }
+
+        /**
+         * Header wiki menu and search dropdown / list
+         *
+         * @Listener(module="core", identifier="templates/header::projectmenulinks")
          *
          * @param Event $event
          */
@@ -216,7 +274,32 @@
 
             $wiki_url = ($event->getSubject() instanceof Project && $event->getSubject()->hasWikiURL()) ? $event->getSubject()->getWikiURL() : null;
             $top_level_articles = Articles::getTable()->getManualSidebarArticles(false, $article->getProject());
-            framework\ActionComponent::includeComponent('publish/menustriplinks', ['project_url' => $project_url, 'project' => $event->getSubject(), 'wiki_url' => $wiki_url, 'top_level_articles' => $top_level_articles]);
+            $top_level_categories = Articles::getTable()->getManualSidebarArticles(true, $article->getProject());
+            $overview_article = Articles::getTable()->getArticleByName('Main Page', $event->getSubject());
+            usort($top_level_articles, '\pachno\core\entities\Article::sortArticleChildren');
+            usort($top_level_categories, '\pachno\core\entities\Article::sortArticleChildren');
+            framework\ActionComponent::includeComponent('publish/menustriplinks', ['project_url' => $project_url, 'project' => $event->getSubject(), 'wiki_url' => $wiki_url, 'top_level_articles' => $top_level_articles, 'top_level_categories' => $top_level_categories, 'overview_article' => $overview_article]);
+        }
+
+        /**
+         * Listen to header menu strip
+         *
+         * @Listener(module="core", identifier="header_menu_strip")
+         *
+         * @param Event $event
+         */
+        public function listenerMainMenustrip(Event $event)
+        {
+            $route = $event->getSubject();
+
+            if (!$route instanceof framework\routing\Route)
+                return;
+
+            if ($route->getModuleName() == 'publish') {
+                $component = framework\Action::returnComponentHTML('publish/mainmenustrip');
+                $event->setReturnValue($component);
+                $event->setProcessed();
+            }
         }
 
         public function listen_createNewProject(Event $event)

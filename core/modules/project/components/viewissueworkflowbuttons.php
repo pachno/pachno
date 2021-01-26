@@ -2,13 +2,6 @@
     <ul>
         <?php if ($issue->isWorkflowTransitionsAvailable()): ?>
             <li class="workflow">
-                <?php if (!$issue->isEditable()): ?>
-                    <div class="not-editable">
-                        <?= fa_image_tag('lock'); ?>
-                        <span class="name"><?= __('Locked'); ?></span>
-                        <span class="tooltip from-above"><?= __('Most details of this issue cannot be edited because the workflow defines this step as "locked"'); ?></span>
-                    </div>
-                <?php endif; ?>
                 <?php $cc = 1; $num_transitions = count($issue->getAvailableWorkflowTransitions()); ?>
                 <?php foreach ($issue->getAvailableWorkflowTransitions() as $transition): ?>
                     <div class="tooltip-container">

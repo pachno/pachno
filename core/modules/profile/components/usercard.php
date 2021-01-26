@@ -70,11 +70,11 @@
                 <div class="header">
                     <h3><?= __('Recently reported issues'); ?></h3>
                 </div>
-                <?php if (count($issues)): ?>
+                <?php if (count($issues)): try { ?>
                     <?php foreach ($issues as $issue): ?>
                         <?php if ($issue->hasAccess()): ?>
-                            <a class="list-item multiline" href="<?= make_url('project_dashboard', array('project_key' => $issue->getProject()->getKey())); ?>">
-                                <?= image_tag($issue->getProject()->getIconName(), ['class' => 'icon issuelog-project-logo', ['title' => $issue->getProject()->getName()]], true); ?>
+                            <a class="list-item multiline" href="<?= ($issue->getProject() instanceof \pachno\core\entities\Project) ? make_url('project_dashboard', array('project_key' => $issue->getProject()->getKey())) : '#'; ?>">
+                                <?= ($issue->getProject() instanceof \pachno\core\entities\Project) ? image_tag($issue->getProject()->getIconName(), ['class' => 'icon issuelog-project-logo', ['title' => $issue->getProject()->getName()]], true) : fa_image_tag('file'); ?>
                                 <?= fa_image_tag(($issue->hasIssueType()) ? $issue->getIssueType()->getFontAwesomeIcon() : 'unknown', ['class' => (($issue->hasIssueType()) ? 'icon issuetype-icon issuetype-' . $issue->getIssueType()->getIcon() : 'icon issuetype-icon issuetype-unknown')]); ?>
                                 <span class="name">
                                     <span class="title"><?php echo pachno_truncateText($issue->getFormattedTitle(true), 100); ?></span>
@@ -86,7 +86,7 @@
                         <?= fa_image_tag('search', ['class' => 'icon']); ?>
                         <span><?= __('Show all issues reported by this user'); ?></span>
                     </a>
-                <?php else: ?>
+                <?php  } catch (\Error $e) { var_dump($e); } else: ?>
                     <div class="list-item disabled"><span class="name"><?php echo __('This user has not reported any issues yet'); ?></span></div>
                 <?php endif; ?>
                 <?php if (count($user->getTeams())): ?>

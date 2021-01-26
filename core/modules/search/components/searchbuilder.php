@@ -18,8 +18,8 @@
                 <div class="name-container">
                     <span class="board-name" id="findissues_search_title" style="<?php if (!$searchtitle) echo 'display: none'; ?>"><?php echo $searchtitle; ?></span>
                     <span class="board-name" id="findissues_search_generictitle" style="<?php if ($searchtitle) echo 'display: none'; ?>"><?php echo __("Find issues"); ?></span>
-                    <span id="findissues_num_results" class="project-name" style="<?php if (!$show_results) echo 'display: none;'; ?>"><?php echo __('%number_of issue(s)', array('%number_of' => '<span id="findissues_num_results_span">-</span>')); ?></span>
                 </div>
+                <span id="findissues_num_results" class="project-name" style="<?php if (!$show_results) echo 'display: none;'; ?>"><?php echo __('%number_of issue(s)', array('%number_of' => '<span id="findissues_num_results_span">-</span>')); ?></span>
                 <div class="stripe-container">
                     <div class="stripe"></div>
                 </div>

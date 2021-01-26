@@ -1,8 +1,10 @@
 @import "../variables";
 
 .syntax_md {
-  border: 1px solid $theme-primary;
-  border-radius: .25em;
+  &:not(.comment-container) {
+    border: 1px solid $theme-primary;
+    border-radius: .25em;
+  }
 
   .editor-toolbar {
     display: flex;

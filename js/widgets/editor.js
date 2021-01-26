@@ -122,6 +122,7 @@ const initializeEasyMde = function () {
     const editor = new EasyMDE({
         element: editor_element,
         forceSync: true,
+        autofocus: true,
         status: [{
             className: "statustext",
             defaultValue: function (el) { el.innerHTML = $editor_element.data('status-text'); }

@@ -1,7 +1,9 @@
+import $ from "jquery";
 import {debounce} from "../tools/tools";
 import Swimlane from "./swimlane";
 import UI from "../helpers/ui";
-import {getEditor} from "../widgets/editor";
+import Pachno from "./pachno";
+import {watchIssuePopupForms} from "../helpers/issues";
 
 export const SwimlaneTypes = {
     NONE: '',
@@ -437,7 +439,7 @@ class Board {
             }
         }
         this.updateWhiteboard();
-    };
+    }
 
     setupListeners() {
         const board = this;
@@ -475,34 +477,7 @@ class Board {
             }
         });
 
-        const watchedForms = new Set();
-
-        $body.off('click', '#issue-card-popup .formatted-text-container');
-        $body.on('click', '#issue-card-popup .formatted-text-container', function () {
-            const $editorContainer = $(this).next();
-            const $textarea = $editorContainer.find('textarea');
-            const $form = $(this).parents('form');
-            const editor = getEditor($textarea.attr('id'));
-            // debugger;
-            // editor.focus();
-            editor.codemirror.off('blur');
-            editor.codemirror.on('blur', () => {
-                $editorContainer.parents('form').submit();
-            });
-            $form.addClass('editing');
-            watchedForms.add($form.attr('id'));
-            setTimeout(() => {
-                editor.codemirror.focus();
-            }, 250);
-        });
-        Pachno.on(Pachno.EVENTS.formSubmitResponse, function (PachnoApplication, data) {
-            const json = data.json;
-            if (watchedForms.has(data.form)) {
-                const $form = $(`#${data.form}`);
-                $form.find('.formatted-text-container').html(json.changed[$form.data('field')].value);
-                $form.removeClass('editing');
-            }
-        });
+        watchIssuePopupForms();
 
         const $filter_input = $('#planning_filter_title_input');
         $filter_input.on('keyup', debounce(this.filterInput, 250).bind(this));

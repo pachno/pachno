@@ -39,12 +39,16 @@
     </div>
 <?php endif; ?>
 <?php if (!$embedded && $show_article && !$article->isCategory() && !$article->isMainPage() && count($article->getCategories()) > 0): ?>
-    <h2><?php echo __('Categories'); ?></h2>
-    <?php $category_links = array(); ?>
-    <?php foreach ($article->getCategories() as $category): ?>
-        <a href="<?php $category->getCategory()->getLink(); ?>" class="card-badge">
-            <?= fa_image_tag('layer-group', ['class' => 'icon']); ?>
-            <span><?= $category->getCategory()->getName(); ?></span>
-        </a>
-    <?php endforeach; ?>
+    <div id="article_categories">
+        <h4>
+            <span class="name"><?php echo __('Categories'); ?></span>
+        </h4>
+        <?php $category_links = array(); ?>
+        <?php foreach ($article->getCategories() as $category): ?>
+            <a href="<?php $category->getCategory()->getLink(); ?>" class="card-badge">
+                <?= fa_image_tag('layer-group', ['class' => 'icon']); ?>
+                <span><?= $category->getCategory()->getName(); ?></span>
+            </a>
+        <?php endforeach; ?>
+    </div>
 <?php endif; ?>

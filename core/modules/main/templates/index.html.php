@@ -17,7 +17,30 @@
 ?>
 <div class="content-with-sidebar">
     <nav class="sidebar">
-        <?php include_component('main/menulinks', array('links' => $links, 'target_type' => 'main_menu', 'target_id' => 0, 'title' => __('Quick links'))); ?>
+        <div id="projects_list_tabs" class="list-mode">
+            <a class="list-item tab selected" data-project-category="active" id="tab_active" href="javascript:void(0);">
+                <?= fa_image_tag('boxes', ['class' => 'icon']); ?>
+                <span class="name"><?= ($pachno_user->isGuest()) ? __('Projects') : __('Active projects'); ?></span>
+                <?= fa_image_tag('spinner', ['style' => 'display: none;', 'id' => 'project_list_tab_active_indicator', 'class' => 'icon fa-spin']); ?>
+            </a>
+            <?php if (!$pachno_user->isGuest()): ?>
+                <a class="list-item tab" id="tab_archived" data-project-category="archived" href="javascript:void(0);">
+                    <?= fa_image_tag('archive', ['class' => 'icon']); ?>
+                    <span class="name"><?= __('Archived projects'); ?></span>
+                    <?= fa_image_tag('spinner', ['style' => 'display: none;', 'id' => 'project_list_tab_archived_indicator', 'class' => 'icon fa-spin']); ?>
+                </a>
+                <?php /* if ($pachno_user->isAuthenticated()): ?>
+                    <div class="list-item separator"></div>
+                    <div class="button-container">
+                        <?= link_tag(make_url('configure_projects'), fa_image_tag('cog'), ['class' => 'button icon secondary']); ?>
+                        <?php if ($list_mode !== 'client' && $pachno_user->canAccessConfigurationPage(framework\Settings::CONFIGURATION_SECTION_PROJECTS) && framework\Context::getScope()->hasProjectsAvailable()): ?>
+                            <button class="button primary project-quick-edit" onclick="Pachno.UI.Backdrop.show('<?= make_url('get_partial_for_backdrop', $partial_options); ?>');"><?= fa_image_tag('plus-square'); ?><span><?= __('Create a project'); ?></span></button>
+                        <?php endif; ?>
+                    </div>
+                <?php endif; */ ?>
+            <?php endif; ?>
+            <div class="list-item separator"></div>
+        </div>
         <?php \pachno\core\framework\Event::createNew('core', 'index_left')->trigger(); ?>
         <?php if (!$pachno_user->isGuest()): ?>
             <?php include_component('main/onboarding_invite'); ?>
@@ -25,9 +48,7 @@
     </nav>
     <div class="main_area frontpage">
         <?php \pachno\core\framework\Event::createNew('core', 'index_right_top')->trigger(); ?>
-        <?php if ($show_project_list): ?>
-            <?php include_component('main/projectlist', ['list_mode' => 'all', 'admin' => false]); ?>
-        <?php endif; ?>
+        <?php include_component('main/projectlist', ['list_mode' => 'all', 'admin' => false]); ?>
         <?php \pachno\core\framework\Event::createNew('core', 'index_right_bottom')->trigger(); ?>
     </div>
 </div>

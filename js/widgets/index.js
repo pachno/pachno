@@ -54,11 +54,18 @@ const toggleExpander = function (event) {
     $(this).closest('.expandable').toggleClass('expanded');
 };
 
-const toggleSidebar = function (event) {
+const toggleSidebarCollapsed = function (event) {
     event.stopPropagation();
     event.preventDefault();
 
     $(this).closest('.sidebar').toggleClass('collapsed');
+};
+
+const toggleSidebar = function (event) {
+    event.stopPropagation();
+    event.preventDefault();
+
+    $('.sidebar').toggleClass('collapsed');
 };
 
 const toggleDropper = function (e) {
@@ -92,8 +99,9 @@ const setupListeners = function () {
     const $body = $('body');
 
     $body.on('click', '.expandable .expander', toggleExpander);
-    $body.on('click', '.sidebar .collapser a', toggleSidebar);
+    $body.on('click', '.sidebar .collapser a', toggleSidebarCollapsed);
     $body.on('click', '.dropper', toggleDropper);
+    $body.on('click', '.menu-toggler', toggleSidebar);
 
     $body.on("click", function (e) {
         if (['INPUT'].indexOf(e.target.nodeName) !== -1) {

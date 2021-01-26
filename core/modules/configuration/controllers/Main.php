@@ -127,7 +127,7 @@
                 $settings = [framework\Settings::SETTING_USER_DISPLAYNAME_FORMAT, framework\Settings::SETTING_ENABLE_GRAVATARS, framework\Settings::SETTING_IS_SINGLE_PROJECT_TRACKER,
                     framework\Settings::SETTING_REQUIRE_LOGIN, framework\Settings::SETTING_ALLOW_REGISTRATION, framework\Settings::SETTING_USER_GROUP,
                     framework\Settings::SETTING_RETURN_FROM_LOGIN, framework\Settings::SETTING_RETURN_FROM_LOGOUT,
-                    framework\Settings::SETTING_REGISTRATION_DOMAIN_WHITELIST, framework\Settings::SETTING_SHOW_PROJECTS_OVERVIEW, framework\Settings::SETTING_KEEP_COMMENT_TRAIL_CLEAN,
+                    framework\Settings::SETTING_REGISTRATION_DOMAIN_WHITELIST, framework\Settings::SETTING_KEEP_COMMENT_TRAIL_CLEAN,
                     framework\Settings::SETTING_SITE_NAME, framework\Settings::SETTING_SITE_NAME_HTML, framework\Settings::SETTING_DEFAULT_CHARSET, framework\Settings::SETTING_DEFAULT_LANGUAGE,
                     framework\Settings::SETTING_SERVER_TIMEZONE, framework\Settings::SETTING_HEADER_LINK,
                     framework\Settings::SETTING_MAINTENANCE_MESSAGE, framework\Settings::SETTING_MAINTENANCE_MODE, framework\Settings::SETTING_ELEVATED_LOGIN_DISABLED,

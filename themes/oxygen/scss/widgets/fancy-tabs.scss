@@ -46,7 +46,7 @@
   font-size: .95em;
 }
 .fancy-tabs .tab.selected {
-  color: rgb(255, 170, 0);
+  color: $theme-secondary-color;
 }
 .fancy-tabs .tab.selected::after {
   content: '';
@@ -57,5 +57,5 @@
   bottom: 0;
   left: 50%;
   transform: translateX(-50%);
-  background-color: rgb(255, 170, 0);
+  background-color: $theme-secondary-color;
 }

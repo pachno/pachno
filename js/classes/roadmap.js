@@ -1,3 +1,7 @@
+import $ from "jquery";
+import Pachno from "../classes/pachno";
+import { watchIssuePopupForms } from "../helpers/issues";
+
 import Milestone from "./milestone";
 
 class Roadmap {
@@ -8,6 +12,7 @@ class Roadmap {
          */
         this.milestones = [];
         this.milestone_types = 'regular';
+        this.milestone_state = 'open';
 
         this.fetchMilestones();
         this.setupListeners();
@@ -20,13 +25,21 @@ class Roadmap {
             roadmap.milestone_types = $(this).val();
             roadmap.fetchMilestones();
         });
+
+        $('input[name=milestone_state]').on('click', function () {
+            roadmap.milestone_state = $(this).val();
+            roadmap.fetchMilestones();
+        });
+
+        watchIssuePopupForms();
     }
 
     fetchMilestones() {
         $('#project_roadmap').addClass('loading');
         $('#milestone-cards-container').html('');
         this.milestones = [];
-        Pachno.fetch(this.milestones_url + `?milestone_type=${this.milestone_types}`, { method: 'GET' })
+
+        Pachno.fetch(this.milestones_url + `?milestone_type=${this.milestone_types}&state=${this.milestone_state}`, { method: 'GET' })
             .then(json => {
                 for (const milestone_json of json.milestones) {
                     const milestone = new Milestone(milestone_json);
@@ -47,7 +60,7 @@ class Roadmap {
                 }
 
                 $milestones_container.append(milestone.getHtmlElement());
-                if (!milestone.closed) {
+                if (!milestone.is_closed) {
                     milestone.fetchIssues();
                 }
             }

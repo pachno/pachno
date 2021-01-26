@@ -95,6 +95,14 @@
             $json = ['milestones' => []];
             try {
                 foreach ($this->selected_project->getMilestones() as $milestone) {
+                    if ($request['state'] == 'open' && $milestone->isClosed()) {
+                        continue;
+                    }
+
+                    if ($request['state'] == 'closed' && !$milestone->isClosed()) {
+                        continue;
+                    }
+
                     if (!$request['milestone_type'] || $request['milestone_type'] == 'all') {
                         $json['milestones'][] = $milestone->toJSON(false);
                         continue;
@@ -1384,7 +1392,7 @@
         }
 
         /**
-         * @Route(url="/configure/project/:project_id/icons/:csrf_token", name="configure_projects_icons")
+         * @Route(url="/configure/project/:project_id/icons/:csrf_token", name="configure_icons")
          * @CsrfProtected
          *
          * @param framework\Request $request

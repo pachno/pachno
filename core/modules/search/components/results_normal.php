@@ -169,7 +169,8 @@ $current_spent_time = $current_estimated_time;
             <?php echo (count($component_names)) ? join(', ', $component_names) : '-'; ?>
         </div>
         <div class="column sc_milestone<?php if (!$issue->getMilestone() instanceof Milestone): ?> faded_out<?php endif; ?> <?php if (!in_array('milestone', $visible_columns)) echo 'hidden'; ?>">
-            <?php echo ($issue->getMilestone() instanceof Milestone) ? link_tag(make_url('project_milestone_details', array('project_key' => $issue->getProject()->getKey(), 'milestone_id' => $issue->getMilestone()->getID())), $issue->getMilestone()->getName()) : '-'; ?>
+            <?php // echo ($issue->getMilestone() instanceof Milestone) ? link_tag(make_url('project_milestone_details', array('project_key' => $issue->getProject()->getKey(), 'milestone_id' => $issue->getMilestone()->getID())), $issue->getMilestone()->getName()) : '-'; ?>
+            <?php echo ($issue->getMilestone() instanceof Milestone) ? $issue->getMilestone()->getName() : '-'; ?>
         </div>
         <div class="column sc_estimated_time<?php if (!$issue->hasEstimatedTime()): ?> faded_out<?php endif; ?> <?php if (!in_array('estimated_time', $visible_columns)) echo 'hidden'; ?>">
             <?php echo (!$issue->hasEstimatedTime()) ? '-' : Issue::getFormattedTime($issue->getEstimatedTime(true, true)); ?>

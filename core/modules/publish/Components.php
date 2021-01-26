@@ -96,6 +96,11 @@
             $this->top_level_categories = $top_level_categories;
         }
 
+        public function componentHeaderActions()
+        {
+            $this->article = framework\Context::getModule('publish')->getCurrentArticle();
+        }
+
         public function componentSpecialSpecialPages()
         {
 

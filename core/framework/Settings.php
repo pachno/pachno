@@ -162,8 +162,6 @@
 
         const SETTING_SERVER_TIMEZONE = 'server_timezone';
 
-        const SETTING_SHOW_PROJECTS_OVERVIEW = 'showprojectsoverview';
-
         const SETTING_SITE_NAME = 'b2_name';
 
         const SETTING_SITE_NAME_HTML = 'pachno_header_name_html';
@@ -592,7 +590,7 @@
 
         public static function getHeaderIconURL()
         {
-            return (self::isUsingCustomHeaderIcon()) ? Context::getRouting()->generate('showfile', ['id' => self::getHeaderIconID()]) : '/logo_white_192.png';
+            return (self::isUsingCustomHeaderIcon()) ? Context::getRouting()->generate('showfile', ['id' => self::getHeaderIconID()]) : '/logo_white_128.png';
         }
 
         public static function isUsingCustomHeaderIcon()
@@ -612,7 +610,7 @@
 
         public static function getFaviconURL()
         {
-            return (self::isUsingCustomFavicon()) ? Context::getRouting()->generate('showfile', ['id' => self::getFaviconID()]) : '/favicon.png';
+            return (self::isUsingCustomFavicon()) ? Context::getRouting()->generate('showfile', ['id' => self::getFaviconID()]) : '/favicon_inverted.png';
         }
 
         public static function isUsingCustomFavicon()
@@ -641,11 +639,6 @@
         public static function isHeaderHtmlFormattingAllowed()
         {
             return (bool)self::get(self::SETTING_SITE_NAME_HTML);
-        }
-
-        public static function isFrontpageProjectListVisible()
-        {
-            return (bool)self::get(self::SETTING_SHOW_PROJECTS_OVERVIEW);
         }
 
         public static function isSingleProjectTracker()

@@ -184,3 +184,56 @@
   }
 }
 
+.backdrop_detail_header {
+  box-shadow: none;
+  border: none;
+  color: $theme-primary-color;
+  font-weight: $theme-font-weight-bold;
+  font-size: 1.4em;
+  margin: 0;
+  text-transform: uppercase;
+  display: flex;
+  background-color: #fff;
+  border-top-left-radius: 3px;
+  border-top-right-radius: 3px;
+
+  span {
+    flex: 1 1 auto;
+    padding: 10px 15px;
+    text-align: left;
+  }
+
+  .closer,
+  .back_link,
+  .add_link {
+    flex: 0 0 34px;
+    padding: 5px;
+    margin: 5px;
+    box-sizing: border-box;
+    border-radius: 4px;
+    vertical-align: middle;
+    transition: background-color 0.25s ease-in-out, color 0.25s ease-in-out;
+    display: inline-block;
+    text-align: center;
+  
+    &:hover {
+      background-color: $theme-primary-color;
+      color: #fff;
+    }
+  }
+  
+  a {
+    color: $theme-primary-color;
+    border: none;
+    text-decoration: none;
+
+    &:hover {
+      border: none;
+      text-decoration: none;
+    }
+  }
+
+  .backdrop_detail_header .closer a:hover {
+    color: #faa;
+  }
+}  

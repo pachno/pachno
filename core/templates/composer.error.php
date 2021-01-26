@@ -73,7 +73,7 @@
             pre { overflow: scroll; padding: 5px; }
             .command_box { border: 1px dashed #DDD; background-color: #F5F5F5; padding: 4px; font-family: 'Fira Mono', monospace; display: inline-block; margin-top: 5px; margin-bottom: 15px; }
         </style>
-        <link rel="shortcut icon" href="favicon.png">
+        <link rel="shortcut icon" href="favicon_inverted.png">
     </head>
     <body>
         <div class="rounded_box" style="margin: 30px auto 0 auto; width: 700px;">

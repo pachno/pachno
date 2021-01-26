@@ -182,6 +182,33 @@
         <span class="name"><?= __('People involved'); ?></span>
     </div>
     <ul class="issue_details fields-list" id="issue_details_fieldslist_people">
+        <li id="posted_by_field">
+            <div class="label" id="posted_by_header"><?= __('Posted by'); ?></div>
+            <div class="value dropper-container" id="posted_by_content">
+                <div class="value-container dropper">
+                    <div id="posted_by_name">
+                        <?= include_component('main/userdropdown', array('user' => $issue->getPostedBy())); ?>
+                    </div>
+                    <span class="no-value" id="no_posted_by" style="display: none;">-</span>
+                    <?php if ($issue->isUpdateable() && $issue->canEditPostedBy()): ?>
+                        <?= fa_image_tag('angle-down', ['class' => 'dropdown-indicator']); ?>
+                    <?php endif; ?>
+                </div>
+                <?php if ($issue->isUpdateable() && $issue->canEditPostedBy()): ?>
+                    <div class="dropdown-container">
+                        <?php include_component('main/identifiableselector', array(    'html_id'             => 'posted_by_change',
+                                                                                'header'             => __('Change issue creator'),
+                                                                                'callback'             => "Pachno.Issues.Field.set('" . make_url('issue_setfield', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => 'posted_by', 'identifiable_type' => 'user', 'value' => '%identifiable_value')) . "', 'posted_by');",
+                                                                                'team_callback'         => "Pachno.Issues.Field.set('" . make_url('issue_setfield', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => 'posted_by', 'identifiable_type' => 'team', 'value' => '%identifiable_value')) . "', 'posted_by');",
+                                                                                'teamup_callback'     => "Pachno.Issues.Field.set('" . make_url('issue_setfield', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => 'posted_by', 'identifiable_type' => 'team', 'value' => '%identifiable_value', 'teamup' => true)) . "', 'posted_by');",
+                                                                                'clear_link_text'    => __('Clear current creator'),
+                                                                                'base_id'            => 'posted_by',
+                                                                                'include_teams'        => true,
+                                                                                'absolute'            => true)); ?>
+                    </div>
+                <?php endif; ?>
+            </div>
+        </li>
         <li id="owned_by_field" style="<?php if (!$issue->isOwnedByVisible()): ?> display: none;<?php endif; ?>">
             <div class="label" id="owned_by_header"><?= __('Owned by'); ?></div>
             <div class="value dropper-container" id="owned_by_content">
@@ -304,7 +331,7 @@
                 <?php include_component('main/viewissuefield', compact('field', 'info', 'issue')); ?>
             <?php endforeach; ?>
             <?php foreach ($customfields_list as $field => $info): ?>
-                <?php if ($info['type'] == CustomDatatype::INPUT_TEXTAREA_MAIN): continue; endif; ?>
+                <?php if ($info['type'] == CustomDatatype::INPUT_TEXTAREA_MAIN) continue; ?>
                 <li id="<?= $field; ?>_field" <?php if (!$info['visible']): ?> style="display: none;"<?php endif; ?>>
                     <div class="label" id="<?= $field; ?>_header">
                         <?= $info['title']; ?>
@@ -375,7 +402,9 @@
                                     case CustomDatatype::DATE_PICKER:
                                     case CustomDatatype::DATETIME_PICKER:
                                         $pachno_response->addJavascript('calendarview');
-                                        if (is_numeric($info['name'])) {
+                                        if (!isset($info['name'])) {
+                                            $value = __('Not set');
+                                        } elseif (is_numeric($info['name'])) {
                                             $value = ($info['name']) ? date('Y-m-d' . ($info['type'] == CustomDatatype::DATETIME_PICKER ? ' H:i' : ''), $info['name']) : __('Not set');
                                         } else {
                                             $value = $info['name'];

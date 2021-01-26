@@ -17,11 +17,11 @@
   &:hover {
     text-decoration: none;
     border: none;
-    background-color: $theme-primary;
-    color: $theme-text-color-inverse;
+    background-color: $theme-highlight-color;
+    color: $theme-primary-color;
 
     .icon {
-      color: $theme-text-color-inverse;
+      color: $theme-primary-color;
     }
   }
 

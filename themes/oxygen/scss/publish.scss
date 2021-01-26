@@ -12,7 +12,7 @@
             .scroll-container {
                 position: relative;
 
-                .list-mode {
+                .list-mode:not(.dropdown-container) {
                     position: absolute;
                     top: 0;
                     left: 0;
@@ -33,33 +33,32 @@
 
                 .list-item,
                 .list-item:hover {
-                    font-size: .9rem;
-                    margin: .15em 1em 0 1em;
+                    //font-size: .9rem;
+                    //margin: .15em 1em 0 1em;
 
                     &:first-child {
-                        margin-top: 0;
+                        //margin-top: 0;
                     }
 
                     &.expandable.expanded {
                         + .submenu {
-                            padding-top: 1em;
-                            padding-bottom: 1em;
-                            border-color: $theme-primary;
-                            display: flex;
-                            flex-direction: column;
+                            //padding-left: .75em;
+                            //border: none;
+                            //display: flex;
+                            //flex-direction: column;
                         }
                     }
 
                     .name {
                         &,
                         &:hover {
-                            padding: .65em;
+                            //padding: .65em;
                         }
                     }
                 }
 
                 .submenu {
-                    background-color: rgb(245, 245, 245);
+                    //background-color: rgb(245, 245, 245);
                     box-shadow: -3px 0 3px -3px rgba(27, 27, 36, 0.2) inset;
                 }
             }
@@ -74,9 +73,9 @@
             padding: 0 2em;
 
             .header-container {
-                margin-left: 0;
                 padding: .5em 0 1em 0;
-                max-width: none;
+                max-width: 1024px;
+                margin: 0 auto;
 
                 .title-container {
                     .title-name {
@@ -105,6 +104,8 @@
                 font-size: 1em;
                 color: $theme-text-color;
                 display: flex;
+                max-width: 1024px;
+                margin: 0 auto;
 
                 .avatar-container {
                     flex: 0 0 3em;
@@ -133,9 +134,10 @@
     flex-direction: column;
     align-items: stretch;
     width: 100%;
+    max-width: 1024px;
+    margin: 0 auto 0 auto;
     justify-content: center;
     padding: 0;
-    margin: 0;
 
     .article-page {
         display: flex;
@@ -185,6 +187,8 @@
     width: auto;
     padding: 1em 0;
     position: relative;
+    max-width: 1024px;
+    margin: 0 auto;
 
     .content {
         a {
@@ -688,18 +692,28 @@ INS { display: inline; background-color: #8D8; text-decoration: none; } DEL { di
 .article .image_container a { border-bottom: none !important; }
 .article .image_container a:hover { border-bottom: 1px dotted #AAA !important; }
 
-#article_comments, #article_attachments { margin: 20px 0 0 5px; }
-#article_comments h4, #article_attachments h4 {
-    color: $theme-text-color-lighter;
-    font-size: 1.2em;
-    font-weight: $theme-font-weight-regular;
-    padding: 30px 0 5px;
-    width: 100%;
-    border-bottom: 1px dotted #CCC;
-    text-transform: uppercase;
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
+#article_comments, #article_attachments, #article_categories {
+    max-width: 1024px;
+    margin: 2em auto .5em auto;
+
+    h4 {
+        color: $theme-text-color-lighter;
+        font-size: 1.2em;
+        font-weight: $theme-font-weight-regular;
+        padding: 30px 0 5px;
+        width: 100%;
+        border-bottom: 1px dotted #CCC;
+        text-transform: none;
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+    }
+
+    &#article_categories {
+        h4 {
+            border-bottom: none;
+        }
+    }
 }
 #article_attachments a.downloadlink { width: initial; }
 #article_attachments .removelink { margin-top: 4px; position: absolute; }

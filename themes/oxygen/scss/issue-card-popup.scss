@@ -1,4 +1,6 @@
-@import 'variables';
+@import "variables";
+@import "widgets/workflow-actions";
+@import "components/issue-fields-list";
 
 #issue-card-popup {
   .backdrop_detail_header {
@@ -10,27 +12,30 @@
       padding: 0;
 
       &.issue-state {
-        padding: .15em .25em;
+        padding: 0.15em 0.25em;
         &:not(:first-child) {
-          margin-left: .35em;
+          margin-left: 0.35em;
         }
 
         + a {
-          margin-left: .25em;
+          margin-left: 0.25em;
         }
       }
     }
 
+    @include workflow-actions-container(flex-end);
+
     .dropper-container {
-      margin-right: .35em;
+      margin-right: 0.35em;
+      margin-left: 0.35em;
     }
 
     > span {
       flex: 1 1 auto;
 
       &.title-crumbs {
-        padding: .75em;
-        font-size: .75em;
+        padding: 0.75em;
+        font-size: 0.75em;
         font-weight: $theme-font-weight-light;
         display: flex;
         align-items: center;
@@ -44,6 +49,96 @@
   }
 
   .backdrop_detail_content {
+    .issue-state {
+      flex: 0 0 auto;
+      padding: 0.15em 0.25em;
+      &:not(:first-child) {
+        margin-left: 0.35em;
+      }
+
+      + a {
+        margin-left: 0.25em;
+      }
+    }
+
+    .title-crumbs {
+      flex: 1 1 auto;
+      padding: 0;
+      font-size: 1em;
+      font-weight: $theme-font-weight-light;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+
+      a:last-child {
+        font-weight: $theme-font-weight-bold;
+      }
+    }
+
+    .is-closed,
+    .not-editable {
+      color: rgb(150, 150, 150);
+      margin: 0 1em 0 0;
+      display: flex;
+      align-items: center;
+      height: 100%;
+      position: relative;
+      font-size: 1.1em;
+
+      .fas {
+        margin-right: 0.35em;
+      }
+
+      .tooltip {
+        margin-top: 2em;
+      }
+    }
+
+    .created-times {
+      display: flex;
+      flex-direction: row;
+      align-items: flex-start;
+      justify-content: center;
+      flex: 0 0 auto;
+      margin: 0 0 0 0.3em;
+      font-size: 0.8rem;
+
+      color: rgba(0, 0, 0, 0.4);
+
+      div + div {
+        margin-left: 1.5em;
+      }
+
+      label {
+        text-transform: none;
+        color: rgba(0, 0, 0, 0.4);
+        font-weight: $theme-font-weight-regular;
+        cursor: default;
+      }
+    }
+
+    .posted-by-container {
+      flex: 0 0 auto;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      position: relative;
+
+      .value {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+      }
+    }
+
+    @include issue-fields-list-container();
+
+    h5 {
+      .not-editable {
+        font-size: 0.8em;
+      }
+    }
+
     .form-container {
       .row {
         height: auto;
@@ -54,7 +149,7 @@
 
           .form-row {
             width: 100%;
-            padding: 0 .5em;
+            padding: 0 0.5em;
             height: auto;
 
             &.header {
@@ -66,7 +161,7 @@
             }
 
             &:not(.header) {
-              + .form-row {
+              + .form-row:not(.header) {
                 margin-top: 1em;
               }
             }
@@ -80,16 +175,23 @@
         &[data-simple-submit] {
           .formatted-text-container {
             min-height: 7em;
-            border-radius: .5em;
-            padding: .5em;
+            border-radius: 0.5em;
+            padding: 0.5em;
             width: 100%;
             box-sizing: border-box;
             font-family: $theme-font-family;
             font-weight: $theme-font-weight-light;
+            transition: background-color 0.25s ease-in-out;
 
-            &:hover {
-              background-color: rgba(0, 0, 0, .05);
-              cursor: pointer;
+            &.editable {
+              &:hover {
+                background-color: rgba(100, 100, 100, 0.05);
+                cursor: pointer;
+              }
+            }
+
+            p + p {
+              margin-top: 1em;
             }
           }
 
@@ -97,7 +199,7 @@
             height: 1px;
             overflow: hidden;
             opacity: 0;
-            transition: opacity .25s ease-in-out;
+            transition: opacity 0.25s ease-in-out;
             width: 100%;
           }
 
@@ -105,7 +207,7 @@
             height: 1px;
             overflow: hidden;
             opacity: 0;
-            transition: opacity .25s ease-in-out;
+            transition: opacity 0.25s ease-in-out;
           }
 
           &.editing {
@@ -128,6 +230,29 @@
         }
       }
     }
-  }
 
+    .form-row#issue-card-issuefields-container {
+      padding: 0;
+      margin-top: .5em;
+
+      .form-row {
+        padding: 0;
+      }
+
+      .fields-list-container {
+        flex: 1 1 auto;
+      }
+
+      .fields-list {
+        li {
+          max-width: none;
+        }
+      }
+    }
+
+    .comments {
+      margin-top: 1em;
+      border-top: 1px solid rgba(200, 200, 200, 0.3);
+    }
+  }
 }

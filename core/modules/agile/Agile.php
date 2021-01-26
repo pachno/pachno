@@ -92,7 +92,7 @@
         /**
          * Header "Agile" menu and board list
          *
-         * @Listener(module="core", identifier="templates/headermainmenu::projectmenulinks")
+         * @Listener(module="core", identifier="templates/header::projectmenulinks")
          *
          * @param Event $event
          */
@@ -101,6 +101,60 @@
             if ($event->getSubject() instanceof Project) {
                 $boards = AgileBoard::getB2DBTable()->getAvailableProjectBoards(framework\Context::getUser()->getID(), $event->getSubject()->getID());
                 framework\ActionComponent::includeComponent('agile/headermenuprojectlinks', ['project' => $event->getSubject(), 'boards' => $boards]);
+            }
+        }
+
+        /**
+         * Header "Agile" menu and board list
+         *
+         * @Listener(module="core", identifier="project_header_buttons")
+         *
+         * @param Event $event
+         */
+        public function dashboardProjectButtons(Event $event)
+        {
+            if (framework\Context::getRouting()->getCurrentRoute()->getName() == 'agile_index') {
+                framework\ActionComponent::includeComponent('agile/projectheaderbutton', ['project' => $event->getSubject()]);
+            }
+        }
+
+        /**
+         * Header "Agile" menu and board list
+         *
+         * @Listener(module="core", identifier="project/templates/projectheader::pagename")
+         *
+         * @param Event $event
+         */
+        public function dashboardProjectHeaderPagename(Event $event)
+        {
+            switch (framework\Context::getRouting()->getCurrentRoute()->getName()) {
+                case 'agile_index':
+                    $event->setReturnValue(framework\Context::getI18n()->__('Project boards'));
+                    $event->setProcessed(true);
+                    break;
+                case 'agile_board':
+                case 'agile_whiteboard':
+                    $event->setReturnValue(framework\Context::getI18n()->__('Project board'));
+                    $event->setProcessed(true);
+                    break;
+            }
+        }
+
+        /**
+         * Header "Agile" menu and board list
+         *
+         * @Listener(module="core", identifier="project/templates/projectheader/after-spacer")
+         *
+         * @param Event $event
+         */
+        public function dashboardProjectHeaderAgileTabs(Event $event)
+        {
+            switch (framework\Context::getRouting()->getCurrentRoute()->getName()) {
+                case 'agile_board':
+                case 'agile_whiteboard':
+                    $board = AgileBoards::getTable()->selectById(framework\Context::getRequest()->getParameter('board_id'));
+                    framework\ActionComponent::includeComponent('agile/headermenuagiletabs', ['project' => $event->getSubject(), 'board' => $board]);
+                    break;
             }
         }
 

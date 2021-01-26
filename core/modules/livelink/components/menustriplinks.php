@@ -12,7 +12,7 @@
 ?>
 <a href="<?= make_url('livelink_project_commits', ['project_key' => Context::getCurrentProject()->getKey()]); ?>" class="list-item expandable <?php if ($selected) echo 'expanded'; ?>">
     <?= fa_image_tag('code', ['class' => 'icon']); ?>
-    <span class="name"><?= __('Repository'); ?></span>
+    <span class="name"><?= __('Code'); ?></span>
     <?= fa_image_tag('angle-down', ['class' => 'expander']); ?>
 </a>
 <div class="submenu list-mode">

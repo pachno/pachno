@@ -22,8 +22,12 @@
             $this->issuetypes = $this->project->getIssuetypeScheme()->getReportableIssuetypes();
         }
 
-        public function componentMilestoneIssue()
+        public function componentProjectHeader()
         {
+            $pagename_event = \pachno\core\framework\Event::createNew('core', 'project/templates/projectheader::pagename', $this->project);
+            $pagename_event->setReturnValue(framework\Context::getModule('project')->getPageName());
+            $pagename_event->triggerUntilProcessed();
+            $this->pagename = $pagename_event->getReturnValue();
         }
 
         public function componentMilestoneVirtualStatusDetails()
@@ -269,6 +273,11 @@
                     $this->build->setEdition($edition);
                 }
             }
+        }
+
+        public function componentMainMenustrip()
+        {
+
         }
 
     }

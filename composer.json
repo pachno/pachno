@@ -44,12 +44,14 @@
         "league/html-to-markdown": "^4.8",
         "pragmarx/google2fa": "^6.1",
         "pragmarx/google2fa-qrcode": "^1.0",
-        "codex-team/editor.js": "dev-master"
+        "codex-team/editor.js": "dev-master",
+        "squizlabs/php_codesniffer": "^3.5"
     },
     "require-dev" : {
         "symfony/finder" : "~2.7",
         "phpunit/phpunit": "4.*",
-        "phpunit/phpunit-skeleton-generator": "*"
+        "phpunit/phpunit-skeleton-generator": "*",
+        "phpstan/phpstan": "^0.12.68"
     },
     "suggest" : {
         "ext-apc" : "Enables APC caching of configuration files and table class definitions"

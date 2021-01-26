@@ -6,25 +6,27 @@
 
 ?>
 <div class="project-strip">
-    <div class="icon-container">
-        <div class="icon-large">
-            <?= image_tag($project->getIconName(), array('alt' => '[i]'), true); ?>
-        </div>
-    </div>
     <div class="details">
-        <span class="name">
-            <a href="<?= make_url('project_dashboard', ['project_key' => $project->getKey()]); ?>">
-                <span><?= $project->getName(); ?></span>
-                <?php if ($project->usePrefix()): ?>
-                    <span class="count-badge"><?= mb_strtoupper($project->getPrefix()); ?></span>
-                <?php endif; ?>
-            </a>
-        </span>
-        <?php if ($project->hasDescription()): ?>
-            <div class="description">
-                <?= \pachno\core\helpers\TextParser::parseText($project->getDescription()); ?>
+        <div class="icon-container">
+            <div class="icon-large">
+                <?= image_tag($project->getIconName(), array('alt' => '[i]'), true); ?>
             </div>
-        <?php endif; ?>
+        </div>
+        <div class="information">
+            <span class="name">
+                <a href="<?= make_url('project_dashboard', ['project_key' => $project->getKey()]); ?>">
+                    <span><?= $project->getName(); ?></span>
+                    <?php if ($project->usePrefix()): ?>
+                        <span class="count-badge"><?= mb_strtoupper($project->getPrefix()); ?></span>
+                    <?php endif; ?>
+                </a>
+            </span>
+            <?php if ($project->hasDescription()): ?>
+                <div class="description">
+                    <?= \pachno\core\helpers\TextParser::parseText($project->getDescription()); ?>
+                </div>
+            <?php endif; ?>
+        </div>
     </div>
     <nav class="button-group">
         <?php if ($project->hasHomepage()): ?>
@@ -36,8 +38,9 @@
         <?php Event::createNew('core', 'project_overview_item_links', $project)->trigger(); ?>
         <?php if ($pachno_user->canSearchForIssues() && $pachno_user->hasPageAccess('project_issues', $project->getID())): ?>
             <?= link_tag(make_url('project_open_issues', array('project_key' => $project->getKey())), fa_image_tag('file-alt') . '<span>'.__('Issues').'</span>', ['class' => 'button secondary']); ?>
-        <?php endif; ?><?php if (!$project->isLocked() && $pachno_user->canReportIssues($project)): ?>
-            <button class="button secondary highlight trigger-backdrop" data-url="<?= make_url('get_partial_for_backdrop', ['key' => 'reportissue', 'project_id' => $project->getId()]); ?>">
+        <?php endif; ?>
+        <?php if (!$project->isLocked() && $pachno_user->canReportIssues($project)): ?>
+            <button class="button secondary highlight report-issue-button trigger-backdrop" data-url="<?= make_url('get_partial_for_backdrop', ['key' => 'reportissue', 'project_id' => $project->getId()]); ?>">
                 <?= fa_image_tag('plus-square', ['class' => 'icon']); ?>
                 <span><?= __('New issue'); ?></span>
             </button>

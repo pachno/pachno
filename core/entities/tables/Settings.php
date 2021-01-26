@@ -158,7 +158,6 @@
             $settings[framework\Settings::SETTING_ALLOW_REGISTRATION] = true;
             $settings[framework\Settings::SETTING_RETURN_FROM_LOGIN] = 'referer';
             $settings[framework\Settings::SETTING_RETURN_FROM_LOGOUT] = 'home';
-            $settings[framework\Settings::SETTING_SHOW_PROJECTS_OVERVIEW] = true;
             $settings[framework\Settings::SETTING_ALLOW_USER_THEMES] = false;
             $settings[framework\Settings::SETTING_ENABLE_UPLOADS] = false;
             $settings[framework\Settings::SETTING_ENABLE_GRAVATARS] = true;

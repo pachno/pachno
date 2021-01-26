@@ -9,29 +9,52 @@
   margin: 0;
   box-sizing: border-box;
   overflow: hidden;
+  position: relative;
 
   > div:not(.sidebar):not(.fixed-position) {
     height: 100%;
     box-sizing: border-box;
     overflow: auto;
     flex: 1 1 auto;
-    //box-shadow: 3px 3px 3px -3px rgba(0, 0, 0, 0.3) inset;
-    box-shadow: 3px 3px 5px -3px rgba(27, 27, 36, 0.2) inset;
     background-color: rgba(225, 225, 225, .15);
+    display: flex;
+    flex-direction: column;
+    align-content: flex-start;
+    align-items: flex-start;
+    justify-content: flex-start;
   }
 }
 
 nav.sidebar {
+  box-sizing: border-box;
   flex: 0 0 350px;
   display: flex;
   flex-direction: column;
   background: #FFF;
-  transition: flex .2s ease-in-out;
+  transition: flex .2s ease-in-out, transform .2s ease-in-out;
+  border-right: 2px solid rgba(225, 225, 225, .5);
   height: 100%;
   overflow: auto;
+  font-size: 1em;
 
   & > div {
     flex: 1 1 auto;
+  }
+
+  .list-mode {
+    padding-top: .9em;
+
+    .filter-container {
+      &,
+      &:hover {
+        border-bottom: none;
+      }
+
+      input[type=text],
+      input[type=search] {
+        background: rgba(225, 225, 225, .1);
+      }
+    }
   }
 
   .onboarding {
@@ -41,9 +64,10 @@ nav.sidebar {
 
     .image-container {
       background: transparent;
-      width: 100%;
       padding: 1em 0;
       height: auto;
+      display: flex;
+      justify-content: center;
 
       img {
         width: 70px;
@@ -80,8 +104,9 @@ nav.sidebar {
   }
 
   &.collapsed {
-    flex: 0 0 75px;
+    flex: 0 0 65px;
     overflow: visible;
+    z-index: 10;
 
     .header-banner {
       .header-name {

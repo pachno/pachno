@@ -13,11 +13,6 @@
             </ul>
         </div> */ ?>
     <div id="project_releases_container">
-        <?php if ($pachno_user->canEditProjectDetails($selected_project)): ?>
-            <div class="project_save_container">
-                <?= link_tag(make_url('project_release_center', array('project_key' => $selected_project->getKey())), __('Manage project releases'), ['class' => 'button']); ?>
-            </div>
-        <?php endif; ?>
         <div class="active_releases releases_list">
             <h3><?= __('Active project releases'); ?></h3>
             <?php if (count($active_builds[0])): ?>

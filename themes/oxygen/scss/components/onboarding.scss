@@ -50,7 +50,8 @@
     display: inline-block;
     text-align: center;
     vertical-align: middle;
-    margin: 0 25px;
+    margin: 0;
+    width: 100%;
   }
 
   .image-container {
@@ -62,6 +63,7 @@
     height: 250px;
     display: flex;
     align-items: center;
+    box-sizing: border-box;
   }
 
   &.medium {

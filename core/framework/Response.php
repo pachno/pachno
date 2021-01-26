@@ -70,7 +70,7 @@
          */
         protected $_javascripts = [
             'jquery.min',
-            'pachno/index'
+            'pachno/main'
         ];
 
         /**

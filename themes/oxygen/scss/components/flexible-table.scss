@@ -103,8 +103,8 @@
       font-weight: $theme-font-weight-bold;
       text-transform: uppercase;
       border: none;
-      border-bottom: 2px solid #0C8990;
-      color: #0C8990;
+      border-bottom: 2px solid $theme-text-color;
+      color: $theme-text-color;
 
       &.invisible {
         border-bottom-color: transparent;

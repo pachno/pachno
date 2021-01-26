@@ -6,6 +6,7 @@ import {fetchHelper, formSubmitHelper, setupListeners as formSetupListeners} fro
 import widgetSetupListeners, { calendars } from "../widgets";
 import profileSetupListeners from "../helpers/profile";
 import {initializeDashboards} from "../helpers/dashboard";
+import {setupListeners as issueSetupListeners} from "../helpers/issues";
 import Board from "./board";
 import Search from "./search";
 import Issuereporter from "./issuereporter";
@@ -109,6 +110,7 @@ class PachnoApplication {
         widgetSetupListeners();
         formSetupListeners();
         profileSetupListeners();
+        issueSetupListeners();
         // $('#fullpage_backdrop_content').on('click', Core._resizeWatcher);
     }
 

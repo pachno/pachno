@@ -38,7 +38,8 @@
       &.slide-out {
         position: fixed;
         left: 0;
-        top: 55px;
+        top: 89px;
+        z-index: 1;
         height: calc(100% - 55px);
         transform-origin: left;
         transform: translateX(-110%);
@@ -129,6 +130,13 @@
 
   .dropper {
     cursor: pointer;
+
+    + .dropdown-container {
+      &.slide-out {
+        opacity: 1;
+      }
+    }
+
     &.active + .dropdown-container {
       transform: scaleY(1);
       opacity: 1;
@@ -136,6 +144,7 @@
       &.slide-out {
         transform-origin: left;
         transform: translateX(0);
+        box-shadow: none;
       }
 
       &.from-center {
@@ -145,3 +154,16 @@
   }
 
 }
+
+.collapsed {
+  .dropper-container {
+    .dropper {
+      &.active + .dropdown-container {
+        &.slide-out {
+          box-shadow: 0 3px 1px -2px rgba(0,0,0,.2),0 2px 2px 0 rgba(0,0,0,.14),0 1px 5px 0 rgba(0,0,0,.12);
+        }
+      }
+    }
+  }
+}
+

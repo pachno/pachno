@@ -63,6 +63,8 @@
                     $this->article->setParentArticle(Articles::getTable()->selectById($request['parent_article_id']));
                 }
             }
+
+            framework\Context::getModule('publish')->setCurrentArticle($this->article);
         }
 
         public function runSpecialArticle(Request $request)
@@ -72,6 +74,17 @@
                 $this->component = $this->article_name;
                 $this->projectnamespace = ($this->selected_project instanceof Project) ? ucfirst($this->selected_project->getKey()) . ':' : '';
             }
+        }
+
+        /**
+         * Show an article
+         *
+         * @Route(name="global_redirect_articles", url="/r/docs")
+         * @param Request $request
+         */
+        public function runGlobalRedirectArticles(Request $request)
+        {
+            $this->redirect('redirectarticles');
         }
 
         /**
@@ -88,11 +101,23 @@
         /**
          * Show an article
          *
-         * @Route(name="redirect_articles", url="/r/docs")
+         * @Route(name="global_articles", url="/docs")
          * @param Request $request
          */
-        public function runRedirectArticles(Request $request)
+        public function runArticle(Request $request)
         {
+            return $this->redirect('showarticle');
+        }
+
+        /**
+         * Show an article
+         *
+         * @Route(name="global_article", url="/docs/:article_id/:article_name")
+         * @param Request $request
+         */
+        public function runGlobalArticle(Request $request)
+        {
+            return $this->redirect('showarticle');
         }
 
         /**

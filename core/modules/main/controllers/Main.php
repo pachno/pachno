@@ -304,8 +304,6 @@
                 }
             }
             $this->forward403unless($this->getUser()->hasPageAccess('home'));
-            $this->links = tables\Links::getTable()->getMainLinks();
-            $this->show_project_list = Settings::isFrontpageProjectListVisible();
         }
 
         /**
@@ -1617,7 +1615,7 @@
                     ];
                     break;
                 case 'shortname':
-                    $issue->setShortname($request->getRawParameter('shortname_value'));
+                    $issue->setShortname($request->getRawParameter('value'));
                     $return_details['changed']['shortname'] = [
                         'value' => $issue->getShortname()
                     ];
@@ -1642,7 +1640,7 @@
                     ];
                     break;
                 case 'percent_complete':
-                    $issue->setPercentCompleted($request['percent']);
+                    $issue->setPercentCompleted($request['value']);
                     $return_details['changed']['percent_complete'] = [
                         'value' => $issue->getPercentCompleted()
                     ];
@@ -1731,7 +1729,6 @@
                     try {
                         $classname = null;
                         $parameter_name = mb_strtolower($request['field']);
-                        $parameter_id_name = "{$parameter_name}_id";
                         $is_pain = in_array($parameter_name, ['pain_bug_type', 'pain_likelihood', 'pain_effect']);
                         if ($is_pain) {
                             switch ($parameter_name) {
@@ -1751,18 +1748,16 @@
                             $set_function_name = 'set' . ucfirst($parameter_name);
                         }
 
-                        if ($request->hasParameter($parameter_id_name)) {
-                            $parameter_id = $request->getParameter($parameter_id_name);
-                            if ($parameter_id !== 0) {
-                                $is_valid = ($is_pain) ? in_array($parameter_id, array_keys(Issue::getPainTypesOrLabel($parameter_name))) : ($parameter_id == 0 || (($parameter = $lab_function_name::getB2DBTable()->selectByID($parameter_id)) instanceof $classname));
-                            }
-                            if ($parameter_id == 0 || $is_valid) {
-                                $issue->$set_function_name($parameter_id);
+                        $parameter_id = $request->getParameter('value');
+                        if ($parameter_id !== 0) {
+                            $is_valid = ($is_pain) ? in_array($parameter_id, array_keys(Issue::getPainTypesOrLabel($parameter_name))) : ($parameter_id == 0 || (($parameter = $lab_function_name::getB2DBTable()->selectByID($parameter_id)) instanceof $classname));
+                        }
+                        if ($parameter_id == 0 || $is_valid) {
+                            $issue->$set_function_name($parameter_id);
 
-                                $return_details['changed'][$request['field']] = [
-                                    'value' => $parameter_id
-                                ];
-                            }
+                            $return_details['changed'][$request['field']] = [
+                                'value' => $parameter_id
+                            ];
                         }
                     } catch (Exception $e) {
                         $this->getResponse()->setHttpStatus(400);
@@ -1779,7 +1774,7 @@
                     }
 
                     $key = $custom_field->getKey();
-                    $custom_field_value = $request->getRawParameter("{$key}_value");
+                    $custom_field_value = $request->getRawParameter('value');
                     if (!$custom_field_value) {
                         $issue->clearCustomField($key);
                     } else {

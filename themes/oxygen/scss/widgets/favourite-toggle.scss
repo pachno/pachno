@@ -1,0 +1,29 @@
+.toggle-favourite {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+
+    .indicator { display: none; }
+
+    &.submitting {
+        .indicator { display: inline-block; }
+        .subscribed, .unsubscribed { display: none; }
+    }
+
+    .subscribed,
+    .unsubscribed {
+        display: inline-block;
+        font-size: 1.5em;
+    }
+
+    &:not(.submitting) {
+        &.starred {
+            .unsubscribed { display: none; }
+        }
+    }
+
+    &:not(.starred) {
+        .subscribed { display: none; }
+    }
+}
