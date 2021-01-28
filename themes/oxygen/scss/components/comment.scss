@@ -28,7 +28,7 @@
     padding: 0;
     clear: both;
     display: block;
-    margin-bottom: 25px;
+    margin-bottom: 2em;
     border: none;
     position: relative;
 
@@ -52,18 +52,17 @@
 
     &::before {
       content: '';
-      display: block;
-      height: 25px;
+      display: none;
+      height: 23px;
       width: 1px;
       border-left: 3px solid rgba(225, 225, 225, .5);
       position: absolute;
-      top: -26px;
+      top: -24px;
       left: 40px;
     }
 
     &:first-child::before {
-      top: -56px;
-      height: 55px;
+      display: none;
     }
 
     &:not(.system-comment) {

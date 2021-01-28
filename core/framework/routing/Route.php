@@ -398,7 +398,7 @@
             return [
                 'name' => $this->getName(),
                 'module' => $this->getModuleName(),
-                'action' => $this->getModuleAction()
+                'action' => $this->getNamespacedAction()
             ];
         }
 

@@ -67,7 +67,7 @@
 
         /**
          * The project roadmap page
-         * @Route(name="roadmap", url="/roadmap/*")
+         * @Route(name="roadmap", url="/roadmap")
          *
          * @param framework\Request $request
          */
@@ -662,6 +662,11 @@
             $this->build_error = Context::getMessageAndClear('build_error');
         }
 
+        /**
+         * @Route(url="/releases")
+         *
+         * @param framework\Request $request
+         */
         public function runReleases(framework\Request $request)
         {
             $this->_setupBuilds();

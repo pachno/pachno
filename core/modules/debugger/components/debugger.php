@@ -69,8 +69,8 @@
         <li onclick="pachno_debug_show_menu_tab('debug_routes', $(this));">
             <?php echo fa_image_tag('desktop'); ?>
             <span>
-                <?php if ($pachno_summary['routing'] instanceof \pachno\core\framework\routing\Route): ?>
-                    [<i><?php echo $pachno_summary['routing']->getName(); ?></i>] <?php echo $pachno_summary['routing']->getModuleName(); ?> / <?php echo $pachno_summary['routing']->getModuleAction(); ?>
+                <?php if ($pachno_summary['routing']): ?>
+                    [<i><?php echo $pachno_summary['routing']['name']; ?></i>] <?php echo $pachno_summary['routing']['module']; ?> / <?php echo $pachno_summary['routing']['action'][0]; ?>::run<?php echo $pachno_summary['routing']['action'][1]; ?>()
                 <?php else: ?>
                     [<i>Unknown route</i>] - / -
                 <?php endif; ?>

@@ -24,7 +24,10 @@ class PachnoApplication {
             ready: 'pachno-ready',
             formSubmit: 'form-submit',
             formSubmitResponse: 'form-submit-response',
-            formSubmitError: 'form-submit-error'
+            formSubmitError: 'form-submit-error',
+            issueUpdate: 'issue-update',
+            issueUpdateDone: 'issue-update-done',
+            issueUpdateJson: 'issue-update-json'
         }
     }
 

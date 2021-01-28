@@ -3,8 +3,8 @@
     vertical-align: middle;
     font-weight: $theme-font-weight-regular;
     padding: 4px;
-    border-radius: 3px;
-    border: 1px solid transparent;
+    border-radius: 4px;
+    border: 0;
     background-color: transparent;
     transition: border-color 0.3s ease-in-out, background-color 0.3s ease-in-out,
       color 0.3s ease-in-out;
@@ -24,7 +24,8 @@
   
   .userlink:hover {
     text-decoration: none;
-    border: 1px solid rgba(100, 100, 100, 0.15);
+    background: $theme-highlight-color;
+    border: none;
     font-weight: $theme-font-weight-regular;
   }
   

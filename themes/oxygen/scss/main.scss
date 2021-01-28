@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css?family=Lilita+One:400|Source+Sans+Pro:300,300i,400,400i,600,600i|Fira+Mono:400,500,700&subset=cyrillic,cyrillic-ext,latin-ext");
+@import url("https://fonts.googleapis.com/css?family=DM+Sans:700|Fira+Sans:300,300i,400,400i,600,600i|Fira+Mono:400,500,700&subset=cyrillic,cyrillic-ext,latin-ext");
 @import "variables.scss";
 
 /* General styles */
@@ -11,7 +11,7 @@ th {
   font-style: normal;
   font-weight: $theme-font-weight-regular;
   text-align: left;
-  font-size: 14px;
+  font-size: 13px;
   line-height: 1.43;
   color: #141823;
 }
@@ -1624,7 +1624,7 @@ a.friend {
   font-weight: $theme-font-weight-regular;
 }
 
-#issue-container pre {
+#issue-container pre:not(.CodeMirror-line) {
   padding: 6px;
   line-height: 1.4;
   background-color: rgba(225, 225, 225, 0.2);
@@ -1635,17 +1635,17 @@ a.friend {
   display: block;
   width: 100%;
   box-sizing: border-box;
-}
 
-/* Undo some of the default styling done for code tag if it is nested
-   with pre tag. */
-#issue-container pre code {
-  padding: 0;
-  border: none;
-  background: transparent;
-  display: block;
-  width: 100%;
-  box-sizing: border-box;
+  /* Undo some of the default styling done for code tag if it is nested
+     with pre tag. */
+  code {
+    padding: 0;
+    border: none;
+    background: transparent;
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+  }
 }
 
 #viewissue_vcs_integration_commits pre {
@@ -1654,17 +1654,6 @@ a.friend {
   border: none;
   font-size: 0.9em;
   font-family: $theme-font-family-mono;
-}
-
-.textarea_save_container {
-  display: block;
-  margin: 0;
-  padding: 7px;
-  box-sizing: border-box;
-  background-color: rgb(245, 245, 245);
-  border: 1px solid rgba(100, 100, 100, 0.5);
-  border-top: 0;
-  text-align: right;
 }
 
 /* end report issue styling */
@@ -6851,3 +6840,5 @@ header .mobile_menuanchor {
 @import "publish";
 @import "backdrops";
 @import "issue-card-popup";
+
+@import "../../../node_modules/air-datepicker/dist/css/datepicker";

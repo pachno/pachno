@@ -228,7 +228,7 @@
                         const form_element = results.find(result => result.form_data !== undefined && result.form_data.input_name === 'article_content');
                         if (form_element !== undefined) {
                             const article_content = JSON.stringify(form_element.form_data.data);
-                            options.additional_params = { article_content };
+                            options.data = { article_content };
                         }
                     <?php endif; ?>
 

@@ -18,21 +18,23 @@ header {
     color: $text-color;
     display: flex;
     flex-direction: row;
-    align-items: stretch;
+    align-items: flex-end;
     justify-content: stretch;
 
-    > a {
+    > a:not(.button):not(.closer):not(.list-item) {
       display: flex;
       flex-direction: row;
       align-items: center;
       justify-content: flex-start;
-      padding: .6em 1em;
+      padding: .5em 1em;
       color: $text-color;
       border: none;
       text-decoration: none;
 
-      .icon {
-        flex: 0 0 20px;
+      .icon.fas,
+      .icon.far {
+        flex: 0 0 auto;
+        margin-right: .5em;
       }
 
       span {
@@ -45,7 +47,9 @@ header {
         color: $theme-text-color-logo;
         font-weight: $theme-font-weight-logo;
         font-family: $theme-font-family-logo;
+        letter-spacing: $theme-letter-spacing-logo;
         padding: .25em .75em;
+        align-self: center;
 
         img {
           height: 24px;
@@ -57,6 +61,7 @@ header {
         background-color: #FFF;
         color: $theme-primary-color;
         font-weight: $theme-font-weight-bold;
+        border-radius: 5px 5px 0 0;
       }
     }
 
@@ -66,6 +71,7 @@ header {
       flex-direction: column;
       align-items: flex-start;
       justify-content: center;
+      align-self: center;
 
       form {
         display: flex;
@@ -84,6 +90,10 @@ header {
           flex: 1 1 auto;
         }
       }
+
+      + a {
+        align-self: center;
+      }
     }
 
     .notifications-container {
@@ -91,6 +101,7 @@ header {
       flex-direction: row;
       align-items: center;
       justify-content: flex-start;
+      align-self: center;
 
       a {
         display: flex;
@@ -176,13 +187,13 @@ header {
       justify-content: flex-start;
       box-sizing: border-box;
       padding-left: .4em;
-      flex: 0 0 auto;
+      flex: 1 1 auto;
 
       &.shaded {
         flex: 0 0 350px;
         background-color: transparent;
-        border-right: 2px solid rgba(225, 225, 225, 0.7);
-        box-shadow: -3px 0 3px -3px rgba(27, 27, 36, 0.1) inset;
+        //border-right: 2px solid rgba(225, 225, 225, 0.7);
+        //box-shadow: -3px 0 3px -3px rgba(27, 27, 36, 0.1) inset;
       }
 
       .image-container,
@@ -263,7 +274,11 @@ header {
       }
 
       .button {
-        font-size: .95em;
+        font-size: .85em;
+
+        &.highlight {
+          font-size: .95em;
+        }
       }
 
       .list-mode {

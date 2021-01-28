@@ -116,7 +116,7 @@
       display: flex;
       flex-direction: column;
 
-      > li {
+      > li:not(.hidden) {
         display: flex;
         align-items: center;
         position: relative;

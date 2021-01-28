@@ -18,7 +18,7 @@
                     <?php if ($issue->isWorkflowTransitionsAvailable()): ?>
                         <?php foreach ($issue->getAvailableWorkflowTransitions() as $transition): ?>
                             <?php if ($transition->hasTemplate()): ?>
-                                <?php echo javascript_link_tag('<span class="name">'.$transition->getName().'</span>', array('class' => 'list-item', 'onclick' => "Pachno.UI.Backdrop.show('".make_url('get_partial_for_backdrop', array('key' => 'workflow_transition', 'transition_id' => $transition->getID()))."&project_key=".$issue->getProject()->getKey()."&issue_id=".$issue->getID()."');")); ?>
+                                <a class="list-item trigger-backdrop" href="javascript:void(0);" data-url="<?= make_url('get_partial_for_backdrop', ['key' => 'workflow_transition', 'transition_id' => $transition->getID()])."&project_key=".$issue->getProject()->getKey()."&issue_id=".$issue->getID(); ?>"><span class="name"><?= $transition->getName(); ?></span></a>
                             <?php else: ?>
                                 <?php echo javascript_link_tag(fa_image_tag('spinner', array('style' => 'display: none;', 'id' => 'transition_working_'.$transition->getID().'_indicator', 'class' => 'fa-spin icon')).'<span class="name">'.$transition->getName().'</span>', array('class' => 'list-item', 'onclick' => "Pachno.Search.interactiveWorkflowTransition('".make_url('transition_issues', array('project_key' => $issue->getProject()->getKey(), 'transition_id' => $transition->getID()))."&issue_ids[]=".$issue->getID()."', ".$transition->getID().");")); ?>
                             <?php endif; ?>

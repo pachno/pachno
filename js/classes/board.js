@@ -381,7 +381,7 @@ class Board {
         const milestone_id = $milestone_input.data('selected-value');
         if (milestone_id) {
             Pachno.fetch($milestone_input.data('status-url'), {
-                additional_params: 'milestone_id=' + parseInt(milestone_id) + '&board_id=' + this.id,
+                data: 'milestone_id=' + parseInt(milestone_id) + '&board_id=' + this.id,
                 method: 'GET',
                 loading: {
                     hide: 'selected_milestone_status_details',

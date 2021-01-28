@@ -4520,14 +4520,22 @@
                 'created_at_iso' => date('c', $this->getPosted()),
                 'updated_at' => $this->getLastUpdatedTime(),
                 'updated_at_iso' => date('c', $this->getLastUpdatedTime()),
+                'updated_at_datetime' => Context::getI18n()->formatTime($this->getLastUpdatedTime(), 24),
+                'updated_at_full' => Context::getI18n()->formatTime($this->getLastUpdatedTime(), 21),
+                'updated_at_friendly' => Context::getI18n()->formatTime($this->getLastUpdatedTime(), 20),
                 'title' => $this->getRawTitle(),
                 'cover_color' => $this->getCoverColor(),
                 'cover_style' => $this->getCoverStyle(),
+                'description' => $this->getDescription(),
+                'description_formatted' => $this->getParsedDescription(),
+                'reproduction_steps' => $this->getReproductionSteps(),
+                'reproduction_steps_formatted' => $this->getParsedReproductionSteps(),
                 'issue_type' => $this->getIssueType()->toJSON(false),
                 'cover_image_file_id' => ($this->getCoverImageFile() instanceof File) ? $this->getCoverImageFile()->getID() : 0,
                 'cover_image_url' => ($this->getCoverImageFile() instanceof File) ? Context::getRouting()->generate('showfile', ['id' => $this->getCoverImageFile()->getID()]) : '',
                 'href' => Context::getRouting()->generate('viewissue', ['project_key' => $this->getProject()->getKey(), 'issue_no' => $this->getFormattedIssueNo()], false),
                 'more_actions_url' => Context::getRouting()->generate('issue_moreactions', ['project_key' => $this->getProject()->getKey(), 'issue_id' => $this->getID()]),
+                'save_url' => Context::getRouting()->generate('edit_issue', ['project_key' => $this->getProject()->getKey(), 'issue_id' => $this->getID()]),
                 'card_url' => Context::getRouting()->generate('get_partial_for_backdrop', ['key' => 'viewissue', 'issue_id' => $this->getID()]),
                 'posted_by' => ($this->getPostedBy() instanceof common\Identifiable) ? $this->getPostedBy()->toJSON() : null,
                 'assignee' => ($this->getAssignee() instanceof common\Identifiable) ? $this->getAssignee()->toJSON() : null,
@@ -4552,9 +4560,10 @@
             }
 
             if ($detailed) {
-                $fields = $this->getProject()->getVisibleFieldsArray($this->getIssueType());
+                $fields = DatatypeBase::getAvailableFields();
+                $visible_fields = $this->getProject()->getVisibleFieldsArray($this->getIssueType());
 
-                foreach ($fields as $field => $details) {
+                foreach ($fields as $field) {
                     $identifiable = true;
                     switch ($field) {
                         case 'shortname':
@@ -4619,7 +4628,8 @@
                 }
 
                 $return_values['comments'] = $comments;
-                $return_values['visible_fields'] = $fields;
+                $return_values['visible_fields'] = $visible_fields;
+                $return_values['fields'] = array_keys($fields);
             }
 
             return $return_values;
@@ -5723,13 +5733,17 @@
             return $this->_description_parser;
         }
 
-        public function getParsedDescription($options)
+        public function getParsedDescription($options = [])
         {
             return $this->_getParsedText($this->getDescription(), $this->getDescriptionSyntax(), $options, '_description_parser');
         }
 
         protected function _getParsedText($text, $syntax, $options = [], $parser_ref = null)
         {
+            if (!isset($options['issue'])) {
+                $options['issue'] = $this;
+            }
+
             switch ($syntax) {
                 default:
                 case Settings::SYNTAX_PT:
@@ -5805,7 +5819,7 @@
             return $this->_reproduction_steps_parser;
         }
 
-        public function getParsedReproductionSteps($options)
+        public function getParsedReproductionSteps($options = [])
         {
             return $this->_getParsedText($this->getReproductionSteps(), $this->getReproductionStepsSyntax(), $options, '_reproduction_steps_parser');
         }

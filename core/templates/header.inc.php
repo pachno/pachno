@@ -16,6 +16,17 @@
     $recent_issues = \pachno\core\entities\tables\Issues::getSessionIssues();
     $link = (Settings::getHeaderLink() == '') ? \pachno\core\framework\Context::getWebroot() : Settings::getHeaderLink();
 
+    $selected_tab = '';
+    if ($pachno_response->getPage() === 'home' || in_array($pachno_routing->getCurrentRoute()->getModuleName(), ['project', 'search'])) {
+        $selected_tab = 'projects';
+    } elseif ($pachno_response->getPage() === 'teams_dashboard') {
+        $selected_tab = 'teams';
+    }
+    $selected_tab_event = Event::createNew('core', 'header_menu::selectedTab');
+    $selected_tab_event->setReturnValue($selected_tab);
+    $selected_tab_event->triggerUntilProcessed();
+    $selected_tab = $selected_tab_event->getReturnValue();
+
 ?>
 <header>
     <div class="header-strip">
@@ -29,13 +40,13 @@
             <span id="logo_name" class="logo_name"><?php echo Settings::getSiteHeaderName() ?? 'Pachno'; ?></span>
         </a>
         <?php if (!Settings::isSingleProjectTracker()): ?>
-            <a class="<?php if ($pachno_response->getPage() === 'home' || $pachno_routing->getCurrentRoute()->getModuleName() == 'project') echo ' selected'; ?>" href="<?= make_url('home'); ?>">
+            <a class="<?php if ($selected_tab == 'projects') echo ' selected'; ?>" href="<?= make_url('home'); ?>">
                 <?= fa_image_tag('list-alt', ['class' => 'icon'], 'far'); ?>
                 <span class="name"><?= __('Projects'); ?></span>
             </a>
         <?php endif; ?>
         <?php Event::createNew('core', 'header_menu_entries')->trigger(); ?>
-        <a class="<?php if ($pachno_response->getPage() === 'teams_dashboard') echo 'selected'; ?>" href="<?= make_url('home'); ?>">
+        <a class="<?php if ($selected_tab == 'teams') echo 'selected'; ?>" href="<?= make_url('home'); ?>">
             <?= fa_image_tag('users', ['class' => 'icon']); ?>
             <span class="name"><?= __('Teams and clients'); ?></span>
         </a>

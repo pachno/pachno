@@ -203,14 +203,14 @@
                         <?php elseif ($info['type'] == \pachno\core\entities\CustomDatatype::DATE_PICKER || $info['type'] == \pachno\core\entities\CustomDatatype::DATETIME_PICKER): ?>
                             <div id="customfield_<?= $field; ?>_calendar_container"></div>
                             <script type="text/javascript">
-                                require(['domReady', 'pachno/index', 'calendarview'], function (domReady, pachno_index_js, Calendar) {
-                                    domReady(function () {
-                                        Calendar.setup({
-                                            dateField: '<?= $field; ?>_id',
-                                            parentElement: 'customfield_<?= $field; ?>_calendar_container'
-                                        });
-                                    });
-                                });
+                                //require(['domReady', 'pachno/index', 'calendarview'], function (domReady, pachno_index_js, Calendar) {
+                                //    domReady(function () {
+                                //        Calendar.setup({
+                                //            dateField: '<?//= $field; ?>//_id',
+                                //            parentElement: 'customfield_<?//= $field; ?>//_calendar_container'
+                                //        });
+                                //    });
+                                //});
                             </script>
                         <?php elseif ($info['type'] == \pachno\core\entities\CustomDatatype::INPUT_TEXTAREA_SMALL || $info['type'] == \pachno\core\entities\CustomDatatype::INPUT_TEXTAREA_MAIN):
                             include_component('main/textarea', array('area_name' => $field.'_id', 'target_type' => 'issue', 'target_id' => $issue->getID(), 'area_id' => $field.'_'.$transition->getID(), 'height' => '120px', 'width' => '790px', 'value' => ''));

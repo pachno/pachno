@@ -19,7 +19,10 @@
             </div>
         </div>
         <?php if ($pachno_user->canPostComments() && ((\pachno\core\framework\Context::isProjectContext() && !\pachno\core\framework\Context::getCurrentProject()->isArchived()) || !\pachno\core\framework\Context::isProjectContext())): ?>
-            <button class="button primary" id="comment_add_button" onclick="Pachno.Main.Comment.showPost();"><?php echo __('Post comment'); ?></button>
+            <button class="button secondary highlight" id="comment_add_button" onclick="Pachno.Main.Comment.showPost();">
+                <?= fa_image_tag('comment', ['class' => 'icon']); ?>
+                <span class="name"><?php echo __('Post comment'); ?></span>
+            </button>
         <?php endif; ?>
     </div>
     <div id="viewissue_comments">

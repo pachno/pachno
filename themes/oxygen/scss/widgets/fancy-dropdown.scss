@@ -91,6 +91,10 @@
       max-width: 250px;
       min-width: 100px;
       font-weight: $theme-font-weight-light;
+
+      &.no-value {
+        color: #C8C8C8;
+      }
     }
 
     &.no-value > .value {

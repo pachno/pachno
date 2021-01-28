@@ -24,7 +24,12 @@
 <?php if ($pachno_user->canPostComments() && ((Context::isProjectContext() && !Context::getCurrentProject()->isArchived()) || !Context::isProjectContext())): ?>
     <?php if (!isset($show_button) || $show_button == true): ?>
         <ul class="simple-list" id="add_comment_button_container">
-            <li id="comment_add_button"><input class="button button-green first last" type="button" onclick="Pachno.Main.Comment.showPost();" value="<?= __('Post comment'); ?>"></li>
+            <li id="comment_add_button">
+                <button class="button secondary highlight">
+                    <?= fa_image_tag('comment', ['class' => 'icon']); ?>
+                    <span class="name"><?= __('Post comment'); ?></span>
+                </button>
+            </li>
         </ul>
     <?php endif; ?>
     <div id="comment_add" class="comment_add comment-editor" style="<?php if (!(isset($comment_error) && $comment_error)): ?>display: none; <?php endif; ?>margin-top: 5px;">

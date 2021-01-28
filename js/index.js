@@ -115,7 +115,7 @@ import Pachno from "./classes/pachno";
 //
 // Pachno.Main.Menu.saveOrder = function (container, target_type, target_id, url) {
 //     Pachno.Helpers.fetch(url, {
-//         additional_params: Sortable.serialize(container),
+//         data: Sortable.serialize(container),
 //         loading: {
 //             indicator: target_type + '_' + target_id + '_indicator'
 //         }
@@ -318,7 +318,7 @@ import Pachno from "./classes/pachno";
 //         }
 //     });
 //     Pachno.Helpers.fetch(url, {
-//         additional_params: items,
+//         data: items,
 //         loading: {indicator: list.down('.dashboard_indicator')}
 //     });
 // };
@@ -969,7 +969,7 @@ import Pachno from "./classes/pachno";
 // Pachno.Project.Timeline.update = function (url) {
 //     Pachno.Helpers.fetch(url, {
 //         method: 'GET',
-//         additional_params: "offset=" + $('#timeline_offset').val(),
+//         data: "offset=" + $('#timeline_offset').val(),
 //         loading: {
 //             indicator: '#timeline_indicator',
 //             hide: 'timeline_more_link'
@@ -987,7 +987,7 @@ import Pachno from "./classes/pachno";
 // Pachno.Project.showBranchCommits = function (url, branch) {
 //     Pachno.Helpers.fetch(url, {
 //         method: 'POST',
-//         additional_params: "branch=" + branch,
+//         data: "branch=" + branch,
 //         loading: {
 //             indicator: '#fullpage_backdrop',
 //             show: 'fullpage_backdrop_indicator',
@@ -1003,7 +1003,7 @@ import Pachno from "./classes/pachno";
 // Pachno.Project.Commits.update = function (url, branch) {
 //     Pachno.Helpers.fetch(url, {
 //         method: 'POST',
-//         additional_params: "from_commit=" + $('#from_commit').val() + "&branch=" + branch,
+//         data: "from_commit=" + $('#from_commit').val() + "&branch=" + branch,
 //         loading: {
 //             indicator: '#commits_indicator',
 //             hide: 'commits_more_link'
@@ -1021,7 +1021,7 @@ import Pachno from "./classes/pachno";
 // Pachno.Project.Commits.viewIssueUpdate = function (url) {
 //     Pachno.Helpers.fetch(url, {
 //         method: 'POST',
-//         additional_params: "offset=" + $('#commits_offset').val() + "&limit=" + $('#commits_limit').val(),
+//         data: "offset=" + $('#commits_offset').val() + "&limit=" + $('#commits_limit').val(),
 //         loading: {
 //             indicator: '#commits_indicator',
 //             hide: 'commits_more_link'
@@ -1080,7 +1080,7 @@ import Pachno from "./classes/pachno";
 // Pachno.Project.resetIcons = function (url) {
 //     Pachno.Helpers.fetch(url, {
 //         method: 'POST',
-//         additional_params: '&clear_icons=1'
+//         data: '&clear_icons=1'
 //     });
 // };
 //
@@ -1298,7 +1298,7 @@ import Pachno from "./classes/pachno";
 //         var release_id = $(event.target).data('release-id');
 //         var url = release.data('assign-issue-url');
 //         Pachno.Helpers.fetch(url, {
-//             additional_params: 'issue_id=' + issue.data('issue-id'),
+//             data: 'issue_id=' + issue.data('issue-id'),
 //             loading: {indicator: release.down('.planning_indicator')},
 //             complete: {
 //                 callback: function (json) {
@@ -1341,7 +1341,7 @@ import Pachno from "./classes/pachno";
 //         var epic_id = $(event.target).data('issue-id');
 //         var url = epic.data('assign-issue-url');
 //         Pachno.Helpers.fetch(url, {
-//             additional_params: 'issue_id=' + issue.data('issue-id'),
+//             data: 'issue_id=' + issue.data('issue-id'),
 //             loading: {indicator: epic.down('.planning_indicator')},
 //             complete: {
 //                 callback: function (json) {
@@ -1554,7 +1554,7 @@ import Pachno from "./classes/pachno";
 //     var milestone_id = (mi.dataset.selectedValue) ? parseInt(mi.dataset.selectedValue) : 0;
 //
 //     Pachno.Helpers.fetch(wb.dataset.whiteboardUrl, {
-//         additional_params: '&milestone_id=' + milestone_id,
+//         data: '&milestone_id=' + milestone_id,
 //         method: 'GET',
 //         loading: {
 //             indicator: '#whiteboard_indicator',
@@ -1593,7 +1593,7 @@ import Pachno from "./classes/pachno";
 //     var milestone_id = (event) ? $(item).dataset.inputValue : mi.dataset.selectedValue;
 //     var board_id = (event) ? $(item).dataset.boardValue : mi.dataset.selectedBoardValue;
 //     Pachno.Helpers.fetch(mi.dataset.statusUrl, {
-//         additional_params: '&milestone_id=' + parseInt(milestone_id) + '&board_id=' + parseInt(board_id),
+//         data: '&milestone_id=' + parseInt(milestone_id) + '&board_id=' + parseInt(board_id),
 //         method: 'GET',
 //         loading: {
 //             hide: 'selected_milestone_status_details',
@@ -1652,7 +1652,7 @@ import Pachno from "./classes/pachno";
 //     if (transition_id) parameters += '&transition_id=' + transition_id;
 //
 //     Pachno.Helpers.fetch($('#whiteboard').dataset.whiteboardUrl, {
-//         additional_params: parameters,
+//         data: parameters,
 //         method: 'POST',
 //         loading: {
 //             indicator: '#fullpage_backdrop',
@@ -2333,7 +2333,7 @@ import Pachno from "./classes/pachno";
 //     });
 //     Pachno.Helpers.fetch(url, {
 //         method: 'POST',
-//         additional_params: items,
+//         data: items,
 //         loading: {indicator: '#planning_indicator'}
 //     });
 // };
@@ -2348,7 +2348,7 @@ import Pachno from "./classes/pachno";
 //     });
 //     Pachno.Helpers.fetch(url, {
 //         method: 'POST',
-//         additional_params: items,
+//         data: items,
 //         loading: {indicator: list.parents('.milestone-box').down('.planning_indicator')}
 //     });
 // };
@@ -2379,7 +2379,7 @@ import Pachno from "./classes/pachno";
 //             var url = list.parents('.milestone-box').data('assign-issue-url');
 //             var original_list = $(ui.sender[0]);
 //             Pachno.Helpers.fetch(url, {
-//                 additional_params: 'issue_id=' + issue.data('issue-id'),
+//                 data: 'issue_id=' + issue.data('issue-id'),
 //                 loading: {indicator: list.parents('.milestone-box').down('.planning_indicator')},
 //                 complete: {
 //                     callback: function (json) {
@@ -2593,7 +2593,7 @@ import Pachno from "./classes/pachno";
 //     });
 //     // Pachno.Helpers.fetch(url, {
 //     //     form: form,
-//     //     additional_params: issues,
+//     //     data: issues,
 //     //     loading: {indicator: '#milestone_edit_indicator'},
 //     //     success: {
 //     //         reset: 'edit_milestone_form',
@@ -3082,7 +3082,7 @@ import Pachno from "./classes/pachno";
 //
 // Pachno.Config.Issuefields.saveOrder = function (container, type, url) {
 //     Pachno.Helpers.fetch(url, {
-//         additional_params: Sortable.serialize(container),
+//         data: Sortable.serialize(container),
 //         loading: {
 //             indicator: type + '_sort_indicator'
 //         }
@@ -3914,7 +3914,7 @@ import Pachno from "./classes/pachno";
 //
 // Pachno.Issues.findDuplicate = function (url, transition_id) {
 //     Pachno.Helpers.fetch(url, {
-//         additional_params: 'searchfor=' + $('#viewissue_find_issue_' + transition_id + '_input').val(),
+//         data: 'searchfor=' + $('#viewissue_find_issue_' + transition_id + '_input').val(),
 //         loading: {indicator: '#viewissue_find_issue_' + transition_id + '_indicator'},
 //         success: {update: '#viewissue_' + transition_id + '_duplicate_results'}
 //     });
@@ -3981,20 +3981,20 @@ import Pachno from "./classes/pachno";
 //
 // Pachno.Issues.Add = function (url, btn) {
 //     var btn = btn != undefined ? $(btn) : $('#reportissue_button');
-//     var additional_params_query = '';
+//     var data_query = '';
 //
 //     if (btn.dataset != undefined && btn.data('milestone-id') != undefined && parseInt(btn.data('milestone-id')) > 0) {
-//         additional_params_query += '/milestone_id/' + btn.data('milestone-id');
+//         data_query += '/milestone_id/' + btn.data('milestone-id');
 //     }
 //
 //     if (url.indexOf('issuetype') !== -1) {
-//         Pachno.Helpers.Backdrop.show(url +  additional_params_query, function () {
+//         Pachno.Helpers.Backdrop.show(url +  data_query, function () {
 //             $('#reportissue_container').addClass('huge');
 //             $('#reportissue_container').removeClass('large');
 //         });
 //     }
 //     else {
-//         Pachno.Helpers.Backdrop.show(url +  additional_params_query);
+//         Pachno.Helpers.Backdrop.show(url +  data_query);
 //     }
 // };
 //
@@ -4960,7 +4960,7 @@ import Pachno from "./classes/pachno";
 //     } else {
 //         Pachno.Helpers.fetch(url, {
 //             form: 'search-bulk-action-form',
-//             additional_params: issues,
+//             data: issues,
 //             loading: {
 //                 indicator: '#fullpage_backdrop',
 //                 show: 'fullpage_backdrop_indicator',

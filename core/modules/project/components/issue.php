@@ -25,18 +25,17 @@
                         <span class="icon"><?= fa_image_tag('align-left'); ?></span>
                         <span class="name"><?php echo __('Description'); ?></span>
                     </div>
-                    <div id="description_name" class="content">
+                    <div id="description_name" class="content <?php if ($issue->isEditable() && $issue->canEditDescription()) echo ' editable'; ?>" data-editable-field data-dynamic-field-value data-field="description" data-issue-id="<?= $issue->getId(); ?>">
                         <?php if ($issue->getDescription()): ?>
-                            <?php echo $issue->getParsedDescription(['issue' => $issue]); ?>
+                            <?php echo $issue->getParsedDescription(); ?>
                         <?php endif; ?>
                     </div>
                     <?php if ($issue->isEditable() && $issue->canEditDescription()): ?>
-                        <form class="viewissue-form" id="description_form" action="<?php echo make_url('viewissue', ['project_key' => $issue->getProject()->getKey(), 'issue_no' => $issue->getFormattedIssueNo()]); ?>" method="post" id="description_change" style="display: none;" class="editor_container">
-                            <?php include_component('main/textarea', ['area_name' => 'value', 'target_type' => 'issue', 'target_id' => $issue->getID(), 'area_id' => 'description_form_value', 'syntax' => \pachno\core\framework\Settings::getSyntaxClass($issue->getDescriptionSyntax()), 'height' => '250px', 'width' => '100%', 'value' => htmlentities($issue->getDescription(), ENT_COMPAT, \pachno\core\framework\Context::getI18n()->getCharset())]); ?>
-                            <div class="textarea_save_container">
-                                <?php echo __('%cancel or %save', ['%save' => '<input class="button" type="submit" value="'.__('Save').'">', '%cancel' => javascript_link_tag(__('Cancel'), ['onclick' => "$('#description_edit').style.display = '';$('#description_change').hide();".(($issue->getDescription() != '') ? "$('#description_name').show();" : "$('#no_description').show();")."return false;"])]); ?>
-                            </div>
-                        </form>
+                        <?php include_component('main/textarea', ['area_name' => 'value', 'target_type' => 'issue', 'target_id' => $issue->getID(), 'area_id' => 'description_form_value', 'field' => 'description', 'syntax' => \pachno\core\framework\Settings::getSyntaxClass($issue->getDescriptionSyntax()), 'height' => '250px', 'width' => '100%', 'value' => htmlentities($issue->getDescription(), ENT_COMPAT, \pachno\core\framework\Context::getI18n()->getCharset())]); ?>
+                        <div class="textarea_save_container">
+                            <button class="button secondary" data-trigger-cancel-editing data-field="description" data-issue-id="<?= $issue->getId(); ?>"><?= __('Cancel'); ?></button>
+                            <button class="button primary" data-trigger-save data-field="description" data-issue-id="<?= $issue->getId(); ?>"><?= __('Save'); ?></button>
+                        </div>
                     <?php endif; ?>
                 </div>
                 <div id="reproduction_steps_field"<?php if (!$issue->isReproductionStepsVisible()): ?> style="display: none;"<?php endif; ?> class="fields-list-container">
@@ -47,24 +46,16 @@
                         <span class="icon"><?= fa_image_tag('list-ol'); ?></span>
                         <span class="name"><?php echo __('How to reproduce'); ?></span>
                     </div>
-                    <div id="reproduction_steps_content" class="content">
-                        <div class="faded_out" id="no_reproduction_steps" <?php if ($issue->getReproductionSteps() != ''):?> style="display: none;" <?php endif; ?>><?php echo __('Nothing entered.'); ?></div>
-                        <div id="reproduction_steps_name" class="issue_inline_description">
-                            <?php if ($issue->getReproductionSteps()): ?>
-                                <?php echo $issue->getParsedReproductionSteps(['issue' => $issue]); ?>
-                            <?php endif; ?>
-                        </div>
+                    <div id="reproduction_steps_name" class="content <?php if ($issue->isEditable() && $issue->canEditReproductionSteps()) echo ' editable'; ?>" data-editable-field data-dynamic-field-value data-field="reproduction_steps" data-issue-id="<?= $issue->getId(); ?>">
+                        <?php if ($issue->getReproductionSteps()): ?>
+                            <?php echo $issue->getParsedReproductionSteps(); ?>
+                        <?php endif; ?>
                     </div>
                     <?php if ($issue->isEditable() && $issue->canEditReproductionSteps()): ?>
-                        <div id="reproduction_steps_change" style="display: none;" class="editor_container">
-                            <form class="viewissue-form" id="reproduction_steps_form" action="<?php echo make_url('viewissue', ['project_key' => $issue->getProject()->getKey(), 'issue_no' => $issue->getFormattedIssueNo()]); ?>" method="post">
-                                <?php include_component('main/textarea', ['area_name' => 'value', 'target_type' => 'issue', 'target_id' => $issue->getID(), 'area_id' => 'reproduction_steps_form_value', 'syntax' => \pachno\core\framework\Settings::getSyntaxClass($issue->getReproductionStepsSyntax()), 'height' => '250px', 'width' => '100%', 'value' => htmlentities($issue->getReproductionSteps(), ENT_COMPAT, \pachno\core\framework\Context::getI18n()->getCharset())]); ?>
-                                <div class="textarea_save_container">
-                                    <?php echo __('%cancel or %save', ['%save' => '<input class="button" type="submit" value="'.__('Save').'">', '%cancel' => javascript_link_tag(__('Cancel'), ['onclick' => "$('#reproduction_steps_change').hide();".(($issue->getReproductionSteps() != '') ? "$('#reproduction_steps_name').show();" : "$('#no_reproduction_steps').show();")."return false;"])]); ?>
-                                </div>
-                            </form>
-                            <?php echo image_tag('spinning_16.gif', ['style' => 'display: none; float: left; margin-right: 5px;', 'id' => 'reproduction_steps_spinning']); ?>
-                            <div id="reproduction_steps_change_error" class="error_message" style="display: none;"></div>
+                        <?php include_component('main/textarea', ['area_name' => 'value', 'target_type' => 'issue', 'target_id' => $issue->getID(), 'area_id' => 'reproduction_steps_form_value', 'field' => 'reproduction_steps', 'syntax' => \pachno\core\framework\Settings::getSyntaxClass($issue->getReproductionStepsSyntax()), 'height' => '250px', 'width' => '100%', 'value' => htmlentities($issue->getReproductionSteps(), ENT_COMPAT, \pachno\core\framework\Context::getI18n()->getCharset())]); ?>
+                        <div class="textarea_save_container">
+                            <button class="button secondary" data-trigger-cancel-editing data-field="reproduction_steps" data-issue-id="<?= $issue->getId(); ?>"><?= __('Cancel'); ?></button>
+                            <button class="button primary" data-trigger-save data-field="reproduction_steps" data-issue-id="<?= $issue->getId(); ?>"><?= __('Save'); ?></button>
                         </div>
                     <?php endif; ?>
                 </div>
@@ -131,10 +122,10 @@
                             </div>
                         </div>
                     </div> */ ?>
+            <?php include_component('project/issuecomments', ['issue' => $issue]); ?>
         </div>
         <div class="issue-fields">
             <?php include_component('main/viewissuefields', ['issue' => $issue]); ?>
         </div>
     </div>
-    <?php include_component('project/issuecomments', ['issue' => $issue]); ?>
 </div>

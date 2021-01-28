@@ -31,19 +31,6 @@
             <span class="content"><?php echo __('The file was attached to this issue'); ?></span>
         </div>
     <?php endif; ?>
-    <?php if ($issue->isBeingWorkedOn() && $issue->isOpen()): ?>
-        <div class="message information" id="viewissue_being_worked_on">
-            <span class="content">
-                <?php if ($issue->getUserWorkingOnIssue()->getID() == $pachno_user->getID()): ?>
-                    <?php echo __('You have been working on this issue since %time', array('%time' => \pachno\core\framework\Context::getI18n()->formatTime($issue->getWorkedOnSince(), 6))); ?>
-                <?php elseif ($issue->getAssignee() instanceof \pachno\core\entities\Team): ?>
-                    <?php echo __('%teamname has been working on this issue since %time', array('%teamname' => $issue->getAssignee()->getName(), '%time' => \pachno\core\framework\Context::getI18n()->formatTime($issue->getWorkedOnSince(), 6))); ?>
-                <?php else: ?>
-                    <?php echo __('%user has been working on this issue since %time', array('%user' => $issue->getUserWorkingOnIssue()->getNameWithUsername(), '%time' => \pachno\core\framework\Context::getI18n()->formatTime($issue->getWorkedOnSince(), 6))); ?>
-                <?php endif; ?>
-            </span>
-        </div>
-    <?php endif; ?>
     <div class="message error" id="blocking_div"<?php if (!$issue->isBlocking()): ?> style="display: none;"<?php endif; ?>>
         <span class="content"><?php echo __('This issue is blocking the next release'); ?></span>
     </div>

@@ -39,3 +39,16 @@
         <div class="content"><?php echo __("This issue either does not exist, has been deleted or you do not have permission to view it."); ?></div>
     </div>
 <?php endif; ?>
+<script type="text/javascript">
+    Pachno.on(Pachno.EVENTS.ready, function () {
+        const issue = new Issue(<?= json_encode($issue->toJSON(false)); ?>, undefined, false);
+
+        Pachno.on(Pachno.EVENTS.issueUpdate, () => {
+            $('#issue-update-indicator').addClass('active');
+        });
+
+        Pachno.on(Pachno.EVENTS.issueUpdateDone, () => {
+            $('#issue-update-indicator').removeClass('active');
+        });
+    });
+</script>

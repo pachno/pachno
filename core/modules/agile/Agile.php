@@ -90,6 +90,21 @@
         }
 
         /**
+         * Header selected tab listener
+         *
+         * @Listener(module="core", identifier="header_menu::selectedTab")
+         *
+         * @param Event $event
+         */
+        public function headerMenuSelectedTab(Event $event)
+        {
+            if (framework\Context::getRouting()->getCurrentRoute()->getModuleName() == 'agile') {
+                $event->setReturnValue('projects');
+                $event->setProcessed();
+            }
+        }
+
+        /**
          * Header "Agile" menu and board list
          *
          * @Listener(module="core", identifier="templates/header::projectmenulinks")

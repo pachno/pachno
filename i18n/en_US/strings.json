@@ -2,5 +2,9 @@
   "agile": {
     "add_card": "Add card",
     "add_card_here": "Add card here"
+  },
+  "issue": {
+    "value_not_set": "Not determined",
+    "unknown_value": "Unknown"
   }
 }

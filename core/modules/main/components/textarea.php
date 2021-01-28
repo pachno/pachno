@@ -22,6 +22,11 @@
         data-upload-url="<?php echo make_url('upload_file'); ?>"
         data-status-text="<?= __('Github-flavored markdown supported. Drop images on the textarea to attach an image.'); ?>"
         id="<?php echo $base_id; ?>"
+        data-editable-textarea
+        <?php if (isset($field)): ?>
+            data-field="<?= $field; ?>"
+            data-issue-id="<?= $target_id; ?>"
+        <?php endif; ?>
         <?php if ($mentionable): ?>
             data-target-type="<?php echo $target_type; ?>"
             data-target-id="<?php echo $target_id; ?>"

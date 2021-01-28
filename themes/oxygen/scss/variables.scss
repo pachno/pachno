@@ -15,11 +15,14 @@ $theme-text-color-inverse: #FFF !default;
 $theme-text-color-error: #D62246 !default;
 $theme-text-color-logo: #FFF;
 
-$theme-font-family: 'Source Sans Pro', 'Open Sans', sans-serif;
-$theme-font-family-logo: 'Lilita One', sans-serif;
+$theme-font-family: 'Fira Sans', 'Open Sans', sans-serif;
+$theme-font-family-logo: 'DM Sans', sans-serif;
 $theme-font-family-mono: 'Fira Mono', monospace;
 
-$theme-font-weight-light: 300;
-$theme-font-weight-regular: 400;
-$theme-font-weight-bold: 600;
-$theme-font-weight-logo: 400;
+$theme-font-weight-light: 100;
+$theme-font-weight-regular: 200;
+$theme-font-weight-bold: 400;
+$theme-font-weight-heavy: 600;
+$theme-font-weight-logo: 700;
+
+$theme-letter-spacing-logo: -1px;

@@ -57,7 +57,7 @@
         <?php include_component('main/viewissuefield', array('field' => 'category', 'info' => $field, 'issue' => $issue)); ?>
         <?php $field = $fields_list['milestone']; unset($fields_list['milestone']); ?>
         <?php include_component('main/viewissuefield', array('field' => 'milestone', 'info' => $field, 'issue' => $issue)); ?>
-        <li id="percent_complete_field"<?php if (!$issue->isPercentCompletedVisible()): ?> style="display: none;"<?php endif; ?>>
+        <li id="percent_complete_field" class="issue-field <?php if (!$issue->isPercentCompletedVisible()): ?> hidden<?php endif; ?>">
             <div class="label" id="percent_complete_header"><?= __('Progress'); ?></div>
             <div class="value" id="percent_complete_content">
                 <?php if ($issue->canEditPercentage()): ?>
@@ -89,82 +89,82 @@
     </div>
     <ul class="issue_details fields-list" id="issue_details_fieldslist_pain">
         <li id="pain_bug_type_field" style="<?php if (!$issue->isUserPainVisible()): ?> display: none;<?php endif; ?>">
-                <div class="label" id="pain_bug_type_header"><?= __('Type of bug'); ?></div>
-                <div class="value" id="pain_bug_type_content">
-                    <?php if ($issue->isUpdateable() && $issue->canEditUserPain()): ?>
-                        <a href="javascript:void(0);" class="dropper dropdown_link" title="<?= __('Click to triage type of bug'); ?>"><?= image_tag('tabmenu_dropdown.png', array('class' => 'dropdown')); ?></a>
-                        <ul class="popup_box more_actions_dropdown with-header" id="pain_bug_type_change">
-                            <li class="header"><?= __('Triage bug type'); ?></li>
+            <div class="label" id="pain_bug_type_header"><?= __('Type of bug'); ?></div>
+            <div class="value" id="pain_bug_type_content">
+                <?php if ($issue->isUpdateable() && $issue->canEditUserPain()): ?>
+                    <a href="javascript:void(0);" class="dropper dropdown_link" title="<?= __('Click to triage type of bug'); ?>"><?= image_tag('tabmenu_dropdown.png', array('class' => 'dropdown')); ?></a>
+                    <ul class="popup_box more_actions_dropdown with-header" id="pain_bug_type_change">
+                        <li class="header"><?= __('Triage bug type'); ?></li>
+                        <li>
+                            <a href="javascript:void(0);" onclick="Pachno.Issues.Field.set('<?= make_url('issue_setfield', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => 'pain_bug_type', 'pain_bug_type_id' => 0)); ?>', 'pain_bug_type');"><?= __('Clear bug type'); ?></a>
+                        </li>
+                        <li class="list-item separator"></li>
+                        <?php foreach (Issue::getPainTypesOrLabel('pain_bug_type') as $choice_id => $choice): ?>
                             <li>
-                                <a href="javascript:void(0);" onclick="Pachno.Issues.Field.set('<?= make_url('issue_setfield', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => 'pain_bug_type', 'pain_bug_type_id' => 0)); ?>', 'pain_bug_type');"><?= __('Clear bug type'); ?></a>
+                                <a href="javascript:void(0);" onclick="Pachno.Issues.Field.set('<?= make_url('issue_setfield', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => 'pain_bug_type', 'pain_bug_type_id' => $choice_id)); ?>', 'pain_bug_type');"><?= $choice; ?></a>
                             </li>
-                            <li class="list-item separator"></li>
-                            <?php foreach (Issue::getPainTypesOrLabel('pain_bug_type') as $choice_id => $choice): ?>
-                                <li>
-                                    <a href="javascript:void(0);" onclick="Pachno.Issues.Field.set('<?= make_url('issue_setfield', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => 'pain_bug_type', 'pain_bug_type_id' => $choice_id)); ?>', 'pain_bug_type');"><?= $choice; ?></a>
-                                </li>
-                            <?php endforeach; ?>
-                            <li id="pain_bug_type_spinning" style="margin-top: 3px; display: none;"><?= image_tag('spinning_20.gif', array('style' => 'float: left; margin-right: 5px;')) . '&nbsp;' . __('Please wait'); ?>...</li>
-                            <li id="pain_bug_type_change_error" class="error_message" style="display: none;"></li>
-                        </ul>
-                    <?php endif; ?>
-                    <span id="pain_bug_type_name"<?php if (!$issue->hasPainBugType()): ?> style="display: none;"<?php endif; ?>>
-                        <?= ($issue->hasPainBugType()) ? $issue->getPainBugTypeLabel() : ''; ?>
-                    </span>
-                    <span class="no-value" id="no_pain_bug_type"<?php if ($issue->hasPainBugType()): ?> style="display: none;"<?php endif; ?>><?= __('Not triaged'); ?></span>
-                </div>
+                        <?php endforeach; ?>
+                        <li id="pain_bug_type_spinning" style="margin-top: 3px; display: none;"><?= image_tag('spinning_20.gif', array('style' => 'float: left; margin-right: 5px;')) . '&nbsp;' . __('Please wait'); ?>...</li>
+                        <li id="pain_bug_type_change_error" class="error_message" style="display: none;"></li>
+                    </ul>
+                <?php endif; ?>
+                <span id="pain_bug_type_name"<?php if (!$issue->hasPainBugType()): ?> style="display: none;"<?php endif; ?>>
+                    <?= ($issue->hasPainBugType()) ? $issue->getPainBugTypeLabel() : ''; ?>
+                </span>
+                <span class="no-value" id="no_pain_bug_type"<?php if ($issue->hasPainBugType()): ?> style="display: none;"<?php endif; ?>><?= __('Not triaged'); ?></span>
+            </div>
         </li>
         <li id="pain_likelihood_field" style="<?php if (!$issue->isUserPainVisible()): ?> display: none;<?php endif; ?>">
-                <div class="label" id="pain_likelihood_header"><?= __('Likelihood'); ?></div>
-                <div class="value" id="pain_likelihood_content">
-                    <?php if ($issue->isUpdateable() && $issue->canEditUserPain()): ?>
-                        <a href="javascript:void(0);" class="dropper dropdown_link" title="<?= __('Click to triage likelihood'); ?>"><?= image_tag('tabmenu_dropdown.png', array('class' => 'dropdown')); ?></a>
-                        <ul class="popup_box more_actions_dropdown with-header" id="pain_likelihood_change">
-                            <li class="header"><?= __('Triage likelihood'); ?></li>
+            <div class="label" id="pain_likelihood_header"><?= __('Likelihood'); ?></div>
+            <div class="value" id="pain_likelihood_content">
+                <?php if ($issue->isUpdateable() && $issue->canEditUserPain()): ?>
+                    <a href="javascript:void(0);" class="dropper dropdown_link" title="<?= __('Click to triage likelihood'); ?>"><?= image_tag('tabmenu_dropdown.png', array('class' => 'dropdown')); ?></a>
+                    <ul class="popup_box more_actions_dropdown with-header" id="pain_likelihood_change">
+                        <li class="header"><?= __('Triage likelihood'); ?></li>
+                        <li>
+                            <a href="javascript:void(0);" onclick="Pachno.Issues.Field.set('<?= make_url('issue_setfield', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => 'pain_likelihood', 'pain_likelihood_id' => 0)); ?>', 'pain_likelihood');"><?= __('Clear likelihood'); ?></a>
+                        </li>
+                        <li class="list-item separator"></li>
+                        <?php foreach (Issue::getPainTypesOrLabel('pain_likelihood') as $choice_id => $choice): ?>
                             <li>
-                                <a href="javascript:void(0);" onclick="Pachno.Issues.Field.set('<?= make_url('issue_setfield', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => 'pain_likelihood', 'pain_likelihood_id' => 0)); ?>', 'pain_likelihood');"><?= __('Clear likelihood'); ?></a>
+                                <a href="javascript:void(0);" onclick="Pachno.Issues.Field.set('<?= make_url('issue_setfield', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => 'pain_likelihood', 'pain_likelihood_id' => $choice_id)); ?>', 'pain_likelihood');"><?= $choice; ?></a>
                             </li>
-                            <li class="list-item separator"></li>
-                            <?php foreach (Issue::getPainTypesOrLabel('pain_likelihood') as $choice_id => $choice): ?>
-                                <li>
-                                    <a href="javascript:void(0);" onclick="Pachno.Issues.Field.set('<?= make_url('issue_setfield', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => 'pain_likelihood', 'pain_likelihood_id' => $choice_id)); ?>', 'pain_likelihood');"><?= $choice; ?></a>
-                                </li>
-                            <?php endforeach; ?>
-                            <li id="pain_likelihood_spinning" style="margin-top: 3px; display: none;"><?= image_tag('spinning_20.gif', array('style' => 'float: left; margin-right: 5px;')) . '&nbsp;' . __('Please wait'); ?>...</li>
-                            <li id="pain_likelihood_change_error" class="error_message" style="display: none;"></li>
-                        </ul>
-                    <?php endif; ?>
-                    <span id="pain_likelihood_name"<?php if (!$issue->hasPainLikelihood()): ?> style="display: none;"<?php endif; ?>>
-                        <?= ($issue->hasPainLikelihood()) ? $issue->getPainLikelihoodLabel() : ''; ?>
-                    </span>
-                    <span class="no-value" id="no_pain_likelihood"<?php if ($issue->hasPainLikelihood()): ?> style="display: none;"<?php endif; ?>><?= __('Not triaged'); ?></span>
-                </div>
+                        <?php endforeach; ?>
+                        <li id="pain_likelihood_spinning" style="margin-top: 3px; display: none;"><?= image_tag('spinning_20.gif', array('style' => 'float: left; margin-right: 5px;')) . '&nbsp;' . __('Please wait'); ?>...</li>
+                        <li id="pain_likelihood_change_error" class="error_message" style="display: none;"></li>
+                    </ul>
+                <?php endif; ?>
+                <span id="pain_likelihood_name"<?php if (!$issue->hasPainLikelihood()): ?> style="display: none;"<?php endif; ?>>
+                    <?= ($issue->hasPainLikelihood()) ? $issue->getPainLikelihoodLabel() : ''; ?>
+                </span>
+                <span class="no-value" id="no_pain_likelihood"<?php if ($issue->hasPainLikelihood()): ?> style="display: none;"<?php endif; ?>><?= __('Not triaged'); ?></span>
+            </div>
         </li>
         <li id="pain_effect_field" style="<?php if (!$issue->isUserPainVisible()): ?> display: none;<?php endif; ?>">
-                <div class="label" id="pain_effect_header"><?= __('Effect'); ?></div>
-                <div class="value" id="pain_effect_content">
-                    <?php if ($issue->isUpdateable() && $issue->canEditUserPain()): ?>
-                        <a href="javascript:void(0);" class="dropper dropdown_link" title="<?= __('Click to triage effect'); ?>"><?= image_tag('tabmenu_dropdown.png', array('class' => 'dropdown')); ?></a>
-                        <ul class="popup_box more_actions_dropdown with-header" id="pain_effect_change">
-                            <li class="header"><?= __('Triage effect'); ?></li>
+            <div class="label" id="pain_effect_header"><?= __('Effect'); ?></div>
+            <div class="value" id="pain_effect_content">
+                <?php if ($issue->isUpdateable() && $issue->canEditUserPain()): ?>
+                    <a href="javascript:void(0);" class="dropper dropdown_link" title="<?= __('Click to triage effect'); ?>"><?= image_tag('tabmenu_dropdown.png', array('class' => 'dropdown')); ?></a>
+                    <ul class="popup_box more_actions_dropdown with-header" id="pain_effect_change">
+                        <li class="header"><?= __('Triage effect'); ?></li>
+                        <li>
+                            <a href="javascript:void(0);" onclick="Pachno.Issues.Field.set('<?= make_url('issue_setfield', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => 'pain_effect', 'pain_effect_id' => 0)); ?>', 'pain_effect');"><?= __('Clear effect'); ?></a>
+                        </li>
+                        <li class="list-item separator"></li>
+                        <?php foreach (Issue::getPainTypesOrLabel('pain_effect') as $choice_id => $choice): ?>
                             <li>
-                                <a href="javascript:void(0);" onclick="Pachno.Issues.Field.set('<?= make_url('issue_setfield', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => 'pain_effect', 'pain_effect_id' => 0)); ?>', 'pain_effect');"><?= __('Clear effect'); ?></a>
+                                <a href="javascript:void(0);" onclick="Pachno.Issues.Field.set('<?= make_url('issue_setfield', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => 'pain_effect', 'pain_effect_id' => $choice_id)); ?>', 'pain_effect');"><?= $choice; ?></a>
                             </li>
-                            <li class="list-item separator"></li>
-                            <?php foreach (Issue::getPainTypesOrLabel('pain_effect') as $choice_id => $choice): ?>
-                                <li>
-                                    <a href="javascript:void(0);" onclick="Pachno.Issues.Field.set('<?= make_url('issue_setfield', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => 'pain_effect', 'pain_effect_id' => $choice_id)); ?>', 'pain_effect');"><?= $choice; ?></a>
-                                </li>
-                            <?php endforeach; ?>
-                            <li id="pain_effect_spinning" style="margin-top: 3px; display: none;"><?= image_tag('spinning_20.gif', array('style' => 'float: left; margin-right: 5px;')) . '&nbsp;' . __('Please wait'); ?>...</li>
-                            <li id="pain_effect_change_error" class="error_message" style="display: none;"></li>
-                        </ul>
-                    <?php endif; ?>
-                    <span id="pain_effect_name"<?php if (!$issue->hasPainEffect()): ?> style="display: none;"<?php endif; ?>>
-                        <?= ($issue->hasPainEffect()) ? $issue->getPainEffectLabel() : ''; ?>
-                    </span>
-                    <span class="no-value" id="no_pain_effect"<?php if ($issue->hasPainEffect()): ?> style="display: none;"<?php endif; ?>><?= __('Not triaged'); ?></span>
-                </div>
+                        <?php endforeach; ?>
+                        <li id="pain_effect_spinning" style="margin-top: 3px; display: none;"><?= image_tag('spinning_20.gif', array('style' => 'float: left; margin-right: 5px;')) . '&nbsp;' . __('Please wait'); ?>...</li>
+                        <li id="pain_effect_change_error" class="error_message" style="display: none;"></li>
+                    </ul>
+                <?php endif; ?>
+                <span id="pain_effect_name"<?php if (!$issue->hasPainEffect()): ?> style="display: none;"<?php endif; ?>>
+                    <?= ($issue->hasPainEffect()) ? $issue->getPainEffectLabel() : ''; ?>
+                </span>
+                <span class="no-value" id="no_pain_effect"<?php if ($issue->hasPainEffect()): ?> style="display: none;"<?php endif; ?>><?= __('Not triaged'); ?></span>
+            </div>
         </li>
     </ul>
 </div>
@@ -183,92 +183,81 @@
     </div>
     <ul class="issue_details fields-list" id="issue_details_fieldslist_people">
         <li id="posted_by_field">
-            <div class="label" id="posted_by_header"><?= __('Posted by'); ?></div>
-            <div class="value dropper-container" id="posted_by_content">
-                <div class="value-container dropper">
-                    <div id="posted_by_name">
-                        <?= include_component('main/userdropdown', array('user' => $issue->getPostedBy())); ?>
-                    </div>
-                    <span class="no-value" id="no_posted_by" style="display: none;">-</span>
+            <div class="fancy-dropdown-container">
+                <div class="fancy-dropdown" data-default-label="<?= __('Unknown'); ?>">
+                    <label><?= __('Posted by'); ?></label>
+                    <?= include_component('main/userdropdown', ['user' => $issue->getPostedBy(), 'size' => 'small']); ?>
                     <?php if ($issue->isUpdateable() && $issue->canEditPostedBy()): ?>
-                        <?= fa_image_tag('angle-down', ['class' => 'dropdown-indicator']); ?>
+                        <?php echo fa_image_tag('angle-down', ['class' => 'expander']); ?>
+                        <div class="dropdown-container">
+                            <?php include_component('main/identifiableselector', array(    'html_id'             => 'posted_by_change',
+                                                                                    'header'             => __('Change issue creator'),
+                                                                                    'callback'             => "Pachno.Issues.Field.set('" . make_url('issue_setfield', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => 'posted_by', 'identifiable_type' => 'user', 'value' => '%identifiable_value')) . "', 'posted_by');",
+                                                                                    'team_callback'         => "Pachno.Issues.Field.set('" . make_url('issue_setfield', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => 'posted_by', 'identifiable_type' => 'team', 'value' => '%identifiable_value')) . "', 'posted_by');",
+                                                                                    'teamup_callback'     => "Pachno.Issues.Field.set('" . make_url('issue_setfield', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => 'posted_by', 'identifiable_type' => 'team', 'value' => '%identifiable_value', 'teamup' => true)) . "', 'posted_by');",
+                                                                                    'clear_link_text'    => __('Clear current creator'),
+                                                                                    'base_id'            => 'posted_by',
+                                                                                    'include_teams'        => false,
+                                                                                    'absolute'            => false)); ?>
+                        </div>
                     <?php endif; ?>
                 </div>
-                <?php if ($issue->isUpdateable() && $issue->canEditPostedBy()): ?>
-                    <div class="dropdown-container">
-                        <?php include_component('main/identifiableselector', array(    'html_id'             => 'posted_by_change',
-                                                                                'header'             => __('Change issue creator'),
-                                                                                'callback'             => "Pachno.Issues.Field.set('" . make_url('issue_setfield', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => 'posted_by', 'identifiable_type' => 'user', 'value' => '%identifiable_value')) . "', 'posted_by');",
-                                                                                'team_callback'         => "Pachno.Issues.Field.set('" . make_url('issue_setfield', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => 'posted_by', 'identifiable_type' => 'team', 'value' => '%identifiable_value')) . "', 'posted_by');",
-                                                                                'teamup_callback'     => "Pachno.Issues.Field.set('" . make_url('issue_setfield', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => 'posted_by', 'identifiable_type' => 'team', 'value' => '%identifiable_value', 'teamup' => true)) . "', 'posted_by');",
-                                                                                'clear_link_text'    => __('Clear current creator'),
-                                                                                'base_id'            => 'posted_by',
-                                                                                'include_teams'        => true,
-                                                                                'absolute'            => true)); ?>
-                    </div>
-                <?php endif; ?>
             </div>
         </li>
-        <li id="owned_by_field" style="<?php if (!$issue->isOwnedByVisible()): ?> display: none;<?php endif; ?>">
-            <div class="label" id="owned_by_header"><?= __('Owned by'); ?></div>
-            <div class="value dropper-container" id="owned_by_content">
-                <div class="value-container dropper">
-                    <div style="width: 170px; display: <?php if ($issue->isOwned()): ?>inline<?php else: ?>none<?php endif; ?>;" id="owned_by_name">
+        <li id="owned_by_field">
+            <div class="fancy-dropdown-container">
+                <div class="fancy-dropdown" data-default-label="<?= __('Unknown'); ?>">
+                    <label><?= __('Owned by'); ?></label>
+                    <div class="value">
                         <?php if ($issue->getOwner() instanceof User): ?>
                             <?= include_component('main/userdropdown', array('user' => $issue->getOwner())); ?>
                         <?php elseif ($issue->getOwner() instanceof Team): ?>
                             <?= include_component('main/teamdropdown', array('team' => $issue->getOwner())); ?>
                         <?php endif; ?>
                     </div>
-                    <span class="no-value" id="no_owned_by"<?php if ($issue->isOwned()): ?> style="display: none;"<?php endif; ?>><?= __('Not owned by anyone'); ?></span>
                     <?php if ($issue->isUpdateable() && $issue->canEditOwner()): ?>
-                        <?= fa_image_tag('angle-down', ['class' => 'dropdown-indicator']); ?>
+                        <?php echo fa_image_tag('angle-down', ['class' => 'expander']); ?>
+                        <div class="dropdown-container">
+                            <?php include_component('main/identifiableselector', array(    'html_id'             => 'owned_by_change',
+                                                                                    'header'             => __('Change issue creator'),
+                                                                                    'callback'             => "Pachno.Issues.Field.set('" . make_url('issue_setfield', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => 'owned_by', 'identifiable_type' => 'user', 'value' => '%identifiable_value')) . "', 'owned_by');",
+                                                                                    'team_callback'         => "Pachno.Issues.Field.set('" . make_url('issue_setfield', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => 'owned_by', 'identifiable_type' => 'team', 'value' => '%identifiable_value')) . "', 'owned_by');",
+                                                                                    'teamup_callback'     => "Pachno.Issues.Field.set('" . make_url('issue_setfield', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => 'owned_by', 'identifiable_type' => 'team', 'value' => '%identifiable_value', 'teamup' => true)) . "', 'owned_by');",
+                                                                                    'clear_link_text'    => __('Clear current creator'),
+                                                                                    'base_id'            => 'owned_by',
+                                                                                    'include_teams'        => true,
+                                                                                    'absolute'            => false)); ?>
+                        </div>
                     <?php endif; ?>
                 </div>
-                <?php if ($issue->isUpdateable() && $issue->canEditOwner()): ?>
-                    <div class="dropdown-container">
-                        <?php include_component('main/identifiableselector', array(    'html_id'             => 'owned_by_change',
-                                                                                'header'             => __('Change issue owner'),
-                                                                                'callback'             => "Pachno.Issues.Field.set('" . make_url('issue_setfield', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => 'owned_by', 'identifiable_type' => 'user', 'value' => '%identifiable_value')) . "', 'owned_by');",
-                                                                                'team_callback'         => "Pachno.Issues.Field.set('" . make_url('issue_setfield', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => 'owned_by', 'identifiable_type' => 'team', 'value' => '%identifiable_value')) . "', 'owned_by');",
-                                                                                'teamup_callback'     => "Pachno.Issues.Field.set('" . make_url('issue_setfield', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => 'owned_by', 'identifiable_type' => 'team', 'value' => '%identifiable_value', 'teamup' => true)) . "', 'owned_by');",
-                                                                                'clear_link_text'    => __('Clear current owner'),
-                                                                                'base_id'            => 'owned_by',
-                                                                                'include_teams'        => true,
-                                                                                'absolute'            => true)); ?>
-                    </div>
-                <?php endif; ?>
             </div>
         </li>
         <li id="assigned_to_field">
-            <div class="label" id="assigned_to_header"><?= __('Assigned to'); ?></div>
-            <div class="value dropper-container" id="assigned_to_content">
-                <div class="value-container <?php if ($issue->canEditAssignee() && $issue->isUpdateable()): ?>dropper<?php endif; ?>">
-                    <div id="assigned_to_name">
+            <div class="fancy-dropdown-container">
+                <div class="fancy-dropdown" data-default-label="<?= __('Unknown'); ?>">
+                    <label><?= __('Assigned to'); ?></label>
+                    <div class="value">
                         <?php if ($issue->getAssignee() instanceof User): ?>
                             <?= include_component('main/userdropdown', array('user' => $issue->getAssignee())); ?>
                         <?php elseif ($issue->getAssignee() instanceof Team): ?>
                             <?= include_component('main/teamdropdown', array('team' => $issue->getAssignee())); ?>
                         <?php endif; ?>
                     </div>
-                    <span class="no-value" id="no_assigned_to"<?php if ($issue->isAssigned()): ?> style="display: none;"<?php endif; ?>><?= __('Not assigned to anyone'); ?></span>
-                    <?php if ($issue->canEditAssignee() && $issue->isUpdateable()): ?>
-                        <?= fa_image_tag('angle-down', ['class' => 'dropdown-indicator']); ?>
+                    <?php if ($issue->isUpdateable() && $issue->canEditAssignee()): ?>
+                        <?php echo fa_image_tag('angle-down', ['class' => 'expander']); ?>
+                        <div class="dropdown-container">
+                            <?php include_component('main/identifiableselector', array(    'html_id'             => 'assigned_to_change',
+                                                                                    'header'             => __('Change issue creator'),
+                                                                                    'callback'             => "Pachno.Issues.Field.set('" . make_url('issue_setfield', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => 'assigned_to', 'identifiable_type' => 'user', 'value' => '%identifiable_value')) . "', 'assigned_to');",
+                                                                                    'team_callback'         => "Pachno.Issues.Field.set('" . make_url('issue_setfield', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => 'assigned_to', 'identifiable_type' => 'team', 'value' => '%identifiable_value')) . "', 'assigned_to');",
+                                                                                    'teamup_callback'     => "Pachno.Issues.Field.set('" . make_url('issue_setfield', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => 'assigned_to', 'identifiable_type' => 'team', 'value' => '%identifiable_value', 'teamup' => true)) . "', 'assigned_to');",
+                                                                                    'clear_link_text'    => __('Clear current creator'),
+                                                                                    'base_id'            => 'assigned_to',
+                                                                                    'include_teams'        => true,
+                                                                                    'absolute'            => false)); ?>
+                        </div>
                     <?php endif; ?>
                 </div>
-                <?php if ($issue->canEditAssignee() && $issue->isEditable()): ?>
-                    <div class="dropdown-container">
-                        <?php include_component('main/identifiableselector', array(    'html_id'             => 'assigned_to_change',
-                            'header'             => __('Assign this issue'),
-                            'callback'             => "Pachno.Issues.Field.set('" . make_url('issue_setfield', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => 'assigned_to', 'identifiable_type' => 'user', 'value' => '%identifiable_value')) . "', 'assigned_to');",
-                            'team_callback'         => "Pachno.Issues.Field.set('" . make_url('issue_setfield', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => 'assigned_to', 'identifiable_type' => 'team', 'value' => '%identifiable_value')) . "', 'assigned_to');",
-                            'teamup_callback'     => "Pachno.Issues.Field.set('" . make_url('issue_setfield', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => 'assigned_to', 'identifiable_type' => 'team', 'value' => '%identifiable_value', 'teamup' => true)) . "', 'assigned_to');",
-                            'clear_link_text'    => __('Clear current assignee'),
-                            'base_id'            => 'assigned_to',
-                            'include_teams'        => true,
-                            'absolute'            => true)); ?>
-                    </div>
-                <?php endif; ?>
             </div>
         </li>
         <li id="subscribers_field">
@@ -486,44 +475,44 @@
                                             </form>
                                         <?php endif; ?>
                                             <script type="text/javascript">
-                                                require(['domReady', 'pachno/index', 'calendarview'], function (domReady, pachno_index_js, Calendar) {
-                                                    domReady(function () {
-                                                        Calendar.setup({
-                                                            dateField: '<?= $field; ?>_new_name',
-                                                            parentElement: 'customfield_<?= $field; ?>_calendar_container',
-                                                            valueCallback: function(element, date) {
-                                                                <?php if ($info['type'] == CustomDatatype::DATETIME_PICKER): ?>
-                                                                var value = date.setUTCHours(parseInt($('#customfield_<?= $field; ?>_hour').value));
-                                                                var date  = new Date(value);
-                                                                var value = Math.floor(date.setUTCMinutes(parseInt($('#customfield_<?= $field; ?>_minute').value)) / 1000);
-                                                                <?php else: ?>
-                                                                var value = Math.floor(date.getTime() / 1000);
-                                                                Pachno.Issues.Field.set('<?= make_url('issue_setfield', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => $field)); ?>?<?= $field; ?>_value='+value, '<?= $field; ?>');
-                                                                <?php endif; ?>
-                                                                $('#<?= $field; ?>_value').value = value;
-                                                            }
-                                                        });
-                                                        <?php if ($info['type'] == CustomDatatype::DATETIME_PICKER): ?>
-                                                        var date = new Date(parseInt($('#<?= $field; ?>_value').value) * 1000);
-                                                        $('#customfield_<?= $field; ?>_hour').value = date.getUTCHours();
-                                                        $('#customfield_<?= $field; ?>_minute').value = date.getUTCMinutes();
-                                                        Event.observe($('#customfield_<?= $field; ?>_hour'), 'change', function (event) {
-                                                            var value = parseInt($('#<?= $field; ?>_value').value);
-                                                            var hours = parseInt(this.value);
-                                                            if (value <= 0 || hours < 0 || hours > 24) return;
-                                                            var date = new Date(value * 1000);
-                                                            $('#<?= $field; ?>_value').value = date.setUTCHours(parseInt(this.value)) / 1000;
-                                                        });
-                                                        Event.observe($('#customfield_<?= $field; ?>_minute'), 'change', function (event) {
-                                                            var value = parseInt($('#<?= $field; ?>_value').value);
-                                                            var minutes = parseInt(this.value);
-                                                            if (value <= 0 || minutes < 0 || minutes > 60) return;
-                                                            var date = new Date(value * 1000);
-                                                            $('#<?= $field; ?>_value').value = date.setUTCMinutes(parseInt(this.value)) / 1000;
-                                                        });
-                                                        <?php endif; ?>
-                                                    });
-                                                });
+                                                //require(['domReady', 'pachno/index', 'calendarview'], function (domReady, pachno_index_js, Calendar) {
+                                                //    domReady(function () {
+                                                //        Calendar.setup({
+                                                //            dateField: '<?//= $field; ?>//_new_name',
+                                                //            parentElement: 'customfield_<?//= $field; ?>//_calendar_container',
+                                                //            valueCallback: function(element, date) {
+                                                //                <?php //if ($info['type'] == CustomDatatype::DATETIME_PICKER): ?>
+                                                //                var value = date.setUTCHours(parseInt($('#customfield_<?//= $field; ?>//_hour').value));
+                                                //                var date  = new Date(value);
+                                                //                var value = Math.floor(date.setUTCMinutes(parseInt($('#customfield_<?//= $field; ?>//_minute').value)) / 1000);
+                                                //                <?php //else: ?>
+                                                //                var value = Math.floor(date.getTime() / 1000);
+                                                //                Pachno.Issues.Field.set('<?//= make_url('issue_setfield', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => $field)); ?>//?<?//= $field; ?>//_value='+value, '<?//= $field; ?>//');
+                                                //                <?php //endif; ?>
+                                                //                $('#<?//= $field; ?>//_value').value = value;
+                                                //            }
+                                                //        });
+                                                //        <?php //if ($info['type'] == CustomDatatype::DATETIME_PICKER): ?>
+                                                //        var date = new Date(parseInt($('#<?//= $field; ?>//_value').value) * 1000);
+                                                //        $('#customfield_<?//= $field; ?>//_hour').value = date.getUTCHours();
+                                                //        $('#customfield_<?//= $field; ?>//_minute').value = date.getUTCMinutes();
+                                                //        Event.observe($('#customfield_<?//= $field; ?>//_hour'), 'change', function (event) {
+                                                //            var value = parseInt($('#<?//= $field; ?>//_value').value);
+                                                //            var hours = parseInt(this.value);
+                                                //            if (value <= 0 || hours < 0 || hours > 24) return;
+                                                //            var date = new Date(value * 1000);
+                                                //            $('#<?//= $field; ?>//_value').value = date.setUTCHours(parseInt(this.value)) / 1000;
+                                                //        });
+                                                //        Event.observe($('#customfield_<?//= $field; ?>//_minute'), 'change', function (event) {
+                                                //            var value = parseInt($('#<?//= $field; ?>//_value').value);
+                                                //            var minutes = parseInt(this.value);
+                                                //            if (value <= 0 || minutes < 0 || minutes > 60) return;
+                                                //            var date = new Date(value * 1000);
+                                                //            $('#<?//= $field; ?>//_value').value = date.setUTCMinutes(parseInt(this.value)) / 1000;
+                                                //        });
+                                                //        <?php //endif; ?>
+                                                //    });
+                                                //});
                                             </script>
                                         <?php else: ?>
                                             <a href="javascript:void(0);" class="list-item" onclick="Pachno.Issues.Field.set('<?= make_url('issue_setfield', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => $field, $field . '_value' => "")); ?>', '<?= $field; ?>');">
@@ -623,12 +612,14 @@
     </div>
 <?php endif; ?>
 <?php Event::createNew('core', 'viewissue_left_after_attachments', $issue)->trigger(); ?>
-<div class="fields-list-container" id="viewissue_duplicate_issues_container">
-    <div class="header">
-        <span class="name"><?= __('Duplicate issues %count', ['%count' => '']); ?><span id="viewissue_duplicate_issues_count" class="count-badge"><?= $issue->getNumberOfDuplicateIssues(); ?></span></span>
+<?php if ($issue->getNumberOfDuplicateIssues()): ?>
+    <div class="fields-list-container" id="viewissue_duplicate_issues_container">
+        <div class="header">
+            <span class="name"><?= __('Duplicate issues %count', ['%count' => '']); ?><span id="viewissue_duplicate_issues_count" class="count-badge"><?= $issue->getNumberOfDuplicateIssues(); ?></span></span>
+        </div>
+        <div id="viewissue_duplicate_issues">
+            <?php include_component('main/duplicateissues', array('issue' => $issue)); ?>
+        </div>
     </div>
-    <div id="viewissue_duplicate_issues">
-        <?php include_component('main/duplicateissues', array('issue' => $issue)); ?>
-    </div>
-</div>
+<?php endif; ?>
 <?php Event::createNew('core', 'viewissue_left_bottom', $issue)->trigger(); ?>

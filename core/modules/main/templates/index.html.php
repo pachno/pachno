@@ -18,6 +18,11 @@
 <div class="content-with-sidebar">
     <nav class="sidebar">
         <div id="projects_list_tabs" class="list-mode">
+            <div class="list-item filter-container">
+                <label for="project-search-input" class="icon"><?= fa_image_tag('search'); ?></label>
+                <input id="project-search-input" type="search" name="value" placeholder="<?= __('Find projects') ;?>">
+            </div>
+            <div class="list-item separator"></div>
             <a class="list-item tab selected" data-project-category="active" id="tab_active" href="javascript:void(0);">
                 <?= fa_image_tag('boxes', ['class' => 'icon']); ?>
                 <span class="name"><?= ($pachno_user->isGuest()) ? __('Projects') : __('Active projects'); ?></span>
@@ -39,7 +44,6 @@
                     </div>
                 <?php endif; */ ?>
             <?php endif; ?>
-            <div class="list-item separator"></div>
         </div>
         <?php \pachno\core\framework\Event::createNew('core', 'index_left')->trigger(); ?>
         <?php if (!$pachno_user->isGuest()): ?>

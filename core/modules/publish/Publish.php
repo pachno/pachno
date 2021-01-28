@@ -227,6 +227,21 @@
         }
 
         /**
+         * Header selected tab listener
+         *
+         * @Listener(module="core", identifier="header_menu::selectedTab")
+         *
+         * @param Event $event
+         */
+        public function headerMenuSelectedTab(Event $event)
+        {
+            if (framework\Context::getRouting()->getCurrentRoute()->getModuleName() == 'publish' && framework\Context::isProjectContext()) {
+                $event->setReturnValue('projects');
+                $event->setProcessed();
+            }
+        }
+
+        /**
          * Header wiki menu and search dropdown / list
          *
          * @Listener(module="core", identifier="header_menu_entries")

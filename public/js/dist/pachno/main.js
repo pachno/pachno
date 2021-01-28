@@ -90,10 +90,10 @@
 /*!*********************************!*\
   !*** ./i18n/en_US/strings.json ***!
   \*********************************/
-/*! exports provided: agile, default */
+/*! exports provided: agile, issue, default */
 /***/ (function(module) {
 
-module.exports = JSON.parse("{\"agile\":{\"add_card\":\"Add card\",\"add_card_here\":\"Add card here\"}}");
+module.exports = JSON.parse("{\"agile\":{\"add_card\":\"Add card\",\"add_card_here\":\"Add card here\"},\"issue\":{\"value_not_set\":\"Not determined\",\"unknown_value\":\"Unknown\"}}");
 
 /***/ }),
 
@@ -676,7 +676,7 @@ var Board = /*#__PURE__*/function () {
 
       if (milestone_id) {
         _pachno__WEBPACK_IMPORTED_MODULE_4__["default"].fetch($milestone_input.data('status-url'), {
-          additional_params: 'milestone_id=' + parseInt(milestone_id) + '&board_id=' + this.id,
+          data: 'milestone_id=' + parseInt(milestone_id) + '&board_id=' + this.id,
           method: 'GET',
           loading: {
             hide: 'selected_milestone_status_details',
@@ -987,6 +987,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _helpers_ui__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../helpers/ui */ "./js/helpers/ui.js");
 /* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! jquery */ "./node_modules/jquery/dist/jquery.js");
 /* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(jquery__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _pachno__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./pachno */ "./js/classes/pachno.js");
+/* harmony import */ var _widgets_editor__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../widgets/editor */ "./js/widgets/editor.js");
+function _createForOfIteratorHelper(o, allowArrayLike) { var it; if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = o[Symbol.iterator](); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
@@ -996,41 +1004,226 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
 
 
+
+
 var Issue = /*#__PURE__*/function () {
   function Issue(json, board_id) {
+    var create_element = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
+
     _classCallCheck(this, Issue);
 
-    this.id = json.id;
     this.board_id = board_id;
-    this.href = json.href;
-    this.title = json.title;
-    this.issue_no = json.issue_no;
-    this.state = json.state;
-    this.closed = json.closed;
-    this.deleted = json.deleted;
-    this.created_at = json.created_at;
-    this.created_at_iso = json.created_at_iso;
-    this.updated_at = json.updated_at;
-    this.updated_at_iso = json.updated_at_iso;
-    this.category = json.category;
-    this.priority = json.priority;
-    this.severity = json.severity;
-    this.more_actions_url = json.more_actions_url;
-    this.posted_by = json.posted_by;
-    this.assignee = json.assignee;
-    this.status = json.status;
-    this.card_url = json.card_url;
-    this.blocking = json.blocking;
-    this.milestone = json.milestone;
-    this.number_of_files = json.number_of_files;
-    this.number_of_comments = json.number_of_comments;
-    this.issue_type = json.issue_type;
-    this.parent_issue_id = json.parent_issue_id;
-    this.processed = false;
-    this.element = this.createHtmlElement();
+    this.updateFromJson(json);
+
+    if (create_element) {
+      this.element = this.createHtmlElement();
+    }
+
+    this.setupListeners();
   }
 
   _createClass(Issue, [{
+    key: "updateFromJson",
+    value: function updateFromJson(json) {
+      this.id = json.id;
+      this.issue_no = json.issue_no;
+      this.created_at = json.created_at;
+      this.created_at_iso = json.created_at_iso;
+      this.updated_at = json.updated_at;
+      this.updated_at_iso = json.updated_at_iso;
+      this.updated_at_full = json.updated_at_full;
+      this.updated_at_friendly = json.updated_at_friendly;
+      this.updated_at_datetime = json.updated_at_datetime;
+      this.card_url = json.card_url;
+      this.href = json.href;
+      this.more_actions_url = json.more_actions_url;
+      this.save_url = json.save_url;
+      this.blocking = json.blocking;
+      this.closed = json.closed;
+      this.deleted = json.deleted;
+      this.state = json.state;
+      this.description = json.description;
+      this.description_formatted = json.description_formatted;
+      this.reproduction_steps = json.reproduction_steps;
+      this.reproduction_steps_formatted = json.reproduction_steps_formatted;
+      this.assignee = json.assignee;
+      this.category = json.category;
+      this.issue_type = json.issue_type;
+      this.milestone = json.milestone;
+      this.parent_issue_id = json.parent_issue_id;
+      this.priority = json.priority;
+      this.posted_by = json.posted_by;
+      this.severity = json.severity;
+      this.reproducability = json.reproducability;
+      this.resolution = json.resolution;
+      this.status = json.status;
+      this.title = json.title;
+      this.number_of_files = json.number_of_files;
+      this.number_of_comments = json.number_of_comments;
+      this.processed = false;
+    }
+  }, {
+    key: "postAndUpdate",
+    value: function postAndUpdate(field, value) {
+      var issue = this;
+      _pachno__WEBPACK_IMPORTED_MODULE_2__["default"].trigger(_pachno__WEBPACK_IMPORTED_MODULE_2__["default"].EVENTS.issueUpdate, {
+        id: this.id
+      });
+      return new Promise(function (resolve, reject) {
+        _pachno__WEBPACK_IMPORTED_MODULE_2__["default"].fetch(issue.save_url, {
+          method: 'POST',
+          data: {
+            field: field,
+            value: value
+          }
+        }).then(function (json) {
+          _pachno__WEBPACK_IMPORTED_MODULE_2__["default"].trigger(_pachno__WEBPACK_IMPORTED_MODULE_2__["default"].EVENTS.issueUpdateDone, {
+            id: issue.id
+          });
+          _pachno__WEBPACK_IMPORTED_MODULE_2__["default"].trigger(_pachno__WEBPACK_IMPORTED_MODULE_2__["default"].EVENTS.issueUpdateJson, {
+            json: json.issue
+          });
+          resolve();
+        });
+      });
+    }
+  }, {
+    key: "setupListeners",
+    value: function setupListeners() {
+      var $body = jquery__WEBPACK_IMPORTED_MODULE_1___default()('body');
+      var issue = this;
+      $body.off('click', "input[data-trigger-issue-update][data-issue-id=".concat(this.id, "]"));
+      $body.on('click', "input[data-trigger-issue-update][data-issue-id=".concat(this.id, "]"), function () {
+        var $element = jquery__WEBPACK_IMPORTED_MODULE_1___default()(this);
+        $element.addClass('submitting');
+        issue.postAndUpdate($element.data('field'), $element.val()).then(function () {
+          $element.removeClass('submitting');
+        });
+      });
+      $body.off('click', ".editable[data-editable-field][data-issue-id=".concat(this.id, "]"));
+      $body.on('click', ".editable[data-editable-field][data-issue-id=".concat(this.id, "]"), function () {
+        var $element = jquery__WEBPACK_IMPORTED_MODULE_1___default()(this);
+        var $textarea = jquery__WEBPACK_IMPORTED_MODULE_1___default()("[data-editable-textarea][data-issue-id=".concat(issue.id, "][data-field=").concat($element.data('field'), "]"));
+        var editor = Object(_widgets_editor__WEBPACK_IMPORTED_MODULE_3__["getEditor"])($textarea.attr('id'));
+        $element.addClass('editing');
+        setTimeout(function () {
+          editor.focus();
+          editor.codemirror.focus();
+        }, 250);
+      });
+      $body.off('click', "[data-trigger-save][data-issue-id=".concat(this.id, "]"));
+      $body.on('click', "[data-trigger-save][data-issue-id=".concat(this.id, "]"), function () {
+        var $element = jquery__WEBPACK_IMPORTED_MODULE_1___default()(this);
+        var $textarea = jquery__WEBPACK_IMPORTED_MODULE_1___default()("[data-editable-textarea][data-issue-id=".concat(issue.id, "][data-field=").concat($element.data('field'), "]"));
+        var $value_container = jquery__WEBPACK_IMPORTED_MODULE_1___default()("[data-editable-field][data-issue-id=".concat(issue.id, "][data-field=").concat($element.data('field'), "]"));
+        var editor = Object(_widgets_editor__WEBPACK_IMPORTED_MODULE_3__["getEditor"])($textarea.attr('id'));
+        issue.postAndUpdate($element.data('field'), editor.value()).then(function () {
+          $value_container.removeClass('editing');
+        });
+      });
+      $body.off('click', "[data-trigger-cancel-editing][data-issue-id=".concat(this.id, "]"));
+      $body.on('click', "[data-trigger-cancel-editing][data-issue-id=".concat(this.id, "]"), function () {
+        var $element = jquery__WEBPACK_IMPORTED_MODULE_1___default()(this);
+        var $value_container = jquery__WEBPACK_IMPORTED_MODULE_1___default()("[data-editable-field][data-issue-id=".concat(issue.id, "][data-field=").concat($element.data('field'), "]"));
+        var $textarea = jquery__WEBPACK_IMPORTED_MODULE_1___default()("[data-editable-textarea][data-issue-id=".concat(issue.id, "][data-field=").concat($element.data('field'), "]"));
+        var editor = Object(_widgets_editor__WEBPACK_IMPORTED_MODULE_3__["getEditor"])($textarea.attr('id'));
+        editor.value(issue[$element.data('field')]);
+        $value_container.removeClass('editing');
+      });
+      _pachno__WEBPACK_IMPORTED_MODULE_2__["default"].on(_pachno__WEBPACK_IMPORTED_MODULE_2__["default"].EVENTS.issueUpdateJson, function (PachnoApplication, data) {
+        if (data.json.id != issue.id) {
+          return;
+        }
+
+        issue.updateFromJson(data.json);
+        issue.updateVisibleValues(data.json);
+      });
+    }
+  }, {
+    key: "updateVisibleValues",
+    value: function updateVisibleValues(json) {
+      var _this$field;
+
+      var $value_fields = jquery__WEBPACK_IMPORTED_MODULE_1___default()("[data-dynamic-field-value][data-issue-id=".concat(this.id, "]"));
+      var visible_fields = json.visible_fields;
+      var available_fields = json.available_fields;
+
+      var _iterator = _createForOfIteratorHelper($value_fields),
+          _step;
+
+      try {
+        for (_iterator.s(); !(_step = _iterator.n()).done;) {
+          var element = _step.value;
+          var $element = jquery__WEBPACK_IMPORTED_MODULE_1___default()(element);
+          var field = $element.data('field');
+
+          if (!this[field]) {
+            $element.addClass('no-value');
+          } else {
+            $element.removeClass('no-value');
+          }
+
+          switch (field) {
+            case 'priority':
+            case 'resolution':
+            case 'category':
+            case 'milestone':
+            case 'reproducability':
+            case 'severity':
+              if (((_this$field = this[field]) === null || _this$field === void 0 ? void 0 : _this$field.name) !== undefined) {
+                $element.html(this[field].name);
+              } else {
+                $element.html(_pachno__WEBPACK_IMPORTED_MODULE_2__["default"].T.issue.value_not_set);
+              }
+
+              break;
+
+            case 'description':
+              $element.html(this.description_formatted);
+              break;
+
+            case 'reproduction_steps':
+              $element.html(this.reproduction_steps_formatted);
+              break;
+
+            case 'updated_at':
+              $element.html(this.updated_at_friendly);
+              $element.prop('title', this.updated_at_full);
+              $element.prop('datetime', this.updated_at_datetime);
+              break;
+          }
+        }
+      } catch (err) {
+        _iterator.e(err);
+      } finally {
+        _iterator.f();
+      }
+
+      var _iterator2 = _createForOfIteratorHelper(available_fields),
+          _step2;
+
+      try {
+        for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
+          var _field = _step2.value;
+          var $field = jquery__WEBPACK_IMPORTED_MODULE_1___default()("#".concat(_field, "_field"));
+
+          if (!$field.length) {
+            continue;
+          }
+
+          if (visible_fields.contains(_field) || this[_field] !== undefined && this[_field] !== null) {
+            $field.removeClass('hidden');
+          } else {
+            $field.addClass('hidden');
+          }
+        }
+      } catch (err) {
+        _iterator2.e(err);
+      } finally {
+        _iterator2.f();
+      }
+    }
+  }, {
     key: "createHtmlElement",
     value: function createHtmlElement() {
       var classes = [];
@@ -1052,7 +1245,7 @@ var Issue = /*#__PURE__*/function () {
 
       $info.append("<span class=\"status-badge\" style=\"background-color: ".concat(this.status.color, "; color: ").concat(this.status.text_color, ";\"><span>").concat(this.status.name, "</span></span>"));
 
-      if (this.assignee !== undefined) {
+      if (this.assignee !== undefined && this.assignee !== null) {
         if (this.assignee.type == 'user') {
           $info.append("<span class=\"assignee\"><span class=\"avatar medium\"><img src=\"".concat(this.assignee.avatar_url_small, "\"></span></span>"));
         }
@@ -1117,7 +1310,7 @@ var IssueReporter = /*#__PURE__*/function () {
           loading: {
             indicator: '#report_issue_more_options_indicator'
           },
-          additional_params: 'issuetype_id=' + issue_type_id
+          data: 'issuetype_id=' + issue_type_id
         }).then(function (json) {
           var _iterator = _createForOfIteratorHelper(json.available_fields),
               _step;
@@ -1459,7 +1652,10 @@ var PachnoApplication = /*#__PURE__*/function () {
         ready: 'pachno-ready',
         formSubmit: 'form-submit',
         formSubmitResponse: 'form-submit-response',
-        formSubmitError: 'form-submit-error'
+        formSubmitError: 'form-submit-error',
+        issueUpdate: 'issue-update',
+        issueUpdateDone: 'issue-update-done',
+        issueUpdateJson: 'issue-update-json'
       };
     }
   }, {
@@ -2842,19 +3038,19 @@ var fetchHelper = function fetchHelper(url, options) {
         data = new FormData();
       }
 
-      if (options.additional_params) {
-        for (var param in options.additional_params) {
-          if (options.additional_params.hasOwnProperty(param)) {
-            data.append(param, options.additional_params[param]);
+      if (options.data) {
+        for (var param in options.data) {
+          if (options.data.hasOwnProperty(param)) {
+            data.append(param, options.data[param]);
           }
         }
       }
 
       fetch_options.body = data;
     } else if (method === 'GET') {
-      if (options.additional_params) {
+      if (options.data) {
         var concatenator = url.indexOf('?') !== -1 ? '&' : '?';
-        url += concatenator + options.additional_params;
+        url += concatenator + options.data;
       }
     }
 
@@ -3069,19 +3265,18 @@ var watchIssuePopupForms = function watchIssuePopupForms() {
   });
 };
 
-var setupListeners = function setupListeners() {
-  var $body = jquery__WEBPACK_IMPORTED_MODULE_0___default()('body');
-  $body.off('click', 'input[data-trigger-issue-update]');
-  $body.on('click', 'input[data-trigger-issue-update]', function () {
-    var $element = jquery__WEBPACK_IMPORTED_MODULE_0___default()(this);
-    $element.addClass('submitting');
-    var url = $element.data('url');
-    _classes_pachno__WEBPACK_IMPORTED_MODULE_1__["default"].fetch(url, {
-      method: 'POST'
-    }).then(function () {
-      $element.removeClass('submitting');
-    });
-  });
+var setupListeners = function setupListeners() {// const $body = $('body');
+  // $body.off('click', 'input[data-trigger-issue-update]');
+  // $body.on('click', 'input[data-trigger-issue-update]', function () {
+  //     const $element = $(this);
+  //     $element.addClass('submitting');
+  //     const url = $element.data('url');
+  //
+  //     Pachno.fetch(url, { method: 'POST' })
+  //         .then(() => {
+  //             $element.removeClass('submitting');
+  //         })
+  // });
 };
 
 
@@ -3934,7 +4129,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 // Pachno.Main.Menu.saveOrder = function (container, target_type, target_id, url) {
 //     Pachno.Helpers.fetch(url, {
-//         additional_params: Sortable.serialize(container),
+//         data: Sortable.serialize(container),
 //         loading: {
 //             indicator: target_type + '_' + target_id + '_indicator'
 //         }
@@ -4137,7 +4332,7 @@ __webpack_require__.r(__webpack_exports__);
 //         }
 //     });
 //     Pachno.Helpers.fetch(url, {
-//         additional_params: items,
+//         data: items,
 //         loading: {indicator: list.down('.dashboard_indicator')}
 //     });
 // };
@@ -4788,7 +4983,7 @@ __webpack_require__.r(__webpack_exports__);
 // Pachno.Project.Timeline.update = function (url) {
 //     Pachno.Helpers.fetch(url, {
 //         method: 'GET',
-//         additional_params: "offset=" + $('#timeline_offset').val(),
+//         data: "offset=" + $('#timeline_offset').val(),
 //         loading: {
 //             indicator: '#timeline_indicator',
 //             hide: 'timeline_more_link'
@@ -4806,7 +5001,7 @@ __webpack_require__.r(__webpack_exports__);
 // Pachno.Project.showBranchCommits = function (url, branch) {
 //     Pachno.Helpers.fetch(url, {
 //         method: 'POST',
-//         additional_params: "branch=" + branch,
+//         data: "branch=" + branch,
 //         loading: {
 //             indicator: '#fullpage_backdrop',
 //             show: 'fullpage_backdrop_indicator',
@@ -4822,7 +5017,7 @@ __webpack_require__.r(__webpack_exports__);
 // Pachno.Project.Commits.update = function (url, branch) {
 //     Pachno.Helpers.fetch(url, {
 //         method: 'POST',
-//         additional_params: "from_commit=" + $('#from_commit').val() + "&branch=" + branch,
+//         data: "from_commit=" + $('#from_commit').val() + "&branch=" + branch,
 //         loading: {
 //             indicator: '#commits_indicator',
 //             hide: 'commits_more_link'
@@ -4840,7 +5035,7 @@ __webpack_require__.r(__webpack_exports__);
 // Pachno.Project.Commits.viewIssueUpdate = function (url) {
 //     Pachno.Helpers.fetch(url, {
 //         method: 'POST',
-//         additional_params: "offset=" + $('#commits_offset').val() + "&limit=" + $('#commits_limit').val(),
+//         data: "offset=" + $('#commits_offset').val() + "&limit=" + $('#commits_limit').val(),
 //         loading: {
 //             indicator: '#commits_indicator',
 //             hide: 'commits_more_link'
@@ -4899,7 +5094,7 @@ __webpack_require__.r(__webpack_exports__);
 // Pachno.Project.resetIcons = function (url) {
 //     Pachno.Helpers.fetch(url, {
 //         method: 'POST',
-//         additional_params: '&clear_icons=1'
+//         data: '&clear_icons=1'
 //     });
 // };
 //
@@ -5117,7 +5312,7 @@ __webpack_require__.r(__webpack_exports__);
 //         var release_id = $(event.target).data('release-id');
 //         var url = release.data('assign-issue-url');
 //         Pachno.Helpers.fetch(url, {
-//             additional_params: 'issue_id=' + issue.data('issue-id'),
+//             data: 'issue_id=' + issue.data('issue-id'),
 //             loading: {indicator: release.down('.planning_indicator')},
 //             complete: {
 //                 callback: function (json) {
@@ -5160,7 +5355,7 @@ __webpack_require__.r(__webpack_exports__);
 //         var epic_id = $(event.target).data('issue-id');
 //         var url = epic.data('assign-issue-url');
 //         Pachno.Helpers.fetch(url, {
-//             additional_params: 'issue_id=' + issue.data('issue-id'),
+//             data: 'issue_id=' + issue.data('issue-id'),
 //             loading: {indicator: epic.down('.planning_indicator')},
 //             complete: {
 //                 callback: function (json) {
@@ -5373,7 +5568,7 @@ __webpack_require__.r(__webpack_exports__);
 //     var milestone_id = (mi.dataset.selectedValue) ? parseInt(mi.dataset.selectedValue) : 0;
 //
 //     Pachno.Helpers.fetch(wb.dataset.whiteboardUrl, {
-//         additional_params: '&milestone_id=' + milestone_id,
+//         data: '&milestone_id=' + milestone_id,
 //         method: 'GET',
 //         loading: {
 //             indicator: '#whiteboard_indicator',
@@ -5412,7 +5607,7 @@ __webpack_require__.r(__webpack_exports__);
 //     var milestone_id = (event) ? $(item).dataset.inputValue : mi.dataset.selectedValue;
 //     var board_id = (event) ? $(item).dataset.boardValue : mi.dataset.selectedBoardValue;
 //     Pachno.Helpers.fetch(mi.dataset.statusUrl, {
-//         additional_params: '&milestone_id=' + parseInt(milestone_id) + '&board_id=' + parseInt(board_id),
+//         data: '&milestone_id=' + parseInt(milestone_id) + '&board_id=' + parseInt(board_id),
 //         method: 'GET',
 //         loading: {
 //             hide: 'selected_milestone_status_details',
@@ -5471,7 +5666,7 @@ __webpack_require__.r(__webpack_exports__);
 //     if (transition_id) parameters += '&transition_id=' + transition_id;
 //
 //     Pachno.Helpers.fetch($('#whiteboard').dataset.whiteboardUrl, {
-//         additional_params: parameters,
+//         data: parameters,
 //         method: 'POST',
 //         loading: {
 //             indicator: '#fullpage_backdrop',
@@ -6152,7 +6347,7 @@ __webpack_require__.r(__webpack_exports__);
 //     });
 //     Pachno.Helpers.fetch(url, {
 //         method: 'POST',
-//         additional_params: items,
+//         data: items,
 //         loading: {indicator: '#planning_indicator'}
 //     });
 // };
@@ -6167,7 +6362,7 @@ __webpack_require__.r(__webpack_exports__);
 //     });
 //     Pachno.Helpers.fetch(url, {
 //         method: 'POST',
-//         additional_params: items,
+//         data: items,
 //         loading: {indicator: list.parents('.milestone-box').down('.planning_indicator')}
 //     });
 // };
@@ -6198,7 +6393,7 @@ __webpack_require__.r(__webpack_exports__);
 //             var url = list.parents('.milestone-box').data('assign-issue-url');
 //             var original_list = $(ui.sender[0]);
 //             Pachno.Helpers.fetch(url, {
-//                 additional_params: 'issue_id=' + issue.data('issue-id'),
+//                 data: 'issue_id=' + issue.data('issue-id'),
 //                 loading: {indicator: list.parents('.milestone-box').down('.planning_indicator')},
 //                 complete: {
 //                     callback: function (json) {
@@ -6412,7 +6607,7 @@ __webpack_require__.r(__webpack_exports__);
 //     });
 //     // Pachno.Helpers.fetch(url, {
 //     //     form: form,
-//     //     additional_params: issues,
+//     //     data: issues,
 //     //     loading: {indicator: '#milestone_edit_indicator'},
 //     //     success: {
 //     //         reset: 'edit_milestone_form',
@@ -6901,7 +7096,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 // Pachno.Config.Issuefields.saveOrder = function (container, type, url) {
 //     Pachno.Helpers.fetch(url, {
-//         additional_params: Sortable.serialize(container),
+//         data: Sortable.serialize(container),
 //         loading: {
 //             indicator: type + '_sort_indicator'
 //         }
@@ -7733,7 +7928,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 // Pachno.Issues.findDuplicate = function (url, transition_id) {
 //     Pachno.Helpers.fetch(url, {
-//         additional_params: 'searchfor=' + $('#viewissue_find_issue_' + transition_id + '_input').val(),
+//         data: 'searchfor=' + $('#viewissue_find_issue_' + transition_id + '_input').val(),
 //         loading: {indicator: '#viewissue_find_issue_' + transition_id + '_indicator'},
 //         success: {update: '#viewissue_' + transition_id + '_duplicate_results'}
 //     });
@@ -7800,20 +7995,20 @@ __webpack_require__.r(__webpack_exports__);
 //
 // Pachno.Issues.Add = function (url, btn) {
 //     var btn = btn != undefined ? $(btn) : $('#reportissue_button');
-//     var additional_params_query = '';
+//     var data_query = '';
 //
 //     if (btn.dataset != undefined && btn.data('milestone-id') != undefined && parseInt(btn.data('milestone-id')) > 0) {
-//         additional_params_query += '/milestone_id/' + btn.data('milestone-id');
+//         data_query += '/milestone_id/' + btn.data('milestone-id');
 //     }
 //
 //     if (url.indexOf('issuetype') !== -1) {
-//         Pachno.Helpers.Backdrop.show(url +  additional_params_query, function () {
+//         Pachno.Helpers.Backdrop.show(url +  data_query, function () {
 //             $('#reportissue_container').addClass('huge');
 //             $('#reportissue_container').removeClass('large');
 //         });
 //     }
 //     else {
-//         Pachno.Helpers.Backdrop.show(url +  additional_params_query);
+//         Pachno.Helpers.Backdrop.show(url +  data_query);
 //     }
 // };
 //
@@ -8779,7 +8974,7 @@ __webpack_require__.r(__webpack_exports__);
 //     } else {
 //         Pachno.Helpers.fetch(url, {
 //             form: 'search-bulk-action-form',
-//             additional_params: issues,
+//             data: issues,
 //             loading: {
 //                 indicator: '#fullpage_backdrop',
 //                 show: 'fullpage_backdrop_indicator',

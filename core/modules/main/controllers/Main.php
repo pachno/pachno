@@ -1793,6 +1793,7 @@
                 framework\Event::listen('core', 'pachno\core\entities\Issue::save_pre_notifications', [$this, 'listen_issueCreate']);
             }
             $issue->save();
+            $return_details['issue'] = $issue->toJSON();
 
             return $this->renderJSON($return_details);
         }
@@ -1839,7 +1840,7 @@
                 case 'pain_effect':
                     return $issue->canEditUserPain();
                 default:
-                    if ($customdatatype = entities\CustomDatatype::getByKey($request['field'])) {
+                    if ($customdatatype = entities\CustomDatatype::getByKey($field)) {
                         $key = $customdatatype->getKey();
 
                         return $issue->canEditCustomFields($key);

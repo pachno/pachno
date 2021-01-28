@@ -41,6 +41,9 @@
             <?php endif; ?>
         </div>
         <div class="status-header">
+            <div id="issue-update-indicator" class="indicator">
+                <?= fa_image_tag('spinner', ['class' => 'fa-spin']); ?>
+            </div>
             <div class="created-times">
                 <div id="posted_at_field">
                     <label><?= __('Posted at'); ?></label>
@@ -48,7 +51,7 @@
                 </div>
                 <div id="updated_at_field">
                     <label><?= __('Last updated'); ?></label>
-                    <time datetime="<?= Context::getI18n()->formatTime($issue->getLastUpdatedTime(), 24); ?>" title="<?= Context::getI18n()->formatTime($issue->getLastUpdatedTime(), 21); ?>" class="value-container"><?= Context::getI18n()->formatTime($issue->getLastUpdatedTime(), 20); ?></time>
+                    <time datetime="<?= Context::getI18n()->formatTime($issue->getLastUpdatedTime(), 24); ?>" title="<?= Context::getI18n()->formatTime($issue->getLastUpdatedTime(), 21); ?>" class="value-container" data-dynamic-field-value data-field="updated_at" data-issue-id="<?= $issue->getId(); ?>"><?= Context::getI18n()->formatTime($issue->getLastUpdatedTime(), 20); ?></time>
                 </div>
             </div>
             <div id="status-field" class="dropper-container status-field">

@@ -214,13 +214,6 @@ project_create_role:
     parameters: [ ]
     csrf_enabled: false
 
-project_releases:
-    route: /:project_key/releases
-    module: project
-    action: releases
-    parameters: [ ]
-    csrf_enabled: false
-
 project_release_center:
     route: /:project_key/release_center
     module: project
@@ -336,22 +329,6 @@ project_files:
     module: project
     action: files
     parameters: [ ]
-    csrf_enabled: false
-
-project_roadmap_upcoming:
-    route: /:project_key/roadmap/upcoming
-    module: project
-    action: roadmap
-    parameters:
-      mode: upcoming
-    csrf_enabled: false
-
-project_roadmap_all:
-    route: /:project_key/roadmap/all
-    module: project
-    action: roadmap
-    parameters:
-      mode: all
     csrf_enabled: false
 
 project_roadmap_milestone_details:

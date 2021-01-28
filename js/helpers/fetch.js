@@ -143,19 +143,19 @@ export const fetchHelper = function (url, options) {
             } else {
                 data = new FormData();
             }
-            if (options.additional_params) {
-                for (let param in options.additional_params) {
-                    if (options.additional_params.hasOwnProperty(param)) {
-                        data.append(param, options.additional_params[param]);
+            if (options.data) {
+                for (let param in options.data) {
+                    if (options.data.hasOwnProperty(param)) {
+                        data.append(param, options.data[param]);
                     }
                 }
             }
 
             fetch_options.body = data;
         } else if (method === 'GET') {
-            if (options.additional_params) {
+            if (options.data) {
                 const concatenator = (url.indexOf('?') !== -1) ? '&' : '?';
-                url += concatenator + options.additional_params;
+                url += concatenator + options.data;
             }
         }
 

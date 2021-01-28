@@ -32,18 +32,18 @@ const watchIssuePopupForms = () => {
 }
 
 const setupListeners = () => {
-    const $body = $('body');
-    $body.off('click', 'input[data-trigger-issue-update]');
-    $body.on('click', 'input[data-trigger-issue-update]', function () {
-        const $element = $(this);
-        $element.addClass('submitting');
-        const url = $element.data('url');
-
-        Pachno.fetch(url, { method: 'POST' })
-            .then(() => {
-                $element.removeClass('submitting');
-            })
-    });
+    // const $body = $('body');
+    // $body.off('click', 'input[data-trigger-issue-update]');
+    // $body.on('click', 'input[data-trigger-issue-update]', function () {
+    //     const $element = $(this);
+    //     $element.addClass('submitting');
+    //     const url = $element.data('url');
+    //
+    //     Pachno.fetch(url, { method: 'POST' })
+    //         .then(() => {
+    //             $element.removeClass('submitting');
+    //         })
+    // });
 }
 
 export {

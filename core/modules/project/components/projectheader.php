@@ -11,7 +11,8 @@
      */
 
     $project = \pachno\core\framework\Context::getCurrentProject();
-    $report_issue_primary_class = (in_array($pachno_response->getPage(), ['project_dashboard', 'project_issues'])) ? 'primary' : 'secondary highlight';
+//    $report_issue_primary_class = (in_array($pachno_response->getPage(), ['project_dashboard', 'project_issues'])) ? 'primary' : 'secondary highlight';
+    $report_issue_primary_class = 'secondary highlight';
 
 ?>
 <div class="name-container">

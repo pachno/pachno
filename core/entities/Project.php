@@ -1547,7 +1547,7 @@
         /**
          * Return an array specifying visibility, requirement and choices for fields in issues
          *
-         * @param integer $issue_type
+         * @param integer|Issuetype $issue_type
          * @param boolean $reportable [optional] Whether to only include fields that can be reported
          * @param boolean $prefix_values [optional] Whether to prefix keys for values of fields that can be reported
          *
@@ -1782,7 +1782,7 @@
         /**
          * Return an array specifying visibility, requirement and choices for fields in the "View issue" page
          *
-         * @param integer $issue_type
+         * @param integer|Issuetype $issue_type
          *
          * @return array
          */

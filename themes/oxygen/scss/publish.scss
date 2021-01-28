@@ -4,7 +4,7 @@
     &.article-container {
         nav.sidebar {
             background-color: rgb(251, 251, 251);
-            box-shadow: -3px 3px 3px -3px rgba(27, 27, 36, 0.2) inset;
+            //box-shadow: -3px 3px 3px -3px rgba(27, 27, 36, 0.2) inset;
             align-items: stretch;
             justify-content: stretch;
             overflow: hidden;
@@ -59,7 +59,7 @@
 
                 .submenu {
                     //background-color: rgb(245, 245, 245);
-                    box-shadow: -3px 0 3px -3px rgba(27, 27, 36, 0.2) inset;
+                    //box-shadow: -3px 0 3px -3px rgba(27, 27, 36, 0.2) inset;
                 }
             }
         }

@@ -11,6 +11,8 @@
   height: 100%;
   overflow: auto;
   background-color: #FFF;
+  align-items: stretch;
+  z-index: 5;
 }
 
 .issue-state,
@@ -110,6 +112,20 @@
         justify-content: flex-end;
         box-sizing: border-box;
         padding-right: 1em;
+
+        .indicator {
+          display: flex;
+          opacity: 0;
+          transition: opacity .25s ease-in-out;
+          flex: 0 0 auto;
+          padding: 1em;
+          align-items: center;
+          justify-content: center;
+
+          &.active {
+            opacity: 1;
+          }
+        }
       }
 
       .fields-header {
@@ -120,7 +136,7 @@
         justify-content: flex-end;
         border-left: 2px solid rgba(225, 225, 225, 0.7);
         background-color: rgb(251, 251, 251);
-        box-shadow: 5px 0 5px -6px rgba(27, 27, 36, 0.2) inset;
+        //box-shadow: 5px 0 5px -6px rgba(27, 27, 36, 0.2) inset;
         box-sizing: border-box;
 
         .issuetype-field {
@@ -216,7 +232,7 @@
     margin: 0;
     flex-direction: row;
     box-sizing: border-box;
-    align-items: flex-start;
+    align-items: stretch;
     box-shadow: none;
     z-index: 5;
 
@@ -251,6 +267,54 @@
 
         .content {
           font-size: 1.15em;
+
+          &.editable {
+            &:hover {
+              background-color: rgba(100, 100, 100, 0.05);
+              cursor: pointer;
+            }
+
+            + .textarea_container {
+              height: 1px;
+              overflow: hidden;
+              opacity: 0;
+              transition: opacity 0.25s ease-in-out;
+              width: 100%;
+
+              + .textarea_save_container {
+                height: 1px;
+                overflow: hidden;
+                opacity: 0;
+                transition: opacity 0.25s ease-in-out;
+
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+                justify-content: space-between;
+                margin: 0;
+                padding: 1em;
+                box-sizing: border-box;
+                background-color: transparent;
+                border: none;
+              }
+            }
+          }
+
+          &.editing {
+            display: none;
+
+            + .textarea_container {
+              height: auto;
+              opacity: 1;
+              min-height: 15em;
+
+              + .textarea_save_container {
+                height: auto;
+                opacity: 1;
+                overflow: visible;
+              }
+            }
+          }
 
           p + p {
             margin-top: 1em;
@@ -296,6 +360,14 @@
       }
     }
 
+    .issue-field {
+      display: flex;
+
+      &.hidden {
+        display: none;
+      }
+    }
+
     .issue-fields {
       flex: 0 0 400px;
       margin: 0;
@@ -303,10 +375,8 @@
       display: flex;
       border-left: 2px solid rgba(225, 225, 225, .5);
       background-color: rgb(251, 251, 251);
-      box-shadow: 5px 0 5px -6px rgba(27, 27, 36, 0.2) inset;
+      //box-shadow: 5px 0 5px -6px rgba(27, 27, 36, 0.2) inset;
       flex-direction: column;
-      height: calc(100% - 4em);
-
       box-sizing: border-box;
       border-radius: 0;
 
@@ -327,6 +397,15 @@
         & + .fields-list-container:not(.not-visible) {
           margin-top: 2em;
         }
+      }
+
+      .userlink {
+        padding: 0;
+        flex: 1 1 auto;
+      }
+
+      .fancy-dropdown-container {
+        flex: 1 1 auto;
       }
     }
 
