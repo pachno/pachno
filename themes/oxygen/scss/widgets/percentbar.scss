@@ -1,0 +1,13 @@
+@import "../variables";
+
+.percent_filled {
+  background-color: $theme-secondary-color;
+  display: inline-block;
+  height: 6px;
+}
+
+.percent_unfilled {
+  background-color: theme-secondary-color-alpha(.4);
+  border-radius: 3px;
+  overflow: hidden;
+}

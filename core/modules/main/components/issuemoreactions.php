@@ -117,12 +117,18 @@
                     <?php endif; ?>
                 <?php else: ?>
                     <?php if ($issue->canAddRelatedIssues() && $pachno_user->canReportIssues($issue->getProject())): ?>
-                        <div class="list-item disabled">
-                            <a href="javascript:void(0);"><?php echo fa_image_tag('list-alt').__("Create a new related issue"); ?></a><div class="tooltip rightie"><?php echo __('This action is not available at this stage in the workflow'); ?></div>
-                        </div>
+                        <a class="list-item disabled" href="javascript:void(0)">
+                            <?php echo fa_image_tag('list-alt', ['class' => 'icon']); ?>
+                            <span class="name"><?= __("Create a new related issue"); ?></span>
+                            <span class="tooltip rightie"><?php echo __('This action is not available at this stage in the workflow'); ?></span>
+                        </a>
                     <?php endif; ?>
                     <?php if ($issue->canAddRelatedIssues()): ?>
-                        <div class="list-item disabled"><a href="javascript:void(0);"><?php echo fa_image_tag('sign-in-alt').__("Relate to an existing issue"); ?></a><div class="tooltip rightie"><?php echo __('This action is not available at this stage in the workflow'); ?></div></div>
+                        <a class="list-item disabled">
+                            <?php echo fa_image_tag('sign-in-alt', ['class' => 'icon']); ?>
+                            <span><?= __("Relate to an existing issue"); ?></span>
+                            <span class="tooltip rightie"><?php echo __('This action is not available at this stage in the workflow'); ?></span>
+                        </a>
                     <?php endif; ?>
                 <?php endif; ?>
                 <div class="list-item separator"></div>

@@ -42,6 +42,7 @@
     z-index: 10;
     box-sizing: border-box;
     box-shadow: none;
+    border-bottom: none;
 
     .header-container {
       display: flex;
@@ -249,6 +250,23 @@
       height: 100%;
       flex-direction: column;
 
+      .messages-container {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+
+        .message-box {
+          margin-left: 0;
+          margin-right: 0;
+          width: auto;
+          flex: 1 1 auto;
+
+          + .message-box {
+            margin-top: 1em;
+          }
+        }
+      }
+
       .card-header {
         flex: 0 0 auto;
         display: flex;
@@ -373,7 +391,7 @@
       margin: 0;
       padding: 1em;
       display: flex;
-      border-left: 2px solid rgba(225, 225, 225, .5);
+      border-left: 2px solid $theme-border-color;
       background-color: rgb(251, 251, 251);
       //box-shadow: 5px 0 5px -6px rgba(27, 27, 36, 0.2) inset;
       flex-direction: column;

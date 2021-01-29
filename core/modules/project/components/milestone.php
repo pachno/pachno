@@ -116,16 +116,28 @@
             datepickerInstance.update({ range: false });
         }
     });
-    // require(['domReady', 'pachno/index', 'calendarview'], function (domReady, pachno_index_js, Calendar) {
-    //     domReady(function () {
-    //         Calendar.setup({
-    //             dateField: 'edit_milestone_start_date',
-    //             parentElement: 'edit_milestone_date_container'
-    //         });
-    //         Calendar.setup({
-    //             dateField: 'edit_milestone_end_date',
-    //             parentElement: 'edit_milestone_end_date_container'
-    //         });
-    //     });
-    // });
+
+    $form = $('#edit_milestone_form');
+    $form.off('submit');
+    $form.on('submit', function (event) {
+        $form.addClass('submitting');
+        event.preventDefault();
+        event.stopPropagation();
+        let datepickerInstance = Pachno.UI.calendars['edit_milestone_date_container'];
+        let dates = datepickerInstance.selectedDates.map(date => date.getTime() / 1000);
+
+        let options = {
+            method: 'POST',
+            form: 'edit_milestone_form',
+            data: {
+                dates
+            }
+        };
+        Pachno.fetch($form.attr('action'), options)
+            .then(json => {
+                $form.removeClass('submitting');
+                Pachno.UI.Backdrop.reset();
+                Pachno.trigger(Pachno.EVENTS.formSubmitResponse, { form: $form.attr('id'), json });
+            });
+    })
 </script>

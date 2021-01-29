@@ -53,10 +53,11 @@
         <div id="quicksearch-container">
             <form accept-charset="<?php echo \pachno\core\framework\Context::getI18n()->getCharset(); ?>" action="<?php echo (\pachno\core\framework\Context::isProjectContext()) ? make_url('search', array('project_key' => \pachno\core\framework\Context::getCurrentProject()->getKey())) : make_url('search'); ?>" method="get" name="quicksearchform" id="quicksearchform">
                 <?= fa_image_tag('spinner', ['class' => 'fa-spin indicator']); ?>
-                <input type="search" name="search_value" accesskey="f" placeholder="<?php echo __('Quick actions'); ?>"><div id="searchfor_autocomplete_choices" class="autocomplete rounded_box"></div>
+                <?= fa_image_tag('search', ['class' => 'icon']); ?>
+                <input type="search" name="search_value" accesskey="/" id="quicksearch-input" placeholder="<?php echo __('Quick actions'); ?>"><div id="searchfor_autocomplete_choices" class="autocomplete rounded_box"></div>
             </form>
         </div>
-        <a id="header_config_link" class="<?php if (in_array(\pachno\core\framework\Context::getRouting()->getCurrentRoute()->getModuleName(), ['configuration', 'import'])) echo ' selected'; ?>" href="<?= make_url('configure'); ?>">
+        <a id="header_config_link" class="only-icon <?php if (in_array(\pachno\core\framework\Context::getRouting()->getCurrentRoute()->getModuleName(), ['configuration', 'import'])) echo ' selected'; ?>" href="<?= make_url('configure'); ?>">
             <?= fa_image_tag('cog', ['class' => 'icon']); ?>
         </a>
         <?php if (!$pachno_user->isGuest()): ?>

@@ -125,7 +125,19 @@
         }
       }
 
+      &:not(.button):not(.closer):not(.list-item) {
+        .fas,
+        .far {
+          margin: 0;
+        }
+
+        .icon {
+          margin: 0;
+        }
+      }
+
       .actions-container {
+        display: flex;
         flex: 0 0 auto;
         white-space: nowrap;
         align-items: flex-start;

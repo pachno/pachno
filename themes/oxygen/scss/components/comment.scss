@@ -43,7 +43,7 @@
         display: block;
         height: calc(100% + 26px);
         width: 1px;
-        border-left: 3px solid rgba(225, 225, 225, .5);
+        border-left: 3px solid $theme-border-color;
         position: absolute;
         top: -1px;
         left: 40px;
@@ -55,7 +55,7 @@
       display: none;
       height: 23px;
       width: 1px;
-      border-left: 3px solid rgba(225, 225, 225, .5);
+      border-left: 3px solid $theme-border-color;
       position: absolute;
       top: -24px;
       left: 40px;

@@ -1793,25 +1793,6 @@ div.bigger {
   border-color: #eee;
 }
 
-.percent_filled {
-  background-color: #8c8;
-}
-
-.percent_unfilled {
-  background-color: #dcefdc;
-}
-
-.issue_lefthand .percent_filled a,
-.percent_unfilled a {
-  display: block;
-  height: 14px;
-}
-
-.issue_lefthand .percent_filled a:hover,
-.percent_unfilled a:hover {
-  border: 0;
-}
-
 .faded_out .percent_filled {
   background-color: #b4dfb4;
 }
@@ -3080,14 +3061,6 @@ table.issue_affects td img {
 /* end user dashboard */
 
 /* scrum page styling */
-#project_planning td {
-  vertical-align: top;
-}
-
-#project_planning td.imgtd {
-  font-size: 1.3em;
-}
-
 ul.milestone_issues_container,
 #project_dashboard ul {
   list-style-type: none;

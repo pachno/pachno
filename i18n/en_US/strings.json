@@ -6,5 +6,8 @@
   "issue": {
     "value_not_set": "Not determined",
     "unknown_value": "Unknown"
+  },
+  "roadmap": {
+    "percent_complete": "%percentage% completed"
   }
 }

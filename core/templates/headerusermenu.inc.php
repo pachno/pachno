@@ -8,7 +8,7 @@
 <nav class="header_menu" id="header_userinfo">
     <ul>
         <?php if ($pachno_user->canAccessConfigurationPage()): ?>
-            <li id="header_config_link" class="<?php if (in_array(\pachno\core\framework\Context::getRouting()->getCurrentRoute()->getModuleName(), ['configuration', 'import'])) echo ' selected'; ?>">
+            <li class="<?php if (in_array(\pachno\core\framework\Context::getRouting()->getCurrentRoute()->getModuleName(), ['configuration', 'import'])) echo ' selected'; ?>">
                 <?= link_tag(make_url('configure'), fa_image_tag('cog')); ?>
             </li>
         <?php endif; ?>

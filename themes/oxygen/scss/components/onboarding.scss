@@ -1,7 +1,7 @@
 @import "../variables";
 
 .onboarding {
-  font-size: 1.6em;
+  font-size: 1.35em;
   font-weight: $theme-font-weight-regular;
   color: rgba(0, 0, 0, 0.6);
   text-align: center;
@@ -87,6 +87,7 @@
     flex: 0 0 auto;
     margin: 1rem 0;
     justify-content: space-around;
+    font-size: .85em;
   }
 
   .content-container {

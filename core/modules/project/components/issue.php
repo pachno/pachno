@@ -8,9 +8,9 @@
 ?>
 <div id="issue_<?php echo $issue->getID(); ?>" class="viewissue-container <?php if ($issue->isBlocking()) echo ' blocking'; ?>">
     <?php include_component('project/viewissueheader', ['issue' => $issue]); ?>
-    <?php include_component('project/viewissuemessages', compact('issue')); ?>
     <div id="issue-container" class="issue-card">
         <div id="issue-main-container" class="issue-card-main">
+            <?php include_component('project/viewissuemessages', compact('issue')); ?>
             <div class="card-header">
                 <?php include_component('project/viewissueworkflowbuttons', ['issue' => $issue]); ?>
                 <div class="dropper-container">

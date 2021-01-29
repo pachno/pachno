@@ -32,13 +32,6 @@
                     <span id="title_change_error" class="error_message" style="display: none;"></span>
                 </span>
             <?php endif; ?>
-            <?php if ($issue->isClosed()): ?>
-                <div class="is-closed">
-                    <?= fa_image_tag('check'); ?>
-                    <span class="name"><?= __('Done'); ?></span>
-                    <span class="tooltip from-above"><?= __('This issue is marked as done / closed'); ?></span>
-                </div>
-            <?php endif; ?>
         </div>
         <div class="status-header">
             <div id="issue-update-indicator" class="indicator">
@@ -84,7 +77,13 @@
             </div>
         </div>
         <div class="fields-header">
-            <?php if ((!isset($showLockedStatus) || $showLockedStatus) && !$issue->isEditable()): ?>
+            <?php if ($issue->isClosed()): ?>
+                <div class="not-editable">
+                    <?= fa_image_tag('check'); ?>
+                    <span class="name"><?= __('Done'); ?></span>
+                    <span class="tooltip from-above"><?= __('This issue is marked as done / closed'); ?></span>
+                </div>
+            <?php elseif ((!isset($showLockedStatus) || $showLockedStatus) && !$issue->isEditable()): ?>
                 <div class="not-editable">
                     <?= fa_image_tag('lock'); ?>
                     <span class="name"><?= __('Locked'); ?></span>

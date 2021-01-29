@@ -10,7 +10,7 @@ class Milestone {
         this.name = json.name;
         this.starting_date = json.starting_date;
         this.scheduled_date = json.scheduled_date;
-        this.percentage_complete = json.percentage_complete;
+        this.percent_complete = json.percent_complete;
         this.issues_count = json.issues_count;
         this.url = json.url;
         /**
@@ -34,6 +34,12 @@ class Milestone {
                 <span class="icon indicator">${UI.fa_image_tag('spinner', {classes: 'fa-spin'})}</span>
                 <span class="icon expander">${UI.fa_image_tag('chevron-down')}</span>
             </span>
+            <div class="percent-container">
+                <span class="percent-header">${Pachno.T.roadmap.percent_complete.replace('%percentage', this.percent_complete)}</span>
+                <span class="percent_unfilled">
+                    <span class="percent_filled" style="width: ${this.percent_complete}%;"></span>
+                </span>
+            </div>
         </div>
         <div class="issues"></div>
     </div>

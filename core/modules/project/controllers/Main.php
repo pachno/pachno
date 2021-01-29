@@ -77,12 +77,46 @@
         }
 
         /**
-         * @Route(name="milestone", url="/milestones/:milestone_id")
+         * @Route(name="milestone", url="/milestones/:milestone_id", methods="GET")
          * @param framework\Request $request
          */
         public function runGetMilestone(framework\Request $request)
         {
             $milestone = Milestones::getTable()->selectById($request['milestone_id']);
+            return $this->renderJSON(['milestone' => $milestone->toJSON(true)]);
+        }
+
+        /**
+         * @Route(name="post_milestone", url="/milestones/:milestone_id", methods="POST")
+         * @param framework\Request $request
+         */
+        public function runEditMilestone(framework\Request $request)
+        {
+            $milestone_id = $request['milestone_id'];
+            if ($milestone_id) {
+                $milestone = Milestones::getTable()->selectById($request['milestone_id']);
+            } else {
+                $milestone = new entities\Milestone();
+            }
+            if (!$request['name'])
+                throw new \Exception($this->getI18n()->__('You must provide a valid milestone name'));
+
+            $milestone->setName($request['name']);
+            $milestone->setProject($this->selected_project);
+            $milestone->setStarting((bool) $request['is_starting']);
+            $milestone->setScheduled((bool) $request['is_scheduled']);
+
+            if ($request['is_starting'] && $request['is_scheduled']) {
+                $milestone->setStartingDate($request['dates'][0]);
+                $milestone->setScheduledDate($request['dates'][1]);
+            } elseif ($request['is_starting']) {
+                $milestone->setStartingDate($request['dates']);
+            } elseif ($request['is_scheduled']) {
+                $milestone->setScheduledDate($request['dates']);
+            }
+
+            $milestone->save();
+
             return $this->renderJSON(['milestone' => $milestone->toJSON(true)]);
         }
 

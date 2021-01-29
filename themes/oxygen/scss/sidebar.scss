@@ -32,7 +32,7 @@ nav.sidebar {
   flex-direction: column;
   background: #FFF;
   transition: flex .2s ease-in-out, transform .2s ease-in-out;
-  border-right: 2px solid rgba(225, 225, 225, .5);
+  border-right: 2px solid $theme-border-color;
   height: 100%;
   overflow: auto;
   font-size: 1em;
@@ -78,14 +78,16 @@ nav.sidebar {
 
     .helper-text {
       margin-top: 1em;
-      font-size: .6em;
+      font-size: .85em;
       line-height: 1.3em;
       font-weight: $theme-font-weight-light;
+      padding: 1em 2em;
     }
 
     button {
       width: calc(100% - 4em);
       margin: 1em auto;
+      font-size: .67em;
     }
   }
 
@@ -165,6 +167,6 @@ nav.sidebar {
   }
 
   .expanded + .submenu {
-    margin-bottom: .5rem;
+    margin-bottom: .5em;
   }
 }

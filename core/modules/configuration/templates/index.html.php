@@ -10,10 +10,6 @@
             <li class="dashboard_view_container">
                 <div class="container_div">
                     <div class="dashboard_view_content">
-                        <span><?php echo __('You currently have version %pachno_version of Pachno.', array('%pachno_version' => \pachno\core\framework\Settings::getVersion())); ?></span>
-                        <div class="button-container">
-                            <a class="button primary" id="update_button" href="javascript:void(0);" onclick="Pachno.Config.updateCheck('<?php echo make_url('configure_update_check'); ?>');"><?php echo __('Check for updates now'); ?></a>
-                        </div>
                     </div>
                 </div>
             </li>

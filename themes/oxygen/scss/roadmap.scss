@@ -2,6 +2,7 @@
 #project_planning {
   display: flex;
   flex-direction: column;
+  align-items: stretch;
 }
 
 #project_roadmap {
@@ -81,27 +82,61 @@
     .header {
       display: flex;
       flex-direction: column;
+      border-bottom: 1px solid rgba(100, 100, 100, 0.2);
+      box-sizing: border-box;
 
       .name {
         font-size: 1.3em;
         font-weight: $theme-font-weight-bold;
         padding: .5em;
         line-height: 1em;
+        box-sizing: border-box;
       }
 
       .info {
-        padding: .5em;
+        padding: .65em;
         font-weight: $theme-font-weight-bold;
-        border-bottom: 1px solid rgba(100, 100, 100, 0.2);
         color: $theme-text-color-lightest;
         display: flex;
         flex-direction: row;
+        box-sizing: border-box;
 
         > span {
           flex: 0 0 auto;
 
           &:last-child {
             margin-left: auto;
+          }
+        }
+      }
+
+      .percent-container {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        justify-content: flex-start;
+        box-sizing: border-box;
+        padding: .65em;
+
+        .percent-header {
+          font-weight: $theme-font-weight-bold;
+          font-size: 1em;
+          box-sizing: border-box;
+          padding: 0 0 .35em 0;
+        }
+
+        .percent_unfilled {
+          display: flex;
+          flex-direction: row;
+          align-items: flex-start;
+          justify-content: stretch;
+          flex: 1 1 auto;
+          height: 10px;
+
+          .percent_filled {
+            flex: 0 0 auto;
+            min-width: 1%;
+            height: 100%;
           }
         }
       }
@@ -117,6 +152,7 @@
         align-items: stretch;
         justify-content: center;
         cursor: pointer;
+        font-size: .9em;
 
         &.issue_closed {
           .issue-header {

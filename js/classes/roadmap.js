@@ -31,6 +31,12 @@ class Roadmap {
             roadmap.fetchMilestones();
         });
 
+        Pachno.on(Pachno.EVENTS.formSubmitResponse, (Pachno, data) => {
+            const milestone = new Milestone(data.json.milestone);
+            roadmap.milestones.push(milestone);
+            roadmap.createMilestoneHtml();
+        });
+
         watchIssuePopupForms();
     }
 

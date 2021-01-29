@@ -7,6 +7,11 @@
     text-transform: none;
     align-items: center;
 
+    .workflow-actions-container {
+      font-size: .75em;
+      margin-right: auto;
+    }
+
     span {
       flex: 0 0 auto;
       padding: 0;
@@ -28,6 +33,7 @@
     .dropper-container {
       margin-right: 0.35em;
       margin-left: 0.35em;
+      font-size: .75em;
     }
 
     > span {

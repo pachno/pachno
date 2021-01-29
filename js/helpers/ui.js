@@ -305,6 +305,18 @@ $(document).ready(() => {
         tabSwitcher($tab, target, $tabSwitcher);
     });
 
+    $body.on('keypress', function (event) {
+        if (['INPUT', 'TEXTAREA'].indexOf(event.target.nodeName) !== -1) {
+            return;
+        }
+
+        if (String.fromCharCode(event.keyCode) === '/') {
+            event.stopPropagation();
+            event.preventDefault();
+            $('#quicksearch-input').focus();
+        }
+    })
+
     $body.on('click', '.fullpage_backdrop_content .closer', () => UI.Backdrop.reset());
     $body.on('click', '.trigger-backdrop', autoBackdropLink);
 

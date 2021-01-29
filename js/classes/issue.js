@@ -51,6 +51,7 @@ class Issue {
         this.resolution = json.resolution;
         this.status = json.status;
         this.title = json.title;
+        this.percent_complete = json.percent_complete;
 
         this.number_of_files = json.number_of_files;
         this.number_of_comments = json.number_of_comments;
@@ -175,6 +176,9 @@ class Issue {
                     $element.html(this.updated_at_friendly);
                     $element.prop('title', this.updated_at_full);
                     $element.prop('datetime', this.updated_at_datetime);
+                    break;
+                case 'percent_complete':
+                    $($element.find('.percent_filled')).css({ width: this.percent_complete + '%'});
                     break;
             }
         }

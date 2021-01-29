@@ -1,3 +1,5 @@
+@import "../variables";
+
 /* paginator */
 .paginator {
   display: flex;
@@ -7,6 +9,7 @@
   justify-content: center;
   width: 100%;
   flex: 0 0 auto;
+  box-sizing: border-box;
 
   .prev-buttons,
   .next-buttons {
@@ -30,5 +33,9 @@
     justify-content: center;
     flex: 1 1 auto;
     flex-wrap: wrap;
+
+    .highlight {
+      border: 1px solid $theme-primary-color;
+    }
   }
 }

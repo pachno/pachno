@@ -90,10 +90,10 @@
 /*!*********************************!*\
   !*** ./i18n/en_US/strings.json ***!
   \*********************************/
-/*! exports provided: agile, issue, default */
+/*! exports provided: agile, issue, roadmap, default */
 /***/ (function(module) {
 
-module.exports = JSON.parse("{\"agile\":{\"add_card\":\"Add card\",\"add_card_here\":\"Add card here\"},\"issue\":{\"value_not_set\":\"Not determined\",\"unknown_value\":\"Unknown\"}}");
+module.exports = JSON.parse("{\"agile\":{\"add_card\":\"Add card\",\"add_card_here\":\"Add card here\"},\"issue\":{\"value_not_set\":\"Not determined\",\"unknown_value\":\"Unknown\"},\"roadmap\":{\"percent_complete\":\"%percentage% completed\"}}");
 
 /***/ }),
 
@@ -1058,6 +1058,7 @@ var Issue = /*#__PURE__*/function () {
       this.resolution = json.resolution;
       this.status = json.status;
       this.title = json.title;
+      this.percent_complete = json.percent_complete;
       this.number_of_files = json.number_of_files;
       this.number_of_comments = json.number_of_comments;
       this.processed = false;
@@ -1190,6 +1191,12 @@ var Issue = /*#__PURE__*/function () {
               $element.html(this.updated_at_friendly);
               $element.prop('title', this.updated_at_full);
               $element.prop('datetime', this.updated_at_datetime);
+              break;
+
+            case 'percent_complete':
+              jquery__WEBPACK_IMPORTED_MODULE_1___default()($element.find('.percent_filled')).css({
+                width: this.percent_complete + '%'
+              });
               break;
           }
         }
@@ -1480,7 +1487,7 @@ var Milestone = /*#__PURE__*/function () {
     this.name = json.name;
     this.starting_date = json.starting_date;
     this.scheduled_date = json.scheduled_date;
-    this.percentage_complete = json.percentage_complete;
+    this.percent_complete = json.percent_complete;
     this.issues_count = json.issues_count;
     this.url = json.url;
     /**
@@ -1498,7 +1505,7 @@ var Milestone = /*#__PURE__*/function () {
       if (this.is_closed) classes.push('milestone-closed');
       var html = "\n<div class=\"milestone-container ".concat(classes.join(','), "\" data-milestone-id=\"").concat(this.id, "\">\n    <div class=\"milestone milestone-card\">\n        <div class=\"header\">\n            <span class=\"name\">").concat(this.name, "</span>\n            <span class=\"info\">\n                <span class=\"info-item\">").concat(_helpers_ui__WEBPACK_IMPORTED_MODULE_0__["default"].fa_image_tag('file-alt', {}, 'far'), "&nbsp;").concat(this.issues_count, "</span>\n                <span class=\"icon indicator\">").concat(_helpers_ui__WEBPACK_IMPORTED_MODULE_0__["default"].fa_image_tag('spinner', {
         classes: 'fa-spin'
-      }), "</span>\n                <span class=\"icon expander\">").concat(_helpers_ui__WEBPACK_IMPORTED_MODULE_0__["default"].fa_image_tag('chevron-down'), "</span>\n            </span>\n        </div>\n        <div class=\"issues\"></div>\n    </div>\n</div>\n");
+      }), "</span>\n                <span class=\"icon expander\">").concat(_helpers_ui__WEBPACK_IMPORTED_MODULE_0__["default"].fa_image_tag('chevron-down'), "</span>\n            </span>\n            <div class=\"percent-container\">\n                <span class=\"percent-header\">").concat(Pachno.T.roadmap.percent_complete.replace('%percentage', this.percent_complete), "</span>\n                <span class=\"percent_unfilled\">\n                    <span class=\"percent_filled\" style=\"width: ").concat(this.percent_complete, "%;\"></span>\n                </span>\n            </div>\n        </div>\n        <div class=\"issues\"></div>\n    </div>\n</div>\n");
       var $html = jquery__WEBPACK_IMPORTED_MODULE_2___default()(html);
       return $html;
     }
@@ -1891,6 +1898,11 @@ var Roadmap = /*#__PURE__*/function () {
       jquery__WEBPACK_IMPORTED_MODULE_0___default()('input[name=milestone_state]').on('click', function () {
         roadmap.milestone_state = jquery__WEBPACK_IMPORTED_MODULE_0___default()(this).val();
         roadmap.fetchMilestones();
+      });
+      _classes_pachno__WEBPACK_IMPORTED_MODULE_1__["default"].on(_classes_pachno__WEBPACK_IMPORTED_MODULE_1__["default"].EVENTS.formSubmitResponse, function (Pachno, data) {
+        var milestone = new _milestone__WEBPACK_IMPORTED_MODULE_3__["default"](data.json.milestone);
+        roadmap.milestones.push(milestone);
+        roadmap.createMilestoneHtml();
       });
       Object(_helpers_issues__WEBPACK_IMPORTED_MODULE_2__["watchIssuePopupForms"])();
     }
@@ -3939,6 +3951,17 @@ jquery__WEBPACK_IMPORTED_MODULE_0___default()(document).ready(function () {
     var $tab = jquery__WEBPACK_IMPORTED_MODULE_0___default()(this);
     var target = $tab.data('tab-target');
     tabSwitcher($tab, target, $tabSwitcher);
+  });
+  $body.on('keypress', function (event) {
+    if (['INPUT', 'TEXTAREA'].indexOf(event.target.nodeName) !== -1) {
+      return;
+    }
+
+    if (String.fromCharCode(event.keyCode) === '/') {
+      event.stopPropagation();
+      event.preventDefault();
+      jquery__WEBPACK_IMPORTED_MODULE_0___default()('#quicksearch-input').focus();
+    }
   });
   $body.on('click', '.fullpage_backdrop_content .closer', function () {
     return UI.Backdrop.reset();

@@ -58,6 +58,13 @@
 
         const ACTIVITY_TYPE = 'issue_spenttimes.activity_type';
 
+        /**
+         * @param $startdate
+         * @param $enddate
+         * @param $issue_ids
+         * @return int[][]|int[]
+         * @throws \b2db\Exception
+         */
         public function getSpentTimesByDateAndIssueIDs($startdate, $enddate, $issue_ids)
         {
             $points_retarr = [];

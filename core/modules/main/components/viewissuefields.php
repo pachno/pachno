@@ -58,25 +58,26 @@
         <?php $field = $fields_list['milestone']; unset($fields_list['milestone']); ?>
         <?php include_component('main/viewissuefield', array('field' => 'milestone', 'info' => $field, 'issue' => $issue)); ?>
         <li id="percent_complete_field" class="issue-field <?php if (!$issue->isPercentCompletedVisible()): ?> hidden<?php endif; ?>">
-            <div class="label" id="percent_complete_header"><?= __('Progress'); ?></div>
-            <div class="value" id="percent_complete_content">
-                <?php if ($issue->canEditPercentage()): ?>
-                    <a href="javascript:void(0);" class="dropper dropdown_link" title="<?= __('Click to set percent completed'); ?>"><?= image_tag('tabmenu_dropdown.png', array('class' => 'dropdown')); ?></a>
-                    <ul class="popup_box more_actions_dropdown with-header" id="percent_complete_change">
-                        <li class="header"><?= __('Set percent completed'); ?></li>
-                        <li><a href="javascript:void(0);" onclick="Pachno.Issues.Field.setPercent('<?= make_url('issue_setfield', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => 'percent_complete', 'percent' => 0)); ?>', 'set');"><?= __('Clear percent completed'); ?></a></li>
-                        <li class="list-item separator"></li>
-                        <li class="nohover">
-                            <form id="percent_complete_form" method="post" accept-charset="<?= Context::getI18n()->getCharset(); ?>" action="" onsubmit="Pachno.Issues.Field.set('<?= make_url('issue_setfield', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => 'percent_complete')); ?>', 'percent_complete', 'percent_complete');return false;">
-                                <label for="set_percent"><?= __('Percent complete'); ?></label>&nbsp;<input type="text" style="width: 40px;" name="percent" id="set_percent" value="<?= $issue->getPercentCompleted(); ?>">&percnt;
-                                <input type="submit" value="<?= __('Set'); ?>">
-                            </form>
-                        </li>
-                        <li id="percent_complete_spinning" style="margin-top: 3px; display: none;"><?= image_tag('spinning_20.gif', array('style' => 'float: left; margin-right: 5px;')) . '&nbsp;' . __('Please wait'); ?>...</li>
-                    </ul>
-                <?php endif; ?>
-                <div id="issue_percent_complete" title="<?= __('%percentage % completed', array('%percentage' => $issue->getPercentCompleted())); ?>">
-                    <?php include_component('main/percentbar', array('percent' => $issue->getPercentCompleted(), 'height' => 4)); ?>
+            <div class="fancy-dropdown-container">
+                <div class="fancy-dropdown">
+                    <label><?= __('Progress'); ?></label>
+                    <span class="value" data-dynamic-field-value data-field="percent_complete" data-issue-id="<?= $issue->getId(); ?>">
+                        <?php include_component('main/percentbar', array('percent' => $issue->getPercentCompleted(), 'height' => 6)); ?>
+                    </span>
+                    <?php if ($issue->canEditPercentage()): ?>
+                        <?php echo fa_image_tag('angle-down', ['class' => 'expander']); ?>
+                        <div class="dropdown-container">
+                            <div class="list-mode">
+                                <div class="header"><?= __('Set percent completed'); ?></div>
+                                <?php foreach(range(0, 100, 10) as $percentage): ?>
+                                    <input type="radio" class="fancy-checkbox" id="issue_<?= $issue->getId(); ?>_fields_percent_complete_<?= $percentage; ?>" name="issues[<?= $issue->getId(); ?>]fields[percent_complete]" value="<?= $percentage; ?>" <?php if ($issue->getPercentCompleted() == $percentage) echo ' checked'; ?> data-trigger-issue-update data-field="percent_complete" data-issue-id="<?= $issue->getId(); ?>">
+                                    <label for="issue_<?= $issue->getId(); ?>_fields_percent_complete_<?= $percentage; ?>" class="list-item">
+                                        <span class="name"><?= $percentage; ?>%</span>
+                                    </label>
+                                <?php endforeach; ?>
+                            </div>
+                        </div>
+                    <?php endif; ?>
                 </div>
             </div>
         </li>

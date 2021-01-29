@@ -5,6 +5,7 @@
     use b2db\Row;
     use pachno\core\entities\common\IdentifiableScoped;
     use pachno\core\entities\common\Timeable;
+    use pachno\core\entities\tables\Issues;
     use pachno\core\entities\tables\LogItems;
     use pachno\core\entities\tables\Milestones;
     use pachno\core\framework;
@@ -881,10 +882,18 @@
                 'reached_date' => $this->getReachedDate(),
                 'percent_complete' => $this->getPercentComplete(),
                 'percentage_type' => $this->getPercentageType(),
+                'virtual_percentage' => Issues::getTable()->getMilestoneDistributionDetails($this->getID()),
                 'issues_count' => $this->countIssues(),
                 'issues_count_open' => $this->countOpenIssues(),
                 'issues_count_closed' => $this->countClosedIssues(),
             ];
+
+            if (count($returnJSON['virtual_percentage']['details'])) {
+                $statuses = Status::getAll();
+                foreach ($returnJSON['virtual_percentage']['details'] as $index => $item) {
+                    $returnJSON['virtual_percentage']['details'][$index]['status'] = $statuses[$item['id']]->toJSON();
+                }
+            }
 
             if ($detailed) {
                 $returnJSON['issues'] = [];
@@ -1048,11 +1057,11 @@
          */
         public function getPercentComplete($allowed_status_ids = [])
         {
-            switch ($this->getPercentageType()) {
-                case self::PERCENTAGE_TYPE_REGULAR:
+            switch ($this->getType()) {
+                case self::TYPE_REGULAR:
                     $pct = $this->getProject()->getClosedPercentageByMilestone($this->getID(), $allowed_status_ids);
                     break;
-                case self::PERCENTAGE_TYPE_SCRUMSPRINT:
+                case self::TYPE_SCRUMSPRINT:
                     if ($this->getPointsEstimated() > 0) {
                         $multiplier = 100 / $this->getPointsEstimated($allowed_status_ids);
                         $pct = $this->getPointsSpent($allowed_status_ids) * $multiplier;

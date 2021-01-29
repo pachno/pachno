@@ -1,3 +1,5 @@
+@import "../variables";
+
 .dropper-container {
   position: relative;
   display: inline-flex;
@@ -6,7 +8,7 @@
   line-height: 1em;
 
   & + .dropper-container {
-    margin-left: .5rem;
+    margin-left: .5em;
   }
 
   .dropdown-container {
@@ -157,7 +159,7 @@
         transform: translateX(0);
         box-shadow: none;
         box-sizing: border-box;
-        border-right: 2px solid rgba(225, 225, 225, .5);
+        border-right: 2px solid $theme-border-color;
       }
 
       &.from-center {

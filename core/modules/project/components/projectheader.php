@@ -37,27 +37,10 @@
 <div class="action-container">
     <?php if ($pachno_response->getPage() !== 'project_settings' && $pachno_user->canEditProjectDetails($project)): ?>
         <?php if ($pachno_response->getPage() == 'project_dashboard'): ?>
-            <div class="dropper-container">
-                <button class="dropper button secondary">
-                    <?= fa_image_tag('ellipsis-v', ['class' => 'icon']); ?>
-                </button>
-                <div class="dropdown-container">
-                    <div class="list-mode">
-                        <?= javascript_link_tag(fa_image_tag('edit', ['class' => 'icon']) . '<span class="name">' . __('Customize dashboard') . '</span>', ['title' => __('Customize dashboard'), 'onclick' => "Pachno.UI.Backdrop.show('" . make_url('get_partial_for_backdrop', ['key' => 'dashboard_config', 'tid' => $project->getID(), 'target_type' => DashboardView::TYPE_PROJECT, 'previous_route']) . "');", 'class' => 'list-item']); ?>
-                        <a href="<?= make_url('project_settings', ['project_key' => $project->getKey()]); ?>" class="list-item">
-                            <?= fa_image_tag('cog', ['class' => 'icon']); ?>
-                            <span class="name"><?= __('Settings'); ?></span>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        <?php else: ?>
-            <a href="<?= make_url('project_settings', ['project_key' => $project->getKey()]); ?>" class="button secondary icon">
-                <?= fa_image_tag('cog', ['class' => 'icon']); ?>
-            </a>
+            <?= javascript_link_tag(fa_image_tag('edit', ['class' => 'icon']) . '<span class="name">' . __('Customize dashboard') . '</span>', ['title' => __('Customize dashboard'), 'onclick' => "Pachno.UI.Backdrop.show('" . make_url('get_partial_for_backdrop', ['key' => 'dashboard_config', 'tid' => $project->getID(), 'target_type' => DashboardView::TYPE_PROJECT, 'previous_route']) . "');", 'class' => 'button secondary']); ?>
         <?php endif; ?>
     <?php endif; ?>
-    <?php if ($pachno_response->getPage() == 'project_dashboard' && $pachno_user->canEditProjectDetails($project)): ?>
+    <?php if ($pachno_response->getPage() != 'project_settings' && $pachno_user->canEditProjectDetails($project)): ?>
         <a href="<?= make_url('project_settings', ['project_key' => $project->getKey()]); ?>" class="button secondary">
             <?= fa_image_tag('cog', ['class' => 'icon']); ?>
             <span class="name"><?= __('Settings'); ?></span>
