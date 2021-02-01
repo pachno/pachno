@@ -216,6 +216,22 @@
         }
 
         /**
+         * @Listener(module='core', identifier='project/editproject::sidebar_tabs')
+         * @param Event $event
+         */
+        public function listen_editProjectTabs(Event $event)
+        {
+            if (!$this->isEnabled()) {
+                return;
+            }
+
+            $selected = $this->hasConnectors();
+            $event->setReturnValue(!$selected);
+
+            include_component('livelink/editproject_tab', ['selected' => $selected]);
+        }
+
+        /**
          * @Listener(module='core', identifier='project/editproject::above_content')
          * @param Event $event
          */
@@ -237,10 +253,11 @@
                 $options['display_name'] = $options['connector']->getImportDisplayNameForProjectEdit($request);
                 $options['input'] = $options['connector']->getInputOptionsForProjectEdit($request);
                 $event->getParameter('project')->setName($options['connector']->getImportProjectNameForProjectEdit($request));
+            } elseif ($this->hasConnectors()) {
+                $event->setReturnValue('livelink');
             }
 
             include_component('livelink/projectconfig_template', $options);
-
         }
 
         public function getCurrentPartialOptions()

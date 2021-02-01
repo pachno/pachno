@@ -206,7 +206,6 @@
         public function componentEditProject()
         {
             $this->access_level = ($this->getUser()->canEditProjectDetails(framework\Context::getCurrentProject())) ? framework\Settings::ACCESS_FULL : framework\Settings::ACCESS_READ;
-            $this->section = isset($this->section) ? $this->section : 'info';
             $this->roles = entities\Role::getAll();
             $assignee = $this->getUser();
             $this->assignee_name = $assignee->getRealname();

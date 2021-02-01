@@ -43,13 +43,14 @@
          * @param array $parameters
          * @param array $initial_list
          */
-        public function __construct($module, $identifier, $subject = null, $parameters = [], $initial_list = [])
+        public function __construct($module, $identifier, $subject = null, $parameters = [], $initial_list = [], $return_value = null)
         {
             $this->_module = $module;
             $this->_identifier = $identifier;
             $this->_subject = $subject;
             $this->_parameters = $parameters;
             $this->_return_list = $initial_list;
+            $this->_return_value = $return_value;
         }
 
         /**
@@ -104,12 +105,13 @@
          * @param mixed $subject
          * @param array $parameters
          * @param array $initial_list
+         * @param mixed $return_value
          *
          * @return Event
          */
-        public static function createNew($module, $identifier, $subject = null, $parameters = [], $initial_list = [])
+        public static function createNew($module, $identifier, $subject = null, $parameters = [], $initial_list = [], $return_value = null)
         {
-            $event = new Event($module, $identifier, $subject, $parameters, $initial_list);
+            $event = new Event($module, $identifier, $subject, $parameters, $initial_list, $return_value);
 
             return $event;
         }
@@ -150,13 +152,17 @@
          * Invoke a trigger
          *
          * @param array $parameters [optional] Parameters to pass to the registered listeners
+         * @param mixed $return_value [optional] Initial return value to pass to this event trigger
          *
          * @return Event
          */
-        public function trigger($parameters = null)
+        public function trigger($parameters = null, $return_value = null)
         {
             if ($parameters !== null) {
                 $this->_parameters = $parameters;
+            }
+            if ($return_value !== null) {
+                $this->_return_value = $return_value;
             }
             self::_trigger($this, false);
 

@@ -13456,7 +13456,7 @@ DEL {
       display: flex;
       flex-direction: column;
       padding: 0;
-      background-color: #FFF;
+      background-color: #f7f7f7;
       border: none;
       box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.16), 0 0 1px 0 rgba(0, 0, 0, 0.16);
       border-radius: 4px; }
@@ -13477,9 +13477,35 @@ DEL {
         justify-content: stretch;
         font-weight: 200;
         font-size: 1.0em;
-        padding: 5px;
+        padding: .5em;
         text-align: left;
-        flex: 1 1 auto; }
+        flex: 1 1 auto;
+        box-sizing: border-box; }
+        .fullpage_backdrop .fullpage_backdrop_content .backdrop_box .backdrop_detail_content:not(.with-sidebar) {
+          background-color: #FFF;
+          box-sizing: border-box;
+          border-radius: .75em .75em 0 0; }
+        .fullpage_backdrop .fullpage_backdrop_content .backdrop_box .backdrop_detail_content.with-sidebar {
+          flex-direction: row;
+          align-items: stretch;
+          justify-content: flex-start;
+          padding: 0; }
+          .fullpage_backdrop .fullpage_backdrop_content .backdrop_box .backdrop_detail_content.with-sidebar .sidebar {
+            flex: 0 0 15em;
+            padding: .75em 0 0 0;
+            box-sizing: border-box; }
+            .fullpage_backdrop .fullpage_backdrop_content .backdrop_box .backdrop_detail_content.with-sidebar .sidebar .list-mode {
+              padding: 0;
+              font-size: 1.05em; }
+              .fullpage_backdrop .fullpage_backdrop_content .backdrop_box .backdrop_detail_content.with-sidebar .sidebar .list-mode .list-item {
+                margin: 0;
+                border-radius: 0; }
+          .fullpage_backdrop .fullpage_backdrop_content .backdrop_box .backdrop_detail_content.with-sidebar .content {
+            flex: 1 1 auto;
+            padding: 1em;
+            box-sizing: border-box;
+            background-color: #FFF;
+            border-radius: .75em 0 0 0; }
         .fullpage_backdrop .fullpage_backdrop_content .backdrop_box .backdrop_detail_content .tab_menu {
           margin-top: 30px;
           margin-bottom: 10px;
@@ -13539,13 +13565,13 @@ DEL {
   margin: 0;
   text-transform: uppercase;
   display: flex;
-  background-color: #fff;
   border-top-left-radius: 3px;
   border-top-right-radius: 3px; }
   .backdrop_detail_header span {
     flex: 1 1 auto;
     padding: 10px 15px;
-    text-align: left; }
+    text-align: left;
+    font-weight: 600; }
   .backdrop_detail_header .closer,
   .backdrop_detail_header .back_link,
   .backdrop_detail_header .add_link {

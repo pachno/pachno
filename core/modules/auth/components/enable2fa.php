@@ -5,7 +5,7 @@
  */
 
 ?>
-<div class="backdrop_box large" id="project_config_popup_main_container">
+<div class="backdrop_box large" id="profile_2fa_settings_container">
     <div class="backdrop_detail_header">
         <span><?= __('Enable two-factor authentication'); ?></span>
         <a class="closer" href="javascript:void(0);" onclick="Pachno.UI.Backdrop.reset();"><?= fa_image_tag('times'); ?></a>

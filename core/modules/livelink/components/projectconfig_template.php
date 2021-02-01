@@ -6,20 +6,18 @@
  */
 
 ?>
-<div class="form-container">
+<div class="form-container" data-tab-id="livelink" style="<?php if (!$module->hasConnectors()) echo ' display: none;'; ?>">
     <div class="form-row header">
         <h3>
             <?= fa_image_tag('magic', ['class' => 'icon']); ?>
             <span class="name"><?= __('Import or link existing project(s)'); ?></span>
         </h3>
     </div>
-    <div class="message-box type-info">
+    <div class="helper-text">
         <div class="image-container"><?= image_tag('/unthemed/onboarding_livelink_intro_icon.png', [], true); ?></div>
-        <div class="message">
-            <span class="description">
-                <?= __('Import and/or link an existing project from %github, %gitlab, %bitbucket and more', ['%github' => fa_image_tag('github', [], 'fab') . ' GitHub', '%gitlab' => fa_image_tag('gitlab', [], 'fab') . ' GitLab', '%bitbucket' => fa_image_tag('bitbucket', [], 'fab') . ' BitBucket']); ?>
-            </span>
-        </div>
+        <span class="description">
+            <?= __('Import and/or link an existing project from %github, %gitlab, %bitbucket and more', ['%github' => fa_image_tag('github', [], 'fab') . ' GitHub', '%gitlab' => fa_image_tag('gitlab', [], 'fab') . ' GitLab', '%bitbucket' => fa_image_tag('bitbucket', [], 'fab') . ' BitBucket']); ?>
+        </span>
     </div>
     <?php if (isset($connector)): ?>
         <ul class="livelink-import-list">
@@ -61,20 +59,15 @@
             <?php endforeach; ?>
         </ul>
     <?php else: ?>
-        <p class="livelink-intro">
-            <?= __('%pachno_live_link requires integration plugins. Download the integration plugins from %configure_modules or visit %pachno_com to get started.', ['%pachno_live_link' => link_tag('https://pachno.com/features/livelink', fa_image_tag('leaf') . 'Pachno Live Link', ['target' => '_blank']), '%pachno_com' => link_tag('https://pachno.com/register/self-hosted', fa_image_tag('globe') . ' pachno.com'), '%configure_modules' => link_tag(make_url('configure_modules'), __('Configuration center') . '&nbsp;&raquo;&nbsp;' . __('Modules'))]); ?>
-        </p>
+        <div class="message-box type-warning">
+            <?= fa_image_tag('info-circle', ['class' => 'icon']); ?>
+            <span class="message">
+                <span><?= __('%pachno_live_link requires integration plugins. Download integration plugins from %configure_modules or visit %pachno_com to get started.', ['%pachno_live_link' => link_tag('https://pachno.com/features/livelink', fa_image_tag('leaf') . 'Pachno Live Link', ['target' => '_blank']), '%pachno_com' => link_tag('https://pachno.com/register/self-hosted', fa_image_tag('globe') . ' pachno.com'), '%configure_modules' => link_tag(make_url('configure_modules'), __('Configuration center') . '&nbsp;&raquo;&nbsp;' . __('Modules'))]); ?></span>
+            </span>
+        </div>
     <?php endif; ?>
 </div>
-<?php if (!$project->getID()): ?>
-    <fieldset class="livelink-separator">
-        <?php if (isset($connector)): ?>
-            <legend><?= __('Enter project details'); ?></legend>
-        <?php else: ?>
-            <legend><?= __('%import_with_livelink or create a project manually', array('%import_with_livelink' => '')); ?></legend>
-        <?php endif; ?>
-    </fieldset>
-<?php else: ?>
+<?php if ($project->getID()): ?>
     <script>
         $(document).ready(() => {
             var removeProjectLivelink = function () {
