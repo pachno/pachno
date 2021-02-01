@@ -519,11 +519,11 @@ toggle_favourite_issue:
     csrf_enabled: false
 
 project_reportissue:
-    route: '/:project_key/issues/new/*'
+    route: '/:project_key/:csrf_token/issues/new'
     module: main
     action: reportIssue
     parameters: [ ]
-    csrf_enabled: false
+    csrf_enabled: true
 
 issue_log:
     route: /:project_key/issuelog/:issue_id

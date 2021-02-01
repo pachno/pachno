@@ -389,7 +389,7 @@
     .issue-fields {
       flex: 0 0 400px;
       margin: 0;
-      padding: 1em;
+      padding: .25em;
       display: flex;
       border-left: 2px solid $theme-border-color;
       background-color: rgb(251, 251, 251);
@@ -400,15 +400,8 @@
 
       .fields-list-container {
         > .header {
-
           .name {
-            display: flex;
-            align-items: center;
-            font-weight: $theme-font-weight-regular;
-            text-transform: uppercase;
-            color: rgb(125, 125, 125);
             font-size: 1.2em;
-            padding: 0 0 .5em 0;
           }
         }
 

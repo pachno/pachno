@@ -577,9 +577,6 @@
         {
             $this->loadFixturesArticles($scope);
 
-            Links::getTable()->addLink('wiki', 0, 'Main Page', 'Wiki Frontpage', 1, $scope);
-            Links::getTable()->addLink('wiki', 0, 'WikiFormatting', 'Formatting help', 2, $scope);
-            Links::getTable()->addLink('wiki', 0, 'Category:Help', 'Help topics', 3, $scope);
             framework\Context::setPermission(self::PERMISSION_READ_ARTICLE, 0, 'publish', 0, 1, 0, true, $scope);
             framework\Context::setPermission(self::PERMISSION_EDIT_ARTICLE, 0, 'publish', 0, 1, 0, true, $scope);
             framework\Context::setPermission(self::PERMISSION_DELETE_ARTICLE, 0, 'publish', 0, 1, 0, true, $scope);
@@ -604,24 +601,27 @@
             $scope = $scope ?? framework\Context::getScope()->getID();
 
             $fixtures_path = PACHNO_CORE_PATH . 'modules' . DS . 'publish' . DS . 'fixtures' . DS;
-            $_path_handle = opendir($fixtures_path);
-            while ($original_article_name = readdir($_path_handle)) {
-                if (mb_strpos($original_article_name, '.') === false) {
-                    $imported = false;
-                    if (framework\Context::isCLI()) {
-                        Command::cli_echo('Saving ' . urldecode($original_article_name) . "\n");
-                    }
-                    if ($overwrite) {
-                        Articles::getTable()->deleteArticleByName(urldecode($original_article_name));
-                    }
-                    if (Articles::getTable()->getArticleByName(urldecode($original_article_name)) === null) {
-                        $content = file_get_contents($fixtures_path . $original_article_name);
-                        Article::createNew(urldecode($original_article_name), $content, $scope, ['overwrite' => $overwrite, 'noauthor' => true]);
-                        $imported = true;
-                    }
-                    Event::createNew('publish', 'fixture_article_loaded', urldecode($original_article_name), ['imported' => $imported])->trigger();
-                }
-            }
+            $data = file_get_contents($fixtures_path . 'main.json');
+            Article::createNew("Main Page", $data, $scope, ['noauthor' => true]);
+
+//            $_path_handle = opendir($fixtures_path);
+//            while ($original_article_name = readdir($_path_handle)) {
+//                if (mb_strpos($original_article_name, '.') === false) {
+//                    $imported = false;
+//                    if (framework\Context::isCLI()) {
+//                        Command::cli_echo('Saving ' . urldecode($original_article_name) . "\n");
+//                    }
+//                    if ($overwrite) {
+//                        Articles::getTable()->deleteArticleByName(urldecode($original_article_name));
+//                    }
+//                    if (Articles::getTable()->getArticleByName(urldecode($original_article_name)) === null) {
+//                        $content = file_get_contents($fixtures_path . $original_article_name);
+//                        Article::createNew(urldecode($original_article_name), $content, $scope, ['overwrite' => $overwrite, 'noauthor' => true]);
+//                        $imported = true;
+//                    }
+//                    Event::createNew('publish', 'fixture_article_loaded', urldecode($original_article_name), ['imported' => $imported])->trigger();
+//                }
+//            }
         }
 
     }

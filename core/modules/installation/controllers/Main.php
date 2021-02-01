@@ -5,6 +5,7 @@
     use b2db\AnnotationSet;
     use b2db\Core;
     use Exception;
+    use pachno\core\entities\Module;
     use pachno\core\entities\Scope;
     use pachno\core\entities\tables\Users;
     use pachno\core\framework;
@@ -359,6 +360,9 @@
         public function runInstallStep5(framework\Request $request)
         {
             try {
+                foreach (['publish', 'mailing'] as $module) {
+                    Module::installModule($module);
+                }
                 $password = trim($request['password']);
                 if ($password !== trim($request['password_repeat']))
                     throw new Exception("Passwords don't match");

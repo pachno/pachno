@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css?family=DM+Sans:700|Fira+Sans:300,300i,400,400i,600,600i|Fira+Mono:400,500,700&subset=cyrillic,cyrillic-ext,latin-ext");
+@import url("https://fonts.googleapis.com/css?family=DM+Sans:700|Fira+Sans:300,300i,400,400i,600,600i|Fira+Mono:400,500,700&subset=cyrillic,cyrillic-ext,latin-ext&display=swap");
 @import "variables.scss";
 
 /* General styles */
@@ -29,10 +29,37 @@ body {
 
 h1 {
   font-size: 1.6em;
+
+  &.logo {
+    color: $theme-text-color;
+    font-weight: $theme-font-weight-logo;
+    font-family: $theme-font-family-logo;
+    letter-spacing: $theme-letter-spacing-logo;
+    padding: .25em .75em .25em 0;
+
+    img {
+      height: 30px;
+      padding-right: 0;
+    }
+  }
 }
 
 h2 {
   font-size: 1.4em;
+
+  &.logo {
+    color: $theme-text-color;
+    font-weight: $theme-font-weight-logo;
+    font-family: $theme-font-family-logo;
+    letter-spacing: $theme-letter-spacing-logo;
+    padding: .25em .75em .25em 0;
+
+    img {
+      height: 30px;
+      padding-right: 0;
+    }
+  }
+
 }
 
 h3 {
@@ -2877,36 +2904,36 @@ table.issue_affects td img {
   &.issuetype-bug_report {
     background-color: rgba(96, 141, 0, 0.95);
   }
-  
+
   &.issuetype-developer_report {
     background-color: rgba(126, 161, 0, 0.95);
   }
-  
+
   &.issuetype-feature_request {
     background-color: rgba(191, 181, 0, 0.95);
   }
-  
+
   &.issuetype-idea {
     background-color: rgba(205, 218, 138, 0.6);
   }
-  
+
   &.issuetype-enhancement {
     background-color: $theme-primary;
   }
-  
+
   &.issuetype-epic {
     background-color: rgba(16, 160, 238, 0.8);
   }
-  
+
   &.issuetype-documentation_request {
     background-color: rgba(255, 185, 185, 0.6);
   }
-  
+
   &.issuetype-unknown,
   &.issuetype- {
     background-color: rgba(255, 185, 185, 0.6);
   }
-  
+
   &.issuetype-task {
     background-color: rgba(78, 129, 171, 0.5);
   }

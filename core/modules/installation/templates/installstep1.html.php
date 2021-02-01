@@ -9,9 +9,9 @@
         Please look through the list, and take the necessary steps to correct any errors that may have been highlighted.</p>
     <?php endif; ?>
     <div id="installation_main_box">
-        <div class="prereq type-ok"><?= fa_image_tag('check-square', [], 'far'); ?><span class="message">Mozilla Public License 2.0 accepted</span></div>
+        <div class="prereq type-ok"><?= fa_image_tag('check'); ?><span class="message">Mozilla Public License 2.0 accepted</span></div>
         <?php if ($php_ok): ?>
-            <div class="prereq type-ok"><?= fa_image_tag('check-square', [], 'far'); ?><span class="message">PHP version (<?php echo $php_ver; ?>) meets requirements</span></div>
+            <div class="prereq type-ok"><?= fa_image_tag('check'); ?><span class="message">PHP version (<?php echo $php_ver; ?>) meets requirements</span></div>
         <?php else: ?>
             <div class="prereq type-warn">
                 <?= fa_image_tag('exclamation-triangle'); ?>
@@ -22,7 +22,7 @@
             </div>
         <?php endif; ?>
         <?php if ($pcre_ok): ?>
-            <div class="prereq type-ok"><?= fa_image_tag('check-square', [], 'far'); ?><span class="message">PCRE libraries version (<?php echo $pcre_ver; ?>) meets requirements</span></div>
+            <div class="prereq type-ok"><?= fa_image_tag('check'); ?><span class="message">PCRE libraries version (<?php echo $pcre_ver; ?>) meets requirements</span></div>
         <?php else: ?>
             <div class="prereq type-warn">
                 <?= fa_image_tag('exclamation-triangle'); ?>
@@ -33,7 +33,7 @@
             </div>
         <?php endif; ?>
         <?php if ($docblock_ok): ?>
-            <div class="prereq type-ok"><?= fa_image_tag('check-square', [], 'far'); ?><span class="message">PHP docblocks are readable</span></div>
+            <div class="prereq type-ok"><?= fa_image_tag('check'); ?><span class="message">PHP docblocks are readable</span></div>
         <?php else: ?>
             <div class="prereq type-fail">
                 <?= fa_image_tag('times'); ?>
@@ -44,7 +44,7 @@
             </div>
         <?php endif; ?>
         <?php if ($base_folder_perm_ok): ?>
-            <div class="prereq type-ok"><?= fa_image_tag('check-square', [], 'far'); ?><span class="message">Can write to Pachno directory</span></div>
+            <div class="prereq type-ok"><?= fa_image_tag('check'); ?><span class="message">Can write to Pachno directory</span></div>
         <?php else: ?>
             <div class="prereq type-fail with-solution">
                 <?= fa_image_tag('times'); ?>
@@ -61,7 +61,7 @@
             </div>
         <?php endif; ?>
         <?php if ($pachno_folder_perm_ok): ?>
-            <div class="prereq type-ok"><?= fa_image_tag('check-square', [], 'far'); ?><span class="message">Can write to Pachno public directory</span></div>
+            <div class="prereq type-ok"><?= fa_image_tag('check'); ?><span class="message">Can write to Pachno public directory</span></div>
         <?php else: ?>
             <div class="prereq type-fail with-solution">
                 <?= fa_image_tag('times'); ?>
@@ -79,7 +79,7 @@
         <?php endif; ?>
 
         <?php if ($mb_ok): ?>
-            <div class="prereq type-ok"><?= fa_image_tag('check-square', [], 'far'); ?><span class="message">PHP "mbstring" extension is loaded</span></div>
+            <div class="prereq type-ok"><?= fa_image_tag('check'); ?><span class="message">PHP "mbstring" extension is loaded</span></div>
         <?php else: ?>
             <div class="prereq type-warn">
                 <?= fa_image_tag('exclamation-triangle'); ?>
@@ -91,7 +91,7 @@
         <?php endif; ?>
 
         <?php if ($dom_ok): ?>
-            <div class="prereq type-ok"><?= fa_image_tag('check-square', [], 'far'); ?><span class="message">PHP "xml" extension is loaded</span></div>
+            <div class="prereq type-ok"><?= fa_image_tag('check'); ?><span class="message">PHP "xml" extension is loaded</span></div>
         <?php else: ?>
             <div class="prereq type-fail">
                 <?= fa_image_tag('times'); ?>
@@ -103,7 +103,7 @@
         <?php endif; ?>
 
         <?php if ($gd_ok): ?>
-            <div class="prereq type-ok"><?= fa_image_tag('check-square', [], 'far'); ?><span class="message">PHP "gd" extension is loaded</span></div>
+            <div class="prereq type-ok"><?= fa_image_tag('check'); ?><span class="message">PHP "gd" extension is loaded</span></div>
         <?php else: ?>
             <div class="prereq type-warn">
                 <?= fa_image_tag('exclamation-triangle'); ?>
@@ -114,7 +114,7 @@
             </div>
         <?php endif; ?>
         <?php if ($pdo_ok): ?>
-            <div class="prereq type-ok"><?= fa_image_tag('check-square', [], 'far'); ?><span class="message">PHP "pdo" extension is loaded</span></div>
+            <div class="prereq type-ok"><?= fa_image_tag('check'); ?><span class="message">PHP "pdo" extension is loaded</span></div>
         <?php endif; ?>
         <?php if (!$mysql_ok && !$pgsql_ok): ?>
             <div class="prereq type-fail">
@@ -126,30 +126,30 @@
             </div>
         <?php else: ?>
             <?php if ($mysql_ok): ?>
-                <div class="prereq type-ok"><?= fa_image_tag('check-square', [], 'far'); ?><span class="message">PHP "pdo-mysql" extension is loaded</span></div>
+                <div class="prereq type-ok"><?= fa_image_tag('check'); ?><span class="message">PHP "pdo-mysql" extension is loaded</span></div>
             <?php elseif (!$mysql_ok && $pgsql_ok): ?>
                 <div class="prereq type-warn">
-                    <?= fa_image_tag('exclamation-triangle'); ?>
+                    <?= fa_image_tag('info-circle'); ?>
                     <span class="message">
                         <b>PDO MySQL driver not enabled</b><br>
-                        You won't be able to install Pachno on a MySQL database.
+                        You can continue the installation, but you won't be able to install Pachno on a MySQL database.
                     </span>
                 </div>
             <?php endif; ?>
             <?php if ($pgsql_ok): ?>
-                <div class="prereq type-ok"><?= fa_image_tag('check-square', [], 'far'); ?><span class="message">PHP "pdo-pgsql" extension is loaded</span></div>
+                <div class="prereq type-ok"><?= fa_image_tag('check'); ?><span class="message">PHP "pdo-pgsql" extension is loaded</span></div>
             <?php elseif ($mysql_ok && !$pgsql_ok): ?>
                 <div class="prereq type-warn">
-                    <?= fa_image_tag('exclamation-triangle'); ?>
+                    <?= fa_image_tag('info-circle'); ?>
                     <span class="message">
                         <b>PDO PostgreSQL driver not enabled</b><br>
-                        You won't be able to install Pachno on a PostgreSQL database.
+                        You can continue the installation, but you won't be able to install Pachno on a PostgreSQL database.
                     </span>
                 </div>
             <?php endif; ?>
         <?php endif; ?>
         <?php if ($b2db_param_file_ok && $b2db_param_folder_ok): ?>
-            <div class="prereq type-ok"><?= fa_image_tag('check-square', [], 'far'); ?><span class="message">Can save database connection details</span></div>
+            <div class="prereq type-ok"><?= fa_image_tag('check'); ?><span class="message">Can save database connection details</span></div>
         <?php elseif (!$b2db_param_file_ok): ?>
             <div class="prereq type-fail">
                 <?= fa_image_tag('times'); ?>

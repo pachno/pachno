@@ -136,6 +136,10 @@
     &.disabled {
       color: rgba(100, 100, 100, .4);
 
+      &:hover {
+        cursor: default;
+      }
+
       .icon {
         color: rgba(100, 100, 100, .4);
       }
@@ -367,7 +371,7 @@
       img {
         width: 100%;
       }
-  
+
       &:not(.issuetype-icon) {
         color: inherit;
       }

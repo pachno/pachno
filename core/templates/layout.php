@@ -23,9 +23,6 @@
         <meta http-equiv="X-UA-Compatible" content="IE=Edge">
         <base href="<?= rtrim(Context::getWebroot(), '/'); ?>">
         <title><?= ($pachno_response->hasTitle()) ? strip_tags($header_name . ' ~ ' . $pachno_response->getTitle()) : strip_tags(\pachno\core\framework\Settings::getSiteHeaderName()); ?></title>
-        <style>
-            @import url('https://fonts.googleapis.com/css?family=Fira+Mono:400,500,700|Source+Sans+Pro:300,300i,400,400i,600,600i|Lilita+One:400&subset=cyrillic,cyrillic-ext,latin-ext&display=swap');
-        </style>
         <?php $pachno_version = \pachno\core\framework\Settings::getVersion(); ?>
         <link rel="shortcut icon" href="<?= (Context::isProjectContext()) ? Context::getCurrentProject()->getIconName() : (\pachno\core\framework\Settings::isUsingCustomFavicon() ? \pachno\core\framework\Settings::getFaviconURL() : '/favicon_inverted.png?bust=' . $pachno_version); ?>">
         <link title="<?= (Context::isProjectContext()) ? __('%project_name search', array('%project_name' => Context::getCurrentProject()->getName())) : __('%site_name search', array('%site_name' => \pachno\core\framework\Settings::getSiteHeaderName())); ?>" href="<?= (Context::isProjectContext()) ? make_url('project_opensearch', array('project_key' => Context::getCurrentProject()->getKey())) : make_url('opensearch'); ?>" type="application/opensearchdescription+xml" rel="search">

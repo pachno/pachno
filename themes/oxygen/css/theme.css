@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css?family=DM+Sans:700|Fira+Sans:300,300i,400,400i,600,600i|Fira+Mono:400,500,700&subset=cyrillic,cyrillic-ext,latin-ext");
+@import url("https://fonts.googleapis.com/css?family=DM+Sans:700|Fira+Sans:300,300i,400,400i,600,600i|Fira+Mono:400,500,700&subset=cyrillic,cyrillic-ext,latin-ext&display=swap");
 /* General styles */
 @import url(~air-datepicker/dist/css/datepicker.min.css);
 body,
@@ -25,9 +25,27 @@ body {
 
 h1 {
   font-size: 1.6em; }
+  h1.logo {
+    color: #232323;
+    font-weight: 700;
+    font-family: "DM Sans", sans-serif;
+    letter-spacing: -1px;
+    padding: .25em .75em .25em 0; }
+    h1.logo img {
+      height: 30px;
+      padding-right: 0; }
 
 h2 {
   font-size: 1.4em; }
+  h2.logo {
+    color: #232323;
+    font-weight: 700;
+    font-family: "DM Sans", sans-serif;
+    letter-spacing: -1px;
+    padding: .25em .75em .25em 0; }
+    h2.logo img {
+      height: 30px;
+      padding-right: 0; }
 
 h3 {
   font-size: 1.2em; }
@@ -6550,7 +6568,8 @@ h1 .button, h2 .button, h3 .button, h4 .button, h5 .button, h6 .button {
   display: flex;
   flex-direction: column;
   position: relative;
-  text-align: left; }
+  text-align: left;
+  box-sizing: border-box; }
   .fancy-dropdown-container .fancy-dropdown {
     display: flex;
     align-items: center;
@@ -6968,6 +6987,9 @@ input[data-interactive-toggle].submitting + label .indicator {
     .list-mode .list-item.disabled,
     .list-mode .list-item:hover.disabled {
       color: rgba(100, 100, 100, 0.4); }
+      .list-mode .list-item.disabled:hover,
+      .list-mode .list-item:hover.disabled:hover {
+        cursor: default; }
       .list-mode .list-item.disabled .icon,
       .list-mode .list-item:hover.disabled .icon {
         color: rgba(100, 100, 100, 0.4); }
@@ -9297,9 +9319,9 @@ textarea.markItUpEditor:focus {
   .message-box.type-warning {
     background-color: rgba(249, 245, 178, 0.6); }
   .message-box.type-info {
-    border-color: #0cd8b6;
-    color: #0cd8b6;
-    font-weight: 400; }
+    border-color: #6ae1a5;
+    color: #232323;
+    font-weight: 200; }
   .message-box .fas,
   .message-box .fab,
   .message-box .far {
@@ -9349,7 +9371,7 @@ textarea.markItUpEditor:focus {
     width: 500px; }
     .onboarding.large img {
       display: inline-block;
-      width: calc(100% - 50px); }
+      width: 100%; }
   .onboarding.small {
     width: 128px; }
     .onboarding.small img {
@@ -9375,7 +9397,7 @@ textarea.markItUpEditor:focus {
     width: 100%; }
   .onboarding .image-container {
     border-radius: 100%;
-    padding: 65px;
+    padding: 55px;
     overflow: hidden;
     background-color: rgba(12, 137, 144, 0.1);
     width: 250px;
@@ -9410,7 +9432,7 @@ textarea.markItUpEditor:focus {
   flex-direction: column;
   padding: 0 1rem 1rem 1rem;
   align-self: center;
-  width: auto;
+  width: 100%;
   max-width: 1024px;
   margin: 0 auto; }
 
@@ -10972,10 +10994,11 @@ img.userstate {
       flex: 0 0 auto;
       display: flex;
       flex-direction: row;
-      align-items: flex-start;
-      justify-content: stretch;
+      align-items: center;
+      justify-content: center;
       color: rgba(0, 0, 0, 0.6);
-      font-size: 1em; }
+      font-size: 1em;
+      padding: 0 .25em .75em .75em; }
       .viewissue-container .issue-card .fields-list-container > .header .name {
         display: flex;
         align-items: center;
@@ -10983,13 +11006,15 @@ img.userstate {
         text-transform: none;
         color: #7d7d7d;
         font-size: 1.2em;
-        padding: 0 0 0.5em 0; }
+        padding: 0; }
       .viewissue-container .issue-card .fields-list-container > .header .icon {
         flex: 0 0 24px;
         display: flex;
-        flex-direction: column;
+        flex-direction: row;
         color: #c8c8c8;
-        font-size: 1.1em; }
+        font-size: 1.1em;
+        align-items: center;
+        justify-content: center; }
         .viewissue-container .issue-card .fields-list-container > .header .icon .far,
         .viewissue-container .issue-card .fields-list-container > .header .icon .fas {
           flex: 0 0 24px;
@@ -11040,17 +11065,23 @@ img.userstate {
       .viewissue-container .issue-card .fields-list-container .fields-list > li:not(.hidden) {
         display: flex;
         align-items: center;
-        position: relative; }
+        position: relative;
+        margin: 0 0 .5em 0; }
         .viewissue-container .issue-card .fields-list-container .fields-list > li:not(.hidden) .fancy-dropdown-container .fancy-dropdown {
-          background-color: transparent; }
+          background-color: transparent;
+          flex-wrap: wrap; }
           .viewissue-container .issue-card .fields-list-container .fields-list > li:not(.hidden) .fancy-dropdown-container .fancy-dropdown:hover {
             background-color: rgba(200, 200, 200, 0.1); }
           .viewissue-container .issue-card .fields-list-container .fields-list > li:not(.hidden) .fancy-dropdown-container .fancy-dropdown > label {
             font-weight: 400;
-            flex: 0 1 100px;
+            flex: 0 0 100%;
+            padding: 0 0 .5em 0;
+            margin: 0;
             font-size: 0.9em;
             text-transform: none;
             color: #141823; }
+          .viewissue-container .issue-card .fields-list-container .fields-list > li:not(.hidden) .fancy-dropdown-container .fancy-dropdown .value {
+            max-width: none; }
         .viewissue-container .issue-card .fields-list-container .fields-list > li:not(.hidden) > .label {
           font-weight: 400;
           flex: 0 1 100px;
@@ -11224,7 +11255,7 @@ img.userstate {
   .viewissue-container .issue-card .issue-fields {
     flex: 0 0 400px;
     margin: 0;
-    padding: 1em;
+    padding: .25em;
     display: flex;
     border-left: 2px solid rgba(225, 225, 225, 0.5);
     background-color: #fbfbfb;
@@ -11232,13 +11263,7 @@ img.userstate {
     box-sizing: border-box;
     border-radius: 0; }
     .viewissue-container .issue-card .issue-fields .fields-list-container > .header .name {
-      display: flex;
-      align-items: center;
-      font-weight: 200;
-      text-transform: uppercase;
-      color: #7d7d7d;
-      font-size: 1.2em;
-      padding: 0 0 .5em 0; }
+      font-size: 1.2em; }
     .viewissue-container .issue-card .issue-fields .fields-list-container + .fields-list-container:not(.not-visible) {
       margin-top: 2em; }
     .viewissue-container .issue-card .issue-fields .userlink {
@@ -12775,7 +12800,37 @@ dl.info {
   #reportissue_additional_information_container.visible {
     display: flex; }
 
+#report_form + .sidebar {
+  transform: scaleX(1);
+  opacity: 1;
+  transition: opacity .25s ease-in-out, transform .25s ease-in-out, flex .25s ease-in-out; }
+
+#report_form.hidden + .sidebar {
+  flex: 0 0 0;
+  transform: scaleX(0);
+  opacity: 0; }
+
+#report_issue_form .content-with-sidebar-container {
+  flex-wrap: nowrap;
+  padding: 0;
+  align-items: stretch; }
+  #report_issue_form .content-with-sidebar-container .content {
+    border-radius: 0 .75em .75em 0; }
+  #report_issue_form .content-with-sidebar-container .sidebar {
+    align-items: flex-start; }
+    #report_issue_form .content-with-sidebar-container .sidebar .fancy-dropdown {
+      flex-wrap: wrap; }
+      #report_issue_form .content-with-sidebar-container .sidebar .fancy-dropdown > label {
+        flex: 0 0 100%;
+        padding: 0 0 .5em 0;
+        margin: 0; }
+
+#report_issue_form .content {
+  display: flex;
+  flex-direction: column; }
+
 #report_issue_form .form-row.submit-container {
+  padding: 1em;
   justify-content: flex-end; }
 
 #report_issue_form .row.additional-information-container {
@@ -13506,6 +13561,14 @@ DEL {
             box-sizing: border-box;
             background-color: #FFF;
             border-radius: .75em 0 0 0; }
+            .fullpage_backdrop .fullpage_backdrop_content .backdrop_box .backdrop_detail_content.with-sidebar .content.hidden {
+              display: none; }
+          .fullpage_backdrop .fullpage_backdrop_content .backdrop_box .backdrop_detail_content.with-sidebar.sidebar-right .content {
+            border-radius: 0 .75em 0 0; }
+            .fullpage_backdrop .fullpage_backdrop_content .backdrop_box .backdrop_detail_content.with-sidebar.sidebar-right .content.no-sidebar {
+              border-radius: .75em .75em 0 0; }
+          .fullpage_backdrop .fullpage_backdrop_content .backdrop_box .backdrop_detail_content.with-sidebar.sidebar-right .sidebar {
+            flex: 0 0 22em; }
         .fullpage_backdrop .fullpage_backdrop_content .backdrop_box .backdrop_detail_content .tab_menu {
           margin-top: 30px;
           margin-bottom: 10px;
@@ -13752,10 +13815,11 @@ DEL {
     flex: 0 0 auto;
     display: flex;
     flex-direction: row;
-    align-items: flex-start;
-    justify-content: stretch;
+    align-items: center;
+    justify-content: center;
     color: rgba(0, 0, 0, 0.6);
-    font-size: 1em; }
+    font-size: 1em;
+    padding: 0 .25em .75em .75em; }
     #issue-card-popup .backdrop_detail_content .fields-list-container > .header .name {
       display: flex;
       align-items: center;
@@ -13763,13 +13827,15 @@ DEL {
       text-transform: none;
       color: #7d7d7d;
       font-size: 1.2em;
-      padding: 0 0 0.5em 0; }
+      padding: 0; }
     #issue-card-popup .backdrop_detail_content .fields-list-container > .header .icon {
       flex: 0 0 24px;
       display: flex;
-      flex-direction: column;
+      flex-direction: row;
       color: #c8c8c8;
-      font-size: 1.1em; }
+      font-size: 1.1em;
+      align-items: center;
+      justify-content: center; }
       #issue-card-popup .backdrop_detail_content .fields-list-container > .header .icon .far,
       #issue-card-popup .backdrop_detail_content .fields-list-container > .header .icon .fas {
         flex: 0 0 24px;
@@ -13820,17 +13886,23 @@ DEL {
     #issue-card-popup .backdrop_detail_content .fields-list-container .fields-list > li:not(.hidden) {
       display: flex;
       align-items: center;
-      position: relative; }
+      position: relative;
+      margin: 0 0 .5em 0; }
       #issue-card-popup .backdrop_detail_content .fields-list-container .fields-list > li:not(.hidden) .fancy-dropdown-container .fancy-dropdown {
-        background-color: transparent; }
+        background-color: transparent;
+        flex-wrap: wrap; }
         #issue-card-popup .backdrop_detail_content .fields-list-container .fields-list > li:not(.hidden) .fancy-dropdown-container .fancy-dropdown:hover {
           background-color: rgba(200, 200, 200, 0.1); }
         #issue-card-popup .backdrop_detail_content .fields-list-container .fields-list > li:not(.hidden) .fancy-dropdown-container .fancy-dropdown > label {
           font-weight: 400;
-          flex: 0 1 100px;
+          flex: 0 0 100%;
+          padding: 0 0 .5em 0;
+          margin: 0;
           font-size: 0.9em;
           text-transform: none;
           color: #141823; }
+        #issue-card-popup .backdrop_detail_content .fields-list-container .fields-list > li:not(.hidden) .fancy-dropdown-container .fancy-dropdown .value {
+          max-width: none; }
       #issue-card-popup .backdrop_detail_content .fields-list-container .fields-list > li:not(.hidden) > .label {
         font-weight: 400;
         flex: 0 1 100px;

@@ -5,14 +5,15 @@
 ?>
 <div class="rounded_box borderless mediumgrey" style="margin: 10px auto 0 auto; width: 500px; padding: 5px 5px 15px 5px; font-size: 13px; text-align: center;">
     <div style="text-align: left; padding: 10px;">
-        <h1 style="font-size: 25px; margin-bottom: 0px; padding-bottom: 3px;">
-            Pachno
+        <h1 class="logo">
+            <?= image_tag('/logo_192.png', ['class' => 'icon'], true); ?>
+            <span class="name">Pachno</span>
             <span style="font-size: 14px; font-weight: normal; color: #888;">
                 <?php echo __('Version %pachno_version', array('%pachno_version' => \pachno\core\framework\Settings::getVersion(true))); ?>
             </span>
         </h1>
         <h3 style="margin-top: 0; padding-top: 0;">Beautiful issue tracking and project management</h3>
-        <?php echo __('Pachno is an issue tracking system with a strong focus on being friendly &ndash; both for regular users and power users'); ?>.<br>
+        <?php echo __('Pachno is an issue tracking system with a strong focus on being friendly - both for regular users and power users'); ?>.<br>
         <br>
         <?php echo __('Pachno follows an open development model, and is released under an open source software license called the MPL (Mozilla Public License). This license gives you the freedom to pick up the sourcecode for Pachno and work with it any way you need.'); ?><br>
         <br>

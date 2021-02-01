@@ -5,6 +5,7 @@
   flex-direction: column;
   position: relative;
   text-align: left;
+  box-sizing: border-box;
 
   .fancy-dropdown {
     display: flex;

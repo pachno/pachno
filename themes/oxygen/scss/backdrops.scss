@@ -155,6 +155,24 @@
             box-sizing: border-box;
             background-color: #FFF;
             border-radius: .75em 0 0 0;
+
+            &.hidden {
+              display: none;
+            }
+          }
+
+          &.sidebar-right {
+            .content {
+              border-radius: 0 .75em 0 0;
+
+              &.no-sidebar {
+                border-radius: .75em .75em 0 0;
+              }
+            }
+
+            .sidebar {
+              flex: 0 0 22em;
+            }
           }
         }
 
@@ -255,13 +273,13 @@
     transition: background-color 0.25s ease-in-out, color 0.25s ease-in-out;
     display: inline-block;
     text-align: center;
-  
+
     &:hover {
       background-color: $theme-primary-color;
       color: #fff;
     }
   }
-  
+
   a {
     color: $theme-primary-color;
     border: none;
@@ -276,4 +294,4 @@
   .backdrop_detail_header .closer a:hover {
     color: #faa;
   }
-}  
+}

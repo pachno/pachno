@@ -1939,11 +1939,12 @@ var Roadmap = /*#__PURE__*/function () {
   }, {
     key: "createMilestoneHtml",
     value: function createMilestoneHtml() {
+      var $milestones_container = jquery__WEBPACK_IMPORTED_MODULE_0___default()('#milestone-cards-container');
+
       if (this.milestones.length === 0) {
         jquery__WEBPACK_IMPORTED_MODULE_0___default()('#onboarding-no-milestones').show();
+        $milestones_container.hide();
       } else {
-        var $milestones_container = jquery__WEBPACK_IMPORTED_MODULE_0___default()('#milestone-cards-container');
-
         var _iterator2 = _createForOfIteratorHelper(this.milestones),
             _step2;
 

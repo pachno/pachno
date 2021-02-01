@@ -56,10 +56,11 @@ class Roadmap {
     }
 
     createMilestoneHtml() {
+        const $milestones_container = $('#milestone-cards-container');
         if (this.milestones.length === 0) {
             $('#onboarding-no-milestones').show();
+            $milestones_container.hide();
         } else {
-            const $milestones_container = $('#milestone-cards-container');
             for (const milestone of this.milestones) {
                 if ($(`.milestone-container[data-milestone-id=${this.id}]`).length > 0) {
                     continue;

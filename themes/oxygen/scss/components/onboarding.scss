@@ -17,7 +17,7 @@
 
     img {
       display: inline-block;
-      width: calc(100% - 50px);
+      width: 100%;
     }
   }
 
@@ -56,7 +56,7 @@
 
   .image-container {
     border-radius: 100%;
-    padding: 65px;
+    padding: 55px;
     overflow: hidden;
     background-color: rgba(12, 137, 144, .1);
     width: 250px;
