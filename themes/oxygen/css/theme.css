@@ -8743,15 +8743,18 @@ nav.sidebar {
     font-weight: 400; }
 
 .syntax_md:not(.comment-container) {
-  border: 1px solid #0c8990;
+  border: 1px solid rgba(0, 173, 199, 0.4);
   border-radius: .25em; }
 
 .syntax_md .editor-toolbar {
   display: flex;
-  background-color: rgba(200, 200, 200, 0.3);
+  background-color: transparent;
   padding: .4em;
   border-radius: .25em .25em 0 0;
-  border-bottom: 2px solid #0c8990;
+  border-bottom: none;
+  box-shadow: 0 3px 3px -2px rgba(27, 27, 36, 0.1);
+  z-index: 1;
+  position: relative;
   align-items: center;
   justify-content: flex-start; }
   .syntax_md .editor-toolbar button {
@@ -8759,7 +8762,7 @@ nav.sidebar {
     box-shadow: none;
     color: #232323; }
     .syntax_md .editor-toolbar button:hover {
-      background-color: #0c8990;
+      background-color: #00adc7;
       color: #FFF; }
   .syntax_md .editor-toolbar .separator {
     color: transparent;
@@ -8768,13 +8771,13 @@ nav.sidebar {
     margin: 0 .35em 0 0;
     height: 70%;
     border-bottom: none;
-    border-right: 2px solid #0c8990; }
+    border-right: 2px solid #00adc7; }
 
 .syntax_md .editor-statusbar {
   font-size: .85em;
   padding: .5em;
-  border-top: 1px dotted #0c8990;
-  background-color: rgba(200, 200, 200, 0.15);
+  border-top: 1px dotted #00adc7;
+  background-color: transparent;
   display: flex;
   align-items: center;
   justify-content: space-between; }
