@@ -9571,6 +9571,7 @@ textarea.markItUpEditor:focus {
   left: 50%;
   top: 50%;
   transform: translateX(-50%) translateY(-50%) scaleY(0);
+  transform-origin: top;
   opacity: 0;
   width: 500px;
   box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
@@ -10944,12 +10945,12 @@ img.userstate {
       line-height: 1.75em;
       padding: 1em 0; }
       .viewissue-container .top-search-filters-container .header-container .title-container .title-crumbs {
-        padding: 0 .35rem;
+        padding: 0 0 .5em 0;
         display: flex;
         flex-direction: row;
         align-items: center;
         justify-content: flex-start;
-        line-height: 1.35em; }
+        line-height: 1.25em; }
         .viewissue-container .top-search-filters-container .header-container .title-container .title-crumbs > a,
         .viewissue-container .top-search-filters-container .header-container .title-container .title-crumbs > a:hover {
           border: none;

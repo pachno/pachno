@@ -68,12 +68,12 @@
         padding: 1em 0;
 
         .title-crumbs {
-          padding: 0 .35rem;
+          padding: 0 0 .5em 0;
           display: flex;
           flex-direction: row;
           align-items: center;
           justify-content: flex-start;
-          line-height: 1.35em;
+          line-height: 1.25em;
 
           > a,
           > a:hover {

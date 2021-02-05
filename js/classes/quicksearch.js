@@ -21,8 +21,9 @@ class Quicksearch {
         this.enabled = true;
         this.highlighted_choice = undefined;
         this.selected_choice = undefined;
+        $('#current-command-description').html('');
 
-        if (this.$input.val() === "") {
+        if (this.$input.val() === "" || this.visible_choices.length === 0) {
             this.visible_choices = this.default_choices;
         } else if (choices !== undefined) {
             this.visible_choices = choices;
@@ -55,6 +56,9 @@ class Quicksearch {
 
         for (const choice of this.visible_choices) {
             console.log(choice);
+            if (choice.previous_choice === undefined) {
+                console.error(choice);
+            }
             const choice_description = (choice.description !== undefined) ? `<span class="description">${choice.description}</span>` : '';
             const choice_icon = (choice.icon !== undefined) ? `<span class="icon">${UI.fa_image_tag(choice.icon.name, {}, choice.icon.type)}</span>` : '';
             const html = `
@@ -71,7 +75,7 @@ class Quicksearch {
         }
     }
 
-    updateSelectedChoice() {
+    updateSelectedChoice(remove) {
         if (this.selected_choice === undefined) {
             $('#current-command-description').html('');
             this.$input.data('shortcut', '');
@@ -81,20 +85,28 @@ class Quicksearch {
         const do_replace = this.$input.data('shortcut') !== this.selected_choice.shortcut;
 
         $('#current-command-description').html(this.selected_choice.description);
-        let value = this.$input.val().trim();
-        if (do_replace && value.startsWith(this.$input.data('shortcut')) && !this.selected_choice.shortcut.startsWith(this.$input.data('shortcut'))) {
-            value = value.substr(this.$input.data('shortcut').length);
+
+        if (remove === undefined) {
+            // let value = this.$input.val().trim();
+            // if (do_replace && value.startsWith(this.$input.data('shortcut')) && !this.selected_choice.shortcut.startsWith(this.$input.data('shortcut'))) {
+            //     value = value.substr(this.$input.data('shortcut').length);
+            // }
+            // if (value === this.selected_choice.shortcut) {
+                this.$input.val(`${this.selected_choice.shortcut} `);
+            // } else {
+            //     this.$input.val(`${this.selected_choice.shortcut} ${value}`);
+            // }
         }
         this.$input.data('shortcut', this.selected_choice.shortcut);
-        if (value === this.selected_choice.shortcut) {
-            this.$input.val(`${this.selected_choice.shortcut} `);
-        } else {
-            this.$input.val(`${this.selected_choice.shortcut} ${value}`);
-        }
 
         if (do_replace) {
             if (this.selected_choice.choices !== undefined) {
                 this.visible_choices = this.selected_choice.choices;
+                for (const index in this.visible_choices) {
+                    if (this.visible_choices.hasOwnProperty(index)) {
+                        this.visible_choices[index].previous_choice = this.selected_choice;
+                    }
+                }
                 this.showChoices();
             } else if (this.selected_choice.type == TYPES.dynamic_choices) {
                 this.updateDynamicChoices(this.selected_choice.event, this.selected_choice.event_value);
@@ -169,13 +181,34 @@ class Quicksearch {
             }
         }
 
-        if (!found) {
-            this.highlighted_choice = undefined;
-            this.selected_choice = this.selected_choice.previous_choice;
+        if (!found && remove) {
+            for (const choice of this.visible_choices) {
+                if (choice.previous_choice !== undefined && value.startsWith(choice.previous_choice.shortcut)) {
+                    this.selected_choice = choice.previous_choice;
+                    this.highlighted_choice = undefined;
+                    found = true;
+                    break;
+                }
+            }
         }
 
-        if (this.selected_choice === undefined && remove === true) {
-            this.updateSelectedChoice();
+        if (!found) {
+            this.highlighted_choice = undefined;
+            this.selected_choice = (this.selected_choice !== undefined) ? this.selected_choice.previous_choice : undefined;
+            if (remove) {
+                if (this.selected_choice !== undefined && this.selected_choice.choices) {
+                    this.visible_choices = this.selected_choice.choices;
+                    this.showChoices();
+                } else if (this.selected_choice === undefined) {
+                    this.visible_choices = this.default_choices;
+                    this.showChoices();
+                }
+                this.updateSelectedChoice(remove);
+            }
+        }
+
+        if ((this.selected_choice === undefined || found) && remove === true) {
+            this.updateSelectedChoice(remove);
         }
         this.updateHighlightedChoice();
     }
@@ -231,7 +264,6 @@ class Quicksearch {
             if (this.selected_choice !== undefined && value !== this.selected_choice.shortcut && value.startsWith(this.selected_choice.shortcut)) {
                 this.$input.val(this.$input.val().substr(this.selected_choice.shortcut.length));
             }
-            highlightedChoice.previous_choice = this.selected_choice;
             this.selected_choice = highlightedChoice;
             changed = true;
         }
@@ -290,6 +322,7 @@ class Quicksearch {
             if (!quicksearch.enabled)
                 return;
 
+            console.log(quicksearch);
             switch (event.key) {
                 case 'Escape':
                 case 'ArrowUp':
@@ -323,9 +356,21 @@ class Quicksearch {
         Pachno.on(Pachno.EVENTS.quicksearchUpdateChoices, function (Pachno, choices) {
             quicksearch.highlighted_choice = undefined;
             quicksearch.visible_choices = choices;
+            for (const index in quicksearch.visible_choices) {
+                if (quicksearch.visible_choices.hasOwnProperty(index)) {
+                    quicksearch.visible_choices[index].previous_choice = quicksearch.selected_choice;
+                }
+            }
             quicksearch.showChoices();
         });
         Pachno.on(Pachno.EVENTS.quicksearchAddDefaultChoice, (Pachno, choice) => {
+            if (choice.choices !== undefined) {
+                for (const index in choice.choices) {
+                    if (choice.choices.hasOwnProperty(index)) {
+                        choice.choices[index].previous_choice = choice;
+                    }
+                }
+            }
             quicksearch.default_choices.push(choice);
         });
     }

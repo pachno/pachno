@@ -2058,8 +2058,9 @@ var Quicksearch = /*#__PURE__*/function () {
       this.enabled = true;
       this.highlighted_choice = undefined;
       this.selected_choice = undefined;
+      jquery__WEBPACK_IMPORTED_MODULE_2___default()('#current-command-description').html('');
 
-      if (this.$input.val() === "") {
+      if (this.$input.val() === "" || this.visible_choices.length === 0) {
         this.visible_choices = this.default_choices;
       } else if (choices !== undefined) {
         this.visible_choices = choices;
@@ -2099,6 +2100,11 @@ var Quicksearch = /*#__PURE__*/function () {
         for (_iterator.s(); !(_step = _iterator.n()).done;) {
           var choice = _step.value;
           console.log(choice);
+
+          if (choice.previous_choice === undefined) {
+            console.error(choice);
+          }
+
           var choice_description = choice.description !== undefined ? "<span class=\"description\">".concat(choice.description, "</span>") : '';
           var choice_icon = choice.icon !== undefined ? "<span class=\"icon\">".concat(_helpers_ui__WEBPACK_IMPORTED_MODULE_0__["default"].fa_image_tag(choice.icon.name, {}, choice.icon.type), "</span>") : '';
           var html = "\n            <div class=\"result-item\">\n                ".concat(choice_icon, "\n                <span class=\"name\">\n                    <span class=\"title\"><span class=\"count-badge\">").concat(choice.shortcut, "</span><span>").concat(choice.name, "</span></span>\n                    ").concat(choice_description, "\n                </span>\n            </div>\n            ");
@@ -2112,7 +2118,7 @@ var Quicksearch = /*#__PURE__*/function () {
     }
   }, {
     key: "updateSelectedChoice",
-    value: function updateSelectedChoice() {
+    value: function updateSelectedChoice(remove) {
       if (this.selected_choice === undefined) {
         jquery__WEBPACK_IMPORTED_MODULE_2___default()('#current-command-description').html('');
         this.$input.data('shortcut', '');
@@ -2121,23 +2127,30 @@ var Quicksearch = /*#__PURE__*/function () {
 
       var do_replace = this.$input.data('shortcut') !== this.selected_choice.shortcut;
       jquery__WEBPACK_IMPORTED_MODULE_2___default()('#current-command-description').html(this.selected_choice.description);
-      var value = this.$input.val().trim();
 
-      if (do_replace && value.startsWith(this.$input.data('shortcut')) && !this.selected_choice.shortcut.startsWith(this.$input.data('shortcut'))) {
-        value = value.substr(this.$input.data('shortcut').length);
+      if (remove === undefined) {
+        // let value = this.$input.val().trim();
+        // if (do_replace && value.startsWith(this.$input.data('shortcut')) && !this.selected_choice.shortcut.startsWith(this.$input.data('shortcut'))) {
+        //     value = value.substr(this.$input.data('shortcut').length);
+        // }
+        // if (value === this.selected_choice.shortcut) {
+        this.$input.val("".concat(this.selected_choice.shortcut, " ")); // } else {
+        //     this.$input.val(`${this.selected_choice.shortcut} ${value}`);
+        // }
       }
 
       this.$input.data('shortcut', this.selected_choice.shortcut);
 
-      if (value === this.selected_choice.shortcut) {
-        this.$input.val("".concat(this.selected_choice.shortcut, " "));
-      } else {
-        this.$input.val("".concat(this.selected_choice.shortcut, " ").concat(value));
-      }
-
       if (do_replace) {
         if (this.selected_choice.choices !== undefined) {
           this.visible_choices = this.selected_choice.choices;
+
+          for (var index in this.visible_choices) {
+            if (this.visible_choices.hasOwnProperty(index)) {
+              this.visible_choices[index].previous_choice = this.selected_choice;
+            }
+          }
+
           this.showChoices();
         } else if (this.selected_choice.type == TYPES.dynamic_choices) {
           this.updateDynamicChoices(this.selected_choice.event, this.selected_choice.event_value);
@@ -2218,13 +2231,47 @@ var Quicksearch = /*#__PURE__*/function () {
         }
       }
 
-      if (!found) {
-        this.highlighted_choice = undefined;
-        this.selected_choice = this.selected_choice.previous_choice;
+      if (!found && remove) {
+        var _iterator2 = _createForOfIteratorHelper(this.visible_choices),
+            _step2;
+
+        try {
+          for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
+            var _choice = _step2.value;
+
+            if (_choice.previous_choice !== undefined && value.startsWith(_choice.previous_choice.shortcut)) {
+              this.selected_choice = _choice.previous_choice;
+              this.highlighted_choice = undefined;
+              found = true;
+              break;
+            }
+          }
+        } catch (err) {
+          _iterator2.e(err);
+        } finally {
+          _iterator2.f();
+        }
       }
 
-      if (this.selected_choice === undefined && remove === true) {
-        this.updateSelectedChoice();
+      if (!found) {
+        this.highlighted_choice = undefined;
+        this.selected_choice = this.selected_choice !== undefined ? this.selected_choice.previous_choice : undefined;
+
+        if (remove) {
+          if (this.selected_choice !== undefined && this.selected_choice.choices) {
+            this.visible_choices = this.selected_choice.choices;
+            this.showChoices();
+          } else if (this.selected_choice === undefined) {
+            this.visible_choices = this.default_choices;
+            this.showChoices();
+          }
+
+          this.updateSelectedChoice(remove);
+        }
+      }
+
+      if ((this.selected_choice === undefined || found) && remove === true) {
+        this.updateSelectedChoice(remove);
       }
 
       this.updateHighlightedChoice();
@@ -2290,7 +2337,6 @@ var Quicksearch = /*#__PURE__*/function () {
           this.$input.val(this.$input.val().substr(this.selected_choice.shortcut.length));
         }
 
-        highlightedChoice.previous_choice = this.selected_choice;
         this.selected_choice = highlightedChoice;
         changed = true;
       }
@@ -2350,6 +2396,7 @@ var Quicksearch = /*#__PURE__*/function () {
       });
       $body.on('keyup', '.quicksearch-container', function (event) {
         if (!quicksearch.enabled) return;
+        console.log(quicksearch);
 
         switch (event.key) {
           case 'Escape':
@@ -2388,9 +2435,24 @@ var Quicksearch = /*#__PURE__*/function () {
       _pachno__WEBPACK_IMPORTED_MODULE_1__["default"].on(_pachno__WEBPACK_IMPORTED_MODULE_1__["default"].EVENTS.quicksearchUpdateChoices, function (Pachno, choices) {
         quicksearch.highlighted_choice = undefined;
         quicksearch.visible_choices = choices;
+
+        for (var index in quicksearch.visible_choices) {
+          if (quicksearch.visible_choices.hasOwnProperty(index)) {
+            quicksearch.visible_choices[index].previous_choice = quicksearch.selected_choice;
+          }
+        }
+
         quicksearch.showChoices();
       });
       _pachno__WEBPACK_IMPORTED_MODULE_1__["default"].on(_pachno__WEBPACK_IMPORTED_MODULE_1__["default"].EVENTS.quicksearchAddDefaultChoice, function (Pachno, choice) {
+        if (choice.choices !== undefined) {
+          for (var index in choice.choices) {
+            if (choice.choices.hasOwnProperty(index)) {
+              choice.choices[index].previous_choice = choice;
+            }
+          }
+        }
+
         quicksearch.default_choices.push(choice);
       });
     }
