@@ -590,7 +590,7 @@
 
         public static function getHeaderIconURL()
         {
-            return (self::isUsingCustomHeaderIcon()) ? Context::getRouting()->generate('showfile', ['id' => self::getHeaderIconID()]) : '/logo_white_128.png';
+            return (self::isUsingCustomHeaderIcon()) ? Context::getRouting()->generate('showfile', ['id' => self::getHeaderIconID()]) : '/logo_192.png';
         }
 
         public static function isUsingCustomHeaderIcon()

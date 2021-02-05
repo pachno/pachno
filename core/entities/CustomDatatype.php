@@ -87,7 +87,7 @@
         /**
          * Returns all custom types available
          *
-         * @return array
+         * @return CustomDatatype[]
          */
         public static function getAll()
         {

@@ -35,6 +35,16 @@
         </div>
     </div>
 <?php endif; ?>
+<div class="quicksearch-container" id="quicksearch-container">
+    <div class="quicksearch-content">
+        <div class="searchbox-container">
+            <input type="search" name="quicksearch" id="quicksearch-input">
+            <div class="description" id="current-command-description"></div>
+        </div>
+        <div class="separator"></div>
+        <div class="quicksearch-results" id="quicksearch-results"></div>
+    </div>
+</div>
 <div class="fullpage_backdrop" id="dialog_backdrop" style="display: none;">
     <div id="dialog_backdrop_content" class="fullpage_backdrop_content">
         <div class="backdrop_box small">

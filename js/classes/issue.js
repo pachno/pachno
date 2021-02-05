@@ -1,6 +1,7 @@
 import UI from "../helpers/ui";
 import $ from "jquery";
 import Pachno from "./pachno";
+import { TYPES as QuicksearchTypes } from "./quicksearch";
 import {getEditor} from "../widgets/editor";
 
 class Issue {
@@ -28,6 +29,8 @@ class Issue {
         this.href = json.href;
         this.more_actions_url = json.more_actions_url;
         this.save_url = json.save_url;
+        this.choices_url = json.choices_url;
+        this.backdrop_url = json.backdrop_url;
 
         this.blocking = json.blocking;
         this.closed = json.closed;
@@ -55,6 +58,7 @@ class Issue {
 
         this.number_of_files = json.number_of_files;
         this.number_of_comments = json.number_of_comments;
+        this.number_of_subscribers = json.number_of_subscribers;
 
         this.processed = false;
     }
@@ -129,6 +133,39 @@ class Issue {
             $value_container.removeClass('editing');
         });
 
+        Pachno.on(Pachno.EVENTS.issueTriggerUpdate, function (PachnoApplication, data) {
+            if (data.issue_id != issue.id)
+                return;
+
+            issue.postAndUpdate(data.field, data.value);
+        });
+
+        Pachno.on(Pachno.EVENTS.issueLoadDynamicChoices, function (PachnoApplication, field) {
+            return new Promise((resolve, reject) => {
+                Pachno.fetch(issue.choices_url, {
+                    data: `field=${field}`
+                }).then((json) => {
+                    let choices = [];
+                    let index = 1;
+
+                    for (const choice of json.data.choices) {
+                        const icon = (choice.icon) ? { type: choice.icon.style, name: choice.icon.name } : undefined;
+                        choices.push({
+                            icon,
+                            shortcut: `set ${field} ${index}`,
+                            name: choice.name,
+                            type: QuicksearchTypes.event,
+                            event: Pachno.EVENTS.issueTriggerUpdate,
+                            event_value: { field, value: choice.id, issue_id: issue.id }
+                        })
+                        index += 1;
+                    }
+
+                    Pachno.trigger(Pachno.EVENTS.quicksearchUpdateChoices, choices);
+                })
+            });
+        });
+
         Pachno.on(Pachno.EVENTS.issueUpdateJson, function (PachnoApplication, data) {
             if (data.json.id != issue.id) {
                 return
@@ -137,6 +174,62 @@ class Issue {
             issue.updateFromJson(data.json);
             issue.updateVisibleValues(data.json);
         });
+    }
+
+    allowShortcuts(fields) {
+        let choice = {
+            icon: { name: 'edit', type: 'fas' },
+            shortcut: 'set',
+            name: 'Set issue properties',
+            description: 'Update one or more properties of an issue',
+            choices: []
+        }
+
+        choice.choices.push({
+            icon: { name: 'exclamation-circle', type: 'fas' },
+            shortcut: 'set priority',
+            name: 'Set issue priority',
+            description: 'Set the priority of an issue',
+            type: QuicksearchTypes.dynamic_choices,
+            event: Pachno.EVENTS.issueLoadDynamicChoices,
+            event_value: 'priority'
+        });
+        choice.choices.push({
+            icon: { name: 'clipboard-check', type: 'fas' },
+            shortcut: 'set resolution',
+            name: 'Set issue resolution',
+            description: 'Set the resolution of an issue',
+            type: QuicksearchTypes.dynamic_choices,
+            event: Pachno.EVENTS.issueLoadDynamicChoices,
+            event_value: 'resolution'
+        });
+        choice.choices.push({
+            icon: { name: 'chart-pie', type: 'fas' },
+            shortcut: 'set category',
+            name: 'Set issue category',
+            description: 'Set the category of an issue',
+            type: QuicksearchTypes.dynamic_choices,
+            event: Pachno.EVENTS.issueLoadDynamicChoices,
+            event_value: 'category'
+        });
+        choice.choices.push({
+            icon: { name: 'list-alt', type: 'far' },
+            shortcut: 'set milestone',
+            name: 'Set issue target release',
+            description: 'Set the target release for an issue',
+            type: QuicksearchTypes.dynamic_choices,
+            event: Pachno.EVENTS.issueLoadDynamicChoices,
+            event_value: 'milestone'
+        });
+        choice.choices.push({
+            icon: { name: 'edit', type: 'far' },
+            shortcut: 'set title',
+            name: 'Set issue title',
+            description: 'Set the title of an issue',
+            type: QuicksearchTypes.backdrop,
+            backdrop_url: this.backdrop_url.replace('%key%', 'issue-title')
+        });
+        Pachno.trigger(Pachno.EVENTS.quicksearchAddDefaultChoice, choice);
     }
 
     updateVisibleValues(json) {
@@ -176,6 +269,9 @@ class Issue {
                     $element.html(this.updated_at_friendly);
                     $element.prop('title', this.updated_at_full);
                     $element.prop('datetime', this.updated_at_datetime);
+                    break;
+                case 'number_of_subscribers':
+                    $element.html(this.number_of_subscribers);
                     break;
                 case 'percent_complete':
                     $($element.find('.percent_filled')).css({ width: this.percent_complete + '%'});

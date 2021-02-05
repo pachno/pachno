@@ -6,6 +6,7 @@
     use b2db\Query;
     use b2db\QueryColumnSort;
     use b2db\Row;
+    use b2db\Table;
     use b2db\Update;
 
     /**
@@ -276,6 +277,14 @@
             $update->add(self::ACTIVITY_TYPE, $new_activity_type_id);
 
             $this->rawUpdate($update, $query);
+        }
+
+        protected function migrateData(Table $old_table)
+        {
+            $update = new Update();
+            $update->add('issue_spenttimes.completed', true);
+
+            $this->rawUpdate($update);
         }
 
     }

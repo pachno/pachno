@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css?family=DM+Sans:700|Fira+Sans:300,300i,400,400i,600,600i|Fira+Mono:400,500,700&subset=cyrillic,cyrillic-ext,latin-ext&display=swap");
+@import url("https://fonts.googleapis.com/css?family=DM+Sans:700|Fira+Sans:200,300,300i,400,400i,600,600i|Fira+Mono:400,500,700&subset=cyrillic,cyrillic-ext,latin-ext&display=swap");
 @import "variables.scss";
 
 /* General styles */
@@ -453,22 +453,25 @@ input[type="checkbox"].semi-checked {
 
 /* footer section */
 footer {
-  position: relative;
+  position: fixed;
   vertical-align: middle;
-  flex: 0 0 35px;
+  display: flex;
   border: 0;
   text-align: center;
   font-size: 0.9em;
   line-height: 1.4;
   padding: 6px 1em;
   box-sizing: border-box;
-  display: flex;
   align-items: center;
   justify-content: center;
   text-shadow: 1px 1px 0 #fff;
   margin-left: 350px;
   background-color: rgba(225, 225, 225, 0.15);
   box-shadow: 6px 0 8px -11px rgba(0, 0, 0, 0.8) inset;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  z-index: 100;
 
   .message-box {
     margin: 10px auto;
@@ -6842,3 +6845,171 @@ header .mobile_menuanchor {
 @import "issue-card-popup";
 
 @import "../../../node_modules/air-datepicker/dist/css/datepicker";
+
+#main_container {
+  flex-direction: row;
+  align-items: stretch;
+  justify-content: stretch;
+  align-content: stretch;
+}
+
+header {
+  flex-direction: column;
+
+  .header-strip {
+    flex-direction: column;
+    align-items: center;
+    flex: 1 1 auto;
+
+    > a:not(.button):not(.closer):not(.list-item) {
+      font-size: 1.2em;
+      border: 2px solid transparent;
+
+      &.logo {
+        padding: .75em;
+        margin-bottom: .5em;
+
+        img {
+          height: 30px;
+          padding-right: 0;
+        }
+
+        .logo_name {
+          display: none;
+        }
+      }
+
+      &:not(.logo) {
+        padding: .75em;
+      }
+
+      &.selected {
+        border: 2px solid #FFF;
+        color: #FFF;
+        background-color: transparent;
+      }
+
+      .icon {
+        &.far,
+        &.fas {
+          margin: 0;
+        }
+      }
+
+      span {
+        transition: opacity .2s ease-in-out, transform .2s ease-in-out;
+        opacity: 0;
+        transform: scaleX(0);
+        transform-origin: left;
+        position: absolute;
+        left: 3.75em;
+        background-color: $theme-header-color;
+        color: #FFF;
+        font-weight: normal;
+        padding: .35em .75em;
+        border-radius: .2em;
+        box-shadow: rgba(9, 30, 66, 0.25) 0 1px 1px, rgba(9, 30, 66, 0.31) 0 0 1px;
+        white-space: nowrap;
+      }
+
+      &:hover {
+        span {
+          transform: scaleX(1);
+          opacity: 1;
+        }
+      }
+    }
+
+    #header_config_link {
+      margin-top: auto;
+    }
+
+    .notifications-container {
+      a:not(.button):not(.list-item):not(.closer) {
+        padding: .75em;
+        font-size: 1.2em;
+
+        .icon {
+          margin: 0;
+          flex: 0 0 auto;
+        }
+
+        .notifications-indicator {
+          display: none;
+        }
+      }
+    }
+
+    .dropper-container {
+      + .dropper-container {
+        margin: 0;
+      }
+
+      &:last-child {
+        margin-bottom: .75em;
+      }
+
+      button,
+      .button {
+        padding: .75em;
+
+        &.secondary {
+          border: 2px solid transparent;
+          border-radius: 8px;
+
+          &.active {
+            border-color: #FFF;
+            background-color: transparent;
+          }
+        }
+      }
+
+      .avatar {
+        margin: 0;
+      }
+
+      .dropdown-indicator {
+        display: none;
+      }
+
+      .dropdown-container {
+        top: auto;
+        right: auto;
+        left: 4.3em;
+        bottom: .4em;
+        transform-origin: bottom left;
+      }
+    }
+
+    .name-container {
+      display: none;
+    }
+  }
+}
+
+.dropper-container {
+  .dropdown-container {
+    &.from-left {
+      &.slide-out {
+        left: 4.35em;
+        top: 4.15em;
+      }
+    }
+  }
+}
+
+.collapsed {
+  .dropper-container {
+    .dropper {
+      &.active {
+        &::after {
+          left: 31.3em;
+        }
+      }
+    }
+  }
+}
+
+#content_container {
+  height: auto;
+}

@@ -73,6 +73,7 @@
                 <?php \pachno\core\framework\Logging::log('done (rendering header)'); ?>
             <?php endif; ?>
             <div id="content_container" class="cf">
+                <?php require PACHNO_CORE_PATH . 'templates/contextmenu.inc.php'; ?>
                 <?php \pachno\core\framework\Logging::log('Rendering content'); ?>
                 <?= $content; ?>
                 <?php \pachno\core\framework\Logging::log('done (rendering content)'); ?>

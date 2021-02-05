@@ -2,6 +2,9 @@ $theme-primary-color: #00adc7;
 @function theme-primary-color-alpha ($alpha) { @return rgba(0, 173, 199, $alpha); }
 $theme-secondary-color: #0cd8b6;
 @function theme-secondary-color-alpha ($alpha) { @return rgba(12, 216, 182, $alpha); }
+$theme-header-color: #2B2D42;
+//$theme-header-color: #005b69;
+//$theme-header-color: $theme-primary-color;
 $theme-highlight-color: rgba(225, 225, 225, .2);
 $theme-highlight-color-text: #141823;
 $theme-selected-color: $theme-primary-color;
@@ -21,8 +24,8 @@ $theme-font-family: 'Fira Sans', 'Open Sans', sans-serif;
 $theme-font-family-logo: 'DM Sans', sans-serif;
 $theme-font-family-mono: 'Fira Mono', monospace;
 
-$theme-font-weight-light: 100;
-$theme-font-weight-regular: 200;
+$theme-font-weight-light: 200;
+$theme-font-weight-regular: 300;
 $theme-font-weight-bold: 400;
 $theme-font-weight-heavy: 600;
 $theme-font-weight-logo: 700;

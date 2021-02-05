@@ -294,7 +294,7 @@ const submitInteractiveForm = function (event, $form) {
         });
 }
 
-$(document).ready(() => {
+const setupListeners = function() {
     const $body = $('body');
 
     $body.on('click', '.tab-switcher .tab-switcher-trigger', function () {
@@ -304,18 +304,6 @@ $(document).ready(() => {
 
         tabSwitcher($tab, target, $tabSwitcher);
     });
-
-    $body.on('keypress', function (event) {
-        if (['INPUT', 'TEXTAREA'].indexOf(event.target.nodeName) !== -1) {
-            return;
-        }
-
-        if (String.fromCharCode(event.keyCode) === '/') {
-            event.stopPropagation();
-            event.preventDefault();
-            $('#quicksearch-input').focus();
-        }
-    })
 
     $body.on('click', '.fullpage_backdrop_content .closer', () => UI.Backdrop.reset());
     $body.on('click', '.trigger-backdrop', autoBackdropLink);
@@ -367,6 +355,9 @@ $(document).ready(() => {
     $body.on('submit', 'form[data-interactive-form]', (event) => submitInteractiveForm(event, $(event.target)));
     $body.on('blur', 'form[data-interactive-form] input[type=text], form[data-interactive-form] textarea', (event) => submitInteractiveForm(event, $(event.target).parents('form')));
     $body.on('change', 'form[data-interactive-form] input[type=radio], form[data-interactive-form] input[type=checkbox]', (event) => submitInteractiveForm(event, $(event.target).parents('form')));
-})
+}
 
 export default UI;
+export {
+    setupListeners
+}

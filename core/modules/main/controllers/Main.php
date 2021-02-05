@@ -292,21 +292,6 @@
         }
 
         /**
-         * Frontpage
-         *
-         * @param Request $request
-         */
-        public function runIndex(Request $request)
-        {
-            if (Settings::isSingleProjectTracker()) {
-                if (($projects = Project::getAllRootProjects(false)) && $project = array_shift($projects)) {
-                    $this->forward($this->getRouting()->generate('project_dashboard', ['project_key' => $project->getKey()]));
-                }
-            }
-            $this->forward403unless($this->getUser()->hasPageAccess('home'));
-        }
-
-        /**
          * @param Request $request
          * @Route(url="/projects/list/:list_mode/:project_state/*", name="project_list")
          */
@@ -572,11 +557,27 @@
         }
 
         /**
-         * Developer dashboard
+         * Frontpage
+         *
+         * @Route(url="/projects", name="projects_list")
          *
          * @param Request $request
          */
-        public function runDashboard(Request $request)
+        public function runProjectsList(Request $request)
+        {
+            if (Settings::isSingleProjectTracker()) {
+                if (($projects = Project::getAllRootProjects(false)) && $project = array_shift($projects)) {
+                    $this->forward($this->getRouting()->generate('project_dashboard', ['project_key' => $project->getKey()]));
+                }
+            }
+            $this->forward403unless($this->getUser()->hasPageAccess('home'));
+        }
+        /**
+         * User homepage
+         *
+         * @param Request $request
+         */
+        public function runIndex(Request $request)
         {
             $this->forward403unless(!$this->getUser()->isGuest() && $this->getUser()->hasPageAccess('dashboard'));
             if (Settings::isSingleProjectTracker()) {
@@ -3776,6 +3777,21 @@
                     $this->issue = null;
             } catch (Exception $e) {
                 throw $e;
+            }
+        }
+
+        /**
+         * @Route(name="issue_load_dynamic_choices", url="/:project_key/choices/:issue_id")
+         *
+         * @param Request $request
+         */
+        public function runIssueLoadChoices(Request $request)
+        {
+            $issue = Issues::getTable()->getIssueById((int)$request['issue_id']);
+            if ($issue instanceof Issue) {
+                $json = $issue->getChoiceValues($request['field']);
+
+                return $this->renderJSON(['data' => $json]);
             }
         }
 

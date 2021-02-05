@@ -184,4 +184,15 @@
             }
         }
 
+        public function toJSON($detailed = true)
+        {
+            $json = parent::toJSON($detailed);
+            $json['icon'] = [
+                'name' => $this->getFontAwesomeIcon(),
+                'style' => $this->getFontAwesomeIconStyle()
+            ];
+
+            return $json;
+        }
+
     }

@@ -17,7 +17,9 @@
     $link = (Settings::getHeaderLink() == '') ? \pachno\core\framework\Context::getWebroot() : Settings::getHeaderLink();
 
     $selected_tab = '';
-    if ($pachno_response->getPage() === 'home' || in_array($pachno_routing->getCurrentRoute()->getModuleName(), ['project', 'search'])) {
+    if ($pachno_response->getPage() === 'home') {
+        $selected_tab = 'home';
+    } elseif ($pachno_response->getPage() === 'projects_list' || in_array($pachno_routing->getCurrentRoute()->getModuleName(), ['project', 'search'])) {
         $selected_tab = 'projects';
     } elseif ($pachno_response->getPage() === 'teams_dashboard') {
         $selected_tab = 'teams';
@@ -30,18 +32,17 @@
 ?>
 <header>
     <div class="header-strip">
-        <div class="menu-toggler-container">
-            <button class="button icon secondary menu-toggler">
-                <?= fa_image_tag('bars', ['class' => 'icon']); ?>
-            </button>
-        </div>
         <a class="logo" href="<?= $link; ?>">
             <?php echo image_tag(Settings::getHeaderIconUrl(), ['class' => 'logo-icon'], true); ?>
             <span id="logo_name" class="logo_name"><?php echo Settings::getSiteHeaderName() ?? 'Pachno'; ?></span>
         </a>
+        <a class="<?php if ($selected_tab == 'home') echo ' selected'; ?>" href="<?= make_url('home'); ?>">
+            <?= fa_image_tag('window-restore', ['class' => 'icon']); ?>
+            <span class="name"><?= __('Home'); ?></span>
+        </a>
         <?php if (!Settings::isSingleProjectTracker()): ?>
-            <a class="<?php if ($selected_tab == 'projects') echo ' selected'; ?>" href="<?= make_url('home'); ?>">
-                <?= fa_image_tag('list-alt', ['class' => 'icon'], 'far'); ?>
+            <a class="<?php if ($selected_tab == 'projects') echo ' selected'; ?>" href="<?= make_url('projects_list'); ?>">
+                <?= fa_image_tag('boxes', ['class' => 'icon']); ?>
                 <span class="name"><?= __('Projects'); ?></span>
             </a>
         <?php endif; ?>
@@ -50,13 +51,10 @@
             <?= fa_image_tag('users', ['class' => 'icon']); ?>
             <span class="name"><?= __('Teams and clients'); ?></span>
         </a>
-        <div id="quicksearch-container">
-            <form accept-charset="<?php echo \pachno\core\framework\Context::getI18n()->getCharset(); ?>" action="<?php echo (\pachno\core\framework\Context::isProjectContext()) ? make_url('search', array('project_key' => \pachno\core\framework\Context::getCurrentProject()->getKey())) : make_url('search'); ?>" method="get" name="quicksearchform" id="quicksearchform">
-                <?= fa_image_tag('spinner', ['class' => 'fa-spin indicator']); ?>
-                <?= fa_image_tag('search', ['class' => 'icon']); ?>
-                <input type="search" name="search_value" accesskey="/" id="quicksearch-input" placeholder="<?php echo __('Quick actions'); ?>"><div id="searchfor_autocomplete_choices" class="autocomplete rounded_box"></div>
-            </form>
-        </div>
+        <a href="javascript:void(0);" class="trigger-quicksearch">
+            <?= fa_image_tag('search', ['class' => 'icon']); ?>
+            <span class="name"><?= __('Press %slash or click here to open the quicksearch', ['%slash' => '<code>/</code>']); ?></span>
+        </a>
         <a id="header_config_link" class="only-icon <?php if (in_array(\pachno\core\framework\Context::getRouting()->getCurrentRoute()->getModuleName(), ['configuration', 'import'])) echo ' selected'; ?>" href="<?= make_url('configure'); ?>">
             <?= fa_image_tag('cog', ['class' => 'icon']); ?>
         </a>
@@ -145,10 +143,4 @@
             <?php endif; ?>
         </div>
     </div>
-    <nav class="menu-strip">
-        <?= Event::createNew('core', 'header_menu_strip', $pachno_routing->getCurrentRoute())->triggerUntilProcessed()->getReturnValue(); ?>
-    </nav>
-    <?php if (!Settings::isMaintenanceModeEnabled()): ?>
-        <?php Event::createNew('core', 'header_menu_end')->trigger(); ?>
-    <?php endif; ?>
 </header>

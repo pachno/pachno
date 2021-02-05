@@ -11,6 +11,7 @@
     <?php
 
         $pachno_response->setTitle('['.(($issue->isClosed()) ? mb_strtoupper(__('Closed')) : mb_strtoupper(__('Open'))) .'] ' . $issue->getFormattedIssueNo(true) . ' - ' . \pachno\core\framework\Context::getI18n()->decodeUTF8($issue->getTitle()));
+        $json = $issue->toJSON(true);
 
     ?>
     <?php \pachno\core\framework\Event::createNew('core', 'viewissue_top', $issue)->trigger(); ?>
@@ -41,7 +42,8 @@
 <?php endif; ?>
 <script type="text/javascript">
     Pachno.on(Pachno.EVENTS.ready, function () {
-        const issue = new Issue(<?= json_encode($issue->toJSON(false)); ?>, undefined, false);
+        const issue = new Issue(<?= json_encode($json); ?>, undefined, false);
+        issue.allowShortcuts(<?= json_encode($json['visible_fields']); ?>);
 
         Pachno.on(Pachno.EVENTS.issueUpdate, () => {
             $('#issue-update-indicator').addClass('active');

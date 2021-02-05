@@ -4535,6 +4535,8 @@
                 'cover_image_url' => ($this->getCoverImageFile() instanceof File) ? Context::getRouting()->generate('showfile', ['id' => $this->getCoverImageFile()->getID()]) : '',
                 'href' => Context::getRouting()->generate('viewissue', ['project_key' => $this->getProject()->getKey(), 'issue_no' => $this->getFormattedIssueNo()], false),
                 'more_actions_url' => Context::getRouting()->generate('issue_moreactions', ['project_key' => $this->getProject()->getKey(), 'issue_id' => $this->getID()]),
+                'choices_url' => Context::getRouting()->generate('issue_load_dynamic_choices', ['project_key' => $this->getProject()->getKey(), 'issue_id' => $this->getID()]),
+                'backdrop_url' => Context::getRouting()->generate('get_partial_for_backdrop', ['key' => '%key%', 'issue_id' => $this->getID()]),
                 'save_url' => Context::getRouting()->generate('edit_issue', ['project_key' => $this->getProject()->getKey(), 'issue_id' => $this->getID()]),
                 'card_url' => Context::getRouting()->generate('get_partial_for_backdrop', ['key' => 'viewissue', 'issue_id' => $this->getID()]),
                 'posted_by' => ($this->getPostedBy() instanceof common\Identifiable) ? $this->getPostedBy()->toJSON() : null,
@@ -4546,6 +4548,7 @@
                 'milestone' => ($this->getMilestone() instanceof common\Identifiable) ? $this->getMilestone()->toJSON() : null,
                 'number_of_comments' => $this->getNumberOfUserComments(),
                 'number_of_files' => $this->getNumberOfFiles(),
+                'number_of_subscribers' => count($this->getSubscribers()),
                 'tags' => []
             ];
 
@@ -5996,6 +5999,72 @@
             if (!is_numeric($syntax)) $syntax = Settings::getSyntaxValue($syntax);
 
             $this->_addChangedProperty('_reproduction_steps_syntax', $syntax);
+        }
+
+        public function getChoiceValues($field)
+        {
+            $json = [
+                'choices' => []
+            ];
+
+            switch ($field) {
+                case 'status':
+                    $choices = ($this->getProject()->useStrictWorkflowMode()) ? $this->getProject()->getAvailableStatuses() : $this->getAvailableStatuses();
+                    break;
+                case 'issuetype':
+                    $choices = $this->getProject()->getIssuetypeScheme()->getIssuetypes();
+                    break;
+                case 'category':
+                    if ($this->isUpdateable() && $this->canEditCategory()) {
+                        $choices = Category::getAll();
+                    }
+                    break;
+                case 'resolution':
+                    if ($this->isUpdateable() && $this->canEditResolution()) {
+                        $choices = Resolution::getAll();
+                    }
+                    break;
+                case 'priority':
+                    if ($this->isUpdateable() && $this->canEditPriority()) {
+                        $choices = Priority::getAll();
+                    }
+                    break;
+                case 'reproducability':
+                    if ($this->isUpdateable() && $this->canEditReproducability()) {
+                        $choices = Reproducability::getAll();
+                    }
+                    break;
+                case 'severity':
+                    if ($this->isUpdateable() && $this->canEditSeverity()) {
+                        $choices = Severity::getAll();
+                    }
+                    break;
+                case 'milestone':
+                    if ($this->isUpdateable() && $this->canEditMilestone()) {
+                        $choices = $this->getProject()->getMilestonesForIssues();
+                    }
+                    break;
+                default:
+                    foreach (CustomDatatype::getAll() as $key => $customdatatype) {
+                        if ($key != $field) {
+                            continue;
+                        }
+
+                        if ($customdatatype->hasCustomOptions()) {
+                            $choices = $customdatatype->getOptions();
+                        } elseif ($customdatatype->hasPredefinedOptions()) {
+                            $choices = $customdatatype->getOptions();
+                        }
+                    }
+            }
+
+            if (isset($choices)) {
+                foreach($choices as $choice) {
+                    $json['choices'][] = $choice->toJSON();
+                }
+            }
+
+            return $json;
         }
 
     }

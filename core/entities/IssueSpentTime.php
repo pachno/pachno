@@ -59,6 +59,21 @@
         protected $_edited_at;
 
         /**
+         * @Column(type="integer", length=10)
+         */
+        protected $_started_at;
+
+        /**
+         * @Column(type="boolean", default=false)
+         */
+        protected $_completed = false;
+
+        /**
+         * @Column(type="boolean", default=false)
+         */
+        protected $_paused = false;
+
+        /**
          * The time spent (months) to fix this issue
          *
          * @var integer
@@ -384,6 +399,54 @@
         protected function _postDelete()
         {
             $this->_recalculateIssueTimes();
+        }
+
+        /**
+         * @return mixed
+         */
+        public function getStartedAt()
+        {
+            return $this->_started_at;
+        }
+
+        /**
+         * @param mixed $started_at
+         */
+        public function setStartedAt($started_at)
+        {
+            $this->_started_at = $started_at;
+        }
+
+        /**
+         * @return bool
+         */
+        public function isCompleted(): bool
+        {
+            return $this->_completed;
+        }
+
+        /**
+         * @param bool $completed
+         */
+        public function setCompleted(bool $completed)
+        {
+            $this->_completed = $completed;
+        }
+
+        /**
+         * @return bool
+         */
+        public function isPaused(): bool
+        {
+            return $this->_paused;
+        }
+
+        /**
+         * @param bool $paused
+         */
+        public function setPaused(bool $paused)
+        {
+            $this->_paused = $paused;
         }
 
     }

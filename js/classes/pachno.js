@@ -1,7 +1,7 @@
 import $ from "jquery";
 import OpenID from "../helpers/openid";
 import Debugger from "./debugger";
-import UI from "../helpers/ui";
+import UI, { setupListeners as uiSetupListeners } from "../helpers/ui";
 import {fetchHelper, formSubmitHelper, setupListeners as formSetupListeners} from "../helpers/fetch";
 import widgetSetupListeners, { calendars } from "../widgets";
 import profileSetupListeners from "../helpers/profile";
@@ -12,6 +12,7 @@ import Search from "./search";
 import Issuereporter from "./issuereporter";
 import Uploader from "./uploader";
 import Roadmap from "./roadmap";
+import Quicksearch, { TYPES as QuicksearchTypes } from "./quicksearch";
 import strings_en_US from "../../i18n/en_US/strings.json";
 
 const translations = {
@@ -26,8 +27,13 @@ class PachnoApplication {
             formSubmitResponse: 'form-submit-response',
             formSubmitError: 'form-submit-error',
             issueUpdate: 'issue-update',
+            issueTriggerUpdate: 'issue-trigger-update',
             issueUpdateDone: 'issue-update-done',
-            issueUpdateJson: 'issue-update-json'
+            issueUpdateJson: 'issue-update-json',
+            issueLoadDynamicChoices: 'issue-load-dynamic-choices',
+            quicksearchTrigger: 'quicksearch-trigger',
+            quicksearchAddDefaultChoice: 'quicksearch-add-default-choice',
+            quicksearchUpdateChoices: 'quicksearch-update-choices'
         }
     }
 
@@ -45,7 +51,7 @@ class PachnoApplication {
         this.debug = false;
         this.basepath = '';
         this.data_url = '';
-        this.autocompleter_url = '';
+        this.quicksearch = undefined;
         this.debugger = undefined;
         this.listeners = {};
         this.language = document.body.dataset.language;
@@ -55,7 +61,28 @@ class PachnoApplication {
         this.debug = options.debug;
         this.basepath = options.basepath;
         this.data_url = options.dataUrl;
-        this.autocompleter_url = options.autocompleterUrl;
+        this.quicksearch = new Quicksearch(options.autocompleterUrl);
+
+        this.trigger(this.EVENTS.quicksearchAddDefaultChoice, {
+            icon: { name: 'search', type: 'fas'},
+            shortcut: 'find',
+            name: 'Find something',
+            description: 'Search through issues, projects, documentation and people',
+            action: {
+                type: QuicksearchTypes.navigate,
+                url: '/account'
+            }
+        });
+        this.trigger(this.EVENTS.quicksearchAddDefaultChoice, {
+            icon: { name: 'search', type: 'fas'},
+            shortcut: 'show',
+            name: 'Show an issue',
+            description: 'Go directly to an issue',
+            action: {
+                type: QuicksearchTypes.event,
+                event: '/find'
+            }
+        });
 
         if (this.debug) {
             this.debugger = new Debugger(options.debugUrl);
@@ -114,6 +141,7 @@ class PachnoApplication {
         formSetupListeners();
         profileSetupListeners();
         issueSetupListeners();
+        uiSetupListeners();
         // $('#fullpage_backdrop_content').on('click', Core._resizeWatcher);
     }
 

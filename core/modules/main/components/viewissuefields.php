@@ -262,13 +262,19 @@
             </div>
         </li>
         <li id="subscribers_field">
-            <div class="label" id="subscribers_header">
-                <?= __('Subscribers'); ?>
-            </div>
-            <div class="value">
-                <a href="javascript:void(0)" onclick="Pachno.UI.Backdrop.show('<?= make_url('get_partial_for_backdrop', array('key' => 'issue_subscribers', 'issue_id' => $issue->getID())); ?>');"><?= __('%number_of subscriber(s)', array('%number_of' => '<span id="subscribers_field_count">'.count($issue->getSubscribers()).'</span>')); ?></a>
-            </div>
-            <div class="tooltip from-above"><?= __('Click here to show the list of subscribers'); ?></div>
+            <a class="field-container trigger-backdrop" href="javascript:void(0);" data-url="<?= make_url('get_partial_for_backdrop', array('key' => 'issue_subscribers', 'issue_id' => $issue->getID())); ?>">
+                <span class="label">
+                    <?= __('Subscribers'); ?>
+                </span>
+                <span class="value">
+                    <span class="count-badge">
+                        <?= fa_image_tag('users', ['class' => 'icon']); ?>
+                        <span data-dynamic-value data-field="number_of_subscribers"><?= count($issue->getSubscribers()); ?></span>
+                    </span>
+                    <?= fa_image_tag('angle-down', ['class' => 'icon']); ?>
+                </span>
+                <span class="tooltip from-above"><?= __('Click here to show the list of subscribers'); ?></span>
+            </a>
         </li>
     </ul>
 </div>
@@ -290,9 +296,6 @@
                         <?= fa_image_tag('angle-down', ['class' => 'dropdown-indicator']); ?>
                     <?php endif; ?>
                 </div>
-                <?php if ($issue->isUpdateable() && $issue->canEditEstimatedTime()): ?>
-                    <?php include_component('main/issueestimator', array('issue' => $issue, 'field' => 'estimated_time', 'mode' => 'left')); ?>
-                <?php endif; ?>
             </div>
         </li>
         <li id="spent_time_field" style="position: relative;<?php if (!$issue->isSpentTimeVisible()): ?> display: none;<?php endif; ?>">

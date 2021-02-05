@@ -69,6 +69,14 @@ button, button:hover,
     }
   }
 
+  span.icon {
+    flex: 0 0 24px;
+
+    img {
+      width: 24px;
+    }
+  }
+
   .indicator {
     display: inline-block;
     width: 0;
@@ -203,7 +211,11 @@ input.button.icon:hover {
 button.secondary.active,
 .button.secondary.active,
 input.button.secondary.active {
-  background-color: rgba(200, 200, 200, .3);
+  &,
+  &:hover {
+    background-color: rgba(200, 200, 200, .3);
+    box-shadow: none;
+  }
 }
 button.secondary:hover,
 .button.secondary:hover,

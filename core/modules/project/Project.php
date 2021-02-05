@@ -25,13 +25,13 @@
                 return;
 
             switch ($route->getName()) {
-                case 'home':
+                case 'projects_list':
                     $component = framework\Action::returnComponentHTML('project/mainmenustrip');
                     $event->setReturnValue($component);
                     $event->setProcessed();
                     break;
                 default:
-                    if (framework\Context::getCurrentProject() instanceof entities\Project) {
+                    if (framework\Context::getCurrentProject() instanceof entities\Project && in_array($route->getModuleName(), ['project', 'search', 'agile'])) {
                         $project = framework\Context::getCurrentProject();
                         $name_event = framework\Event::createNew('core', 'project/templates/projectheader/namelabel', $project)->trigger();
                         $name = ($name_event->isProcessed()) ? $name_event->getReturnValue() : framework\Context::getI18n()->__('Project dashboard');

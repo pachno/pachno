@@ -6,16 +6,19 @@ use pachno\core\framework;
  * @var \pachno\core\entities\User $pachno_user
  */
 ?>
-<div class="name-container shaded">
-    <div class="form-container">
-        <form id="documentation-search">
-            <div class="form-row">
-                <div class="search-container">
-                    <label for="documentation-search-input" class="icon"><?= fa_image_tag('search'); ?></label>
-                    <input id="documentation-search-input" type="search" name="value" placeholder="<?= __('Search documentation') ;?>">
-                </div>
-            </div>
-        </form>
+<div class="dropper-container">
+    <button class="secondary dropper">
+        <?php if (framework\Context::isProjectContext()): ?>
+            <span class="icon"><?php echo image_tag(framework\Context::getCurrentProject()->getIconName(), ['alt' => "[img]"], true); ?></span>
+            <span class="name"><?= framework\Context::getCurrentProject()->getName(); ?></span>
+        <?php else: ?>
+            <?= fa_image_tag('atlas', ['class' => 'icon']); ?>
+            <span class="name"><?= __('Site documentation'); ?></span>
+        <?php endif; ?>
+        <?= fa_image_tag('chevron-down', ['class' => 'icon toggler']); ?>
+    </button>
+    <div class="dropdown-container from-left">
+        <div class="list-mode"></div>
     </div>
 </div>
 <div class="spacer"></div>

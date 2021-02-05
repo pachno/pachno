@@ -235,8 +235,8 @@
          */
         public function headerMenuSelectedTab(Event $event)
         {
-            if (framework\Context::getRouting()->getCurrentRoute()->getModuleName() == 'publish' && framework\Context::isProjectContext()) {
-                $event->setReturnValue('projects');
+            if (framework\Context::getRouting()->getCurrentRoute()->getModuleName() == 'publish') {
+                $event->setReturnValue('publish');
                 $event->setProcessed();
             }
         }

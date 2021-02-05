@@ -12,7 +12,7 @@
   font-weight: $theme-font-weight-light;
 
   &.type-error {
-    background-color: #d62246;
+    background-color: #9F4A54;
     color: #FFF;
 
     .message {
@@ -21,12 +21,12 @@
   }
 
   &.type-warning {
-    background-color: rgba(249, 245, 178, 0.6);
+    background-color: #FBF2C0;
   }
 
   &.type-info {
-    border-color: #6ae1a5;
-    color: $theme-text-color;
+    border-color: #4E6E58;
+    color: #FFF;
     font-weight: $theme-font-weight-regular;
 
   }

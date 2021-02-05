@@ -5,10 +5,13 @@
     use Exception;
     use InvalidArgumentException;
     use pachno\core\entities;
+    use pachno\core\entities\Project;
     use pachno\core\entities\tables;
     use pachno\core\entities\tables\Milestones;
     use pachno\core\framework;
     use pachno\core\framework\Context;
+    use pachno\core\framework\Request;
+    use pachno\core\framework\Settings;
     use pachno\core\helpers;
 
     /**
@@ -1567,6 +1570,23 @@
             foreach ($al_teams as $tid) {
                 Context::setPermission('canviewissue', $issue->getID(), 'core', 0, 0, $tid, true);
             }
+        }
+
+        /**
+         * Frontpage
+         *
+         * @Route(url="/projects")
+         *
+         * @param Request $request
+         */
+        public function runIndex(Request $request)
+        {
+            if (Settings::isSingleProjectTracker()) {
+                if (($projects = Project::getAllRootProjects(false)) && $project = array_shift($projects)) {
+                    $this->forward($this->getRouting()->generate('project_dashboard', ['project_key' => $project->getKey()]));
+                }
+            }
+            $this->forward403unless($this->getUser()->hasPageAccess('home'));
         }
 
     }

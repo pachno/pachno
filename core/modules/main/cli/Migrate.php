@@ -50,6 +50,9 @@
 
                 return;
             }
+            $this->cliEcho('IssueSpentTimes', self::COLOR_WHITE, self::STYLE_DEFAULT);
+            IssueSpentTimes::getTable()->upgrade(tbg\tables\IssueSpentTimes::getTable());
+            return;
 
             Settings::getTable()->setMaintenanceMode(true);
 
@@ -71,6 +74,9 @@
             $this->cliEcho('Issues', self::COLOR_WHITE, self::STYLE_DEFAULT);
             Issues::getTable()->upgrade(tbg\tables\Issues::getTable());
             $this->cliMoveLeft(6);
+            $this->cliEcho('IssueSpentTimes', self::COLOR_WHITE, self::STYLE_DEFAULT);
+            IssueSpentTimes::getTable()->upgrade(tbg\tables\IssueSpentTimes::getTable());
+            $this->cliMoveLeft(15);
             $this->cliEcho('AgileBoards', self::COLOR_WHITE, self::STYLE_DEFAULT);
             AgileBoards::getTable()->upgrade(tbg\tables\AgileBoards::getTable());
             AgileBoards::getTable()->fixGuestBoards();
