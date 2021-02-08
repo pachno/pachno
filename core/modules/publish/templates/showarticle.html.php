@@ -70,7 +70,9 @@
                         <span class="count-badge"><?= count($attachments); ?></span>
                     </span>
                     <?php if ($article->canEdit()): ?>
-                        <button class="button secondary trigger-file-upload"><?php echo __('Add attachment'); ?></button>
+                        <button class="button secondary trigger-file-upload">
+                            <span class="name"><?php echo __('Add attachment'); ?></span>
+                        </button>
                     <?php elseif (!\pachno\core\framework\Settings::isUploadsEnabled()): ?>
                         <button class="button secondary disabled" onclick="Pachno.UI.Message.error('<?php echo __('File uploads are not enabled'); ?>');"><?php echo __('Attach a file'); ?></button>
                     <?php endif; ?>
@@ -88,7 +90,10 @@
                         <?php echo fa_image_tag('spinner', ['class' => 'fa-spin', 'style' => 'display: none;', 'id' => 'comments_loading_indicator']); ?>
                         <button class="secondary icon" id="sort-comments-button" style="<?php if (!$comment_count) echo 'display: none; '; ?>" onclick="Pachno.Main.Comment.toggleOrder('<?= Comment::TYPE_ARTICLE; ?>', '<?= $article->getID(); ?>')"><?= fa_image_tag('sort', ['class' => 'icon']); ?></button>
                         <?php if ($pachno_user->canPostComments() && ((Context::isProjectContext() && !Context::getCurrentProject()->isArchived()) || !Context::isProjectContext())): ?>
-                            <button id="comment_add_button" class="button secondary" onclick="Pachno.Main.Comment.showPost();"><span><?php echo __('Add comment'); ?></span></button>
+                            <button id="comment_add_button" class="button secondary highlight" onclick="Pachno.Main.Comment.showPost();">
+                                <?= fa_image_tag('comment', ['class' => 'icon']); ?>
+                                <span class="name"><?= __('Post a comment'); ?></span>
+                            </button>
                         <?php endif; ?>
                     </div>
                 </h4>

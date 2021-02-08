@@ -6,7 +6,7 @@
 <a href="javascript:void(0);" class="userlink trigger-backdrop <?php if ($pachno_user->isFriend($user)): ?>friend<?php endif; ?>" data-url="<?php echo make_url('get_partial_for_backdrop', ['key' => 'usercard', 'user_id' => $user->getID()]); ?>">
     <?php if (!isset($userstate) || $userstate): ?><span class="userstate"><?php echo pachno_get_userstate_image($user); ?></span><?php endif; ?>
     <?php if ($show_avatar): ?>
-        <?php $extraClass = (isset($size)) ? $size : "medium"; ?>
+        <?php $extraClass = (isset($size)) ? $size : "small"; ?>
         <?php echo image_tag($user->getAvatarURL(), array('alt' => ' ', 'class' => 'avatar '.$extraClass), true); ?>
     <?php endif; ?>
     <?php echo (isset($displayname)) ? $displayname : $user->getName(); ?>

@@ -1,6 +1,8 @@
 <?php
 
-    $pachno_response->addJavascript('calendarview');
+use pachno\core\entities\DatatypeBase;
+
+$pachno_response->addJavascript('calendarview');
 
 ?>
 <div id="search-builder" class="top-search-filters-container">
@@ -248,7 +250,7 @@
             <?php include_component('search/interactivefilter', array('filter' => \pachno\core\entities\SearchFilter::createFilter($key, array('operator' => '<=', 'value' => time())))); ?>
         <?php endforeach; ?>
         <?php foreach ($nondatecustomfields as $customtype): ?>
-            <?php if ($customtype->getType() == \pachno\core\entities\CustomDatatype::DATE_PICKER || $customtype->getType() == \pachno\core\entities\CustomDatatype::DATETIME_PICKER) continue; ?>
+            <?php if ($customtype->getType() == DatatypeBase::DATE_PICKER || $customtype->getType() == DatatypeBase::DATETIME_PICKER) continue; ?>
             <?php if (!$search_object->hasFilter($customtype->getKey())) include_component('search/interactivefilter', array('filter' => \pachno\core\entities\SearchFilter::createFilter($customtype->getKey()))); ?>
         <?php endforeach; ?>
         <?php foreach ($datecustomfields as $customtype): ?>

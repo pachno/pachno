@@ -5,6 +5,7 @@
     use pachno\core\entities\BoardColumn;
     use pachno\core\entities\Category;
     use pachno\core\entities\CustomDatatype;
+    use pachno\core\entities\DatatypeBase;
     use pachno\core\entities\Milestone;
     use pachno\core\entities\Priority;
     use pachno\core\entities\SavedSearch;
@@ -32,7 +33,7 @@
             ];
             $this->savedsearches = SavedSearches::getTable()->getAllSavedSearchesByUserIDAndPossiblyProjectID(framework\Context::getUser()->getID(), $this->board->getProject()->getID());
             $this->issuetypes = $this->board->getProject()->getIssuetypeScheme()->getIssuetypes();
-            $this->issuefields = CustomDatatype::getByFieldTypes([CustomDatatype::DATE_PICKER, CustomDatatype::DATETIME_PICKER]);
+            $this->issuefields = CustomDatatype::getByFieldTypes([DatatypeBase::DATE_PICKER, DatatypeBase::DATETIME_PICKER]);
             $this->swimlane_groups = [
                 'priority' => $i18n->__('Issue priority'),
                 'severity' => $i18n->__('Issue severity'),

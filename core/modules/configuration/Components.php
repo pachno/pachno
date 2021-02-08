@@ -138,7 +138,7 @@
             if (array_key_exists($this->type, $types)) {
                 $this->items = call_user_func([$types[$this->type], 'getAll']);
                 $this->showitems = true;
-            } elseif (!in_array($this->type, entities\DatatypeBase::getAvailableFields(true))) {
+            } elseif (!array_key_exists($this->type, entities\DatatypeBase::getAvailableFields(true))) {
                 $customtype = entities\CustomDatatype::getByKey($this->type);
                 $this->showitems = $customtype->hasCustomOptions();
                 $this->iscustom = true;
@@ -161,7 +161,7 @@
 
         public function componentIssueTypeSchemeOptions()
         {
-            $this->builtin_fields = entities\Datatype::getAvailableFields(true);
+            $this->builtin_fields = array_keys(entities\DatatypeBase::getAvailableFields(true));
             $this->custom_fields = entities\CustomDatatype::getAll();
             $this->visible_fields = $this->scheme->getVisibleFieldsForIssuetype($this->issue_type);
         }

@@ -274,9 +274,4 @@
             }
         }
 
-        public function componentMainMenustrip()
-        {
-
-        }
-
     }

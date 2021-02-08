@@ -183,7 +183,7 @@
                         'clear' => $i18n->__('Clear this field'),
                         'select' => $i18n->__('%clear_this_field or click to set a new value', ['%clear_this_field' => ''])];
 
-                    if ($customdatatype->getType() == entities\CustomDatatype::CALCULATED_FIELD) {
+                    if ($customdatatype->getType() == entities\DatatypeBase::CALCULATED_FIELD) {
                         $result = $this->issue->getCustomField($key);
                         $customfields_list[$key]['value'] = $result;
                     } elseif ($customdatatype->hasCustomOptions()) {

@@ -1272,8 +1272,8 @@
                     } else {
                         $selected_customdatatype[$customdatatype->getKey()] = null;
                         switch ($customdatatype->getType()) {
-                            case entities\CustomDatatype::INPUT_TEXTAREA_MAIN:
-                            case entities\CustomDatatype::INPUT_TEXTAREA_SMALL:
+                            case entities\DatatypeBase::INPUT_TEXTAREA_MAIN:
+                            case entities\DatatypeBase::INPUT_TEXTAREA_SMALL:
                                 if ($request->hasParameter($customdatatype_value))
                                     $selected_customdatatype[$customdatatype->getKey()] = $request->getParameter($customdatatype_value, null, false);
 
@@ -1299,11 +1299,11 @@
                         }
                     } elseif ($info['required']) {
                         $var_name = "selected_{$field}";
-                        if ((in_array($field, entities\Datatype::getAvailableFields(true)) && ($this->$var_name === null || $this->$var_name === 0)) || (!in_array($field, entities\DatatypeBase::getAvailableFields(true)) && !in_array($field, ['pain_bug_type', 'pain_likelihood', 'pain_effect']) && (array_key_exists($field, $selected_customdatatype) && $selected_customdatatype[$field] === null))) {
+                        if ((array_key_exists($field, entities\DatatypeBase::getAvailableFields(true)) && ($this->$var_name === null || $this->$var_name === 0)) || (!array_key_exists($field, entities\DatatypeBase::getAvailableFields(true)) && !in_array($field, ['pain_bug_type', 'pain_likelihood', 'pain_effect']) && (array_key_exists($field, $selected_customdatatype) && $selected_customdatatype[$field] === null))) {
                             $errors[$field] = true;
                         }
                     } else {
-                        if (in_array($field, entities\Datatype::getAvailableFields(true)) || in_array($field, ['pain_bug_type', 'pain_likelihood', 'pain_effect'])) {
+                        if (array_key_exists($field, entities\DatatypeBase::getAvailableFields(true)) || in_array($field, ['pain_bug_type', 'pain_likelihood', 'pain_effect'])) {
                             if (!$this->selected_project->fieldPermissionCheck($field)) {
                                 $permission_errors[$field] = true;
                             }
@@ -1484,7 +1484,7 @@
             }
 
             $fields_array = $this->selected_project->getReportableFieldsArray($request['issuetype_id'], true);
-            $available_fields = entities\DatatypeBase::getAvailableFields();
+            $available_fields = array_keys(entities\DatatypeBase::getAvailableFields());
             $available_fields[] = 'pain_bug_type';
             $available_fields[] = 'pain_likelihood';
             $available_fields[] = 'pain_effect';
@@ -2545,7 +2545,7 @@
         {
             $field_key = $request['field_key'];
             $return_array = ['description' => null, 'type' => null, 'choices' => null];
-            if ($field_key == 'title' || in_array($field_key, entities\DatatypeBase::getAvailableFields(true))) {
+            if ($field_key == 'title' || array_key_exists($field_key, entities\DatatypeBase::getAvailableFields(true))) {
                 switch ($field_key) {
                     case 'title':
                     case 'shortname':
@@ -2844,7 +2844,7 @@
                         }
                         if ($request['type']) {
                             $type = $request['type'];
-                            if (in_array($type, entities\DatatypeBase::getAvailableFields(true))) {
+                            if (array_key_exists($type, entities\DatatypeBase::getAvailableFields(true))) {
                                 $item = $type;
                             } else {
                                 $item = entities\CustomDatatype::getByKey($type);

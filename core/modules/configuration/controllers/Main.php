@@ -312,7 +312,7 @@
             $issue_type = tables\IssueTypes::getTable()->selectById($request['issue_type_id']);
             $scheme = tables\IssuetypeSchemes::getTable()->selectById($request['scheme_id']);
 
-            $builtin_types = entities\DatatypeBase::getAvailableFields(true);
+            $builtin_types = array_keys(entities\DatatypeBase::getAvailableFields(true));
             $custom_types = CustomDatatype::getAll();
             $visible_fields = $scheme->getVisibleFieldsForIssuetype($issue_type);
             $key = $request['key'];
@@ -2044,55 +2044,55 @@
                                     break;
                                 case entities\WorkflowTransitionAction::CUSTOMFIELD_SET_PREFIX . $this->action->getCustomActionType():
                                     switch (CustomDatatype::getByKey($this->action->getCustomActionType())->getType()) {
-                                        case CustomDatatype::INPUT_TEXTAREA_MAIN:
-                                        case CustomDatatype::INPUT_TEXTAREA_SMALL:
+                                        case entities\DatatypeBase::INPUT_TEXTAREA_MAIN:
+                                        case entities\DatatypeBase::INPUT_TEXTAREA_SMALL:
                                             break;
-                                        case CustomDatatype::DATE_PICKER:
-                                        case CustomDatatype::DATETIME_PICKER:
-                                            return $this->renderJSON(['content' => date('Y-m-d' . (CustomDatatype::getByKey($this->action->getCustomActionType())->getType() == CustomDatatype::DATETIME_PICKER ? ' H:i' : ''), (int)$text)]);
+                                        case entities\DatatypeBase::DATE_PICKER:
+                                        case entities\DatatypeBase::DATETIME_PICKER:
+                                            return $this->renderJSON(['content' => date('Y-m-d' . (CustomDatatype::getByKey($this->action->getCustomActionType())->getType() == entities\DatatypeBase::DATETIME_PICKER ? ' H:i' : ''), (int)$text)]);
                                             break;
-                                        case CustomDatatype::USER_CHOICE:
+                                        case entities\DatatypeBase::USER_CHOICE:
                                             return $this->renderJSON(['content' => $this->getComponentHTML('main/userdropdown', ['user' => $text])]);
                                             break;
-                                        case CustomDatatype::TEAM_CHOICE:
+                                        case entities\DatatypeBase::TEAM_CHOICE:
                                             return $this->renderJSON(['content' => $this->getComponentHTML('main/teamdropdown', ['team' => $text])]);
                                             break;
-                                        case CustomDatatype::CLIENT_CHOICE:
+                                        case entities\DatatypeBase::CLIENT_CHOICE:
                                             if (is_numeric($this->action->getTargetValue())) {
                                                 $text = ($this->action->getTargetValue()) ? Clients::getTable()->selectById((int)$this->action->getTargetValue())->getName() : $this->getI18n()->__('Value provided by user');
                                             }
                                             break;
-                                        case CustomDatatype::RELEASES_CHOICE:
+                                        case entities\DatatypeBase::RELEASES_CHOICE:
                                             if (is_numeric($this->action->getTargetValue())) {
                                                 $target = ($this->action->getTargetValue()) ? Builds::getTable()->selectById((int)$this->action->getTargetValue()) : null;
                                                 $text = ($this->action->getTargetValue()) ? $target->getProject()->getName() . ' - ' . $target->getName() : $this->getI18n()->__('Value provided by user');
                                             }
                                             break;
-                                        case CustomDatatype::COMPONENTS_CHOICE:
+                                        case entities\DatatypeBase::COMPONENTS_CHOICE:
                                             if (is_numeric($this->action->getTargetValue())) {
                                                 $target = ($this->action->getTargetValue()) ? Components::getTable()->selectById((int)$this->action->getTargetValue()) : null;
                                                 $text = ($this->action->getTargetValue()) ? $target->getProject()->getName() . ' - ' . $target->getName() : $this->getI18n()->__('Value provided by user');
                                             }
                                             break;
-                                        case CustomDatatype::EDITIONS_CHOICE:
+                                        case entities\DatatypeBase::EDITIONS_CHOICE:
                                             if (is_numeric($this->action->getTargetValue())) {
                                                 $target = ($this->action->getTargetValue()) ? Editions::getTable()->selectById((int)$this->action->getTargetValue()) : null;
                                                 $text = ($this->action->getTargetValue()) ? $target->getProject()->getName() . ' - ' . $target->getName() : $this->getI18n()->__('Value provided by user');
                                             }
                                             break;
-                                        case CustomDatatype::MILESTONE_CHOICE:
+                                        case entities\DatatypeBase::MILESTONE_CHOICE:
                                             if (is_numeric($this->action->getTargetValue())) {
                                                 $target = ($this->action->getTargetValue()) ? Milestones::getTable()->selectById((int)$this->action->getTargetValue()) : null;
                                                 $text = ($this->action->getTargetValue()) ? $target->getProject()->getName() . ' - ' . $target->getName() : $this->getI18n()->__('Value provided by user');
                                             }
                                             break;
-                                        case CustomDatatype::STATUS_CHOICE:
+                                        case entities\DatatypeBase::STATUS_CHOICE:
                                             if (is_numeric($this->action->getTargetValue())) {
                                                 $target = ($this->action->getTargetValue()) ? ListTypes::getTable()->selectById((int)$this->action->getTargetValue()) : null;
                                                 $text = ($this->action->getTargetValue()) ? '<span class="status-badge" style="background-color: ' . $target->getColor() . '; color: ' . $target->getTextColor() . ';">' . $target->getName() . '</span>' : $this->getI18n()->__('Value provided by user');
                                             }
                                             break;
-                                        case CustomDatatype::DROPDOWN_CHOICE_TEXT:
+                                        case entities\DatatypeBase::DROPDOWN_CHOICE_TEXT:
                                         default:
                                             if (is_numeric($this->action->getTargetValue())) {
                                                 $text = ($this->action->getTargetValue()) ? tables\CustomFieldOptions::getTable()->selectById((int)$this->action->getTargetValue())->getName() : $this->getI18n()->__('Value provided by user');
@@ -2139,15 +2139,15 @@
                             $text = null;
                             if ($rule->isCustom()) {
                                 switch ($rule->getCustomType()) {
-                                    case CustomDatatype::RADIO_CHOICE:
-                                    case CustomDatatype::DROPDOWN_CHOICE_TEXT:
-                                    case CustomDatatype::TEAM_CHOICE:
-                                    case CustomDatatype::STATUS_CHOICE:
-                                    case CustomDatatype::MILESTONE_CHOICE:
-                                    case CustomDatatype::CLIENT_CHOICE:
-                                    case CustomDatatype::COMPONENTS_CHOICE:
-                                    case CustomDatatype::EDITIONS_CHOICE:
-                                    case CustomDatatype::RELEASES_CHOICE:
+                                    case entities\DatatypeBase::RADIO_CHOICE:
+                                    case entities\DatatypeBase::DROPDOWN_CHOICE_TEXT:
+                                    case entities\DatatypeBase::TEAM_CHOICE:
+                                    case entities\DatatypeBase::STATUS_CHOICE:
+                                    case entities\DatatypeBase::MILESTONE_CHOICE:
+                                    case entities\DatatypeBase::CLIENT_CHOICE:
+                                    case entities\DatatypeBase::COMPONENTS_CHOICE:
+                                    case entities\DatatypeBase::EDITIONS_CHOICE:
+                                    case entities\DatatypeBase::RELEASES_CHOICE:
                                         $rule->setRuleValue(join(',', $request['rule_value'] ?: []));
                                         $text = ($rule->getRuleValue()) ? $rule->getRuleValueAsJoinedString() : $this->getI18n()->__('Any valid value');
                                         break;

@@ -525,7 +525,7 @@
 
                 default:
                     if ($this->isCustomAction()) {
-                        if ($this->getCustomField()->getType() != CustomDatatype::CALCULATED_FIELD) {
+                        if ($this->getCustomField()->getType() != DatatypeBase::CALCULATED_FIELD) {
                             return $this->getCustomField()->getOptions();
                         }
                     }
@@ -563,7 +563,7 @@
                 case self::ACTION_SET_REPRODUCABILITY:
                     return true;
                 default:
-                    return ($this->isCustomAction() && $this->getCustomField()->getType() != CustomDatatype::CALCULATED_FIELD);
+                    return ($this->isCustomAction() && $this->getCustomField()->getType() != DatatypeBase::CALCULATED_FIELD);
             }
         }
 

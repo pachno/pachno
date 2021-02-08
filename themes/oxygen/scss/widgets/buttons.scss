@@ -177,11 +177,14 @@ button.secondary.highlight,
 input.button.secondary.highlight,
 .button.secondary.highlight {
   border: 1px solid transparent;
-  color: $theme-primary-color;
   font-weight: $theme-font-weight-heavy;
+  
+  &:not(.disabled):not([disabled]) {
+    color: $theme-primary-color;
 
-  &:hover {
-    border-color: $theme-primary-color;
+    &:hover {
+      border-color: $theme-primary-color;
+    }
   }
 }
 button.secondary.enabled,
@@ -327,7 +330,7 @@ h1, h2, h3, h4, h5, h6 {
   .button {
     &,
     &:hover {
-      font-size: .9rem;
+      font-size: .85rem;
     }
   }
 }

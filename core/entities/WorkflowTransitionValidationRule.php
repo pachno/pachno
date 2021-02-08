@@ -363,15 +363,15 @@
                 default:
                     if ($this->isCustom()) {
                         switch ($this->getCustomType()) {
-                            case CustomDatatype::RADIO_CHOICE:
-                            case CustomDatatype::DROPDOWN_CHOICE_TEXT:
-                            case CustomDatatype::TEAM_CHOICE:
-                            case CustomDatatype::STATUS_CHOICE:
-                            case CustomDatatype::MILESTONE_CHOICE:
-                            case CustomDatatype::CLIENT_CHOICE:
-                            case CustomDatatype::COMPONENTS_CHOICE:
-                            case CustomDatatype::EDITIONS_CHOICE:
-                            case CustomDatatype::RELEASES_CHOICE:
+                            case DatatypeBase::RADIO_CHOICE:
+                            case DatatypeBase::DROPDOWN_CHOICE_TEXT:
+                            case DatatypeBase::TEAM_CHOICE:
+                            case DatatypeBase::STATUS_CHOICE:
+                            case DatatypeBase::MILESTONE_CHOICE:
+                            case DatatypeBase::CLIENT_CHOICE:
+                            case DatatypeBase::COMPONENTS_CHOICE:
+                            case DatatypeBase::EDITIONS_CHOICE:
+                            case DatatypeBase::RELEASES_CHOICE:
                                 $valid_items = explode(',', $this->getRuleValue());
                                 if ($input instanceof Issue) {
                                     $value = $input->getCustomField($this->getCustomFieldname());
@@ -468,29 +468,29 @@
                             $field = $fieldname::getB2DBTable()->selectByID((int)$value);
                         } elseif ($is_custom) {
                             switch ($customtype) {
-                                case CustomDatatype::RADIO_CHOICE:
-                                case CustomDatatype::DROPDOWN_CHOICE_TEXT:
+                                case DatatypeBase::RADIO_CHOICE:
+                                case DatatypeBase::DROPDOWN_CHOICE_TEXT:
                                     $field = tables\CustomFieldOptions::getTable()->selectById((int)$value);
                                     break;
-                                case CustomDatatype::TEAM_CHOICE:
+                                case DatatypeBase::TEAM_CHOICE:
                                     $field = Teams::getTable()->selectById((int)$value);
                                     break;
-                                case CustomDatatype::STATUS_CHOICE:
+                                case DatatypeBase::STATUS_CHOICE:
                                     $field = ListTypes::getTable()->selectById((int)$value);
                                     break;
-                                case CustomDatatype::MILESTONE_CHOICE:
+                                case DatatypeBase::MILESTONE_CHOICE:
                                     $field = Milestones::getTable()->selectById((int)$value);
                                     break;
-                                case CustomDatatype::CLIENT_CHOICE:
+                                case DatatypeBase::CLIENT_CHOICE:
                                     $field = Clients::getTable()->selectById((int)$value);
                                     break;
-                                case CustomDatatype::COMPONENTS_CHOICE:
+                                case DatatypeBase::COMPONENTS_CHOICE:
                                     $field = Components::getTable()->selectById((int)$value);
                                     break;
-                                case CustomDatatype::EDITIONS_CHOICE:
+                                case DatatypeBase::EDITIONS_CHOICE:
                                     $field = Editions::getTable()->selectById((int)$value);
                                     break;
-                                case CustomDatatype::RELEASES_CHOICE:
+                                case DatatypeBase::RELEASES_CHOICE:
                                     $field = Builds::getTable()->selectById((int)$value);
                                     break;
                             }

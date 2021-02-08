@@ -2709,7 +2709,7 @@
             $var_name = "_customfield{$key}";
             if (property_exists($this, $var_name)) {
                 $customtype = CustomDatatype::getByKey($key);
-                if ($customtype->getType() == CustomDatatype::CALCULATED_FIELD) {
+                if ($customtype->getType() == DatatypeBase::CALCULATED_FIELD) {
                     $result = null;
                     $options = $customtype->getOptions();
                     if (!empty($options)) {
@@ -2754,28 +2754,28 @@
                 } elseif ($this->$var_name && $customtype->hasPredefinedOptions() && !$this->$var_name instanceof common\Identifiable) {
                     try {
                         switch ($customtype->getType()) {
-                            case CustomDatatype::EDITIONS_CHOICE:
+                            case DatatypeBase::EDITIONS_CHOICE:
                                 $this->$var_name = tables\Editions::getTable()->selectById($this->$var_name);
                                 break;
-                            case CustomDatatype::COMPONENTS_CHOICE:
+                            case DatatypeBase::COMPONENTS_CHOICE:
                                 $this->$var_name = tables\Components::getTable()->selectById($this->$var_name);
                                 break;
-                            case CustomDatatype::RELEASES_CHOICE:
+                            case DatatypeBase::RELEASES_CHOICE:
                                 $this->$var_name = tables\Builds::getTable()->selectById($this->$var_name);
                                 break;
-                            case CustomDatatype::MILESTONE_CHOICE:
+                            case DatatypeBase::MILESTONE_CHOICE:
                                 $this->$var_name = tables\Milestones::getTable()->selectById($this->$var_name);
                                 break;
-                            case CustomDatatype::CLIENT_CHOICE:
+                            case DatatypeBase::CLIENT_CHOICE:
                                 $this->$var_name = tables\Clients::getTable()->selectById($this->$var_name);
                                 break;
-                            case CustomDatatype::USER_CHOICE:
+                            case DatatypeBase::USER_CHOICE:
                                 $this->$var_name = tables\Users::getTable()->selectById($this->$var_name);
                                 break;
-                            case CustomDatatype::TEAM_CHOICE:
+                            case DatatypeBase::TEAM_CHOICE:
                                 $this->$var_name = tables\Teams::getTable()->selectById($this->$var_name);
                                 break;
-                            case CustomDatatype::STATUS_CHOICE:
+                            case DatatypeBase::STATUS_CHOICE:
                                 $this->$var_name = Status::getB2DBTable()->selectById($this->$var_name);
                                 break;
                         }
@@ -4566,7 +4566,7 @@
                 $fields = DatatypeBase::getAvailableFields();
                 $visible_fields = $this->getProject()->getVisibleFieldsArray($this->getIssueType());
 
-                foreach ($fields as $field) {
+                foreach ($fields as $field => $field_type) {
                     $identifiable = true;
                     switch ($field) {
                         case 'shortname':
@@ -4584,6 +4584,11 @@
                         case 'owner':
                             $value = $this->getOwner();
                             break;
+                        case 'assignee':
+                            $value = $this->getAssignee();
+                            break;
+                        case 'milestone':
+                            $value = $this->getMilestone();
                             break;
                         case 'percent_complete':
                             $value = $this->getPercentCompleted();
@@ -4605,8 +4610,6 @@
                             $value = $this->getSpentTime(true, true);
                             $identifiable = false;
                             break;
-                        case 'milestone':
-                        case 'assignee':
                         case 'build':
                         case 'edition':
                         case 'component':
@@ -4632,7 +4635,7 @@
 
                 $return_values['comments'] = $comments;
                 $return_values['visible_fields'] = $visible_fields;
-                $return_values['fields'] = array_keys($fields);
+                $return_values['fields'] = $fields;
             }
 
             return $return_values;
@@ -4985,33 +4988,33 @@
         {
             foreach (CustomDatatype::getAll() as $key => $customdatatype) {
                 switch ($customdatatype->getType()) {
-                    case CustomDatatype::INPUT_TEXT:
-                    case CustomDatatype::INPUT_TEXTAREA_SMALL:
-                    case CustomDatatype::INPUT_TEXTAREA_MAIN:
-                    case CustomDatatype::DATE_PICKER:
-                    case CustomDatatype::DATETIME_PICKER:
+                    case DatatypeBase::INPUT_TEXT:
+                    case DatatypeBase::INPUT_TEXTAREA_SMALL:
+                    case DatatypeBase::INPUT_TEXTAREA_MAIN:
+                    case DatatypeBase::DATE_PICKER:
+                    case DatatypeBase::DATETIME_PICKER:
                         $option_id = $this->getCustomField($key);
                         tables\IssueCustomFields::getTable()->saveIssueCustomFieldValue($option_id, $customdatatype->getID(), $this->getID());
                         break;
-                    case CustomDatatype::EDITIONS_CHOICE:
-                    case CustomDatatype::COMPONENTS_CHOICE:
-                    case CustomDatatype::RELEASES_CHOICE:
-                    case CustomDatatype::MILESTONE_CHOICE:
-                    case CustomDatatype::STATUS_CHOICE:
-                    case CustomDatatype::USER_CHOICE:
-                    case CustomDatatype::TEAM_CHOICE:
-                    case CustomDatatype::CLIENT_CHOICE:
+                    case DatatypeBase::EDITIONS_CHOICE:
+                    case DatatypeBase::COMPONENTS_CHOICE:
+                    case DatatypeBase::RELEASES_CHOICE:
+                    case DatatypeBase::MILESTONE_CHOICE:
+                    case DatatypeBase::STATUS_CHOICE:
+                    case DatatypeBase::USER_CHOICE:
+                    case DatatypeBase::TEAM_CHOICE:
+                    case DatatypeBase::CLIENT_CHOICE:
                         $option_object = null;
                         try {
                             switch ($customdatatype->getType()) {
-                                case CustomDatatype::EDITIONS_CHOICE:
-                                case CustomDatatype::COMPONENTS_CHOICE:
-                                case CustomDatatype::RELEASES_CHOICE:
-                                case CustomDatatype::MILESTONE_CHOICE:
-                                case CustomDatatype::CLIENT_CHOICE:
-                                case CustomDatatype::STATUS_CHOICE:
-                                case CustomDatatype::USER_CHOICE:
-                                case CustomDatatype::TEAM_CHOICE:
+                                case DatatypeBase::EDITIONS_CHOICE:
+                                case DatatypeBase::COMPONENTS_CHOICE:
+                                case DatatypeBase::RELEASES_CHOICE:
+                                case DatatypeBase::MILESTONE_CHOICE:
+                                case DatatypeBase::CLIENT_CHOICE:
+                                case DatatypeBase::STATUS_CHOICE:
+                                case DatatypeBase::USER_CHOICE:
+                                case DatatypeBase::TEAM_CHOICE:
                                     $option_object = $this->getCustomField($key);
                                     break;
                             }
@@ -5314,49 +5317,49 @@
                                     $customdatatype = CustomDatatype::getByKey($key);
 
                                     switch ($customdatatype->getType()) {
-                                        case CustomDatatype::INPUT_TEXT:
+                                        case DatatypeBase::INPUT_TEXT:
                                             $new_value = ($this->getCustomField($key) != '') ? $this->getCustomField($key) : Context::getI18n()->__('Unknown');
                                             $this->addLogEntry(LogItem::ACTION_ISSUE_UPDATE_CUSTOMFIELD, $key . ': ' . $new_value, $original_value, $compare_value);
                                             break;
-                                        case CustomDatatype::INPUT_TEXTAREA_SMALL:
-                                        case CustomDatatype::INPUT_TEXTAREA_MAIN:
+                                        case DatatypeBase::INPUT_TEXTAREA_SMALL:
+                                        case DatatypeBase::INPUT_TEXTAREA_MAIN:
                                             $new_value = ($this->getCustomField($key) != '') ? $this->getCustomField($key) : Context::getI18n()->__('Unknown');
                                             $this->addLogEntry(LogItem::ACTION_ISSUE_UPDATE_CUSTOMFIELD, $key . ': ' . $new_value, $original_value, $compare_value);
                                             break;
-                                        case CustomDatatype::EDITIONS_CHOICE:
-                                        case CustomDatatype::COMPONENTS_CHOICE:
-                                        case CustomDatatype::RELEASES_CHOICE:
-                                        case CustomDatatype::MILESTONE_CHOICE:
-                                        case CustomDatatype::STATUS_CHOICE:
-                                        case CustomDatatype::TEAM_CHOICE:
-                                        case CustomDatatype::USER_CHOICE:
-                                        case CustomDatatype::CLIENT_CHOICE:
+                                        case DatatypeBase::EDITIONS_CHOICE:
+                                        case DatatypeBase::COMPONENTS_CHOICE:
+                                        case DatatypeBase::RELEASES_CHOICE:
+                                        case DatatypeBase::MILESTONE_CHOICE:
+                                        case DatatypeBase::STATUS_CHOICE:
+                                        case DatatypeBase::TEAM_CHOICE:
+                                        case DatatypeBase::USER_CHOICE:
+                                        case DatatypeBase::CLIENT_CHOICE:
                                             $old_object = null;
                                             $new_object = null;
                                             try {
                                                 switch ($customdatatype->getType()) {
-                                                    case CustomDatatype::EDITIONS_CHOICE:
+                                                    case DatatypeBase::EDITIONS_CHOICE:
                                                         $old_object = Edition::getB2DBTable()->selectById($original_value);
                                                         break;
-                                                    case CustomDatatype::COMPONENTS_CHOICE:
+                                                    case DatatypeBase::COMPONENTS_CHOICE:
                                                         $old_object = Component::getB2DBTable()->selectById($original_value);
                                                         break;
-                                                    case CustomDatatype::RELEASES_CHOICE:
+                                                    case DatatypeBase::RELEASES_CHOICE:
                                                         $old_object = Build::getB2DBTable()->selectById($original_value);
                                                         break;
-                                                    case CustomDatatype::MILESTONE_CHOICE:
+                                                    case DatatypeBase::MILESTONE_CHOICE:
                                                         $old_object = Milestone::getB2DBTable()->selectById($original_value);
                                                         break;
-                                                    case CustomDatatype::STATUS_CHOICE:
+                                                    case DatatypeBase::STATUS_CHOICE:
                                                         $old_object = Status::getB2DBTable()->selectById($original_value);
                                                         break;
-                                                    case CustomDatatype::TEAM_CHOICE:
+                                                    case DatatypeBase::TEAM_CHOICE:
                                                         $old_object = Team::getB2DBTable()->selectById($original_value);
                                                         break;
-                                                    case CustomDatatype::USER_CHOICE:
+                                                    case DatatypeBase::USER_CHOICE:
                                                         $old_object = User::getB2DBTable()->selectById($original_value);
                                                         break;
-                                                    case CustomDatatype::CLIENT_CHOICE:
+                                                    case DatatypeBase::CLIENT_CHOICE:
                                                         $old_object = Client::getB2DBTable()->selectById($original_value);
                                                         break;
                                                 }
@@ -5364,14 +5367,14 @@
                                             }
                                             try {
                                                 switch ($customdatatype->getType()) {
-                                                    case CustomDatatype::EDITIONS_CHOICE:
-                                                    case CustomDatatype::COMPONENTS_CHOICE:
-                                                    case CustomDatatype::RELEASES_CHOICE:
-                                                    case CustomDatatype::MILESTONE_CHOICE:
-                                                    case CustomDatatype::STATUS_CHOICE:
-                                                    case CustomDatatype::TEAM_CHOICE:
-                                                    case CustomDatatype::USER_CHOICE:
-                                                    case CustomDatatype::CLIENT_CHOICE:
+                                                    case DatatypeBase::EDITIONS_CHOICE:
+                                                    case DatatypeBase::COMPONENTS_CHOICE:
+                                                    case DatatypeBase::RELEASES_CHOICE:
+                                                    case DatatypeBase::MILESTONE_CHOICE:
+                                                    case DatatypeBase::STATUS_CHOICE:
+                                                    case DatatypeBase::TEAM_CHOICE:
+                                                    case DatatypeBase::USER_CHOICE:
+                                                    case DatatypeBase::CLIENT_CHOICE:
                                                         $new_object = $this->getCustomField($key);
                                                         break;
                                                 }

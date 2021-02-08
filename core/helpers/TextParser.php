@@ -161,14 +161,14 @@
             $retval = $this->_emphasize_off() . "\n";
 
             $retval .= "<h{$level}";
+            $id = $this->toc_base_id . '_toc_' . (count($this->toc) + 1);
             if ($this->use_toc) {
-                $id = $this->toc_base_id . '_toc_' . (count($this->toc) + 1);
                 $this->toc[] = ['level' => $level, 'content' => $content, 'id' => $id];
-                $retval .= " id=\"{$id}\"";
             }
+            $retval .= " id=\"{$id}\"";
             $retval .= ">" . $content;
             if (!isset($this->options['embedded']) || $this->options['embedded'] == false) {
-                $retval .= "&nbsp;<a href=\"#top\">&uArr;&nbsp;" . Context::getI18n()->__('top') . "</a>";
+                $retval .= "&nbsp;<a href=\"#{$id}\">" . fa_image_tag('link', ['class' => 'icon']) . '</a>';
             }
             $retval .= "</h{$level}>\n";
 

@@ -1,11 +1,13 @@
-                            <?php foreach ($customfields_list as $field => $info): ?>
+                            <?php use pachno\core\entities\DatatypeBase;
+
+                            foreach ($customfields_list as $field => $info): ?>
                             <?php
                                 if (!$info['visible']) {
                                     continue;
                                 }
                                 switch ($info['type'])
                                 {
-                                    case \pachno\core\entities\CustomDatatype::INPUT_TEXTAREA_MAIN:
+                                    case DatatypeBase::INPUT_TEXTAREA_MAIN:
                                         ?>
                                         <div id="<?php echo $field;?>_field">
                                             <fieldset id="<?php echo $field; ?>_header" class="hoverable viewissue_customfield">

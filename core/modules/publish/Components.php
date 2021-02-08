@@ -26,9 +26,16 @@
             $this->whatlinkshere = ($this->article instanceof Article) ? $this->article->getLinkingArticles() : [];
         }
 
-        public function componentTools()
+        public function componentMainMenustrip()
         {
+            $this->publish = framework\Context::getModule('publish');
+            $articles = [];
 
+            foreach ($this->getUser()->getAssociatedProjects() as $project) {
+                $articles[$project->getID()] = Articles::getTable()->getArticleByName('Main Page', $project);
+            }
+            $this->articles = $articles;
+            $this->main_article = Articles::getTable()->getArticleByName('Main Page');
         }
 
         public function componentArticledisplay()

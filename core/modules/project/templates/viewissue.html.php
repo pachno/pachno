@@ -43,7 +43,7 @@
 <script type="text/javascript">
     Pachno.on(Pachno.EVENTS.ready, function () {
         const issue = new Issue(<?= json_encode($json); ?>, undefined, false);
-        issue.allowShortcuts(<?= json_encode($json['visible_fields']); ?>);
+        issue.allowShortcuts(<?= json_encode($json['fields']); ?>);
 
         Pachno.on(Pachno.EVENTS.issueUpdate, () => {
             $('#issue-update-indicator').addClass('active');

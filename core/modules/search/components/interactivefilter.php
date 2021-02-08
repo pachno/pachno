@@ -1,6 +1,7 @@
 <?php
 
 use pachno\core\entities\CustomDatatype;
+use pachno\core\entities\DatatypeBase;
 use pachno\core\entities\SearchFilter;
 use pachno\core\framework\Context;
 
@@ -217,32 +218,32 @@ if ($filter instanceof SearchFilter): ?>
                 {
                     switch ($filter->getFilterType())
                     {
-                        case CustomDatatype::DATE_PICKER:
-                        case CustomDatatype::DATETIME_PICKER:
+                        case DatatypeBase::DATE_PICKER:
+                        case DatatypeBase::DATETIME_PICKER:
                             include_component('search/interactivefilter_date', compact('filter'));
                             break;
-                        case CustomDatatype::RADIO_CHOICE:
-                        case CustomDatatype::DROPDOWN_CHOICE_TEXT:
+                        case DatatypeBase::RADIO_CHOICE:
+                        case DatatypeBase::DROPDOWN_CHOICE_TEXT:
                             include_component('search/interactivefilter_choice', compact('filter'));
                             break;
-                        case CustomDatatype::COMPONENTS_CHOICE:
-                        case CustomDatatype::EDITIONS_CHOICE:
-                        case CustomDatatype::RELEASES_CHOICE:
-                        case CustomDatatype::MILESTONE_CHOICE:
+                        case DatatypeBase::COMPONENTS_CHOICE:
+                        case DatatypeBase::EDITIONS_CHOICE:
+                        case DatatypeBase::RELEASES_CHOICE:
+                        case DatatypeBase::MILESTONE_CHOICE:
                             include_component('search/interactivefilter_affected', compact('filter'));
                             break;
-                        case CustomDatatype::USER_CHOICE:
+                        case DatatypeBase::USER_CHOICE:
                             include_component('search/interactivefilter_user', compact('filter'));
                             break;
-                        case CustomDatatype::TEAM_CHOICE:
+                        case DatatypeBase::TEAM_CHOICE:
                             include_component('search/interactivefilter_team', compact('filter'));
                             break;
-                        case CustomDatatype::CLIENT_CHOICE:
+                        case DatatypeBase::CLIENT_CHOICE:
                             include_component('search/interactivefilter_client', compact('filter'));
                             break;
-                        case CustomDatatype::INPUT_TEXT:
-                        case CustomDatatype::INPUT_TEXTAREA_MAIN:
-                        case CustomDatatype::INPUT_TEXTAREA_SMALL:
+                        case DatatypeBase::INPUT_TEXT:
+                        case DatatypeBase::INPUT_TEXTAREA_MAIN:
+                        case DatatypeBase::INPUT_TEXTAREA_SMALL:
                             include_component('search/interactivefilter_text', compact('filter'));
                             break;
                     }

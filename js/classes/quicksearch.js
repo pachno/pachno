@@ -55,7 +55,6 @@ class Quicksearch {
         this.$results_container.html('');
 
         for (const choice of this.visible_choices) {
-            console.log(choice);
             if (choice.previous_choice === undefined) {
                 console.error(choice);
             }

@@ -1,4 +1,6 @@
-<?php if (isset($customtype)): ?>
+<?php use pachno\core\entities\DatatypeBase;
+
+if (isset($customtype)): ?>
     <div class="form-container">
         <form accept-charset="<?= \pachno\core\framework\Context::getI18n()->getCharset(); ?>" action="<?= make_url('configure_issuefields_update_customtype', array('type' => $type)); ?>" onsubmit="Pachno.Config.Issuefields.Custom.update('<?= make_url('configure_issuefields_update_customtype', array('type' => $type)); ?>', '<?= $type; ?>');return false;" id="edit_custom_type_<?= $type; ?>_form">
             <div class="form-row">
@@ -23,7 +25,7 @@
     </div>
 <?php endif; ?>
 <?php if (isset($customtype)): ?>
-    <?php if ($customtype->getType() == \pachno\core\entities\CustomDatatype::CALCULATED_FIELD): ?>
+    <?php if ($customtype->getType() == DatatypeBase::CALCULATED_FIELD): ?>
         <div class="header_div" style="margin-top: 15px;">
             <?= __('Formula'); ?>
         </div>

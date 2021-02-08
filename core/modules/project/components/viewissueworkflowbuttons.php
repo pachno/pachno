@@ -21,7 +21,7 @@
             </li>
         <?php endif; ?>
     </ul>
-    <button class="button secondary highlight trigger-start-time-tracking">
+    <button class="button secondary highlight trigger-start-time-tracking" disabled>
         <?= fa_image_tag('play-circle', ['class' => 'icon']); ?>
         <span class="name"><?= __('Track time'); ?></span>
     </button>

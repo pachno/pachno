@@ -93,6 +93,27 @@ use pachno\core\framework\Context;
         <?php endif; ?>
     <?php endif; ?>
     <?php if ($article->getID()): ?>
+        <div class="toggle-favourite">
+            <?php if ($pachno_user->isGuest()): ?>
+                <button class="button secondary disabled" disabled>
+                    <?= fa_image_tag('star', ['class' => 'unsubscribed']); ?>
+                </button>
+                <div class="tooltip from-above from-right">
+                    <?= __('Please log in to subscribe to updates for this article'); ?>
+                </div>
+            <?php else: ?>
+                <div class="tooltip from-above from-right">
+                    <?= __('Click the star to toggle whether you want to be notified whenever this article updates or changes'); ?><br>
+                </div>
+                <?= fa_image_tag('spinner', array('id' => 'article_favourite_indicator_'.$article->getId(), 'style' => 'display: none;', 'class' => 'fa-spin')); ?>
+                <button class="button icon secondary" id="article_favourite_faded_<?= $article->getId(); ?>" style="<?= ($pachno_user->isArticleStarred($article->getID())) ? 'display: none;' : ''; ?>" onclick="Pachno.Main.toggleFavouriteArticle('<?= make_url('publish_toggle_favourite_article', ['article_id' => $article->getID(), 'user_id' => $pachno_user->getID()]); ?>', <?= $article->getID(); ?>);">
+                    <?= fa_image_tag('star', ['class' => 'unsubscribed']); ?>
+                </button>
+                <button class="button icon secondary" id="article_favourite_normal_<?= $article->getId(); ?>" style="<?= (!$pachno_user->isArticleStarred($article->getID())) ? 'display: none;' : ''; ?>" onclick="Pachno.Main.toggleFavouriteArticle('<?= make_url('publish_toggle_favourite_article', ['article_id' => $article->getID(), 'user_id' => $pachno_user->getID()]); ?>', <?= $article->getID(); ?>);">
+                    <?= fa_image_tag('star', ['class' => 'subscribed']); ?>
+                </button>
+            <?php endif; ?>
+        </div>
         <div class="dropper-container">
             <a class="button dropper icon secondary"><?= fa_image_tag('ellipsis-v'); ?></a>
             <div class="dropdown-container">

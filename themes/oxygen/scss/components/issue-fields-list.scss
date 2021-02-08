@@ -18,6 +18,12 @@
       opacity: 0;
       transform: scaleX(0);
       height: 1px;
+
+      &.force-visible {
+        opacity: 1;
+        transform: scaleX(1);
+        height: auto;
+      }
     }
 
     & + .fields-list-container:not(.not-visible) {
@@ -73,8 +79,9 @@
 
     .content {
       flex: 1 1 auto;
-      margin-left: 24px;
       font-size: 1.1em;
+      padding: .25em .65em;
+      border-radius: 4px;
       font-weight: $theme-font-weight-light;
       margin-bottom: 2em;
     }

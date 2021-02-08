@@ -84,6 +84,20 @@ class Issue {
         })
     }
 
+    triggerEditField(field) {
+        const $container_element = $(`#${field}_field`);
+        const $element = $(`[data-editable-field][data-issue-id=${this.id}][data-field=${field}]`);
+        const $textarea = $(`[data-editable-textarea][data-issue-id=${this.id}][data-field=${field}]`);
+        const editor = getEditor($textarea.attr('id'));
+
+        $container_element.addClass('force-visible');
+        $element.addClass('editing');
+        setTimeout(() => {
+            editor.focus();
+            editor.codemirror.focus();
+        }, 250);
+    }
+
     setupListeners() {
         const $body = $('body');
         const issue = this;
@@ -101,14 +115,7 @@ class Issue {
         $body.off('click', `.editable[data-editable-field][data-issue-id=${this.id}]`);
         $body.on('click', `.editable[data-editable-field][data-issue-id=${this.id}]`, function () {
             const $element = $(this);
-            const $textarea = $(`[data-editable-textarea][data-issue-id=${issue.id}][data-field=${$element.data('field')}]`);
-            const editor = getEditor($textarea.attr('id'));
-
-            $element.addClass('editing');
-            setTimeout(() => {
-                editor.focus();
-                editor.codemirror.focus();
-            }, 250);
+            issue.triggerEditField($element.data('field'));
         });
 
         $body.off('click', `[data-trigger-save][data-issue-id=${this.id}]`);
@@ -117,9 +124,12 @@ class Issue {
             const $textarea = $(`[data-editable-textarea][data-issue-id=${issue.id}][data-field=${$element.data('field')}]`);
             const $value_container = $(`[data-editable-field][data-issue-id=${issue.id}][data-field=${$element.data('field')}]`);
             const editor = getEditor($textarea.attr('id'));
-            issue.postAndUpdate($element.data('field'), editor.value())
+            const field = $element.data('field');
+            const $container_element = $(`#${field}_field`);
+            issue.postAndUpdate(field, editor.value())
                 .then(() => {
                     $value_container.removeClass('editing');
+                    $container_element.removeClass('force-visible');
                 })
         });
 
@@ -129,8 +139,18 @@ class Issue {
             const $value_container = $(`[data-editable-field][data-issue-id=${issue.id}][data-field=${$element.data('field')}]`);
             const $textarea = $(`[data-editable-textarea][data-issue-id=${issue.id}][data-field=${$element.data('field')}]`);
             const editor = getEditor($textarea.attr('id'));
-            editor.value(issue[$element.data('field')]);
+            const field = $element.data('field');
+            const $container_element = $(`#${field}_field`);
+            editor.value(issue[field]);
             $value_container.removeClass('editing');
+            $container_element.removeClass('force-visible');
+        });
+
+        Pachno.on(Pachno.EVENTS.issueTriggerEdit, function (PachnoApplication, data) {
+            if (data.issue_id != issue.id)
+                return;
+
+            issue.triggerEditField(data.field);
         });
 
         Pachno.on(Pachno.EVENTS.issueTriggerUpdate, function (PachnoApplication, data) {
@@ -171,8 +191,10 @@ class Issue {
                 return
             }
 
-            issue.updateFromJson(data.json);
-            issue.updateVisibleValues(data.json);
+            const issue_json = (data.json.issue !== undefined) ? data.json.issue : data.json;
+
+            issue.updateFromJson(issue_json);
+            issue.updateVisibleValues(issue_json);
         });
     }
 
@@ -185,61 +207,80 @@ class Issue {
             choices: []
         }
 
-        choice.choices.push({
-            icon: { name: 'exclamation-circle', type: 'fas' },
-            shortcut: 'set priority',
-            name: 'Set issue priority',
-            description: 'Set the priority of an issue',
-            type: QuicksearchTypes.dynamic_choices,
-            event: Pachno.EVENTS.issueLoadDynamicChoices,
-            event_value: 'priority'
-        });
-        choice.choices.push({
-            icon: { name: 'clipboard-check', type: 'fas' },
-            shortcut: 'set resolution',
-            name: 'Set issue resolution',
-            description: 'Set the resolution of an issue',
-            type: QuicksearchTypes.dynamic_choices,
-            event: Pachno.EVENTS.issueLoadDynamicChoices,
-            event_value: 'resolution'
-        });
-        choice.choices.push({
-            icon: { name: 'chart-pie', type: 'fas' },
-            shortcut: 'set category',
-            name: 'Set issue category',
-            description: 'Set the category of an issue',
-            type: QuicksearchTypes.dynamic_choices,
-            event: Pachno.EVENTS.issueLoadDynamicChoices,
-            event_value: 'category'
-        });
-        choice.choices.push({
-            icon: { name: 'list-alt', type: 'far' },
-            shortcut: 'set milestone',
-            name: 'Set issue target release',
-            description: 'Set the target release for an issue',
-            type: QuicksearchTypes.dynamic_choices,
-            event: Pachno.EVENTS.issueLoadDynamicChoices,
-            event_value: 'milestone'
-        });
-        choice.choices.push({
-            icon: { name: 'edit', type: 'far' },
-            shortcut: 'set title',
-            name: 'Set issue title',
-            description: 'Set the title of an issue',
-            type: QuicksearchTypes.backdrop,
-            backdrop_url: this.backdrop_url.replace('%key%', 'issue-title')
-        });
+        for (const field_key in fields) {
+            if (!fields.hasOwnProperty(field_key))
+                continue;
+
+            const field = fields[field_key];
+            const field_choice = {
+                shortcut: `set ${field_key}`,
+                name: `Set issue ${field_key}`,
+                description: `Quick edit this value`,
+            };
+            switch (field) {
+                case FIELD_TYPES.BUILTIN:
+                    switch (field_key) {
+                        case 'priority':
+                            field_choice.icon = { name: 'exclamation-circle', type: 'fas' };
+                            break;
+                        case 'resolution':
+                            field_choice.icon = { name: 'clipboard-check', type: 'fas' };
+                            break;
+                        case 'category':
+                            field_choice.icon = { name: 'chart-pie', type: 'fas' };
+                            break;
+                        case 'milestone':
+                            field_choice.icon = { name: 'list-alt', type: 'fas' };
+                            break;
+                        default:
+                            field_choice.icon = { name: 'edit', type: 'far' };
+                    }
+
+                    if (['title', 'reproduction_steps', 'description'].includes(field_key)) {
+                        field_choice.type = QuicksearchTypes.event;
+                        field_choice.event = Pachno.EVENTS.issueTriggerEdit;
+                        field_choice.event_value = { field: field_key, issue_id: this.id };
+                    } else if (field_key === 'votes') {
+                        field_choice.name = 'Vote / unvote';
+                        field_choice.description = 'Toggle your vote for this issue';
+                        field_choice.type = QuicksearchTypes.event;
+                        field_choice.event = Pachno.EVENTS.issueTriggerUpdate;
+                        field_choice.event_value = { field: field_key, value: 1, issue_id: this.id }
+                    } else {
+                        field_choice.type = QuicksearchTypes.dynamic_choices;
+                        field_choice.event = Pachno.EVENTS.issueLoadDynamicChoices;
+                        field_choice.event_value = field_key;
+                    }
+                    break;
+                case FIELD_TYPES.CLIENT_CHOICE:
+                case FIELD_TYPES.COMPONENTS_CHOICE:
+                case FIELD_TYPES.DROPDOWN_CHOICE_TEXT:
+                case FIELD_TYPES.MILESTONE_CHOICE:
+                case FIELD_TYPES.RADIO_CHOICE:
+                case FIELD_TYPES.RELEASES_CHOICE:
+                case FIELD_TYPES.STATUS_CHOICE:
+                    field_choice.icon = { name: 'list-alt', type: 'fas' };
+                    field_choice.type = QuicksearchTypes.dynamic_choices;
+                    field_choice.event = Pachno.EVENTS.issueLoadDynamicChoices;
+                    field_choice.event_value = field_key;
+                    break;
+            }
+
+            choice.choices.push(field_choice);
+        }
+
         Pachno.trigger(Pachno.EVENTS.quicksearchAddDefaultChoice, choice);
     }
 
     updateVisibleValues(json) {
         const $value_fields = $(`[data-dynamic-field-value][data-issue-id=${this.id}]`);
         const visible_fields = json.visible_fields;
-        const available_fields = json.available_fields;
+        const fields = json.fields;
 
-        for (const element of $value_fields) {
+        for (const element in $value_fields) {
             const $element = $(element);
             const field = $element.data('field');
+            let $value_input;
 
             if (!this[field]) {
                 $element.addClass('no-value');
@@ -255,8 +296,13 @@ class Issue {
                 case 'severity':
                     if (this[field]?.name !== undefined) {
                         $element.html(this[field].name);
+                        $value_input = $(`#issue_${this.id}_field_${field}_${this[field].value}`);
                     } else {
                         $element.html(Pachno.T.issue.value_not_set);
+                        $value_input = $(`#issue_${this.id}_field_${field}_0`);
+                    }
+                    if ($value_input.length) {
+                        $value_input.checked = true;
                     }
                     break;
                 case 'description':
@@ -279,16 +325,21 @@ class Issue {
             }
         }
 
-        for (const field of available_fields) {
+        for (const field in fields) {
+            if (!fields.hasOwnProperty(field))
+                continue;
+
             const $field = $(`#${field}_field`);
             if (!$field.length) {
                 continue;
             }
 
-            if (visible_fields.contains(field) || (this[field] !== undefined && this[field] !== null)) {
+            if (visible_fields.hasOwnProperty(field) || (this[field] !== undefined && this[field] !== null)) {
                 $field.removeClass('hidden');
+                $field.removeClass('not-visible');
             } else {
                 $field.addClass('hidden');
+                $field.addClass('not-visible');
             }
         }
     }
@@ -337,6 +388,26 @@ class Issue {
         return $html;
     }
 }
+
+export const FIELD_TYPES = {
+    BUILTIN: 0,
+    DROPDOWN_CHOICE_TEXT: 1,
+    INPUT_TEXT: 2,
+    INPUT_TEXTAREA_MAIN: 3,
+    INPUT_TEXTAREA_SMALL: 4,
+    RADIO_CHOICE: 5,
+    RELEASES_CHOICE: 8,
+    COMPONENTS_CHOICE: 10,
+    EDITIONS_CHOICE: 12,
+    STATUS_CHOICE: 13,
+    USER_CHOICE: 14,
+    TEAM_CHOICE: 15,
+    CALCULATED_FIELD: 18,
+    DATE_PICKER: 19,
+    MILESTONE_CHOICE: 20,
+    CLIENT_CHOICE: 21,
+    DATETIME_PICKER: 22,
+};
 
 export default Issue;
 window.Issue = Issue;

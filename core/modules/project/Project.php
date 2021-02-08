@@ -47,6 +47,8 @@
             $i18n = framework\Context::getI18n();
 
             switch (framework\Context::getRouting()->getCurrentRoute()->getName()) {
+                case 'viewissue':
+                    return $i18n->__('Issues');
                 case 'project_releases':
                     return $i18n->__('Project releases');
                 case 'project_dashboard':

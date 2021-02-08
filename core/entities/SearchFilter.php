@@ -348,7 +348,7 @@
         {
             $this->_populateCustomtype();
 
-            return in_array($this->_customtype->getType(), [CustomDatatype::RADIO_CHOICE, CustomDatatype::COMPONENTS_CHOICE, CustomDatatype::EDITIONS_CHOICE, CustomDatatype::RELEASES_CHOICE, CustomDatatype::STATUS_CHOICE]);
+            return in_array($this->_customtype->getType(), [DatatypeBase::RADIO_CHOICE, DatatypeBase::COMPONENTS_CHOICE, DatatypeBase::EDITIONS_CHOICE, DatatypeBase::RELEASES_CHOICE, DatatypeBase::STATUS_CHOICE]);
         }
 
         public function getAvailableValues()
@@ -401,21 +401,21 @@
                         return $customdatatype->getOptions();
                     } else {
                         switch ($this->getFilterType()) {
-                            case CustomDatatype::COMPONENTS_CHOICE:
+                            case DatatypeBase::COMPONENTS_CHOICE:
                                 return $this->_getAvailableComponentChoices();
-                            case CustomDatatype::RELEASES_CHOICE:
+                            case DatatypeBase::RELEASES_CHOICE:
                                 return $this->_getAvailableBuildChoices();
-                            case CustomDatatype::EDITIONS_CHOICE:
+                            case DatatypeBase::EDITIONS_CHOICE:
                                 return $this->_getAvailableEditionChoices();
-                            case CustomDatatype::MILESTONE_CHOICE:
+                            case DatatypeBase::MILESTONE_CHOICE:
                                 return $this->_getAvailableMilestoneChoices();
-                            case CustomDatatype::USER_CHOICE:
+                            case DatatypeBase::USER_CHOICE:
                                 return $this->_getAvailableUserChoices();
-                            case CustomDatatype::TEAM_CHOICE:
+                            case DatatypeBase::TEAM_CHOICE:
                                 return $this->_getAvailableTeamChoices();
-                            case CustomDatatype::CLIENT_CHOICE:
+                            case DatatypeBase::CLIENT_CHOICE:
                                 return $this->_getAvailableClientChoices();
-                            case CustomDatatype::STATUS_CHOICE:
+                            case DatatypeBase::STATUS_CHOICE:
                                 return Status::getAll();
                             default:
                                 return [];

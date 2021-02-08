@@ -16,8 +16,8 @@
                 <div class="dropdown-container">
                     <div class="list-mode">
                         <div class="header"><?php echo $info['change_header']; ?></div>
-                        <input type="radio" class="fancy-checkbox" id="issue_fields_<?= $field; ?>_0" name="issue[fields][<?= $field; ?>]" value="0" <?php if ($info['value'] == 0) echo ' checked'; ?>  data-trigger-issue-update data-field="<?= $field; ?>" data-issue-id="<?= $issue->getId(); ?>">
-                        <label class="list-item" for="issue_fields_<?= $field; ?>_0">
+                        <input type="radio" class="fancy-checkbox" id="issue_<?= $issue->getId(); ?>_fields_<?= $field; ?>_0" name="issue[fields][<?= $field; ?>]" value="0" <?php if ($info['value'] == 0) echo ' checked'; ?>  data-trigger-issue-update data-field="<?= $field; ?>" data-issue-id="<?= $issue->getId(); ?>">
+                        <label class="list-item" for="issue_<?= $issue->getId(); ?>_fields_<?= $field; ?>_0">
                             <span class="icon"><?php echo fa_image_tag('times'); ?></span>
                             <span class="name"><?php echo $info['clear']; ?></span>
                             <span class="indicator"><?= fa_image_tag('spinner', ['class' => 'fa-spin']); ?></span>

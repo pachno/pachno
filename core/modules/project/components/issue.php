@@ -20,7 +20,7 @@
             </div>
             <?php \pachno\core\framework\Event::createNew('core', 'viewissue::afterWorkflowButtons', $issue)->trigger(); ?>
             <div class="issue-details">
-                <div id="description_field"<?php if (!$issue->isDescriptionVisible()): ?> style="display: none;"<?php endif; ?> class="fields-list-container viewissue_description">
+                <div id="description_field" class="fields-list-container <?php if (!$issue->isDescriptionVisible()) echo 'not-visible'; ?> viewissue_description">
                     <div class="header" id="description_header">
                         <span class="icon"><?= fa_image_tag('align-left'); ?></span>
                         <span class="name"><?php echo __('Description'); ?></span>
@@ -38,11 +38,8 @@
                         </div>
                     <?php endif; ?>
                 </div>
-                <div id="reproduction_steps_field"<?php if (!$issue->isReproductionStepsVisible()): ?> style="display: none;"<?php endif; ?> class="fields-list-container">
+                <div id="reproduction_steps_field" class="fields-list-container <?php if (!$issue->isReproductionStepsVisible()) echo 'not-visible'; ?>">
                     <div class="header" id="reproduction_steps_header">
-                        <?php if (false && $issue->isEditable() && $issue->canEditReproductionSteps()): ?>
-                            <?php echo fa_image_tag('edit', ['class' => 'dropdown', 'id' => 'reproduction_steps_edit', 'onclick' => "$('#reproduction_steps_change').show(); $('#reproduction_steps_name').hide(); $('#no_reproduction_steps').hide();", 'title' => __('Click here to edit reproduction steps')]); ?>
-                        <?php endif; ?>
                         <span class="icon"><?= fa_image_tag('list-ol'); ?></span>
                         <span class="name"><?php echo __('How to reproduce'); ?></span>
                     </div>

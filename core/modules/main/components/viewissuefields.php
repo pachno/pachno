@@ -1,6 +1,7 @@
 <?php
 
-    use pachno\core\framework\Context;
+use pachno\core\entities\DatatypeBase;
+use pachno\core\framework\Context;
     use pachno\core\framework\Event;
     use pachno\core\framework\I18n;
     use pachno\core\entities\CustomDatatype;
@@ -324,7 +325,7 @@
                 <?php include_component('main/viewissuefield', compact('field', 'info', 'issue')); ?>
             <?php endforeach; ?>
             <?php foreach ($customfields_list as $field => $info): ?>
-                <?php if ($info['type'] == CustomDatatype::INPUT_TEXTAREA_MAIN) continue; ?>
+                <?php if ($info['type'] == DatatypeBase::INPUT_TEXTAREA_MAIN) continue; ?>
                 <li id="<?= $field; ?>_field" <?php if (!$info['visible']): ?> style="display: none;"<?php endif; ?>>
                     <div class="label" id="<?= $field; ?>_header">
                         <?= $info['title']; ?>
@@ -334,7 +335,7 @@
                             <?php
                                 switch ($info['type'])
                                 {
-                                    case CustomDatatype::INPUT_TEXTAREA_SMALL:
+                                    case DatatypeBase::INPUT_TEXTAREA_SMALL:
                                         var_dump($info);
                                         break;
                                         ?>
@@ -346,7 +347,7 @@
                                         </span>
                                         <?php
                                         break;
-                                    case CustomDatatype::USER_CHOICE:
+                                    case DatatypeBase::USER_CHOICE:
                                         ?>
                                         <span id="<?= $field; ?>_name"<?php if (!$info['value']): ?> style="display: none;"<?php endif; ?>>
                                             <?= include_component('main/userdropdown', array('user' => $info['value'])); ?>
@@ -356,7 +357,7 @@
                                         </span>
                                         <?php
                                         break;
-                                    case CustomDatatype::TEAM_CHOICE:
+                                    case DatatypeBase::TEAM_CHOICE:
                                         ?>
                                         <span id="<?= $field; ?>_name"<?php if (!$info['value']): ?> style="display: none;"<?php endif; ?>>
                                             <?= include_component('main/teamdropdown', array('team' => $info['identifiable'])); ?>
@@ -366,11 +367,11 @@
                                         </span>
                                         <?php
                                         break;
-                                    case CustomDatatype::EDITIONS_CHOICE:
-                                    case CustomDatatype::COMPONENTS_CHOICE:
-                                    case CustomDatatype::RELEASES_CHOICE:
-                                    case CustomDatatype::MILESTONE_CHOICE:
-                                    case CustomDatatype::CLIENT_CHOICE:
+                                    case DatatypeBase::EDITIONS_CHOICE:
+                                    case DatatypeBase::COMPONENTS_CHOICE:
+                                    case DatatypeBase::RELEASES_CHOICE:
+                                    case DatatypeBase::MILESTONE_CHOICE:
+                                    case DatatypeBase::CLIENT_CHOICE:
                                          ?>
                                         <span id="<?= $field; ?>_name"<?php if (!$info['value']): ?> style="display: none;"<?php endif; ?>>
                                             <?= (isset($info['name'])) ? $info['name'] : __('Unknown'); ?>
@@ -379,7 +380,7 @@
                                             <?= __('Not determined'); ?>
                                         </span><?php
                                         break;
-                                    case CustomDatatype::STATUS_CHOICE:
+                                    case DatatypeBase::STATUS_CHOICE:
                                         $status = null;
                                         $value = null;
                                         $color = '#FFF';
@@ -392,13 +393,13 @@
                                         catch (\Exception $e) { }
                                         ?><span id="<?= $field; ?>_name"<?php if (!$info['value']): ?> style="display: none;"<?php endif; ?>><div class="status-badge" style="background-color: <?= $color; ?>;"><span><?= __($value); ?></span></div></span><span class="no-value" id="no_<?= $field; ?>"<?php if ($info['value']): ?> style="display: none;"<?php endif; ?>><?= __('Not determined'); ?></span><?php
                                         break;
-                                    case CustomDatatype::DATE_PICKER:
-                                    case CustomDatatype::DATETIME_PICKER:
+                                    case DatatypeBase::DATE_PICKER:
+                                    case DatatypeBase::DATETIME_PICKER:
                                         $pachno_response->addJavascript('calendarview');
                                         if (!isset($info['name'])) {
                                             $value = __('Not set');
                                         } elseif (is_numeric($info['name'])) {
-                                            $value = ($info['name']) ? date('Y-m-d' . ($info['type'] == CustomDatatype::DATETIME_PICKER ? ' H:i' : ''), $info['name']) : __('Not set');
+                                            $value = ($info['name']) ? date('Y-m-d' . ($info['type'] == DatatypeBase::DATETIME_PICKER ? ' H:i' : ''), $info['name']) : __('Not set');
                                         } else {
                                             $value = $info['name'];
                                         }
@@ -419,7 +420,7 @@
                         </div>
                         <?php if ($issue->isUpdateable() && $issue->canEditCustomFields($field) && $info['editable']): ?>
                             <div class="dropdown-container">
-                                <?php if ($info['type'] == CustomDatatype::USER_CHOICE): ?>
+                                <?php if ($info['type'] == DatatypeBase::USER_CHOICE): ?>
                                     <?php include_component('main/identifiableselector', array(
                                         'html_id'             => $field.'_change',
                                         'header'             => __('Select a user'),
@@ -428,7 +429,7 @@
                                         'base_id'            => $field,
                                         'include_teams'        => false,
                                         'absolute'            => true)); ?>
-                                <?php elseif ($info['type'] == CustomDatatype::TEAM_CHOICE): ?>
+                                <?php elseif ($info['type'] == DatatypeBase::TEAM_CHOICE): ?>
                                     <?php include_component('main/identifiableselector', array(
                                         'html_id'             => $field.'_change',
                                         'header'             => __('Select a team'),
@@ -438,7 +439,7 @@
                                         'include_teams'        => true,
                                         'include_users'        => false,
                                         'absolute'            => true)); ?>
-                                <?php elseif ($info['type'] == CustomDatatype::CLIENT_CHOICE): ?>
+                                <?php elseif ($info['type'] == DatatypeBase::CLIENT_CHOICE): ?>
                                     <?php include_component('main/identifiableselector', array(
                                         'html_id'             => $field.'_change',
                                         'header'             => __('Select a client'),
@@ -463,13 +464,13 @@
                                                 <span class="name"><?= __($choice->getName()); ?></span>
                                             </a>
                                         <?php endforeach; ?>
-                                        <?php elseif ($info['type'] == CustomDatatype::DATE_PICKER || $info['type'] == CustomDatatype::DATETIME_PICKER): ?>
+                                        <?php elseif ($info['type'] == DatatypeBase::DATE_PICKER || $info['type'] == DatatypeBase::DATETIME_PICKER): ?>
                                             <a href="javascript:void(0);" class="list-item" onclick="Pachno.Issues.Field.set('<?= make_url('issue_setfield', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => $field, $field . '_value' => "")); ?>', '<?= $field; ?>');">
                                                 <span class="name"><?= $info['clear']; ?></span>
                                             </a>
                                             <div class="list-item separator"></div>
                                             <div class="list-item" id="customfield_<?= $field; ?>_calendar_container" style="padding: 0;"></div>
-                                        <?php if ($info['type'] == CustomDatatype::DATETIME_PICKER): ?>
+                                        <?php if ($info['type'] == DatatypeBase::DATETIME_PICKER): ?>
                                             <form id="customfield_<?= $field; ?>_form" method="post" class="list-item" accept-charset="<?= Context::getI18n()->getCharset(); ?>" action="" onsubmit="Pachno.Issues.Field.set('<?= make_url('issue_setfield', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => $field)); ?>', '<?= $field; ?>', 'customfield_<?= $field; ?>');return false;">
                                                 <div class="header"><?= __('Time'); ?></div>
                                                 <input type="text" id="customfield_<?= $field; ?>_hour" value="00" style="width: 20px; font-size: 0.9em; text-align: center;">&nbsp;:&nbsp;
@@ -527,7 +528,7 @@
 
                                         switch ($info['type'])
                                         {
-                                        case CustomDatatype::EDITIONS_CHOICE:
+                                        case DatatypeBase::EDITIONS_CHOICE:
                                             ?>
                                             <?php foreach ($issue->getProject()->getEditions() as $choice): ?>
                                             <a href="javascript:void(0);" class="list-item" onclick="Pachno.Issues.Field.set('<?= make_url('issue_setfield', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => $field, $field . '_value' => $choice->getID())); ?>', '<?= $field; ?>');">
@@ -537,7 +538,7 @@
                                         <?php endforeach; ?>
                                             <?php
                                             break;
-                                        case CustomDatatype::MILESTONE_CHOICE:
+                                        case DatatypeBase::MILESTONE_CHOICE:
                                             ?>
                                             <?php foreach ($issue->getProject()->getMilestonesForIssues() as $choice): ?>
                                             <a href="javascript:void(0);" class="list-item" onclick="Pachno.Issues.Field.set('<?= make_url('issue_setfield', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => $field, $field . '_value' => $choice->getID())); ?>', '<?= $field; ?>');">
@@ -547,7 +548,7 @@
                                         <?php endforeach; ?>
                                             <?php
                                             break;
-                                        case CustomDatatype::STATUS_CHOICE:
+                                        case DatatypeBase::STATUS_CHOICE:
                                             ?>
                                             <?php foreach (Status::getAll() as $choice): ?>
                                             <a href="javascript:void(0);" class="list-item" onclick="Pachno.Issues.Field.set('<?= make_url('issue_setfield', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => $field, $field . '_value' => $choice->getID())); ?>', '<?= $field; ?>');">
@@ -559,7 +560,7 @@
                                         <?php endforeach; ?>
                                             <?php
                                             break;
-                                        case CustomDatatype::COMPONENTS_CHOICE:
+                                        case DatatypeBase::COMPONENTS_CHOICE:
                                             ?>
                                             <?php foreach ($issue->getProject()->getComponents() as $choice): ?>
                                             <a href="javascript:void(0);" class="list-item" onclick="Pachno.Issues.Field.set('<?= make_url('issue_setfield', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => $field, $field . '_value' => $choice->getID())); ?>', '<?= $field; ?>');">
@@ -569,7 +570,7 @@
                                         <?php endforeach; ?>
                                             <?php
                                             break;
-                                        case CustomDatatype::RELEASES_CHOICE:
+                                        case DatatypeBase::RELEASES_CHOICE:
                                             ?>
                                             <?php foreach ($issue->getProject()->getBuilds() as $choice): ?>
                                             <a href="javascript:void(0);" class="list-item" onclick="Pachno.Issues.Field.set('<?= make_url('issue_setfield', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => $field, $field . '_value' => $choice->getID())); ?>', '<?= $field; ?>');">
@@ -579,7 +580,7 @@
                                         <?php endforeach; ?>
                                             <?php
                                             break;
-                                        case CustomDatatype::INPUT_TEXT:
+                                        case DatatypeBase::INPUT_TEXT:
                                             var_dump($field);
                                             var_dump($info);
                                             /*?>
@@ -590,7 +591,7 @@
                                             </div>
                                             <?php*/
                                             break;
-                                        case CustomDatatype::INPUT_TEXTAREA_SMALL:
+                                        case DatatypeBase::INPUT_TEXTAREA_SMALL:
                                             var_dump($field);
                                             var_dump($info);
                                             /*?>

@@ -979,11 +979,12 @@ var Debugger = /*#__PURE__*/function () {
 /*!*****************************!*\
   !*** ./js/classes/issue.js ***!
   \*****************************/
-/*! exports provided: default */
+/*! exports provided: FIELD_TYPES, default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "FIELD_TYPES", function() { return FIELD_TYPES; });
 /* harmony import */ var _helpers_ui__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../helpers/ui */ "./js/helpers/ui.js");
 /* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! jquery */ "./node_modules/jquery/dist/jquery.js");
 /* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(jquery__WEBPACK_IMPORTED_MODULE_1__);
@@ -1094,6 +1095,20 @@ var Issue = /*#__PURE__*/function () {
       });
     }
   }, {
+    key: "triggerEditField",
+    value: function triggerEditField(field) {
+      var $container_element = jquery__WEBPACK_IMPORTED_MODULE_1___default()("#".concat(field, "_field"));
+      var $element = jquery__WEBPACK_IMPORTED_MODULE_1___default()("[data-editable-field][data-issue-id=".concat(this.id, "][data-field=").concat(field, "]"));
+      var $textarea = jquery__WEBPACK_IMPORTED_MODULE_1___default()("[data-editable-textarea][data-issue-id=".concat(this.id, "][data-field=").concat(field, "]"));
+      var editor = Object(_widgets_editor__WEBPACK_IMPORTED_MODULE_4__["getEditor"])($textarea.attr('id'));
+      $container_element.addClass('force-visible');
+      $element.addClass('editing');
+      setTimeout(function () {
+        editor.focus();
+        editor.codemirror.focus();
+      }, 250);
+    }
+  }, {
     key: "setupListeners",
     value: function setupListeners() {
       var $body = jquery__WEBPACK_IMPORTED_MODULE_1___default()('body');
@@ -1109,13 +1124,7 @@ var Issue = /*#__PURE__*/function () {
       $body.off('click', ".editable[data-editable-field][data-issue-id=".concat(this.id, "]"));
       $body.on('click', ".editable[data-editable-field][data-issue-id=".concat(this.id, "]"), function () {
         var $element = jquery__WEBPACK_IMPORTED_MODULE_1___default()(this);
-        var $textarea = jquery__WEBPACK_IMPORTED_MODULE_1___default()("[data-editable-textarea][data-issue-id=".concat(issue.id, "][data-field=").concat($element.data('field'), "]"));
-        var editor = Object(_widgets_editor__WEBPACK_IMPORTED_MODULE_4__["getEditor"])($textarea.attr('id'));
-        $element.addClass('editing');
-        setTimeout(function () {
-          editor.focus();
-          editor.codemirror.focus();
-        }, 250);
+        issue.triggerEditField($element.data('field'));
       });
       $body.off('click', "[data-trigger-save][data-issue-id=".concat(this.id, "]"));
       $body.on('click', "[data-trigger-save][data-issue-id=".concat(this.id, "]"), function () {
@@ -1123,8 +1132,11 @@ var Issue = /*#__PURE__*/function () {
         var $textarea = jquery__WEBPACK_IMPORTED_MODULE_1___default()("[data-editable-textarea][data-issue-id=".concat(issue.id, "][data-field=").concat($element.data('field'), "]"));
         var $value_container = jquery__WEBPACK_IMPORTED_MODULE_1___default()("[data-editable-field][data-issue-id=".concat(issue.id, "][data-field=").concat($element.data('field'), "]"));
         var editor = Object(_widgets_editor__WEBPACK_IMPORTED_MODULE_4__["getEditor"])($textarea.attr('id'));
-        issue.postAndUpdate($element.data('field'), editor.value()).then(function () {
+        var field = $element.data('field');
+        var $container_element = jquery__WEBPACK_IMPORTED_MODULE_1___default()("#".concat(field, "_field"));
+        issue.postAndUpdate(field, editor.value()).then(function () {
           $value_container.removeClass('editing');
+          $container_element.removeClass('force-visible');
         });
       });
       $body.off('click', "[data-trigger-cancel-editing][data-issue-id=".concat(this.id, "]"));
@@ -1133,8 +1145,15 @@ var Issue = /*#__PURE__*/function () {
         var $value_container = jquery__WEBPACK_IMPORTED_MODULE_1___default()("[data-editable-field][data-issue-id=".concat(issue.id, "][data-field=").concat($element.data('field'), "]"));
         var $textarea = jquery__WEBPACK_IMPORTED_MODULE_1___default()("[data-editable-textarea][data-issue-id=".concat(issue.id, "][data-field=").concat($element.data('field'), "]"));
         var editor = Object(_widgets_editor__WEBPACK_IMPORTED_MODULE_4__["getEditor"])($textarea.attr('id'));
-        editor.value(issue[$element.data('field')]);
+        var field = $element.data('field');
+        var $container_element = jquery__WEBPACK_IMPORTED_MODULE_1___default()("#".concat(field, "_field"));
+        editor.value(issue[field]);
         $value_container.removeClass('editing');
+        $container_element.removeClass('force-visible');
+      });
+      _pachno__WEBPACK_IMPORTED_MODULE_2__["default"].on(_pachno__WEBPACK_IMPORTED_MODULE_2__["default"].EVENTS.issueTriggerEdit, function (PachnoApplication, data) {
+        if (data.issue_id != issue.id) return;
+        issue.triggerEditField(data.field);
       });
       _pachno__WEBPACK_IMPORTED_MODULE_2__["default"].on(_pachno__WEBPACK_IMPORTED_MODULE_2__["default"].EVENTS.issueTriggerUpdate, function (PachnoApplication, data) {
         if (data.issue_id != issue.id) return;
@@ -1187,8 +1206,9 @@ var Issue = /*#__PURE__*/function () {
           return;
         }
 
-        issue.updateFromJson(data.json);
-        issue.updateVisibleValues(data.json);
+        var issue_json = data.json.issue !== undefined ? data.json.issue : data.json;
+        issue.updateFromJson(issue_json);
+        issue.updateVisibleValues(issue_json);
       });
     }
   }, {
@@ -1204,65 +1224,99 @@ var Issue = /*#__PURE__*/function () {
         description: 'Update one or more properties of an issue',
         choices: []
       };
-      choice.choices.push({
-        icon: {
-          name: 'exclamation-circle',
-          type: 'fas'
-        },
-        shortcut: 'set priority',
-        name: 'Set issue priority',
-        description: 'Set the priority of an issue',
-        type: _quicksearch__WEBPACK_IMPORTED_MODULE_3__["TYPES"].dynamic_choices,
-        event: _pachno__WEBPACK_IMPORTED_MODULE_2__["default"].EVENTS.issueLoadDynamicChoices,
-        event_value: 'priority'
-      });
-      choice.choices.push({
-        icon: {
-          name: 'clipboard-check',
-          type: 'fas'
-        },
-        shortcut: 'set resolution',
-        name: 'Set issue resolution',
-        description: 'Set the resolution of an issue',
-        type: _quicksearch__WEBPACK_IMPORTED_MODULE_3__["TYPES"].dynamic_choices,
-        event: _pachno__WEBPACK_IMPORTED_MODULE_2__["default"].EVENTS.issueLoadDynamicChoices,
-        event_value: 'resolution'
-      });
-      choice.choices.push({
-        icon: {
-          name: 'chart-pie',
-          type: 'fas'
-        },
-        shortcut: 'set category',
-        name: 'Set issue category',
-        description: 'Set the category of an issue',
-        type: _quicksearch__WEBPACK_IMPORTED_MODULE_3__["TYPES"].dynamic_choices,
-        event: _pachno__WEBPACK_IMPORTED_MODULE_2__["default"].EVENTS.issueLoadDynamicChoices,
-        event_value: 'category'
-      });
-      choice.choices.push({
-        icon: {
-          name: 'list-alt',
-          type: 'far'
-        },
-        shortcut: 'set milestone',
-        name: 'Set issue target release',
-        description: 'Set the target release for an issue',
-        type: _quicksearch__WEBPACK_IMPORTED_MODULE_3__["TYPES"].dynamic_choices,
-        event: _pachno__WEBPACK_IMPORTED_MODULE_2__["default"].EVENTS.issueLoadDynamicChoices,
-        event_value: 'milestone'
-      });
-      choice.choices.push({
-        icon: {
-          name: 'edit',
-          type: 'far'
-        },
-        shortcut: 'set title',
-        name: 'Set issue title',
-        description: 'Set the title of an issue',
-        type: _quicksearch__WEBPACK_IMPORTED_MODULE_3__["TYPES"].backdrop,
-        backdrop_url: this.backdrop_url.replace('%key%', 'issue-title')
-      });
+
+      for (var field_key in fields) {
+        if (!fields.hasOwnProperty(field_key)) continue;
+        var field = fields[field_key];
+        var field_choice = {
+          shortcut: "set ".concat(field_key),
+          name: "Set issue ".concat(field_key),
+          description: "Quick edit this value"
+        };
+
+        switch (field) {
+          case FIELD_TYPES.BUILTIN:
+            switch (field_key) {
+              case 'priority':
+                field_choice.icon = {
+                  name: 'exclamation-circle',
+                  type: 'fas'
+                };
+                break;
+
+              case 'resolution':
+                field_choice.icon = {
+                  name: 'clipboard-check',
+                  type: 'fas'
+                };
+                break;
+
+              case 'category':
+                field_choice.icon = {
+                  name: 'chart-pie',
+                  type: 'fas'
+                };
+                break;
+
+              case 'milestone':
+                field_choice.icon = {
+                  name: 'list-alt',
+                  type: 'fas'
+                };
+                break;
+
+              default:
+                field_choice.icon = {
+                  name: 'edit',
+                  type: 'far'
+                };
+            }
+
+            if (['title', 'reproduction_steps', 'description'].includes(field_key)) {
+              field_choice.type = _quicksearch__WEBPACK_IMPORTED_MODULE_3__["TYPES"].event;
+              field_choice.event = _pachno__WEBPACK_IMPORTED_MODULE_2__["default"].EVENTS.issueTriggerEdit;
+              field_choice.event_value = {
+                field: field_key,
+                issue_id: this.id
+              };
+            } else if (field_key === 'votes') {
+              field_choice.name = 'Vote / unvote';
+              field_choice.description = 'Toggle your vote for this issue';
+              field_choice.type = _quicksearch__WEBPACK_IMPORTED_MODULE_3__["TYPES"].event;
+              field_choice.event = _pachno__WEBPACK_IMPORTED_MODULE_2__["default"].EVENTS.issueTriggerUpdate;
+              field_choice.event_value = {
+                field: field_key,
+                value: 1,
+                issue_id: this.id
+              };
+            } else {
+              field_choice.type = _quicksearch__WEBPACK_IMPORTED_MODULE_3__["TYPES"].dynamic_choices;
+              field_choice.event = _pachno__WEBPACK_IMPORTED_MODULE_2__["default"].EVENTS.issueLoadDynamicChoices;
+              field_choice.event_value = field_key;
+            }
+
+            break;
+
+          case FIELD_TYPES.CLIENT_CHOICE:
+          case FIELD_TYPES.COMPONENTS_CHOICE:
+          case FIELD_TYPES.DROPDOWN_CHOICE_TEXT:
+          case FIELD_TYPES.MILESTONE_CHOICE:
+          case FIELD_TYPES.RADIO_CHOICE:
+          case FIELD_TYPES.RELEASES_CHOICE:
+          case FIELD_TYPES.STATUS_CHOICE:
+            field_choice.icon = {
+              name: 'list-alt',
+              type: 'fas'
+            };
+            field_choice.type = _quicksearch__WEBPACK_IMPORTED_MODULE_3__["TYPES"].dynamic_choices;
+            field_choice.event = _pachno__WEBPACK_IMPORTED_MODULE_2__["default"].EVENTS.issueLoadDynamicChoices;
+            field_choice.event_value = field_key;
+            break;
+        }
+
+        choice.choices.push(field_choice);
+      }
+
       _pachno__WEBPACK_IMPORTED_MODULE_2__["default"].trigger(_pachno__WEBPACK_IMPORTED_MODULE_2__["default"].EVENTS.quicksearchAddDefaultChoice, choice);
     }
   }, {
@@ -1272,91 +1326,81 @@ var Issue = /*#__PURE__*/function () {
 
       var $value_fields = jquery__WEBPACK_IMPORTED_MODULE_1___default()("[data-dynamic-field-value][data-issue-id=".concat(this.id, "]"));
       var visible_fields = json.visible_fields;
-      var available_fields = json.available_fields;
+      var fields = json.fields;
 
-      var _iterator2 = _createForOfIteratorHelper($value_fields),
-          _step2;
+      for (var element in $value_fields) {
+        var $element = jquery__WEBPACK_IMPORTED_MODULE_1___default()(element);
+        var field = $element.data('field');
+        var $value_input = void 0;
 
-      try {
-        for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
-          var element = _step2.value;
-          var $element = jquery__WEBPACK_IMPORTED_MODULE_1___default()(element);
-          var field = $element.data('field');
-
-          if (!this[field]) {
-            $element.addClass('no-value');
-          } else {
-            $element.removeClass('no-value');
-          }
-
-          switch (field) {
-            case 'priority':
-            case 'resolution':
-            case 'category':
-            case 'milestone':
-            case 'reproducability':
-            case 'severity':
-              if (((_this$field = this[field]) === null || _this$field === void 0 ? void 0 : _this$field.name) !== undefined) {
-                $element.html(this[field].name);
-              } else {
-                $element.html(_pachno__WEBPACK_IMPORTED_MODULE_2__["default"].T.issue.value_not_set);
-              }
-
-              break;
-
-            case 'description':
-              $element.html(this.description_formatted);
-              break;
-
-            case 'reproduction_steps':
-              $element.html(this.reproduction_steps_formatted);
-              break;
-
-            case 'updated_at':
-              $element.html(this.updated_at_friendly);
-              $element.prop('title', this.updated_at_full);
-              $element.prop('datetime', this.updated_at_datetime);
-              break;
-
-            case 'number_of_subscribers':
-              $element.html(this.number_of_subscribers);
-              break;
-
-            case 'percent_complete':
-              jquery__WEBPACK_IMPORTED_MODULE_1___default()($element.find('.percent_filled')).css({
-                width: this.percent_complete + '%'
-              });
-              break;
-          }
+        if (!this[field]) {
+          $element.addClass('no-value');
+        } else {
+          $element.removeClass('no-value');
         }
-      } catch (err) {
-        _iterator2.e(err);
-      } finally {
-        _iterator2.f();
+
+        switch (field) {
+          case 'priority':
+          case 'resolution':
+          case 'category':
+          case 'milestone':
+          case 'reproducability':
+          case 'severity':
+            if (((_this$field = this[field]) === null || _this$field === void 0 ? void 0 : _this$field.name) !== undefined) {
+              $element.html(this[field].name);
+              $value_input = jquery__WEBPACK_IMPORTED_MODULE_1___default()("#issue_".concat(this.id, "_field_").concat(field, "_").concat(this[field].value));
+            } else {
+              $element.html(_pachno__WEBPACK_IMPORTED_MODULE_2__["default"].T.issue.value_not_set);
+              $value_input = jquery__WEBPACK_IMPORTED_MODULE_1___default()("#issue_".concat(this.id, "_field_").concat(field, "_0"));
+            }
+
+            if ($value_input.length) {
+              $value_input.checked = true;
+            }
+
+            break;
+
+          case 'description':
+            $element.html(this.description_formatted);
+            break;
+
+          case 'reproduction_steps':
+            $element.html(this.reproduction_steps_formatted);
+            break;
+
+          case 'updated_at':
+            $element.html(this.updated_at_friendly);
+            $element.prop('title', this.updated_at_full);
+            $element.prop('datetime', this.updated_at_datetime);
+            break;
+
+          case 'number_of_subscribers':
+            $element.html(this.number_of_subscribers);
+            break;
+
+          case 'percent_complete':
+            jquery__WEBPACK_IMPORTED_MODULE_1___default()($element.find('.percent_filled')).css({
+              width: this.percent_complete + '%'
+            });
+            break;
+        }
       }
 
-      var _iterator3 = _createForOfIteratorHelper(available_fields),
-          _step3;
+      for (var _field in fields) {
+        if (!fields.hasOwnProperty(_field)) continue;
+        var $field = jquery__WEBPACK_IMPORTED_MODULE_1___default()("#".concat(_field, "_field"));
 
-      try {
-        for (_iterator3.s(); !(_step3 = _iterator3.n()).done;) {
-          var _field = _step3.value;
-          var $field = jquery__WEBPACK_IMPORTED_MODULE_1___default()("#".concat(_field, "_field"));
-
-          if (!$field.length) {
-            continue;
-          }
-
-          if (visible_fields.contains(_field) || this[_field] !== undefined && this[_field] !== null) {
-            $field.removeClass('hidden');
-          } else {
-            $field.addClass('hidden');
-          }
+        if (!$field.length) {
+          continue;
         }
-      } catch (err) {
-        _iterator3.e(err);
-      } finally {
-        _iterator3.f();
+
+        if (visible_fields.hasOwnProperty(_field) || this[_field] !== undefined && this[_field] !== null) {
+          $field.removeClass('hidden');
+          $field.removeClass('not-visible');
+        } else {
+          $field.addClass('hidden');
+          $field.addClass('not-visible');
+        }
       }
     }
   }, {
@@ -1394,6 +1438,25 @@ var Issue = /*#__PURE__*/function () {
   return Issue;
 }();
 
+var FIELD_TYPES = {
+  BUILTIN: 0,
+  DROPDOWN_CHOICE_TEXT: 1,
+  INPUT_TEXT: 2,
+  INPUT_TEXTAREA_MAIN: 3,
+  INPUT_TEXTAREA_SMALL: 4,
+  RADIO_CHOICE: 5,
+  RELEASES_CHOICE: 8,
+  COMPONENTS_CHOICE: 10,
+  EDITIONS_CHOICE: 12,
+  STATUS_CHOICE: 13,
+  USER_CHOICE: 14,
+  TEAM_CHOICE: 15,
+  CALCULATED_FIELD: 18,
+  DATE_PICKER: 19,
+  MILESTONE_CHOICE: 20,
+  CLIENT_CHOICE: 21,
+  DATETIME_PICKER: 22
+};
 /* harmony default export */ __webpack_exports__["default"] = (Issue);
 window.Issue = Issue;
 
@@ -1805,6 +1868,7 @@ var PachnoApplication = /*#__PURE__*/function () {
         formSubmitError: 'form-submit-error',
         issueUpdate: 'issue-update',
         issueTriggerUpdate: 'issue-trigger-update',
+        issueTriggerEdit: 'issue-trigger-edit',
         issueUpdateDone: 'issue-update-done',
         issueUpdateJson: 'issue-update-json',
         issueLoadDynamicChoices: 'issue-load-dynamic-choices',
@@ -2097,7 +2161,6 @@ var Quicksearch = /*#__PURE__*/function () {
       try {
         for (_iterator.s(); !(_step = _iterator.n()).done;) {
           var choice = _step.value;
-          console.log(choice);
 
           if (choice.previous_choice === undefined) {
             console.error(choice);

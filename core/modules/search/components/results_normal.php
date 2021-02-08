@@ -10,6 +10,7 @@ use pachno\core\entities\common\Timeable;
 use pachno\core\entities\CustomDatatype;
 use pachno\core\entities\CustomDatatypeOption;
 use pachno\core\entities\Datatype;
+use pachno\core\entities\DatatypeBase;
 use pachno\core\entities\Issue;
 use pachno\core\entities\Milestone;
 use pachno\core\entities\Priority;
@@ -84,7 +85,7 @@ $current_spent_time = $current_estimated_time;
                 <div data-sort-direction="<?php echo $search_object->getSortDirection(Issues::POSTED); ?>" data-sort-field="<?php echo Issues::POSTED; ?>" class="column header sc_posted <?php if ($dir = $search_object->getSortDirection(Issues::POSTED)) echo "sort_{$dir}"; ?> sc_datetime <?php if (!in_array('posted', $visible_columns)) echo 'hidden'; ?>"><?php echo __('Posted at'); ?></div>
                 <div data-sort-direction="<?php echo $search_object->getSortDirection(IssueSpentTimes::EDITED_AT); ?>" data-sort-field="<?php echo IssueSpentTimes::EDITED_AT; ?>" class="column header sc_time_spent <?php if ($dir = $search_object->getSortDirection(IssueSpentTimes::EDITED_AT)) echo "sort_{$dir}"; ?> sc_datetime <?php if (!in_array('time_spent', $visible_columns)) echo 'hidden'; ?>"><?php echo __('Time spent at'); ?></div>
                 <?php foreach ($custom_columns as $column): ?>
-                    <div data-sort-direction="<?php echo $search_object->getSortDirection($column->getKey()); ?>" data-sort-field="<?php echo $column->getKey(); ?>" class="column header sc_<?php echo $column->getKey(); ?> <?php if ($dir = $search_object->getSortDirection($column->getKey())) echo "sort_{$dir}"; ?> <?php if ($column->getType() == CustomDatatype::DATE_PICKER || $column->getType() == CustomDatatype::DATETIME_PICKER) echo 'sc_datetime'; ?> <?php if (!in_array($column->getKey(), $visible_columns)) echo 'hidden'; ?>"><?php echo __($column->getName()); ?></div>
+                    <div data-sort-direction="<?php echo $search_object->getSortDirection($column->getKey()); ?>" data-sort-field="<?php echo $column->getKey(); ?>" class="column header sc_<?php echo $column->getKey(); ?> <?php if ($dir = $search_object->getSortDirection($column->getKey())) echo "sort_{$dir}"; ?> <?php if ($column->getType() == DatatypeBase::DATE_PICKER || $column->getType() == DatatypeBase::DATETIME_PICKER) echo 'sc_datetime'; ?> <?php if (!in_array($column->getKey(), $visible_columns)) echo 'hidden'; ?>"><?php echo __($column->getName()); ?></div>
                 <?php endforeach; ?>
                 <?php if (!$pachno_user->isGuest() && $actionable): ?>
                     <div class="column header sc_actions nosort">&nbsp;</div>
@@ -185,33 +186,33 @@ $current_spent_time = $current_estimated_time;
             <div class="column smaller sc_<?php echo $column->getKey(); ?> <?php if (!in_array($column->getKey(), $visible_columns)) echo 'hidden'; ?>"><?php
                 $value = $issue->getCustomField($column->getKey());
                 switch ($column->getType()) {
-                    case CustomDatatype::DATE_PICKER:
+                    case DatatypeBase::DATE_PICKER:
                         echo Context::getI18n()->formatTime($value, 20);
                         break;
-                    case CustomDatatype::DROPDOWN_CHOICE_TEXT:
-                    case CustomDatatype::RADIO_CHOICE:
+                    case DatatypeBase::DROPDOWN_CHOICE_TEXT:
+                    case DatatypeBase::RADIO_CHOICE:
                     echo ($value instanceof CustomDatatypeOption) ? $value->getValue() : '';
                         break;
-                    case CustomDatatype::INPUT_TEXT:
-                    case CustomDatatype::INPUT_TEXTAREA_MAIN:
-                    case CustomDatatype::INPUT_TEXTAREA_SMALL:
+                    case DatatypeBase::INPUT_TEXT:
+                    case DatatypeBase::INPUT_TEXTAREA_MAIN:
+                    case DatatypeBase::INPUT_TEXTAREA_SMALL:
                         echo $value;
                         break;
-                    case CustomDatatype::STATUS_CHOICE:
+                    case DatatypeBase::STATUS_CHOICE:
                         if ($value instanceof Status):
                             ?><div class="sc_status_color status-badge" style="background-color: <?php echo $value->getColor(); ?>;"><span class="sc_status_name" style="color: <?php echo $value->getTextColor(); ?>;"><?php echo $value->getName(); ?></span></div><?php
                         endif;
                         break;
-                    case CustomDatatype::CLIENT_CHOICE:
-                    case CustomDatatype::COMPONENTS_CHOICE:
-                    case CustomDatatype::EDITIONS_CHOICE:
-                    case CustomDatatype::MILESTONE_CHOICE:
-                    case CustomDatatype::RELEASES_CHOICE:
-                    case CustomDatatype::TEAM_CHOICE:
-                    case CustomDatatype::USER_CHOICE:
+                    case DatatypeBase::CLIENT_CHOICE:
+                    case DatatypeBase::COMPONENTS_CHOICE:
+                    case DatatypeBase::EDITIONS_CHOICE:
+                    case DatatypeBase::MILESTONE_CHOICE:
+                    case DatatypeBase::RELEASES_CHOICE:
+                    case DatatypeBase::TEAM_CHOICE:
+                    case DatatypeBase::USER_CHOICE:
                         echo ($value instanceof Identifiable) ? $value->getName() : '';
                         break;
-                    case CustomDatatype::DATETIME_PICKER:
+                    case DatatypeBase::DATETIME_PICKER:
                         echo (is_numeric($value)) ? Context::getI18n()->formatTime($value, 25) : $value;
                         break;
                 }

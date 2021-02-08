@@ -1,4 +1,5 @@
-<?php use pachno\core\entities\LogItem;
+<?php use pachno\core\entities\DatatypeBase;
+use pachno\core\entities\LogItem;
 
 if ($item instanceof \pachno\core\entities\LogItem) {
 
@@ -129,40 +130,40 @@ if ($item instanceof \pachno\core\entities\LogItem) {
                         $old_value = $item->getPreviousValue();
                         $new_value = $item->getCurrentValue();
                         switch ($customdatatype->getType()) {
-                            case \pachno\core\entities\CustomDatatype::INPUT_TEXT:
-                            case \pachno\core\entities\CustomDatatype::INPUT_TEXTAREA_SMALL:
-                            case \pachno\core\entities\CustomDatatype::INPUT_TEXTAREA_MAIN:
+                            case DatatypeBase::INPUT_TEXT:
+                            case DatatypeBase::INPUT_TEXTAREA_SMALL:
+                            case DatatypeBase::INPUT_TEXTAREA_MAIN:
                                 $old_value = \pachno\core\framework\Response::escape($item->getPreviousValue());
                                 $new_value = \pachno\core\framework\Response::escape($item->getCurrentValue());
                                 echo fa_image_tag('edit', ['class' => 'log_issue_customfield']);
 
                                 break;
-                            case \pachno\core\entities\CustomDatatype::DATE_PICKER:
-                            case \pachno\core\entities\CustomDatatype::DATETIME_PICKER:
+                            case DatatypeBase::DATE_PICKER:
+                            case DatatypeBase::DATETIME_PICKER:
                                 echo fa_image_tag('calendar', ['class' => 'log_issue_customfield']);
 
-                                $old_value = ($old_value != null) ? date('Y-m-d' . ($customdatatype->getType() == \pachno\core\entities\CustomDatatype::DATETIME_PICKER ? ' H:i' : ''), (int)$old_value) : \pachno\core\framework\Context::getI18n()->__('Not determined');
-                                $new_value = ($new_value != null) ? date('Y-m-d' . ($customdatatype->getType() == \pachno\core\entities\CustomDatatype::DATETIME_PICKER ? ' H:i' : ''), (int)$new_value) : \pachno\core\framework\Context::getI18n()->__('Not determined');
+                                $old_value = ($old_value != null) ? date('Y-m-d' . ($customdatatype->getType() == DatatypeBase::DATETIME_PICKER ? ' H:i' : ''), (int)$old_value) : \pachno\core\framework\Context::getI18n()->__('Not determined');
+                                $new_value = ($new_value != null) ? date('Y-m-d' . ($customdatatype->getType() == DatatypeBase::DATETIME_PICKER ? ' H:i' : ''), (int)$new_value) : \pachno\core\framework\Context::getI18n()->__('Not determined');
                                 break;
-                            case \pachno\core\entities\CustomDatatype::EDITIONS_CHOICE:
-                            case \pachno\core\entities\CustomDatatype::COMPONENTS_CHOICE:
-                            case \pachno\core\entities\CustomDatatype::RELEASES_CHOICE:
-                            case \pachno\core\entities\CustomDatatype::STATUS_CHOICE:
+                            case DatatypeBase::EDITIONS_CHOICE:
+                            case DatatypeBase::COMPONENTS_CHOICE:
+                            case DatatypeBase::RELEASES_CHOICE:
+                            case DatatypeBase::STATUS_CHOICE:
                                 echo fa_image_tag('cubes', ['class' => 'log_issue_customfield component']);
                                 $old_object = null;
                                 $new_object = null;
                                 try {
                                     switch ($customdatatype->getType()) {
-                                        case \pachno\core\entities\CustomDatatype::EDITIONS_CHOICE:
+                                        case DatatypeBase::EDITIONS_CHOICE:
                                             $old_object = \pachno\core\entities\Edition::getB2DBTable()->selectById($old_value);
                                             break;
-                                        case \pachno\core\entities\CustomDatatype::COMPONENTS_CHOICE:
+                                        case DatatypeBase::COMPONENTS_CHOICE:
                                             $old_object = \pachno\core\entities\Component::getB2DBTable()->selectById($old_value);
                                             break;
-                                        case \pachno\core\entities\CustomDatatype::RELEASES_CHOICE:
+                                        case DatatypeBase::RELEASES_CHOICE:
                                             $old_object = \pachno\core\entities\Build::getB2DBTable()->selectById($old_value);
                                             break;
-                                        case \pachno\core\entities\CustomDatatype::STATUS_CHOICE:
+                                        case DatatypeBase::STATUS_CHOICE:
                                             $old_object = \pachno\core\entities\Status::getB2DBTable()->selectById($old_value);
                                             break;
                                     }
@@ -170,16 +171,16 @@ if ($item instanceof \pachno\core\entities\LogItem) {
                                 }
                                 try {
                                     switch ($customdatatype->getType()) {
-                                        case \pachno\core\entities\CustomDatatype::EDITIONS_CHOICE:
+                                        case DatatypeBase::EDITIONS_CHOICE:
                                             $new_object = \pachno\core\entities\Edition::getB2DBTable()->selectById($new_value);
                                             break;
-                                        case \pachno\core\entities\CustomDatatype::COMPONENTS_CHOICE:
+                                        case DatatypeBase::COMPONENTS_CHOICE:
                                             $new_object = \pachno\core\entities\Component::getB2DBTable()->selectById($new_value);
                                             break;
-                                        case \pachno\core\entities\CustomDatatype::RELEASES_CHOICE:
+                                        case DatatypeBase::RELEASES_CHOICE:
                                             $new_object = \pachno\core\entities\Build::getB2DBTable()->selectById($new_value);
                                             break;
-                                        case \pachno\core\entities\CustomDatatype::STATUS_CHOICE:
+                                        case DatatypeBase::STATUS_CHOICE:
                                             $new_object = \pachno\core\entities\Status::getB2DBTable()->selectById($new_value);
                                             break;
                                     }

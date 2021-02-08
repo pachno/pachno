@@ -164,7 +164,7 @@
         {
             $this->templates = entities\SavedSearch::getTemplates();
             $this->filters = $this->appliedfilters;
-            $date_types = [entities\CustomDatatype::DATE_PICKER, entities\CustomDatatype::DATETIME_PICKER];
+            $date_types = [entities\DatatypeBase::DATE_PICKER, entities\DatatypeBase::DATETIME_PICKER];
             $this->nondatecustomfields = entities\CustomDatatype::getAllExceptTypes($date_types);
             $this->datecustomfields = entities\CustomDatatype::getByFieldTypes($date_types);
             $i18n = framework\Context::getI18n();

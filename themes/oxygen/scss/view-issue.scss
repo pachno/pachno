@@ -399,6 +399,14 @@
       border-radius: 0;
 
       .fields-list-container {
+        &.hidden {
+          display: none;
+
+          &.force-visible {
+            display: flex;
+          }
+        }
+
         > .header {
           .name {
             font-size: 1.2em;

@@ -582,7 +582,7 @@ use pachno\core\framework\Settings;
                             <table id="<?= $customdatatype->getKey(); ?>_div" style="display: none;"
                                    class="additional_information<?php if (array_key_exists($customdatatype->getKey(), $errors)): ?> reportissue_error<?php endif; ?>">
                                 <tr>
-                                    <?php if ($customdatatype->getType() == CustomDatatype::DATE_PICKER || $customdatatype->getType() == CustomDatatype::DATETIME_PICKER): ?>
+                                    <?php if ($customdatatype->getType() == entities\DatatypeBase::DATE_PICKER || $customdatatype->getType() == entities\DatatypeBase::DATETIME_PICKER): ?>
                                         <td style="width: 180px;"><label for="<?= $customdatatype->getKey(); ?>_id"
                                                                          id="<?= $customdatatype->getKey(); ?>_label"><span>* </span><?= __($customdatatype->getDescription()); ?>
                                             </label></td>
@@ -600,7 +600,7 @@ use pachno\core\framework\Settings;
                                                 <li class="separator"></li>
                                                 <li id="customfield_<?= $customdatatype->getKey(); ?>_calendar_container"
                                                     style="padding: 0;"></li>
-                                                <?php if ($customdatatype->getType() == CustomDatatype::DATETIME_PICKER): ?>
+                                                <?php if ($customdatatype->getType() == entities\DatatypeBase::DATETIME_PICKER): ?>
                                                     <li class="nohover">
                                                         <label><?= __('Time'); ?></label>
                                                         <input type="text"
@@ -684,7 +684,7 @@ use pachno\core\framework\Settings;
                                     <td colspan="2" style="padding-top: 5px;" class="editor_container">
                                         <?php
                                         switch ($customdatatype->getType()) {
-                                            case CustomDatatype::DROPDOWN_CHOICE_TEXT: ?>
+                                            case entities\DatatypeBase::DROPDOWN_CHOICE_TEXT: ?>
                                                 <select name="<?= $customdatatype->getKey(); ?>_id"
                                                         id="<?= $customdatatype->getKey(); ?>_id" style="width: 100%;">
                                                     <option value=""<?php if (!$selected_customdatatype[$customdatatype->getKey()] instanceof CustomDatatypeOption) echo ' selected'; ?>><?= __('Not specified'); ?></option>
@@ -694,7 +694,7 @@ use pachno\core\framework\Settings;
                                                 </select>
                                                 <?php
                                                 break;
-                                            case CustomDatatype::EDITIONS_CHOICE: ?>
+                                            case entities\DatatypeBase::EDITIONS_CHOICE: ?>
                                                 <select name="<?= $customdatatype->getKey(); ?>_id"
                                                         id="<?= $customdatatype->getKey(); ?>_id" style="width: 100%;">
                                                     <option value=""<?php if (!$selected_customdatatype[$customdatatype->getKey()] instanceof Edition) echo ' selected'; ?>><?= __('Not specified'); ?></option>
@@ -706,7 +706,7 @@ use pachno\core\framework\Settings;
                                                 </select>
                                                 <?php
                                                 break;
-                                            case CustomDatatype::STATUS_CHOICE: ?>
+                                            case entities\DatatypeBase::STATUS_CHOICE: ?>
                                                 <select name="<?= $customdatatype->getKey(); ?>_id"
                                                         id="<?= $customdatatype->getKey(); ?>_id" style="width: 100%;">
                                                     <option value=""<?php if (!$selected_customdatatype[$customdatatype->getKey()] instanceof Status) echo ' selected'; ?>><?= __('Not specified'); ?></option>
@@ -716,7 +716,7 @@ use pachno\core\framework\Settings;
                                                 </select>
                                                 <?php
                                                 break;
-                                            case CustomDatatype::TEAM_CHOICE: ?>
+                                            case entities\DatatypeBase::TEAM_CHOICE: ?>
                                                 <select name="<?= $customdatatype->getKey(); ?>_id"
                                                         id="<?= $customdatatype->getKey(); ?>_id" style="width: 100%;">
                                                     <option value=""<?php if (!$selected_customdatatype[$customdatatype->getKey()] instanceof Team) echo ' selected'; ?>><?= __('Not specified'); ?></option>
@@ -726,7 +726,7 @@ use pachno\core\framework\Settings;
                                                 </select>
                                                 <?php
                                                 break;
-                                            case CustomDatatype::CLIENT_CHOICE: ?>
+                                            case entities\DatatypeBase::CLIENT_CHOICE: ?>
                                                 <select name="<?= $customdatatype->getKey(); ?>_id"
                                                         id="<?= $customdatatype->getKey(); ?>_id" style="width: 100%;">
                                                     <option value=""<?php if (!$selected_customdatatype[$customdatatype->getKey()] instanceof Client) echo ' selected'; ?>><?= __('Not specified'); ?></option>
@@ -736,7 +736,7 @@ use pachno\core\framework\Settings;
                                                 </select>
                                                 <?php
                                                 break;
-                                            case CustomDatatype::COMPONENTS_CHOICE: ?>
+                                            case entities\DatatypeBase::COMPONENTS_CHOICE: ?>
                                                 <select name="<?= $customdatatype->getKey(); ?>_id"
                                                         id="<?= $customdatatype->getKey(); ?>_id" style="width: 100%;">
                                                     <option value=""<?php if (!$selected_customdatatype[$customdatatype->getKey()] instanceof Component) echo ' selected'; ?>><?= __('Not specified'); ?></option>
@@ -748,7 +748,7 @@ use pachno\core\framework\Settings;
                                                 </select>
                                                 <?php
                                                 break;
-                                            case CustomDatatype::RELEASES_CHOICE: ?>
+                                            case entities\DatatypeBase::RELEASES_CHOICE: ?>
                                                 <select name="<?= $customdatatype->getKey(); ?>_id"
                                                         id="<?= $customdatatype->getKey(); ?>_id" style="width: 100%;">
                                                     <option value=""<?php if (!$selected_customdatatype[$customdatatype->getKey()] instanceof Build) echo ' selected'; ?>><?= __('Not specified'); ?></option>
@@ -760,7 +760,7 @@ use pachno\core\framework\Settings;
                                                 </select>
                                                 <?php
                                                 break;
-                                            case CustomDatatype::RADIO_CHOICE: ?>
+                                            case entities\DatatypeBase::RADIO_CHOICE: ?>
                                                 <input type="radio" name="<?= $customdatatype->getKey(); ?>_id"
                                                        id="<?= $customdatatype->getKey(); ?>_0"
                                                        value="" <?php if (!$selected_customdatatype[$customdatatype->getKey()] instanceof CustomDatatypeOption): ?> selected<?php endif; ?> />
@@ -775,21 +775,21 @@ use pachno\core\framework\Settings;
                                                 <?php endforeach; ?>
                                                 <?php
                                                 break;
-                                            case CustomDatatype::INPUT_TEXT:
+                                            case entities\DatatypeBase::INPUT_TEXT:
                                                 ?>
                                                 <input type="text" name="<?= $customdatatype->getKey(); ?>_value"
                                                        value="<?= $selected_customdatatype[$customdatatype->getKey()]; ?>"
                                                        id="<?= $customdatatype->getKey(); ?>_value"/><br>
                                                 <?php
                                                 break;
-                                            case CustomDatatype::INPUT_TEXTAREA_SMALL:
-                                            case CustomDatatype::INPUT_TEXTAREA_MAIN:
+                                            case entities\DatatypeBase::INPUT_TEXTAREA_SMALL:
+                                            case entities\DatatypeBase::INPUT_TEXTAREA_MAIN:
                                                 ?>
                                                 <?php include_component('main/textarea', array('area_name' => $customdatatype->getKey() . '_value', 'target_type' => 'project', 'target_id' => $selected_project->getID(), 'area_id' => $customdatatype->getKey() . '_value', 'height' => '75px', 'width' => '100%', 'hide_hint' => true, 'syntax' => $pachno_user->getPreferredIssuesSyntax(true), 'value' => $selected_customdatatype[$customdatatype->getKey()])); ?>
                                                 <?php
                                                 break;
-                                            case CustomDatatype::DATE_PICKER:
-                                            case CustomDatatype::DATETIME_PICKER:
+                                            case entities\DatatypeBase::DATE_PICKER:
+                                            case entities\DatatypeBase::DATETIME_PICKER:
                                                 ?>
 
                                                 <?php

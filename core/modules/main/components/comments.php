@@ -27,7 +27,7 @@
             <li id="comment_add_button">
                 <button class="button secondary highlight">
                     <?= fa_image_tag('comment', ['class' => 'icon']); ?>
-                    <span class="name"><?= __('Post comment'); ?></span>
+                    <span class="name"><?= __('Post a comment'); ?></span>
                 </button>
             </li>
         </ul>

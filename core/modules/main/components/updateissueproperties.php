@@ -1,4 +1,6 @@
-<div class="backdrop_box large issuedetailspopup workflow_transition" style="<?php if ($issue instanceof \pachno\core\entities\Issue && (!isset($show) || !$show)): ?>display: none;<?php endif; ?>" id="issue_transition_container_<?= $transition->getId(); ?>">
+<div class="backdrop_box large issuedetailspopup workflow_transition" style="<?php use pachno\core\entities\DatatypeBase;
+
+if ($issue instanceof \pachno\core\entities\Issue && (!isset($show) || !$show)): ?>display: none;<?php endif; ?>" id="issue_transition_container_<?= $transition->getId(); ?>">
     <div class="backdrop_detail_header">
         <span><?= $transition->getDescription(); ?></span>
         <?php if (($issue instanceof \pachno\core\entities\Issue && ($issue->isUpdateable() && !$issue->isDuplicate()) || isset($issues)) && $transition->hasAction(\pachno\core\entities\WorkflowTransitionAction::ACTION_SET_DUPLICATE)): ?>
@@ -202,7 +204,7 @@
                                             <?php endif; ?>
                                         <?php endforeach; ?>
                                     </select>
-                                <?php elseif ($info['type'] == \pachno\core\entities\CustomDatatype::DATE_PICKER || $info['type'] == \pachno\core\entities\CustomDatatype::DATETIME_PICKER): ?>
+                                <?php elseif ($info['type'] == DatatypeBase::DATE_PICKER || $info['type'] == DatatypeBase::DATETIME_PICKER): ?>
                                     <div id="customfield_<?= $field; ?>_calendar_container"></div>
                                     <script type="text/javascript">
                                         //require(['domReady', 'pachno/index', 'calendarview'], function (domReady, pachno_index_js, Calendar) {
@@ -214,9 +216,9 @@
                                         //    });
                                         //});
                                     </script>
-                                <?php elseif ($info['type'] == \pachno\core\entities\CustomDatatype::INPUT_TEXTAREA_SMALL || $info['type'] == \pachno\core\entities\CustomDatatype::INPUT_TEXTAREA_MAIN):
+                                <?php elseif ($info['type'] == DatatypeBase::INPUT_TEXTAREA_SMALL || $info['type'] == DatatypeBase::INPUT_TEXTAREA_MAIN):
                                     include_component('main/textarea', array('area_name' => $field.'_id', 'target_type' => 'issue', 'target_id' => $issue->getID(), 'area_id' => $field.'_'.$transition->getID(), 'height' => '120px', 'width' => '790px', 'value' => ''));
-                                elseif ($info['type'] == \pachno\core\entities\CustomDatatype::INPUT_TEXT): ?>
+                                elseif ($info['type'] == DatatypeBase::INPUT_TEXT): ?>
                                     <input type="text" name="<?= $field; ?>_id" placeholder="<?= $info['name'] ?>">
                                 <?php else: ?>
                                     <select name="<?= $field; ?>_id" id="transition_popup_set_<?= $field; ?>_<?= $transition->getID(); ?>">
@@ -224,27 +226,27 @@
 
                                             switch ($info['type'])
                                             {
-                                                case \pachno\core\entities\CustomDatatype::EDITIONS_CHOICE:
+                                                case DatatypeBase::EDITIONS_CHOICE:
                                                     foreach ($project->getEditions() as $choice): ?>
                                                         <option value="<?= $choice->getID(); ?>"<?php if ($issue instanceof \pachno\core\entities\Issue && $issue->getCustomField($field) instanceof \pachno\core\entities\Edition && $issue->getCustomField($field)->getID() == $choice->getID()): ?> selected<?php endif; ?>><?= __($choice->getName()); ?></option>
                                                     <?php endforeach;
                                                     break;
-                                                case \pachno\core\entities\CustomDatatype::MILESTONE_CHOICE:
+                                                case DatatypeBase::MILESTONE_CHOICE:
                                                     foreach ($project->getMilestones() as $choice): ?>
                                                         <option value="<?= $choice->getID(); ?>"<?php if ($issue instanceof \pachno\core\entities\Issue && $issue->getCustomField($field) instanceof \pachno\core\entities\Milestone && $issue->getCustomField($field)->getID() == $choice->getID()): ?> selected<?php endif; ?>><?= __($choice->getName()); ?></option>
                                                     <?php endforeach;
                                                     break;
-                                                case \pachno\core\entities\CustomDatatype::STATUS_CHOICE:
+                                                case DatatypeBase::STATUS_CHOICE:
                                                     foreach (\pachno\core\entities\Status::getAll() as $choice): ?>
                                                         <option value="<?= $choice->getID(); ?>"<?php if ($issue instanceof \pachno\core\entities\Issue && $issue->getCustomField($field) instanceof \pachno\core\entities\Edition && $issue->getCustomField($field)->getID() == $choice->getID()): ?> selected<?php endif; ?>><?= __($choice->getName()); ?></option>
                                                     <?php endforeach;
                                                     break;
-                                                case \pachno\core\entities\CustomDatatype::COMPONENTS_CHOICE:
+                                                case DatatypeBase::COMPONENTS_CHOICE:
                                                     foreach ($project->getComponents() as $choice): ?>
                                                         <option value="<?= $choice->getID(); ?>"<?php if ($issue instanceof \pachno\core\entities\Issue && $issue->getCustomField($field) instanceof \pachno\core\entities\Edition && $issue->getCustomField($field)->getID() == $choice->getID()): ?> selected<?php endif; ?>><?= __($choice->getName()); ?></option>
                                                     <?php endforeach;
                                                     break;
-                                                case \pachno\core\entities\CustomDatatype::RELEASES_CHOICE:
+                                                case DatatypeBase::RELEASES_CHOICE:
                                                     foreach ($project->getBuilds() as $choice): ?>
                                                         <option value="<?= $choice->getID(); ?>"<?php if ($issue instanceof \pachno\core\entities\Issue && $issue->getCustomField($field) instanceof \pachno\core\entities\Edition && $issue->getCustomField($field)->getID() == $choice->getID()): ?> selected<?php endif; ?>><?= __($choice->getName()); ?></option>
                                                     <?php endforeach;

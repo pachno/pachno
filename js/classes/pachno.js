@@ -28,6 +28,7 @@ class PachnoApplication {
             formSubmitError: 'form-submit-error',
             issueUpdate: 'issue-update',
             issueTriggerUpdate: 'issue-trigger-update',
+            issueTriggerEdit: 'issue-trigger-edit',
             issueUpdateDone: 'issue-update-done',
             issueUpdateJson: 'issue-update-json',
             issueLoadDynamicChoices: 'issue-load-dynamic-choices',

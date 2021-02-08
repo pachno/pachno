@@ -1560,7 +1560,7 @@
                 $retval = [];
                 $res = tables\IssueFields::getTable()->getBySchemeIDandIssuetypeID($this->getIssuetypeScheme()->getID(), $issue_type);
                 if ($res) {
-                    $builtin_types = Datatype::getAvailableFields(true);
+                    $builtin_types = array_keys(DatatypeBase::getAvailableFields(true));
                     while ($row = $res->getNextRow()) {
                         if (!$reportable || (bool)$row->get(tables\IssueFields::REPORTABLE) == true) {
                             if ($reportable) {
@@ -1591,7 +1591,7 @@
                         $key_prefix = $prefix_values ? 'v' : '';
 
                         foreach ($retval as $key => $return_details) {
-                            if ($key == 'edition' || array_key_exists('custom', $return_details) && $return_details['custom'] && $return_details['custom_type'] == CustomDatatype::EDITIONS_CHOICE) {
+                            if ($key == 'edition' || array_key_exists('custom', $return_details) && $return_details['custom'] && $return_details['custom_type'] == DatatypeBase::EDITIONS_CHOICE) {
                                 $retval[$key]['values'] = [];
                                 $retval[$key]['values'][''] = framework\Context::getI18n()->__('None');
                                 foreach ($this->getEditions() as $edition) {
@@ -1607,7 +1607,7 @@
                                 if (array_key_exists($key, $retval) && array_key_exists('values', $retval[$key])) {
                                     asort($retval[$key]['values'], SORT_STRING);
                                 }
-                            } elseif ($key == 'status' || array_key_exists('custom', $return_details) && $return_details['custom'] && $return_details['custom_type'] == CustomDatatype::STATUS_CHOICE) {
+                            } elseif ($key == 'status' || array_key_exists('custom', $return_details) && $return_details['custom'] && $return_details['custom_type'] == DatatypeBase::STATUS_CHOICE) {
                                 $retval[$key]['values'] = [];
                                 foreach (Status::getAll() as $status) {
                                     $retval[$key]['values'][$key_prefix . $status->getID()] = $status->getName();
@@ -1622,7 +1622,7 @@
                                 if (array_key_exists($key, $retval) && array_key_exists('values', $retval[$key])) {
                                     asort($retval[$key]['values'], SORT_STRING);
                                 }
-                            } elseif ($key == 'component' || array_key_exists('custom', $return_details) && $return_details['custom'] && $return_details['custom_type'] == CustomDatatype::COMPONENTS_CHOICE) {
+                            } elseif ($key == 'component' || array_key_exists('custom', $return_details) && $return_details['custom'] && $return_details['custom_type'] == DatatypeBase::COMPONENTS_CHOICE) {
                                 $retval[$key]['values'] = [];
                                 $retval[$key]['values'][''] = framework\Context::getI18n()->__('None');
                                 foreach ($this->getComponents() as $component) {
@@ -1638,7 +1638,7 @@
                                 if (array_key_exists($key, $retval) && array_key_exists('values', $retval[$key])) {
                                     asort($retval[$key]['values'], SORT_STRING);
                                 }
-                            } elseif ($key == 'build' || array_key_exists('custom', $return_details) && $return_details['custom'] && $return_details['custom_type'] == CustomDatatype::RELEASES_CHOICE) {
+                            } elseif ($key == 'build' || array_key_exists('custom', $return_details) && $return_details['custom'] && $return_details['custom_type'] == DatatypeBase::RELEASES_CHOICE) {
                                 $retval[$key]['values'] = [];
                                 $retval[$key]['values'][''] = framework\Context::getI18n()->__('None');
                                 foreach ($this->getActiveBuilds() as $build) {
@@ -2107,7 +2107,7 @@
             if (!$includeTextareas) {
                 unset($fields['description'], $fields['reproduction_steps']);
                 foreach ($fields as $key => $field) {
-                    if (in_array($field['type'], [CustomDatatype::INPUT_TEXTAREA_MAIN, CustomDatatype::INPUT_TEXTAREA_SMALL])) {
+                    if (in_array($field['type'], [DatatypeBase::INPUT_TEXTAREA_MAIN, DatatypeBase::INPUT_TEXTAREA_SMALL])) {
                         unset($fields[$key]);
                     }
                 }

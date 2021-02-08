@@ -38,7 +38,7 @@
                     <?= $suberror; ?>
                 <?php endforeach; ?>
             <?php elseif (is_bool($error)): ?>
-                <?php if ($key == 'title' || in_array($key, Datatype::getAvailableFields(true)) || in_array($key, ['pain_bug_type', 'pain_likelihood', 'pain_effect'])): ?>
+                <?php if ($key == 'title' || array_key_exists($key, DatatypeBase::getAvailableFields(true)) || in_array($key, ['pain_bug_type', 'pain_likelihood', 'pain_effect'])): ?>
                     <?php
 
                         switch ($key)
@@ -130,7 +130,7 @@
                     <?= $p_suberror; ?>
                 <?php endforeach; ?>
             <?php elseif (is_bool($p_error)): ?>
-                <?php if (in_array($key, Datatype::getAvailableFields(true))): ?>
+                <?php if (array_key_exists($key, DatatypeBase::getAvailableFields(true))): ?>
                     <?php
 
                         switch ($key)
