@@ -178,7 +178,7 @@ input.button.secondary.highlight,
 .button.secondary.highlight {
   border: 1px solid transparent;
   font-weight: $theme-font-weight-heavy;
-  
+
   &:not(.disabled):not([disabled]) {
     color: $theme-primary-color;
 

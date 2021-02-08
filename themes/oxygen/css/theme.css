@@ -7309,11 +7309,13 @@ input[data-interactive-toggle].submitting + label .indicator {
       padding: 0;
       font-size: 1em;
       min-width: 0; }
-    .collapsed > .list-mode > .list-item > .icon:first-child {
+    .collapsed > .list-mode > .list-item > .icon:first-child,
+    .collapsed > .list-mode > .list-item > a > .icon:first-child {
       padding: .5em;
       flex: 1 1 auto;
       margin: 0; }
-      .collapsed > .list-mode > .list-item > .icon:first-child:hover + .name {
+      .collapsed > .list-mode > .list-item > .icon:first-child:hover + .name,
+      .collapsed > .list-mode > .list-item > a > .icon:first-child:hover + .name {
         opacity: 1;
         transform: scaleX(1); }
     .collapsed > .list-mode > .list-item > .icon:not(:first-child) {
@@ -9991,6 +9993,20 @@ img.userstate {
       white-space: nowrap;
       align-items: flex-start; }
 
+#content_container .label-generic,
+#content_container .label-kanban,
+#content_container .label-scrum {
+  display: none; }
+
+#content_container.type-generic .label-generic {
+  display: inherit; }
+
+#content_container.type-kanban .label-kanban {
+  display: inherit; }
+
+#content_container.type-scrum .label-scrum {
+  display: inherit; }
+
 .whiteboard .onboarding.hidden {
   display: none; }
   .whiteboard .onboarding.hidden + .whiteboard-columns {
@@ -10006,20 +10022,6 @@ img.userstate {
 
 .whiteboard .onboarding .button-container + .content-container {
   display: none; }
-
-.whiteboard .label-generic,
-.whiteboard .label-kanban,
-.whiteboard .label-scrum {
-  display: none; }
-
-.whiteboard.type-generic .label-generic {
-  display: inherit; }
-
-.whiteboard.type-kanban .label-kanban {
-  display: inherit; }
-
-.whiteboard.type-scrum .label-scrum {
-  display: inherit; }
 
 .whiteboard-columns-container {
   flex: 1 1 auto;

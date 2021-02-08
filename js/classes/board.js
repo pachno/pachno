@@ -108,7 +108,7 @@ class Board {
     }
 
     updateBoardClass() {
-        const $container = $('#project_planning');
+        const $container = $('#content_container');
         $container.removeClass('type-generic');
         $container.removeClass('type-kanban');
         $container.removeClass('type-scrum');

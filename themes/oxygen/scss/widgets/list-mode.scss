@@ -554,7 +554,8 @@
         font-size: 1em;
         min-width: 0;
       }
-      > .icon:first-child {
+      > .icon:first-child,
+      > a > .icon:first-child {
         padding: .5em;
         flex: 1 1 auto;
         margin: 0;

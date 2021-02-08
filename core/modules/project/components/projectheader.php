@@ -35,16 +35,14 @@
 <div class="spacer"></div>
 <?php \pachno\core\framework\Event::createNew('core', 'project/templates/projectheader/after-spacer', $project)->trigger(); ?>
 <div class="action-container">
-    <?php if ($pachno_response->getPage() !== 'project_settings' && $pachno_user->canEditProjectDetails($project)): ?>
-        <?php if ($pachno_response->getPage() == 'project_dashboard'): ?>
-            <?= javascript_link_tag(fa_image_tag('edit', ['class' => 'icon']) . '<span class="name">' . __('Customize dashboard') . '</span>', ['title' => __('Customize dashboard'), 'onclick' => "Pachno.UI.Backdrop.show('" . make_url('get_partial_for_backdrop', ['key' => 'dashboard_config', 'tid' => $project->getID(), 'target_type' => DashboardView::TYPE_PROJECT, 'previous_route']) . "');", 'class' => 'button secondary']); ?>
+    <?php if ($pachno_response->getPage() === 'project_dashboard'): ?>
+        <?= javascript_link_tag(fa_image_tag('edit', ['class' => 'icon']) . '<span class="name">' . __('Customize dashboard') . '</span>', ['title' => __('Customize dashboard'), 'onclick' => "Pachno.UI.Backdrop.show('" . make_url('get_partial_for_backdrop', ['key' => 'dashboard_config', 'tid' => $project->getID(), 'target_type' => DashboardView::TYPE_PROJECT, 'previous_route']) . "');", 'class' => 'button secondary']); ?>
+        <?php if ($pachno_user->canEditProjectDetails($project)): ?>
+            <a href="<?= make_url('project_settings', ['project_key' => $project->getKey()]); ?>" class="button secondary">
+                <?= fa_image_tag('cog', ['class' => 'icon']); ?>
+                <span class="name"><?= __('Settings'); ?></span>
+            </a>
         <?php endif; ?>
-    <?php endif; ?>
-    <?php if ($pachno_response->getPage() != 'project_settings' && $pachno_user->canEditProjectDetails($project)): ?>
-        <a href="<?= make_url('project_settings', ['project_key' => $project->getKey()]); ?>" class="button secondary">
-            <?= fa_image_tag('cog', ['class' => 'icon']); ?>
-            <span class="name"><?= __('Settings'); ?></span>
-        </a>
     <?php endif; ?>
     <?php if (framework\Context::isProjectContext() && !$project->isArchived() && !$project->isLocked() && $pachno_user->canReportIssues($project)): ?>
         <button class="button button-report-issue trigger-backdrop <?= $report_issue_primary_class; ?>" data-url="<?= make_url('get_partial_for_backdrop', ['key' => 'reportissue', 'project_id' => $project->getId()]); ?>" id="reportissue_button">

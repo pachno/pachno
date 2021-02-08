@@ -239,7 +239,7 @@ var Board = /*#__PURE__*/function () {
   }, {
     key: "updateBoardClass",
     value: function updateBoardClass() {
-      var $container = jquery__WEBPACK_IMPORTED_MODULE_0___default()('#project_planning');
+      var $container = jquery__WEBPACK_IMPORTED_MODULE_0___default()('#content_container');
       $container.removeClass('type-generic');
       $container.removeClass('type-kanban');
       $container.removeClass('type-scrum');

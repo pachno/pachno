@@ -146,6 +146,32 @@
   }
 }
 
+#content_container {
+  .label-generic,
+  .label-kanban,
+  .label-scrum {
+    display: none;
+  }
+
+  &.type-generic {
+    .label-generic {
+      display: inherit;
+    }
+  }
+
+  &.type-kanban {
+    .label-kanban {
+      display: inherit;
+    }
+  }
+
+  &.type-scrum {
+    .label-scrum {
+      display: inherit;
+    }
+  }
+}
+
 .whiteboard {
   .onboarding {
     &.hidden {
@@ -172,30 +198,6 @@
       + .content-container {
         display: none;
       }
-    }
-  }
-
-  .label-generic,
-  .label-kanban,
-  .label-scrum {
-    display: none;
-  }
-
-  &.type-generic {
-    .label-generic {
-      display: inherit;
-    }
-  }
-
-  &.type-kanban {
-    .label-kanban {
-      display: inherit;
-    }
-  }
-
-  &.type-scrum {
-    .label-scrum {
-      display: inherit;
     }
   }
 }
