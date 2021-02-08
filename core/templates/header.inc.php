@@ -95,16 +95,6 @@
                             <span class="description">@<?= $pachno_user->getUsername(); ?></span>
                         </span>
                     </div>
-                    <a href="<?= make_url('dashboard'); ?>" class="list-item">
-                        <?= fa_image_tag('columns', ['class' => 'icon']); ?>
-                        <span class="name"><?= __('Your dashboard'); ?></span>
-                    </a>
-                    <?php if ($pachno_response->getPage() == 'dashboard'): ?>
-                        <a href="javascript:void(0);" onclick="$$('.dashboard').each(function (elm) { elm.toggleClass('editable');});" class="list-item">
-                            <?= fa_image_tag('edit', ['class' => 'icon']); ?>
-                            <span class="name"><?= __('Customize your dashboard'); ?></span>
-                        </a>
-                    <?php endif; ?>
                     <a href="<?= make_url('profile_account'); ?>" class="list-item">
                         <?= fa_image_tag('user-md', ['class' => 'icon']); ?>
                         <span class="name"><?= __('Your account'); ?></span>

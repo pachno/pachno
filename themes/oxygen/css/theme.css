@@ -6213,7 +6213,7 @@ input.icon.danger {
   justify-self: flex-end;
   flex: 1 1 auto; }
 
-h1 .button, h2 .button, h3 .button, h4 .button, h5 .button, h6 .button {
+h1 .button, h1 .button:hover, h2 .button, h2 .button:hover, h3 .button, h3 .button:hover, h4 .button, h4 .button:hover, h5 .button, h5 .button:hover, h6 .button, h6 .button:hover {
   font-size: .9rem; }
 
 .card-badge {
@@ -6368,7 +6368,7 @@ h1 .button, h2 .button, h3 .button, h4 .button, h5 .button, h6 .button {
         z-index: 1;
         height: calc(100% - 55px);
         transform-origin: left;
-        transform: translateX(-110%);
+        transform: translateX(-120%);
         width: 350px;
         border-radius: 0;
         max-height: none; }
@@ -7013,15 +7013,18 @@ input[data-interactive-toggle].submitting + label .indicator {
     .list-mode .list-item.danger,
     .list-mode .list-item:hover.danger {
       color: #cb1a00; }
+      .list-mode .list-item.danger.disabled,
+      .list-mode .list-item:hover.danger.disabled {
+        color: rgba(177, 22, 0, 0.54); }
       .list-mode .list-item.danger .icon,
       .list-mode .list-item:hover.danger .icon {
         color: #cb1a00; }
-      .list-mode .list-item.danger:hover,
-      .list-mode .list-item:hover.danger:hover {
+      .list-mode .list-item.danger:not(.disabled):hover,
+      .list-mode .list-item:hover.danger:not(.disabled):hover {
         background-color: #cb1a00;
         color: #FFF; }
-        .list-mode .list-item.danger:hover .icon,
-        .list-mode .list-item:hover.danger:hover .icon {
+        .list-mode .list-item.danger:not(.disabled):hover .icon,
+        .list-mode .list-item:hover.danger:not(.disabled):hover .icon {
           color: #FFF; }
     .list-mode .list-item .dropper-container,
     .list-mode .list-item:hover .dropper-container {
@@ -7184,7 +7187,6 @@ input[data-interactive-toggle].submitting + label .indicator {
     .list-mode .list-item .icon,
     .list-mode .list-item:hover .icon {
       flex: 0 0 35px;
-      padding: .35em .65em .35em 0;
       align-self: center;
       text-align: center;
       display: flex;
@@ -7192,6 +7194,13 @@ input[data-interactive-toggle].submitting + label .indicator {
       justify-content: center;
       flex-direction: row;
       box-sizing: border-box; }
+      .list-mode .list-item .icon:not(.issuetype-icon),
+      .list-mode .list-item:hover .icon:not(.issuetype-icon) {
+        padding: .35em .65em .35em 0; }
+      .list-mode .list-item .icon.issuetype-icon,
+      .list-mode .list-item:hover .icon.issuetype-icon {
+        flex: 0 0 30px;
+        padding: .65em; }
       .list-mode .list-item .icon.large,
       .list-mode .list-item:hover .icon.large {
         flex: 0 0 36px; }
@@ -9091,7 +9100,7 @@ header {
       header .menu-strip .dropper-container button .name {
         padding-right: 2em; }
       header .menu-strip .dropper-container .dropdown-container {
-        margin: -.5em 0 0 .5em; }
+        margin: .85em 0 0 .5em; }
     header .menu-strip .name-container {
       display: flex;
       flex-direction: row;
@@ -9629,7 +9638,7 @@ textarea.markItUpEditor:focus {
         color: #FFF;
         padding: .5em 1em;
         background: transparent; }
-        .quicksearch-container .quicksearch-content .quicksearch-results .result-item.selected {
+        .quicksearch-container .quicksearch-content .quicksearch-results .result-item.selected, .quicksearch-container .quicksearch-content .quicksearch-results .result-item:hover {
           background-color: rgba(255, 255, 255, 0.1); }
         .quicksearch-container .quicksearch-content .quicksearch-results .result-item .icon {
           flex: 0 0 24px;

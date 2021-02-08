@@ -110,7 +110,7 @@ const setupListeners = function () {
             return;
         } else if (e.target && typeof(e.target.hasAttribute) == 'function' && e.target.hasAttribute('onclick')) {
             return;
-        } else if (e.target && typeof(e.target.hasAttribute) == 'function' && e.target.hasAttribute('onclick')) {
+        } else if (e.target && e.target.classList.contains('dropper')) {
             return;
         }
 

@@ -40,16 +40,17 @@
                         <button class="button icon secondary" type="button" onclick="$('#category_selector_container').show();return false;"><?= fa_image_tag('layer-group'); ?></button>
                         <span class="separator"></span>
                     <?php endif; ?>
+                    <?php /*
                     <button class="button secondary" type="submit" onclick="$('#article_preview').value = 1;">
                         <?= fa_image_tag('eye', ['class' => 'icon']); ?>
                         <span class="name"><?= __('Preview'); ?></span>
-                    </button>
+                    </button> */ ?>
                     <button class="button primary enable-on-editor-ready" id="article-publish-button" disabled type="submit">
                         <?= fa_image_tag('spinner', ['class' => 'fa-spin icon indicator']); ?>
                         <?php if (isset($convert)): ?>
                             <span><?= __('Convert page'); ?></span>
                         <?php else: ?>
-                            <span><?php echo ($article->getId()) ? __('Publish changes') : __('Publish page'); ?></span>
+                            <span><?php echo ($article->getId()) ? __('Save changes') : __('Save page'); ?></span>
                         <?php endif; ?>
                     </button>
                 </div>

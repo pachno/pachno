@@ -31,7 +31,7 @@
                 'article' => $article,
                 'main_article' => $overview_article
             ]); ?>
-            <?php if ($article->getProject() instanceof Project): ?>
+            <?php /* if ($article->getProject() instanceof Project): ?>
                 <a href="<?= make_url("publish_project_redirect_articles", ['project_key' => $article->getProject()->getKey()]); ?>" class="list-item">
                     <?= fa_image_tag('share-square', ['class' => 'icon'], 'far'); ?>
                     <span class="name"><?= __('Named links'); ?></span>
@@ -41,7 +41,7 @@
                     <?= fa_image_tag('share-square', ['class' => 'icon'], 'far'); ?>
                     <span class="name"><?= __('Named links'); ?></span>
                 </a>
-            <?php endif; ?>
+            <?php endif; */ ?>
             <?php if ($article->getProject() instanceof Project): ?>
                 <div class="list-item filter-container">
                     <label for="documentation-search-input" class="icon"><?= fa_image_tag('search'); ?></label>

@@ -148,11 +148,15 @@
     &.danger {
       color: #cb1a00;
 
+      &.disabled {
+        color: rgba(177,22,0,0.54);
+      }
+
       .icon {
         color: #cb1a00;
       }
 
-      &:hover {
+      &:not(.disabled):hover {
         background-color: #cb1a00;
         color: #FFF;
 
@@ -355,7 +359,6 @@
 
     .icon {
       flex: 0 0 35px;
-      padding: .35em .65em .35em 0;
       align-self: center;
       text-align: center;
       display: flex;
@@ -363,6 +366,15 @@
       justify-content: center;
       flex-direction: row;
       box-sizing: border-box;
+
+      &:not(.issuetype-icon) {
+        padding: .35em .65em .35em 0;
+      }
+
+      &.issuetype-icon {
+        flex: 0 0 30px;
+        padding: .65em;
+      }
 
       &.large {
         flex: 0 0 36px;

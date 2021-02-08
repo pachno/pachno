@@ -62,7 +62,7 @@ class Quicksearch {
             const choice_description = (choice.description !== undefined) ? `<span class="description">${choice.description}</span>` : '';
             const choice_icon = (choice.icon !== undefined) ? `<span class="icon">${UI.fa_image_tag(choice.icon.name, {}, choice.icon.type)}</span>` : '';
             const html = `
-            <div class="result-item">
+            <div class="result-item" data-shortcut="${choice.shortcut}">
                 ${choice_icon}
                 <span class="name">
                     <span class="title"><span class="count-badge">${choice.shortcut}</span><span>${choice.name}</span></span>
@@ -118,6 +118,8 @@ class Quicksearch {
                 this.selectHighlightedChoice();
             }
         }
+
+        this.$input.focus();
     }
 
     updateDynamicChoices(event, event_value) {
@@ -348,6 +350,13 @@ class Quicksearch {
         $body.off('click', '.trigger-quicksearch');
         $body.on('click', '.trigger-quicksearch', () => {
             Pachno.trigger(Pachno.EVENTS.quicksearchTrigger, { choices: this.default_choices });
+        });
+
+        $body.off('click', '.quicksearch-container .result-item');
+        $body.on('click', '.quicksearch-container .result-item', function () {
+            const shortcut = $(this).data('shortcut');
+            quicksearch.highlighted_choice = quicksearch.visible_choices.findIndex(choice => choice.shortcut === shortcut);
+            quicksearch.selectHighlightedChoiceOrExecute();
         });
 
         Pachno.on(Pachno.EVENTS.quicksearchTrigger, function (Pachno, data) {

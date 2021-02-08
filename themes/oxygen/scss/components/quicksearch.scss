@@ -84,7 +84,8 @@
         padding: .5em 1em;
         background: transparent;
 
-        &.selected {
+        &.selected,
+        &:hover {
           background-color: rgba(255, 255, 255, .1);
         }
 

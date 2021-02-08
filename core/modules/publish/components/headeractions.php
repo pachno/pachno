@@ -97,24 +97,24 @@ use pachno\core\framework\Context;
             <a class="button dropper icon secondary"><?= fa_image_tag('ellipsis-v'); ?></a>
             <div class="dropdown-container">
                 <div class="list-mode">
-                    <a href="<?= $article->getLink('history'); ?>" class="list-item">
+                    <a href="<?= $article->getLink('history'); ?>" class="list-item disabled">
                         <?= fa_image_tag('history', ['class' => 'icon']); ?>
                         <span class="name"><?= __('History'); ?></span>
                     </a>
                     <?php if ($article->canEdit()): ?>
-                        <a href="<?= $article->getLink('permissions'); ?>" class="list-item">
+                        <a href="<?= $article->getLink('permissions'); ?>" class="list-item disabled">
                             <?= fa_image_tag('lock', ['class' => 'icon']); ?>
                             <span class="name"><?= __('Permissions'); ?></span>
                         </a>
                     <?php endif; ?>
                     <div class="list-item separator"></div>
-                    <a href="<?= $article->getLink('edit'); ?>?copy=true" class="list-item">
+                    <a href="<?= $article->getLink('edit'); ?>?copy=true" class="list-item disabled">
                         <?= fa_image_tag('copy', ['class' => 'icon'], 'far'); ?>
                         <span class="name"><?= __('Copy article'); ?></span>
                     </a>
                     <div class="list-item separator"></div>
                     <?php if ($article->canDelete()): ?>
-                        <?= javascript_link_tag(fa_image_tag('times', ['class' => 'icon']) . '<span class="name">'.__('Delete this article').'</span>', ['onclick' => "Pachno.UI.Dialog.show('".__('Please confirm')."', '".__('Do you really want to delete this article?')."', {yes: {click: function () { Pachno.Main.deleteArticle('".make_url('publish_article_delete', ['article_id' => $article->getID()])."') }}, no: {click: Pachno.UI.Dialog.dismiss}})", 'class' => 'list-item danger']); ?>
+                        <?= javascript_link_tag(fa_image_tag('times', ['class' => 'icon']) . '<span class="name">'.__('Delete this article').'</span>', ['onclick' => "Pachno.UI.Dialog.show('".__('Please confirm')."', '".__('Do you really want to delete this article?')."', {yes: {click: function () { Pachno.Main.deleteArticle('".make_url('publish_article_delete', ['article_id' => $article->getID()])."') }}, no: {click: Pachno.UI.Dialog.dismiss}})", 'class' => 'list-item danger disabled']); ?>
                     <?php endif; ?>
                 </div>
             </div>
