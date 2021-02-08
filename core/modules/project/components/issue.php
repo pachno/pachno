@@ -84,7 +84,7 @@
                 <div id="viewissue_related_information_container" class="fields-list-container <?php if (!$issue->countChildIssues()) echo 'not-visible'; ?>">
                     <div class="header">
                         <span class="icon"><?= fa_image_tag('list-alt', [], 'far'); ?></span>
-                        <span class="name"><?= __('Child issues'); ?><span id="viewissue_related_issues_count" class="count-badge"><?= $issue->countChildIssues(); ?></span></span>
+                        <span class="name"><?= __('Subtasks'); ?><span id="viewissue_related_issues_count" class="count-badge"><?= $issue->countChildIssues(); ?></span></span>
                     </div>
                     <div id="viewissue_related_information" class="related-issues content">
                         <?php include_component('main/relatedissues', array('issue' => $issue)); ?>

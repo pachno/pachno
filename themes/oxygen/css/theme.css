@@ -9182,7 +9182,7 @@ header {
       align-items: center;
       justify-content: flex-start;
       border-left: 2px solid rgba(225, 225, 225, 0.2);
-      margin: .6em 0;
+      margin: .5em 0;
       padding: 0 1em 0 .75em; }
       header .menu-strip .action-container .dropper-container {
         margin-right: .5em; }
@@ -11412,6 +11412,9 @@ img.userstate {
       flex: 1 1 auto; }
     .viewissue-container .issue-card .issue-fields .fancy-dropdown-container {
       flex: 1 1 auto; }
+    .viewissue-container .issue-card .issue-fields .affected-list {
+      padding: 0 .25em .75em .75em;
+      box-sizing: border-box; }
   .viewissue-container .issue-card .fancy-tabs {
     flex: 0 0 auto;
     align-self: flex-end; }
@@ -11424,6 +11427,36 @@ img.userstate {
   width: calc(100% - 2rem);
   max-width: 1650px;
   margin: 0 1rem 3rem 1rem; }
+
+.viewissue-container .related-issues-list {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: center; }
+  .viewissue-container .related-issues-list .related-issue, .viewissue-container .related-issues-list .related-issue:hover {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    box-shadow: rgba(9, 30, 66, 0.25) 0 1px 1px, rgba(9, 30, 66, 0.31) 0 0 1px;
+    background-color: #FFF;
+    padding: .35em;
+    border-radius: .25em;
+    font-size: 1em;
+    margin-bottom: .5em;
+    transition: border .25s ease-in-out;
+    border: none;
+    cursor: pointer;
+    color: #232323; }
+    .viewissue-container .related-issues-list .related-issue .count-badge, .viewissue-container .related-issues-list .related-issue:hover .count-badge {
+      margin-left: 0; }
+    .viewissue-container .related-issues-list .related-issue .issue-state, .viewissue-container .related-issues-list .related-issue:hover .issue-state {
+      font-size: .8em;
+      margin-right: .35em; }
+    .viewissue-container .related-issues-list .related-issue .issue-title, .viewissue-container .related-issues-list .related-issue:hover .issue-title {
+      flex: 1 1 auto; }
+    .viewissue-container .related-issues-list .related-issue.closed .issue-title, .viewissue-container .related-issues-list .related-issue:hover.closed .issue-title {
+      text-decoration: line-through; }
 
 #customize_dashboard_icon img,
 #customize_dashboard_icon span {
@@ -11494,7 +11527,6 @@ img.userstate {
         margin: 0;
         border-radius: 4px;
         clear: both;
-        font-size: 1.1em;
         display: flex;
         flex-direction: column;
         align-items: stretch;

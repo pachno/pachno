@@ -426,6 +426,11 @@
       .fancy-dropdown-container {
         flex: 1 1 auto;
       }
+
+      .affected-list {
+        padding: 0 .25em .75em .75em;
+        box-sizing: border-box;
+      }
     }
 
     .fancy-tabs {
@@ -444,5 +449,51 @@
     width: calc(100% - 2rem);
     max-width: 1650px;
     margin: 0 1rem 3rem 1rem;
+  }
+
+  .related-issues-list {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: center;
+
+    .related-issue {
+      &,
+      &:hover {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: flex-start;
+        box-shadow: rgba(9, 30, 66, 0.25) 0 1px 1px, rgba(9, 30, 66, 0.31) 0 0 1px;
+        background-color: #FFF;
+        padding: .35em;
+        border-radius: .25em;
+        font-size: 1em;
+        margin-bottom: .5em;
+        transition: border .25s ease-in-out;
+        border: none;
+        cursor: pointer;
+        color: $theme-text-color;
+
+        .count-badge {
+          margin-left: 0;
+        }
+
+        .issue-state {
+          font-size: .8em;
+          margin-right: .35em;
+        }
+
+        .issue-title {
+          flex: 1 1 auto;
+        }
+
+        &.closed {
+          .issue-title {
+            text-decoration: line-through;
+          }
+        }
+      }
+    }
   }
 }

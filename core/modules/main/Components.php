@@ -66,6 +66,7 @@
 
             }
             $this->show_avatar = (isset($this->show_avatar)) ? $this->show_avatar : true;
+            $this->show_name = (isset($this->show_name)) ? $this->show_name : true;
             framework\Logging::log('done (user dropdown component)');
         }
 

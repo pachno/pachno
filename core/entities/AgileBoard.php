@@ -41,7 +41,7 @@
 
         const SWIMLANES_EXPEDITE = 'expedite';
 
-        const BACKGROUND_COLOR_DEFAULT = '#0C8990';
+        const BACKGROUND_COLOR_DEFAULT = '#00ADC7';
         const BACKGROUND_COLOR_ONE = '#7d7c84';
         const BACKGROUND_COLOR_TWO = '#00aa7f';
         const BACKGROUND_COLOR_THREE = '#d62246';
