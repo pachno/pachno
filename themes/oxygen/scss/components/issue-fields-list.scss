@@ -27,7 +27,7 @@
     }
 
     & + .fields-list-container:not(.not-visible) {
-      margin-top: 2em;
+      margin-top: 1.5em;
     }
 
     > .header {
@@ -83,7 +83,7 @@
       padding: .25em .65em;
       border-radius: 4px;
       font-weight: $theme-font-weight-light;
-      margin-bottom: 2em;
+      margin-bottom: 1.5em;
     }
 
     > ul {
@@ -155,6 +155,21 @@
 
             .value {
               max-width: none;
+            }
+
+            .expander {
+              opacity: 0;
+              transition: opacity .25s ease-in-out;
+            }
+          }
+        }
+
+        &:hover {
+          .fancy-dropdown-container {
+            .fancy-dropdown {
+              .expander {
+                opacity: 1;
+              }
             }
           }
         }

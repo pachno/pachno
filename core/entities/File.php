@@ -190,6 +190,8 @@
             $size = $this->getSize();
             if ($size > 1024 * 1024) {
                 return round(($size * 100 / (1024 * 1024)) / 100, 2) . 'MB';
+            } elseif ($size < 1024) {
+                return $size . 'B';
             } else {
                 return round(($size * 100 / 1024) / 100, 2) . 'KB';
             }
@@ -230,15 +232,15 @@
 
             foreach ($issue_ids as $issue_id) {
                 $issue = new Issue($issue_id);
-                if (!$issue->hasAccess())
-                    return false;
+                if ($issue->hasAccess())
+                    return true;
             }
 
             if ($this->getProject() instanceof Project) {
                 return $this->getProject()->hasAccess();
             }
 
-            return false;
+            return true;
 //            $event = Event::createNew('core', 'pachno\core\entities\File::hasAccess', $this);
 //            $event->setReturnValue(false);
 //            $event->triggerUntilProcessed();

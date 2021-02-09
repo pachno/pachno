@@ -1,0 +1,77 @@
+@import "../variables";
+
+.attachments-container {
+  display: flex;
+  flex-direction: row;
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+  flex-wrap: wrap;
+  font-size: 1em;
+
+  .attachment {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+    padding: 0;
+    box-shadow: rgba(9, 30, 66, 0.25) 0 1px 1px, rgba(9, 30, 66, 0.31) 0 0 1px;
+    background-color: rgba(225, 225, 225, .2);
+    border-radius: 4px;
+    margin: .35em;
+    flex: 0 0 12.5em;
+
+    a:not(.button) {
+      &,
+      &:hover {
+        box-sizing: border-box;
+        flex: 1 1 auto;
+        border: 0;
+        text-decoration: none;
+        font-weight: $theme-font-weight-regular;
+        color: $theme-text-color;
+        padding : .35em;
+        display: flex;
+        flex-direction: row;
+        border-radius: 4px 4px 0 0;
+
+        &.preview {
+          padding: 0;
+          max-height: 8.5em;
+          overflow: hidden;
+
+          ~ .actions-container {
+            margin-top: 1.5em;
+          }
+        }
+
+        img {
+          width: 100%;
+        }
+      }
+    }
+
+    .information {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: flex-start;
+      font-size: .85em;
+      padding: 0 .35em;
+    }
+
+    .actions-container {
+      margin-top: 2.5em;
+      display: flex;
+      flex-direction: row;
+      align-items: flex-start;
+      justify-content: center;
+      padding: .35em;
+
+      .remove-button {
+        margin-left: auto;
+      }
+    }
+  }
+}

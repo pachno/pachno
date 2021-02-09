@@ -82,6 +82,7 @@
             font-size: 1.1em;
             flex: 0 0 auto;
             margin-left: .5em;
+            font-weight: $theme-font-weight-bold;
           }
         }
 
@@ -164,8 +165,8 @@
         align-items: flex-end;
         flex: 0 0 auto;
         margin-right: 1rem;
-        font-size: .8rem;
-
+        font-size: .9em;
+        line-height: 1.3em;
         color: rgba(0, 0, 0, .4);
 
         label {
@@ -310,7 +311,7 @@
                 align-items: center;
                 justify-content: space-between;
                 margin: 0;
-                padding: 1em;
+                padding: 0;
                 box-sizing: border-box;
                 background-color: transparent;
                 border: none;
@@ -327,6 +328,7 @@
               min-height: 15em;
 
               + .textarea_save_container {
+                padding: 1em;
                 height: auto;
                 opacity: 1;
                 overflow: visible;
@@ -446,9 +448,7 @@
   }
 
   .comments {
-    width: calc(100% - 2rem);
-    max-width: 1650px;
-    margin: 0 1rem 3rem 1rem;
+    margin: 0 .35em 3em .35em;
   }
 
   .related-issues-list {
@@ -456,6 +456,7 @@
     flex-direction: column;
     align-items: stretch;
     justify-content: center;
+    font-size: .9em;
 
     .related-issue {
       &,
@@ -486,6 +487,26 @@
 
         .issue-title {
           flex: 1 1 auto;
+        }
+
+        .information {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          justify-content: flex-start;
+          flex: 0 0 auto;
+          margin: 0 .75em;
+          color: $theme-text-color-lighter;
+          font-weight: $theme-font-weight-bold;
+          font-size: .9em;
+
+          + .information {
+            margin-left: 0;
+          }
+        }
+
+        .userlink {
+          margin-right: .35em;
         }
 
         &.closed {

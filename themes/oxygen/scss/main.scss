@@ -460,14 +460,12 @@ footer {
   text-align: center;
   font-size: 0.9em;
   line-height: 1.4;
-  padding: 6px 1em;
+  padding: 0;
   box-sizing: border-box;
   align-items: center;
   justify-content: center;
-  text-shadow: 1px 1px 0 #fff;
-  margin-left: 350px;
-  background-color: rgba(225, 225, 225, 0.15);
-  box-shadow: 6px 0 8px -11px rgba(0, 0, 0, 0.8) inset;
+  margin: 0;
+  background: transparent;
   bottom: 0;
   left: 0;
   width: 100%;
@@ -2003,52 +2001,6 @@ h5.change-list {
   font-weight: $theme-font-weight-regular;
 }
 
-.affected_item img {
-  display: inline-block;
-  vertical-align: middle;
-  margin-right: 5px;
-}
-
-.affected_item .removelink,
-.attached_item .removelink,
-.relatedissue .removelink,
-.duplicatedissue .removelink,
-.attached_item .removelink:hover,
-.relatedissue .removelink:hover,
-.duplicatedissue .removelink:hover {
-  display: inline-block;
-  vertical-align: middle;
-  margin-right: 5px;
-  width: 17px;
-  opacity: 0.3;
-  transition: opacity 0.3s ease;
-}
-
-.relatedissue .removelink,
-.affected_item .removelink,
-.duplicatedissue .removelink {
-  float: right;
-}
-
-.attached_item:hover .removelink,
-.affected_item:hover .removelink,
-.relatedissue:hover .removelink,
-.duplicatedissue:hover .removelink,
-.attached_item:hover .removelink:hover,
-.relatedissue:hover .removelink:hover,
-.duplicatedissue:hover .removelink:hover {
-  opacity: 1;
-  border: none;
-}
-
-.attached_item:hover .removelink a:hover,
-.affected_item:hover .removelink a:hover,
-.relatedissue a.removelink:hover,
-.duplicatedissue a.removelink:hover {
-  text-decoration: none;
-  border: none;
-}
-
 .icon-link:hover,
 .icon-link {
   color: #555;
@@ -2067,52 +2019,6 @@ h5.change-list {
 .icon-link .fas,
 .icon-link .far {
   margin: 0;
-}
-
-#viewissue_attached_information .attached_item.file_image,
-#article_attachments .attached_item.file_image {
-  display: inline-block;
-  width: 160px;
-  margin-top: 10px;
-  position: relative;
-  vertical-align: top;
-}
-
-#viewissue_attached_information .attached_item.file_image:nth-child(odd),
-#article_attachments .attached_item.file_image {
-  margin-right: 5px;
-}
-
-#viewissue_attached_information .attached_item.file_image .removelink,
-#article_attachments .attached_item.file_image .removelink {
-  position: absolute;
-  top: 5px;
-  right: 0;
-  cursor: pointer;
-  padding: 3px 2px;
-}
-
-#viewissue_attached_information .attached_item .filename,
-#article_attachments .attached_item .filename {
-  display: block;
-}
-
-#viewissue_attached_information
-  .attached_item.file_image
-  .removelink:first-of-type,
-#article_attachments .attached_item.file_image .removelink:first-of-type {
-  right: 20px;
-}
-
-#viewissue_attached_information .attached_item.file_image:hover .removelink,
-#article_attachments .attached_item.file_image:hover .removelink {
-  background-color: rgba(255, 255, 255, 0.9);
-  border: 1px solid rgba(200, 200, 200, 0.8);
-  border-radius: 2px;
-  padding: 2px;
-  line-height: 1em;
-  width: 16px;
-  height: 16px;
 }
 
 .imagepreview {
@@ -6498,25 +6404,6 @@ td.legendLabel {
 .page-publish_article_permissions .rounded_box.verylightyellow table,
 .page-publish_article_permissions .rounded_box.invisible.borderless table {
   background-color: #fff;
-}
-
-#article_attachments .attached_item.file_image > a.imagepreview {
-  height: 120px;
-  overflow: hidden;
-  padding: 0;
-  border: 4px solid #fff;
-}
-
-#article_attachments .attached_item.file_image > a.imagepreview > img {
-  position: relative;
-  top: 50%;
-  -webkit-transform: translateY(-50%);
-  -ms-transform: translateY(-50%);
-  transform: translateY(-50%);
-}
-
-.article .content {
-  line-height: 1.4em;
 }
 
 .wiki-find-articles-button {

@@ -178,7 +178,44 @@ use pachno\core\framework\Context;
         <?php include_component('main/issueaffected', array('issue' => $issue)); ?>
     </div>
 </div>
-<div class="fields-list-container">
+<div class="fields-list-container" id="issue_timetracking_container">
+    <div class="header">
+        <span class="icon"><?= fa_image_tag('clock'); ?></span>
+        <span class="name"><?= __('Times and dates'); ?></span>
+    </div>
+    <ul class="issue_details fields-list" id="issue_details_fieldslist_time">
+        <li id="estimated_time_field" class="issue-field <?php if (!$issue->isEstimatedTimeVisible()): ?> hidden<?php endif; ?>">
+            <div id="estimated_time_content" class="value fancy-dropdown-container">
+                <div class="fancy-dropdown">
+                    <label><?= __('Estimated time'); ?></label>
+                    <span class="value" data-dynamic-field-value data-field="estimated_time" data-issue-id="<?= $issue->getId(); ?>">
+                        <?= ($issue->hasEstimatedTime()) ? Issue::getFormattedTime($issue->getEstimatedTime(true, true)) : __('Not estimated'); ?>
+                    </span>
+                    <?php if ($issue->isUpdateable() && $issue->canEditEstimatedTime()): ?>
+                        <?php echo fa_image_tag('angle-down', ['class' => 'expander']); ?>
+                        <div class="dropdown-container">
+                        </div>
+                    <?php endif; ?>
+                </div>
+            </div>
+        </li>
+        <li id="spent_time_field" class="<?php if (!$issue->isSpentTimeVisible()): ?> hidden<?php endif; ?> trigger-backdrop" data-url="<?= make_url('get_partial_for_backdrop', array('key' => 'issue_spenttimes', 'issue_id' => $issue->getID())); ?>">
+            <div id="estimated_time_content" class="field-container">
+                <span class="label"><?= __('Time spent'); ?></span>
+                <span class="value" data-dynamic-field-value data-field="spent_time" data-issue-id="<?= $issue->getId(); ?>">
+                    <span><?= ($issue->hasEstimatedTime()) ? Issue::getFormattedTime($issue->getSpentTime(true, true)) : __('Not estimated'); ?></span>
+                    <?php if ($issue->canEditEstimatedTime()): ?>
+                        <?php echo fa_image_tag('hourglass', ['class' => 'icon'], 'far'); ?>
+                    <?php endif; ?>
+                </span>
+            </div>
+        </li>
+        <?php foreach ($customfields_list as $field => $info): ?>
+            <?php if (!in_array($info['type'], [DatatypeBase::DATE_PICKER, DatatypeBase::DATETIME_PICKER])) continue; ?>
+            <?php include_component('main/viewissuecustomfield', compact('field', 'info', 'issue')); ?>
+        <?php endforeach; ?>
+    </ul>
+</div><div class="fields-list-container">
     <div class="header">
         <span class="icon"><?= fa_image_tag('users'); ?></span>
         <span class="name"><?= __('People involved'); ?></span>
@@ -279,41 +316,6 @@ use pachno\core\framework\Context;
         </li>
     </ul>
 </div>
-<div class="fields-list-container" id="issue_timetracking_container">
-    <div class="header">
-        <span class="icon"><?= fa_image_tag('clock'); ?></span>
-        <span class="name"><?= __('Times and dates'); ?></span>
-    </div>
-    <ul class="issue_details fields-list" id="issue_details_fieldslist_time">
-        <li id="estimated_time_field"<?php if (!$issue->isEstimatedTimeVisible()): ?> style="display: none;"<?php endif; ?>>
-            <div class="label" id="estimated_time_header"><?= __('Estimated time'); ?></div>
-            <div class="value <?php if ($issue->isUpdateable() && $issue->canEditEstimatedTime()): ?>dropper-container<?php endif; ?>" id="estimated_time_content">
-                <div class="value-container <?php if ($issue->isUpdateable() && $issue->canEditEstimatedTime()): ?>dropper<?php endif; ?>">
-                    <span id="estimated_time_<?= $issue->getID(); ?>_name"<?php if (!$issue->hasEstimatedTime()): ?> style="display: none;"<?php endif; ?>>
-                        <?= Issue::getFormattedTime($issue->getEstimatedTime(true, true)); ?>
-                    </span>
-                    <span class="no-value" id="no_estimated_time_<?= $issue->getID(); ?>"<?php if ($issue->hasEstimatedTime()): ?> style="display: none;"<?php endif; ?>><?= __('Not estimated'); ?></span>
-                    <?php if ($issue->isUpdateable() && $issue->canEditEstimatedTime()): ?>
-                        <?= fa_image_tag('angle-down', ['class' => 'dropdown-indicator']); ?>
-                    <?php endif; ?>
-                </div>
-            </div>
-        </li>
-        <li id="spent_time_field" style="position: relative;<?php if (!$issue->isSpentTimeVisible()): ?> display: none;<?php endif; ?>">
-            <div class="label" id="spent_time_header"><?= __('Time spent'); ?></div>
-            <div class="value" id="spent_time_content">
-                <div class="value-container">
-                    <span id="spent_time_<?= $issue->getID(); ?>_name"<?php if (!$issue->hasSpentTime()): ?> style="display: none;"<?php endif; ?>>
-                        <a href="javascript:void(0)" onclick="Pachno.UI.Backdrop.show('<?= make_url('get_partial_for_backdrop', array('key' => 'issue_spenttimes', 'issue_id' => $issue->getID())); ?>');" id="spent_time_<?= $issue->getID(); ?>_value"><?= Issue::getFormattedTime($issue->getSpentTime(true, true)); ?></a>
-                    </span>
-                    <span class="no-value" id="no_spent_time_<?= $issue->getID(); ?>"<?php if ($issue->hasSpentTime()): ?> style="display: none;"<?php endif; ?>><a href="javascript:void(0)" onclick="Pachno.UI.Backdrop.show('<?= make_url('get_partial_for_backdrop', array('key' => 'issue_spenttimes', 'issue_id' => $issue->getID())); ?>');"><?= __('No time spent'); ?></a></span>
-                    <div id="estimated_percentbar"<?php if (!($issue->hasEstimatedTime())): ?> style="display: none;"<?php endif; ?>><?php include_component('main/percentbar', array('percent' => $issue->getEstimatedPercentCompleted(), 'height' => 2)); ?></div>
-                </div>
-            </div>
-            <div class="tooltip from-above"><?= __('Click here to see time logged against this issue'); ?></div>
-        </li>
-    </ul>
-</div>
 <?php if (count($fields_list) || count($customfields_list)): ?>
     <div class="fields-list-container">
         <div class="header">
@@ -325,293 +327,8 @@ use pachno\core\framework\Context;
                 <?php include_component('main/viewissuefield', compact('field', 'info', 'issue')); ?>
             <?php endforeach; ?>
             <?php foreach ($customfields_list as $field => $info): ?>
-                <?php if ($info['type'] == DatatypeBase::INPUT_TEXTAREA_MAIN) continue; ?>
-                <li id="<?= $field; ?>_field" <?php if (!$info['visible']): ?> style="display: none;"<?php endif; ?>>
-                    <div class="label" id="<?= $field; ?>_header">
-                        <?= $info['title']; ?>
-                    </div>
-                    <div class="value dropper-container" id="<?= $field; ?>_content">
-                        <div class="value-container dropper">
-                            <?php
-                                switch ($info['type'])
-                                {
-                                    case DatatypeBase::INPUT_TEXTAREA_SMALL:
-                                        var_dump($info);
-                                        break;
-                                        ?>
-                                        <span id="<?= $field; ?>_name"<?php if (!$info['value']): ?> style="display: none;"<?php endif; ?>>
-                                            <?= TextParser::parseText($info['name'], false, null, array('headers' => false)); ?>
-                                        </span>
-                                        <span class="no-value" id="no_<?= $field; ?>"<?php if ($info['value']): ?> style="display: none;"<?php endif; ?>>
-                                            <?= __('Not determined'); ?>
-                                        </span>
-                                        <?php
-                                        break;
-                                    case DatatypeBase::USER_CHOICE:
-                                        ?>
-                                        <span id="<?= $field; ?>_name"<?php if (!$info['value']): ?> style="display: none;"<?php endif; ?>>
-                                            <?= include_component('main/userdropdown', array('user' => $info['value'])); ?>
-                                        </span>
-                                        <span class="no-value" id="no_<?= $field; ?>"<?php if ($info['value']): ?> style="display: none;"<?php endif; ?>>
-                                            <?= __('Not determined'); ?>
-                                        </span>
-                                        <?php
-                                        break;
-                                    case DatatypeBase::TEAM_CHOICE:
-                                        ?>
-                                        <span id="<?= $field; ?>_name"<?php if (!$info['value']): ?> style="display: none;"<?php endif; ?>>
-                                            <?= include_component('main/teamdropdown', array('team' => $info['identifiable'])); ?>
-                                        </span>
-                                        <span class="no-value" id="no_<?= $field; ?>"<?php if ($info['value']): ?> style="display: none;"<?php endif; ?>>
-                                            <?= __('Not determined'); ?>
-                                        </span>
-                                        <?php
-                                        break;
-                                    case DatatypeBase::EDITIONS_CHOICE:
-                                    case DatatypeBase::COMPONENTS_CHOICE:
-                                    case DatatypeBase::RELEASES_CHOICE:
-                                    case DatatypeBase::MILESTONE_CHOICE:
-                                    case DatatypeBase::CLIENT_CHOICE:
-                                         ?>
-                                        <span id="<?= $field; ?>_name"<?php if (!$info['value']): ?> style="display: none;"<?php endif; ?>>
-                                            <?= (isset($info['name'])) ? $info['name'] : __('Unknown'); ?>
-                                        </span>
-                                        <span class="no-value" id="no_<?= $field; ?>"<?php if ($info['value']): ?> style="display: none;"<?php endif; ?>>
-                                            <?= __('Not determined'); ?>
-                                        </span><?php
-                                        break;
-                                    case DatatypeBase::STATUS_CHOICE:
-                                        $status = null;
-                                        $value = null;
-                                        $color = '#FFF';
-                                        try
-                                        {
-                                            $status = new Status($info['name']);
-                                            $value = $status->getName();
-                                            $color = $status->getColor();
-                                        }
-                                        catch (\Exception $e) { }
-                                        ?><span id="<?= $field; ?>_name"<?php if (!$info['value']): ?> style="display: none;"<?php endif; ?>><div class="status-badge" style="background-color: <?= $color; ?>;"><span><?= __($value); ?></span></div></span><span class="no-value" id="no_<?= $field; ?>"<?php if ($info['value']): ?> style="display: none;"<?php endif; ?>><?= __('Not determined'); ?></span><?php
-                                        break;
-                                    case DatatypeBase::DATE_PICKER:
-                                    case DatatypeBase::DATETIME_PICKER:
-                                        $pachno_response->addJavascript('calendarview');
-                                        if (!isset($info['name'])) {
-                                            $value = __('Not set');
-                                        } elseif (is_numeric($info['name'])) {
-                                            $value = ($info['name']) ? date('Y-m-d' . ($info['type'] == DatatypeBase::DATETIME_PICKER ? ' H:i' : ''), $info['name']) : __('Not set');
-                                        } else {
-                                            $value = $info['name'];
-                                        }
-                                        ?><span id="<?= $field; ?>_name"<?php if (!$info['value']): ?> style="display: none;"<?php endif; ?>><?= $value; ?></span><span id="<?= $field; ?>_new_name" style="display: none;"><?= (int) $value; ?></span><span class="no-value" id="no_<?= $field; ?>"<?php if ($info['value']): ?> style="display: none;"<?php endif; ?>><?= __('Not set'); ?></span><?php
-                                        break;
-                                    default:
-                                        if (!isset($info['name'])) {
-                                            var_dump($info);
-                                        } else {
-                                            ?><span id="<?= $field; ?>_name"<?php if (!$info['value']): ?> style="display: none;"<?php endif; ?>><?= (filter_var($info['name'], FILTER_VALIDATE_URL) !== false) ? link_tag($info['name'], $info['name']) : $info['name']; ?></span><span class="no-value" id="no_<?= $field; ?>"<?php if ($info['value']): ?> style="display: none;"<?php endif; ?>><?= __('Not determined'); ?></span><?php
-                                            break;
-                                        }
-                                }
-                            ?>
-                            <?php if ($issue->isUpdateable() && $issue->canEditCustomFields($field) && $info['editable']): ?>
-                                <?= fa_image_tag('angle-down', ['class' => 'dropdown-indicator']); ?>
-                            <?php endif; ?>
-                        </div>
-                        <?php if ($issue->isUpdateable() && $issue->canEditCustomFields($field) && $info['editable']): ?>
-                            <div class="dropdown-container">
-                                <?php if ($info['type'] == DatatypeBase::USER_CHOICE): ?>
-                                    <?php include_component('main/identifiableselector', array(
-                                        'html_id'             => $field.'_change',
-                                        'header'             => __('Select a user'),
-                                        'callback'             => "Pachno.Issues.Field.set('" . make_url('issue_setfield', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => $field, 'identifiable_type' => 'user', $field.'_value' => '%identifiable_value')) . "', '".$field."');",
-                                        'clear_link_text'    => __('Clear currently selected user'),
-                                        'base_id'            => $field,
-                                        'include_teams'        => false,
-                                        'absolute'            => true)); ?>
-                                <?php elseif ($info['type'] == DatatypeBase::TEAM_CHOICE): ?>
-                                    <?php include_component('main/identifiableselector', array(
-                                        'html_id'             => $field.'_change',
-                                        'header'             => __('Select a team'),
-                                        'callback'             => "Pachno.Issues.Field.set('" . make_url('issue_setfield', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => $field, 'identifiable_type' => 'team', $field.'_value' => '%identifiable_value')) . "', '".$field."');",
-                                        'clear_link_text'    => __('Clear currently selected team'),
-                                        'base_id'            => $field,
-                                        'include_teams'        => true,
-                                        'include_users'        => false,
-                                        'absolute'            => true)); ?>
-                                <?php elseif ($info['type'] == DatatypeBase::CLIENT_CHOICE): ?>
-                                    <?php include_component('main/identifiableselector', array(
-                                        'html_id'             => $field.'_change',
-                                        'header'             => __('Select a client'),
-                                        'callback'             => "Pachno.Issues.Field.set('" . make_url('issue_setfield', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => $field, 'identifiable_type' => 'client', $field.'_value' => '%identifiable_value')) . "', '".$field."');",
-                                        'clear_link_text'    => __('Clear currently selected client'),
-                                        'base_id'            => $field,
-                                        'include_clients'    => true,
-                                        'include_teams'        => false,
-                                        'include_users'        => false,
-                                        'absolute'            => true)); ?>
-                                <?php else: ?>
-                                    <div class="list-mode" id="<?= $field; ?>_change">
-                                        <div class="header"><?= $info['change_header']; ?></div>
-                                        <?php if (array_key_exists('choices', $info) && is_array($info['choices'])): ?>
-                                            <a href="javascript:void(0);" class="list-item" onclick="Pachno.Issues.Field.set('<?= make_url('issue_setfield', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => $field, $field . '_value' => "")); ?>', '<?= $field; ?>');">
-                                                <span class="name"><?= $info['clear']; ?></span>
-                                            </a>
-                                            <div class="list-item separator"></div>
-                                            <?php foreach ($info['choices'] ?: array() as $choice): ?>
-                                            <a href="javascript:void(0);" class="list-item" onclick="Pachno.Issues.Field.set('<?= make_url('issue_setfield', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => $field, $field . '_value' => $choice->getID())); ?>', '<?= $field; ?>');">
-                                                <span class="icon"><?= fa_image_tag('list'); ?></span>
-                                                <span class="name"><?= __($choice->getName()); ?></span>
-                                            </a>
-                                        <?php endforeach; ?>
-                                        <?php elseif ($info['type'] == DatatypeBase::DATE_PICKER || $info['type'] == DatatypeBase::DATETIME_PICKER): ?>
-                                            <a href="javascript:void(0);" class="list-item" onclick="Pachno.Issues.Field.set('<?= make_url('issue_setfield', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => $field, $field . '_value' => "")); ?>', '<?= $field; ?>');">
-                                                <span class="name"><?= $info['clear']; ?></span>
-                                            </a>
-                                            <div class="list-item separator"></div>
-                                            <div class="list-item" id="customfield_<?= $field; ?>_calendar_container" style="padding: 0;"></div>
-                                        <?php if ($info['type'] == DatatypeBase::DATETIME_PICKER): ?>
-                                            <form id="customfield_<?= $field; ?>_form" method="post" class="list-item" accept-charset="<?= Context::getI18n()->getCharset(); ?>" action="" onsubmit="Pachno.Issues.Field.set('<?= make_url('issue_setfield', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => $field)); ?>', '<?= $field; ?>', 'customfield_<?= $field; ?>');return false;">
-                                                <div class="header"><?= __('Time'); ?></div>
-                                                <input type="text" id="customfield_<?= $field; ?>_hour" value="00" style="width: 20px; font-size: 0.9em; text-align: center;">&nbsp;:&nbsp;
-                                                <input type="text" id="customfield_<?= $field; ?>_minute" value="00" style="width: 20px; font-size: 0.9em; text-align: center;">
-                                                <input type="hidden" name="<?= $field; ?>_value" value="<?= (int) $info['name'] - I18n::getTimezoneOffset(); ?>" id="<?= $field; ?>_value" />
-                                                <input type="submit" class="button secondary" value="<?= __('Update'); ?>">
-                                            </form>
-                                        <?php endif; ?>
-                                            <script type="text/javascript">
-                                                //require(['domReady', 'pachno/index', 'calendarview'], function (domReady, pachno_index_js, Calendar) {
-                                                //    domReady(function () {
-                                                //        Calendar.setup({
-                                                //            dateField: '<?//= $field; ?>//_new_name',
-                                                //            parentElement: 'customfield_<?//= $field; ?>//_calendar_container',
-                                                //            valueCallback: function(element, date) {
-                                                //                <?php //if ($info['type'] == CustomDatatype::DATETIME_PICKER): ?>
-                                                //                var value = date.setUTCHours(parseInt($('#customfield_<?//= $field; ?>//_hour').value));
-                                                //                var date  = new Date(value);
-                                                //                var value = Math.floor(date.setUTCMinutes(parseInt($('#customfield_<?//= $field; ?>//_minute').value)) / 1000);
-                                                //                <?php //else: ?>
-                                                //                var value = Math.floor(date.getTime() / 1000);
-                                                //                Pachno.Issues.Field.set('<?//= make_url('issue_setfield', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => $field)); ?>//?<?//= $field; ?>//_value='+value, '<?//= $field; ?>//');
-                                                //                <?php //endif; ?>
-                                                //                $('#<?//= $field; ?>//_value').value = value;
-                                                //            }
-                                                //        });
-                                                //        <?php //if ($info['type'] == CustomDatatype::DATETIME_PICKER): ?>
-                                                //        var date = new Date(parseInt($('#<?//= $field; ?>//_value').value) * 1000);
-                                                //        $('#customfield_<?//= $field; ?>//_hour').value = date.getUTCHours();
-                                                //        $('#customfield_<?//= $field; ?>//_minute').value = date.getUTCMinutes();
-                                                //        Event.observe($('#customfield_<?//= $field; ?>//_hour'), 'change', function (event) {
-                                                //            var value = parseInt($('#<?//= $field; ?>//_value').value);
-                                                //            var hours = parseInt(this.value);
-                                                //            if (value <= 0 || hours < 0 || hours > 24) return;
-                                                //            var date = new Date(value * 1000);
-                                                //            $('#<?//= $field; ?>//_value').value = date.setUTCHours(parseInt(this.value)) / 1000;
-                                                //        });
-                                                //        Event.observe($('#customfield_<?//= $field; ?>//_minute'), 'change', function (event) {
-                                                //            var value = parseInt($('#<?//= $field; ?>//_value').value);
-                                                //            var minutes = parseInt(this.value);
-                                                //            if (value <= 0 || minutes < 0 || minutes > 60) return;
-                                                //            var date = new Date(value * 1000);
-                                                //            $('#<?//= $field; ?>//_value').value = date.setUTCMinutes(parseInt(this.value)) / 1000;
-                                                //        });
-                                                //        <?php //endif; ?>
-                                                //    });
-                                                //});
-                                            </script>
-                                        <?php else: ?>
-                                            <a href="javascript:void(0);" class="list-item" onclick="Pachno.Issues.Field.set('<?= make_url('issue_setfield', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => $field, $field . '_value' => "")); ?>', '<?= $field; ?>');">
-                                                <span class="name"><?= $info['clear']; ?></span>
-                                            </a>
-                                            <div class="list-item separator"></div>
-                                            <?php
-
-                                        switch ($info['type'])
-                                        {
-                                        case DatatypeBase::EDITIONS_CHOICE:
-                                            ?>
-                                            <?php foreach ($issue->getProject()->getEditions() as $choice): ?>
-                                            <a href="javascript:void(0);" class="list-item" onclick="Pachno.Issues.Field.set('<?= make_url('issue_setfield', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => $field, $field . '_value' => $choice->getID())); ?>', '<?= $field; ?>');">
-                                                <span class="icon"><?= fa_image_tag('window-restore'); ?></span>
-                                                <span class="name"><?= __($choice->getName()); ?></span>
-                                            </a>
-                                        <?php endforeach; ?>
-                                            <?php
-                                            break;
-                                        case DatatypeBase::MILESTONE_CHOICE:
-                                            ?>
-                                            <?php foreach ($issue->getProject()->getMilestonesForIssues() as $choice): ?>
-                                            <a href="javascript:void(0);" class="list-item" onclick="Pachno.Issues.Field.set('<?= make_url('issue_setfield', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => $field, $field . '_value' => $choice->getID())); ?>', '<?= $field; ?>');">
-                                                <span class="icon"><?= fa_image_tag('chart-line'); ?></span>
-                                                <span class="name"><?= __($choice->getName()); ?></span>
-                                            </a>
-                                        <?php endforeach; ?>
-                                            <?php
-                                            break;
-                                        case DatatypeBase::STATUS_CHOICE:
-                                            ?>
-                                            <?php foreach (Status::getAll() as $choice): ?>
-                                            <a href="javascript:void(0);" class="list-item" onclick="Pachno.Issues.Field.set('<?= make_url('issue_setfield', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => $field, $field . '_value' => $choice->getID())); ?>', '<?= $field; ?>');">
-                                                <span class="status-badge" style="background-color: <?= ($choice instanceof Status) ? $choice->getColor() : '#FFF'; ?>;">
-                                                    <span id="status_content">&nbsp;&nbsp;</span>
-                                                </span>
-                                                <?= __($choice->getName()); ?>
-                                            </a>
-                                        <?php endforeach; ?>
-                                            <?php
-                                            break;
-                                        case DatatypeBase::COMPONENTS_CHOICE:
-                                            ?>
-                                            <?php foreach ($issue->getProject()->getComponents() as $choice): ?>
-                                            <a href="javascript:void(0);" class="list-item" onclick="Pachno.Issues.Field.set('<?= make_url('issue_setfield', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => $field, $field . '_value' => $choice->getID())); ?>', '<?= $field; ?>');">
-                                                <span class="icon"><?= fa_image_tag('cube'); ?></span>
-                                                <span class="name"><?= __($choice->getName()); ?></span>
-                                            </a>
-                                        <?php endforeach; ?>
-                                            <?php
-                                            break;
-                                        case DatatypeBase::RELEASES_CHOICE:
-                                            ?>
-                                            <?php foreach ($issue->getProject()->getBuilds() as $choice): ?>
-                                            <a href="javascript:void(0);" class="list-item" onclick="Pachno.Issues.Field.set('<?= make_url('issue_setfield', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => $field, $field . '_value' => $choice->getID())); ?>', '<?= $field; ?>');">
-                                                <span class="icon"><?= fa_image_tag('compact-dist'); ?></span>
-                                                <span class="name"><?= __($choice->getName()); ?></span>
-                                            </a>
-                                        <?php endforeach; ?>
-                                            <?php
-                                            break;
-                                        case DatatypeBase::INPUT_TEXT:
-                                            var_dump($field);
-                                            var_dump($info);
-                                            /*?>
-                                            <div class="list-item">
-                                                <form id="<?= $field; ?>_form" action="<?= make_url('issue_setfield', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => $field)); ?>" method="post" onSubmit="Pachno.Issues.Field.set('<?= make_url('issue_setfield', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => $field)) ?>', '<?= $field; ?>', '<?= $field; ?>'); return false;">
-                                                    <input type="text" name="<?= $field; ?>_value" value="<?= $info['name'] ?>" /><?= __('%save or %cancel', array('%save' => '<input type="submit" value="'.__('Save').'">', '%cancel' => '<a href="#" onclick="$(\''.$field.'_change\').hide(); return false;">'.__('cancel').'</a>')); ?>
-                                                </form>
-                                            </div>
-                                            <?php*/
-                                            break;
-                                        case DatatypeBase::INPUT_TEXTAREA_SMALL:
-                                            var_dump($field);
-                                            var_dump($info);
-                                            /*?>
-                                            <div class="list-item">
-                                                <form id="<?= $field; ?>_form" action="<?= make_url('issue_setfield', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => $field)); ?>" method="post" onSubmit="Pachno.Issues.Field.set('<?= make_url('issue_setfield', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => $field)) ?>', '<?= $field; ?>', '<?= $field; ?>'); return false;">
-                                                    <?php include_component('main/textarea', array('area_name' => $field.'_value', 'target_type' => 'issue', 'target_id' => $issue->getID(), 'area_id' => $field.'_value', 'height' => '100px', 'width' => '100%', 'value' => $info['name'])); ?>
-                                                    <br><?= __('%save or %cancel', array('%save' => '<input type="submit" value="'.__('Save').'">', '%cancel' => '<a href="#" onclick="$(\''.$field.'_change\').hide(); return false;">'.__('cancel').'</a>')); ?>
-                                                </form>
-                                            </div>
-                                            <?php*/
-                                            break;
-                                        }
-
-                                        endif; ?>
-                                    </div>
-                                <?php endif; ?>
-                            </div>
-                        <?php endif; ?>
-                    </div>
-                </li>
+                <?php if (in_array($info['type'], [DatatypeBase::INPUT_TEXTAREA_MAIN, DatatypeBase::DATE_PICKER, DatatypeBase::DATETIME_PICKER])) continue; ?>
+                <?php include_component('main/viewissuecustomfield', compact('field', 'info', 'issue')); ?>
             <?php endforeach; ?>
         </ul>
     </div>

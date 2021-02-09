@@ -61,13 +61,13 @@
                         <span class="icon"><?= fa_image_tag('paperclip'); ?></span>
                         <span class="name"><?php echo __('Attachments'); ?><span id="viewissue_uploaded_attachments_count" class="count-badge"><?= (count($issue->getLinks()) + count($issue->getFiles())); ?></span></span>
                     </div>
-                    <div id="viewissue_attached_information" class="attachments-list content">
-                        <ul class="attached_items" id="viewissue_uploaded_links">
+                    <div id="viewissue_attached_information" class="attachments-list">
+                        <ul class="attached_items" id="viewissue_uploaded_links" style="display: none;">
                             <?php foreach ($issue->getLinks() as $link_id => $link): ?>
                                 <?php include_component('main/attachedlink', array('issue' => $issue, 'link' => $link, 'link_id' => $link['id'])); ?>
                             <?php endforeach; ?>
                         </ul>
-                        <ul class="attached_items" id="viewissue_uploaded_files">
+                        <div class="attachments-container" id="viewissue_uploaded_files">
                             <?php foreach (array_reverse($issue->getFiles()) as $file_id => $file): ?>
                                 <?php if (!$file->isImage()): ?>
                                     <?php include_component('main/attachedfile', array('base_id' => 'viewissue_files', 'mode' => 'issue', 'issue' => $issue, 'file' => $file)); ?>
@@ -78,7 +78,7 @@
                                     <?php include_component('main/attachedfile', array('base_id' => 'viewissue_files', 'mode' => 'issue', 'issue' => $issue, 'file' => $file)); ?>
                                 <?php endif; ?>
                             <?php endforeach; ?>
-                        </ul>
+                        </div>
                     </div>
                 </div>
                 <div id="viewissue_related_information_container" class="fields-list-container <?php if (!$issue->countChildIssues()) echo 'not-visible'; ?>">

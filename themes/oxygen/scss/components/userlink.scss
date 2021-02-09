@@ -1,78 +1,71 @@
 @import "../variables";
 
 .userlink {
-    display: inline-block;
-    vertical-align: middle;
-    font-weight: $theme-font-weight-regular;
-    padding: .25em .35em;
-    border-radius: 4px;
-    border: 0;
-    background-color: transparent;
-    transition: border-color 0.3s ease-in-out, background-color 0.3s ease-in-out,
-      color 0.3s ease-in-out;
+  display: flex;
+  align-items: center;
+  font-weight: $theme-font-weight-regular;
+  padding: .25em .35em;
+  border-radius: 4px;
+  border: 0;
+  background-color: transparent;
+  transition: border-color 0.3s ease-in-out, background-color 0.3s ease-in-out,
+  color 0.3s ease-in-out;
+
+  .avatar {
+    margin-right: .35em;
   }
-  
-  .userlink.inline {
-    vertical-align: baseline;
-    padding: 2px 4px;
-    margin: 0;
-    color: #555;
-    font-weight: $theme-font-weight-regular;
-  }
-  
-  .userlink.inline:hover {
-    font-weight: $theme-font-weight-regular;
-  }
-  
-  .userlink:hover {
-    text-decoration: none;
-    background: $theme-highlight-color;
-    border: none;
-    font-weight: $theme-font-weight-regular;
-  }
-  
-  .userstate {
-    display: none;
-  }
-  img.userstate {
-    width: 12px;
-    height: 12px;
-    display: inline-block;
-    margin: 1px 2px 2px 0;
-    vertical-align: middle;
-  }
-  
-  .fas.userstate,
-  .far.userstate {
-    display: inline-block;
-    width: 12px;
-    font-size: 0.8em;
-  }
-  
-  .fas.userstate.online,
-  .far.userstate.online {
-    color: rgb(50, 150, 50);
-  }
-  
-  .fas.userstate.busy,
-  .fas.userstate.unavailable,
-  .far.userstate.busy,
-  .far.userstate.unavailable {
-    color: rgb(200, 50, 50);
-  }
-  
-  .fas.userstate.in-meeting,
-  .far.userstate.in-meeting {
-    color: rgb(50, 50, 200);
-  }
-  
-  .fas.userstate.absent,
-  .far.userstate.absent {
-    color: rgb(200, 200, 0);
-  }
-  
-  .fas.userstate.offline,
-  .far.userstate.offline {
-    color: rgb(200, 200, 200);
-  }
+}
+
+.userlink:hover {
+  text-decoration: none;
+  background: $theme-highlight-color;
+  border: none;
+  font-weight: $theme-font-weight-regular;
+}
+
+.userstate {
+  display: none;
+}
+
+img.userstate {
+  width: 12px;
+  height: 12px;
+  display: inline-block;
+  margin: 1px 2px 2px 0;
+  vertical-align: middle;
+}
+
+.fas.userstate,
+.far.userstate {
+  display: inline-block;
+  width: 12px;
+  font-size: 0.8em;
+}
+
+.fas.userstate.online,
+.far.userstate.online {
+  color: rgb(50, 150, 50);
+}
+
+.fas.userstate.busy,
+.fas.userstate.unavailable,
+.far.userstate.busy,
+.far.userstate.unavailable {
+  color: rgb(200, 50, 50);
+}
+
+.fas.userstate.in-meeting,
+.far.userstate.in-meeting {
+  color: rgb(50, 50, 200);
+}
+
+.fas.userstate.absent,
+.far.userstate.absent {
+  color: rgb(200, 200, 0);
+}
+
+.fas.userstate.offline,
+.far.userstate.offline {
+  color: rgb(200, 200, 200);
+}
   
