@@ -2384,41 +2384,6 @@
             return $this->renderJSON(['error' => framework\Context::getI18n()->__('You can not remove items from this issue')]);
         }
 
-        public function runAttachLink(Request $request)
-        {
-            $link = tables\Links::getTable()->addLink($request['target_type'], $request['target_id'], $request['link_url'], $request->getRawParameter('description'));
-
-            return $this->renderJSON(['message' => framework\Context::getI18n()->__('Link added!'), 'content' => $this->getComponentHTML('main/menulink', ['link_id' => $link->getID(), 'link' => ['target_type' => $request['target_type'], 'target_id' => $request['target_id'], 'description' => $request->getRawParameter('description'), 'url' => $request['link_url']]])]);
-        }
-
-        public function runRemoveLink(Request $request)
-        {
-            if (!$this->getUser()->canEditMainMenu($request['target_type'])) {
-                $this->getResponse()->setHttpStatus(403);
-
-                return $this->renderJSON(['error' => framework\Context::getI18n()->__('You do not have access to removing links')]);
-            }
-
-            if (!$request['link_id']) {
-                $this->getResponse()->setHttpStatus(400);
-
-                return $this->renderJSON(['error' => framework\Context::getI18n()->__('You have to provide a valid link id')]);
-            }
-
-            tables\Links::getTable()->removeByTargetTypeTargetIDandLinkID($request['target_type'], $request['target_id'], $request['link_id']);
-
-            return $this->renderJSON(['message' => framework\Context::getI18n()->__('Link removed!')]);
-        }
-
-        public function runSaveMenuOrder(Request $request)
-        {
-            $target_type = $request['target_type'];
-            $target_id = $request['target_id'];
-            tables\Links::getTable()->saveLinkOrder($request[$target_type . '_' . $target_id . '_links']);
-
-            return $this->renderJSON('ok');
-        }
-
         public function runDeleteComment(Request $request)
         {
             $comment = tables\Comments::getTable()->selectById($request['comment_id']);

@@ -1903,24 +1903,6 @@
         }
 
         /**
-         * Return if the user can edit the main menu
-         *
-         * @return boolean
-         */
-        public function canEditMainMenu($target_type = null)
-        {
-            if ($target_type === null || $target_type == 'main_menu') {
-                $retval = $this->hasPermission('caneditmainmenu', 0, 'core');
-            } elseif ($target_type == 'wiki') {
-                $retval = $this->hasPermission('editwikimenu', 0, 'publish');
-            } else {
-                $retval = false;
-            }
-
-            return ($retval !== null) ? $retval : false;
-        }
-
-        /**
          * Return if the user can see comments
          *
          * @return boolean

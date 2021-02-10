@@ -771,7 +771,6 @@
                 self::$_available_permissions['general']['canfindissuesandsavesearches'] = ['description' => $i18n->__('Can search for issues and create saved searches'), 'details' => []];
                 self::$_available_permissions['general']['canfindissuesandsavesearches']['details']['canfindissues'] = ['description' => $i18n->__('Can search for issues')];
                 self::$_available_permissions['general']['canfindissuesandsavesearches']['details']['cancreatepublicsearches'] = ['description' => $i18n->__('Can create saved searches that are public')];
-                self::$_available_permissions['general']['caneditmainmenu'] = ['description' => $i18n->__('Can edit main menu')];
                 self::$_available_permissions['pages']['page_home_access'] = ['description' => $i18n->__('Can access the frontpage')];
                 self::$_available_permissions['pages']['page_dashboard_access'] = ['description' => $i18n->__('Can access the user dashboard')];
                 self::$_available_permissions['pages']['page_search_access'] = ['description' => $i18n->__('Can access the search page')];

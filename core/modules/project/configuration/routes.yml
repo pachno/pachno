@@ -179,13 +179,6 @@ configure_project_component_delete:
       section: 10
     csrf_enabled: false
 
-project_getmenulinks:
-    route: /:project_key/menulinks
-    module: project
-    action: menuLinks
-    parameters: [ ]
-    csrf_enabled: false
-
 transition_issue:
     route: /:project_key/:issue_id/transition/:transition_id
     module: project

@@ -5,27 +5,6 @@ home:
     parameters: [ ]
     csrf_enabled: false
 
-save_menu_order:
-    route: /menu/:target_type/:target_id
-    module: main
-    action: saveMenuOrder
-    parameters: [ ]
-    csrf_enabled: false
-
-attach_link:
-    route: /attach/link/to/:target_type/:target_id
-    module: main
-    action: attachLink
-    parameters: [ ]
-    csrf_enabled: false
-
-remove_link:
-    route: /upload/remove/link/:link_id/from/other/:target_type/:target_id
-    module: main
-    action: removeLink
-    parameters: [ ]
-    csrf_enabled: false
-
 client_dashboard:
     route: /clients/:client_id
     module: main

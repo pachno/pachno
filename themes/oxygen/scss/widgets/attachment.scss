@@ -9,6 +9,10 @@
   flex-wrap: wrap;
   font-size: 1em;
 
+  &:empty {
+    margin-bottom: 3em;
+  }
+
   .attachment {
     box-sizing: border-box;
     display: flex;

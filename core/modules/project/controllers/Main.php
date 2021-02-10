@@ -583,11 +583,6 @@
             }
         }
 
-        public function runMenuLinks(framework\Request $request)
-        {
-
-        }
-
         public function runTransitionIssue(framework\Request $request)
         {
             try {

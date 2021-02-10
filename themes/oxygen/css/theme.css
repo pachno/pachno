@@ -5675,6 +5675,8 @@ header .mobile_menuanchor {
   box-sizing: border-box;
   flex-wrap: wrap;
   font-size: 1em; }
+  .attachments-container:empty {
+    margin-bottom: 3em; }
   .attachments-container .attachment {
     box-sizing: border-box;
     display: flex;
@@ -7276,7 +7278,7 @@ input[data-interactive-toggle].submitting + label .indicator {
       min-width: 0; }
     .collapsed > .list-mode > .list-item > .icon:first-child,
     .collapsed > .list-mode > .list-item > a > .icon:first-child {
-      padding: .5em;
+      padding: .75em .5em;
       flex: 1 1 auto;
       margin: 0; }
       .collapsed > .list-mode > .list-item > .icon:first-child:hover + .name,
