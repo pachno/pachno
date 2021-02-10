@@ -22,23 +22,13 @@
 ?>
 <?php $module = (isset($module)) ? $module : 'core'; ?>
 <?php if ($pachno_user->canPostComments() && ((Context::isProjectContext() && !Context::getCurrentProject()->isArchived()) || !Context::isProjectContext())): ?>
-    <?php if (!isset($show_button) || $show_button == true): ?>
-        <ul class="simple-list" id="add_comment_button_container">
-            <li id="comment_add_button">
-                <button class="button secondary highlight">
-                    <?= fa_image_tag('comment', ['class' => 'icon']); ?>
-                    <span class="name"><?= __('Post a comment'); ?></span>
-                </button>
-            </li>
-        </ul>
-    <?php endif; ?>
     <div id="comment_add" class="comment_add comment-editor" style="<?php if (!(isset($comment_error) && $comment_error)): ?>display: none; <?php endif; ?>margin-top: 5px;">
         <div class="backdrop_detail_header">
             <span><?= __('Create a comment'); ?></span>
-            <?= javascript_link_tag(fa_image_tag('times'), ['onclick' => "$('#comment_add').hide();$('#comment_add_button').show();", 'class' => 'closer']); ?>
+            <?= javascript_link_tag(fa_image_tag('times'), ['class' => 'closer']); ?>
         </div>
         <div class="add-comment-container form-container">
-            <form id="add-comment-form" accept-charset="<?= mb_strtoupper(Context::getI18n()->getCharset()); ?>" action="<?= make_url('comment_add', ['comment_applies_id' => $target_id, 'comment_applies_type' => $target_type, 'comment_module' => $module]); ?>" method="post" onSubmit="Pachno.Main.Comment.add('<?= $comment_count_div; ?>');return false;">
+            <form id="add-comment-form" accept-charset="<?= mb_strtoupper(Context::getI18n()->getCharset()); ?>" action="<?= make_url('comment_add', ['comment_applies_id' => $target_id, 'comment_applies_type' => $target_type, 'comment_module' => $module]); ?>" method="post" data-comment-count-element="<?= $comment_count_div; ?>" data-simple-submit>
                 <div class="form-row">
                     <?php include_component('main/textarea', array('area_name' => 'comment_body', 'target_type' => $mentionable_target_type, 'target_id' => $target_id, 'area_id' => 'comment_bodybox', 'height' => '250px', 'width' => '100%', 'syntax' => $pachno_user->getPreferredCommentsSyntax(true), 'value' => ((isset($comment_error) && $comment_error) ? $comment_error_body : ''))); ?>
                 </div>

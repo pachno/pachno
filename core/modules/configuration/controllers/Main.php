@@ -1952,8 +1952,7 @@
                     $this->step->setIsClosed((bool)($request['state'] == entities\Issue::STATE_CLOSED));
                     $this->step->save();
 
-
-                    $this->forward(framework\Context::getRouting()->generate('configure_workflow_step', ['workflow_id' => $this->workflow->getID(), 'step_id' => $this->step->getID()]));
+                    return $this->renderJSON(['workflow_step' => $this->step->toJSON()]);
                 }
             } catch (Exception $e) {
                 $this->error = $this->getI18n()->__('This workflow / step does not exist');

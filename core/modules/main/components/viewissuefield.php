@@ -4,14 +4,15 @@
 
     if (in_array($field, array('priority'))) $primary = true;
     $canEditField = "canEdit".ucfirst($field);
+    $editable = $issue->$canEditField();
 
 ?>
-<li id="<?php echo $field; ?>_field" class="issue-field <?php if (!$info['visible']): ?> hidden<?php endif; ?>">
+<li id="<?php echo $field; ?>_field" class="issue-field <?php if (!$info['visible']): ?> hidden<?php endif; ?> <?php if (array_key_exists('choices', $info) && count($info['choices']) && $editable) echo 'editable'; ?>">
     <div id="<?php echo $field; ?>_content" class="<?php if (isset($info['extra_classes'])) echo $info['extra_classes']; ?> value fancy-dropdown-container">
         <div class="fancy-dropdown" data-default-label="<?= __('Not determined'); ?>">
             <label><?php echo $info['title']; ?></label>
             <span class="value" data-dynamic-field-value data-field="<?= $field; ?>" data-issue-id="<?= $issue->getId(); ?>"></span>
-            <?php if (array_key_exists('choices', $info) && count($info['choices']) && $issue->$canEditField()): ?>
+            <?php if (array_key_exists('choices', $info) && count($info['choices']) && $editable): ?>
                 <?php echo fa_image_tag('angle-down', ['class' => 'expander']); ?>
                 <div class="dropdown-container">
                     <div class="list-mode">

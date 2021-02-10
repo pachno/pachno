@@ -88,9 +88,9 @@
                     </span>
                     <div class="button-group">
                         <?php echo fa_image_tag('spinner', ['class' => 'fa-spin', 'style' => 'display: none;', 'id' => 'comments_loading_indicator']); ?>
-                        <button class="secondary icon" id="sort-comments-button" style="<?php if (!$comment_count) echo 'display: none; '; ?>" onclick="Pachno.Main.Comment.toggleOrder('<?= Comment::TYPE_ARTICLE; ?>', '<?= $article->getID(); ?>')"><?= fa_image_tag('sort', ['class' => 'icon']); ?></button>
+                        <button class="secondary icon trigger-comment-sort" data-target-type="<?= Comment::TYPE_ARTICLE; ?>" data-target-id="<?= $article->getID(); ?>" id="sort-comments-button" style="<?php if (!$comment_count) echo 'display: none; '; ?>"><?= fa_image_tag('sort', ['class' => 'icon']); ?></button>
                         <?php if ($pachno_user->canPostComments() && ((Context::isProjectContext() && !Context::getCurrentProject()->isArchived()) || !Context::isProjectContext())): ?>
-                            <button id="comment_add_button" class="button secondary highlight" onclick="Pachno.Main.Comment.showPost();">
+                            <button id="comment_add_button" class="button secondary highlight trigger-show-comment-post">
                                 <?= fa_image_tag('comment', ['class' => 'icon']); ?>
                                 <span class="name"><?= __('Post a comment'); ?></span>
                             </button>

@@ -866,6 +866,7 @@
             $returnJSON = [
                 'id' => $this->getID(),
                 'url' => Context::getRouting()->generate('project_milestone', ['project_key' => $this->getProject()->getKey(), 'milestone_id' => $this->getID()]),
+                'backdrop_url' => Context::getRouting()->generate('get_partial_for_backdrop', ['key' => 'milestone', 'project_id' => $this->getProject()->getID(), 'milestone_id' => $this->getID()]),
                 'name' => $this->getName(),
                 'closed' => $this->getClosed(),
                 'reached' => $this->isReached(),

@@ -15,7 +15,10 @@
                 <?= $file->getOriginalFilename(); ?>
             </div>
         <?php else: ?>
-            <a href="<?php echo make_url('downloadfile', array('id' => $file_id)); ?>" title="<?php echo $file->getOriginalFilename(); ?>"><?php echo $file->getOriginalFilename(); ?></a>
+            <a href="<?php echo make_url('downloadfile', array('id' => $file_id)); ?>" title="<?php echo $file->getOriginalFilename(); ?>">
+                <?= fa_image_tag($file->getIcon(), ['class' => 'icon'], 'far'); ?>
+                <span class="name"><?php echo $file->getOriginalFilename(); ?></span>
+            </a>
         <?php endif; ?>
         <div class="information">
             <?= $file->getReadableFilesize(); ?>

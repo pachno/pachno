@@ -115,6 +115,43 @@
             return $content_type;
         }
 
+        public function getIcon()
+        {
+            $filename = $this->getOriginalFilename();
+            if (!$filename || strpos($filename, '.') === false) {
+                return 'file';
+            }
+
+            $extension = strtolower(explode('.', $filename)[1]);
+            if (in_array($extension, ['php', 'cpp', 'h', 'java', 'js', 'tsx', 'jsp', 'pl', 'ts', 'jsx', 'htm', 'html', 'asp', 'rb', 'class', 'cmd', 'cxx', 'json', 'patch', 'xml', 'css', 'scss', 'yml', 'xlf'])) {
+                return 'file-code';
+            } elseif (in_array($extension, ['jpg', 'jpeg', 'bmp', 'png', 'webp', 'gif', 'img'])) {
+                return 'file-image';
+            } elseif (in_array($extension, ['ppt', 'pptx', 'odp', 'odpt'])) {
+                return 'file-powerpoint';
+            } elseif (in_array($extension, ['doc', 'docx', 'odt', 'odtt'])) {
+                return 'file-word';
+            } elseif (in_array($extension, ['xls', 'xlsx', 'ods', 'odst'])) {
+                return 'file-excel';
+            } elseif (in_array($extension, ['mpg', 'mp4', 'mpeg', 'avi', 'mov'])) {
+                return 'file-video';
+            } elseif (in_array($extension, ['txt', 'info', 'nfo', 'inf', 'ini', 'cfg', 'md'])) {
+                return 'file-alt';
+            } elseif (in_array($extension, ['zip', 'rar', 'gz', 'tar', 'xz', 'jar', 'deb', 'rpm', 'appimage', 'flatpak'])) {
+                return 'file-archive';
+            } elseif (in_array($extension, ['exe', 'bat'])) {
+                return 'window-maximize';
+            } elseif (in_array($extension, ['wav', 'mp3', 'ogg'])) {
+                return 'file-audio';
+            } elseif ($extension === 'csv') {
+                return 'file-csv';
+            } elseif ($extension === 'pdf') {
+                return 'file-pdf';
+            }
+
+            return 'file';
+        }
+
         public function getContentType()
         {
             return $this->_content_type;

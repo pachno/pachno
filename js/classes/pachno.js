@@ -7,6 +7,7 @@ import widgetSetupListeners, { calendars } from "../widgets";
 import profileSetupListeners from "../helpers/profile";
 import {initializeDashboards} from "../helpers/dashboard";
 import {setupListeners as issueSetupListeners} from "../helpers/issues";
+import {setupListeners as commentSetupListeners} from "../helpers/comments";
 import Board from "./board";
 import Search from "./search";
 import Issuereporter from "./issuereporter";
@@ -34,7 +35,10 @@ class PachnoApplication {
             issueLoadDynamicChoices: 'issue-load-dynamic-choices',
             quicksearchTrigger: 'quicksearch-trigger',
             quicksearchAddDefaultChoice: 'quicksearch-add-default-choice',
-            quicksearchUpdateChoices: 'quicksearch-update-choices'
+            quicksearchUpdateChoices: 'quicksearch-update-choices',
+            comment: {
+                remove: 'comment-remove'
+            }
         }
     }
 
@@ -142,6 +146,7 @@ class PachnoApplication {
         formSetupListeners();
         profileSetupListeners();
         issueSetupListeners();
+        commentSetupListeners();
         uiSetupListeners();
         // $('#fullpage_backdrop_content').on('click', Core._resizeWatcher);
     }

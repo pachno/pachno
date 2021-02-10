@@ -49,7 +49,7 @@
     <div id="dialog_backdrop_content" class="fullpage_backdrop_content">
         <div class="backdrop_box small">
             <div class="backdrop_detail_header"><span id="dialog_title"></span></div>
-            <div class="backdrop_detail_content">
+            <div class="backdrop_detail_content dialog">
                 <p id="dialog_content"></p>
             </div>
             <div class="backdrop_details_submit">

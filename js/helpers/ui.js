@@ -355,6 +355,7 @@ const setupListeners = function() {
     $body.on('submit', 'form[data-interactive-form]', (event) => submitInteractiveForm(event, $(event.target)));
     $body.on('blur', 'form[data-interactive-form] input[type=text], form[data-interactive-form] textarea', (event) => submitInteractiveForm(event, $(event.target).parents('form')));
     $body.on('change', 'form[data-interactive-form] input[type=radio], form[data-interactive-form] input[type=checkbox]', (event) => submitInteractiveForm(event, $(event.target).parents('form')));
+    $body.on('click', 'form[data-interactive-form] input[type=radio], form[data-interactive-form] input[type=checkbox]', (event) => submitInteractiveForm(event, $(event.target).parents('form')));
 }
 
 export default UI;

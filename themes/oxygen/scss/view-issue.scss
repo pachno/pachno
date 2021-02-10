@@ -43,6 +43,7 @@
     box-sizing: border-box;
     box-shadow: none;
     border-bottom: none;
+    flex: 0 0 auto;
 
     .header-container {
       display: flex;
@@ -230,7 +231,7 @@
 
   .issue-card {
     display: flex;
-    flex: 0 0 auto;
+    flex: 1 1 auto;
     margin: 0;
     flex-direction: row;
     box-sizing: border-box;
@@ -417,6 +418,15 @@
 
         & + .fields-list-container:not(.not-visible) {
           margin-top: 2em;
+        }
+
+        .percent_unfilled {
+          height: .6em;
+
+          .percent_filled {
+            display: block;
+            height: 100%;
+          }
         }
       }
 

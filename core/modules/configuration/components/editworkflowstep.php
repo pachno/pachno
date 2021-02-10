@@ -4,7 +4,7 @@
 
 ?>
 <div class="form-container">
-    <form accept-charset="<?= \pachno\core\framework\Context::getI18n()->getCharset(); ?>" action="<?= make_url('configure_workflow_step_post', ['step_id' => $step->getID(), 'workflow_id' => $step->getWorkflow()->getID()]); ?>" onsubmit="Pachno.Config.Workflows.Workflow.Step.save(this);return false;" data-interactive-form>
+    <form id="edit-workflow-step-<?= $step->getID(); ?>-form" accept-charset="<?= \pachno\core\framework\Context::getI18n()->getCharset(); ?>" action="<?= make_url('configure_workflow_step_post', ['step_id' => $step->getID(), 'workflow_id' => $step->getWorkflow()->getID()]); ?>" data-interactive-form>
         <div class="form-row header">
             <h4><?= __('Step settings'); ?></h4>
         </div>
@@ -16,7 +16,7 @@
                     <?= fa_image_tag('angle-down', ['class' => 'expander']); ?>
                     <div class="dropdown-container list-mode">
                         <?php foreach (\pachno\core\entities\Status::getAll() as $status): ?>
-                            <input type="radio" name="itemdata" value="<?= $status->getId(); ?>" id="edit_step_details_<?= $step->getId(); ?>_status_<?= $status->getID(); ?>" class="fancy-checkbox" <?php if ($step->getLinkedStatusID() == $status->getId()) echo 'checked'; ?>>
+                            <input type="radio" name="status_id" value="<?= $status->getId(); ?>" id="edit_step_details_<?= $step->getId(); ?>_status_<?= $status->getID(); ?>" class="fancy-checkbox" <?php if ($step->getLinkedStatusID() == $status->getId()) echo 'checked'; ?>>
                             <label class="list-item" for="edit_step_details_<?= $step->getId(); ?>_status_<?= $status->getID(); ?>">
                                 <span class="name"><span class="status-badge" style="background-color: <?php echo $status->getColor(); ?>; color: <?php echo $status->getTextColor(); ?>;"><span class="value"><?php echo $status->getName(); ?></span></span></span>
                             </label>
@@ -26,14 +26,14 @@
             </div>
         </div>
         <div class="form-row">
-            <input type="checkbox" value="1" name="editable" id="edit_step_<?= $step->getID(); ?>_editable_yes" class="fancy-checkbox" <?php if ($step->isEditable()) echo 'checked'; ?>>
+            <input type="checkbox" value="1" name="is_editable" id="edit_step_<?= $step->getID(); ?>_editable_yes" class="fancy-checkbox" <?php if ($step->isEditable()) echo 'checked'; ?>>
             <label for="edit_step_<?= $step->getID(); ?>_editable_yes">
                 <?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far'); ?>
                 <span class="name value"><?php echo __('Issue details can be edited when in this step'); ?></span>
             </label>
         </div>
         <div class="form-row">
-            <input type="checkbox" value="1" name="editable" id="edit_step_<?= $step->getID(); ?>_closed_yes" class="fancy-checkbox" <?php if ($step->isClosed()) echo 'checked'; ?>>
+            <input type="checkbox" value="1" name="state" id="edit_step_<?= $step->getID(); ?>_closed_yes" class="fancy-checkbox" <?php if ($step->isClosed()) echo 'checked'; ?>>
             <label for="edit_step_<?= $step->getID(); ?>_closed_yes">
                 <?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far'); ?>
                 <span class="name value"><?php echo __('Issues are closed when reaching this step'); ?></span>

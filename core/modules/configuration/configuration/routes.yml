@@ -171,6 +171,8 @@ configure_workflow_steps:
   route: /configure/workflows/:workflow_id/steps
   module: configuration
   action: configureWorkflowSteps
+  methods:
+    - GET
   parameters:
     config_module: core
     section: 1
@@ -188,7 +190,7 @@ configure_workflow_step:
     csrf_enabled: false
 
 configure_workflow_step_post:
-  route: /configure/workflows/:workflow_id/steps
+  route: /configure/workflows/:workflow_id/steps/:step_id
   module: configuration
   action: configureWorkflowStepPost
   methods:

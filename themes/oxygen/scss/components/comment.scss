@@ -134,6 +134,10 @@
     padding: 3px 10px;
     font-size: 1.1em;
 
+    &.article {
+      max-width: none;
+    }
+
     .image_container.thumb img.image {
       width: 130px;
     }

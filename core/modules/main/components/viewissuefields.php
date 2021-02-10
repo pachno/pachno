@@ -63,7 +63,7 @@ use pachno\core\framework\Context;
                 <div class="fancy-dropdown">
                     <label><?= __('Progress'); ?></label>
                     <span class="value" data-dynamic-field-value data-field="percent_complete" data-issue-id="<?= $issue->getId(); ?>">
-                        <?php include_component('main/percentbar', array('percent' => $issue->getPercentCompleted(), 'height' => 6)); ?>
+                        <?php include_component('main/percentbar', array('percent' => $issue->getPercentCompleted())); ?>
                     </span>
                     <?php if ($issue->canEditPercentage()): ?>
                         <?php echo fa_image_tag('angle-down', ['class' => 'expander']); ?>
@@ -184,7 +184,7 @@ use pachno\core\framework\Context;
         <span class="name"><?= __('Times and dates'); ?></span>
     </div>
     <ul class="issue_details fields-list" id="issue_details_fieldslist_time">
-        <li id="estimated_time_field" class="issue-field <?php if (!$issue->isEstimatedTimeVisible()): ?> hidden<?php endif; ?>">
+        <li id="estimated_time_field" class="issue-field <?php if (!$issue->isEstimatedTimeVisible()): ?> hidden<?php endif; ?> <?php if ($issue->isUpdateable() && $issue->canEditEstimatedTime()) echo 'editable'; ?>">
             <div id="estimated_time_content" class="value fancy-dropdown-container">
                 <div class="fancy-dropdown">
                     <label><?= __('Estimated time'); ?></label>
@@ -199,7 +199,7 @@ use pachno\core\framework\Context;
                 </div>
             </div>
         </li>
-        <li id="spent_time_field" class="<?php if (!$issue->isSpentTimeVisible()): ?> hidden<?php endif; ?> trigger-backdrop" data-url="<?= make_url('get_partial_for_backdrop', array('key' => 'issue_spenttimes', 'issue_id' => $issue->getID())); ?>">
+        <li id="spent_time_field" class="<?php if (!$issue->isSpentTimeVisible()): ?> hidden<?php endif; ?> <?php if ($issue->canEditEstimatedTime()) echo 'editable'; ?> trigger-backdrop" data-url="<?= make_url('get_partial_for_backdrop', array('key' => 'issue_spenttimes', 'issue_id' => $issue->getID())); ?>">
             <div id="estimated_time_content" class="field-container">
                 <span class="label"><?= __('Time spent'); ?></span>
                 <span class="value" data-dynamic-field-value data-field="spent_time" data-issue-id="<?= $issue->getId(); ?>">
@@ -221,7 +221,7 @@ use pachno\core\framework\Context;
         <span class="name"><?= __('People involved'); ?></span>
     </div>
     <ul class="issue_details fields-list" id="issue_details_fieldslist_people">
-        <li id="posted_by_field">
+        <li id="posted_by_field" class="issue-field <?php if ($issue->isUpdateable() && $issue->canEditPostedBy()) echo 'editable'; ?>">
             <div class="fancy-dropdown-container">
                 <div class="fancy-dropdown" data-default-label="<?= __('Unknown'); ?>">
                     <label><?= __('Posted by'); ?></label>
@@ -243,7 +243,7 @@ use pachno\core\framework\Context;
                 </div>
             </div>
         </li>
-        <li id="owned_by_field">
+        <li id="owned_by_field"class="issue-field <?php if ($issue->isUpdateable() && $issue->canEditOwner()) echo 'editable'; ?>">
             <div class="fancy-dropdown-container">
                 <div class="fancy-dropdown" data-default-label="<?= __('Unknown'); ?>">
                     <label><?= __('Owned by'); ?></label>
@@ -271,7 +271,7 @@ use pachno\core\framework\Context;
                 </div>
             </div>
         </li>
-        <li id="assigned_to_field">
+        <li id="assigned_to_field"class="issue-field <?php if ($issue->isUpdateable() && $issue->canEditAssignee()) echo 'editable'; ?>">
             <div class="fancy-dropdown-container">
                 <div class="fancy-dropdown" data-default-label="<?= __('Unknown'); ?>">
                     <label><?= __('Assigned to'); ?></label>

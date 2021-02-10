@@ -34,6 +34,7 @@ button, button:hover,
   flex-direction: row;
   align-items: center;
   justify-content: center;
+  white-space: nowrap;
 
   &:active,
   &.activated,

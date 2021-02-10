@@ -334,7 +334,7 @@ class Issue {
                 continue;
             }
 
-            if (visible_fields.hasOwnProperty(field) || (this[field] !== undefined && this[field] !== null)) {
+            if (visible_fields.hasOwnProperty(field) || (this[field] !== undefined && this[field] !== null && this[field] !== "")) {
                 $field.removeClass('hidden');
                 $field.removeClass('not-visible');
             } else {

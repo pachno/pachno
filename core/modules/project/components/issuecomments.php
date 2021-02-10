@@ -11,7 +11,7 @@
                         <span class="icon"><?= fa_image_tag('comment-slash'); ?></span>
                         <span class="name"><?php echo __('Toggle system-generated comments'); ?></span>
                     </a>
-                    <a href="javascript:void(0);" class="list-item" onclick="Pachno.Main.Comment.toggleOrder('<?= \pachno\core\entities\Comment::TYPE_ISSUE; ?>', '<?= $issue->getID(); ?>');">
+                    <a href="javascript:void(0);" class="list-item trigger-comment-sort" data-target-type="<?= \pachno\core\entities\Comment::TYPE_ISSUE; ?>" data-target-id="<?= $issue->getID(); ?>">
                         <span class="icon"><?= fa_image_tag('arrows-alt-v'); ?></span>
                         <span class="name"><?php echo __('Sort comments in opposite direction'); ?></span>
                     </a>
@@ -19,7 +19,7 @@
             </div>
         </div>
         <?php if ($pachno_user->canPostComments() && ((\pachno\core\framework\Context::isProjectContext() && !\pachno\core\framework\Context::getCurrentProject()->isArchived()) || !\pachno\core\framework\Context::isProjectContext())): ?>
-            <button class="button secondary highlight" id="comment_add_button" onclick="Pachno.Main.Comment.showPost();">
+            <button class="button secondary highlight trigger-show-comment-post" id="comment_add_button">
                 <?= fa_image_tag('comment', ['class' => 'icon']); ?>
                 <span class="name"><?php echo __('Post comment'); ?></span>
             </button>

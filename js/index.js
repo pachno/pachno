@@ -463,13 +463,6 @@ import Pachno from "./classes/pachno";
 //     Pachno.Helpers.fetch(url, {});
 // };
 //
-// Pachno.Main.Comment.showPost = function () {
-//     $('.comment-editor').each(Element.hide);
-//     $('#comment_add_button').hide();
-//     $('#comment_add').show();
-//     $('#comment_bodybox').focus();
-// };
-//
 // Pachno.Main.Comment.toggleOrder = function (target_type, target_id) {
 //     Pachno.Helpers.fetch($('#main_container').data('url'), {
 //         method: 'POST',

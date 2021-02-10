@@ -13,6 +13,7 @@ class Milestone {
         this.percent_complete = json.percent_complete;
         this.issues_count = json.issues_count;
         this.url = json.url;
+        this.backdrop_url = json.backdrop_url;
         /**
          * @type {Issue[]}
          */
@@ -27,7 +28,7 @@ class Milestone {
         let html = `
 <div class="milestone-container ${classes.join(',')}" data-milestone-id="${this.id}">
     <div class="milestone milestone-card">
-        <div class="header">
+        <div class="header trigger-backdrop" data-url="${this.backdrop_url}">
             <span class="name">${this.name}</span>
             <span class="info">
                 <span class="info-item">${UI.fa_image_tag('file-alt', {}, 'far')}&nbsp;${this.issues_count}</span>

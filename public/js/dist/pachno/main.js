@@ -387,7 +387,7 @@ var Board = /*#__PURE__*/function () {
               header_name += "<a class=\"issue-number\" href=\"".concat(swimlane.identifier_issue.href, "\">").concat(swimlane.identifier_issue.issue_no, "</a>");
               header_name += "<span class=\"name issue_header ".concat(closed_class, "\">").concat(swimlane.identifier_issue.title, "</span>");
               header_name += '</span>';
-              header_name += "<button class=\"button secondary highlight button-report-issue trigger-backdrop\" data-additional-params=\"parent_issue_id=".concat(swimlane.identifier_issue.id, "\">").concat(_pachno__WEBPACK_IMPORTED_MODULE_4__["default"].T.agile.add_card_here, "</button>");
+              header_name += "<button class=\"button secondary highlight button-report-issue trigger-backdrop\" data-url=\"".concat(this.report_issue_url, "\" data-additional-params=\"parent_issue_id=").concat(swimlane.identifier_issue.id, "\">").concat(_pachno__WEBPACK_IMPORTED_MODULE_4__["default"].T.agile.add_card_here, "</button>");
             } else {
               header_name = "<span class=\"name\">".concat(swimlane.name, "</span>");
             }
@@ -443,7 +443,7 @@ var Board = /*#__PURE__*/function () {
               var html = "<div class=\"column\" id=\"".concat(column_id, "\" data-swimlane-identifier=\"").concat(swimlane.identifier, "\" data-column-id=\"").concat(column.id, "\" data-status-ids=\"").concat(status_ids, "\">");
 
               if (this.swimlane_type === SwimlaneTypes.NONE) {
-                html += "\n                            <div class=\"form-container\">\n                                <div class=\"row\">\n                                    <div class=\"form name\">\n                                        <div class=\"form-row\">\n                                            <span class=\"input invisible trigger-report-issue\" data-status-ids=\"".concat(status_ids, "\">\n                                                <span class=\"placeholder\">").concat(_helpers_ui__WEBPACK_IMPORTED_MODULE_3__["default"].fa_image_tag('plus'), "<span>").concat(_pachno__WEBPACK_IMPORTED_MODULE_4__["default"].T.agile.add_card, "</span></span>\n                                            </span>\n                                        </div>\n                                    </div>\n                                </div>\n                            </div>\n                        ");
+                html += "\n                            <div class=\"form-container\">\n                                <div class=\"row\">\n                                    <div class=\"form name\">\n                                        <div class=\"form-row\">\n                                            <span class=\"input invisible button-report-issue\" data-status-ids=\"".concat(status_ids, "\">\n                                                <span class=\"placeholder\">").concat(_helpers_ui__WEBPACK_IMPORTED_MODULE_3__["default"].fa_image_tag('plus'), "<span>").concat(_pachno__WEBPACK_IMPORTED_MODULE_4__["default"].T.agile.add_card, "</span></span>\n                                            </span>\n                                        </div>\n                                    </div>\n                                </div>\n                            </div>\n                        ");
               }
 
               html += '</div>';
@@ -598,7 +598,7 @@ var Board = /*#__PURE__*/function () {
         this.verifyColumns();
         this.verifyIssues();
         this.updateAssigneesList();
-        var $buttons = jquery__WEBPACK_IMPORTED_MODULE_0___default()('.button-report-issue');
+        var $buttons = jquery__WEBPACK_IMPORTED_MODULE_0___default()('.trigger-report-issue');
         var url = this.selected_milestone_id ? this.report_issue_url + "&milestone_id=".concat(this.selected_milestone_id) : this.report_issue_url;
         $buttons.each(function () {
           var $button = jquery__WEBPACK_IMPORTED_MODULE_0___default()(this);
@@ -1394,7 +1394,7 @@ var Issue = /*#__PURE__*/function () {
           continue;
         }
 
-        if (visible_fields.hasOwnProperty(_field) || this[_field] !== undefined && this[_field] !== null) {
+        if (visible_fields.hasOwnProperty(_field) || this[_field] !== undefined && this[_field] !== null && this[_field] !== "") {
           $field.removeClass('hidden');
           $field.removeClass('not-visible');
         } else {
@@ -1682,6 +1682,7 @@ var Milestone = /*#__PURE__*/function () {
     this.percent_complete = json.percent_complete;
     this.issues_count = json.issues_count;
     this.url = json.url;
+    this.backdrop_url = json.backdrop_url;
     /**
      * @type {Issue[]}
      */
@@ -1695,7 +1696,7 @@ var Milestone = /*#__PURE__*/function () {
     value: function createHtmlElement() {
       var classes = [];
       if (this.is_closed) classes.push('milestone-closed');
-      var html = "\n<div class=\"milestone-container ".concat(classes.join(','), "\" data-milestone-id=\"").concat(this.id, "\">\n    <div class=\"milestone milestone-card\">\n        <div class=\"header\">\n            <span class=\"name\">").concat(this.name, "</span>\n            <span class=\"info\">\n                <span class=\"info-item\">").concat(_helpers_ui__WEBPACK_IMPORTED_MODULE_0__["default"].fa_image_tag('file-alt', {}, 'far'), "&nbsp;").concat(this.issues_count, "</span>\n                <span class=\"icon indicator\">").concat(_helpers_ui__WEBPACK_IMPORTED_MODULE_0__["default"].fa_image_tag('spinner', {
+      var html = "\n<div class=\"milestone-container ".concat(classes.join(','), "\" data-milestone-id=\"").concat(this.id, "\">\n    <div class=\"milestone milestone-card\">\n        <div class=\"header trigger-backdrop\" data-url=\"").concat(this.backdrop_url, "\">\n            <span class=\"name\">").concat(this.name, "</span>\n            <span class=\"info\">\n                <span class=\"info-item\">").concat(_helpers_ui__WEBPACK_IMPORTED_MODULE_0__["default"].fa_image_tag('file-alt', {}, 'far'), "&nbsp;").concat(this.issues_count, "</span>\n                <span class=\"icon indicator\">").concat(_helpers_ui__WEBPACK_IMPORTED_MODULE_0__["default"].fa_image_tag('spinner', {
         classes: 'fa-spin'
       }), "</span>\n                <span class=\"icon expander\">").concat(_helpers_ui__WEBPACK_IMPORTED_MODULE_0__["default"].fa_image_tag('chevron-down'), "</span>\n            </span>\n            <div class=\"percent-container\">\n                <span class=\"percent-header\">").concat(Pachno.T.roadmap.percent_complete.replace('%percentage', this.percent_complete), "</span>\n                <span class=\"percent_unfilled\">\n                    <span class=\"percent_filled\" style=\"width: ").concat(this.percent_complete, "%;\"></span>\n                </span>\n            </div>\n        </div>\n        <div class=\"issues\"></div>\n    </div>\n</div>\n");
       var $html = jquery__WEBPACK_IMPORTED_MODULE_2___default()(html);
@@ -1799,14 +1800,15 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _helpers_profile__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../helpers/profile */ "./js/helpers/profile.js");
 /* harmony import */ var _helpers_dashboard__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../helpers/dashboard */ "./js/helpers/dashboard.js");
 /* harmony import */ var _helpers_issues__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../helpers/issues */ "./js/helpers/issues.js");
-/* harmony import */ var _board__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./board */ "./js/classes/board.js");
-/* harmony import */ var _search__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./search */ "./js/classes/search.js");
-/* harmony import */ var _issuereporter__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./issuereporter */ "./js/classes/issuereporter.js");
-/* harmony import */ var _uploader__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./uploader */ "./js/classes/uploader.js");
-/* harmony import */ var _roadmap__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./roadmap */ "./js/classes/roadmap.js");
-/* harmony import */ var _quicksearch__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ./quicksearch */ "./js/classes/quicksearch.js");
-/* harmony import */ var _i18n_en_US_strings_json__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ../../i18n/en_US/strings.json */ "./i18n/en_US/strings.json");
-var _i18n_en_US_strings_json__WEBPACK_IMPORTED_MODULE_15___namespace = /*#__PURE__*/__webpack_require__.t(/*! ../../i18n/en_US/strings.json */ "./i18n/en_US/strings.json", 1);
+/* harmony import */ var _helpers_comments__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../helpers/comments */ "./js/helpers/comments.js");
+/* harmony import */ var _board__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./board */ "./js/classes/board.js");
+/* harmony import */ var _search__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./search */ "./js/classes/search.js");
+/* harmony import */ var _issuereporter__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./issuereporter */ "./js/classes/issuereporter.js");
+/* harmony import */ var _uploader__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./uploader */ "./js/classes/uploader.js");
+/* harmony import */ var _roadmap__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ./roadmap */ "./js/classes/roadmap.js");
+/* harmony import */ var _quicksearch__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ./quicksearch */ "./js/classes/quicksearch.js");
+/* harmony import */ var _i18n_en_US_strings_json__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ../../i18n/en_US/strings.json */ "./i18n/en_US/strings.json");
+var _i18n_en_US_strings_json__WEBPACK_IMPORTED_MODULE_16___namespace = /*#__PURE__*/__webpack_require__.t(/*! ../../i18n/en_US/strings.json */ "./i18n/en_US/strings.json", 1);
 function _createForOfIteratorHelper(o, allowArrayLike) { var it; if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = o[Symbol.iterator](); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
 
 function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
@@ -1841,8 +1843,9 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
 
 
+
 var translations = {
-  en_US: _i18n_en_US_strings_json__WEBPACK_IMPORTED_MODULE_15__
+  en_US: _i18n_en_US_strings_json__WEBPACK_IMPORTED_MODULE_16__
 };
 
 var PachnoApplication = /*#__PURE__*/function () {
@@ -1874,7 +1877,10 @@ var PachnoApplication = /*#__PURE__*/function () {
         issueLoadDynamicChoices: 'issue-load-dynamic-choices',
         quicksearchTrigger: 'quicksearch-trigger',
         quicksearchAddDefaultChoice: 'quicksearch-add-default-choice',
-        quicksearchUpdateChoices: 'quicksearch-update-choices'
+        quicksearchUpdateChoices: 'quicksearch-update-choices',
+        comment: {
+          remove: 'comment-remove'
+        }
       };
     }
   }, {
@@ -1895,7 +1901,7 @@ var PachnoApplication = /*#__PURE__*/function () {
       this.debug = options.debug;
       this.basepath = options.basepath;
       this.data_url = options.dataUrl;
-      this.quicksearch = new _quicksearch__WEBPACK_IMPORTED_MODULE_14__["default"](options.autocompleterUrl);
+      this.quicksearch = new _quicksearch__WEBPACK_IMPORTED_MODULE_15__["default"](options.autocompleterUrl);
       this.trigger(this.EVENTS.quicksearchAddDefaultChoice, {
         icon: {
           name: 'search',
@@ -1905,7 +1911,7 @@ var PachnoApplication = /*#__PURE__*/function () {
         name: 'Find something',
         description: 'Search through issues, projects, documentation and people',
         action: {
-          type: _quicksearch__WEBPACK_IMPORTED_MODULE_14__["TYPES"].navigate,
+          type: _quicksearch__WEBPACK_IMPORTED_MODULE_15__["TYPES"].navigate,
           url: '/account'
         }
       });
@@ -1918,7 +1924,7 @@ var PachnoApplication = /*#__PURE__*/function () {
         name: 'Show an issue',
         description: 'Go directly to an issue',
         action: {
-          type: _quicksearch__WEBPACK_IMPORTED_MODULE_14__["TYPES"].event,
+          type: _quicksearch__WEBPACK_IMPORTED_MODULE_15__["TYPES"].event,
           event: '/find'
         }
       });
@@ -1997,6 +2003,7 @@ var PachnoApplication = /*#__PURE__*/function () {
       Object(_helpers_fetch__WEBPACK_IMPORTED_MODULE_4__["setupListeners"])();
       Object(_helpers_profile__WEBPACK_IMPORTED_MODULE_6__["default"])();
       Object(_helpers_issues__WEBPACK_IMPORTED_MODULE_8__["setupListeners"])();
+      Object(_helpers_comments__WEBPACK_IMPORTED_MODULE_9__["setupListeners"])();
       Object(_helpers_ui__WEBPACK_IMPORTED_MODULE_3__["setupListeners"])(); // $('#fullpage_backdrop_content').on('click', Core._resizeWatcher);
     }
   }, {
@@ -3532,6 +3539,124 @@ window.Uploader = Uploader;
 
 /***/ }),
 
+/***/ "./js/helpers/comments.js":
+/*!********************************!*\
+  !*** ./js/helpers/comments.js ***!
+  \********************************/
+/*! exports provided: setupListeners */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* WEBPACK VAR INJECTION */(function($) {/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "setupListeners", function() { return setupListeners; });
+/* harmony import */ var _classes_pachno__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../classes/pachno */ "./js/classes/pachno.js");
+
+
+var toggleOrder = function toggleOrder(event) {
+  var $element = $(this);
+  var target_type = $element.data('target-type');
+  var target_id = $element.data('target-id');
+  _classes_pachno__WEBPACK_IMPORTED_MODULE_0__["default"].fetch(_classes_pachno__WEBPACK_IMPORTED_MODULE_0__["default"].data_url, {
+    method: 'POST',
+    loading: {
+      indicator: '#comments_loading_indicator'
+    },
+    params: '&say=togglecommentsorder'
+  }).then(function () {
+    _classes_pachno__WEBPACK_IMPORTED_MODULE_0__["default"].fetch(_classes_pachno__WEBPACK_IMPORTED_MODULE_0__["default"].data_url, {
+      method: 'GET',
+      loading: {
+        indicator: '#comments_loading_indicator'
+      },
+      params: '&say=loadcomments&target_type=' + target_type + '&target_id=' + target_id,
+      success: {
+        callback: function callback(json) {
+          $('#comments_box').html(json.comments);
+        }
+      }
+    });
+  });
+};
+
+var removeComment = function removeComment(PachnoApplication, data) {
+  var url = data.url,
+      comment_id = data.comment_id,
+      commentcount_span = data.commentcount_span;
+  $('#dialog_indicator').show();
+  _classes_pachno__WEBPACK_IMPORTED_MODULE_0__["default"].fetch(url, {
+    method: 'DELETE'
+  }).then(function (json) {
+    $('#comment_' + comment_id).remove();
+    _classes_pachno__WEBPACK_IMPORTED_MODULE_0__["default"].UI.Dialog.dismiss();
+    $('#dialog_indicator').hide();
+
+    if ($('#comments_box').children().length == 0) {
+      $('#comments-list-none').show();
+    }
+
+    $(commentcount_span).html($('#comments_box').children().length);
+  });
+};
+
+var addOrUpdateComment = function addOrUpdateComment(PachnoApplication, data) {
+  var json = data.json;
+  var $form = $('#' + data.form);
+
+  if ($form.data('comment-id')) {
+    var comment_id = $form.data('comment-id'),
+        $comment_container = $('#comment_' + comment_id + '_content');
+    $comment_container.html(json.comment_data);
+    $('#comment_edit_' + comment_id).removeClass('active');
+    $('#comment_' + comment_id + '_body').show();
+    $('#comment_view_' + comment_id).show();
+  } else if ($form.data('comment-reply-id')) {
+    var reply_comment_id = $form.data('comment-reply-id');
+    var $comments_container = $('#comment_' + reply_comment_id + '_replies');
+    $comments_container.append(json.comment_data);
+    window.location.hash = "#comment_" + json.comment_id;
+    $form[0].reset();
+    $('#comment_reply_controls_' + reply_comment_id).show();
+    $('#comment_reply_' + reply_comment_id).removeClass('active');
+  } else {
+    switch (data.form) {
+      case 'add-comment-form':
+        var $count_span = $('#' + $form.data('comment-count-element'));
+
+        var _$comments_container = $('#comments_box');
+
+        _$comments_container.append(json.comment_data);
+
+        $('#comments-list-none').remove();
+        window.location.hash = "#comment_" + json.comment_id;
+        $count_span.html(json.commentcount);
+        $form[0].reset();
+        $('#comment_add').hide();
+        break;
+    }
+  }
+};
+
+var showPost = function showPost() {
+  $('.comment-editor').hide();
+  $('#comment_add').show();
+  $('#comment_bodybox').focus();
+};
+
+var setupListeners = function setupListeners() {
+  var $body = $('body');
+  $body.off('click', '.trigger-show-comment-post');
+  $body.on('click', '.trigger-show-comment-post', showPost);
+  $body.off('click', '.trigger-comment-sort');
+  $body.on('click', '.trigger-comment-sort', toggleOrder);
+  _classes_pachno__WEBPACK_IMPORTED_MODULE_0__["default"].on(_classes_pachno__WEBPACK_IMPORTED_MODULE_0__["default"].EVENTS.formSubmitResponse, addOrUpdateComment);
+  _classes_pachno__WEBPACK_IMPORTED_MODULE_0__["default"].on(_classes_pachno__WEBPACK_IMPORTED_MODULE_0__["default"].EVENTS.comment.remove, removeComment);
+};
+
+
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! jquery */ "./node_modules/jquery/dist/jquery.js")))
+
+/***/ }),
+
 /***/ "./js/helpers/dashboard.js":
 /*!*********************************!*\
   !*** ./js/helpers/dashboard.js ***!
@@ -4715,6 +4840,9 @@ var setupListeners = function setupListeners() {
   $body.on('change', 'form[data-interactive-form] input[type=radio], form[data-interactive-form] input[type=checkbox]', function (event) {
     return submitInteractiveForm(event, jquery__WEBPACK_IMPORTED_MODULE_0___default()(event.target).parents('form'));
   });
+  $body.on('click', 'form[data-interactive-form] input[type=radio], form[data-interactive-form] input[type=checkbox]', function (event) {
+    return submitInteractiveForm(event, jquery__WEBPACK_IMPORTED_MODULE_0___default()(event.target).parents('form'));
+  });
 };
 
 /* harmony default export */ __webpack_exports__["default"] = (UI);
@@ -5195,13 +5323,6 @@ __webpack_require__.r(__webpack_exports__);
 // Pachno.Main.setToggleState = function (url, state) {
 //     url += '/' + (state ? '1' : 0);
 //     Pachno.Helpers.fetch(url, {});
-// };
-//
-// Pachno.Main.Comment.showPost = function () {
-//     $('.comment-editor').each(Element.hide);
-//     $('#comment_add_button').hide();
-//     $('#comment_add').show();
-//     $('#comment_bodybox').focus();
 // };
 //
 // Pachno.Main.Comment.toggleOrder = function (target_type, target_id) {

@@ -6,13 +6,13 @@
   box-sizing: border-box;
   margin: 10px;
   padding: 10px;
-  border: 1px solid rgba(200, 200, 200, 0.7);
+  border: none;
   align-items: center;
-  border-radius: 3px;
-  font-weight: $theme-font-weight-light;
+  border-radius: 5px;
+  font-weight: $theme-font-weight-bold;
 
   &.type-error {
-    background-color: #9F4A54;
+    background-color: #AF3E4D;
     color: #FFF;
 
     .message {
@@ -21,14 +21,14 @@
   }
 
   &.type-warning {
-    background-color: #FBF2C0;
+    background-color: #F4D58D;
+    color: $theme-text-color;
   }
 
   &.type-info {
-    border-color: #4E6E58;
+    border-color: transparent;
     color: #FFF;
-    font-weight: $theme-font-weight-regular;
-
+    background: #0cd8b6;
   }
 
   .fas,

@@ -134,13 +134,30 @@
         position: relative;
         margin: 0 0 .5em 0;
 
+        &.editable {
+          .fancy-dropdown-container {
+            .fancy-dropdown {
+              > label {
+                &:hover {
+                  cursor: pointer;
+                }
+              }
+              &:hover {
+                background-color: rgba(200, 200, 200, 0.1);
+                cursor: pointer;
+              }
+            }
+          }
+        }
+
         .fancy-dropdown-container {
           .fancy-dropdown {
             background-color: transparent;
             flex-wrap: wrap;
 
             &:hover {
-              background-color: rgba(200, 200, 200, 0.1);
+              background-color: transparent;
+              cursor: default;
             }
 
             > label {
@@ -151,6 +168,7 @@
               font-size: 0.9em;
               text-transform: none;
               color: #141823;
+              cursor: default;
             }
 
             .value {

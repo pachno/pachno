@@ -126,6 +126,11 @@
           border-radius: .75em .75em 0 0;
         }
 
+        &.dialog {
+          border-radius: .75em;
+          padding: 1em .5em;
+        }
+
         &.with-sidebar {
           flex-direction: row;
           align-items: stretch;

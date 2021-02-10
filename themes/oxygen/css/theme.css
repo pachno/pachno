@@ -5697,7 +5697,14 @@ header .mobile_menuanchor {
       padding: .35em;
       display: flex;
       flex-direction: row;
-      border-radius: 4px 4px 0 0; }
+      border-radius: 4px 4px 0 0;
+      align-items: center; }
+      .attachments-container .attachment a:not(.button) .icon, .attachments-container .attachment a:not(.button):hover .icon {
+        flex: 0 0 auto;
+        font-size: 1.1em;
+        margin-right: .35em; }
+      .attachments-container .attachment a:not(.button) .name, .attachments-container .attachment a:not(.button):hover .name {
+        flex: 1 1 auto; }
       .attachments-container .attachment a:not(.button).preview, .attachments-container .attachment a:not(.button):hover.preview {
         padding: 0;
         max-height: 8.5em;
@@ -5823,7 +5830,8 @@ button, button:hover,
   display: flex;
   flex-direction: row;
   align-items: center;
-  justify-content: center; }
+  justify-content: center;
+  white-space: nowrap; }
   input[type=submit]:active, input[type=submit].activated, input[type=submit].dropper.active, input[type=submit]:hover:active, input[type=submit]:hover.activated, input[type=submit]:hover.dropper.active,
   input[type=button]:active,
   input[type=button].activated,
@@ -8585,6 +8593,8 @@ nav.sidebar {
 .comment-container .body {
   padding: 3px 10px;
   font-size: 1.1em; }
+  .comment-container .body.article {
+    max-width: none; }
   .comment-container .body .image_container.thumb img.image {
     width: 130px; }
 
@@ -9291,21 +9301,22 @@ textarea.markItUpEditor:focus {
   box-sizing: border-box;
   margin: 10px;
   padding: 10px;
-  border: 1px solid rgba(200, 200, 200, 0.7);
+  border: none;
   align-items: center;
-  border-radius: 3px;
-  font-weight: 200; }
+  border-radius: 5px;
+  font-weight: 400; }
   .message-box.type-error {
-    background-color: #9F4A54;
+    background-color: #AF3E4D;
     color: #FFF; }
     .message-box.type-error .message {
       color: white; }
   .message-box.type-warning {
-    background-color: #FBF2C0; }
+    background-color: #F4D58D;
+    color: #232323; }
   .message-box.type-info {
-    border-color: #4E6E58;
+    border-color: transparent;
     color: #FFF;
-    font-weight: 300; }
+    background: #0cd8b6; }
   .message-box .fas,
   .message-box .fab,
   .message-box .far {
@@ -10896,7 +10907,8 @@ img.userstate {
   z-index: 10;
   box-sizing: border-box;
   box-shadow: none;
-  border-bottom: none; }
+  border-bottom: none;
+  flex: 0 0 auto; }
   .viewissue-container .top-search-filters-container .header-container {
     display: flex;
     flex-direction: row;
@@ -11030,7 +11042,7 @@ img.userstate {
 
 .viewissue-container .issue-card {
   display: flex;
-  flex: 0 0 auto;
+  flex: 1 1 auto;
   margin: 0;
   flex-direction: row;
   box-sizing: border-box;
@@ -11138,11 +11150,17 @@ img.userstate {
         align-items: center;
         position: relative;
         margin: 0 0 .5em 0; }
+        .viewissue-container .issue-card .fields-list-container .fields-list > li:not(.hidden).editable .fancy-dropdown-container .fancy-dropdown > label:hover {
+          cursor: pointer; }
+        .viewissue-container .issue-card .fields-list-container .fields-list > li:not(.hidden).editable .fancy-dropdown-container .fancy-dropdown:hover {
+          background-color: rgba(200, 200, 200, 0.1);
+          cursor: pointer; }
         .viewissue-container .issue-card .fields-list-container .fields-list > li:not(.hidden) .fancy-dropdown-container .fancy-dropdown {
           background-color: transparent;
           flex-wrap: wrap; }
           .viewissue-container .issue-card .fields-list-container .fields-list > li:not(.hidden) .fancy-dropdown-container .fancy-dropdown:hover {
-            background-color: rgba(200, 200, 200, 0.1); }
+            background-color: transparent;
+            cursor: default; }
           .viewissue-container .issue-card .fields-list-container .fields-list > li:not(.hidden) .fancy-dropdown-container .fancy-dropdown > label {
             font-weight: 400;
             flex: 0 0 100%;
@@ -11150,7 +11168,8 @@ img.userstate {
             margin: 0;
             font-size: 0.9em;
             text-transform: none;
-            color: #141823; }
+            color: #141823;
+            cursor: default; }
           .viewissue-container .issue-card .fields-list-container .fields-list > li:not(.hidden) .fancy-dropdown-container .fancy-dropdown .value {
             max-width: none; }
           .viewissue-container .issue-card .fields-list-container .fields-list > li:not(.hidden) .fancy-dropdown-container .fancy-dropdown .expander {
@@ -11364,6 +11383,11 @@ img.userstate {
       font-size: 1.2em; }
     .viewissue-container .issue-card .issue-fields .fields-list-container + .fields-list-container:not(.not-visible) {
       margin-top: 2em; }
+    .viewissue-container .issue-card .issue-fields .fields-list-container .percent_unfilled {
+      height: .6em; }
+      .viewissue-container .issue-card .issue-fields .fields-list-container .percent_unfilled .percent_filled {
+        display: block;
+        height: 100%; }
     .viewissue-container .issue-card .issue-fields .userlink {
       padding: 0;
       flex: 1 1 auto; }
@@ -13701,6 +13725,9 @@ DEL {
           background-color: #FFF;
           box-sizing: border-box;
           border-radius: .75em .75em 0 0; }
+        .fullpage_backdrop .fullpage_backdrop_content .backdrop_box .backdrop_detail_content.dialog {
+          border-radius: .75em;
+          padding: 1em .5em; }
         .fullpage_backdrop .fullpage_backdrop_content .backdrop_box .backdrop_detail_content.with-sidebar {
           flex-direction: row;
           align-items: stretch;
@@ -14054,11 +14081,17 @@ DEL {
       align-items: center;
       position: relative;
       margin: 0 0 .5em 0; }
+      #issue-card-popup .backdrop_detail_content .fields-list-container .fields-list > li:not(.hidden).editable .fancy-dropdown-container .fancy-dropdown > label:hover {
+        cursor: pointer; }
+      #issue-card-popup .backdrop_detail_content .fields-list-container .fields-list > li:not(.hidden).editable .fancy-dropdown-container .fancy-dropdown:hover {
+        background-color: rgba(200, 200, 200, 0.1);
+        cursor: pointer; }
       #issue-card-popup .backdrop_detail_content .fields-list-container .fields-list > li:not(.hidden) .fancy-dropdown-container .fancy-dropdown {
         background-color: transparent;
         flex-wrap: wrap; }
         #issue-card-popup .backdrop_detail_content .fields-list-container .fields-list > li:not(.hidden) .fancy-dropdown-container .fancy-dropdown:hover {
-          background-color: rgba(200, 200, 200, 0.1); }
+          background-color: transparent;
+          cursor: default; }
         #issue-card-popup .backdrop_detail_content .fields-list-container .fields-list > li:not(.hidden) .fancy-dropdown-container .fancy-dropdown > label {
           font-weight: 400;
           flex: 0 0 100%;
@@ -14066,7 +14099,8 @@ DEL {
           margin: 0;
           font-size: 0.9em;
           text-transform: none;
-          color: #141823; }
+          color: #141823;
+          cursor: default; }
         #issue-card-popup .backdrop_detail_content .fields-list-container .fields-list > li:not(.hidden) .fancy-dropdown-container .fancy-dropdown .value {
           max-width: none; }
         #issue-card-popup .backdrop_detail_content .fields-list-container .fields-list > li:not(.hidden) .fancy-dropdown-container .fancy-dropdown .expander {
