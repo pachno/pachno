@@ -14,6 +14,7 @@ use pachno\core\framework\Context;
     /**
      * @var Issue $issue
      * @var \pachno\core\framework\Response $pachno_response
+     * @var \pachno\core\entities\User $pachno_user
      * @var Status[] $statuses
      * @var \pachno\core\entities\Issuetype[] $issuetypes
      * @var mixed[][] $fields_list
@@ -58,7 +59,7 @@ use pachno\core\framework\Context;
         <?php include_component('main/viewissuefield', array('field' => 'category', 'info' => $field, 'issue' => $issue)); ?>
         <?php $field = $fields_list['milestone']; unset($fields_list['milestone']); ?>
         <?php include_component('main/viewissuefield', array('field' => 'milestone', 'info' => $field, 'issue' => $issue)); ?>
-        <li id="percent_complete_field" class="issue-field <?php if (!$issue->isPercentCompletedVisible()): ?> hidden<?php endif; ?>">
+        <li id="percent_complete_field" class="issue-field <?php if (!$issue->isPercentCompletedVisible()): ?> hidden<?php endif; ?> <?php if ($issue->canEditPercentage()) echo ' editable'; ?>">
             <div class="fancy-dropdown-container">
                 <div class="fancy-dropdown">
                     <label><?= __('Progress'); ?></label>
@@ -199,14 +200,11 @@ use pachno\core\framework\Context;
                 </div>
             </div>
         </li>
-        <li id="spent_time_field" class="<?php if (!$issue->isSpentTimeVisible()): ?> hidden<?php endif; ?> <?php if ($issue->canEditEstimatedTime()) echo 'editable'; ?> trigger-backdrop" data-url="<?= make_url('get_partial_for_backdrop', array('key' => 'issue_spenttimes', 'issue_id' => $issue->getID())); ?>">
-            <div id="estimated_time_content" class="field-container">
+        <li id="spent_time_field" class="<?php if (!$issue->isSpentTimeVisible()): ?> hidden<?php endif; ?> <?php if ($issue->canEditEstimatedTime()) echo 'trigger-backdrop'; ?>" data-url="<?= make_url('get_partial_for_backdrop', array('key' => 'issue_spenttimes', 'issue_id' => $issue->getID())); ?>">
+            <div id="estimated_time_content" class="field-container <?php if ($issue->canEditEstimatedTime()) echo 'editable'; ?>">
                 <span class="label"><?= __('Time spent'); ?></span>
                 <span class="value" data-dynamic-field-value data-field="spent_time" data-issue-id="<?= $issue->getId(); ?>">
                     <span><?= ($issue->hasEstimatedTime()) ? Issue::getFormattedTime($issue->getSpentTime(true, true)) : __('Not estimated'); ?></span>
-                    <?php if ($issue->canEditEstimatedTime()): ?>
-                        <?php echo fa_image_tag('hourglass', ['class' => 'icon'], 'far'); ?>
-                    <?php endif; ?>
                 </span>
             </div>
         </li>
@@ -300,7 +298,7 @@ use pachno\core\framework\Context;
             </div>
         </li>
         <li id="subscribers_field">
-            <a class="field-container trigger-backdrop" href="javascript:void(0);" data-url="<?= make_url('get_partial_for_backdrop', array('key' => 'issue_subscribers', 'issue_id' => $issue->getID())); ?>">
+            <a class="field-container trigger-backdrop tooltip-container <?php if ($pachno_user->canManageProject($issue->getProject())) echo ' editable'; ?>" href="javascript:void(0);" data-url="<?= make_url('get_partial_for_backdrop', array('key' => 'issue_subscribers', 'issue_id' => $issue->getID())); ?>">
                 <span class="label">
                     <?= __('Subscribers'); ?>
                 </span>
@@ -309,9 +307,8 @@ use pachno\core\framework\Context;
                         <?= fa_image_tag('users', ['class' => 'icon']); ?>
                         <span data-dynamic-value data-field="number_of_subscribers"><?= count($issue->getSubscribers()); ?></span>
                     </span>
-                    <?= fa_image_tag('angle-down', ['class' => 'icon']); ?>
                 </span>
-                <span class="tooltip from-above"><?= __('Click here to show the list of subscribers'); ?></span>
+                <span class="tooltip from-right"><?= __('Click here to show the list of subscribers'); ?></span>
             </a>
         </li>
     </ul>

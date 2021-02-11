@@ -3,43 +3,48 @@
 .tooltip-container {
   position: relative;
   overflow: visible;
-}
 
-.tooltip {
-  display: block;
-  position: absolute;
-  bottom: 35px;
-  left: -12px;
-  text-align: left;
-  font-size: .9rem;
-  color: #FFF;
-  box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.4);
-  border-radius: 5px;
-  background-color: rgba(0, 0, 0, .9);
-  transform-origin: top;
-  transform: scaleY(0);
-  transition: opacity .3s ease .5s, transform .3s ease .5s;
-  overflow: visible;
-  white-space: normal;
-  width: 350px;
-  height: auto;
-  padding: 10px;
-  z-index: 200000;
-  text-transform: none;
-  font-weight: $theme-font-weight-regular;
+  .tooltip {
+    display: block;
+    position: absolute;
+    bottom: 35px;
+    left: 0;
+    text-align: left;
+    font-size: .8rem;
+    color: #FFF;
+    box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.4);
+    border-radius: 5px;
+    background-color: rgba(0, 0, 0, .9);
+    transform-origin: top;
+    transform: scaleY(0);
+    transition: opacity .3s ease .5s, transform .3s ease .5s;
+    overflow: visible;
+    white-space: normal;
+    width: 350px;
+    height: auto;
+    padding: 10px;
+    z-index: 200000;
+    text-transform: none;
+    font-weight: $theme-font-weight-bold;
 
-  &.from-above {
-    bottom: auto;
-    top: 35px;
-  }
+    &.from-above {
+      bottom: auto;
+      top: 35px;
+    }
 
-  &.from-right {
-    left: auto;
-    right: 0;
-  }
+    &.from-right {
+      left: auto;
+      right: 0;
+    }
 
-  &.big {
-    width: 450px;
+    &.from-left {
+      left: 0;
+      right: auto;
+    }
+
+    &.big {
+      width: 450px;
+    }
   }
 }
 

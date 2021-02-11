@@ -131,22 +131,6 @@ update_attachments:
     parameters: [ ]
     csrf_enabled: false
 
-issue_upload:
-    route: /upload/to/issue/:issue_id
-    module: main
-    action: upload
-    parameters:
-      mode: issue
-    csrf_enabled: false
-
-article_upload:
-    route: /upload/to/article/:article_name
-    module: main
-    action: upload
-    parameters:
-      mode: article
-    csrf_enabled: false
-
 showfile:
     route: /files/show/:id
     module: main
@@ -163,22 +147,6 @@ downloadfile:
       mode: download
     csrf_enabled: false
 
-issue_upload_status:
-    route: /upload/get/status/for/issue/:issue_id
-    module: main
-    action: getUploadStatus
-    parameters:
-      mode: issue
-    csrf_enabled: false
-
-article_upload_status:
-    route: /upload/get/status/for/article/:article_name
-    module: main
-    action: getUploadStatus
-    parameters:
-      mode: article
-    csrf_enabled: false
-
 issue_detach_file:
     route: /upload/detach/file/:file_id/from/issue/:issue_id
     module: main
@@ -188,7 +156,7 @@ issue_detach_file:
     csrf_enabled: false
 
 article_detach_file:
-    route: /upload/detach/file/:file_id/from/article/:article_name
+    route: /upload/detach/file/:file_id/from/article/:article_id
     module: main
     action: detachFile
     parameters:
@@ -213,20 +181,6 @@ issue_remove_link:
     route: /upload/remove/link/:link_id/from/issue/:issue_id
     module: main
     action: removeLinkFromIssue
-    parameters: [ ]
-    csrf_enabled: false
-
-upload_status:
-    route: /upload/get/status/for/:mode
-    module: main
-    action: getUploadStatus
-    parameters: [ ]
-    csrf_enabled: false
-
-upload:
-    route: /upload/:mode
-    module: main
-    action: upload
     parameters: [ ]
     csrf_enabled: false
 

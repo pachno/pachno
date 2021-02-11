@@ -2080,6 +2080,20 @@
             return $this->_permissionCheck('canremovefilesfromissues');
         }
 
+        public function canRemoveAttachment(User $user, File $file)
+        {
+            if ($this->canRemoveAttachments())
+                return true;
+
+            if ($user->canManageProject($this->getProject()))
+                return true;
+
+            if ($file->getID() == $user->getID())
+                return true;
+
+            return false;
+        }
+
         /**
          * Return if the user can attach links
          *
@@ -3945,6 +3959,9 @@
             tables\IssueFiles::getTable()->removeByIssueIDandFileID($this->getID(), $file->getID());
             if (is_array($this->_files) && array_key_exists($file->getID(), $this->_files)) {
                 unset($this->_files[$file->getID()]);
+            }
+            if ($this->_num_files !== null) {
+                $this->_num_files--;
             }
             $file->delete();
             $this->touch();

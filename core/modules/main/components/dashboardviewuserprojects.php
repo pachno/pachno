@@ -7,7 +7,7 @@
     <div id="associated-projects" class="project-list">
         <?php foreach ($pachno_user->getAssociatedProjects() as $project): ?>
             <?php if ($project->isDeleted()) continue; ?>
-            <?php include_component('project/project', compact('project')); ?>
+            <?php include_component('project/project', ['project' => $project, 'include_subprojects' => false]); ?>
         <?php endforeach; ?>
     </div>
 <?php else: ?>

@@ -1,3 +1,4 @@
+import $ from "jquery";
 import Pachno from "../classes/pachno";
 
 const toggleOrder = function (event) {

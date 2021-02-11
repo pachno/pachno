@@ -62,7 +62,7 @@
                     <?php endforeach; ?>
                 </div>
             <?php endif; ?>
-            <div class="header expandable <?php if ($article->isMainPage()) echo 'expanded'; ?>">
+            <div class="header expandable <?php if ($article->isMainPage() || $article->isCategory()) echo 'expanded'; ?>">
                 <span class="name"><?= __('Categories'); ?></span>
                 <button class="button secondary icon expander"><?= fa_image_tag('caret-square-down', [], 'far'); ?></button>
             </div>

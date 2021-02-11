@@ -166,7 +166,7 @@ input.button.secondary,
 .fullpage_backdrop_content .button:not(.primary),
 .fullpage_backdrop_content input.button:not(.primary) {
   background: transparent;
-  color: #000;
+  color: $theme-text-color;
   box-shadow: none;
   border-radius: 4px;
   text-align: center;

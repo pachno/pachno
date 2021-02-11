@@ -387,7 +387,7 @@ var Board = /*#__PURE__*/function () {
               header_name += "<a class=\"issue-number\" href=\"".concat(swimlane.identifier_issue.href, "\">").concat(swimlane.identifier_issue.issue_no, "</a>");
               header_name += "<span class=\"name issue_header ".concat(closed_class, "\">").concat(swimlane.identifier_issue.title, "</span>");
               header_name += '</span>';
-              header_name += "<button class=\"button secondary highlight button-report-issue trigger-backdrop\" data-url=\"".concat(this.report_issue_url, "\" data-additional-params=\"parent_issue_id=").concat(swimlane.identifier_issue.id, "\">").concat(_pachno__WEBPACK_IMPORTED_MODULE_4__["default"].T.agile.add_card_here, "</button>");
+              header_name += "<button class=\"button secondary highlight trigger-report-issue trigger-backdrop\" data-url=\"".concat(this.report_issue_url, "\" data-additional-params=\"parent_issue_id=").concat(swimlane.identifier_issue.id, "\">").concat(_pachno__WEBPACK_IMPORTED_MODULE_4__["default"].T.agile.add_card_here, "</button>");
             } else {
               header_name = "<span class=\"name\">".concat(swimlane.name, "</span>");
             }
@@ -443,7 +443,7 @@ var Board = /*#__PURE__*/function () {
               var html = "<div class=\"column\" id=\"".concat(column_id, "\" data-swimlane-identifier=\"").concat(swimlane.identifier, "\" data-column-id=\"").concat(column.id, "\" data-status-ids=\"").concat(status_ids, "\">");
 
               if (this.swimlane_type === SwimlaneTypes.NONE) {
-                html += "\n                            <div class=\"form-container\">\n                                <div class=\"row\">\n                                    <div class=\"form name\">\n                                        <div class=\"form-row\">\n                                            <span class=\"input invisible button-report-issue\" data-status-ids=\"".concat(status_ids, "\">\n                                                <span class=\"placeholder\">").concat(_helpers_ui__WEBPACK_IMPORTED_MODULE_3__["default"].fa_image_tag('plus'), "<span>").concat(_pachno__WEBPACK_IMPORTED_MODULE_4__["default"].T.agile.add_card, "</span></span>\n                                            </span>\n                                        </div>\n                                    </div>\n                                </div>\n                            </div>\n                        ");
+                html += "\n                            <div class=\"form-container\">\n                                <div class=\"row\">\n                                    <div class=\"form name\">\n                                        <div class=\"form-row\">\n                                            <span class=\"input invisible trigger-report-issue\" data-status-ids=\"".concat(status_ids, "\">\n                                                <span class=\"placeholder\">").concat(_helpers_ui__WEBPACK_IMPORTED_MODULE_3__["default"].fa_image_tag('plus'), "<span>").concat(_pachno__WEBPACK_IMPORTED_MODULE_4__["default"].T.agile.add_card, "</span></span>\n                                            </span>\n                                        </div>\n                                    </div>\n                                </div>\n                            </div>\n                        ");
               }
 
               html += '</div>';
@@ -1064,9 +1064,9 @@ var Issue = /*#__PURE__*/function () {
       this.status = json.status;
       this.title = json.title;
       this.percent_complete = json.percent_complete;
-      this.number_of_files = json.number_of_files;
-      this.number_of_comments = json.number_of_comments;
-      this.number_of_subscribers = json.number_of_subscribers;
+      this.number_of_files = parseInt(json.number_of_files);
+      this.number_of_comments = parseInt(json.number_of_comments);
+      this.number_of_subscribers = parseInt(json.number_of_subscribers);
       this.processed = false;
     }
   }, {
@@ -1084,10 +1084,10 @@ var Issue = /*#__PURE__*/function () {
             value: value
           }
         }).then(function (json) {
-          _pachno__WEBPACK_IMPORTED_MODULE_2__["default"].trigger(_pachno__WEBPACK_IMPORTED_MODULE_2__["default"].EVENTS.issueUpdateDone, {
+          _pachno__WEBPACK_IMPORTED_MODULE_2__["default"].trigger(_pachno__WEBPACK_IMPORTED_MODULE_2__["default"].EVENTS.issue.updateDone, {
             id: issue.id
           });
-          _pachno__WEBPACK_IMPORTED_MODULE_2__["default"].trigger(_pachno__WEBPACK_IMPORTED_MODULE_2__["default"].EVENTS.issueUpdateJson, {
+          _pachno__WEBPACK_IMPORTED_MODULE_2__["default"].trigger(_pachno__WEBPACK_IMPORTED_MODULE_2__["default"].EVENTS.issue.updateJson, {
             json: json.issue
           });
           resolve();
@@ -1151,15 +1151,31 @@ var Issue = /*#__PURE__*/function () {
         $value_container.removeClass('editing');
         $container_element.removeClass('force-visible');
       });
-      _pachno__WEBPACK_IMPORTED_MODULE_2__["default"].on(_pachno__WEBPACK_IMPORTED_MODULE_2__["default"].EVENTS.issueTriggerEdit, function (PachnoApplication, data) {
+      _pachno__WEBPACK_IMPORTED_MODULE_2__["default"].on(_pachno__WEBPACK_IMPORTED_MODULE_2__["default"].EVENTS.issue.triggerEdit, function (PachnoApplication, data) {
         if (data.issue_id != issue.id) return;
         issue.triggerEditField(data.field);
       });
-      _pachno__WEBPACK_IMPORTED_MODULE_2__["default"].on(_pachno__WEBPACK_IMPORTED_MODULE_2__["default"].EVENTS.issueTriggerUpdate, function (PachnoApplication, data) {
+      _pachno__WEBPACK_IMPORTED_MODULE_2__["default"].on(_pachno__WEBPACK_IMPORTED_MODULE_2__["default"].EVENTS.issue.removeFile, function (PachnoApplication, data) {
+        if (data.issue_id != issue.id) return;
+        jquery__WEBPACK_IMPORTED_MODULE_1___default()("[data-attachment][data-file-id=\"".concat(data.file_id, "\"]")).remove();
+        _pachno__WEBPACK_IMPORTED_MODULE_2__["default"].UI.Dialog.dismiss();
+        _pachno__WEBPACK_IMPORTED_MODULE_2__["default"].fetch(data.url, {
+          method: 'DELETE'
+        }).then(function (json) {
+          issue.updateFromJson(json.issue);
+          issue.updateVisibleValues();
+        });
+      });
+      _pachno__WEBPACK_IMPORTED_MODULE_2__["default"].on(_pachno__WEBPACK_IMPORTED_MODULE_2__["default"].EVENTS.upload.complete, function (PachnoApplication, data) {
+        if (data.issue_id != issue.id) return;
+        issue.number_of_files += 1;
+        issue.updateVisibleValues();
+      });
+      _pachno__WEBPACK_IMPORTED_MODULE_2__["default"].on(_pachno__WEBPACK_IMPORTED_MODULE_2__["default"].EVENTS.issue.triggerUpdate, function (PachnoApplication, data) {
         if (data.issue_id != issue.id) return;
         issue.postAndUpdate(data.field, data.value);
       });
-      _pachno__WEBPACK_IMPORTED_MODULE_2__["default"].on(_pachno__WEBPACK_IMPORTED_MODULE_2__["default"].EVENTS.issueLoadDynamicChoices, function (PachnoApplication, field) {
+      _pachno__WEBPACK_IMPORTED_MODULE_2__["default"].on(_pachno__WEBPACK_IMPORTED_MODULE_2__["default"].EVENTS.issue.loadDynamicChoices, function (PachnoApplication, field) {
         return new Promise(function (resolve, reject) {
           _pachno__WEBPACK_IMPORTED_MODULE_2__["default"].fetch(issue.choices_url, {
             data: "field=".concat(field)
@@ -1182,7 +1198,7 @@ var Issue = /*#__PURE__*/function () {
                   shortcut: "set ".concat(field, " ").concat(index),
                   name: choice.name,
                   type: _quicksearch__WEBPACK_IMPORTED_MODULE_3__["TYPES"].event,
-                  event: _pachno__WEBPACK_IMPORTED_MODULE_2__["default"].EVENTS.issueTriggerUpdate,
+                  event: _pachno__WEBPACK_IMPORTED_MODULE_2__["default"].EVENTS.issue.triggerUpdate,
                   event_value: {
                     field: field,
                     value: choice.id,
@@ -1201,7 +1217,7 @@ var Issue = /*#__PURE__*/function () {
           });
         });
       });
-      _pachno__WEBPACK_IMPORTED_MODULE_2__["default"].on(_pachno__WEBPACK_IMPORTED_MODULE_2__["default"].EVENTS.issueUpdateJson, function (PachnoApplication, data) {
+      _pachno__WEBPACK_IMPORTED_MODULE_2__["default"].on(_pachno__WEBPACK_IMPORTED_MODULE_2__["default"].EVENTS.issue.updateJson, function (PachnoApplication, data) {
         if (data.json.id != issue.id) {
           return;
         }
@@ -1274,7 +1290,7 @@ var Issue = /*#__PURE__*/function () {
 
             if (['title', 'reproduction_steps', 'description'].includes(field_key)) {
               field_choice.type = _quicksearch__WEBPACK_IMPORTED_MODULE_3__["TYPES"].event;
-              field_choice.event = _pachno__WEBPACK_IMPORTED_MODULE_2__["default"].EVENTS.issueTriggerEdit;
+              field_choice.event = _pachno__WEBPACK_IMPORTED_MODULE_2__["default"].EVENTS.issue.triggerEdit;
               field_choice.event_value = {
                 field: field_key,
                 issue_id: this.id
@@ -1283,7 +1299,7 @@ var Issue = /*#__PURE__*/function () {
               field_choice.name = 'Vote / unvote';
               field_choice.description = 'Toggle your vote for this issue';
               field_choice.type = _quicksearch__WEBPACK_IMPORTED_MODULE_3__["TYPES"].event;
-              field_choice.event = _pachno__WEBPACK_IMPORTED_MODULE_2__["default"].EVENTS.issueTriggerUpdate;
+              field_choice.event = _pachno__WEBPACK_IMPORTED_MODULE_2__["default"].EVENTS.issue.triggerUpdate;
               field_choice.event_value = {
                 field: field_key,
                 value: 1,
@@ -1291,7 +1307,7 @@ var Issue = /*#__PURE__*/function () {
               };
             } else {
               field_choice.type = _quicksearch__WEBPACK_IMPORTED_MODULE_3__["TYPES"].dynamic_choices;
-              field_choice.event = _pachno__WEBPACK_IMPORTED_MODULE_2__["default"].EVENTS.issueLoadDynamicChoices;
+              field_choice.event = _pachno__WEBPACK_IMPORTED_MODULE_2__["default"].EVENTS.issue.loadDynamicChoices;
               field_choice.event_value = field_key;
             }
 
@@ -1309,7 +1325,7 @@ var Issue = /*#__PURE__*/function () {
               type: 'fas'
             };
             field_choice.type = _quicksearch__WEBPACK_IMPORTED_MODULE_3__["TYPES"].dynamic_choices;
-            field_choice.event = _pachno__WEBPACK_IMPORTED_MODULE_2__["default"].EVENTS.issueLoadDynamicChoices;
+            field_choice.event = _pachno__WEBPACK_IMPORTED_MODULE_2__["default"].EVENTS.issue.loadDynamicChoices;
             field_choice.event_value = field_key;
             break;
         }
@@ -1322,84 +1338,100 @@ var Issue = /*#__PURE__*/function () {
   }, {
     key: "updateVisibleValues",
     value: function updateVisibleValues(json) {
-      var _this$field;
+      var _this$_field;
 
       var $value_fields = jquery__WEBPACK_IMPORTED_MODULE_1___default()("[data-dynamic-field-value][data-issue-id=".concat(this.id, "]"));
-      var visible_fields = json.visible_fields;
-      var fields = json.fields;
 
-      for (var element in $value_fields) {
-        var $element = jquery__WEBPACK_IMPORTED_MODULE_1___default()(element);
-        var field = $element.data('field');
-        var $value_input = void 0;
+      var _iterator2 = _createForOfIteratorHelper($value_fields),
+          _step2;
 
-        if (!this[field]) {
-          $element.addClass('no-value');
-        } else {
-          $element.removeClass('no-value');
+      try {
+        for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
+          var element = _step2.value;
+          var $element = jquery__WEBPACK_IMPORTED_MODULE_1___default()(element);
+
+          var _field = $element.data('field');
+
+          var $value_input = void 0;
+
+          if (!this[_field]) {
+            $element.addClass('no-value');
+          } else {
+            $element.removeClass('no-value');
+          }
+
+          switch (_field) {
+            case 'priority':
+            case 'resolution':
+            case 'category':
+            case 'milestone':
+            case 'reproducability':
+            case 'severity':
+              if (((_this$_field = this[_field]) === null || _this$_field === void 0 ? void 0 : _this$_field.name) !== undefined) {
+                $element.html(this[_field].name);
+                $value_input = jquery__WEBPACK_IMPORTED_MODULE_1___default()("#issue_".concat(this.id, "_field_").concat(_field, "_").concat(this[_field].value));
+              } else {
+                $element.html(_pachno__WEBPACK_IMPORTED_MODULE_2__["default"].T.issue.value_not_set);
+                $value_input = jquery__WEBPACK_IMPORTED_MODULE_1___default()("#issue_".concat(this.id, "_field_").concat(_field, "_0"));
+              }
+
+              if ($value_input.length) {
+                $value_input.checked = true;
+              }
+
+              break;
+
+            case 'description':
+              $element.html(this.description_formatted);
+              break;
+
+            case 'reproduction_steps':
+              $element.html(this.reproduction_steps_formatted);
+              break;
+
+            case 'updated_at':
+              $element.html(this.updated_at_friendly);
+              $element.prop('title', this.updated_at_full);
+              $element.prop('datetime', this.updated_at_datetime);
+              break;
+
+            case 'number_of_subscribers':
+              $element.html(this.number_of_subscribers);
+              break;
+
+            case 'number_of_files':
+              $element.html(this.number_of_files);
+              break;
+
+            case 'percent_complete':
+              jquery__WEBPACK_IMPORTED_MODULE_1___default()($element.find('.percent_filled')).css({
+                width: this.percent_complete + '%'
+              });
+              break;
+          }
         }
-
-        switch (field) {
-          case 'priority':
-          case 'resolution':
-          case 'category':
-          case 'milestone':
-          case 'reproducability':
-          case 'severity':
-            if (((_this$field = this[field]) === null || _this$field === void 0 ? void 0 : _this$field.name) !== undefined) {
-              $element.html(this[field].name);
-              $value_input = jquery__WEBPACK_IMPORTED_MODULE_1___default()("#issue_".concat(this.id, "_field_").concat(field, "_").concat(this[field].value));
-            } else {
-              $element.html(_pachno__WEBPACK_IMPORTED_MODULE_2__["default"].T.issue.value_not_set);
-              $value_input = jquery__WEBPACK_IMPORTED_MODULE_1___default()("#issue_".concat(this.id, "_field_").concat(field, "_0"));
-            }
-
-            if ($value_input.length) {
-              $value_input.checked = true;
-            }
-
-            break;
-
-          case 'description':
-            $element.html(this.description_formatted);
-            break;
-
-          case 'reproduction_steps':
-            $element.html(this.reproduction_steps_formatted);
-            break;
-
-          case 'updated_at':
-            $element.html(this.updated_at_friendly);
-            $element.prop('title', this.updated_at_full);
-            $element.prop('datetime', this.updated_at_datetime);
-            break;
-
-          case 'number_of_subscribers':
-            $element.html(this.number_of_subscribers);
-            break;
-
-          case 'percent_complete':
-            jquery__WEBPACK_IMPORTED_MODULE_1___default()($element.find('.percent_filled')).css({
-              width: this.percent_complete + '%'
-            });
-            break;
-        }
+      } catch (err) {
+        _iterator2.e(err);
+      } finally {
+        _iterator2.f();
       }
 
-      for (var _field in fields) {
-        if (!fields.hasOwnProperty(_field)) continue;
-        var $field = jquery__WEBPACK_IMPORTED_MODULE_1___default()("#".concat(_field, "_field"));
+      if (json !== undefined) {
+        for (var field in json.fields) {
+          if (!json.fields.hasOwnProperty(field)) continue;
+          var $field = jquery__WEBPACK_IMPORTED_MODULE_1___default()("#".concat(field, "_field"));
 
-        if (!$field.length) {
-          continue;
-        }
+          if (!$field.length) {
+            continue;
+          }
 
-        if (visible_fields.hasOwnProperty(_field) || this[_field] !== undefined && this[_field] !== null && this[_field] !== "") {
-          $field.removeClass('hidden');
-          $field.removeClass('not-visible');
-        } else {
-          $field.addClass('hidden');
-          $field.addClass('not-visible');
+          if (json.visible_fields.hasOwnProperty(field) || this[field] !== undefined && this[field] !== null && this[field] !== "") {
+            $field.removeClass('hidden');
+            $field.removeClass('not-visible');
+          } else {
+            $field.addClass('hidden');
+            $field.addClass('not-visible');
+          }
         }
       }
     }
@@ -1801,14 +1833,15 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _helpers_dashboard__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../helpers/dashboard */ "./js/helpers/dashboard.js");
 /* harmony import */ var _helpers_issues__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../helpers/issues */ "./js/helpers/issues.js");
 /* harmony import */ var _helpers_comments__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../helpers/comments */ "./js/helpers/comments.js");
-/* harmony import */ var _board__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./board */ "./js/classes/board.js");
-/* harmony import */ var _search__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./search */ "./js/classes/search.js");
-/* harmony import */ var _issuereporter__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./issuereporter */ "./js/classes/issuereporter.js");
-/* harmony import */ var _uploader__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./uploader */ "./js/classes/uploader.js");
-/* harmony import */ var _roadmap__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ./roadmap */ "./js/classes/roadmap.js");
-/* harmony import */ var _quicksearch__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ./quicksearch */ "./js/classes/quicksearch.js");
-/* harmony import */ var _i18n_en_US_strings_json__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ../../i18n/en_US/strings.json */ "./i18n/en_US/strings.json");
-var _i18n_en_US_strings_json__WEBPACK_IMPORTED_MODULE_16___namespace = /*#__PURE__*/__webpack_require__.t(/*! ../../i18n/en_US/strings.json */ "./i18n/en_US/strings.json", 1);
+/* harmony import */ var _helpers_favourites__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ../helpers/favourites */ "./js/helpers/favourites.js");
+/* harmony import */ var _board__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./board */ "./js/classes/board.js");
+/* harmony import */ var _search__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./search */ "./js/classes/search.js");
+/* harmony import */ var _issuereporter__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./issuereporter */ "./js/classes/issuereporter.js");
+/* harmony import */ var _uploader__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ./uploader */ "./js/classes/uploader.js");
+/* harmony import */ var _roadmap__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ./roadmap */ "./js/classes/roadmap.js");
+/* harmony import */ var _quicksearch__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ./quicksearch */ "./js/classes/quicksearch.js");
+/* harmony import */ var _i18n_en_US_strings_json__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ../../i18n/en_US/strings.json */ "./i18n/en_US/strings.json");
+var _i18n_en_US_strings_json__WEBPACK_IMPORTED_MODULE_17___namespace = /*#__PURE__*/__webpack_require__.t(/*! ../../i18n/en_US/strings.json */ "./i18n/en_US/strings.json", 1);
 function _createForOfIteratorHelper(o, allowArrayLike) { var it; if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = o[Symbol.iterator](); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
 
 function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
@@ -1844,8 +1877,9 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
 
 
+
 var translations = {
-  en_US: _i18n_en_US_strings_json__WEBPACK_IMPORTED_MODULE_16__
+  en_US: _i18n_en_US_strings_json__WEBPACK_IMPORTED_MODULE_17__
 };
 
 var PachnoApplication = /*#__PURE__*/function () {
@@ -1866,15 +1900,24 @@ var PachnoApplication = /*#__PURE__*/function () {
     get: function get() {
       return {
         ready: 'pachno-ready',
+        article: {
+          removeFile: 'article-remove-file'
+        },
         formSubmit: 'form-submit',
         formSubmitResponse: 'form-submit-response',
         formSubmitError: 'form-submit-error',
-        issueUpdate: 'issue-update',
-        issueTriggerUpdate: 'issue-trigger-update',
-        issueTriggerEdit: 'issue-trigger-edit',
-        issueUpdateDone: 'issue-update-done',
-        issueUpdateJson: 'issue-update-json',
-        issueLoadDynamicChoices: 'issue-load-dynamic-choices',
+        issue: {
+          removeFile: 'issue-remove-file',
+          update: 'issue-update',
+          triggerUpdate: 'issue-trigger-update',
+          triggerEdit: 'issue-trigger-edit',
+          updateDone: 'issue-update-done',
+          updateJson: 'issue-update-json',
+          loadDynamicChoices: 'issue-load-dynamic-choices'
+        },
+        upload: {
+          complete: 'upload-complete'
+        },
         quicksearchTrigger: 'quicksearch-trigger',
         quicksearchAddDefaultChoice: 'quicksearch-add-default-choice',
         quicksearchUpdateChoices: 'quicksearch-update-choices',
@@ -1901,7 +1944,7 @@ var PachnoApplication = /*#__PURE__*/function () {
       this.debug = options.debug;
       this.basepath = options.basepath;
       this.data_url = options.dataUrl;
-      this.quicksearch = new _quicksearch__WEBPACK_IMPORTED_MODULE_15__["default"](options.autocompleterUrl);
+      this.quicksearch = new _quicksearch__WEBPACK_IMPORTED_MODULE_16__["default"](options.autocompleterUrl);
       this.trigger(this.EVENTS.quicksearchAddDefaultChoice, {
         icon: {
           name: 'search',
@@ -1911,7 +1954,7 @@ var PachnoApplication = /*#__PURE__*/function () {
         name: 'Find something',
         description: 'Search through issues, projects, documentation and people',
         action: {
-          type: _quicksearch__WEBPACK_IMPORTED_MODULE_15__["TYPES"].navigate,
+          type: _quicksearch__WEBPACK_IMPORTED_MODULE_16__["TYPES"].navigate,
           url: '/account'
         }
       });
@@ -1924,7 +1967,7 @@ var PachnoApplication = /*#__PURE__*/function () {
         name: 'Show an issue',
         description: 'Go directly to an issue',
         action: {
-          type: _quicksearch__WEBPACK_IMPORTED_MODULE_15__["TYPES"].event,
+          type: _quicksearch__WEBPACK_IMPORTED_MODULE_16__["TYPES"].event,
           event: '/find'
         }
       });
@@ -2004,6 +2047,7 @@ var PachnoApplication = /*#__PURE__*/function () {
       Object(_helpers_profile__WEBPACK_IMPORTED_MODULE_6__["default"])();
       Object(_helpers_issues__WEBPACK_IMPORTED_MODULE_8__["setupListeners"])();
       Object(_helpers_comments__WEBPACK_IMPORTED_MODULE_9__["setupListeners"])();
+      Object(_helpers_favourites__WEBPACK_IMPORTED_MODULE_10__["setupListeners"])();
       Object(_helpers_ui__WEBPACK_IMPORTED_MODULE_3__["setupListeners"])(); // $('#fullpage_backdrop_content').on('click', Core._resizeWatcher);
     }
   }, {
@@ -3325,17 +3369,25 @@ window.Swimlane = Swimlane;
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* WEBPACK VAR INJECTION */(function($) {/* harmony import */ var _helpers_ui__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../helpers/ui */ "./js/helpers/ui.js");
+/* harmony import */ var _pachno__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./pachno */ "./js/classes/pachno.js");
 function _createForOfIteratorHelper(o, allowArrayLike) { var it; if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = o[Symbol.iterator](); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
 
 function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
 
 function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
 
 
 
@@ -3347,7 +3399,7 @@ var Uploader = /*#__PURE__*/function () {
 
     this.uploader_container = options.uploader_container;
     this.mode = options.mode;
-    this.dropzone = options.dropzone;
+    this.dropzone = options.dropzone || $('#upload_drop_zone');
     this.input_name = options.input_name;
     this.file_upload_list = options.file_upload_list;
     this.only_images = options.only_images;
@@ -3372,11 +3424,14 @@ var Uploader = /*#__PURE__*/function () {
     $body.on('change', '#file_upload_dummy', function (event) {
       return _this.selectFiles(event);
     });
-    this.uploader_container.on('click', '.trigger-file-upload', function (event) {
-      event.preventDefault();
 
-      _this.file_input_element.trigger('click');
-    });
+    if (this.uploader_container !== undefined) {
+      this.uploader_container.on('click', '.trigger-file-upload', function (event) {
+        event.preventDefault();
+
+        _this.file_input_element.trigger('click');
+      });
+    }
   }
 
   _createClass(Uploader, [{
@@ -3434,14 +3489,32 @@ var Uploader = /*#__PURE__*/function () {
         // <label for="project_icon_<?= $index; ?>"><?= image_tag($icon, [], true); ?></label>
 
 
-        var $input_element = $("<input type=\"radio\" name=\"".concat(_this2.input_name, "\">"));
-        var $label_element = $("<label><img class=\"icon_preview\" src=\"\"><i class=\"fa-spin fas fa-circle-notch indicator\"></i></label>");
-        $input_element.insertBefore(_this2.uploader_container.find('.trigger-file-upload'));
-        $label_element.insertBefore(_this2.uploader_container.find('.trigger-file-upload'));
+        var $input_element, $label_element;
+
+        if (_this2.mode === 'grid') {
+          $input_element = $("<input type=\"radio\" name=\"".concat(_this2.input_name, "\">"));
+          $label_element = $("<label><img class=\"icon_preview\" src=\"\"><i class=\"fa-spin fas fa-circle-notch indicator\"></i></label>");
+          $input_element.insertBefore(_this2.uploader_container.find('.file-upload-placeholder'));
+          $label_element.insertBefore(_this2.uploader_container.find('.file-upload-placeholder'));
+        } else if (_this2.mode === 'list') {
+          var link_element;
+
+          if (is_image) {
+            link_element = "<a href=\"javascript:void(0);\" class=\"preview\"><img src=\"\"></a><div class=\"information\">".concat(file.name, "</div>");
+          } else {
+            link_element = "<a href=\"javascript:void(0);\">".concat(_helpers_ui__WEBPACK_IMPORTED_MODULE_0__["default"].fa_image_tag('spinner', {
+              classes: 'fa-spin icon'
+            }), "<span class=\"name\">").concat(file.name, "</span></a>");
+          }
+
+          $label_element = $("<div class=\"attachment\">".concat(link_element, "<div class=\"information\">").concat(fileSize, "</div><div class=\"actions-container\"></div></div>"));
+          $label_element.insertBefore(_this2.uploader_container.find('.file-upload-placeholder'));
+        }
 
         if (is_image) {
           var $image_preview = $label_element.find('img');
           var reader = new FileReader();
+          $label_element.addClass('type-image');
 
           reader.onload = function (e) {
             $image_preview.attr('src', e.target.result);
@@ -3450,50 +3523,54 @@ var Uploader = /*#__PURE__*/function () {
           reader.readAsDataURL(file);
         }
 
-        var formData = new FormData();
-        formData.append(file.name.replace('[', '(').replace(']', ')'), file);
-        formData.append('type', _this2.type);
-        var options = {
-          body: formData,
-          method: 'POST'
+        var file_key = file.name.replace('[', '(').replace(']', ')');
+        var data = {
+          'type': _this2.type
         };
+        data[file_key] = file;
 
         if (_this2.form_data !== undefined) {
           if (_this2.form_data.project_id !== undefined) {
-            formData.append('project_id', _this2.form_data.project_id);
+            data.project_id = _this2.form_data.project_id;
+          }
+
+          if (_this2.form_data.issue_id !== undefined) {
+            data.issue_id = _this2.form_data.issue_id;
+          }
+
+          if (_this2.form_data.article_id !== undefined) {
+            data.article_id = _this2.form_data.article_id;
           }
         }
 
-        fetch(url, options).then(function (_response) {
-          var contentType = _response.headers.get("content-type");
+        var options = {
+          data: data,
+          method: 'POST'
+        };
+        _pachno__WEBPACK_IMPORTED_MODULE_1__["default"].fetch(url, options).then(function (json) {
+          if (json.element !== undefined) {
+            $label_element.replaceWith(json.element);
+            _pachno__WEBPACK_IMPORTED_MODULE_1__["default"].trigger(_pachno__WEBPACK_IMPORTED_MODULE_1__["default"].EVENTS.upload.complete, _objectSpread(_objectSpread({}, _this2.form_data), {}, {
+              mode: _this2.mode
+            }));
+          } else if (_this2.mode === 'grid') {
+            var _data = json.file;
+            $label_element.addClass('confirmed');
+            $label_element.find('.indicator').remove();
+            $input_element.attr('value', _data.id);
+            $input_element.attr('id', "".concat(_this2.input_name, "_").concat(_data.id));
+            $label_element.attr('for', "".concat(_this2.input_name, "_").concat(_data.id));
+          }
 
-          var is_json = contentType && contentType.indexOf("application/json") !== -1;
-          return new Promise(function (_resolve, _reject) {
-            if (_response.ok && is_json) {
-              _response.json().then(function (json) {
-                _resolve(json);
-              });
-            } else {
-              _response.json().then(function (json) {
-                _helpers_ui__WEBPACK_IMPORTED_MODULE_0__["default"].Message.error(json.error, json.message);
-
-                if (options.failure && options.failure.callback) {
-                  options.failure.callback(json);
-                }
-              });
-
-              _reject(_response);
-            }
-          });
-        }).then(function (json, responseText) {
-          var data = json.file;
-          $label_element.addClass('confirmed');
-          $label_element.find('.indicator').remove();
-          $input_element.attr('value', data.id);
-          $input_element.attr('id', "".concat(_this2.input_name, "_").concat(data.id));
-          $label_element.attr('for', "".concat(_this2.input_name, "_").concat(data.id));
           resolve();
         })["catch"](function (error) {
+          _pachno__WEBPACK_IMPORTED_MODULE_1__["default"].UI.Message.error(error);
+          $label_element.remove();
+
+          if (_this2.mode === 'grid') {
+            $input_element.remove();
+          }
+
           reject(error);
         });
       });
@@ -3525,7 +3602,7 @@ var Uploader = /*#__PURE__*/function () {
       }
 
       Promise.all(uploads)["catch"](function (error) {
-        return Pachno.UI.Message.error;
+        return _pachno__WEBPACK_IMPORTED_MODULE_1__["default"].UI.Message.error;
       });
     }
   }]);
@@ -3548,22 +3625,25 @@ window.Uploader = Uploader;
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* WEBPACK VAR INJECTION */(function($) {/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "setupListeners", function() { return setupListeners; });
-/* harmony import */ var _classes_pachno__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../classes/pachno */ "./js/classes/pachno.js");
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "setupListeners", function() { return setupListeners; });
+/* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! jquery */ "./node_modules/jquery/dist/jquery.js");
+/* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(jquery__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _classes_pachno__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../classes/pachno */ "./js/classes/pachno.js");
+
 
 
 var toggleOrder = function toggleOrder(event) {
-  var $element = $(this);
+  var $element = jquery__WEBPACK_IMPORTED_MODULE_0___default()(this);
   var target_type = $element.data('target-type');
   var target_id = $element.data('target-id');
-  _classes_pachno__WEBPACK_IMPORTED_MODULE_0__["default"].fetch(_classes_pachno__WEBPACK_IMPORTED_MODULE_0__["default"].data_url, {
+  _classes_pachno__WEBPACK_IMPORTED_MODULE_1__["default"].fetch(_classes_pachno__WEBPACK_IMPORTED_MODULE_1__["default"].data_url, {
     method: 'POST',
     loading: {
       indicator: '#comments_loading_indicator'
     },
     params: '&say=togglecommentsorder'
   }).then(function () {
-    _classes_pachno__WEBPACK_IMPORTED_MODULE_0__["default"].fetch(_classes_pachno__WEBPACK_IMPORTED_MODULE_0__["default"].data_url, {
+    _classes_pachno__WEBPACK_IMPORTED_MODULE_1__["default"].fetch(_classes_pachno__WEBPACK_IMPORTED_MODULE_1__["default"].data_url, {
       method: 'GET',
       loading: {
         indicator: '#comments_loading_indicator'
@@ -3571,7 +3651,7 @@ var toggleOrder = function toggleOrder(event) {
       params: '&say=loadcomments&target_type=' + target_type + '&target_id=' + target_id,
       success: {
         callback: function callback(json) {
-          $('#comments_box').html(json.comments);
+          jquery__WEBPACK_IMPORTED_MODULE_0___default()('#comments_box').html(json.comments);
         }
       }
     });
@@ -3582,78 +3662,77 @@ var removeComment = function removeComment(PachnoApplication, data) {
   var url = data.url,
       comment_id = data.comment_id,
       commentcount_span = data.commentcount_span;
-  $('#dialog_indicator').show();
-  _classes_pachno__WEBPACK_IMPORTED_MODULE_0__["default"].fetch(url, {
+  jquery__WEBPACK_IMPORTED_MODULE_0___default()('#dialog_indicator').show();
+  _classes_pachno__WEBPACK_IMPORTED_MODULE_1__["default"].fetch(url, {
     method: 'DELETE'
   }).then(function (json) {
-    $('#comment_' + comment_id).remove();
-    _classes_pachno__WEBPACK_IMPORTED_MODULE_0__["default"].UI.Dialog.dismiss();
-    $('#dialog_indicator').hide();
+    jquery__WEBPACK_IMPORTED_MODULE_0___default()('#comment_' + comment_id).remove();
+    _classes_pachno__WEBPACK_IMPORTED_MODULE_1__["default"].UI.Dialog.dismiss();
+    jquery__WEBPACK_IMPORTED_MODULE_0___default()('#dialog_indicator').hide();
 
-    if ($('#comments_box').children().length == 0) {
-      $('#comments-list-none').show();
+    if (jquery__WEBPACK_IMPORTED_MODULE_0___default()('#comments_box').children().length == 0) {
+      jquery__WEBPACK_IMPORTED_MODULE_0___default()('#comments-list-none').show();
     }
 
-    $(commentcount_span).html($('#comments_box').children().length);
+    jquery__WEBPACK_IMPORTED_MODULE_0___default()(commentcount_span).html(jquery__WEBPACK_IMPORTED_MODULE_0___default()('#comments_box').children().length);
   });
 };
 
 var addOrUpdateComment = function addOrUpdateComment(PachnoApplication, data) {
   var json = data.json;
-  var $form = $('#' + data.form);
+  var $form = jquery__WEBPACK_IMPORTED_MODULE_0___default()('#' + data.form);
 
   if ($form.data('comment-id')) {
     var comment_id = $form.data('comment-id'),
-        $comment_container = $('#comment_' + comment_id + '_content');
+        $comment_container = jquery__WEBPACK_IMPORTED_MODULE_0___default()('#comment_' + comment_id + '_content');
     $comment_container.html(json.comment_data);
-    $('#comment_edit_' + comment_id).removeClass('active');
-    $('#comment_' + comment_id + '_body').show();
-    $('#comment_view_' + comment_id).show();
+    jquery__WEBPACK_IMPORTED_MODULE_0___default()('#comment_edit_' + comment_id).removeClass('active');
+    jquery__WEBPACK_IMPORTED_MODULE_0___default()('#comment_' + comment_id + '_body').show();
+    jquery__WEBPACK_IMPORTED_MODULE_0___default()('#comment_view_' + comment_id).show();
   } else if ($form.data('comment-reply-id')) {
     var reply_comment_id = $form.data('comment-reply-id');
-    var $comments_container = $('#comment_' + reply_comment_id + '_replies');
+    var $comments_container = jquery__WEBPACK_IMPORTED_MODULE_0___default()('#comment_' + reply_comment_id + '_replies');
     $comments_container.append(json.comment_data);
     window.location.hash = "#comment_" + json.comment_id;
     $form[0].reset();
-    $('#comment_reply_controls_' + reply_comment_id).show();
-    $('#comment_reply_' + reply_comment_id).removeClass('active');
+    jquery__WEBPACK_IMPORTED_MODULE_0___default()('#comment_reply_controls_' + reply_comment_id).show();
+    jquery__WEBPACK_IMPORTED_MODULE_0___default()('#comment_reply_' + reply_comment_id).removeClass('active');
   } else {
     switch (data.form) {
       case 'add-comment-form':
-        var $count_span = $('#' + $form.data('comment-count-element'));
+        var $count_span = jquery__WEBPACK_IMPORTED_MODULE_0___default()('#' + $form.data('comment-count-element'));
 
-        var _$comments_container = $('#comments_box');
+        var _$comments_container = jquery__WEBPACK_IMPORTED_MODULE_0___default()('#comments_box');
 
         _$comments_container.append(json.comment_data);
 
-        $('#comments-list-none').remove();
+        jquery__WEBPACK_IMPORTED_MODULE_0___default()('#comments-list-none').remove();
         window.location.hash = "#comment_" + json.comment_id;
         $count_span.html(json.commentcount);
         $form[0].reset();
-        $('#comment_add').hide();
+        jquery__WEBPACK_IMPORTED_MODULE_0___default()('#comment_add').hide();
         break;
     }
   }
 };
 
 var showPost = function showPost() {
-  $('.comment-editor').hide();
-  $('#comment_add').show();
-  $('#comment_bodybox').focus();
+  jquery__WEBPACK_IMPORTED_MODULE_0___default()('.comment-editor').hide();
+  jquery__WEBPACK_IMPORTED_MODULE_0___default()('#comment_add').show();
+  jquery__WEBPACK_IMPORTED_MODULE_0___default()('#comment_bodybox').focus();
 };
 
 var setupListeners = function setupListeners() {
-  var $body = $('body');
+  var $body = jquery__WEBPACK_IMPORTED_MODULE_0___default()('body');
   $body.off('click', '.trigger-show-comment-post');
   $body.on('click', '.trigger-show-comment-post', showPost);
   $body.off('click', '.trigger-comment-sort');
   $body.on('click', '.trigger-comment-sort', toggleOrder);
-  _classes_pachno__WEBPACK_IMPORTED_MODULE_0__["default"].on(_classes_pachno__WEBPACK_IMPORTED_MODULE_0__["default"].EVENTS.formSubmitResponse, addOrUpdateComment);
-  _classes_pachno__WEBPACK_IMPORTED_MODULE_0__["default"].on(_classes_pachno__WEBPACK_IMPORTED_MODULE_0__["default"].EVENTS.comment.remove, removeComment);
+  _classes_pachno__WEBPACK_IMPORTED_MODULE_1__["default"].on(_classes_pachno__WEBPACK_IMPORTED_MODULE_1__["default"].EVENTS.formSubmitResponse, addOrUpdateComment);
+  _classes_pachno__WEBPACK_IMPORTED_MODULE_1__["default"].on(_classes_pachno__WEBPACK_IMPORTED_MODULE_1__["default"].EVENTS.comment.remove, removeComment);
 };
 
 
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! jquery */ "./node_modules/jquery/dist/jquery.js")))
 
 /***/ }),
 
@@ -3712,6 +3791,72 @@ var initializeDashboards = function initializeDashboards() {
 
 var setupDashboardListeners = function setupDashboardListeners() {
   jquery__WEBPACK_IMPORTED_MODULE_0___default()('body').on('click', '.dashboard_add_view_container', addViewPopup);
+};
+
+
+
+/***/ }),
+
+/***/ "./js/helpers/favourites.js":
+/*!**********************************!*\
+  !*** ./js/helpers/favourites.js ***!
+  \**********************************/
+/*! exports provided: setupListeners */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "setupListeners", function() { return setupListeners; });
+/* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! jquery */ "./node_modules/jquery/dist/jquery.js");
+/* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(jquery__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _classes_pachno__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../classes/pachno */ "./js/classes/pachno.js");
+
+ // Pachno.Main.toggleFavouriteArticle = function (url, article_id)
+// {
+//     Pachno.Helpers.fetch(url, {
+//         loading: {
+//             indicator: '#article_favourite_indicator_' + article_id,
+//             hide: ['article_favourite_normal_' + article_id, 'article_favourite_faded_' + article_id]
+//         },
+//         success: {
+//             callback: function (json) {
+//                 if ($('#article_favourite_faded_' + article_id)) {
+//                     if (json.starred) {
+//                         $('#article_favourite_faded_' + article_id).hide();
+//                         $('#article_favourite_indicator_' + article_id).hide();
+//                         $('#article_favourite_normal_' + article_id).show();
+//                     } else {
+//                         $('#article_favourite_normal_' + article_id).hide();
+//                         $('#article_favourite_indicator_' + article_id).hide();
+//                         $('#article_favourite_faded_' + article_id).show();
+//                     }
+//                 } else if (json.subscriber != '') {
+//                     $('#subscribers_list').append(json.subscriber);
+//                 }
+//             }
+//         }
+//     });
+// };
+
+var setupListeners = function setupListeners() {
+  var $body = jquery__WEBPACK_IMPORTED_MODULE_0___default()('body');
+  $body.off('click', '.trigger-toggle-favourite');
+  $body.on('click', '.trigger-toggle-favourite', function () {
+    var $element = jquery__WEBPACK_IMPORTED_MODULE_0___default()(this);
+    var url = $element.data('url');
+    $element.addClass('submitting');
+    _classes_pachno__WEBPACK_IMPORTED_MODULE_1__["default"].fetch(url, {
+      method: 'POST'
+    }).then(function (json) {
+      if (json.starred) {
+        $element.addClass('starred');
+      } else {
+        $element.removeClass('starred');
+      }
+
+      $element.removeClass('submitting');
+    });
+  });
 };
 
 
@@ -10156,7 +10301,7 @@ var updateFancyDropdownLabel = function updateFancyDropdownLabel($dropdown) {
 
         if ($value.text() != '') {
           values.push($value.text());
-        } else {
+        } else if ($input.val() != "0") {
           console.error('Could not find a .value for item', $input);
         }
       }

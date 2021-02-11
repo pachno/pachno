@@ -30,6 +30,15 @@
       margin-top: 1.5em;
     }
 
+    .percent_unfilled {
+      height: .6em;
+
+      .percent_filled {
+        display: block;
+        height: 100%;
+      }
+    }
+
     > .header {
       border: none;
       padding: 0;
@@ -42,7 +51,7 @@
       font-size: 1em;
       padding: 0 .25em .75em .75em;
 
-      .name {
+      > .name {
         display: flex;
         align-items: center;
         font-weight: $theme-font-weight-regular;
@@ -52,7 +61,7 @@
         padding: 0;
       }
 
-      .icon {
+      span.icon {
         flex: 0 0 24px;
         display: flex;
         flex-direction: row;
@@ -68,7 +77,7 @@
         }
       }
 
-      .name {
+      > .name {
         flex: 1 1 auto;
         padding: 0;
         font-size: 1.1em;
@@ -210,8 +219,15 @@
             border-radius: 4px;
           }
 
-          &:hover {
-            background-color: rgba(200, 200, 200, 0.1);
+          &.editable {
+            &:hover {
+              cursor: pointer;
+              background-color: rgba(200, 200, 200, 0.1);
+            }
+          }
+
+          .tooltip {
+            bottom: 4.5em;
           }
 
           > .label {

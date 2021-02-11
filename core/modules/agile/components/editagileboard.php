@@ -132,10 +132,13 @@
                                         <span class="value"></span>
                                         <?= fa_image_tag('angle-down', ['class' => 'expander']); ?>
                                         <div class="dropdown-container list-mode">
+                                            <input type="radio" value="0" name="epic_issuetype_id" id="epic_issuetype_id_0" class="fancy-checkbox" <?php if (!$board->getEpicIssuetypeID()) echo 'checked'; ?>>
+                                            <label for="epic_issuetype_id_0" class="list-item">
+                                                <span class="name value"><?php echo __("Don't use epics"); ?></span>
+                                            </label>
                                             <?php foreach ($issuetypes as $issuetype): ?>
                                                 <input type="radio" value="<?php echo $issuetype->getID(); ?>" name="epic_issuetype_id" id="epic_issuetype_id_<?php echo $issuetype->getID(); ?>" class="fancy-checkbox" <?php if ($board->getEpicIssuetypeID() == $issuetype->getID()) echo 'checked'; ?>>
                                                 <label for="epic_issuetype_id_<?php echo $issuetype->getID(); ?>" class="list-item">
-                                                    <?= fa_image_tag('check-circle', ['class' => 'checked'], 'far') . fa_image_tag('circle', ['class' => 'unchecked'], 'far'); ?>
                                                     <?= fa_image_tag($issuetype->getFontAwesomeIcon(), ['class' => 'issuetype-icon issuetype-' . $issuetype->getIcon()]); ?>
                                                     <span class="name value"><?php echo __($issuetype->getName()); ?></span>
                                                 </label>
@@ -212,6 +215,7 @@
                     </div>
                     <div class="row container" id="agileboard-swimlane-details-container">
                         <div class="form-row" id="agileboard_swimlane_<?php echo AgileBoard::SWIMLANES_ISSUES; ?>_container" style="<?php if (!$board->usesSwimlanes() || $board->getSwimlaneType() != AgileBoard::SWIMLANES_ISSUES) echo 'display: none;'; ?>">
+                            <input type="hidden" name="swimlane_<?php echo AgileBoard::SWIMLANES_ISSUES; ?>_identifier" value="issuetype">
                             <div class="helper-text"><span><?php echo __('The whiteboard will have separate swimlanes for all issues that is of a certain type. Specify which issuetype qualifies as a swimlane.'); ?></span></div>
                             <div class="fancy-dropdown-container from-bottom">
                                 <div class="fancy-dropdown" data-default-label="<?php echo __('Choose one or more issue types'); ?>">

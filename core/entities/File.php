@@ -15,6 +15,7 @@
     {
 
         const TYPE_PROJECT_ICON = 'project_icon';
+        const TYPE_ATTACHMENT = 'attachment';
 
         /**
          * @Column(type="string", length=200)
@@ -172,6 +173,9 @@
             return ['image/png', 'image/jpeg', 'image/jpg', 'image/bmp', 'image/gif'];
         }
 
+        /**
+         * @return User
+         */
         public function getUploadedBy()
         {
             return $this->_b2dbLazyLoad('_uid');

@@ -1511,16 +1511,17 @@
             }
 
             if ($user->isIssueStarred($issue_id)) {
-                $retval = !$user->removeStarredIssue($issue_id);
+                $user->removeStarredIssue($issue_id);
+                $starred = false;
             } else {
-                $retval = $user->addStarredIssue($issue_id);
+                $user->addStarredIssue($issue_id);
+                $starred = true;
                 if ($user->getID() != $this->getUser()->getID()) {
                     framework\Event::createNew('core', 'issue_subscribe_user', $issue, compact('user'))->trigger();
                 }
             }
 
-
-            return $this->renderText(json_encode(['starred' => $retval, 'subscriber' => $this->getComponentHTML('main/issuesubscriber', ['user' => $user, 'issue' => $issue]), 'count' => count($issue->getSubscribers())]));
+            return $this->renderText(json_encode(['starred' => $starred, 'subscriber' => $this->getComponentHTML('main/issuesubscriber', ['user' => $user, 'issue' => $issue]), 'count' => count($issue->getSubscribers())]));
         }
 
         public function runIssueDeleteTimeSpent(Request $request)
@@ -2157,7 +2158,6 @@
                 $_SESSION['upload_files'] = [];
             }
 
-            $files = [];
             $files_dir = Settings::getUploadsLocalpath();
 
             foreach ($request->getUploadedFiles() as $key => $file) {
@@ -2181,90 +2181,32 @@
                     $saved_file->setContentType($content_type);
                     $saved_file->setType($request['type']);
                     $saved_file->setProject($request['project_id']);
+                    $saved_file->setUploadedBy($this->getUser());
                     if (Settings::getUploadStorage() == 'database') {
                         $saved_file->setContent(file_get_contents($filename));
                     }
                     $saved_file->save();
 
-                    return $this->renderJSON(['file' => $saved_file->toJSON()]);
+                    $json = ['file' => $saved_file->toJSON()];
+                    if ($request['issue_id']) {
+                        $issue = Issues::getTable()->selectById($request['issue_id']);
+                        if ($issue instanceof Issue && $issue->hasAccess() && $issue->canAttachFiles()) {
+                            $issue->attachFile($saved_file);
+                            $json['element'] = $this->getComponentHTML('main/attachedfile', array('mode' => 'issue', 'issue' => $issue, 'file' => $saved_file));
+                        }
+                    } elseif ($request['article_id']) {
+                        $article = tables\Articles::getTable()->selectById($request['article_id']);
+                        if ($article instanceof entities\Article && $article->canEdit()) {
+                            $article->attachFile($saved_file);
+                            $json['element'] = $this->getComponentHTML('main/attachedfile', array('mode' => 'article', 'article' => $article, 'file' => $saved_file));
+                        }
+                    }
+
+                    return $this->renderJSON($json);
                 }
             }
 
             return $this->renderJSON(['error' => $this->getI18n()->__('An error occurred when uploading the file')]);
-        }
-
-        public function runUpload(Request $request)
-        {
-            $apc_exists = Request::CanGetUploadStatus();
-            if ($apc_exists && !$request['APC_UPLOAD_PROGRESS']) {
-                $request->setParameter('APC_UPLOAD_PROGRESS', $request['upload_id']);
-            }
-            $this->getResponse()->setDecoration(Response::DECORATE_NONE);
-
-            $canupload = false;
-
-            if ($request['mode'] == 'issue') {
-                $issue = Issues::getTable()->selectById($request['issue_id']);
-                $canupload = (bool)($issue instanceof Issue && $issue->hasAccess() && $issue->canAttachFiles());
-            } elseif ($request['mode'] == 'article') {
-                $article = entities\Article::getByName($request['article_name']);
-                $canupload = (bool)($article instanceof entities\Article && $article->canEdit());
-            } else {
-                $event = framework\Event::createNew('core', 'upload', $request['mode']);
-                $event->triggerUntilProcessed();
-
-                $canupload = ($event->isProcessed()) ? (bool)$event->getReturnValue() : true;
-            }
-
-            if ($canupload) {
-                try {
-                    $file = framework\Context::getRequest()->handleUpload('uploader_file');
-                    if ($file instanceof entities\File) {
-                        switch ($request['mode']) {
-                            case 'issue':
-                                if (!$issue instanceof Issue)
-                                    break;
-                                $issue->attachFile($file, $request->getRawParameter('comment'), $request['uploader_file_description']);
-                                $issue->save();
-                                break;
-                            case 'article':
-                                if (!$article instanceof entities\Article)
-                                    break;
-
-                                $article->attachFile($file);
-                                break;
-                        }
-                        if ($apc_exists)
-                            return $this->renderText('ok');
-                    }
-                    $this->error = framework\Context::getI18n()->__('An unhandled error occured with the upload');
-                } catch (Exception $e) {
-                    $this->getResponse()->setHttpStatus(400);
-                    $this->error = $e->getMessage();
-                }
-            } else {
-                $this->error = framework\Context::getI18n()->__('You are not allowed to attach files here');
-            }
-            if (!$apc_exists) {
-                switch ($request['mode']) {
-                    case 'issue':
-                        if (!$issue instanceof Issue)
-                            break;
-
-                        $this->forward($this->getRouting()->generate('viewissue', ['project_key' => $issue->getProject()->getKey(), 'issue_no' => $issue->getFormattedIssueNo()]));
-                        break;
-                    case 'article':
-                        if (!$article instanceof entities\Article)
-                            break;
-
-                        $this->forward($this->getRouting()->generate('publish_article_attachments', ['article_name' => $article->getName()]));
-                        break;
-                }
-            }
-            framework\Logging::log('marking upload ' . $request['APC_UPLOAD_PROGRESS'] . ' as completed with error ' . $this->error);
-            $request->markUploadAsFinishedWithError($request['APC_UPLOAD_PROGRESS'], $this->error);
-
-            return $this->renderText($request['APC_UPLOAD_PROGRESS'] . ': ' . $this->error);
         }
 
         public function runDetachFile(Request $request)
@@ -2274,24 +2216,24 @@
                 switch ($request['mode']) {
                     case 'issue':
                         $issue = Issues::getTable()->selectById($request['issue_id']);
-                        if ($issue instanceof Issue && $issue->canRemoveAttachments() && (int)$request->getParameter('file_id', 0)) {
+                        if ($issue instanceof Issue && $file instanceof entities\File && $issue->canRemoveAttachment($this->getUser(), $file)) {
                             $issue->detachFile($file);
 
-                            return $this->renderJSON(['file_id' => $request['file_id'], 'attachmentcount' => (count($issue->getFiles()) + count($issue->getLinks())), 'message' => framework\Context::getI18n()->__('The attachment has been removed')]);
+                            return $this->renderJSON(['file_id' => $request['file_id'], 'message' => framework\Context::getI18n()->__('The attachment has been removed'), 'issue' => $issue->toJSON()]);
                         }
                         $this->getResponse()->setHttpStatus(400);
 
                         return $this->renderJSON(['error' => framework\Context::getI18n()->__('You can not remove items from this issue')]);
                     case 'article':
-                        $article = entities\Article::getByName($request['article_name']);
-                        if ($article instanceof entities\Article && $article->canEdit() && (int)$request->getParameter('file_id', 0)) {
+                        $article = tables\Articles::getTable()->selectById($request['article_id']);
+                        if ($article instanceof entities\Article && $file instanceof entities\File && $article->canEdit()) {
                             $article->detachFile($file);
 
-                            return $this->renderJSON(['file_id' => $request['file_id'], 'attachmentcount' => count($article->getFiles()), 'message' => framework\Context::getI18n()->__('The attachment has been removed')]);
+                            return $this->renderJSON(['file_id' => $request['file_id'], 'attachments' => count($article->getFiles()), 'message' => framework\Context::getI18n()->__('The attachment has been removed')]);
                         }
                         $this->getResponse()->setHttpStatus(400);
 
-                        return $this->renderJSON(['error' => framework\Context::getI18n()->__('You can not remove items from this issue')]);
+                        return $this->renderJSON(['error' => framework\Context::getI18n()->__('You can not remove items from this article')]);
                 }
             } catch (Exception $e) {
                 $this->getResponse()->setHttpStatus(400);

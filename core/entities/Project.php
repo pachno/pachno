@@ -639,16 +639,15 @@
 
             $final = [];
             foreach (self::$_projects as $project) {
-                if ($archived === null && !$project->hasParent()) {
+                if ($project->hasParent())
+                    continue;
+
+                if ($archived === null) {
                     $final[] = $project;
-                } elseif ($archived === true) {
-                    if ($project->isArchived()) {
-                        $final[] = $project;
-                    }
-                } elseif ($archived === false) {
-                    if (!$project->hasParent() && !$project->isArchived()) {
-                        $final[] = $project;
-                    }
+                } elseif ($archived === true && $project->isArchived()) {
+                    $final[] = $project;
+                } elseif ($archived === false && !$project->isArchived()) {
+                    $final[] = $project;
                 }
             }
 

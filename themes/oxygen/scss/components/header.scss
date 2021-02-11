@@ -163,13 +163,13 @@ header {
       }
     }
 
-    .toggle-favourite {
-      margin-left: .35em;
+    .toggle-favourite-container {
+      margin-left: 1.15em;
 
-      button {
+      button, .toggle-favourite {
         &,
         &:hover {
-          font-size: .75em;
+          font-size: .85em;
         }
       }
     }

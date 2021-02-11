@@ -148,11 +148,7 @@
             $query->where(self::ISSUE_ID, $issue_id);
             $query->where(self::FILE_ID, $file_id);
             $query->where(self::SCOPE, framework\Context::getScope()->getID());
-            if ($res = $this->rawSelectOne($query)) {
-                $this->rawDelete($query);
-            }
-
-            return $res;
+            $this->rawDelete($query);
         }
 
         protected function initialize()

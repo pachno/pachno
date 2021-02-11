@@ -17,4 +17,18 @@
   + span {
     margin-left: .35em;
   }
+
+  .indicator {
+    display: none;
+  }
+
+  &.submitting {
+    > span:not(.indicator) {
+      display: none;
+    }
+
+    .indicator {
+      display: inline-block;
+    }
+  }
 }

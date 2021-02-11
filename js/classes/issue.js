@@ -56,9 +56,9 @@ class Issue {
         this.title = json.title;
         this.percent_complete = json.percent_complete;
 
-        this.number_of_files = json.number_of_files;
-        this.number_of_comments = json.number_of_comments;
-        this.number_of_subscribers = json.number_of_subscribers;
+        this.number_of_files = parseInt(json.number_of_files);
+        this.number_of_comments = parseInt(json.number_of_comments);
+        this.number_of_subscribers = parseInt(json.number_of_subscribers);
 
         this.processed = false;
     }
@@ -76,8 +76,8 @@ class Issue {
                     }
                 })
                 .then((json) => {
-                    Pachno.trigger(Pachno.EVENTS.issueUpdateDone, {id: issue.id});
-                    Pachno.trigger(Pachno.EVENTS.issueUpdateJson, {json: json.issue});
+                    Pachno.trigger(Pachno.EVENTS.issue.updateDone, {id: issue.id});
+                    Pachno.trigger(Pachno.EVENTS.issue.updateJson, {json: json.issue});
 
                     resolve();
                 });
@@ -146,21 +146,43 @@ class Issue {
             $container_element.removeClass('force-visible');
         });
 
-        Pachno.on(Pachno.EVENTS.issueTriggerEdit, function (PachnoApplication, data) {
+        Pachno.on(Pachno.EVENTS.issue.triggerEdit, function (PachnoApplication, data) {
             if (data.issue_id != issue.id)
                 return;
 
             issue.triggerEditField(data.field);
         });
 
-        Pachno.on(Pachno.EVENTS.issueTriggerUpdate, function (PachnoApplication, data) {
+        Pachno.on(Pachno.EVENTS.issue.removeFile, function (PachnoApplication, data) {
+            if (data.issue_id != issue.id)
+                return;
+
+            $(`[data-attachment][data-file-id="${data.file_id}"]`).remove();
+            Pachno.UI.Dialog.dismiss();
+
+            Pachno.fetch(data.url, { method: 'DELETE' })
+                .then((json) => {
+                    issue.updateFromJson(json.issue);
+                    issue.updateVisibleValues();
+                })
+        });
+
+        Pachno.on(Pachno.EVENTS.upload.complete, function (PachnoApplication, data) {
+            if (data.issue_id != issue.id)
+                return;
+
+            issue.number_of_files += 1;
+            issue.updateVisibleValues();
+        });
+
+        Pachno.on(Pachno.EVENTS.issue.triggerUpdate, function (PachnoApplication, data) {
             if (data.issue_id != issue.id)
                 return;
 
             issue.postAndUpdate(data.field, data.value);
         });
 
-        Pachno.on(Pachno.EVENTS.issueLoadDynamicChoices, function (PachnoApplication, field) {
+        Pachno.on(Pachno.EVENTS.issue.loadDynamicChoices, function (PachnoApplication, field) {
             return new Promise((resolve, reject) => {
                 Pachno.fetch(issue.choices_url, {
                     data: `field=${field}`
@@ -175,7 +197,7 @@ class Issue {
                             shortcut: `set ${field} ${index}`,
                             name: choice.name,
                             type: QuicksearchTypes.event,
-                            event: Pachno.EVENTS.issueTriggerUpdate,
+                            event: Pachno.EVENTS.issue.triggerUpdate,
                             event_value: { field, value: choice.id, issue_id: issue.id }
                         })
                         index += 1;
@@ -186,7 +208,7 @@ class Issue {
             });
         });
 
-        Pachno.on(Pachno.EVENTS.issueUpdateJson, function (PachnoApplication, data) {
+        Pachno.on(Pachno.EVENTS.issue.updateJson, function (PachnoApplication, data) {
             if (data.json.id != issue.id) {
                 return
             }
@@ -238,17 +260,17 @@ class Issue {
 
                     if (['title', 'reproduction_steps', 'description'].includes(field_key)) {
                         field_choice.type = QuicksearchTypes.event;
-                        field_choice.event = Pachno.EVENTS.issueTriggerEdit;
+                        field_choice.event = Pachno.EVENTS.issue.triggerEdit;
                         field_choice.event_value = { field: field_key, issue_id: this.id };
                     } else if (field_key === 'votes') {
                         field_choice.name = 'Vote / unvote';
                         field_choice.description = 'Toggle your vote for this issue';
                         field_choice.type = QuicksearchTypes.event;
-                        field_choice.event = Pachno.EVENTS.issueTriggerUpdate;
+                        field_choice.event = Pachno.EVENTS.issue.triggerUpdate;
                         field_choice.event_value = { field: field_key, value: 1, issue_id: this.id }
                     } else {
                         field_choice.type = QuicksearchTypes.dynamic_choices;
-                        field_choice.event = Pachno.EVENTS.issueLoadDynamicChoices;
+                        field_choice.event = Pachno.EVENTS.issue.loadDynamicChoices;
                         field_choice.event_value = field_key;
                     }
                     break;
@@ -261,7 +283,7 @@ class Issue {
                 case FIELD_TYPES.STATUS_CHOICE:
                     field_choice.icon = { name: 'list-alt', type: 'fas' };
                     field_choice.type = QuicksearchTypes.dynamic_choices;
-                    field_choice.event = Pachno.EVENTS.issueLoadDynamicChoices;
+                    field_choice.event = Pachno.EVENTS.issue.loadDynamicChoices;
                     field_choice.event_value = field_key;
                     break;
             }
@@ -274,12 +296,10 @@ class Issue {
 
     updateVisibleValues(json) {
         const $value_fields = $(`[data-dynamic-field-value][data-issue-id=${this.id}]`);
-        const visible_fields = json.visible_fields;
-        const fields = json.fields;
 
-        for (const element in $value_fields) {
-            const $element = $(element);
-            const field = $element.data('field');
+        for (const element of $value_fields) {
+            let $element = $(element);
+            let field = $element.data('field');
             let $value_input;
 
             if (!this[field]) {
@@ -319,27 +339,32 @@ class Issue {
                 case 'number_of_subscribers':
                     $element.html(this.number_of_subscribers);
                     break;
+                case 'number_of_files':
+                    $element.html(this.number_of_files);
+                    break;
                 case 'percent_complete':
                     $($element.find('.percent_filled')).css({ width: this.percent_complete + '%'});
                     break;
             }
         }
 
-        for (const field in fields) {
-            if (!fields.hasOwnProperty(field))
-                continue;
+        if (json !== undefined) {
+            for (const field in json.fields) {
+                if (!json.fields.hasOwnProperty(field))
+                    continue;
 
-            const $field = $(`#${field}_field`);
-            if (!$field.length) {
-                continue;
-            }
+                const $field = $(`#${field}_field`);
+                if (!$field.length) {
+                    continue;
+                }
 
-            if (visible_fields.hasOwnProperty(field) || (this[field] !== undefined && this[field] !== null && this[field] !== "")) {
-                $field.removeClass('hidden');
-                $field.removeClass('not-visible');
-            } else {
-                $field.addClass('hidden');
-                $field.addClass('not-visible');
+                if (json.visible_fields.hasOwnProperty(field) || (this[field] !== undefined && this[field] !== null && this[field] !== "")) {
+                    $field.removeClass('hidden');
+                    $field.removeClass('not-visible');
+                } else {
+                    $field.addClass('hidden');
+                    $field.addClass('not-visible');
+                }
             }
         }
     }

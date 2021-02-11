@@ -10,6 +10,7 @@
     .workflow-actions-container {
       font-size: .75em;
       margin-right: auto;
+      padding-left: .5em;
     }
 
     span {
@@ -28,7 +29,7 @@
       }
     }
 
-    @include workflow-actions-container(flex-end);
+    @include workflow-actions-container(flex-start);
 
     .dropper-container {
       margin-right: 0.35em;
@@ -237,21 +238,28 @@
       }
     }
 
-    .form-row#issue-card-issuefields-container {
-      padding: 0;
-      margin-top: .5em;
+    .fields-list-container {
+      flex: 1 1 auto;
 
-      .form-row {
-        padding: 0;
-      }
+      li {
+        &.issue-field {
+          display: flex;
 
-      .fields-list-container {
-        flex: 1 1 auto;
-      }
+          &.hidden {
+            display: none;
+          }
 
-      .fields-list {
-        li {
-          max-width: none;
+          .fancy-dropdown-container {
+            flex: 1 1 auto;
+
+            .fancy-dropdown {
+              border-radius: 0;
+            }
+          }
+        }
+
+        .field-container {
+          border-radius: 0;
         }
       }
     }

@@ -585,11 +585,11 @@
                     case self::SWIMLANES_ISSUES:
                         $issues = ($milestone instanceof Milestone) ? $milestone->getIssues() : $this->getBacklogSearchObject()->getIssues();
                         foreach ($issues as $issue) {
-                            if ($issue->isChildIssue()) {
-                                foreach ($issue->getParentIssues() as $parent) {
-                                    if ($parent->getIssueType()->getID() != $this->getEpicIssuetypeID()) continue 2;
-                                }
-                            }
+                            if ($issue->isChildIssue())
+                                continue;
+
+                            if ($issue->getIssueType()->getID() == $this->getEpicIssuetypeID())
+                                continue;
 
                             if (in_array($issue->getIssueType()->getID(), $this->getSwimlaneFieldValues())) {
                                 $swimlanes[] = ['identifiables' => $issue];

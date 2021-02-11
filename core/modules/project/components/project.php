@@ -47,7 +47,7 @@
         <?php endif; ?>
     </nav>
 </div>
-<?php if ($project->hasChildren()): ?>
+<?php if ($include_subprojects && $project->hasChildren()): ?>
     <div class="subprojects-list">
         <h5><?= __('Subprojects'); ?></h5>
         <div class="configurable-components-list">

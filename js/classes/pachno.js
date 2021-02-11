@@ -8,6 +8,7 @@ import profileSetupListeners from "../helpers/profile";
 import {initializeDashboards} from "../helpers/dashboard";
 import {setupListeners as issueSetupListeners} from "../helpers/issues";
 import {setupListeners as commentSetupListeners} from "../helpers/comments";
+import {setupListeners as favouriteSetupListeners} from "../helpers/favourites";
 import Board from "./board";
 import Search from "./search";
 import Issuereporter from "./issuereporter";
@@ -24,15 +25,24 @@ class PachnoApplication {
     get EVENTS() {
         return {
             ready: 'pachno-ready',
+            article: {
+                removeFile: 'article-remove-file',
+            },
             formSubmit: 'form-submit',
             formSubmitResponse: 'form-submit-response',
             formSubmitError: 'form-submit-error',
-            issueUpdate: 'issue-update',
-            issueTriggerUpdate: 'issue-trigger-update',
-            issueTriggerEdit: 'issue-trigger-edit',
-            issueUpdateDone: 'issue-update-done',
-            issueUpdateJson: 'issue-update-json',
-            issueLoadDynamicChoices: 'issue-load-dynamic-choices',
+            issue: {
+                removeFile: 'issue-remove-file',
+                update: 'issue-update',
+                triggerUpdate: 'issue-trigger-update',
+                triggerEdit: 'issue-trigger-edit',
+                updateDone: 'issue-update-done',
+                updateJson: 'issue-update-json',
+                loadDynamicChoices: 'issue-load-dynamic-choices',
+            },
+            upload: {
+                complete: 'upload-complete',
+            },
             quicksearchTrigger: 'quicksearch-trigger',
             quicksearchAddDefaultChoice: 'quicksearch-add-default-choice',
             quicksearchUpdateChoices: 'quicksearch-update-choices',
@@ -147,6 +157,7 @@ class PachnoApplication {
         profileSetupListeners();
         issueSetupListeners();
         commentSetupListeners();
+        favouriteSetupListeners();
         uiSetupListeners();
         // $('#fullpage_backdrop_content').on('click', Core._resizeWatcher);
     }

@@ -1095,7 +1095,7 @@
         public function addStarredIssue($issue_id)
         {
             $this->_populateStarredIssues();
-            if ($this->isLoggedIn() && !$this->isGuest()) {
+            if (!$this->isGuest()) {
                 if (array_key_exists($issue_id, $this->_starredissues))
                     return true;
 

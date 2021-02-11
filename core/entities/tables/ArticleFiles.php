@@ -95,11 +95,7 @@
             $query->where(self::ARTICLE_ID, $article_id);
             $query->where(self::FILE_ID, $file_id);
             $query->where(self::SCOPE, framework\Context::getScope()->getID());
-            if ($res = $this->rawSelectOne($query)) {
-                $this->rawDelete($query);
-            }
-
-            return $res;
+            $this->rawDelete($query);
         }
 
         public function deleteFilesByArticleID($article_id)

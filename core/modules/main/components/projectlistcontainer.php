@@ -6,7 +6,7 @@
 <?php if ($project_count > 0): ?>
     <div class="project-list">
         <?php foreach ($projects as $project): ?>
-            <?php include_component('project/project', compact('project')); ?>
+            <?php include_component('project/project', ['project' => $project, 'include_subprojects' => true]); ?>
         <?php endforeach; ?>
     </div>
     <?php if ($pagination->getTotalPages() > 1): ?>

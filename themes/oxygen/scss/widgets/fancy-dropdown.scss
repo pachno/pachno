@@ -82,6 +82,10 @@
       font-size: .9em;
       text-transform: uppercase;
       margin-right: .5em;
+
+      .locked {
+        display: none;
+      }
     }
 
     > .value {
@@ -223,5 +227,20 @@
       }
     }
   }
+}
 
+.form-row.locked {
+  .fancy-dropdown {
+    &,
+    &:hover {
+      border: 2px solid $theme-primary-color;
+    }
+
+    label,
+    .label {
+      .locked {
+        display: inline-block;
+      }
+    }
+  }
 }

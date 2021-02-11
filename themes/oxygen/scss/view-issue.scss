@@ -59,6 +59,11 @@
         align-items: center;
         box-sizing: border-box;
         padding: 1em;
+
+        .tooltip.from-above {
+          top: 5em;
+          left: 1em;
+        }
       }
 
       .title-container {
@@ -343,31 +348,6 @@
         }
       }
 
-      .attached-items {
-        list-style: none;
-        padding: 0;
-        margin: 5px 0 0 0;
-
-        a.downloadlink,
-        a.downloadlink:hover {
-          display: inline-block;
-          font-size: 1em;
-          width: 303px;
-          vertical-align: middle;
-          overflow: hidden;
-          text-overflow: ellipsis;
-          padding: 0 5px 0 0;
-          text-decoration: none;
-          border: none;
-
-          img {
-            display: inline-block;
-            vertical-align: middle;
-            margin-right: 5px;
-          }
-        }
-      }
-
       .fields-list {
         display: flex;
         flex-direction: row;
@@ -418,15 +398,6 @@
 
         & + .fields-list-container:not(.not-visible) {
           margin-top: 2em;
-        }
-
-        .percent_unfilled {
-          height: .6em;
-
-          .percent_filled {
-            display: block;
-            height: 100%;
-          }
         }
       }
 

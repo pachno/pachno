@@ -416,7 +416,7 @@
         /**
          * Toggle favourite article (starring)
          *
-         * @Route(name="toggle_favourite_article", url="/docs/:article_id/:user_id")
+         * @Route(name="toggle_favourite_article", url="/toggle_favourite_article/:article_id/:user_id")
          * @param Request $request
          */
         public function runToggleFavouriteArticle(Request $request)
@@ -453,15 +453,17 @@
             }
 
             if ($user->isArticleStarred($article_id)) {
-                $retval = !$user->removeStarredArticle($article_id);
+                $user->removeStarredArticle($article_id);
+                $starred = false;
             } else {
-                $retval = $user->addStarredArticle($article_id);
+                $user->addStarredArticle($article_id);
+                $starred = true;
                 if ($user->getID() != $this->getUser()->getID()) {
                     framework\Event::createNew('core', 'article_subscribe_user', $article, compact('user'))->trigger();
                 }
             }
 
-            return $this->renderText(json_encode(['starred' => $retval, 'subscriber' => $this->getComponentHTML('publish/articlesubscriber', ['user' => $user, 'article' => $article])]));
+            return $this->renderJSON(['starred' => $starred, 'subscriber' => $this->getComponentHTML('publish/articlesubscriber', ['user' => $user, 'article' => $article])]);
         }
 
         protected function _getArticleNameDetails($article_name)

@@ -61,13 +61,13 @@
             </div>
         <?php endif; ?>
         <?php if ($article->getID()): ?>
-            <?php $attachments = array_reverse($article->getFiles()); ?>
+            <?php $attachments = $article->getFiles(); ?>
             <div id="article_attachments">
                 <h4>
                     <?= fa_image_tag('paperclip', ['class' => 'icon']); ?>
                     <span class="name">
                         <span><?php echo __('Attachments'); ?></span>
-                        <span class="count-badge"><?= count($attachments); ?></span>
+                        <span class="count-badge" id="article-attachments-count"><?= count($attachments); ?></span>
                     </span>
                     <?php if ($article->canEdit()): ?>
                         <button class="button secondary trigger-file-upload">
@@ -78,6 +78,12 @@
                     <?php endif; ?>
                 </h4>
                 <?php include_component('publish/attachments', ['article' => $article, 'attachments' => $attachments]); ?>
+            </div>
+            <div class="upload-container fixed-position hidden" id="upload_drop_zone">
+                <div class="wrapper">
+                    <span class="image-container"><?= image_tag('/unthemed/icon-upload.png', [], true); ?></span>
+                    <span class="message"><?= $message ?? __('Drop the file to upload it'); ?></span>
+                </div>
             </div>
             <div id="article_comments">
                 <h4>
@@ -101,9 +107,44 @@
             </div>
         <?php endif; ?>
     </div>
-    <?php if (\pachno\core\framework\Settings::isUploadsEnabled() && $article->canEdit()): ?>
-        <?php include_component('main/uploader'); ?>
-    <?php endif; ?>
+    <script type="text/javascript">
+        Pachno.on(Pachno.EVENTS.ready, function () {
+            const article = <?= json_encode($article->toJSON()); ?>;
+            <?php if (\pachno\core\framework\Settings::isUploadsEnabled() && $article->canEdit()): ?>
+                const uploader = new Uploader({
+                    uploader_container: $('#article_attachments'),
+                    mode: 'list',
+                    only_images: false,
+                    type: '<?= \pachno\core\entities\File::TYPE_ATTACHMENT; ?>',
+                    data: {
+                        article_id: <?= $article->getID(); ?>
+                    }
+                });
+            <?php endif; ?>
+
+            Pachno.on(Pachno.EVENTS.article.removeFile, function (PachnoApplication, data) {
+                if (data.article_id != article.id)
+                    return;
+
+                $(`[data-attachment][data-file-id="${data.file_id}"]`).remove();
+                Pachno.UI.Dialog.dismiss();
+
+                Pachno.fetch(data.url, { method: 'DELETE' })
+                    .then((json) => {
+                        $('#article-attachments-count').html(json.attachments);
+                    })
+            });
+
+            Pachno.on(Pachno.EVENTS.upload.complete, function (PachnoApplication, data) {
+                if (data.article_id != article.id)
+                    return;
+
+                const count = parseInt($('#article-attachments-count').html());
+                $('#article-attachments-count').html(count + 1);
+            });
+
+        });
+    </script>
 <?php else: ?>
     <div class="redbox" id="notfound_error">
         <div class="header"><?php echo __("This article can not be displayed"); ?></div>

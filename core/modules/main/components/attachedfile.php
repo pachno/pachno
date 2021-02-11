@@ -1,14 +1,24 @@
 <?php
 
+    use pachno\core\entities\User;
+
+    /**
+     * @var \pachno\core\entities\Issue $issue
+     * @var \pachno\core\entities\Article $article
+     * @var \pachno\core\entities\File $file
+     * @var \pachno\core\entities\User $pachno_user
+     */
+
     $can_remove = false;
-    if ($mode == 'issue' && $issue->canRemoveAttachments())
+    if ($mode == 'issue' && $issue->canRemoveAttachment($pachno_user, $file)) {
         $can_remove = true;
-    if ($mode == 'article' && $article->canEdit())
+    } elseif ($mode == 'article' && ($article->canEdit() || ($article->getProject() instanceof \pachno\core\entities\Project && $pachno_user->canManageProject($article->getProject())) || ($file->getUploadedBy() instanceof User && $file->getUploadedBy()->getID() === $pachno_user->getID()))) {
         $can_remove = true;
+    }
 
 ?>
 <?php if ($file instanceof \pachno\core\entities\File): ?>
-    <div id="<?php echo $base_id . '_' . $file_id; ?>" class="attachment <?php if ($file->isImage()) echo 'type-image'; ?>">
+    <div id="attachment_<?= $file_id; ?>" class="attachment <?php if ($file->isImage()) echo 'type-image'; ?>" data-attachment data-file-id="<?= $file->getId(); ?>">
         <?php if ($file->isImage()): ?>
             <a href="<?php echo make_url('showfile', array('id' => $file_id)); ?>" target="_new" class="preview" title="<?php echo $file->getOriginalFilename(); ?>"><?php echo image_tag(make_url('showfile', array('id' => $file_id)), [], true); ?></a>
             <div class="information">
@@ -29,13 +39,13 @@
                 <?php //echo ($file->hasDescription()) ? $file->getDescription() : $file->getOriginalFilename(); ?>
             </a>
             <?php if ($file->isImage()): ?>
-                <?php echo javascript_link_tag(fa_image_tag('code'), ['onclick' => "Pachno.UI.Dialog.showModal('".__('Embedding this file in descriptions or comments')."', '".__('Use this tag to include this image: [[Image:%filename|thumb|Image description]]', ['%filename' => $file->getRealFilename()])."');", 'class' => 'button icon secondary']); ?>
+                <?php echo javascript_link_tag(fa_image_tag('code'), ['onclick' => "Pachno.UI.Dialog.showModal('" . __('Embedding this file in descriptions or comments') . "', '" . __('Use this tag to include this image: [[Image:%filename|thumb|Image description]]', ['%filename' => $file->getRealFilename()]) . "');", 'class' => 'button icon secondary']); ?>
             <?php endif; ?>
             <?php if ($can_remove): ?>
                 <?php if ($mode == 'issue'): ?>
-                    <?php echo javascript_link_tag(fa_image_tag('times', ['class' => 'icon']), ['onclick' => "Pachno.UI.Dialog.show('".__('Do you really want to detach this file?')."', '".__('If you detach this file, it will be deleted. This action cannot be undone. Are you sure you want to remove this file?')."', {yes: {click: function() {Pachno.Issues.File.remove('".make_url('issue_detach_file', ['issue_id' => $issue->getID(), 'file_id' => $file_id])."', ".$file_id."); }}, no: { click: Pachno.UI.Dialog.dismiss }});", 'class' => 'button secondary icon remove-button']); ?>
+                    <?php echo javascript_link_tag(fa_image_tag('times', ['class' => 'icon']), ['onclick' => "Pachno.UI.Dialog.show('" . __('Do you really want to detach this file?') . "', '" . __('If you detach this file, it will be deleted. This action cannot be undone. Are you sure you want to remove this file?') . "', {yes: {click: function() { Pachno.trigger(Pachno.EVENTS.issue.removeFile, { url: '" . make_url('issue_detach_file', ['issue_id' => $issue->getID(), 'file_id' => $file_id]) . "', file_id: " . $file_id . ", issue_id: " . $issue->getId() . "}); }}, no: { click: Pachno.UI.Dialog.dismiss }});", 'class' => 'button secondary icon remove-button']); ?>
                 <?php elseif ($mode == 'article'): ?>
-                    <?php echo javascript_link_tag(fa_image_tag('times', ['class' => 'icon']), ['onclick' => "Pachno.UI.Dialog.show('".__('Do you really want to detach this file?')."', '".__('If you detach this file, it will be deleted. This action cannot be undone. Are you sure you want to remove this file?')."', {yes: {click: function() {Pachno.Main.detachFileFromArticle('".make_url('article_detach_file', ['article_name' => $article->getName(), 'file_id' => $file_id])."', ".$file_id.", ".$article->getID()."); }}, no: { click: Pachno.UI.Dialog.dismiss }});", 'class' => 'button secondary icon remove-button']); ?>
+                    <?php echo javascript_link_tag(fa_image_tag('times', ['class' => 'icon']), ['onclick' => "Pachno.UI.Dialog.show('" . __('Do you really want to detach this file?') . "', '" . __('If you detach this file, it will be deleted. This action cannot be undone. Are you sure you want to remove this file?') . "', {yes: {click: function() { Pachno.trigger(Pachno.EVENTS.article.removeFile, { url: '" . make_url('article_detach_file', ['article_id' => $article->getID(), 'file_id' => $file_id]) . "', file_id: " . $file_id . ", article_id: " . $article->getID() . "}); }}, no: { click: Pachno.UI.Dialog.dismiss }});", 'class' => 'button secondary icon remove-button']); ?>
                 <?php endif; ?>
             <?php endif; ?>
         </div>

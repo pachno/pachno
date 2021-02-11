@@ -8,6 +8,7 @@
   box-sizing: border-box;
   flex-wrap: wrap;
   font-size: 1em;
+  align-items: flex-start;
 
   &:empty {
     margin-bottom: 3em;
@@ -74,6 +75,7 @@
       justify-content: flex-start;
       font-size: .85em;
       padding: 0 .35em;
+      font-weight: $theme-font-weight-light;
     }
 
     .actions-container {

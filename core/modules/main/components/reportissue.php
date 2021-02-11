@@ -96,37 +96,6 @@ use pachno\core\framework\Settings;
             <div class="form-row content-with-sidebar-container">
                 <div class="content">
                     <input type="hidden" name="project_id" id="project_id" value="<?= $selected_project->getID(); ?>">
-                    <?php if (isset($selected_milestone) || isset($selected_build) || isset($parent_issue)): ?>
-                        <div class="message-box type-info">
-                            <div class="message">
-                                <?php if (isset($selected_milestone)): ?>
-                                    <?= __('You are adding an issue to %milestone_name', array('%milestone_name' => '<b>' . $selected_milestone->getName() . '</b>')); ?>
-                                    <input type="hidden" name="milestone_id" id="reportissue_selected_milestone_id"
-                                           value="<?= $selected_milestone->getID(); ?>">
-                                    <input type="hidden" name="milestone_fixed" value="1">
-                                <?php endif; ?>
-                                <?php if (isset($parent_issue)): ?>
-                                    <?= __('Issues you create will be child issues of %related_issue_title', array('%related_issue_title' => '<b>' . $parent_issue->getFormattedTitle() . '</b>')); ?>
-                                    <input type="hidden" name="parent_issue_id" id="reportissue_parent_issue_id"
-                                           value="<?= $parent_issue->getID(); ?>">
-                                <?php if ($issue instanceof Issue): ?>
-                                    <script>
-                                        //require(['domReady', 'pachno/index'], function (domReady, Pachno) {
-                                        //    domReady(function () {
-                                        //        Pachno.Issues.refreshRelatedIssues('<?//= make_url('viewissue_related_issues', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $parent_issue->getID())); ?>//');
-                                        //    });
-                                        //});
-                                    </script>
-                                <?php endif; ?>
-                                <?php endif; ?>
-                                <?php if (isset($selected_build)): ?>
-                                    <?= __('You are adding an issue to release %release_name', array('%release_name' => '<b>' . $selected_build->getName() . '</b>')); ?>
-                                    <input type="hidden" name="build_id" id="reportissue_selected_build_id"
-                                           value="<?= $selected_build->getID(); ?>">
-                                <?php endif; ?>
-                            </div>
-                        </div>
-                    <?php endif; ?>
                     <?php if (count($issuetypes) > 0): ?>
                         <?php if ($reporthelparticle instanceof Article): ?>
                             <?php include_component('publish/articledisplay', array('article' => $reporthelparticle, 'show_title' => false, 'show_details' => false, 'show_actions' => false, 'embedded' => true)); ?>
@@ -502,37 +471,38 @@ use pachno\core\framework\Settings;
                                 </div>
                             </div>
                         </div>
-                        <?php if (!isset($selected_milestone)): ?>
-                            <div class="form-row hidden additional_information <?php if (array_key_exists('milestone', $errors)): ?>invalid<?php endif; ?>"
-                                 id="milestone_div">
-                                <div class="fancy-dropdown-container">
-                                    <div class="fancy-dropdown" data-default-label="<?= __('Not selected'); ?>">
-                                        <label id="milestone_label"><?php echo __('Select milestone'); ?></label>
-                                        <span class="value"></span>
-                                        <?= fa_image_tag('angle-down', ['class' => 'expander']); ?>
-                                        <div class="dropdown-container list-mode">
-                                            <input type="radio" value="" name="milestone_id"
-                                                   id="report_issue_milestone_id_0"
-                                                   class="fancy-checkbox" <?php if (!$selected_milestone instanceof Milestone) echo ' checked'; ?>>
-                                            <label for="report_issue_milestone_id_0" class="list-item">
-                                                <span class="name value"><?= __('Not selected'); ?></span>
+                        <div class="form-row hidden <?php if ($selected_milestone instanceof Milestone) echo ' locked'; ?> additional_information <?php if (array_key_exists('milestone', $errors)): ?>invalid<?php endif; ?>"
+                             id="milestone_div">
+                            <div class="fancy-dropdown-container">
+                                <div class="fancy-dropdown" data-default-label="<?= __('Not selected'); ?>">
+                                    <label id="milestone_label">
+                                        <span><?php echo __('Select milestone'); ?></span>
+                                        <?= fa_image_tag('lock', ['class' => 'icon locked']); ?>
+                                    </label>
+                                    <span class="value"></span>
+                                    <?= fa_image_tag('angle-down', ['class' => 'expander']); ?>
+                                    <div class="dropdown-container list-mode">
+                                        <input type="radio" value="" name="milestone_id"
+                                               id="report_issue_milestone_id_0"
+                                               class="fancy-checkbox" <?php if (!$selected_milestone instanceof Milestone) echo ' checked'; ?>>
+                                        <label for="report_issue_milestone_id_0" class="list-item">
+                                            <span class="name value"><?= __('Not selected'); ?></span>
+                                        </label>
+                                        <?php foreach ($milestones as $milestone): ?>
+                                            <?php if ((!$selected_milestone instanceof Milestone || $selected_milestone->getID() !== $milestone->getID()) && $milestone->isClosed()) continue; ?>
+                                            <input type="radio" value="<?php echo $milestone->getID(); ?>"
+                                                   name="milestone_id"
+                                                   id="report_issue_milestone_id_<?php echo $milestone->getID(); ?>"
+                                                   class="fancy-checkbox" <?php if ($selected_milestone instanceof Milestone && $selected_milestone->getID() == $milestone->getID()) echo ' checked'; ?>>
+                                            <label for="report_issue_milestone_id_<?php echo $milestone->getID(); ?>"
+                                                   class="list-item">
+                                                <span class="name value"><?php echo __($milestone->getName()); ?></span>
                                             </label>
-                                            <?php foreach ($milestones as $milestone): ?>
-                                                <?php if ($milestone->isClosed()) continue; ?>
-                                                <input type="radio" value="<?php echo $milestone->getID(); ?>"
-                                                       name="milestone_id"
-                                                       id="report_issue_milestone_id_<?php echo $milestone->getID(); ?>"
-                                                       class="fancy-checkbox" <?php if ($selected_milestone instanceof Milestone && $selected_milestone->getID() == $milestone->getID()) echo ' checked'; ?>>
-                                                <label for="report_issue_milestone_id_<?php echo $milestone->getID(); ?>"
-                                                       class="list-item">
-                                                    <span class="name value"><?php echo __($milestone->getName()); ?></span>
-                                                </label>
-                                            <?php endforeach; ?>
-                                        </div>
+                                        <?php endforeach; ?>
                                     </div>
                                 </div>
                             </div>
-                        <?php endif; ?>
+                        </div>
                         <?php /*<table id="pain_bug_type_div" style="display: none;" class="additional_information<?php if (array_key_exists('pain_bug_type', $errors)): ?> reportissue_error<?php endif; ?>">
                             <tr>
                                 <td style="width: 180px;"><label for="pain_bug_type_id" id="pain_bug_type_label"><span>* </span><?= __('Triaging: Bug type'); ?></label></td>

@@ -24,7 +24,7 @@
                             <input type="radio" name="file_id" value="<?= $icon->getID(); ?>" id="project_icon_file_<?= $icon->getID(); ?>" <?php if ($project->getIcon() instanceof \pachno\core\entities\File && $project->getIcon()->getID() == $icon->getID()) echo ' checked'; ?>>
                             <label for="project_icon_file_<?= $icon->getID(); ?>"><?= image_tag($icon->getURL(), [], true); ?></label>
                         <?php endforeach; ?>
-                        <label class="trigger-file-upload button secondary"><?= fa_image_tag('upload', ['class' => 'icon']); ?><span class="name"><?= __('Add icon'); ?></span></label>
+                        <label class="trigger-file-upload file-upload-placeholder button secondary"><?= fa_image_tag('upload', ['class' => 'icon']); ?><span class="name"><?= __('Add icon'); ?></span></label>
                     </div>
                 </div>
                 <div class="form-row submit-container">

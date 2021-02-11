@@ -135,32 +135,32 @@
                 $this->statuses = ($this->project->useStrictWorkflowMode()) ? $this->project->getAvailableStatuses() : $this->issue->getAvailableStatuses();
                 $this->issuetypes = $this->project->getIssuetypeScheme()->getIssuetypes();
                 $fields_list = [];
-                $fields_list['category'] = ['title' => $i18n->__('Category'), 'fa_icon' => 'chart-pie', 'fa_icon_style' => 'fas', 'choices' => [], 'visible' => $this->issue->isCategoryVisible(), 'value' => (($this->issue->getCategory() instanceof entities\Category) ? $this->issue->getCategory()->getId() : 0), 'icon' => false, 'change_tip' => $i18n->__('Click to change category'), 'change_header' => $i18n->__('Change category'), 'clear' => $i18n->__('Clear the category'), 'select' => $i18n->__('%clear_the_category or click to select a new category', ['%clear_the_category' => ''])];
+                $fields_list['category'] = ['title' => $i18n->__('Category'), 'fa_icon' => 'chart-pie', 'fa_icon_style' => 'fas', 'choices' => [], 'visible' => $this->issue->isCategoryVisible(), 'value' => (($this->issue->getCategory() instanceof entities\Category) ? $this->issue->getCategory()->getId() : 0), 'icon' => false, 'change_tip' => $i18n->__('Click to change category'), 'change_header' => $i18n->__('Change category'), 'clear' => $i18n->__('No category selected'), 'select' => $i18n->__('%clear_the_category or click to select a new category', ['%clear_the_category' => ''])];
 
                 if ($this->issue->isUpdateable() && $this->issue->canEditCategory()) {
                     $fields_list['category']['choices'] = entities\Category::getAll();
                 }
 
-                $fields_list['resolution'] = ['title' => $i18n->__('Resolution'), 'choices' => [], 'visible' => $this->issue->isResolutionVisible(), 'value' => (($this->issue->getResolution() instanceof entities\Resolution) ? $this->issue->getResolution()->getId() : 0), 'icon' => false, 'change_tip' => $i18n->__('Click to change resolution'), 'change_header' => $i18n->__('Change resolution'), 'clear' => $i18n->__('Clear the resolution'), 'select' => $i18n->__('%clear_the_resolution or click to select a new resolution', ['%clear_the_resolution' => ''])];
+                $fields_list['resolution'] = ['title' => $i18n->__('Resolution'), 'choices' => [], 'visible' => $this->issue->isResolutionVisible(), 'value' => (($this->issue->getResolution() instanceof entities\Resolution) ? $this->issue->getResolution()->getId() : 0), 'icon' => false, 'change_tip' => $i18n->__('Click to change resolution'), 'change_header' => $i18n->__('Change resolution'), 'clear' => $i18n->__('No resolution selected'), 'select' => $i18n->__('%clear_the_resolution or click to select a new resolution', ['%clear_the_resolution' => ''])];
 
                 if ($this->issue->isUpdateable() && $this->issue->canEditResolution()) {
                     $fields_list['resolution']['choices'] = entities\Resolution::getAll();
                 }
 
                 $has_priority = $this->issue->getPriority() instanceof entities\Priority;
-                $fields_list['priority'] = ['title' => $i18n->__('Priority'), 'choices' => [], 'visible' => $this->issue->isPriorityVisible(), 'extra_classes' => (($has_priority) ? 'priority_' . $this->issue->getPriority()->getItemdata() : ''), 'value' => (($has_priority) ? $this->issue->getPriority()->getId() : 0), 'fa_icon' => (($has_priority) ? $this->issue->getPriority()->getFontAwesomeIcon() : ''), 'fa_icon_style' => (($has_priority) ? $this->issue->getPriority()->getFontAwesomeIconStyle() : ''), 'icon' => false, 'change_tip' => $i18n->__('Click to change priority'), 'change_header' => $i18n->__('Change priority'), 'clear' => $i18n->__('Clear the priority'), 'select' => $i18n->__('%clear_the_priority or click to select a new priority', ['%clear_the_priority' => ''])];
+                $fields_list['priority'] = ['title' => $i18n->__('Priority'), 'choices' => [], 'visible' => $this->issue->isPriorityVisible(), 'extra_classes' => (($has_priority) ? 'priority_' . $this->issue->getPriority()->getItemdata() : ''), 'value' => (($has_priority) ? $this->issue->getPriority()->getId() : 0), 'fa_icon' => (($has_priority) ? $this->issue->getPriority()->getFontAwesomeIcon() : ''), 'fa_icon_style' => (($has_priority) ? $this->issue->getPriority()->getFontAwesomeIconStyle() : ''), 'icon' => false, 'change_tip' => $i18n->__('Click to change priority'), 'change_header' => $i18n->__('Change priority'), 'clear' => $i18n->__('No priority selected'), 'select' => $i18n->__('%clear_the_priority or click to select a new priority', ['%clear_the_priority' => ''])];
 
                 if ($this->issue->isUpdateable() && $this->issue->canEditPriority()) {
                     $fields_list['priority']['choices'] = entities\Priority::getAll();
                 }
 
-                $fields_list['reproducability'] = ['title' => $i18n->__('Reproducability'), 'choices' => [], 'visible' => $this->issue->isReproducabilityVisible(), 'value' => (($this->issue->getReproducability() instanceof entities\Reproducability) ? $this->issue->getReproducability()->getId() : 0), 'icon' => false, 'change_tip' => $i18n->__('Click to change reproducability'), 'change_header' => $i18n->__('Change reproducability'), 'clear' => $i18n->__('Clear the reproducability'), 'select' => $i18n->__('%clear_the_reproducability or click to select a new reproducability', ['%clear_the_reproducability' => ''])];
+                $fields_list['reproducability'] = ['title' => $i18n->__('Reproducability'), 'choices' => [], 'visible' => $this->issue->isReproducabilityVisible(), 'value' => (($this->issue->getReproducability() instanceof entities\Reproducability) ? $this->issue->getReproducability()->getId() : 0), 'icon' => false, 'change_tip' => $i18n->__('Click to change reproducability'), 'change_header' => $i18n->__('Change reproducability'), 'clear' => $i18n->__('No reproducability selected'), 'select' => $i18n->__('%clear_the_reproducability or click to select a new reproducability', ['%clear_the_reproducability' => ''])];
 
                 if ($this->issue->isUpdateable() && $this->issue->canEditReproducability()) {
                     $fields_list['reproducability']['choices'] = entities\Reproducability::getAll();
                 }
 
-                $fields_list['severity'] = ['title' => $i18n->__('Severity'), 'choices' => [], 'visible' => $this->issue->isSeverityVisible(), 'value' => (($this->issue->getSeverity() instanceof entities\Severity) ? $this->issue->getSeverity()->getId() : 0), 'icon' => false, 'change_tip' => $i18n->__('Click to change severity'), 'change_header' => $i18n->__('Change severity'), 'clear' => $i18n->__('Clear the severity'), 'select' => $i18n->__('%clear_the_severity or click to select a new severity', ['%clear_the_severity' => ''])];
+                $fields_list['severity'] = ['title' => $i18n->__('Severity'), 'choices' => [], 'visible' => $this->issue->isSeverityVisible(), 'value' => (($this->issue->getSeverity() instanceof entities\Severity) ? $this->issue->getSeverity()->getId() : 0), 'icon' => false, 'change_tip' => $i18n->__('Click to change severity'), 'change_header' => $i18n->__('Change severity'), 'clear' => $i18n->__('No severity selected'), 'select' => $i18n->__('%clear_the_severity or click to select a new severity', ['%clear_the_severity' => ''])];
 
                 if ($this->issue->isUpdateable() && $this->issue->canEditSeverity()) {
                     $fields_list['severity']['choices'] = entities\Severity::getAll();

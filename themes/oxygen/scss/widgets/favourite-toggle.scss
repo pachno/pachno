@@ -5,7 +5,7 @@
     justify-content: flex-start;
     position: relative;
 
-    .indicator { display: none; }
+    .indicator { flex: 0 0 25px; box-sizing: border-box; display: none; font-size: 1.5em; }
 
     &.submitting {
         .indicator { display: inline-block; }
@@ -14,6 +14,8 @@
 
     .subscribed,
     .unsubscribed {
+        flex: 0 0 25px;
+        box-sizing: border-box;
         display: inline-block;
         font-size: 1.5em;
     }

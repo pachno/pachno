@@ -93,7 +93,7 @@ use pachno\core\framework\Context;
         <?php endif; ?>
     <?php endif; ?>
     <?php if ($article->getID()): ?>
-        <div class="toggle-favourite">
+        <div class="toggle-favourite-container tooltip-container">
             <?php if ($pachno_user->isGuest()): ?>
                 <button class="button secondary disabled" disabled>
                     <?= fa_image_tag('star', ['class' => 'unsubscribed']); ?>
@@ -106,12 +106,7 @@ use pachno\core\framework\Context;
                     <?= __('Click the star to toggle whether you want to be notified whenever this article updates or changes'); ?><br>
                 </div>
                 <?= fa_image_tag('spinner', array('id' => 'article_favourite_indicator_'.$article->getId(), 'style' => 'display: none;', 'class' => 'fa-spin')); ?>
-                <button class="button icon secondary" id="article_favourite_faded_<?= $article->getId(); ?>" style="<?= ($pachno_user->isArticleStarred($article->getID())) ? 'display: none;' : ''; ?>" onclick="Pachno.Main.toggleFavouriteArticle('<?= make_url('publish_toggle_favourite_article', ['article_id' => $article->getID(), 'user_id' => $pachno_user->getID()]); ?>', <?= $article->getID(); ?>);">
-                    <?= fa_image_tag('star', ['class' => 'unsubscribed']); ?>
-                </button>
-                <button class="button icon secondary" id="article_favourite_normal_<?= $article->getId(); ?>" style="<?= (!$pachno_user->isArticleStarred($article->getID())) ? 'display: none;' : ''; ?>" onclick="Pachno.Main.toggleFavouriteArticle('<?= make_url('publish_toggle_favourite_article', ['article_id' => $article->getID(), 'user_id' => $pachno_user->getID()]); ?>', <?= $article->getID(); ?>);">
-                    <?= fa_image_tag('star', ['class' => 'subscribed']); ?>
-                </button>
+                <?php include_component('main/favouritetoggle', ['url' => make_url('publish_toggle_favourite_article', ['article_id' => $article->getID(), 'user_id' => $pachno_user->getID()]), 'include_user' => false, 'starred' => $pachno_user->isArticleStarred($article->getID())]); ?>
             <?php endif; ?>
         </div>
         <div class="dropper-container">

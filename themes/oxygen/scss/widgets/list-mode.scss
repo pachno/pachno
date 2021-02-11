@@ -476,7 +476,8 @@
     &:hover {
       transform: rotate(0);
       cursor: pointer;
-      padding: 10px;
+      padding: .3em .5em .3em 1em;
+      border-radius: 0 4px 4px 0;
     }
   }
 
@@ -497,6 +498,7 @@
     &:not(button) .expander {
       transform: rotate(180deg);
       color: $theme-secondary-color;
+      padding: .3em 1em .3em .5em;
     }
 
     & + .expandable-menu {
@@ -627,13 +629,16 @@
     .icon {
       color: $theme-text-color-lightest;
       flex: 0 0 auto;
-      padding: .35em;
       margin: 0 .35em;
       align-self: center;
       text-align: center;
       display: flex;
       align-items: center;
       justify-content: center;
+
+      &:not(.expander) {
+        padding: .35em;
+      }
 
       &,
       &:hover {

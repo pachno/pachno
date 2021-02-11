@@ -33,6 +33,7 @@
 </div>
 <script>
     Pachno.on(Pachno.EVENTS.ready, function () {
+        return;
         const $upload_drop_zone = $('#upload_drop_zone');
         const $file_upload_list = $('#file_upload_list');
         const $upload_status_container = $('#upload_status_container');

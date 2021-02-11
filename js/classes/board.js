@@ -202,7 +202,7 @@ class Board {
                     header_name += `<a class="issue-number" href="${swimlane.identifier_issue.href}">${swimlane.identifier_issue.issue_no}</a>`;
                     header_name += `<span class="name issue_header ${closed_class}">${swimlane.identifier_issue.title}</span>`;
                     header_name += '</span>';
-                    header_name += `<button class="button secondary highlight button-report-issue trigger-backdrop" data-url="${this.report_issue_url}" data-additional-params="parent_issue_id=${swimlane.identifier_issue.id}">${Pachno.T.agile.add_card_here}</button>`
+                    header_name += `<button class="button secondary highlight trigger-report-issue trigger-backdrop" data-url="${this.report_issue_url}" data-additional-params="parent_issue_id=${swimlane.identifier_issue.id}">${Pachno.T.agile.add_card_here}</button>`
                 } else {
                     header_name = `<span class="name">${swimlane.name}</span>`;
                 }
@@ -239,7 +239,7 @@ class Board {
                                 <div class="row">
                                     <div class="form name">
                                         <div class="form-row">
-                                            <span class="input invisible button-report-issue" data-status-ids="${status_ids}">
+                                            <span class="input invisible trigger-report-issue" data-status-ids="${status_ids}">
                                                 <span class="placeholder">${UI.fa_image_tag('plus')}<span>${Pachno.T.agile.add_card}</span></span>
                                             </span>
                                         </div>
