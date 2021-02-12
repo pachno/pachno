@@ -9,6 +9,7 @@ import {initializeDashboards} from "../helpers/dashboard";
 import {setupListeners as issueSetupListeners} from "../helpers/issues";
 import {setupListeners as commentSetupListeners} from "../helpers/comments";
 import {setupListeners as favouriteSetupListeners} from "../helpers/favourites";
+import {setupListeners as agileSetupListeners} from "../helpers/agile";
 import Board from "./board";
 import Search from "./search";
 import Issuereporter from "./issuereporter";
@@ -25,8 +26,14 @@ class PachnoApplication {
     get EVENTS() {
         return {
             ready: 'pachno-ready',
+            agile: {
+                deleteBoard: 'agile-delete-board',
+            },
             article: {
                 removeFile: 'article-remove-file',
+            },
+            configuration: {
+                deleteComponent: 'configuration-delete-component',
             },
             formSubmit: 'form-submit',
             formSubmitResponse: 'form-submit-response',
@@ -152,13 +159,14 @@ class PachnoApplication {
     setupListeners() {
         // $(window).on('resize', Core._resizeWatcher);
         // $(document).on('keydown', Core._escapeWatcher);
-        widgetSetupListeners();
-        formSetupListeners();
-        profileSetupListeners();
-        issueSetupListeners();
+        agileSetupListeners();
         commentSetupListeners();
         favouriteSetupListeners();
+        formSetupListeners();
+        issueSetupListeners();
+        profileSetupListeners();
         uiSetupListeners();
+        widgetSetupListeners();
         // $('#fullpage_backdrop_content').on('click', Core._resizeWatcher);
     }
 

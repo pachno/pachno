@@ -1,7 +1,8 @@
 {
   "agile": {
     "add_card": "Add card",
-    "add_card_here": "Add card here"
+    "add_card_here": "Add card",
+    "add_swimlane": "Add a swimlane"
   },
   "issue": {
     "value_not_set": "Not determined",

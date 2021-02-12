@@ -102,7 +102,7 @@
       }
     }
 
-    &.no-value > .value {
+    &:not(.locked).no-value > .value {
       color: #C8C8C8;
     }
 
@@ -233,13 +233,14 @@
   .fancy-dropdown {
     &,
     &:hover {
-      border: 2px solid $theme-primary-color;
+      //border: 2px solid $theme-primary-color;
     }
 
     label,
     .label {
       .locked {
         display: inline-block;
+        margin-left: .35em;
       }
     }
   }

@@ -319,6 +319,18 @@
         + span {
           margin-left: .35rem;
         }
+
+        &.required-indicator {
+          display: none;
+        }
+      }
+
+      &.required {
+        font-weight: $theme-font-weight-heavy;
+
+        .required-indicator {
+          display: inline-flex;
+        }
       }
 
       a,
@@ -391,8 +403,8 @@
       }
 
       &.name-input-enhance {
-        font-size: 1.25em;
-        padding: .5em .2em;
+        font-size: 1.4em;
+        padding: .5em .3em;
         font-weight: $theme-font-weight-regular;
 
         &:not(.invisible) {

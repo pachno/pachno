@@ -14,13 +14,13 @@
                 <?php include_component('agile/boardbox', compact('board')); ?>
             <?php endforeach; ?>
         </div>
-        <div id="onboarding-no-boards" class="onboarding" style="<?php if (count($project_boards) + count($user_boards)) echo 'display: none;'; ?>">
+        <div id="onboarding-no-boards" class="onboarding <?php if (count($project_boards) + count($user_boards)) echo 'hidden'; ?>">
             <div class="image-container">
                 <?= image_tag('/unthemed/no-boards.png', [], true); ?>
             </div>
             <div class="helper-text">
-                <?= __('Understand the full picture'); ?><br>
-                <?= __('Boards let you organize issues and tasks the way you want'); ?>
+                <span class="title"><?= __('Understand the full picture'); ?></span>
+                <span><?= __('Boards let you organize issues and tasks the way you want'); ?></span>
             </div>
         </div>
     </div>

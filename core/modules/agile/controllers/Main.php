@@ -169,7 +169,7 @@
                 $board_id = $this->board->getID();
                 $this->board->delete();
 
-                return $this->renderJSON(['message' => $this->getI18n()->__('The board has been deleted'), 'board_id' => $board_id]);
+                return $this->renderJSON(['message' => $this->getI18n()->__('The board has been deleted'), 'board' => ['id' => $board_id]]);
             } elseif ($request->isPost()) {
                 if ($request->hasParameter('name')) {
                     $this->board->setName($request['name']);

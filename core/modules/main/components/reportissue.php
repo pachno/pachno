@@ -1,39 +1,41 @@
 <?php
 
-use \pachno\core\entities;
-use pachno\core\entities\Article;
-use pachno\core\entities\Build;
-use pachno\core\entities\Category;
-use pachno\core\entities\Client;
-use pachno\core\entities\Component;
-use pachno\core\entities\CustomDatatype;
-use pachno\core\entities\CustomDatatypeOption;
-use pachno\core\entities\Datatype;
-use pachno\core\entities\Edition;
-use pachno\core\entities\Issue;
-use pachno\core\entities\Issuetype;
-use pachno\core\entities\Milestone;
-use pachno\core\entities\Priority;
-use pachno\core\entities\Project;
-use pachno\core\entities\Reproducability;
-use pachno\core\entities\Resolution;
-use pachno\core\entities\Severity;
-use pachno\core\entities\Status;
-use pachno\core\entities\Team;
-use pachno\core\framework\Context;
-use pachno\core\framework\Event;
-use pachno\core\framework\Settings;
+    use \pachno\core\entities;
+    use pachno\core\entities\Article;
+    use pachno\core\entities\Build;
+    use pachno\core\entities\Category;
+    use pachno\core\entities\Client;
+    use pachno\core\entities\Component;
+    use pachno\core\entities\CustomDatatype;
+    use pachno\core\entities\CustomDatatypeOption;
+    use pachno\core\entities\Datatype;
+    use pachno\core\entities\Edition;
+    use pachno\core\entities\Issue;
+    use pachno\core\entities\Issuetype;
+    use pachno\core\entities\Milestone;
+    use pachno\core\entities\Priority;
+    use pachno\core\entities\Project;
+    use pachno\core\entities\Reproducability;
+    use pachno\core\entities\Resolution;
+    use pachno\core\entities\Severity;
+    use pachno\core\entities\Status;
+    use pachno\core\entities\Team;
+    use pachno\core\framework\Context;
+    use pachno\core\framework\Event;
+    use pachno\core\framework\Settings;
 
-/**
- * @var string[][] $errors
- * @var string[][] $permission_errors
- * @var Issuetype[] $issuetypes
- * @var Milestone[] $milestones
- * @var Milestone $selected_milestone
- * @var Issue $issue
- * @var Issuetype[] $issuetypes
- * @var Issuetype $selected_issuetype
- */
+    /**
+     * @var string[][] $errors
+     * @var string[][] $permission_errors
+     * @var Issuetype[] $issuetypes
+     * @var Milestone[] $milestones
+     * @var Milestone $selected_milestone
+     * @var Issue $issue
+     * @var Issue $parent_issue
+     * @var Issuetype[] $issuetypes
+     * @var Issuetype $selected_issuetype
+     * @var entities\AgileBoard $board
+     */
 
 ?>
 <div class="form-container">
@@ -55,19 +57,25 @@ use pachno\core\framework\Settings;
         <?php if (count($issuetypes) > 0): ?>
             <div class="form-row" id="issuetype_list">
                 <div class="list-mode">
-                    <?php if ($introarticle instanceof Article): ?>
-                        <?php include_component('publish/articledisplay', array('article' => $introarticle, 'show_title' => false, 'show_details' => false, 'show_actions' => false, 'embedded' => true)); ?>
-                    <?php endif; ?>
                     <?php foreach ($issuetypes as $issuetype): ?>
+                        <?php if ($parent_issue instanceof Issue && $issuetype->getID() === $parent_issue->getIssueType()->getID()) continue; ?>
                         <?php if (!$selected_project->getIssuetypeScheme()->isIssuetypeReportable($issuetype)) continue; ?>
                         <?php if (isset($board) && $issuetype->getID() == $board->getEpicIssuetypeID()) continue; ?>
-                        <a class="list-item multiline" data-key="<?= $issuetype->getKey(); ?>"
-                           data-id="<?= $issuetype->getID(); ?>" href="javascript:void(0);">
+                        <?php if (isset($selected_issuetype) && $selected_issuetype instanceof Issuetype && $issuetype->getID() !== $selected_issuetype->getID()) continue; ?>
+                        <a class="list-item multiline" data-key="<?= $issuetype->getKey(); ?>" data-id="<?= $issuetype->getID(); ?>" href="javascript:void(0);">
                             <?= fa_image_tag($issuetype->getFontAwesomeIcon(), ['class' => 'icon issuetype-icon issuetype-' . $issuetype->getType()]); ?>
                             <span class="name">
                                 <span class="title"><?= __('Create a new %issuetype_name', array('%issuetype_name' => $issuetype->getName())); ?></span>
                                 <span class="description"><?= $issuetype->getDescription(); ?></span>
                             </span>
+                            <?php if (isset($board) && $board->isIssuetypeSwimlaneIdentifier($issuetype)): ?>
+                                <span class="icon tooltip-container">
+                                    <?= fa_image_tag('stream', ['class' => 'icon']); ?>
+                                    <span class="tooltip from-right">
+                                        <?= __('Issues with this issue type will become swimlanes on the current board'); ?>
+                                    </span>
+                                </span>
+                            <?php endif; ?>
                         </a>
                     <?php endforeach; ?>
                 </div>
@@ -88,39 +96,43 @@ use pachno\core\framework\Settings;
             </div>
         </div>
     </div>
-    <div class="form-container hidden" id="report_form"
-         data-fields-url="<?= make_url('getreportissuefields', array('project_key' => $selected_project->getKey())); ?>">
-        <form action="<?= make_url('project_reportissue', array('project_key' => $selected_project->getKey())); ?>"
-              method="post" accept-charset="<?= Context::getI18n()->getCharset(); ?>" id="report_issue_form"
-              data-simple-submit>
+    <div class="form-container <?php if (!$selected_issuetype instanceof Issuetype) echo 'hidden'; ?>" id="report_form" data-fields-url="<?= make_url('getreportissuefields', array('project_key' => $selected_project->getKey())); ?>">
+        <form action="<?= make_url('project_reportissue', array('project_key' => $selected_project->getKey())); ?>" method="post" accept-charset="<?= Context::getI18n()->getCharset(); ?>" id="report_issue_form" data-simple-submit>
             <div class="form-row content-with-sidebar-container">
                 <div class="content">
                     <input type="hidden" name="project_id" id="project_id" value="<?= $selected_project->getID(); ?>">
                     <?php if (count($issuetypes) > 0): ?>
-                        <?php if ($reporthelparticle instanceof Article): ?>
-                            <?php include_component('publish/articledisplay', array('article' => $reporthelparticle, 'show_title' => false, 'show_details' => false, 'show_actions' => false, 'embedded' => true)); ?>
-                        <?php endif; ?>
-                        <div class="form-row">
+                        <div class="form-row <?php if (isset($selected_issuetype) && $selected_issuetype instanceof Issuetype) echo 'locked'; ?>">
                             <div class="fancy-dropdown-container">
                                 <div class="fancy-dropdown" data-default-label="<?= __('Select an issue type'); ?>">
-                                    <label><?= __('Issue type'); ?></label>
+                                    <label>
+                                        <span><?= __('Issue type'); ?></span>
+                                        <?= fa_image_tag('lock', ['class' => 'icon locked']); ?>
+                                    </label>
                                     <span class="value"></span>
                                     <?php if (!isset($locked_issuetype) || !$locked_issuetype): ?>
                                         <?= fa_image_tag('angle-down', ['class' => 'expander']); ?>
                                         <div class="dropdown-container list-mode">
                                             <?php foreach ($issuetypes as $issuetype): ?>
+                                                <?php if ($parent_issue instanceof Issue && $issuetype->getID() === $parent_issue->getIssueType()->getID()) continue; ?>
                                                 <?php if (!$selected_project->getIssuetypeScheme()->isIssuetypeReportable($issuetype)) continue; ?>
-                                                <input type="radio" class="fancy-checkbox report-issue-type-selector"
-                                                       id="report_issue_issue_type_<?= $issuetype->getId(); ?>"
-                                                       name="issuetype_id"
-                                                       value="<?= $issuetype->getId(); ?>" <?php if ($selected_issuetype instanceof Issuetype && $selected_issuetype->getID() == $issuetype->getID()) echo 'checked'; ?>>
-                                                <label for="report_issue_issue_type_<?= $issuetype->getId(); ?>"
-                                                       class="list-item multiline">
+                                                <?php if (isset($board) && $issuetype->getID() == $board->getEpicIssuetypeID()) continue; ?>
+                                                <?php if (isset($selected_issuetype) && $selected_issuetype instanceof Issuetype && $issuetype->getID() !== $selected_issuetype->getID()) continue; ?>
+                                                <input type="radio" class="fancy-checkbox report-issue-type-selector" id="report_issue_issue_type_<?= $issuetype->getId(); ?>" name="issuetype_id" value="<?= $issuetype->getId(); ?>" <?php if ($selected_issuetype instanceof Issuetype && $selected_issuetype->getID() == $issuetype->getID()) echo 'checked'; ?>>
+                                                <label for="report_issue_issue_type_<?= $issuetype->getId(); ?>" class="list-item multiline">
                                                     <span class="icon"><?= fa_image_tag($issuetype->getFontAwesomeIcon(), ['class' => 'issuetype-icon issuetype-' . $issuetype->getIcon()]); ?></span>
                                                     <span class="name">
-                                                    <span class="title value"><?= $issuetype->getName(); ?></span>
-                                                    <span class="description"><?= $issuetype->getDescription(); ?></span>
-                                                </span>
+                                                        <span class="title value"><?= $issuetype->getName(); ?></span>
+                                                        <span class="description"><?= $issuetype->getDescription(); ?></span>
+                                                    </span>
+                                                    <?php if (isset($board) && $board->isIssuetypeSwimlaneIdentifier($issuetype)): ?>
+                                                        <span class="icon tooltip-container">
+                                                            <?= fa_image_tag('stream', ['class' => 'icon']); ?>
+                                                            <span class="tooltip from-right">
+                                                                <?= __('Issues with this issue type will become swimlanes on the current board'); ?>
+                                                            </span>
+                                                        </span>
+                                                    <?php endif; ?>
                                                 </label>
                                             <?php endforeach; ?>
                                         </div>
@@ -130,47 +142,20 @@ use pachno\core\framework\Settings;
                         </div>
                         <div class="form-row <?php if (array_key_exists('title', $errors)): ?> invalid<?php endif; ?>">
                             <input type="text" name="title" id="report_issue_title_input" class="name-input-enhance"
-                                   value="<?php if (isset($title) && trim($title) != '') echo htmlspecialchars($title); ?>"
-                                   placeholder="<?= __('Enter a short, but descriptive summary of the issue here'); ?>">
+                                   value="<?php if (isset($title) && trim($title) != '') echo htmlspecialchars($title); ?>" placeholder="<?= __('Enter a short, but descriptive summary of the issue here'); ?>">
                             <label for="report_issue_title_input"
                                    class="required">
                                 <span><?= __('Short summary'); ?></span>
-                                <span>* </span>
+                                <span class="required-indicator">* </span>
                             </label>
-                        </div>
-                        <div class="form-row hidden additional_information" id="status_div">
-                            <div class="fancy-dropdown-container">
-                                <div class="fancy-dropdown" data-default-label="<?= __('Not selected'); ?>">
-                                    <label id="status_label"><?php echo __('Select initial status'); ?></label>
-                                    <span class="value"></span>
-                                    <?= fa_image_tag('angle-down', ['class' => 'expander']); ?>
-                                    <div class="dropdown-container list-mode">
-                                        <?php foreach ($statuses as $status): ?>
-                                            <input type="radio" value="<?php echo $status->getID(); ?>" name="status_id"
-                                                   id="report_issue_status_id_<?php echo $status->getID(); ?>"
-                                                   class="fancy-checkbox" <?php if ($selected_status instanceof Datatype && $selected_status->getID() == $status->getID()) echo ' checked'; ?>>
-                                            <label for="report_issue_status_id_<?php echo $status->getID(); ?>"
-                                                   class="list-item">
-                                            <span class="name">
-                                                <span class="status-badge"
-                                                      style="background-color: <?php echo $status->getColor(); ?>;color: <?php echo $status->getTextColor(); ?>;">
-                                                    <span class="value"><?php echo __($status->getName()); ?></span>
-                                                </span>
-                                            </span>
-                                            </label>
-                                        <?php endforeach; ?>
-                                    </div>
-                                </div>
-                            </div>
                         </div>
                         <div class="form-row hidden <?php if (array_key_exists('shortname', $errors)): ?> invalid<?php endif; ?>"
                              id="shortname_div">
                             <input type="text" name="shortname" id="shortname" class="shortname"
-                                   value="<?php if (isset($shortname) && trim($shortname) != '') echo htmlspecialchars($shortname); ?>"
-                                   placeholder="<?= __('Enter a very short label for the issue here'); ?>">
+                                   value="<?php if (isset($shortname) && trim($shortname) != '') echo htmlspecialchars($shortname); ?>" placeholder="<?= __('Enter a very short label for the issue here'); ?>">
                             <label for="shortname" id="shortname_label">
                                 <span><?= __('Issue label'); ?></span>
-                                <span>* </span>
+                                <span class="required-indicator">* </span>
                             </label>
                         </div>
                         <div id="report_issue_more_options_indicator" class hidden="form-row">
@@ -181,15 +166,19 @@ use pachno\core\framework\Settings;
                         </div>
                         <div class="form-row <?php if (array_key_exists('description', $errors)) echo 'invalid'; ?>"
                              id="description_div">
-                            <label for="report_issue_description_input"
-                                   id="description_label"><?= __('Description'); ?></label>
+                            <label for="report_issue_description_input" id="description_label">
+                                <span><?= __('Description'); ?></span>
+                                <span class="required-indicator">* </span>
+                            </label>
                             <?php include_component('main/textarea', ['area_name' => 'description', 'target_type' => 'project', 'target_id' => $selected_project->getID(), 'invisible' => true, 'markuppable' => true, 'syntax' => Settings::SYNTAX_MD, 'value' => ((isset($selected_description)) ? $selected_description : null)]); ?>
                             <div class="helper-text"><?= __('Describe the issue in as much detail as possible. More is better.'); ?></div>
                         </div>
                         <div class="form-row <?php if (array_key_exists('reproduction_steps', $errors)) echo 'invalid'; ?>"
                              id="reproduction_steps_div">
-                            <label for="report_issue_reproduction_steps_input"
-                                   id="reproduction_steps_label"><?= __('Reproduction steps'); ?></label>
+                            <label for="report_issue_reproduction_steps_input" id="reproduction_steps_label">
+                                <span><?= __('Reproduction steps'); ?></span>
+                                <span class="required-indicator">* </span>
+                            </label>
                             <?php include_component('main/textarea', ['area_name' => 'reproduction_steps', 'target_type' => 'project', 'target_id' => $selected_project->getID(), 'invisible' => true, 'markuppable' => true, 'syntax' => Settings::SYNTAX_MD, 'value' => ((isset($selected_reproduction_steps)) ? $selected_reproduction_steps : null)]); ?>
                             <div class="helper-text">
                                 <?= __('Enter the steps necessary to reproduce the issue, as detailed as possible.'); ?>
@@ -265,13 +254,61 @@ use pachno\core\framework\Settings;
                 </div>
                 <div class="sidebar">
                     <div class="row additional-information-container">
-                        <div class="form-row hidden additional_information <?php if (array_key_exists('edition', $errors)): ?>invalid<?php endif; ?>"
-                             id="edition_div">
+                        <div class="form-row hidden <?php if ($selected_statuses) echo ' locked'; ?> additional_information" id="status_div">
+                            <div class="fancy-dropdown-container">
+                                <div class="fancy-dropdown" data-default-label="<?= __('Not selected'); ?>">
+                                    <label id="status_label">
+                                        <span><?php echo __('Select initial status'); ?></span>
+                                        <span class="required-indicator">* </span>
+                                        <?= fa_image_tag('lock', ['class' => 'icon locked']); ?>
+                                    </label>
+                                    <span class="value"></span>
+                                    <?= fa_image_tag('angle-down', ['class' => 'expander']); ?>
+                                    <div class="dropdown-container list-mode">
+                                        <?php foreach ($statuses as $status): ?>
+                                            <?php if ($selected_statuses && !array_key_exists($status->getId(), $selected_statuses)) continue; ?>
+                                            <input type="radio" value="<?php echo $status->getID(); ?>" name="status_id" id="report_issue_status_id_<?php echo $status->getID(); ?>" class="fancy-checkbox" <?php if ($selected_statuses || ($selected_status instanceof Datatype && $selected_status->getID() == $status->getID())) echo ' checked'; ?>>
+                                            <label for="report_issue_status_id_<?php echo $status->getID(); ?>" class="list-item">
+                                                <span class="name">
+                                                    <span class="status-badge" style="background-color: <?php echo $status->getColor(); ?>;color: <?php echo $status->getTextColor(); ?>;">
+                                                        <span class="value"><?php echo __($status->getName()); ?></span>
+                                                    </span>
+                                                </span>
+                                            </label>
+                                        <?php endforeach; ?>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <?php if (isset($parent_issue) && $parent_issue instanceof Issue): ?>
+                            <div class="form-row locked additional_information" id="parent_issue_div">
+                                <div class="fancy-dropdown-container">
+                                    <div class="fancy-dropdown locked">
+                                        <label>
+                                            <span><?= __('Parent issue'); ?></span>
+                                            <?= fa_image_tag('lock', ['class' => 'icon locked']); ?>
+                                        </label>
+                                        <span class="value">
+                                            <?= fa_image_tag(($parent_issue->hasIssueType()) ? $parent_issue->getIssueType()->getFontAwesomeIcon() : 'unknown', ['class' => (($parent_issue->hasIssueType()) ? 'issuetype-icon issuetype-' . $parent_issue->getIssueType()->getIcon() : 'issuetype-icon issuetype-unknown')]); ?>
+                                            <span class="name"><?= $parent_issue->getFormattedTitle(); ?></span>
+                                        </span>
+                                        <div class="dropdown-container list-mode">
+                                            <input type="radio" value="<?= $parent_issue->getID(); ?>" name="parent_issue_id" id="report_issue_parent_issue_id_<?= $parent_issue->getId(); ?>" class="fancy-checkbox" checked>
+                                            <label for="report_issue_parent_issue_id_<?= $parent_issue->getId(); ?>" class="list-item">
+                                                <?= fa_image_tag(($parent_issue->hasIssueType()) ? $parent_issue->getIssueType()->getFontAwesomeIcon() : 'unknown', ['class' => (($parent_issue->hasIssueType()) ? 'issuetype-icon issuetype-' . $parent_issue->getIssueType()->getIcon() : 'issuetype-icon issuetype-unknown')]); ?>
+                                                <span class="name"><?= $parent_issue->getFormattedTitle(); ?></span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        <?php endif; ?>
+                        <div class="form-row hidden additional_information <?php if (array_key_exists('edition', $errors)): ?>invalid<?php endif; ?>" id="edition_div">
                             <div class="fancy-dropdown-container">
                                 <div class="fancy-dropdown" data-default-label="<?= __('Not selected'); ?>">
                                     <label id="edition_label">
                                         <span><?php echo __('Affected edition'); ?></span>
-                                        <span>* </span>
+                                        <span class="required-indicator">* </span>
                                     </label>
                                     <span class="value"></span>
                                     <?= fa_image_tag('angle-down', ['class' => 'expander']); ?>
@@ -280,13 +317,12 @@ use pachno\core\framework\Settings;
                             </div>
                             <div class="helper-text"><?= __("Select which edition of the product you're using"); ?></div>
                         </div>
-                        <div class="form-row hidden additional_information <?php if (array_key_exists('build', $errors)): ?>invalid<?php endif; ?>"
-                             id="build_div">
+                        <div class="form-row hidden additional_information <?php if (array_key_exists('build', $errors)): ?>invalid<?php endif; ?>" id="build_div">
                             <div class="fancy-dropdown-container">
                                 <div class="fancy-dropdown" data-default-label="<?= __('Not selected'); ?>">
                                     <label id="build_label">
                                         <span><?php echo __('Affected release'); ?></span>
-                                        <span>* </span>
+                                        <span class="required-indicator">* </span>
                                     </label>
                                     <span class="value"></span>
                                     <?= fa_image_tag('angle-down', ['class' => 'expander']); ?>
@@ -295,13 +331,12 @@ use pachno\core\framework\Settings;
                             </div>
                             <div class="helper-text"><?= __("Select which release you're using"); ?></div>
                         </div>
-                        <div class="form-row hidden additional_information <?php if (array_key_exists('component', $errors)): ?>invalid<?php endif; ?>"
-                             id="component_div">
+                        <div class="form-row hidden additional_information <?php if (array_key_exists('component', $errors)): ?>invalid<?php endif; ?>" id="component_div">
                             <div class="fancy-dropdown-container">
                                 <div class="fancy-dropdown" data-default-label="<?= __('Not selected'); ?>">
                                     <label id="component_label">
                                         <span><?php echo __('Affected component'); ?></span>
-                                        <span>* </span>
+                                        <span class="required-indicator">* </span>
                                     </label>
                                     <span class="value"></span>
                                     <?= fa_image_tag('angle-down', ['class' => 'expander']); ?>
@@ -311,8 +346,7 @@ use pachno\core\framework\Settings;
                             <div class="helper-text"><?= __("Choose the component where this issue occurs"); ?></div>
                         </div>
                         <div class="form-row hidden additional_information" id="estimated_time_div">
-                            <input name="estimated_time" id="estimated_time_id" class="number"
-                                   placeholder="<?= __('Enter an estimate here'); ?>">
+                            <input name="estimated_time" id="estimated_time_id" class="number" placeholder="<?= __('Enter an estimate here'); ?>">
                             <label for="estimated_time_id" id="estimated_time_label">
                                 <?= fa_image_tag('clock', ['class' => 'icon']); ?>
                                 <?= __('Estimated time'); ?>
@@ -320,8 +354,7 @@ use pachno\core\framework\Settings;
                             <div class="helper-text"><?= __('Type in your estimate here. Use keywords such as "points", "minutes", "hours", "days", "weeks" and "months" to describe your estimate'); ?></div>
                         </div>
                         <div class="form-row hidden additional_information" id="spent_time_div">
-                            <input name="spent_time" id="spent_time_id" class="number"
-                                   placeholder="<?= __('Enter an estimate here'); ?>">
+                            <input name="spent_time" id="spent_time_id" class="number" placeholder="<?= __('Enter an estimate here'); ?>">
                             <label for="spent_time_id" id="spent_time_label">
                                 <?= fa_image_tag('clock', ['class' => 'icon']); ?>
                                 <?= __('Spent time'); ?>
@@ -329,16 +362,14 @@ use pachno\core\framework\Settings;
                             <div class="helper-text"><?= __('Enter time spent on this issue here. Use keywords such as "points", "minutes", "hours", "days", "weeks" and "months" to describe your effort'); ?></div>
                         </div>
                         <div class="form-row hidden additional_information" id="percentage_div">
-                            <input name="percentage" id="percentage_id" class="number"
-                                   placeholder="<?= __('Enter an estimate here'); ?>">
+                            <input name="percentage" id="percentage_id" class="number" placeholder="<?= __('Enter an estimate here'); ?>">
                             <label for="percentage_id" id="percentage_label">
                                 <?= fa_image_tag('percent', ['class' => 'icon']); ?>
                                 <?= __('Percentage completed'); ?>
                             </label>
                             <div class="helper-text"><?= __('Enter time spent on this issue here. Use keywords such as "points", "minutes", "hours", "days", "weeks" and "months" to describe your effort'); ?></div>
                         </div>
-                        <div class="form-row hidden additional_information <?php if (array_key_exists('category', $errors)): ?>invalid<?php endif; ?>"
-                             id="category_div">
+                        <div class="form-row hidden additional_information <?php if (array_key_exists('category', $errors)): ?>invalid<?php endif; ?>" id="category_div">
                             <div class="fancy-dropdown-container">
                                 <div class="fancy-dropdown" data-default-label="<?= __('Not selected'); ?>">
                                     <label id="category_label"><?php echo __('Select category'); ?></label>
@@ -364,8 +395,7 @@ use pachno\core\framework\Settings;
                                 </div>
                             </div>
                         </div>
-                        <div class="form-row hidden additional_information <?php if (array_key_exists('resolution', $errors)): ?>invalid<?php endif; ?>"
-                             id="resolution_div">
+                        <div class="form-row hidden additional_information <?php if (array_key_exists('resolution', $errors)): ?>invalid<?php endif; ?>" id="resolution_div">
                             <div class="fancy-dropdown-container">
                                 <div class="fancy-dropdown" data-default-label="<?= __('Not selected'); ?>">
                                     <label id="resolution_label"><?php echo __('Select resolution'); ?></label>
@@ -391,8 +421,7 @@ use pachno\core\framework\Settings;
                                 </div>
                             </div>
                         </div>
-                        <div class="form-row hidden additional_information <?php if (array_key_exists('reproducability', $errors)): ?>invalid<?php endif; ?>"
-                             id="reproducability_div">
+                        <div class="form-row hidden additional_information <?php if (array_key_exists('reproducability', $errors)): ?>invalid<?php endif; ?>" id="reproducability_div">
                             <div class="fancy-dropdown-container">
                                 <div class="fancy-dropdown" data-default-label="<?= __('Not selected'); ?>">
                                     <label id="reproducability_label"><?php echo __('Select reproducability'); ?></label>
@@ -419,8 +448,7 @@ use pachno\core\framework\Settings;
                                 </div>
                             </div>
                         </div>
-                        <div class="form-row hidden additional_information <?php if (array_key_exists('priority', $errors)): ?>invalid<?php endif; ?>"
-                             id="priority_div">
+                        <div class="form-row hidden additional_information <?php if (array_key_exists('priority', $errors)): ?>invalid<?php endif; ?>" id="priority_div">
                             <div class="fancy-dropdown-container">
                                 <div class="fancy-dropdown" data-default-label="<?= __('Not selected'); ?>">
                                     <label id="priority_label"><?php echo __('Select priority'); ?></label>
@@ -445,8 +473,7 @@ use pachno\core\framework\Settings;
                                 </div>
                             </div>
                         </div>
-                        <div class="form-row hidden additional_information <?php if (array_key_exists('severity', $errors)): ?>invalid<?php endif; ?>"
-                             id="severity_div">
+                        <div class="form-row hidden additional_information <?php if (array_key_exists('severity', $errors)): ?>invalid<?php endif; ?>" id="severity_div">
                             <div class="fancy-dropdown-container">
                                 <div class="fancy-dropdown" data-default-label="<?= __('Not selected'); ?>">
                                     <label id="severity_label"><?php echo __('Select severity'); ?></label>
@@ -471,8 +498,7 @@ use pachno\core\framework\Settings;
                                 </div>
                             </div>
                         </div>
-                        <div class="form-row hidden <?php if ($selected_milestone instanceof Milestone) echo ' locked'; ?> additional_information <?php if (array_key_exists('milestone', $errors)): ?>invalid<?php endif; ?>"
-                             id="milestone_div">
+                        <div class="form-row hidden <?php if ($selected_milestone instanceof Milestone) echo ' locked'; ?> additional_information <?php if (array_key_exists('milestone', $errors)): ?>invalid<?php endif; ?>" id="milestone_div">
                             <div class="fancy-dropdown-container">
                                 <div class="fancy-dropdown" data-default-label="<?= __('Not selected'); ?>">
                                     <label id="milestone_label">
@@ -505,7 +531,7 @@ use pachno\core\framework\Settings;
                         </div>
                         <?php /*<table id="pain_bug_type_div" style="display: none;" class="additional_information<?php if (array_key_exists('pain_bug_type', $errors)): ?> reportissue_error<?php endif; ?>">
                             <tr>
-                                <td style="width: 180px;"><label for="pain_bug_type_id" id="pain_bug_type_label"><span>* </span><?= __('Triaging: Bug type'); ?></label></td>
+                                <td style="width: 180px;"><label for="pain_bug_type_id" id="pain_bug_type_label"><span class="required-indicator">* </span><?= __('Triaging: Bug type'); ?></label></td>
                                 <td class="report_issue_help faded_out dark"><?= __("What type of bug is this?"); ?></td>
                             <tr>
                                 <td colspan="2" style="padding-top: 5px;">
@@ -520,7 +546,7 @@ use pachno\core\framework\Settings;
                         </table>
                         <table id="pain_likelihood_div" style="display: none;" class="additional_information<?php if (array_key_exists('pain_likelihood', $errors)): ?> reportissue_error<?php endif; ?>">
                             <tr>
-                                <td style="width: 180px;"><label for="pain_likelihood_id" id="pain_likelihood_label"><span>* </span><?= __('Triaging: Likelihood'); ?></label></td>
+                                <td style="width: 180px;"><label for="pain_likelihood_id" id="pain_likelihood_label"><span class="required-indicator">* </span><?= __('Triaging: Likelihood'); ?></label></td>
                                 <td class="report_issue_help faded_out dark"><?= __("How likely are users to experience the bug?"); ?></td>
                             <tr>
                                 <td colspan="2" style="padding-top: 5px;">
@@ -535,7 +561,7 @@ use pachno\core\framework\Settings;
                         </table>
                         <table id="pain_effect_div" style="display: none;" class="additional_information<?php if (array_key_exists('pain_effect', $errors)): ?> reportissue_error<?php endif; ?>">
                             <tr>
-                                <td style="width: 180px;"><label for="pain_effect_id" id="pain_effect_label"><span>* </span><?= __('Triaging: Effect'); ?></label></td>
+                                <td style="width: 180px;"><label for="pain_effect_id" id="pain_effect_label"><span class="required-indicator">* </span><?= __('Triaging: Effect'); ?></label></td>
                                 <td class="report_issue_help faded_out dark"><?= __("Of the people who experience the bug, how badly does it affect their experience?"); ?></td>
                             <tr>
                                 <td colspan="2" style="padding-top: 5px;">
@@ -554,7 +580,7 @@ use pachno\core\framework\Settings;
                                 <tr>
                                     <?php if ($customdatatype->getType() == entities\DatatypeBase::DATE_PICKER || $customdatatype->getType() == entities\DatatypeBase::DATETIME_PICKER): ?>
                                         <td style="width: 180px;"><label for="<?= $customdatatype->getKey(); ?>_id"
-                                                                         id="<?= $customdatatype->getKey(); ?>_label"><span>* </span><?= __($customdatatype->getDescription()); ?>
+                                                                         id="<?= $customdatatype->getKey(); ?>_label"><span class="required-indicator">* </span><?= __($customdatatype->getDescription()); ?>
                                             </label></td>
                                         <td style="width: 326px;position: relative;"
                                             class="report_issue_help faded_out dark">
@@ -646,125 +672,125 @@ use pachno\core\framework\Settings;
                                         </td>
                                     <?php else: ?>
                                         <td style="width: 180px;"><label for="<?= $customdatatype->getKey(); ?>_id"
-                                                                         id="<?= $customdatatype->getKey(); ?>_label"><span>* </span><?= __($customdatatype->getDescription()); ?>
+                                                                         id="<?= $customdatatype->getKey(); ?>_label"><span class="required-indicator">* </span><?= __($customdatatype->getDescription()); ?>
                                             </label></td>
                                         <td class="report_issue_help faded_out dark"><?= __($customdatatype->getInstructions()); ?></td>
                                     <?php endif; ?>
                                 <tr>
                                     <td colspan="2" style="padding-top: 5px;" class="editor_container">
                                         <?php
-                                        switch ($customdatatype->getType()) {
-                                            case entities\DatatypeBase::DROPDOWN_CHOICE_TEXT: ?>
-                                                <select name="<?= $customdatatype->getKey(); ?>_id"
-                                                        id="<?= $customdatatype->getKey(); ?>_id" style="width: 100%;">
-                                                    <option value=""<?php if (!$selected_customdatatype[$customdatatype->getKey()] instanceof CustomDatatypeOption) echo ' selected'; ?>><?= __('Not specified'); ?></option>
-                                                    <?php foreach ($customdatatype->getOptions() as $option): ?>
-                                                        <option value="<?= $option->getID(); ?>"<?php if ($selected_customdatatype[$customdatatype->getKey()] instanceof CustomDatatypeOption && $selected_customdatatype[$customdatatype->getKey()]->getID() == $option->getID()): ?> selected<?php endif; ?>><?= $option->getName(); ?></option>
-                                                    <?php endforeach; ?>
-                                                </select>
-                                                <?php
-                                                break;
-                                            case entities\DatatypeBase::EDITIONS_CHOICE: ?>
-                                                <select name="<?= $customdatatype->getKey(); ?>_id"
-                                                        id="<?= $customdatatype->getKey(); ?>_id" style="width: 100%;">
-                                                    <option value=""<?php if (!$selected_customdatatype[$customdatatype->getKey()] instanceof Edition) echo ' selected'; ?>><?= __('Not specified'); ?></option>
-                                                    <?php if ($selected_project instanceof Project): ?>
-                                                        <?php foreach ($selected_project->getEditions() as $option): ?>
+                                            switch ($customdatatype->getType()) {
+                                                case entities\DatatypeBase::DROPDOWN_CHOICE_TEXT: ?>
+                                                    <select name="<?= $customdatatype->getKey(); ?>_id"
+                                                            id="<?= $customdatatype->getKey(); ?>_id" style="width: 100%;">
+                                                        <option value=""<?php if (!$selected_customdatatype[$customdatatype->getKey()] instanceof CustomDatatypeOption) echo ' selected'; ?>><?= __('Not specified'); ?></option>
+                                                        <?php foreach ($customdatatype->getOptions() as $option): ?>
+                                                            <option value="<?= $option->getID(); ?>"<?php if ($selected_customdatatype[$customdatatype->getKey()] instanceof CustomDatatypeOption && $selected_customdatatype[$customdatatype->getKey()]->getID() == $option->getID()): ?> selected<?php endif; ?>><?= $option->getName(); ?></option>
+                                                        <?php endforeach; ?>
+                                                    </select>
+                                                    <?php
+                                                    break;
+                                                case entities\DatatypeBase::EDITIONS_CHOICE: ?>
+                                                    <select name="<?= $customdatatype->getKey(); ?>_id"
+                                                            id="<?= $customdatatype->getKey(); ?>_id" style="width: 100%;">
+                                                        <option value=""<?php if (!$selected_customdatatype[$customdatatype->getKey()] instanceof Edition) echo ' selected'; ?>><?= __('Not specified'); ?></option>
+                                                        <?php if ($selected_project instanceof Project): ?>
+                                                            <?php foreach ($selected_project->getEditions() as $option): ?>
+                                                                <option value="<?= $option->getID(); ?>"<?php if ($selected_customdatatype[$customdatatype->getKey()] == $option->getID()): ?> selected<?php endif; ?>><?= $option->getName(); ?></option>
+                                                            <?php endforeach; ?>
+                                                        <?php endif; ?>
+                                                    </select>
+                                                    <?php
+                                                    break;
+                                                case entities\DatatypeBase::STATUS_CHOICE: ?>
+                                                    <select name="<?= $customdatatype->getKey(); ?>_id"
+                                                            id="<?= $customdatatype->getKey(); ?>_id" style="width: 100%;">
+                                                        <option value=""<?php if (!$selected_customdatatype[$customdatatype->getKey()] instanceof Status) echo ' selected'; ?>><?= __('Not specified'); ?></option>
+                                                        <?php foreach (Status::getAll() as $option): ?>
                                                             <option value="<?= $option->getID(); ?>"<?php if ($selected_customdatatype[$customdatatype->getKey()] == $option->getID()): ?> selected<?php endif; ?>><?= $option->getName(); ?></option>
                                                         <?php endforeach; ?>
-                                                    <?php endif; ?>
-                                                </select>
-                                                <?php
-                                                break;
-                                            case entities\DatatypeBase::STATUS_CHOICE: ?>
-                                                <select name="<?= $customdatatype->getKey(); ?>_id"
-                                                        id="<?= $customdatatype->getKey(); ?>_id" style="width: 100%;">
-                                                    <option value=""<?php if (!$selected_customdatatype[$customdatatype->getKey()] instanceof Status) echo ' selected'; ?>><?= __('Not specified'); ?></option>
-                                                    <?php foreach (Status::getAll() as $option): ?>
-                                                        <option value="<?= $option->getID(); ?>"<?php if ($selected_customdatatype[$customdatatype->getKey()] == $option->getID()): ?> selected<?php endif; ?>><?= $option->getName(); ?></option>
-                                                    <?php endforeach; ?>
-                                                </select>
-                                                <?php
-                                                break;
-                                            case entities\DatatypeBase::TEAM_CHOICE: ?>
-                                                <select name="<?= $customdatatype->getKey(); ?>_id"
-                                                        id="<?= $customdatatype->getKey(); ?>_id" style="width: 100%;">
-                                                    <option value=""<?php if (!$selected_customdatatype[$customdatatype->getKey()] instanceof Team) echo ' selected'; ?>><?= __('Not specified'); ?></option>
-                                                    <?php foreach (Team::getAll() as $option): ?>
-                                                        <option value="<?= $option->getID(); ?>"<?php if ($selected_customdatatype[$customdatatype->getKey()] == $option->getID()): ?> selected<?php endif; ?>><?= $option->getName(); ?></option>
-                                                    <?php endforeach; ?>
-                                                </select>
-                                                <?php
-                                                break;
-                                            case entities\DatatypeBase::CLIENT_CHOICE: ?>
-                                                <select name="<?= $customdatatype->getKey(); ?>_id"
-                                                        id="<?= $customdatatype->getKey(); ?>_id" style="width: 100%;">
-                                                    <option value=""<?php if (!$selected_customdatatype[$customdatatype->getKey()] instanceof Client) echo ' selected'; ?>><?= __('Not specified'); ?></option>
-                                                    <?php foreach (Client::getAll() as $option): ?>
-                                                        <option value="<?= $option->getID(); ?>"<?php if ($selected_customdatatype[$customdatatype->getKey()] == $option->getID()): ?> selected<?php endif; ?>><?= $option->getName(); ?></option>
-                                                    <?php endforeach; ?>
-                                                </select>
-                                                <?php
-                                                break;
-                                            case entities\DatatypeBase::COMPONENTS_CHOICE: ?>
-                                                <select name="<?= $customdatatype->getKey(); ?>_id"
-                                                        id="<?= $customdatatype->getKey(); ?>_id" style="width: 100%;">
-                                                    <option value=""<?php if (!$selected_customdatatype[$customdatatype->getKey()] instanceof Component) echo ' selected'; ?>><?= __('Not specified'); ?></option>
-                                                    <?php if ($selected_project instanceof Project): ?>
-                                                        <?php foreach ($selected_project->getComponents() as $option): ?>
+                                                    </select>
+                                                    <?php
+                                                    break;
+                                                case entities\DatatypeBase::TEAM_CHOICE: ?>
+                                                    <select name="<?= $customdatatype->getKey(); ?>_id"
+                                                            id="<?= $customdatatype->getKey(); ?>_id" style="width: 100%;">
+                                                        <option value=""<?php if (!$selected_customdatatype[$customdatatype->getKey()] instanceof Team) echo ' selected'; ?>><?= __('Not specified'); ?></option>
+                                                        <?php foreach (Team::getAll() as $option): ?>
                                                             <option value="<?= $option->getID(); ?>"<?php if ($selected_customdatatype[$customdatatype->getKey()] == $option->getID()): ?> selected<?php endif; ?>><?= $option->getName(); ?></option>
                                                         <?php endforeach; ?>
-                                                    <?php endif; ?>
-                                                </select>
-                                                <?php
-                                                break;
-                                            case entities\DatatypeBase::RELEASES_CHOICE: ?>
-                                                <select name="<?= $customdatatype->getKey(); ?>_id"
-                                                        id="<?= $customdatatype->getKey(); ?>_id" style="width: 100%;">
-                                                    <option value=""<?php if (!$selected_customdatatype[$customdatatype->getKey()] instanceof Build) echo ' selected'; ?>><?= __('Not specified'); ?></option>
-                                                    <?php if ($selected_project instanceof Project): ?>
-                                                        <?php foreach ($selected_project->getBuilds() as $option): ?>
+                                                    </select>
+                                                    <?php
+                                                    break;
+                                                case entities\DatatypeBase::CLIENT_CHOICE: ?>
+                                                    <select name="<?= $customdatatype->getKey(); ?>_id"
+                                                            id="<?= $customdatatype->getKey(); ?>_id" style="width: 100%;">
+                                                        <option value=""<?php if (!$selected_customdatatype[$customdatatype->getKey()] instanceof Client) echo ' selected'; ?>><?= __('Not specified'); ?></option>
+                                                        <?php foreach (Client::getAll() as $option): ?>
                                                             <option value="<?= $option->getID(); ?>"<?php if ($selected_customdatatype[$customdatatype->getKey()] == $option->getID()): ?> selected<?php endif; ?>><?= $option->getName(); ?></option>
                                                         <?php endforeach; ?>
-                                                    <?php endif; ?>
-                                                </select>
-                                                <?php
-                                                break;
-                                            case entities\DatatypeBase::RADIO_CHOICE: ?>
-                                                <input type="radio" name="<?= $customdatatype->getKey(); ?>_id"
-                                                       id="<?= $customdatatype->getKey(); ?>_0"
-                                                       value="" <?php if (!$selected_customdatatype[$customdatatype->getKey()] instanceof CustomDatatypeOption): ?> selected<?php endif; ?> />
-                                                <label for="<?= $customdatatype->getKey(); ?>_0"><?= __('Not specified'); ?></label>
-                                                <br>
-                                                <?php foreach ($customdatatype->getOptions() as $option): ?>
+                                                    </select>
+                                                    <?php
+                                                    break;
+                                                case entities\DatatypeBase::COMPONENTS_CHOICE: ?>
+                                                    <select name="<?= $customdatatype->getKey(); ?>_id"
+                                                            id="<?= $customdatatype->getKey(); ?>_id" style="width: 100%;">
+                                                        <option value=""<?php if (!$selected_customdatatype[$customdatatype->getKey()] instanceof Component) echo ' selected'; ?>><?= __('Not specified'); ?></option>
+                                                        <?php if ($selected_project instanceof Project): ?>
+                                                            <?php foreach ($selected_project->getComponents() as $option): ?>
+                                                                <option value="<?= $option->getID(); ?>"<?php if ($selected_customdatatype[$customdatatype->getKey()] == $option->getID()): ?> selected<?php endif; ?>><?= $option->getName(); ?></option>
+                                                            <?php endforeach; ?>
+                                                        <?php endif; ?>
+                                                    </select>
+                                                    <?php
+                                                    break;
+                                                case entities\DatatypeBase::RELEASES_CHOICE: ?>
+                                                    <select name="<?= $customdatatype->getKey(); ?>_id"
+                                                            id="<?= $customdatatype->getKey(); ?>_id" style="width: 100%;">
+                                                        <option value=""<?php if (!$selected_customdatatype[$customdatatype->getKey()] instanceof Build) echo ' selected'; ?>><?= __('Not specified'); ?></option>
+                                                        <?php if ($selected_project instanceof Project): ?>
+                                                            <?php foreach ($selected_project->getBuilds() as $option): ?>
+                                                                <option value="<?= $option->getID(); ?>"<?php if ($selected_customdatatype[$customdatatype->getKey()] == $option->getID()): ?> selected<?php endif; ?>><?= $option->getName(); ?></option>
+                                                            <?php endforeach; ?>
+                                                        <?php endif; ?>
+                                                    </select>
+                                                    <?php
+                                                    break;
+                                                case entities\DatatypeBase::RADIO_CHOICE: ?>
                                                     <input type="radio" name="<?= $customdatatype->getKey(); ?>_id"
-                                                           id="<?= $customdatatype->getKey(); ?>_<?= $option->getID(); ?>"
-                                                           value="<?= $option->getID(); ?>" <?php if ($selected_customdatatype[$customdatatype->getKey()] instanceof CustomDatatypeOption && $selected_customdatatype[$customdatatype->getKey()]->getID() == $option->getID()): ?> selected<?php endif; ?> />
-                                                    <label for="<?= $customdatatype->getKey(); ?>_<?= $option->getID(); ?>"><?= $option->getName(); ?></label>
+                                                           id="<?= $customdatatype->getKey(); ?>_0"
+                                                           value="" <?php if (!$selected_customdatatype[$customdatatype->getKey()] instanceof CustomDatatypeOption): ?> selected<?php endif; ?> />
+                                                    <label for="<?= $customdatatype->getKey(); ?>_0"><?= __('Not specified'); ?></label>
                                                     <br>
-                                                <?php endforeach; ?>
-                                                <?php
-                                                break;
-                                            case entities\DatatypeBase::INPUT_TEXT:
-                                                ?>
-                                                <input type="text" name="<?= $customdatatype->getKey(); ?>_value"
-                                                       value="<?= $selected_customdatatype[$customdatatype->getKey()]; ?>"
-                                                       id="<?= $customdatatype->getKey(); ?>_value"/><br>
-                                                <?php
-                                                break;
-                                            case entities\DatatypeBase::INPUT_TEXTAREA_SMALL:
-                                            case entities\DatatypeBase::INPUT_TEXTAREA_MAIN:
-                                                ?>
-                                                <?php include_component('main/textarea', array('area_name' => $customdatatype->getKey() . '_value', 'target_type' => 'project', 'target_id' => $selected_project->getID(), 'area_id' => $customdatatype->getKey() . '_value', 'height' => '75px', 'width' => '100%', 'hide_hint' => true, 'syntax' => $pachno_user->getPreferredIssuesSyntax(true), 'value' => $selected_customdatatype[$customdatatype->getKey()])); ?>
-                                                <?php
-                                                break;
-                                            case entities\DatatypeBase::DATE_PICKER:
-                                            case entities\DatatypeBase::DATETIME_PICKER:
-                                                ?>
+                                                    <?php foreach ($customdatatype->getOptions() as $option): ?>
+                                                        <input type="radio" name="<?= $customdatatype->getKey(); ?>_id"
+                                                               id="<?= $customdatatype->getKey(); ?>_<?= $option->getID(); ?>"
+                                                               value="<?= $option->getID(); ?>" <?php if ($selected_customdatatype[$customdatatype->getKey()] instanceof CustomDatatypeOption && $selected_customdatatype[$customdatatype->getKey()]->getID() == $option->getID()): ?> selected<?php endif; ?> />
+                                                        <label for="<?= $customdatatype->getKey(); ?>_<?= $option->getID(); ?>"><?= $option->getName(); ?></label>
+                                                        <br>
+                                                    <?php endforeach; ?>
+                                                    <?php
+                                                    break;
+                                                case entities\DatatypeBase::INPUT_TEXT:
+                                                    ?>
+                                                    <input type="text" name="<?= $customdatatype->getKey(); ?>_value"
+                                                           value="<?= $selected_customdatatype[$customdatatype->getKey()]; ?>"
+                                                           id="<?= $customdatatype->getKey(); ?>_value"/><br>
+                                                    <?php
+                                                    break;
+                                                case entities\DatatypeBase::INPUT_TEXTAREA_SMALL:
+                                                case entities\DatatypeBase::INPUT_TEXTAREA_MAIN:
+                                                    ?>
+                                                    <?php include_component('main/textarea', array('area_name' => $customdatatype->getKey() . '_value', 'target_type' => 'project', 'target_id' => $selected_project->getID(), 'area_id' => $customdatatype->getKey() . '_value', 'height' => '75px', 'width' => '100%', 'hide_hint' => true, 'syntax' => $pachno_user->getPreferredIssuesSyntax(true), 'value' => $selected_customdatatype[$customdatatype->getKey()])); ?>
+                                                    <?php
+                                                    break;
+                                                case entities\DatatypeBase::DATE_PICKER:
+                                                case entities\DatatypeBase::DATETIME_PICKER:
+                                                    ?>
 
-                                                <?php
-                                                break;
-                                        }
+                                                    <?php
+                                                    break;
+                                            }
                                         ?>
                                     </td>
                                 </tr>

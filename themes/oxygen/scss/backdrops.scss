@@ -277,12 +277,15 @@
     border-radius: 4px;
     vertical-align: middle;
     transition: background-color 0.25s ease-in-out, color 0.25s ease-in-out;
-    display: inline-block;
+    display: inline-flex;
     text-align: center;
+    align-items: center;
+    justify-content: center;
 
     &:hover {
       background-color: $theme-primary-color;
       color: #fff;
+      cursor: pointer;
     }
   }
 

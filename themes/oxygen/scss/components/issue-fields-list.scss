@@ -235,6 +235,9 @@
             font-weight: $theme-font-weight-bold;
             font-size: 0.9em;
             padding: 0 0 5px 0;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
           }
 
           > .value {
@@ -279,6 +282,23 @@
               }
             }
           }
+        }
+      }
+    }
+  }
+
+  .form-row.locked {
+    .field-container {
+      &,
+      &:hover {
+        border: 2px solid $theme-primary-color;
+      }
+
+      label,
+      .label {
+        .locked {
+          display: inline-block;
+          margin-left: .35em;
         }
       }
     }

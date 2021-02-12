@@ -8,7 +8,7 @@
     use pachno\core\entities\Component;
     use pachno\core\entities\CustomDatatype;
     use pachno\core\entities\CustomDatatypeOption;
-    use pachno\core\entities\Datatype;
+    use pachno\core\entities\DatatypeBase;
     use pachno\core\entities\Edition;
     use pachno\core\entities\Issue;
     use pachno\core\entities\Issuetype;

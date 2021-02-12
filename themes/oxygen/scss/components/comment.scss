@@ -263,13 +263,15 @@
   bottom: 5px;
   right: 5px;
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
-  background-color: #FFF;
+  background-color: rgb(247, 247, 247);
   border: 0;
 }
 
 .add-comment-container,
 .todo_add_main {
-  padding: 10px;
+  padding: .5em;
+  background: #FFF;
+  border-radius: 4px 4px 0 0;
 }
 
 .comment-editor .typeahead.dropdown-menu,

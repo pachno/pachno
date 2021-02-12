@@ -63,11 +63,6 @@
             $this->include_buttons = (isset($this->include_buttons)) ? $this->include_buttons : true;
         }
 
-        public function componentBoardSwimlane()
-        {
-            $this->issues = (count($this->swimlane->getBoard()->getColumns())) ? $this->swimlane->getIssues() : [];
-        }
-
         public function componentBoardColumnheader()
         {
             $this->statuses = Status::getAll();

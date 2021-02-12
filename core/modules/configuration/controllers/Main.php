@@ -1916,8 +1916,13 @@
 
         public function runConfigureWorkflowStep(framework\Request $request)
         {
-            $workflow = tables\Workflows::getTable()->selectById($request['workflow_id']);
             $step = tables\WorkflowSteps::getTable()->selectById($request['step_id']);
+
+            switch ($request['mode']) {
+                case 'delete':
+                    $step->delete();
+                    break;
+            }
 
             return $this->renderJSON([
                 'content' => $this->getComponentHTML('configuration/editworkflowstep', ['step' => $step])

@@ -1,4 +1,5 @@
 import $ from "jquery";
+import Pachno from "../classes/pachno";
 import {fetchHelper, formSubmitHelper} from "./fetch";
 
 const tabSwitcher = function ($tab, target, $tabSwitcher, change_hash) {
@@ -350,6 +351,17 @@ const setupListeners = function() {
         }
         e.stopPropagation();
         e.preventDefault();
+    });
+
+    Pachno.on(Pachno.EVENTS.configuration.deleteComponent, (_, data) => {
+        const $container = $('body').find('.configurable-components-container');
+        const $optionsContainer = $('body').find('.configurable-component-options').first();
+        $(`[data-${data.type}][data-id=${data.id}]`).remove();
+        $container.removeClass('active');
+        $optionsContainer.html('');
+        Pachno.UI.Dialog.dismiss();
+
+        Pachno.fetch(data.url, { method: 'DELETE' });
     });
 
     $body.on('submit', 'form[data-interactive-form]', (event) => submitInteractiveForm(event, $(event.target)));

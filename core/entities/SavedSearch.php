@@ -330,10 +330,10 @@
         {
             $i18n = framework\Context::getI18n();
             $templates = [];
-            $templates['results_normal'] = ['title' => $i18n->__('Standard'), 'icon' => 'list', 'description' => $i18n->__('Standard search results'), 'grouping' => true, 'parameter' => false];
-            $templates['results_todo'] = ['title' => $i18n->__('Todo-list'), 'icon' => 'clipboard-check', 'description' => $i18n->__('Todo-list with progress indicator'), 'grouping' => false, 'parameter' => false];
-            $templates['results_votes'] = ['title' => $i18n->__('Voting results'), 'icon' => 'vote-yea', 'description' => $i18n->__('Most voted-for issues'), 'grouping' => false, 'parameter' => false];
-            $templates['results_userpain_singlepainthreshold'] = ['title' => $i18n->__('User pain with threshold'), 'icon' => 'meh', 'description' => $i18n->__('User pain indicator with custom single bug pain threshold'), 'grouping' => false, 'parameter' => true, 'parameter_header' => $i18n->__('User pain threshold'), 'parameter_text' => $i18n->__('Pain threshold (0 - 100)')];
+            $templates['results_normal'] = ['name' => 'results_normal', 'title' => $i18n->__('Standard'), 'icon' => 'list', 'description' => $i18n->__('Standard search results'), 'grouping' => true, 'parameter' => false];
+            $templates['results_todo'] = ['name' => 'results_todo', 'title' => $i18n->__('Todo-list'), 'icon' => 'clipboard-check', 'description' => $i18n->__('Todo-list with progress indicator'), 'grouping' => false, 'parameter' => false];
+            $templates['results_votes'] = ['name' => 'results_votes', 'title' => $i18n->__('Voting results'), 'icon' => 'vote-yea', 'description' => $i18n->__('Most voted-for issues'), 'grouping' => false, 'parameter' => false];
+            $templates['results_userpain_singlepainthreshold'] = ['name' => 'results_userpain_singlepainthreshold', 'title' => $i18n->__('User pain with threshold'), 'icon' => 'meh', 'description' => $i18n->__('User pain indicator with custom single bug pain threshold'), 'grouping' => false, 'parameter' => true, 'parameter_header' => $i18n->__('User pain threshold'), 'parameter_text' => $i18n->__('Pain threshold (0 - 100)')];
             if (!$display_only) {
                 $templates['results_rss'] = $i18n->__('RSS feed');
             }

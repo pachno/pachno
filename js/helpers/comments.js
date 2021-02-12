@@ -99,6 +99,11 @@ const setupListeners = function() {
     $body.off('click', '.trigger-comment-sort');
     $body.on('click', '.trigger-comment-sort', toggleOrder);
 
+    $body.off('click', '#comment_add .closer');
+    $body.on('click', '#comment_add .closer', () => {
+        $('#comment_add').hide();
+    });
+
     Pachno.on(Pachno.EVENTS.formSubmitResponse, addOrUpdateComment);
     Pachno.on(Pachno.EVENTS.comment.remove, removeComment);
 }

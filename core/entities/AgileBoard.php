@@ -34,12 +34,11 @@
         const TYPE_KANBAN = 2;
 
         const SWIMLANES_NONE = '';
-
         const SWIMLANES_ISSUES = 'issues';
-
         const SWIMLANES_GROUPING = 'grouping';
-
         const SWIMLANES_EXPEDITE = 'expedite';
+
+        const SWIMLANE_IDENTIFIER_ISSUETYPE = 'issuetype';
 
         const BACKGROUND_COLOR_DEFAULT = '#00ADC7';
         const BACKGROUND_COLOR_ONE = '#7d7c84';
@@ -134,7 +133,7 @@
          * @var integer
          * @Column(type="integer", length=10)
          */
-        protected $_type = self::TYPE_SCRUM;
+        protected $_type = self::TYPE_GENERIC;
 
         /**
          * Whether to use swimlanes
@@ -150,17 +149,17 @@
          * Swimlane type
          *
          * @var string
-         * @Column(type="string", length=50, default="issuetype")
+         * @Column(type="string", length=50, default="")
          */
-        protected $_swimlane_type = self::SWIMLANES_ISSUES;
+        protected $_swimlane_type = self::SWIMLANES_NONE;
 
         /**
          * Swimlane identifier field
          *
          * @var string
-         * @Column(type="string", length=50, default="issuetype")
+         * @Column(type="string", length=50, default="")
          */
-        protected $_swimlane_identifier = "issuetype";
+        protected $_swimlane_identifier = "";
 
         /**
          * Swimlane field value
@@ -490,6 +489,17 @@
             return (count($this->getSwimlaneFieldValues()) > 0);
         }
 
+        public function isIssuetypeSwimlaneIdentifier(Issuetype $issuetype)
+        {
+            if ($this->getSwimlaneType() != self::SWIMLANES_ISSUES)
+                return false;
+
+            if ($this->getSwimlaneIdentifier() != self::SWIMLANE_IDENTIFIER_ISSUETYPE)
+                return false;
+
+            return in_array($issuetype->getID(), $this->getSwimlaneFieldValues());
+        }
+
         public function hasIssueFieldValue($value)
         {
             return in_array($value, $this->getIssueFieldValues());
@@ -710,7 +720,7 @@
             $json['report_issue_url'] = Context::getRouting()->generate('get_partial_for_backdrop', ['key' => 'reportissue', 'project_id' => $this->getProject()->getId()]) . '?board_id=' . $this->getID();
             $json['swimlane_type'] = $this->getSwimlaneType();
             $json['swimlane_identifier'] = $this->getSwimlaneIdentifier();
-            $json['swimlane_field_values'] = $this->getSwimlaneFieldValues();
+            $json['swimlane_field_values'] = array_values($this->getSwimlaneFieldValues());
             $json['columns'] = [];
             foreach ($this->getColumns() as $column) {
                 $json['columns'][] = $column->toJSON();

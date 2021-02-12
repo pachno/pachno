@@ -1143,7 +1143,7 @@
 
             $this->selected_issuetype = null;
             if ($request->hasParameter('issuetype'))
-                $this->selected_issuetype = entities\Issuetype::getByKeyish($request['issuetype']);
+                $this->selected_issuetype = tables\IssueTypes::getTable()->selectById($request['issuetype']);
 
             $this->locked_issuetype = (bool)$request['lock_issuetype'];
 
@@ -1333,6 +1333,25 @@
             }
         }
 
+        protected function _getStatusesFromRequest($request)
+        {
+            if ($request->hasParameter('status_ids')) {
+                try {
+                    $statuses = $this->selected_project->getAvailableStatuses();
+                    $request_statuses = explode(',', $request['status_ids']);
+                    $selected_statuses = [];
+                    foreach ($statuses as $status) {
+                        if (in_array($status->getID(), $request_statuses)) {
+                            $selected_statuses[$status->getID()] = $status;
+                        }
+                    }
+
+                    return $selected_statuses;
+                } catch (Exception $e) {
+                }
+            }
+        }
+
         protected function _postIssue(Request $request)
         {
             $fields_array = $this->selected_project->getReportableFieldsArray($this->issuetype_id);
@@ -1352,7 +1371,7 @@
             }
             if (isset($fields_array['category']) && $this->selected_category instanceof entities\Datatype)
                 $issue->setCategory($this->selected_category->getID());
-            if (isset($fields_array['status']) && $this->selected_status instanceof entities\Datatype)
+            if ($this->selected_status instanceof entities\Datatype)
                 $issue->setStatus($this->selected_status->getID());
             if (isset($fields_array['reproducability']) && $this->selected_reproducability instanceof entities\Datatype)
                 $issue->setReproducability($this->selected_reproducability->getID());
@@ -2606,6 +2625,7 @@
                             $options['selected_issuetype'] = $this->selected_issuetype;
                             $options['locked_issuetype'] = $this->locked_issuetype;
                             $options['selected_milestone'] = $this->_getMilestoneFromRequest($request);
+                            $options['selected_statuses'] = $this->_getStatusesFromRequest($request);
                             $options['parent_issue'] = $this->_getParentIssueFromRequest($request);
                             $options['board'] = $this->_getBoardFromRequest($request);
                             $options['selected_build'] = $this->_getBuildFromRequest($request);

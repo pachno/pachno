@@ -93,7 +93,7 @@
 /*! exports provided: agile, issue, roadmap, default */
 /***/ (function(module) {
 
-module.exports = JSON.parse("{\"agile\":{\"add_card\":\"Add card\",\"add_card_here\":\"Add card here\"},\"issue\":{\"value_not_set\":\"Not determined\",\"unknown_value\":\"Unknown\"},\"roadmap\":{\"percent_complete\":\"%percentage% completed\"}}");
+module.exports = JSON.parse("{\"agile\":{\"add_card\":\"Add card\",\"add_card_here\":\"Add card\",\"add_swimlane\":\"Add a swimlane\"},\"issue\":{\"value_not_set\":\"Not determined\",\"unknown_value\":\"Unknown\"},\"roadmap\":{\"percent_complete\":\"%percentage% completed\"}}");
 
 /***/ }),
 
@@ -384,12 +384,24 @@ var Board = /*#__PURE__*/function () {
             if (swimlane.identifier_issue) {
               var closed_class = swimlane.identifier_issue.closed ? 'closed' : '';
               header_name = '<span class="issue-container">';
-              header_name += "<a class=\"issue-number\" href=\"".concat(swimlane.identifier_issue.href, "\">").concat(swimlane.identifier_issue.issue_no, "</a>");
-              header_name += "<span class=\"name issue_header ".concat(closed_class, "\">").concat(swimlane.identifier_issue.title, "</span>");
+              header_name += "<a class=\"issue-number\" href=\"".concat(swimlane.identifier_issue.href, "\">");
+              header_name += "<span>".concat(swimlane.identifier_issue.issue_no, "</span>");
+              header_name += "<span class=\"status-badge\" style=\"background-color: ".concat(swimlane.identifier_issue.status.color, "; color: ").concat(swimlane.identifier_issue.status.text_color, ";\"><span>").concat(swimlane.identifier_issue.status.name, "</span></span>");
+              header_name += "</a>";
+              header_name += "<span class=\"name issue_header ".concat(closed_class, "\">");
+              header_name += "<span>".concat(swimlane.identifier_issue.title, "</span>");
               header_name += '</span>';
-              header_name += "<button class=\"button secondary highlight trigger-report-issue trigger-backdrop\" data-url=\"".concat(this.report_issue_url, "\" data-additional-params=\"parent_issue_id=").concat(swimlane.identifier_issue.id, "\">").concat(_pachno__WEBPACK_IMPORTED_MODULE_4__["default"].T.agile.add_card_here, "</button>");
+              header_name += '</span>';
+              header_name += "<button class=\"button secondary highlight trigger-report-issue trigger-backdrop\" data-url=\"".concat(this.report_issue_url, "\" data-additional-params=\"parent_issue_id=").concat(swimlane.identifier_issue.id, "\">").concat(_helpers_ui__WEBPACK_IMPORTED_MODULE_3__["default"].fa_image_tag('sticky-note', {
+                classes: 'icon'
+              }, 'far'), "<span>").concat(_pachno__WEBPACK_IMPORTED_MODULE_4__["default"].T.agile.add_card_here, "</span></button>");
             } else {
-              header_name = "<span class=\"name\">".concat(swimlane.name, "</span>");
+              header_name = '<span class="issue-container">';
+              header_name += "<span class=\"name issue_header\">".concat(swimlane.name, "</span>");
+              header_name += '</span>';
+              header_name += "<button class=\"button secondary highlight trigger-report-issue trigger-backdrop\" data-url=\"".concat(this.report_issue_url, "\" data-additional-params=\"issuetype_id=").concat(this.swimlane_field_values, "\">").concat(_helpers_ui__WEBPACK_IMPORTED_MODULE_3__["default"].fa_image_tag('stream', {
+                classes: 'icon'
+              }), "<span>").concat(_pachno__WEBPACK_IMPORTED_MODULE_4__["default"].T.agile.add_swimlane, "</span></button>");
             }
 
             var header_html = "<div class=\"swimlane-header\"><div class=\"header\">".concat(header_name, "</div>");
@@ -442,8 +454,8 @@ var Board = /*#__PURE__*/function () {
 
               var html = "<div class=\"column\" id=\"".concat(column_id, "\" data-swimlane-identifier=\"").concat(swimlane.identifier, "\" data-column-id=\"").concat(column.id, "\" data-status-ids=\"").concat(status_ids, "\">");
 
-              if (this.swimlane_type === SwimlaneTypes.NONE) {
-                html += "\n                            <div class=\"form-container\">\n                                <div class=\"row\">\n                                    <div class=\"form name\">\n                                        <div class=\"form-row\">\n                                            <span class=\"input invisible trigger-report-issue\" data-status-ids=\"".concat(status_ids, "\">\n                                                <span class=\"placeholder\">").concat(_helpers_ui__WEBPACK_IMPORTED_MODULE_3__["default"].fa_image_tag('plus'), "<span>").concat(_pachno__WEBPACK_IMPORTED_MODULE_4__["default"].T.agile.add_card, "</span></span>\n                                            </span>\n                                        </div>\n                                    </div>\n                                </div>\n                            </div>\n                        ");
+              if (this.swimlane_type === SwimlaneTypes.NONE || !swimlane.has_identifiables) {
+                html += "\n                            <div class=\"form-container\">\n                                <div class=\"row\">\n                                    <div class=\"form name\">\n                                        <div class=\"form-row\">\n                                            <span class=\"input invisible trigger-report-issue trigger-backdrop\" data-url=\"".concat(this.report_issue_url, "\" data-additional-params=\"status_ids=").concat(status_ids, "\">\n                                                <span class=\"placeholder\">").concat(_helpers_ui__WEBPACK_IMPORTED_MODULE_3__["default"].fa_image_tag('plus'), "<span>").concat(_pachno__WEBPACK_IMPORTED_MODULE_4__["default"].T.agile.add_card, "</span></span>\n                                            </span>\n                                        </div>\n                                    </div>\n                                </div>\n                            </div>\n                        ");
               }
 
               html += '</div>';
@@ -519,7 +531,7 @@ var Board = /*#__PURE__*/function () {
 
                   $swimlaneContainer.removeClass('empty');
 
-                  if (_this4.swimlane_type == SwimlaneTypes.NONE) {
+                  if (_this4.swimlane_type == SwimlaneTypes.NONE || !swimlane.has_identifiables) {
                     $add_card_form.before(issue.element);
                   } else {
                     $swimlane.append(issue.element);
@@ -1519,10 +1531,17 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
 
 var IssueReporter = /*#__PURE__*/function () {
-  function IssueReporter() {
+  function IssueReporter(do_update) {
     _classCallCheck(this, IssueReporter);
 
     this.setupListeners();
+
+    if (do_update === true) {
+      var $reportissueContainer = $('#reportissue_container');
+      $reportissueContainer.addClass('huge');
+      $reportissueContainer.removeClass('large');
+      this.updateFields();
+    }
   }
 
   _createClass(IssueReporter, [{
@@ -1834,14 +1853,15 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _helpers_issues__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../helpers/issues */ "./js/helpers/issues.js");
 /* harmony import */ var _helpers_comments__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../helpers/comments */ "./js/helpers/comments.js");
 /* harmony import */ var _helpers_favourites__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ../helpers/favourites */ "./js/helpers/favourites.js");
-/* harmony import */ var _board__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./board */ "./js/classes/board.js");
-/* harmony import */ var _search__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./search */ "./js/classes/search.js");
-/* harmony import */ var _issuereporter__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./issuereporter */ "./js/classes/issuereporter.js");
-/* harmony import */ var _uploader__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ./uploader */ "./js/classes/uploader.js");
-/* harmony import */ var _roadmap__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ./roadmap */ "./js/classes/roadmap.js");
-/* harmony import */ var _quicksearch__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ./quicksearch */ "./js/classes/quicksearch.js");
-/* harmony import */ var _i18n_en_US_strings_json__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ../../i18n/en_US/strings.json */ "./i18n/en_US/strings.json");
-var _i18n_en_US_strings_json__WEBPACK_IMPORTED_MODULE_17___namespace = /*#__PURE__*/__webpack_require__.t(/*! ../../i18n/en_US/strings.json */ "./i18n/en_US/strings.json", 1);
+/* harmony import */ var _helpers_agile__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ../helpers/agile */ "./js/helpers/agile.js");
+/* harmony import */ var _board__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./board */ "./js/classes/board.js");
+/* harmony import */ var _search__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./search */ "./js/classes/search.js");
+/* harmony import */ var _issuereporter__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ./issuereporter */ "./js/classes/issuereporter.js");
+/* harmony import */ var _uploader__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ./uploader */ "./js/classes/uploader.js");
+/* harmony import */ var _roadmap__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ./roadmap */ "./js/classes/roadmap.js");
+/* harmony import */ var _quicksearch__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ./quicksearch */ "./js/classes/quicksearch.js");
+/* harmony import */ var _i18n_en_US_strings_json__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! ../../i18n/en_US/strings.json */ "./i18n/en_US/strings.json");
+var _i18n_en_US_strings_json__WEBPACK_IMPORTED_MODULE_18___namespace = /*#__PURE__*/__webpack_require__.t(/*! ../../i18n/en_US/strings.json */ "./i18n/en_US/strings.json", 1);
 function _createForOfIteratorHelper(o, allowArrayLike) { var it; if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = o[Symbol.iterator](); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
 
 function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
@@ -1878,8 +1898,9 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
 
 
+
 var translations = {
-  en_US: _i18n_en_US_strings_json__WEBPACK_IMPORTED_MODULE_17__
+  en_US: _i18n_en_US_strings_json__WEBPACK_IMPORTED_MODULE_18__
 };
 
 var PachnoApplication = /*#__PURE__*/function () {
@@ -1900,8 +1921,14 @@ var PachnoApplication = /*#__PURE__*/function () {
     get: function get() {
       return {
         ready: 'pachno-ready',
+        agile: {
+          deleteBoard: 'agile-delete-board'
+        },
         article: {
           removeFile: 'article-remove-file'
+        },
+        configuration: {
+          deleteComponent: 'configuration-delete-component'
         },
         formSubmit: 'form-submit',
         formSubmitResponse: 'form-submit-response',
@@ -1944,7 +1971,7 @@ var PachnoApplication = /*#__PURE__*/function () {
       this.debug = options.debug;
       this.basepath = options.basepath;
       this.data_url = options.dataUrl;
-      this.quicksearch = new _quicksearch__WEBPACK_IMPORTED_MODULE_16__["default"](options.autocompleterUrl);
+      this.quicksearch = new _quicksearch__WEBPACK_IMPORTED_MODULE_17__["default"](options.autocompleterUrl);
       this.trigger(this.EVENTS.quicksearchAddDefaultChoice, {
         icon: {
           name: 'search',
@@ -1954,7 +1981,7 @@ var PachnoApplication = /*#__PURE__*/function () {
         name: 'Find something',
         description: 'Search through issues, projects, documentation and people',
         action: {
-          type: _quicksearch__WEBPACK_IMPORTED_MODULE_16__["TYPES"].navigate,
+          type: _quicksearch__WEBPACK_IMPORTED_MODULE_17__["TYPES"].navigate,
           url: '/account'
         }
       });
@@ -1967,7 +1994,7 @@ var PachnoApplication = /*#__PURE__*/function () {
         name: 'Show an issue',
         description: 'Go directly to an issue',
         action: {
-          type: _quicksearch__WEBPACK_IMPORTED_MODULE_16__["TYPES"].event,
+          type: _quicksearch__WEBPACK_IMPORTED_MODULE_17__["TYPES"].event,
           event: '/find'
         }
       });
@@ -2042,13 +2069,14 @@ var PachnoApplication = /*#__PURE__*/function () {
     value: function setupListeners() {
       // $(window).on('resize', Core._resizeWatcher);
       // $(document).on('keydown', Core._escapeWatcher);
-      Object(_widgets__WEBPACK_IMPORTED_MODULE_5__["default"])();
-      Object(_helpers_fetch__WEBPACK_IMPORTED_MODULE_4__["setupListeners"])();
-      Object(_helpers_profile__WEBPACK_IMPORTED_MODULE_6__["default"])();
-      Object(_helpers_issues__WEBPACK_IMPORTED_MODULE_8__["setupListeners"])();
+      Object(_helpers_agile__WEBPACK_IMPORTED_MODULE_11__["setupListeners"])();
       Object(_helpers_comments__WEBPACK_IMPORTED_MODULE_9__["setupListeners"])();
       Object(_helpers_favourites__WEBPACK_IMPORTED_MODULE_10__["setupListeners"])();
-      Object(_helpers_ui__WEBPACK_IMPORTED_MODULE_3__["setupListeners"])(); // $('#fullpage_backdrop_content').on('click', Core._resizeWatcher);
+      Object(_helpers_fetch__WEBPACK_IMPORTED_MODULE_4__["setupListeners"])();
+      Object(_helpers_issues__WEBPACK_IMPORTED_MODULE_8__["setupListeners"])();
+      Object(_helpers_profile__WEBPACK_IMPORTED_MODULE_6__["default"])();
+      Object(_helpers_ui__WEBPACK_IMPORTED_MODULE_3__["setupListeners"])();
+      Object(_widgets__WEBPACK_IMPORTED_MODULE_5__["default"])(); // $('#fullpage_backdrop_content').on('click', Core._resizeWatcher);
     }
   }, {
     key: "_initialize",
@@ -2961,23 +2989,15 @@ var Search = /*#__PURE__*/function () {
         default_visible_columns: default_columns
       };
 
-      var _iterator = _createForOfIteratorHelper(this.result_views[template.name].available_columns),
-          _step;
+      for (var key in this.result_views[template.name].available_columns) {
+        if (!this.result_views[template.name].available_columns.hasOwnProperty(key)) continue;
+        var column = this.result_views[template.name].available_columns[key];
 
-      try {
-        for (_iterator.s(); !(_step = _iterator.n()).done;) {
-          var column = _step.value;
-
-          if (this.result_views[template.name].visible_columns.indexOf(column) != -1) {
-            $('#search_column_' + column + '_toggler_checkbox').prop('checked', true);
-          } else {
-            $('#search_column_' + column + '_toggler_checkbox').prop('checked', false);
-          }
+        if (this.result_views[template.name].visible_columns.indexOf(column) != -1) {
+          $('#search_column_' + column + '_toggler_checkbox').prop('checked', true);
+        } else {
+          $('#search_column_' + column + '_toggler_checkbox').prop('checked', false);
         }
-      } catch (err) {
-        _iterator.e(err);
-      } finally {
-        _iterator.f();
       }
 
       $("#filter_selected_template_".concat(template.name)).prop('checked', true);
@@ -2991,19 +3011,19 @@ var Search = /*#__PURE__*/function () {
         $('#search_template_parameter_container').addClass('hidden');
       }
 
-      var _iterator2 = _createForOfIteratorHelper(filters),
-          _step2;
+      var _iterator = _createForOfIteratorHelper(filters),
+          _step;
 
       try {
-        for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
-          var filter = _step2.value;
+        for (_iterator.s(); !(_step = _iterator.n()).done;) {
+          var filter = _step.value;
           var $filter_element = $('#additional_filter_' + filter + '_link');
           $filter_element.addClass('disabled');
         }
       } catch (err) {
-        _iterator2.e(err);
+        _iterator.e(err);
       } finally {
-        _iterator2.f();
+        _iterator.f();
       }
     }
   }, {
@@ -3616,6 +3636,60 @@ window.Uploader = Uploader;
 
 /***/ }),
 
+/***/ "./js/helpers/agile.js":
+/*!*****************************!*\
+  !*** ./js/helpers/agile.js ***!
+  \*****************************/
+/*! exports provided: setupListeners */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "setupListeners", function() { return setupListeners; });
+/* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! jquery */ "./node_modules/jquery/dist/jquery.js");
+/* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(jquery__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _classes_pachno__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../classes/pachno */ "./js/classes/pachno.js");
+
+
+
+var setupListeners = function setupListeners() {
+  if (jquery__WEBPACK_IMPORTED_MODULE_0___default()('#project_planning').length) return;
+  _classes_pachno__WEBPACK_IMPORTED_MODULE_1__["default"].on(_classes_pachno__WEBPACK_IMPORTED_MODULE_1__["default"].EVENTS.formSubmitResponse, function (_, data) {
+    if (data.form === 'edit-agileboard-form') {
+      var json = data.json;
+      var $existing_board = jquery__WEBPACK_IMPORTED_MODULE_0___default()("[data-agileboard][data-id=\"".concat(json.board.id, "\"]"));
+
+      if ($existing_board.length) {
+        $existing_board.replaceWith(json.component);
+      } else {
+        jquery__WEBPACK_IMPORTED_MODULE_0___default()('#onboarding-no-boards').addClass('hidden');
+        jquery__WEBPACK_IMPORTED_MODULE_0___default()('#agileboards').append(json.component);
+        _classes_pachno__WEBPACK_IMPORTED_MODULE_1__["default"].UI.Backdrop.reset();
+      }
+    }
+  });
+  _classes_pachno__WEBPACK_IMPORTED_MODULE_1__["default"].on(_classes_pachno__WEBPACK_IMPORTED_MODULE_1__["default"].EVENTS.agile.deleteBoard, function (_, data) {
+    var $existing_board = jquery__WEBPACK_IMPORTED_MODULE_0___default()("[data-agileboard][data-id=\"".concat(data.board_id, "\"]"));
+
+    if ($existing_board.length) {
+      $existing_board.remove();
+    }
+
+    if (!jquery__WEBPACK_IMPORTED_MODULE_0___default()('#agileboards').find('[data-agileboard]').length) {
+      jquery__WEBPACK_IMPORTED_MODULE_0___default()('#onboarding-no-boards').removeClass('hidden');
+    }
+
+    _classes_pachno__WEBPACK_IMPORTED_MODULE_1__["default"].UI.Dialog.dismiss();
+    _classes_pachno__WEBPACK_IMPORTED_MODULE_1__["default"].fetch(data.url, {
+      method: 'DELETE'
+    });
+  });
+};
+
+
+
+/***/ }),
+
 /***/ "./js/helpers/comments.js":
 /*!********************************!*\
   !*** ./js/helpers/comments.js ***!
@@ -3728,6 +3802,10 @@ var setupListeners = function setupListeners() {
   $body.on('click', '.trigger-show-comment-post', showPost);
   $body.off('click', '.trigger-comment-sort');
   $body.on('click', '.trigger-comment-sort', toggleOrder);
+  $body.off('click', '#comment_add .closer');
+  $body.on('click', '#comment_add .closer', function () {
+    jquery__WEBPACK_IMPORTED_MODULE_0___default()('#comment_add').hide();
+  });
   _classes_pachno__WEBPACK_IMPORTED_MODULE_1__["default"].on(_classes_pachno__WEBPACK_IMPORTED_MODULE_1__["default"].EVENTS.formSubmitResponse, addOrUpdateComment);
   _classes_pachno__WEBPACK_IMPORTED_MODULE_1__["default"].on(_classes_pachno__WEBPACK_IMPORTED_MODULE_1__["default"].EVENTS.comment.remove, removeComment);
 };
@@ -4582,7 +4660,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "setupListeners", function() { return setupListeners; });
 /* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! jquery */ "./node_modules/jquery/dist/jquery.js");
 /* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(jquery__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _fetch__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./fetch */ "./js/helpers/fetch.js");
+/* harmony import */ var _classes_pachno__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../classes/pachno */ "./js/classes/pachno.js");
+/* harmony import */ var _fetch__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./fetch */ "./js/helpers/fetch.js");
 function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
 
 function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
@@ -4594,6 +4673,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
 function _iterableToArrayLimit(arr, i) { if (typeof Symbol === "undefined" || !(Symbol.iterator in Object(arr))) return; var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
 
 function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
+
 
 
 
@@ -4737,7 +4817,7 @@ var UI = {
 
         showBackdrop(docked).then(function () {
           if (url != undefined) {
-            Object(_fetch__WEBPACK_IMPORTED_MODULE_1__["fetchHelper"])(url, {
+            Object(_fetch__WEBPACK_IMPORTED_MODULE_2__["fetchHelper"])(url, {
               method: 'GET',
               loading: {
                 indicator: '#fullpage_backdrop_indicator'
@@ -4823,7 +4903,7 @@ var loadComponentOptions = function loadComponentOptions($item) {
     $container.addClass('active');
     $container.find('.configurable-component').removeClass('active');
     $item.addClass('active');
-    Object(_fetch__WEBPACK_IMPORTED_MODULE_1__["fetchHelper"])(url, {
+    Object(_fetch__WEBPACK_IMPORTED_MODULE_2__["fetchHelper"])(url, {
       success: {
         update: '#' + $optionsContainer.attr('id')
       }
@@ -4888,7 +4968,7 @@ var submitForm = function submitForm($form) {
     }
   }
 
-  return Object(_fetch__WEBPACK_IMPORTED_MODULE_1__["formSubmitHelper"])(url, $form.attr('id'), options).then(function (json) {
+  return Object(_fetch__WEBPACK_IMPORTED_MODULE_2__["formSubmitHelper"])(url, $form.attr('id'), options).then(function (json) {
     $form.removeClass('submitting');
     $form.find('button[type=submit]').each(function () {
       var $button = jquery__WEBPACK_IMPORTED_MODULE_0___default()(this);
@@ -4902,7 +4982,7 @@ var submitForm = function submitForm($form) {
       $form.parents('.fullpage_backdrop').hide();
     }
 
-    Pachno.trigger(Pachno.EVENTS.formSubmitResponse, {
+    _classes_pachno__WEBPACK_IMPORTED_MODULE_1__["default"].trigger(_classes_pachno__WEBPACK_IMPORTED_MODULE_1__["default"].EVENTS.formSubmitResponse, {
       form: $form.attr('id'),
       json: json
     });
@@ -4975,6 +5055,17 @@ var setupListeners = function setupListeners() {
 
     e.stopPropagation();
     e.preventDefault();
+  });
+  _classes_pachno__WEBPACK_IMPORTED_MODULE_1__["default"].on(_classes_pachno__WEBPACK_IMPORTED_MODULE_1__["default"].EVENTS.configuration.deleteComponent, function (_, data) {
+    var $container = jquery__WEBPACK_IMPORTED_MODULE_0___default()('body').find('.configurable-components-container');
+    var $optionsContainer = jquery__WEBPACK_IMPORTED_MODULE_0___default()('body').find('.configurable-component-options').first();
+    jquery__WEBPACK_IMPORTED_MODULE_0___default()("[data-".concat(data.type, "][data-id=").concat(data.id, "]")).remove();
+    $container.removeClass('active');
+    $optionsContainer.html('');
+    _classes_pachno__WEBPACK_IMPORTED_MODULE_1__["default"].UI.Dialog.dismiss();
+    _classes_pachno__WEBPACK_IMPORTED_MODULE_1__["default"].fetch(data.url, {
+      method: 'DELETE'
+    });
   });
   $body.on('submit', 'form[data-interactive-form]', function (event) {
     return submitInteractiveForm(event, jquery__WEBPACK_IMPORTED_MODULE_0___default()(event.target));

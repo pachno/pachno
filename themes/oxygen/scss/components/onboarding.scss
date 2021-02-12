@@ -12,6 +12,10 @@
   flex-direction: column;
   align-items: center;
 
+  &.hidden {
+    display: none;
+  }
+
   &.large {
     width: 500px;
 

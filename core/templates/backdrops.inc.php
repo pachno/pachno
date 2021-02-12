@@ -1,3 +1,10 @@
+<div id="fullpage_backdrop" class="fullpage_backdrop" style="display: none;">
+    <div id="fullpage_backdrop_indicator">
+        <?php echo image_tag('spinning_32.gif'); ?><br>
+        <?php echo __('Please wait ...'); ?>
+    </div>
+    <div id="fullpage_backdrop_content" class="fullpage_backdrop_content" data-simplebar> </div>
+</div>
 <div class="popup_message failure" onclick="Pachno.UI.Message.clear();" style="display: none;" id="pachno_failuremessage">
     <div class="message-content">
         <span class="title" id="pachno_failuremessage_title"></span>
@@ -20,13 +27,6 @@
         <span class="message" id="pachno_successmessage_content"></span>
     </div>
     <div class="dismiss_me"><?php echo __('Okay'); ?></div>
-</div>
-<div id="fullpage_backdrop" class="fullpage_backdrop" style="display: none;">
-    <div id="fullpage_backdrop_indicator">
-        <?php echo image_tag('spinning_32.gif'); ?><br>
-        <?php echo __('Please wait ...'); ?>
-    </div>
-    <div id="fullpage_backdrop_content" class="fullpage_backdrop_content" data-simplebar> </div>
 </div>
 <?php if (\pachno\core\framework\Context::getRouting()->getCurrentRoute()->getName() != 'auth_login_page' && $pachno_user->isGuest()): ?>
     <div id="login_backdrop" class="fullpage_backdrop" style="display: none;">

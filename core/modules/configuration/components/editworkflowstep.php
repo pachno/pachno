@@ -40,7 +40,7 @@
             </label>
         </div>
         <div class="form-row submit-container">
-            <a class="button secondary" href="javascript:void(0);" onclick="Pachno.UI.Dialog.show('<?= __('Do you really want to delete this workflow step?'); ?>', '<?=__('This will set the status of any issues currently in this step back to the initial workflow step. It will also remove any transitions to / from this step.'); ?>', {yes: {click: function() {Pachno.Config.Workflows.Workflow.Step.remove('<?= make_url('configure_workflow_delete_step', ['workflow_id' => $step->getWorkflow()->getID(), 'step_id' => $step->getID()]); ?>')}}, no: { click: Pachno.UI.Dialog.dismiss }});">
+            <a class="button secondary" href="javascript:void(0);" onclick="Pachno.UI.Dialog.show('<?= __('Do you really want to delete this workflow step?'); ?>', '<?=__('This will set the status of any issues currently in this step back to the initial workflow step. It will also remove any transitions to / from this step.'); ?>', {yes: {click: function() {Pachno.trigger(Pachno.EVENTS.configuration.deleteComponent, { url: '<?= make_url('configure_workflow_delete_step', ['workflow_id' => $step->getWorkflow()->getID(), 'step_id' => $step->getID()]); ?>', type: 'workflow-step', id: <?= $step->getID(); ?> })}}, no: { click: Pachno.UI.Dialog.dismiss }});">
                 <span class="icon"><?= fa_image_tag('times'); ?></span>
                 <span class="name"><?= __('Remove step'); ?></span>
             </a>

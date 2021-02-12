@@ -4931,8 +4931,10 @@
                 if (!$this->_last_updated) $this->_last_updated = NOW;
                 if (!$this->_posted_by) $this->_posted_by = Context::getUser();
 
-                $step = $this->getProject()->getWorkflowScheme()->getWorkflowForIssuetype($this->getIssueType())->getFirstStep();
-                $step->applyToIssue($this);
+                if (!$this->getStatus() instanceof Status) {
+                    $step = $this->getProject()->getWorkflowScheme()->getWorkflowForIssuetype($this->getIssueType())->getFirstStep();
+                    $step->applyToIssue($this);
+                }
 
                 return;
             }

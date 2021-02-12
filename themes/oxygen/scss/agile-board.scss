@@ -3,7 +3,7 @@
 #main_container {
   transition: background-color .25s ease-in-out;
   &.shaded {
-    background-color: #0C8990;
+    //background-color: #0C8990;
 
     header {
       background: rgba(0, 0, 0, .1);
@@ -25,6 +25,8 @@
     }
 
     .top-search-filters-container {
+      background-color: rgba(255, 255, 255, .2);
+
       .header {
         color: #FFF;
         .name-container {
@@ -36,7 +38,7 @@
 
         .stripe-container {
           .stripe {
-            background-color: #FFF;
+            //background-color: #FFF;
           }
         }
       }
@@ -443,7 +445,17 @@
                 text-decoration: none;
                 color: $theme-text-color-lighter;
                 font-size: .9em;
-                font-weight: $theme-font-weight-light;
+                font-weight: $theme-font-weight-bold;
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+                justify-content: flex-start;
+
+                .status-badge {
+                  font-weight: $theme-font-weight-light;
+                  font-size: 1em;
+                  margin-left: .5em;
+                }
               }
             }
           }
@@ -659,7 +671,7 @@
     box-sizing: border-box;
     align-items: center;
     justify-content: flex-start;
-    padding: .5em;
+    padding: .5em .5em 0 .5em;
     color: $theme-text-color-lightest;
     font-weight: $theme-font-weight-regular;
 
@@ -719,7 +731,7 @@
   &.blocking img.blocking {
     display: inline-block;
     vertical-align: middle;
-    margin: 0 0 0 auto;
+    margin: 0;
     border-radius: 2px;
     border: 1px solid rgba(0, 0, 0, 0.4);
     opacity: 0.6;

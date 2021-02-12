@@ -163,7 +163,7 @@ $current_spent_time = $current_estimated_time;
             <?php echo ($issue->getReproducability() instanceof Reproducability) ? $issue->getReproducability()->getName() : '-'; ?>
         </div>
         <div class="column sc_priority<?php if (!$issue->getPriority() instanceof Priority): ?> faded_out<?php endif; ?> <?php if (!in_array('priority', $visible_columns)) echo 'hidden'; ?>">
-            <?php echo ($issue->getPriority() instanceof Priority) ? fa_image_tag($issue->getPriority()->getFontAwesomeIcon(), [], $issue->getPriority()->getFontAwesomeIconStyle()) . $issue->getPriority()->getName() : '-'; ?>
+            <?php echo ($issue->getPriority() instanceof Priority) ? fa_image_tag($issue->getPriority()->getFontAwesomeIcon(), [], $issue->getPriority()->getFontAwesomeIconStyle()) . '<span>'.$issue->getPriority()->getName().'</span>' : '-'; ?>
         </div>
         <?php $component_names = $issue->getComponentNames(); ?>
         <div class="column sc_components<?php if (!count($component_names)): ?> faded_out<?php endif; ?> <?php if (!in_array('components', $visible_columns)) echo 'hidden'; ?>">

@@ -5,6 +5,8 @@
     use Exception;
     use pachno\core\entities;
     use pachno\core\entities\Comment;
+    use pachno\core\entities\Issue;
+    use pachno\core\entities\Issuetype;
     use pachno\core\entities\tables;
     use pachno\core\framework;
     use pachno\core\framework\Event;
@@ -133,7 +135,7 @@
             if ($this->issue instanceof entities\Issue) {
                 $this->project = $this->issue->getProject();
                 $this->statuses = ($this->project->useStrictWorkflowMode()) ? $this->project->getAvailableStatuses() : $this->issue->getAvailableStatuses();
-                $this->issuetypes = $this->project->getIssuetypeScheme()->getIssuetypes();
+
                 $fields_list = [];
                 $fields_list['category'] = ['title' => $i18n->__('Category'), 'fa_icon' => 'chart-pie', 'fa_icon_style' => 'fas', 'choices' => [], 'visible' => $this->issue->isCategoryVisible(), 'value' => (($this->issue->getCategory() instanceof entities\Category) ? $this->issue->getCategory()->getId() : 0), 'icon' => false, 'change_tip' => $i18n->__('Click to change category'), 'change_header' => $i18n->__('Change category'), 'clear' => $i18n->__('No category selected'), 'select' => $i18n->__('%clear_the_category or click to select a new category', ['%clear_the_category' => ''])];
 
@@ -203,6 +205,7 @@
                 $this->components = ($this->issue->getProject()->isComponentsEnabled()) ? $this->issue->getComponents() : [];
                 $this->builds = ($this->issue->getProject()->isBuildsEnabled()) ? $this->issue->getBuilds() : [];
                 $this->affected_count = count($this->editions) + count($this->components) + count($this->builds);
+                $this->issuetypes = $this->project->getIssuetypeScheme()->getIssuetypes();
             } else {
                 $fields_list = [];
                 $fields_list['category'] = ['choices' => entities\Category::getAll()];
@@ -290,7 +293,7 @@
 
         public function componentUpdateissueproperties()
         {
-            $this->issue = $this->issue ?: null;
+            $this->issue = $this->issue ?? null;
             $this->setupVariables();
         }
 
@@ -409,32 +412,33 @@
 
         protected function _setupReportIssueProperties()
         {
-            $this->locked_issuetype = $this->locked_issuetype ?: null;
-            $this->selected_issuetype = $this->selected_issuetype ?: null;
-            $this->selected_edition = $this->selected_edition ?: null;
-            $this->selected_build = $this->selected_build ?: null;
-            $this->selected_milestone = $this->selected_milestone ?: null;
-            $this->parent_issue = $this->parent_issue ?: null;
-            $this->selected_component = $this->selected_component ?: null;
-            $this->selected_category = $this->selected_category ?: null;
-            $this->selected_status = $this->selected_status ?: null;
-            $this->selected_resolution = $this->selected_resolution ?: null;
-            $this->selected_priority = $this->selected_priority ?: null;
-            $this->selected_reproducability = $this->selected_reproducability ?: null;
-            $this->selected_severity = $this->selected_severity ?: null;
-            $this->selected_estimated_time = $this->selected_estimated_time ?: null;
-            $this->selected_spent_time = $this->selected_spent_time ?: null;
-            $this->selected_percent_complete = $this->selected_percent_complete ?: null;
-            $this->selected_pain_bug_type = $this->selected_pain_bug_type ?: null;
-            $this->selected_pain_likelihood = $this->selected_pain_likelihood ?: null;
-            $this->selected_pain_effect = $this->selected_pain_effect ?: null;
-            $selected_customdatatype = $this->selected_customdatatype ?: [];
+            $this->locked_issuetype = $this->locked_issuetype ?? null;
+            $this->selected_issuetype = $this->selected_issuetype ?? null;
+            $this->selected_edition = $this->selected_edition ?? null;
+            $this->selected_build = $this->selected_build ?? null;
+            $this->selected_milestone = $this->selected_milestone ?? null;
+            $this->selected_statuses = $this->selected_statuses ?? null;
+            $this->parent_issue = $this->parent_issue ?? null;
+            $this->selected_component = $this->selected_component ?? null;
+            $this->selected_category = $this->selected_category ?? null;
+            $this->selected_status = $this->selected_status ?? null;
+            $this->selected_resolution = $this->selected_resolution ?? null;
+            $this->selected_priority = $this->selected_priority ?? null;
+            $this->selected_reproducability = $this->selected_reproducability ?? null;
+            $this->selected_severity = $this->selected_severity ?? null;
+            $this->selected_estimated_time = $this->selected_estimated_time ?? null;
+            $this->selected_spent_time = $this->selected_spent_time ?? null;
+            $this->selected_percent_complete = $this->selected_percent_complete ?? null;
+            $this->selected_pain_bug_type = $this->selected_pain_bug_type ?? null;
+            $this->selected_pain_likelihood = $this->selected_pain_likelihood ?? null;
+            $this->selected_pain_effect = $this->selected_pain_effect ?? null;
+            $selected_customdatatype = $this->selected_customdatatype ?? [];
             foreach (entities\CustomDatatype::getAll() as $customdatatype) {
                 $selected_customdatatype[$customdatatype->getKey()] = isset($selected_customdatatype[$customdatatype->getKey()]) ? $selected_customdatatype[$customdatatype->getKey()] : null;
             }
             $this->selected_customdatatype = $selected_customdatatype;
-            $this->issuetype_id = $this->issuetype_id ?: null;
-            $this->issue = $this->issue ?: null;
+            $this->issuetype_id = $this->issuetype_id ?? null;
+            $this->issue = $this->issue ?? null;
             $this->categories = entities\Category::getAll();
             $this->severities = entities\Severity::getAll();
             $this->priorities = entities\Priority::getAll();

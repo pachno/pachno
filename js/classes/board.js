@@ -199,12 +199,20 @@ class Board {
                 if (swimlane.identifier_issue) {
                     const closed_class = (swimlane.identifier_issue.closed) ? 'closed' : '';
                     header_name = '<span class="issue-container">';
-                    header_name += `<a class="issue-number" href="${swimlane.identifier_issue.href}">${swimlane.identifier_issue.issue_no}</a>`;
-                    header_name += `<span class="name issue_header ${closed_class}">${swimlane.identifier_issue.title}</span>`;
+                    header_name += `<a class="issue-number" href="${swimlane.identifier_issue.href}">`;
+                    header_name += `<span>${swimlane.identifier_issue.issue_no}</span>`;
+                    header_name += `<span class="status-badge" style="background-color: ${swimlane.identifier_issue.status.color}; color: ${swimlane.identifier_issue.status.text_color};"><span>${swimlane.identifier_issue.status.name}</span></span>`
+                    header_name += `</a>`;
+                    header_name += `<span class="name issue_header ${closed_class}">`;
+                    header_name += `<span>${swimlane.identifier_issue.title}</span>`;
                     header_name += '</span>';
-                    header_name += `<button class="button secondary highlight trigger-report-issue trigger-backdrop" data-url="${this.report_issue_url}" data-additional-params="parent_issue_id=${swimlane.identifier_issue.id}">${Pachno.T.agile.add_card_here}</button>`
+                    header_name += '</span>';
+                    header_name += `<button class="button secondary highlight trigger-report-issue trigger-backdrop" data-url="${this.report_issue_url}" data-additional-params="parent_issue_id=${swimlane.identifier_issue.id}">${UI.fa_image_tag('sticky-note', { classes: 'icon' }, 'far')}<span>${Pachno.T.agile.add_card_here}</span></button>`
                 } else {
-                    header_name = `<span class="name">${swimlane.name}</span>`;
+                    header_name = '<span class="issue-container">';
+                    header_name += `<span class="name issue_header">${swimlane.name}</span>`;
+                    header_name += '</span>';
+                    header_name += `<button class="button secondary highlight trigger-report-issue trigger-backdrop" data-url="${this.report_issue_url}" data-additional-params="issuetype_id=${this.swimlane_field_values}">${UI.fa_image_tag('stream', { classes: 'icon'})}<span>${Pachno.T.agile.add_swimlane}</span></button>`
                 }
                 const header_html = `<div class="swimlane-header"><div class="header">${header_name}</div>`;
                 $swimlane.append(header_html);
@@ -233,13 +241,13 @@ class Board {
                 }
 
                 let html = `<div class="column" id="${column_id}" data-swimlane-identifier="${swimlane.identifier}" data-column-id="${column.id}" data-status-ids="${status_ids}">`;
-                if (this.swimlane_type === SwimlaneTypes.NONE) {
+                if (this.swimlane_type === SwimlaneTypes.NONE || !swimlane.has_identifiables) {
                     html += `
                             <div class="form-container">
                                 <div class="row">
                                     <div class="form name">
                                         <div class="form-row">
-                                            <span class="input invisible trigger-report-issue" data-status-ids="${status_ids}">
+                                            <span class="input invisible trigger-report-issue trigger-backdrop" data-url="${this.report_issue_url}" data-additional-params="status_ids=${status_ids}">
                                                 <span class="placeholder">${UI.fa_image_tag('plus')}<span>${Pachno.T.agile.add_card}</span></span>
                                             </span>
                                         </div>
@@ -277,7 +285,7 @@ class Board {
                     }
 
                     $swimlaneContainer.removeClass('empty');
-                    if (this.swimlane_type == SwimlaneTypes.NONE) {
+                    if (this.swimlane_type == SwimlaneTypes.NONE || !swimlane.has_identifiables) {
                         $add_card_form.before(issue.element);
                     } else {
                         $swimlane.append(issue.element);

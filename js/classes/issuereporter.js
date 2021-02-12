@@ -1,8 +1,14 @@
 import UI from "../helpers/ui";
 
 class IssueReporter {
-    constructor() {
+    constructor(do_update) {
         this.setupListeners();
+        if (do_update === true) {
+            const $reportissueContainer = $('#reportissue_container');
+            $reportissueContainer.addClass('huge');
+            $reportissueContainer.removeClass('large');
+            this.updateFields();
+        }
     }
 
     updateFields() {

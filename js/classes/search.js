@@ -186,7 +186,11 @@ class Search {
             visible_columns: visible_columns,
             default_visible_columns: default_columns
         };
-        for (const column of this.result_views[template.name].available_columns) {
+        for (const key in this.result_views[template.name].available_columns) {
+            if (!this.result_views[template.name].available_columns.hasOwnProperty(key))
+                continue;
+
+            const column = this.result_views[template.name].available_columns[key];
             if (this.result_views[template.name].visible_columns.indexOf(column) != -1) {
                 $('#search_column_' + column + '_toggler_checkbox').prop('checked', true);
             } else {
