@@ -18,23 +18,13 @@
                 <?php include_component('project/issueparent_crumbs', array('issue' => $issue)); ?>
             </span>
             <div id="title_content">
-                <span class="faded_out" id="no_title" <?php if ($issue->getTitle() != ''):?> style="display: none;" <?php endif; ?>><?php echo __('Nothing entered.'); ?></span>
                 <span id="title-name" class="title-name" title="<?php echo \pachno\core\framework\Context::getI18n()->decodeUTF8($issue->getTitle()); ?>">
                     <?php echo \pachno\core\framework\Context::getI18n()->decodeUTF8($issue->getTitle()); ?>
                 </span>
             </div>
-            <?php if ($issue->isEditable() && $issue->canEditTitle()): ?>
-                <span id="title_change" style="display: none;">
-                    <form id="title_form" action="<?php echo make_url('issue_setfield', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => 'title')); ?>" method="post" onSubmit="Pachno.Issues.Field.set('<?php echo make_url('issue_setfield', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => 'title')) ?>', 'title'); return false;">
-                        <input type="text" name="value" value="<?php echo $issue->getTitle(); ?>"><span class="title_form_save_container"><?php echo __('%cancel or %save', array('%save' => '<input type="submit" class="button" value="'.__('Save').'">', '%cancel' => '<a href="#" onclick="$(\'title-field\').toggleClass(\'editing\');$(\'title_change\').hide(); $(\'title_name\').show(); return false;">'.__('cancel').'</a>')); ?></span>
-                    </form>
-                    <?php echo image_tag('spinning_16.gif', array('style' => 'display: none; float: left; margin-right: 5px;', 'id' => 'title_spinning')); ?>
-                    <span id="title_change_error" class="error_message" style="display: none;"></span>
-                </span>
-            <?php endif; ?>
         </div>
         <div class="status-header">
-            <div id="issue-update-indicator" class="indicator">
+            <div id="issue-update-indicator" class="indicator issue-update-indicator" data-issue-id="<?= $issue->getID(); ?>">
                 <?= fa_image_tag('spinner', ['class' => 'fa-spin']); ?>
             </div>
             <div class="created-times">

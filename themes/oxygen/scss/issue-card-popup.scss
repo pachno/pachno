@@ -1,11 +1,14 @@
 @import "variables";
 @import "widgets/workflow-actions";
 @import "components/issue-fields-list";
+@import "components/issue-details";
+@import 'components/issue-title';
 
 #issue-card-popup {
-  .backdrop_detail_header {
+  > .backdrop_detail_header {
     text-transform: none;
     align-items: center;
+    font-weight: $theme-font-weight-regular;
 
     .workflow-actions-container {
       font-size: .75em;
@@ -16,6 +19,7 @@
     span {
       flex: 0 0 auto;
       padding: 0;
+      font-weight: $theme-font-weight-regular;
 
       &.issue-state {
         padding: 0.15em 0.25em;
@@ -30,6 +34,16 @@
     }
 
     @include workflow-actions-container(flex-start);
+
+    .indicator {
+      display: none;
+      margin-right: 0.35em;
+      margin-left: 0.35em;
+
+      &.active {
+        display: inline-flex;
+      }
+    }
 
     .dropper-container {
       margin-right: 0.35em;
@@ -53,9 +67,18 @@
         }
       }
     }
+
+    .toggle-favourite {
+      margin: 0 .35em;
+
+      .subscribed,
+      .unsubscribed {
+        font-size: 1.15em;
+      }
+    }
   }
 
-  .backdrop_detail_content {
+  > .backdrop_detail_content {
     .issue-state {
       flex: 0 0 auto;
       padding: 0.15em 0.25em;
@@ -68,18 +91,21 @@
       }
     }
 
-    .title-crumbs {
-      flex: 1 1 auto;
-      padding: 0;
-      font-size: 1em;
-      font-weight: $theme-font-weight-light;
-      display: flex;
-      align-items: center;
-      justify-content: flex-start;
+    @include issue-title();
 
-      a:last-child {
-        font-weight: $theme-font-weight-bold;
+    #status-field {
+      .dropdown-container {
+        left: 0;
+        right: auto;
       }
+    }
+
+    .title-container {
+      padding: 0 0 .35em 0;
+    }
+
+    .status-field {
+      margin-bottom: 1.5em;
     }
 
     .is-closed,
@@ -140,103 +166,41 @@
 
     @include issue-fields-list-container();
 
+    .sidebar {
+      .fields-list-container {
+        > .header {
+          padding: 0 .25em .5em .75em;
+          font-size: .9em;
+
+          span {
+            &.icon {
+              flex: 0 0 20px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+
+              .fas,
+              .far {
+                flex: 0 0 auto;
+              }
+            }
+          }
+
+          > .name {
+            font-size: 1em;
+            text-transform: uppercase;
+          }
+        }
+      }
+    }
+
     h5 {
       .not-editable {
         font-size: 0.8em;
       }
     }
 
-    .form-container {
-      .row {
-        height: auto;
-
-        .column {
-          flex-direction: row;
-          flex-wrap: wrap;
-
-          .form-row {
-            width: 100%;
-            padding: 0 0.5em;
-            height: auto;
-
-            &.header {
-              color: rgba(0, 0, 0, 0.6);
-
-              .icon {
-                color: #c8c8c8;
-              }
-            }
-
-            &:not(.header) {
-              + .form-row:not(.header) {
-                margin-top: 1em;
-              }
-            }
-
-            .name-input-enhance {
-              font-weight: $theme-font-weight-bold;
-            }
-          }
-        }
-
-        &[data-simple-submit] {
-          .formatted-text-container {
-            min-height: 7em;
-            border-radius: 0.5em;
-            padding: 0.5em;
-            width: 100%;
-            box-sizing: border-box;
-            font-family: $theme-font-family;
-            font-weight: $theme-font-weight-light;
-            transition: background-color 0.25s ease-in-out;
-
-            &.editable {
-              &:hover {
-                background-color: rgba(100, 100, 100, 0.05);
-                cursor: pointer;
-              }
-            }
-
-            p + p {
-              margin-top: 1em;
-            }
-          }
-
-          .editor-container {
-            height: 1px;
-            overflow: hidden;
-            opacity: 0;
-            transition: opacity 0.25s ease-in-out;
-            width: 100%;
-          }
-
-          .form-row.submit-container {
-            height: 1px;
-            overflow: hidden;
-            opacity: 0;
-            transition: opacity 0.25s ease-in-out;
-          }
-
-          &.editing {
-            .formatted-text-container {
-              display: none;
-            }
-
-            .editor-container {
-              height: auto;
-              opacity: 1;
-              min-height: 15em;
-            }
-
-            .form-row.submit-container {
-              height: auto;
-              opacity: 1;
-              overflow: visible;
-            }
-          }
-        }
-      }
-    }
+    @include issue-details();
 
     .fields-list-container {
       flex: 1 1 auto;
@@ -267,6 +231,10 @@
     .comments {
       margin-top: 1em;
       border-top: 1px solid rgba(200, 200, 200, 0.3);
+
+      .comment-container {
+        box-shadow: none;
+      }
     }
   }
 }

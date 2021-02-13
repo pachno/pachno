@@ -436,6 +436,10 @@
             .name {
               font-size: 1.1em;
               font-weight: $theme-font-weight-regular;
+
+              &.trigger-backdrop {
+                cursor: pointer;
+              }
             }
 
             .issue-number {

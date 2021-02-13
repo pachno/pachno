@@ -1,4 +1,5 @@
 import Issue from "./issue";
+import Pachno from "./pachno";
 import {SwimlaneTypes} from "./board";
 
 class Swimlane {
@@ -17,13 +18,13 @@ class Swimlane {
         this.identifier = json.identifier;
 
         for (const issue_json of json.issues) {
-            this.issues.push(new Issue(issue_json, this.board_id));
+            this.issues.push(Pachno.addIssue(issue_json, this.board_id));
         }
     }
 
     addIssues(issues) {
         for (const issue_json of issues) {
-            this.issues.push(new Issue(issue_json, this.board_id));
+            this.issues.push(Pachno.addIssue(issue_json, this.board_id));
         }
     }
 

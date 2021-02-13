@@ -203,7 +203,7 @@ class Board {
                     header_name += `<span>${swimlane.identifier_issue.issue_no}</span>`;
                     header_name += `<span class="status-badge" style="background-color: ${swimlane.identifier_issue.status.color}; color: ${swimlane.identifier_issue.status.text_color};"><span>${swimlane.identifier_issue.status.name}</span></span>`
                     header_name += `</a>`;
-                    header_name += `<span class="name issue_header ${closed_class}">`;
+                    header_name += `<span class="name issue_header ${closed_class} trigger-backdrop" data-url="${swimlane.identifier_issue.card_url}">`;
                     header_name += `<span>${swimlane.identifier_issue.title}</span>`;
                     header_name += '</span>';
                     header_name += '</span>';
@@ -407,7 +407,7 @@ class Board {
     }
 
     addIssue(issue_json) {
-        const issue = new Issue(issue_json, this.id);
+        const issue = Pachno.addIssue(issue_json, this.id);
         if (this.swimlane_type === SwimlaneTypes.ISSUES && this.swimlane_identifier === "issuetype" && this.swimlane_field_values.includes(issue.issue_type.id)) {
             const swimlane = new Swimlane({
                 issues: [],

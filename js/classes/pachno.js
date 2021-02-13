@@ -13,6 +13,7 @@ import {setupListeners as agileSetupListeners} from "../helpers/agile";
 import Board from "./board";
 import Search from "./search";
 import Issuereporter from "./issuereporter";
+import Issue from "./issue";
 import Uploader from "./uploader";
 import Roadmap from "./roadmap";
 import Quicksearch, { TYPES as QuicksearchTypes } from "./quicksearch";
@@ -77,6 +78,7 @@ class PachnoApplication {
         this.debugger = undefined;
         this.listeners = {};
         this.language = document.body.dataset.language;
+        this.issues = {};
     }
 
     initialize(options) {
@@ -210,6 +212,22 @@ class PachnoApplication {
                     });
                 });
         });
+    }
+
+    /**
+     *
+     * @param json
+     * @param board_id
+     * @returns Issue
+     */
+    addIssue(json, board_id) {
+        if (this.issues[json.id] !== undefined) {
+            return this.issues[json.id];
+        }
+
+        this.issues[json.id] = new Issue(json, board_id);
+
+        return this.issues[json.id];
     }
 
 }

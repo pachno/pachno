@@ -21,6 +21,9 @@
                 <?php include_component('project/issueparent_crumbs', array('issue' => $issue)); ?>
             </span>
         <?php endif; ?>
+        <div class="indicator issue-update-indicator" data-issue-id="<?= $issue->getID(); ?>">
+            <?= fa_image_tag('spinner', ['class' => 'fa-spin']); ?>
+        </div>
         <div class="dropper-container">
             <button class="dropper button secondary" id="more_actions_<?= $issue->getID(); ?>_button"><span><?= __('Actions'); ?></span><?= fa_image_tag('chevron-down'); ?></button>
             <?php include_component('main/issuemoreactions', array('issue' => $issue, 'times' => false, 'show_workflow_transitions' => false)); ?>
@@ -30,96 +33,47 @@
     </div>
     <div id="backdrop_detail_content" class="backdrop_detail_content with-sidebar sidebar-right">
         <div class="content">
-            <div class="form-container">
-                <div class="form">
-                    <div class="row">
-                        <div class="column large">
-                            <?php if ($issue->isWorkflowTransitionsAvailable()): ?>
-                                <div class="form-row">
-                                    <span class="title-crumbs">
-                                        <?php include_component('project/issueparent_crumbs', array('issue' => $issue)); ?>
-                                    </span>
-                                </div>
-                            <?php endif; ?>
-                            <form class="form-row header" id="issue-card-title-form" action="<?= $set_field_route . '?field=title'; ?>" method="post" data-interactive-form>
-                                <input name="value" class="name-input-enhance invisible" id="edit-issue-name" type="text" value="<?= $issue->getTitle(); ?>" placeholder="<?= __('Enter a short description of this issue here'); ?>">
-                            </form>
-                            <div class="form-row">
-                                <div class="created-times">
-                                    <div id="posted_at_field">
-                                        <label><?= __('Posted at'); ?></label>
-                                        <time datetime="<?= Context::getI18n()->formatTime($issue->getPosted(), 24); ?>" title="<?= Context::getI18n()->formatTime($issue->getPosted(), 21); ?>" class="value-container"><?= Context::getI18n()->formatTime($issue->getPosted(), 20); ?></time>
-                                    </div>
-                                    <div id="updated_at_field">
-                                        <label><?= __('Last updated'); ?></label>
-                                        <time datetime="<?= Context::getI18n()->formatTime($issue->getLastUpdatedTime(), 24); ?>" title="<?= Context::getI18n()->formatTime($issue->getLastUpdatedTime(), 21); ?>" class="value-container"><?= Context::getI18n()->formatTime($issue->getLastUpdatedTime(), 20); ?></time>
-                                    </div>
-                                </div>
-                            </div>
-                            <form class="row" id="issue-card-description-form" action="<?= $set_field_route . '?field=description'; ?>" method="post" data-simple-submit data-field="description">
-                                <div class="form-row header">
-                                    <h5>
-                                        <?= fa_image_tag('align-left', ['class' => 'icon']); ?><span><?= __('Description'); ?></span>
-                                        <?php if (!$issue->isEditable()): ?>
-                                            <div class="not-editable">
-                                                <?= fa_image_tag('lock'); ?>
-                                                <span class="name"><?= __('Locked'); ?></span>
-                                                <span class="tooltip from-above"><?= __('This field cannot be edited because the workflow defines this step as "locked"'); ?></span>
-                                            </div>
-                                        <?php endif; ?>
-                                    </h5>
-                                </div>
-                                <div class="form-row">
-                                    <div class="formatted-text-container content <?php if ($issue->isEditable()) echo 'editable'; ?>">
-                                        <?php echo $issue->getParsedDescription(['issue' => $issue]); ?>
-                                    </div>
-                                    <?php if ($issue->isEditable()): ?>
-                                        <div class="editor-container">
-                                            <?php include_component('main/textarea', ['area_id' => 'description_input_area', 'area_name' => 'value', 'target_type' => 'issue', 'target_id' => $issue->getID(), 'invisible' => true, 'markuppable' => true, 'syntax' => Settings::SYNTAX_MD, 'value' => $issue->getDescription()]); ?>
-                                        </div>
-                                    <?php endif; ?>
-                                </div>
-                                <div class="form-row submit-container">
-                                    <button type="button" class="button secondary"><?= __('Cancel'); ?></button>
-                                    <button type="submit" class="button primary">
-                                        <span class="name"><?= __('Save'); ?></span>
-                                        <?= fa_image_tag('spinner', ['class' => 'fa-spin icon indicator']); ?>
-                                    </button>
-                                </div>
-                            </form>
-                            <form class="row <?php if (!$issue->isReproductionStepsVisible()) echo 'hidden'; ?>" id="issue-card-reproduction_steps-form" action="<?= $set_field_route . '?field=reproduction_steps'; ?>" method="post" data-simple-submit data-field="reproduction_steps">
-                                <div class="form-row header">
-                                    <h5>
-                                        <?= fa_image_tag('list-ol', ['class' => 'icon']); ?><span><?= __('How to reproduce'); ?></span>
-                                        <?php if (!$issue->isEditable()): ?>
-                                            <div class="not-editable">
-                                                <?= fa_image_tag('lock'); ?>
-                                                <span class="name"><?= __('Locked'); ?></span>
-                                                <span class="tooltip from-above"><?= __('This field cannot be edited because the workflow defines this step as "locked"'); ?></span>
-                                            </div>
-                                        <?php endif; ?>
-                                    </h5>
-                                </div>
-                                <div class="form-row">
-                                    <div class="formatted-text-container content <?php if ($issue->isEditable()) echo 'editable'; ?>">
-                                        <?php echo $issue->getParsedReproductionSteps(['issue' => $issue]); ?>
-                                    </div>
-                                    <div class="editor-container">
-                                        <?php include_component('main/textarea', ['area_id' => 'reproduction_steps_input_area', 'area_name' => 'value', 'target_type' => 'issue', 'target_id' => $issue->getID(), 'invisible' => true, 'markuppable' => true, 'syntax' => Settings::SYNTAX_MD, 'value' => $issue->getReproductionSteps()]); ?>
-                                    </div>
-                                </div>
-                                <div class="form-row submit-container">
-                                    <button type="button" class="button secondary"><?= __('Cancel'); ?></button>
-                                    <button type="submit" class="button primary">
-                                        <span class="name"><?= __('Save'); ?></span>
-                                        <?= fa_image_tag('spinner', ['class' => 'fa-spin icon indicator']); ?>
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
+            <div id="title-field" class="title-container">
+                <?php if ($issue->isWorkflowTransitionsAvailable()): ?>
+                    <span class="title-crumbs">
+                        <?php include_component('project/issueparent_crumbs', array('issue' => $issue)); ?>
+                    </span>
+                <?php endif; ?>
+                <div id="title_content">
+                    <span id="title-name" class="title-name" title="<?php echo \pachno\core\framework\Context::getI18n()->decodeUTF8($issue->getTitle()); ?>">
+                        <?php echo \pachno\core\framework\Context::getI18n()->decodeUTF8($issue->getTitle()); ?>
+                    </span>
                 </div>
             </div>
+            <div id="status-field" class="dropper-container status-field">
+                <div class="status-badge dropper" style="
+                        background-color: <?php echo ($issue->getStatus() instanceof \pachno\core\entities\Datatype) ? $issue->getStatus()->getColor() : '#FFF'; ?>;
+                        color: <?php echo ($issue->getStatus() instanceof \pachno\core\entities\Datatype) ? $issue->getStatus()->getTextColor() : '#333'; ?>;
+                <?php if (!$issue->getStatus() instanceof \pachno\core\entities\Datatype): ?> display: none;<?php endif; ?>
+                        " id="status_<?php echo $issue->getID(); ?>_color">
+                    <span id="status_content"><?php if ($issue->getStatus() instanceof \pachno\core\entities\Datatype) echo __($issue->getStatus()->getName()); ?></span>
+                </div>
+                <?php if ($issue->canEditStatus()): ?>
+                    <div class="dropdown-container">
+                        <div class="list-mode" id="status_change">
+                            <div class="header">
+                                <span class="name"><?= __('Change status'); ?></span>
+                            </div>
+                            <?php foreach ($statuses as $status): ?>
+                                <?php if (!$status->canUserSet($pachno_user)) continue; ?>
+                                <div class="list-item">
+                                    <a href="javascript:void(0);" onclick="Pachno.Issues.Field.set('<?php echo make_url('issue_setfield', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => 'status', 'status_id' => $status->getID())); ?>', 'status');">
+                                        <div class="status-badge" style="background-color: <?php echo $status->getColor(); ?>;color: <?php echo $status->getTextColor(); ?>;">
+                                            <span><?php echo __($status->getName()); ?></span>
+                                        </div>
+                                    </a>
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
+                    </div>
+                <?php endif; ?>
+            </div>
+            <?php include_component('project/issuedetails', ['issue' => $issue]); ?>
             <?php include_component('project/issuecomments', ['issue' => $issue]); ?>
         </div>
         <div class="sidebar" id="issue-card-issuefields-container">
@@ -128,24 +82,5 @@
     </div>
 </div>
 <script>
-    let issue = new Issue(<?= json_encode($json); ?>, undefined, false);
-    issue.allowShortcuts(<?= json_encode($json['fields']); ?>);
-
-    Pachno.on(Pachno.EVENTS.issue.update, () => {
-        $('#issue-update-indicator').addClass('active');
-    });
-
-    Pachno.on(Pachno.EVENTS.issue.updateDone, () => {
-        $('#issue-update-indicator').removeClass('active');
-    });
-
-    let uploader = new Uploader({
-        uploader_container: $('#viewissue_attached_information_container'),
-        mode: 'list',
-        only_images: false,
-        type: '<?= \pachno\core\entities\File::TYPE_ATTACHMENT; ?>',
-        data: {
-            issue_id: <?= $issue->getID(); ?>
-        }
-    });
+    Pachno.addIssue(<?= json_encode($json); ?>).updateVisibleValues();
 </script>

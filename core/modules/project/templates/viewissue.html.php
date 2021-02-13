@@ -44,23 +44,5 @@
     Pachno.on(Pachno.EVENTS.ready, function () {
         const issue = new Issue(<?= json_encode($json); ?>, undefined, false);
         issue.allowShortcuts(<?= json_encode($json['fields']); ?>);
-
-        Pachno.on(Pachno.EVENTS.issue.update, () => {
-            $('#issue-update-indicator').addClass('active');
-        });
-
-        Pachno.on(Pachno.EVENTS.issue.updateDone, () => {
-            $('#issue-update-indicator').removeClass('active');
-        });
-
-        const uploader = new Uploader({
-            uploader_container: $('#viewissue_attached_information_container'),
-            mode: 'list',
-            only_images: false,
-            type: '<?= \pachno\core\entities\File::TYPE_ATTACHMENT; ?>',
-            data: {
-                issue_id: <?= $issue->getID(); ?>
-            }
-        });
     });
 </script>

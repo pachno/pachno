@@ -1,6 +1,8 @@
 @import "variables";
 @import 'widgets/workflow-actions';
 @import 'components/issue-fields-list';
+@import 'components/issue-details';
+@import 'components/issue-title';
 
 .viewissue-container,
 .content-with-sidebar > div:not(.sidebar):not(.fixed-position).viewissue-container {
@@ -66,75 +68,7 @@
         }
       }
 
-      .title-container {
-        display: flex;
-        flex: 1 1 auto;
-        flex-direction: column;
-        line-height: 1.75em;
-        padding: 1em 0;
-
-        .title-crumbs {
-          padding: 0 0 .5em 0;
-          display: flex;
-          flex-direction: row;
-          align-items: center;
-          justify-content: flex-start;
-          line-height: 1.25em;
-
-          > a,
-          > a:hover {
-            border: none;
-            color: #141823;
-            font-size: 1.1em;
-            flex: 0 0 auto;
-            margin-left: .5em;
-            font-weight: $theme-font-weight-bold;
-          }
-        }
-
-        .title-name {
-          font-size: 1.5rem;
-          font-weight: $theme-font-weight-bold;
-        }
-
-        .posted-by-container {
-          flex: 0 0 auto;
-          display: flex;
-          flex-direction: row;
-          align-items: center;
-          position: relative;
-
-          .value {
-            display: flex;
-            flex-direction: row;
-            align-items: center;
-          }
-        }
-      }
-
-      .status-header {
-        flex: 0 0 auto;
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        justify-content: flex-end;
-        box-sizing: border-box;
-        padding-right: 1em;
-
-        .indicator {
-          display: flex;
-          opacity: 0;
-          transition: opacity .25s ease-in-out;
-          flex: 0 0 auto;
-          padding: 1em;
-          align-items: center;
-          justify-content: center;
-
-          &.active {
-            opacity: 1;
-          }
-        }
-      }
+      @include issue-title();
 
       .fields-header {
         flex: 0 0 400px;
@@ -285,68 +219,7 @@
         @include workflow-actions-container(flex-start);
       }
 
-      .issue-details {
-        flex: 1 1 auto;
-        display: flex;
-        flex-direction: column;
-
-        .content {
-          font-size: 1.15em;
-
-          &.editable {
-            &:hover {
-              background-color: rgba(100, 100, 100, 0.05);
-              cursor: pointer;
-            }
-
-            + .textarea_container {
-              height: 1px;
-              overflow: hidden;
-              opacity: 0;
-              transition: opacity 0.25s ease-in-out;
-              width: 100%;
-
-              + .textarea_save_container {
-                height: 1px;
-                overflow: hidden;
-                opacity: 0;
-                transition: opacity 0.25s ease-in-out;
-
-                display: flex;
-                flex-direction: row;
-                align-items: center;
-                justify-content: space-between;
-                margin: 0;
-                padding: 0;
-                box-sizing: border-box;
-                background-color: transparent;
-                border: none;
-              }
-            }
-          }
-
-          &.editing {
-            display: none;
-
-            + .textarea_container {
-              height: auto;
-              opacity: 1;
-              min-height: 15em;
-
-              + .textarea_save_container {
-                padding: 1em;
-                height: auto;
-                opacity: 1;
-                overflow: visible;
-              }
-            }
-          }
-
-          p + p {
-            margin-top: 1em;
-          }
-        }
-      }
+      @include issue-details();
 
       .fields-list {
         display: flex;

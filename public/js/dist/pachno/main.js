@@ -388,7 +388,7 @@ var Board = /*#__PURE__*/function () {
               header_name += "<span>".concat(swimlane.identifier_issue.issue_no, "</span>");
               header_name += "<span class=\"status-badge\" style=\"background-color: ".concat(swimlane.identifier_issue.status.color, "; color: ").concat(swimlane.identifier_issue.status.text_color, ";\"><span>").concat(swimlane.identifier_issue.status.name, "</span></span>");
               header_name += "</a>";
-              header_name += "<span class=\"name issue_header ".concat(closed_class, "\">");
+              header_name += "<span class=\"name issue_header ".concat(closed_class, " trigger-backdrop\" data-url=\"").concat(swimlane.identifier_issue.card_url, "\">");
               header_name += "<span>".concat(swimlane.identifier_issue.title, "</span>");
               header_name += '</span>';
               header_name += '</span>';
@@ -707,7 +707,7 @@ var Board = /*#__PURE__*/function () {
   }, {
     key: "addIssue",
     value: function addIssue(issue_json) {
-      var issue = new Issue(issue_json, this.id);
+      var issue = _pachno__WEBPACK_IMPORTED_MODULE_4__["default"].addIssue(issue_json, this.id);
 
       if (this.swimlane_type === SwimlaneTypes.ISSUES && this.swimlane_identifier === "issuetype" && this.swimlane_field_values.includes(issue.issue_type.id)) {
         var swimlane = new _swimlane__WEBPACK_IMPORTED_MODULE_2__["default"]({
@@ -1001,8 +1001,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! jquery */ "./node_modules/jquery/dist/jquery.js");
 /* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(jquery__WEBPACK_IMPORTED_MODULE_1__);
 /* harmony import */ var _pachno__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./pachno */ "./js/classes/pachno.js");
-/* harmony import */ var _quicksearch__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./quicksearch */ "./js/classes/quicksearch.js");
-/* harmony import */ var _widgets_editor__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../widgets/editor */ "./js/widgets/editor.js");
+/* harmony import */ var _uploader__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./uploader */ "./js/classes/uploader.js");
+/* harmony import */ var _quicksearch__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./quicksearch */ "./js/classes/quicksearch.js");
+/* harmony import */ var _widgets_editor__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../widgets/editor */ "./js/widgets/editor.js");
 function _createForOfIteratorHelper(o, allowArrayLike) { var it; if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = o[Symbol.iterator](); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
 
 function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
@@ -1014,6 +1015,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
 
 
 
@@ -1035,6 +1037,15 @@ var Issue = /*#__PURE__*/function () {
     }
 
     this.setupListeners();
+    this.uploader = new _uploader__WEBPACK_IMPORTED_MODULE_3__["default"]({
+      uploader_container: jquery__WEBPACK_IMPORTED_MODULE_1___default()('#viewissue_attached_information_container'),
+      mode: 'list',
+      only_images: false,
+      type: 'attachment',
+      data: {
+        issue_id: this.id
+      }
+    });
   }
 
   _createClass(Issue, [{
@@ -1085,7 +1096,7 @@ var Issue = /*#__PURE__*/function () {
     key: "postAndUpdate",
     value: function postAndUpdate(field, value) {
       var issue = this;
-      _pachno__WEBPACK_IMPORTED_MODULE_2__["default"].trigger(_pachno__WEBPACK_IMPORTED_MODULE_2__["default"].EVENTS.issueUpdate, {
+      _pachno__WEBPACK_IMPORTED_MODULE_2__["default"].trigger(_pachno__WEBPACK_IMPORTED_MODULE_2__["default"].EVENTS.issue.update, {
         id: this.id
       });
       return new Promise(function (resolve, reject) {
@@ -1112,7 +1123,7 @@ var Issue = /*#__PURE__*/function () {
       var $container_element = jquery__WEBPACK_IMPORTED_MODULE_1___default()("#".concat(field, "_field"));
       var $element = jquery__WEBPACK_IMPORTED_MODULE_1___default()("[data-editable-field][data-issue-id=".concat(this.id, "][data-field=").concat(field, "]"));
       var $textarea = jquery__WEBPACK_IMPORTED_MODULE_1___default()("[data-editable-textarea][data-issue-id=".concat(this.id, "][data-field=").concat(field, "]"));
-      var editor = Object(_widgets_editor__WEBPACK_IMPORTED_MODULE_4__["getEditor"])($textarea.attr('id'));
+      var editor = Object(_widgets_editor__WEBPACK_IMPORTED_MODULE_5__["getEditor"])($textarea.attr('id'));
       $container_element.addClass('force-visible');
       $element.addClass('editing');
       setTimeout(function () {
@@ -1143,7 +1154,7 @@ var Issue = /*#__PURE__*/function () {
         var $element = jquery__WEBPACK_IMPORTED_MODULE_1___default()(this);
         var $textarea = jquery__WEBPACK_IMPORTED_MODULE_1___default()("[data-editable-textarea][data-issue-id=".concat(issue.id, "][data-field=").concat($element.data('field'), "]"));
         var $value_container = jquery__WEBPACK_IMPORTED_MODULE_1___default()("[data-editable-field][data-issue-id=".concat(issue.id, "][data-field=").concat($element.data('field'), "]"));
-        var editor = Object(_widgets_editor__WEBPACK_IMPORTED_MODULE_4__["getEditor"])($textarea.attr('id'));
+        var editor = Object(_widgets_editor__WEBPACK_IMPORTED_MODULE_5__["getEditor"])($textarea.attr('id'));
         var field = $element.data('field');
         var $container_element = jquery__WEBPACK_IMPORTED_MODULE_1___default()("#".concat(field, "_field"));
         issue.postAndUpdate(field, editor.value()).then(function () {
@@ -1156,12 +1167,22 @@ var Issue = /*#__PURE__*/function () {
         var $element = jquery__WEBPACK_IMPORTED_MODULE_1___default()(this);
         var $value_container = jquery__WEBPACK_IMPORTED_MODULE_1___default()("[data-editable-field][data-issue-id=".concat(issue.id, "][data-field=").concat($element.data('field'), "]"));
         var $textarea = jquery__WEBPACK_IMPORTED_MODULE_1___default()("[data-editable-textarea][data-issue-id=".concat(issue.id, "][data-field=").concat($element.data('field'), "]"));
-        var editor = Object(_widgets_editor__WEBPACK_IMPORTED_MODULE_4__["getEditor"])($textarea.attr('id'));
+        var editor = Object(_widgets_editor__WEBPACK_IMPORTED_MODULE_5__["getEditor"])($textarea.attr('id'));
         var field = $element.data('field');
         var $container_element = jquery__WEBPACK_IMPORTED_MODULE_1___default()("#".concat(field, "_field"));
         editor.value(issue[field]);
         $value_container.removeClass('editing');
         $container_element.removeClass('force-visible');
+      });
+      _pachno__WEBPACK_IMPORTED_MODULE_2__["default"].on(_pachno__WEBPACK_IMPORTED_MODULE_2__["default"].EVENTS.issue.update, function (json) {
+        if (json.id === issue.id) {
+          jquery__WEBPACK_IMPORTED_MODULE_1___default()(".issue-update-indicator[data-issue-id=".concat(issue.id, "]")).addClass('active');
+        }
+      });
+      _pachno__WEBPACK_IMPORTED_MODULE_2__["default"].on(_pachno__WEBPACK_IMPORTED_MODULE_2__["default"].EVENTS.issue.updateDone, function (json) {
+        if (json.id === issue.id) {
+          jquery__WEBPACK_IMPORTED_MODULE_1___default()(".issue-update-indicator[data-issue-id=".concat(issue.id, "]")).removeClass('active');
+        }
       });
       _pachno__WEBPACK_IMPORTED_MODULE_2__["default"].on(_pachno__WEBPACK_IMPORTED_MODULE_2__["default"].EVENTS.issue.triggerEdit, function (PachnoApplication, data) {
         if (data.issue_id != issue.id) return;
@@ -1209,7 +1230,7 @@ var Issue = /*#__PURE__*/function () {
                   icon: icon,
                   shortcut: "set ".concat(field, " ").concat(index),
                   name: choice.name,
-                  type: _quicksearch__WEBPACK_IMPORTED_MODULE_3__["TYPES"].event,
+                  type: _quicksearch__WEBPACK_IMPORTED_MODULE_4__["TYPES"].event,
                   event: _pachno__WEBPACK_IMPORTED_MODULE_2__["default"].EVENTS.issue.triggerUpdate,
                   event_value: {
                     field: field,
@@ -1301,7 +1322,7 @@ var Issue = /*#__PURE__*/function () {
             }
 
             if (['title', 'reproduction_steps', 'description'].includes(field_key)) {
-              field_choice.type = _quicksearch__WEBPACK_IMPORTED_MODULE_3__["TYPES"].event;
+              field_choice.type = _quicksearch__WEBPACK_IMPORTED_MODULE_4__["TYPES"].event;
               field_choice.event = _pachno__WEBPACK_IMPORTED_MODULE_2__["default"].EVENTS.issue.triggerEdit;
               field_choice.event_value = {
                 field: field_key,
@@ -1310,7 +1331,7 @@ var Issue = /*#__PURE__*/function () {
             } else if (field_key === 'votes') {
               field_choice.name = 'Vote / unvote';
               field_choice.description = 'Toggle your vote for this issue';
-              field_choice.type = _quicksearch__WEBPACK_IMPORTED_MODULE_3__["TYPES"].event;
+              field_choice.type = _quicksearch__WEBPACK_IMPORTED_MODULE_4__["TYPES"].event;
               field_choice.event = _pachno__WEBPACK_IMPORTED_MODULE_2__["default"].EVENTS.issue.triggerUpdate;
               field_choice.event_value = {
                 field: field_key,
@@ -1318,7 +1339,7 @@ var Issue = /*#__PURE__*/function () {
                 issue_id: this.id
               };
             } else {
-              field_choice.type = _quicksearch__WEBPACK_IMPORTED_MODULE_3__["TYPES"].dynamic_choices;
+              field_choice.type = _quicksearch__WEBPACK_IMPORTED_MODULE_4__["TYPES"].dynamic_choices;
               field_choice.event = _pachno__WEBPACK_IMPORTED_MODULE_2__["default"].EVENTS.issue.loadDynamicChoices;
               field_choice.event_value = field_key;
             }
@@ -1336,7 +1357,7 @@ var Issue = /*#__PURE__*/function () {
               name: 'list-alt',
               type: 'fas'
             };
-            field_choice.type = _quicksearch__WEBPACK_IMPORTED_MODULE_3__["TYPES"].dynamic_choices;
+            field_choice.type = _quicksearch__WEBPACK_IMPORTED_MODULE_4__["TYPES"].dynamic_choices;
             field_choice.event = _pachno__WEBPACK_IMPORTED_MODULE_2__["default"].EVENTS.issue.loadDynamicChoices;
             field_choice.event_value = field_key;
             break;
@@ -1445,6 +1466,15 @@ var Issue = /*#__PURE__*/function () {
             $field.addClass('not-visible');
           }
         }
+      }
+
+      var $fieldslist = jquery__WEBPACK_IMPORTED_MODULE_1___default()('#issue_details_fieldslist');
+      var $other_fields = $fieldslist.children('> ul > li:not(.hidden)');
+
+      if ($other_fields.length) {
+        $fieldslist.removeClass('not-visible');
+      } else {
+        $fieldslist.addClass('not-visible');
       }
     }
   }, {
@@ -1701,7 +1731,7 @@ window.IssueReporter = IssueReporter;
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _helpers_ui__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../helpers/ui */ "./js/helpers/ui.js");
-/* harmony import */ var _issue__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./issue */ "./js/classes/issue.js");
+/* harmony import */ var _pachno__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./pachno */ "./js/classes/pachno.js");
 /* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! jquery */ "./node_modules/jquery/dist/jquery.js");
 /* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(jquery__WEBPACK_IMPORTED_MODULE_2__);
 function _createForOfIteratorHelper(o, allowArrayLike) { var it; if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = o[Symbol.iterator](); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
@@ -1749,7 +1779,7 @@ var Milestone = /*#__PURE__*/function () {
       if (this.is_closed) classes.push('milestone-closed');
       var html = "\n<div class=\"milestone-container ".concat(classes.join(','), "\" data-milestone-id=\"").concat(this.id, "\">\n    <div class=\"milestone milestone-card\">\n        <div class=\"header trigger-backdrop\" data-url=\"").concat(this.backdrop_url, "\">\n            <span class=\"name\">").concat(this.name, "</span>\n            <span class=\"info\">\n                <span class=\"info-item\">").concat(_helpers_ui__WEBPACK_IMPORTED_MODULE_0__["default"].fa_image_tag('file-alt', {}, 'far'), "&nbsp;").concat(this.issues_count, "</span>\n                <span class=\"icon indicator\">").concat(_helpers_ui__WEBPACK_IMPORTED_MODULE_0__["default"].fa_image_tag('spinner', {
         classes: 'fa-spin'
-      }), "</span>\n                <span class=\"icon expander\">").concat(_helpers_ui__WEBPACK_IMPORTED_MODULE_0__["default"].fa_image_tag('chevron-down'), "</span>\n            </span>\n            <div class=\"percent-container\">\n                <span class=\"percent-header\">").concat(Pachno.T.roadmap.percent_complete.replace('%percentage', this.percent_complete), "</span>\n                <span class=\"percent_unfilled\">\n                    <span class=\"percent_filled\" style=\"width: ").concat(this.percent_complete, "%;\"></span>\n                </span>\n            </div>\n        </div>\n        <div class=\"issues\"></div>\n    </div>\n</div>\n");
+      }), "</span>\n                <span class=\"icon expander\">").concat(_helpers_ui__WEBPACK_IMPORTED_MODULE_0__["default"].fa_image_tag('chevron-down'), "</span>\n            </span>\n            <div class=\"percent-container\">\n                <span class=\"percent-header\">").concat(_pachno__WEBPACK_IMPORTED_MODULE_1__["default"].T.roadmap.percent_complete.replace('%percentage', this.percent_complete), "</span>\n                <span class=\"percent_unfilled\">\n                    <span class=\"percent_filled\" style=\"width: ").concat(this.percent_complete, "%;\"></span>\n                </span>\n            </div>\n        </div>\n        <div class=\"issues\"></div>\n    </div>\n</div>\n");
       var $html = jquery__WEBPACK_IMPORTED_MODULE_2___default()(html);
       return $html;
     }
@@ -1762,7 +1792,7 @@ var Milestone = /*#__PURE__*/function () {
       try {
         for (_iterator.s(); !(_step = _iterator.n()).done;) {
           var issue_json = _step.value;
-          this.issues.push(new _issue__WEBPACK_IMPORTED_MODULE_1__["default"](issue_json));
+          this.issues.push(_pachno__WEBPACK_IMPORTED_MODULE_1__["default"].addIssue(issue_json));
         }
       } catch (err) {
         _iterator.e(err);
@@ -1782,7 +1812,7 @@ var Milestone = /*#__PURE__*/function () {
 
       var $milestone_card = this.element.find('.milestone-card');
       $milestone_card.addClass('loading');
-      Pachno.fetch(this.url, {
+      _pachno__WEBPACK_IMPORTED_MODULE_1__["default"].fetch(this.url, {
         method: 'GET'
       }).then(function (json) {
         _this.addIssues(json.milestone.issues);
@@ -1857,11 +1887,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _board__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./board */ "./js/classes/board.js");
 /* harmony import */ var _search__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./search */ "./js/classes/search.js");
 /* harmony import */ var _issuereporter__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ./issuereporter */ "./js/classes/issuereporter.js");
-/* harmony import */ var _uploader__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ./uploader */ "./js/classes/uploader.js");
-/* harmony import */ var _roadmap__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ./roadmap */ "./js/classes/roadmap.js");
-/* harmony import */ var _quicksearch__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ./quicksearch */ "./js/classes/quicksearch.js");
-/* harmony import */ var _i18n_en_US_strings_json__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! ../../i18n/en_US/strings.json */ "./i18n/en_US/strings.json");
-var _i18n_en_US_strings_json__WEBPACK_IMPORTED_MODULE_18___namespace = /*#__PURE__*/__webpack_require__.t(/*! ../../i18n/en_US/strings.json */ "./i18n/en_US/strings.json", 1);
+/* harmony import */ var _issue__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ./issue */ "./js/classes/issue.js");
+/* harmony import */ var _uploader__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ./uploader */ "./js/classes/uploader.js");
+/* harmony import */ var _roadmap__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ./roadmap */ "./js/classes/roadmap.js");
+/* harmony import */ var _quicksearch__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! ./quicksearch */ "./js/classes/quicksearch.js");
+/* harmony import */ var _i18n_en_US_strings_json__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! ../../i18n/en_US/strings.json */ "./i18n/en_US/strings.json");
+var _i18n_en_US_strings_json__WEBPACK_IMPORTED_MODULE_19___namespace = /*#__PURE__*/__webpack_require__.t(/*! ../../i18n/en_US/strings.json */ "./i18n/en_US/strings.json", 1);
 function _createForOfIteratorHelper(o, allowArrayLike) { var it; if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = o[Symbol.iterator](); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
 
 function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
@@ -1899,8 +1930,9 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
 
 
+
 var translations = {
-  en_US: _i18n_en_US_strings_json__WEBPACK_IMPORTED_MODULE_18__
+  en_US: _i18n_en_US_strings_json__WEBPACK_IMPORTED_MODULE_19__
 };
 
 var PachnoApplication = /*#__PURE__*/function () {
@@ -1914,6 +1946,7 @@ var PachnoApplication = /*#__PURE__*/function () {
     this["debugger"] = undefined;
     this.listeners = {};
     this.language = document.body.dataset.language;
+    this.issues = {};
   }
 
   _createClass(PachnoApplication, [{
@@ -1971,7 +2004,7 @@ var PachnoApplication = /*#__PURE__*/function () {
       this.debug = options.debug;
       this.basepath = options.basepath;
       this.data_url = options.dataUrl;
-      this.quicksearch = new _quicksearch__WEBPACK_IMPORTED_MODULE_17__["default"](options.autocompleterUrl);
+      this.quicksearch = new _quicksearch__WEBPACK_IMPORTED_MODULE_18__["default"](options.autocompleterUrl);
       this.trigger(this.EVENTS.quicksearchAddDefaultChoice, {
         icon: {
           name: 'search',
@@ -1981,7 +2014,7 @@ var PachnoApplication = /*#__PURE__*/function () {
         name: 'Find something',
         description: 'Search through issues, projects, documentation and people',
         action: {
-          type: _quicksearch__WEBPACK_IMPORTED_MODULE_17__["TYPES"].navigate,
+          type: _quicksearch__WEBPACK_IMPORTED_MODULE_18__["TYPES"].navigate,
           url: '/account'
         }
       });
@@ -1994,7 +2027,7 @@ var PachnoApplication = /*#__PURE__*/function () {
         name: 'Show an issue',
         description: 'Go directly to an issue',
         action: {
-          type: _quicksearch__WEBPACK_IMPORTED_MODULE_17__["TYPES"].event,
+          type: _quicksearch__WEBPACK_IMPORTED_MODULE_18__["TYPES"].event,
           event: '/find'
         }
       });
@@ -2116,6 +2149,23 @@ var PachnoApplication = /*#__PURE__*/function () {
           });
         });
       });
+    }
+    /**
+     *
+     * @param json
+     * @param board_id
+     * @returns Issue
+     */
+
+  }, {
+    key: "addIssue",
+    value: function addIssue(json, board_id) {
+      if (this.issues[json.id] !== undefined) {
+        return this.issues[json.id];
+      }
+
+      this.issues[json.id] = new _issue__WEBPACK_IMPORTED_MODULE_15__["default"](json, board_id);
+      return this.issues[json.id];
     }
   }]);
 
@@ -3262,7 +3312,8 @@ window.Search = Search;
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _issue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./issue */ "./js/classes/issue.js");
-/* harmony import */ var _board__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./board */ "./js/classes/board.js");
+/* harmony import */ var _pachno__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./pachno */ "./js/classes/pachno.js");
+/* harmony import */ var _board__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./board */ "./js/classes/board.js");
 function _createForOfIteratorHelper(o, allowArrayLike) { var it; if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = o[Symbol.iterator](); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
 
 function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
@@ -3274,6 +3325,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
 
 
 
@@ -3301,7 +3353,7 @@ var Swimlane = /*#__PURE__*/function () {
     try {
       for (_iterator.s(); !(_step = _iterator.n()).done;) {
         var issue_json = _step.value;
-        this.issues.push(new _issue__WEBPACK_IMPORTED_MODULE_0__["default"](issue_json, this.board_id));
+        this.issues.push(_pachno__WEBPACK_IMPORTED_MODULE_1__["default"].addIssue(issue_json, this.board_id));
       }
     } catch (err) {
       _iterator.e(err);
@@ -3319,7 +3371,7 @@ var Swimlane = /*#__PURE__*/function () {
       try {
         for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
           var issue_json = _step2.value;
-          this.issues.push(new _issue__WEBPACK_IMPORTED_MODULE_0__["default"](issue_json, this.board_id));
+          this.issues.push(_pachno__WEBPACK_IMPORTED_MODULE_1__["default"].addIssue(issue_json, this.board_id));
         }
       } catch (err) {
         _iterator2.e(err);
@@ -3346,11 +3398,11 @@ var Swimlane = /*#__PURE__*/function () {
       }
 
       switch (this.identifier_type) {
-        case _board__WEBPACK_IMPORTED_MODULE_1__["SwimlaneTypes"].ISSUES:
+        case _board__WEBPACK_IMPORTED_MODULE_2__["SwimlaneTypes"].ISSUES:
           return this.identifier_issue.id === issue.parent_issue_id;
 
-        case _board__WEBPACK_IMPORTED_MODULE_1__["SwimlaneTypes"].GROUPING:
-        case _board__WEBPACK_IMPORTED_MODULE_1__["SwimlaneTypes"].EXPEDITE:
+        case _board__WEBPACK_IMPORTED_MODULE_2__["SwimlaneTypes"].GROUPING:
+        case _board__WEBPACK_IMPORTED_MODULE_2__["SwimlaneTypes"].EXPEDITE:
           if (!this.identifiables) {
             return false;
           } // debugger;
@@ -3441,11 +3493,13 @@ var Uploader = /*#__PURE__*/function () {
       });
     }
 
+    $body.off('change', '#file_upload_dummy');
     $body.on('change', '#file_upload_dummy', function (event) {
       return _this.selectFiles(event);
     });
 
     if (this.uploader_container !== undefined) {
+      this.uploader_container.off('click', '.trigger-file-upload');
       this.uploader_container.on('click', '.trigger-file-upload', function (event) {
         event.preventDefault();
 

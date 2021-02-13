@@ -1,0 +1,64 @@
+@mixin issue-details() {
+  .issue-details {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+
+    .content {
+      font-size: 1.15em;
+
+      &.editable {
+        &:hover {
+          background-color: rgba(100, 100, 100, 0.05);
+          cursor: pointer;
+        }
+
+        + .textarea_container {
+          height: 1px;
+          overflow: hidden;
+          opacity: 0;
+          transition: opacity 0.25s ease-in-out;
+          width: 100%;
+
+          + .textarea_save_container {
+            height: 1px;
+            overflow: hidden;
+            opacity: 0;
+            transition: opacity 0.25s ease-in-out;
+
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: space-between;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            background-color: transparent;
+            border: none;
+          }
+        }
+      }
+
+      &.editing {
+        display: none;
+
+        + .textarea_container {
+          height: auto;
+          opacity: 1;
+          min-height: 15em;
+
+          + .textarea_save_container {
+            padding: 1em;
+            height: auto;
+            opacity: 1;
+            overflow: visible;
+          }
+        }
+      }
+
+      p + p {
+        margin-top: 1em;
+      }
+    }
+  }
+}

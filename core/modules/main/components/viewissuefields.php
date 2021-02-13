@@ -314,12 +314,12 @@ use pachno\core\framework\Context;
     </ul>
 </div>
 <?php if (count($fields_list) || count($customfields_list)): ?>
-    <div class="fields-list-container">
+    <div class="fields-list-container" id="issue_details_fieldslist">
         <div class="header">
             <span class="icon"><?= fa_image_tag('stream'); ?></span>
             <span class="name"><?= __('Other details'); ?></span>
         </div>
-        <ul class="issue_details fields-list" id="issue_details_fieldslist">
+        <ul class="issue_details fields-list">
             <?php foreach ($fields_list as $field => $info): ?>
                 <?php include_component('main/viewissuefield', compact('field', 'info', 'issue')); ?>
             <?php endforeach; ?>

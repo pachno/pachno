@@ -1,0 +1,57 @@
+@mixin issue-title() {
+  .title-container {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    line-height: 1.75em;
+    padding: 1em 0;
+
+    .title-crumbs {
+      padding: 0 0 .5em 0;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: flex-start;
+      line-height: 1.25em;
+
+      > a,
+      > a:hover {
+        border: none;
+        color: #141823;
+        font-size: 1.1em;
+        flex: 0 0 auto;
+        margin-left: .5em;
+        font-weight: $theme-font-weight-bold;
+      }
+    }
+
+    .title-name {
+      font-size: 1.5rem;
+      font-weight: $theme-font-weight-bold;
+    }
+  }
+
+  .status-header {
+    flex: 0 0 auto;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-end;
+    box-sizing: border-box;
+    padding-right: 1em;
+
+    .indicator {
+      display: flex;
+      opacity: 0;
+      transition: opacity .25s ease-in-out;
+      flex: 0 0 auto;
+      padding: 1em;
+      align-items: center;
+      justify-content: center;
+
+      &.active {
+        opacity: 1;
+      }
+    }
+  }
+}

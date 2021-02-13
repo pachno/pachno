@@ -21,8 +21,10 @@ class Uploader {
             $body.on('dragleave', (event) => this.dragOverFiles(event))
             this.dropzone.on('drop', (event) => this.dropFiles(event));
         }
+        $body.off('change', '#file_upload_dummy');
         $body.on('change', '#file_upload_dummy', (event) => this.selectFiles(event))
         if (this.uploader_container !== undefined) {
+            this.uploader_container.off('click', '.trigger-file-upload');
             this.uploader_container.on('click', '.trigger-file-upload', (event) => { event.preventDefault(); this.file_input_element.trigger('click');});
         }
     }

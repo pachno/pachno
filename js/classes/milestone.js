@@ -1,5 +1,5 @@
 import UI from "../helpers/ui";
-import Issue from "./issue";
+import Pachno from "./pachno";
 import $ from "jquery";
 
 class Milestone {
@@ -53,7 +53,7 @@ class Milestone {
 
     addIssues(issues) {
         for (const issue_json of issues) {
-            this.issues.push(new Issue(issue_json));
+            this.issues.push(Pachno.addIssue(issue_json));
         }
     }
 

@@ -52,6 +52,7 @@
 
         public function componentViewIssueCard()
         {
+            $this->statuses = ($this->issue->getProject()->useStrictWorkflowMode()) ? $this->issue->getProject()->getAvailableStatuses() : $this->issue->getAvailableStatuses();
             $this->set_field_route = framework\Context::getRouting()->generate('edit_issue', array('project_key' => $this->issue->getProject()->getKey(), 'issue_id' => $this->issue->getID()));
         }
 

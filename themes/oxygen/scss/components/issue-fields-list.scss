@@ -41,7 +41,6 @@
 
     > .header {
       border: none;
-      padding: 0;
       flex: 0 0 auto;
       display: flex;
       flex-direction: row;
@@ -136,6 +135,10 @@
       margin: 0;
       display: flex;
       flex-direction: column;
+
+      &.hidden {
+        display: none;
+      }
 
       > li:not(.hidden) {
         display: flex;

@@ -1,6 +1,7 @@
 import UI from "../helpers/ui";
 import $ from "jquery";
 import Pachno from "./pachno";
+import Uploader from "./uploader";
 import { TYPES as QuicksearchTypes } from "./quicksearch";
 import {getEditor} from "../widgets/editor";
 
@@ -12,6 +13,15 @@ class Issue {
             this.element = this.createHtmlElement();
         }
         this.setupListeners();
+        this.uploader = new Uploader({
+            uploader_container: $('#viewissue_attached_information_container'),
+            mode: 'list',
+            only_images: false,
+            type: 'attachment',
+            data: {
+                issue_id: this.id
+            }
+        });
     }
 
     updateFromJson(json) {
@@ -65,7 +75,7 @@ class Issue {
 
     postAndUpdate(field, value) {
         const issue = this;
-        Pachno.trigger(Pachno.EVENTS.issueUpdate, {id: this.id});
+        Pachno.trigger(Pachno.EVENTS.issue.update, {id: this.id});
 
         return new Promise(function (resolve, reject) {
             Pachno.fetch(issue.save_url, {
@@ -144,6 +154,18 @@ class Issue {
             editor.value(issue[field]);
             $value_container.removeClass('editing');
             $container_element.removeClass('force-visible');
+        });
+
+        Pachno.on(Pachno.EVENTS.issue.update, (json) => {
+            if (json.id === issue.id) {
+                $(`.issue-update-indicator[data-issue-id=${issue.id}]`).addClass('active');
+            }
+        });
+
+        Pachno.on(Pachno.EVENTS.issue.updateDone, (json) => {
+            if (json.id === issue.id) {
+                $(`.issue-update-indicator[data-issue-id=${issue.id}]`).removeClass('active');
+            }
         });
 
         Pachno.on(Pachno.EVENTS.issue.triggerEdit, function (PachnoApplication, data) {
@@ -366,6 +388,14 @@ class Issue {
                     $field.addClass('not-visible');
                 }
             }
+        }
+
+        const $fieldslist = $('#issue_details_fieldslist');
+        const $other_fields = $fieldslist.children('> ul > li:not(.hidden)');
+        if ($other_fields.length) {
+            $fieldslist.removeClass('not-visible');
+        } else {
+            $fieldslist.addClass('not-visible');
         }
     }
 
