@@ -1,8 +1,17 @@
+<?php
+
+    use pachno\core\entities\Issue;
+
+    /**
+     * @var Issue $issue
+     */
+
+?>
 <?php if (isset($dynamic) && $dynamic == true): ?>
     <?php $moreactions_url = array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID()); ?>
     <?php if (isset($board)) $moreactions_url['board_id'] = $board->getID(); ?>
     <?php if (isset($estimator_mode)) $moreactions_url['estimator_mode'] = $estimator_mode; ?>
-    <div class="dropdown-container dynamic_menu" data-menu-url="<?php echo make_url('issue_moreactions', $moreactions_url); ?>">
+    <div class="dropdown-container dynamic_menu" data-menu-url="<?php echo make_url('issue_moreactions', $moreactions_url); ?>" data-dynamic-field-value data-field="menu" data-issue-id="<?= $issue->getId(); ?>">
         <div class="list-mode">
             <div class="list-item disabled">
                 <span class="icon"><?= fa_image_tag('spinner', ['class' => 'fa-spin']); ?></span>
@@ -10,7 +19,7 @@
         </div>
     </div>
 <?php else: ?>
-    <div class="dropdown-container">
+    <div class="dropdown-container" data-dynamic-field-value data-field="menu" data-issue-id="<?= $issue->getId(); ?>">
         <div class="list-mode" data-simplebar>
             <?php if (!$issue->getProject()->isArchived() && $issue->canEditIssueDetails()): ?>
                 <?php if (!$multi && $show_workflow_transitions): ?>
@@ -20,7 +29,7 @@
                             <?php if ($transition->hasTemplate()): ?>
                                 <a class="list-item trigger-backdrop" href="javascript:void(0);" data-url="<?= make_url('get_partial_for_backdrop', ['key' => 'workflow_transition', 'transition_id' => $transition->getID()])."&project_key=".$issue->getProject()->getKey()."&issue_id=".$issue->getID(); ?>"><span class="name"><?= $transition->getName(); ?></span></a>
                             <?php else: ?>
-                                <?php echo javascript_link_tag(fa_image_tag('spinner', array('style' => 'display: none;', 'id' => 'transition_working_'.$transition->getID().'_indicator', 'class' => 'fa-spin icon')).'<span class="name">'.$transition->getName().'</span>', array('class' => 'list-item disabled', 'onclick' => "Pachno.Search.interactiveWorkflowTransition('".make_url('transition_issues', array('project_key' => $issue->getProject()->getKey(), 'transition_id' => $transition->getID()))."&issue_ids[]=".$issue->getID()."', ".$transition->getID().");")); ?>
+                                <a class="list-item trigger-workflow-transition" href="javascript:void(0);" data-url="<?= str_replace(['%25project_key%25', '%25issue_id%25'], [$issue->getProject()->getKey(), $issue->getID()], $transition->toJSON(false)['url']); ?>"><span class="name"><?= $transition->getName(); ?></span><span class="icon indicator"><?= fa_image_tag('spinner', ['class' => 'fa-spin']); ?></span></a>
                             <?php endif; ?>
                         <?php endforeach; ?>
                     <?php endif; ?>

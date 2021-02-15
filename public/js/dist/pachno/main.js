@@ -523,7 +523,7 @@ var Board = /*#__PURE__*/function () {
                   var issue = _step10.value;
                   if (!isInColumn(issue)) continue;
                   num_issues["status_".concat(issue.status.id)] += 1;
-                  if (issue.processed) continue;
+                  if (issue.processed && issue.swimlane === swimlane.identifier) continue;
 
                   if (issue.assignee && issue.assignee.type == 'user') {
                     _this4.users.add(JSON.stringify(issue.assignee));
@@ -532,12 +532,13 @@ var Board = /*#__PURE__*/function () {
                   $swimlaneContainer.removeClass('empty');
 
                   if (_this4.swimlane_type == SwimlaneTypes.NONE || !swimlane.has_identifiables) {
-                    $add_card_form.before(issue.element);
+                    $add_card_form.before(issue.element.detach());
                   } else {
-                    $swimlane.append(issue.element);
+                    $swimlane.append(issue.element.detach());
                   }
 
                   issue.processed = true;
+                  issue.swimlane = swimlane.identifier;
                 }
               } catch (err) {
                 _iterator10.e(err);
@@ -808,6 +809,8 @@ var Board = /*#__PURE__*/function () {
   }, {
     key: "setupListeners",
     value: function setupListeners() {
+      var _this6 = this;
+
       var board = this;
       var $body = jquery__WEBPACK_IMPORTED_MODULE_0___default()('body');
       $body.on('click', '#selected_milestone_input li', function (event) {
@@ -876,6 +879,37 @@ var Board = /*#__PURE__*/function () {
             board.updateSelectedMilestone(true);
             break;
         }
+      });
+      _pachno__WEBPACK_IMPORTED_MODULE_4__["default"].on(_pachno__WEBPACK_IMPORTED_MODULE_4__["default"].EVENTS.issue.updateJsonComplete, function () {
+        _this6.verifyIssues();
+      });
+      $body.off('dragstart', '.whiteboard-issue');
+      $body.on('dragstart', '.whiteboard-issue', function (event) {
+        event.originalEvent.dataTransfer.setData('text/plain', jquery__WEBPACK_IMPORTED_MODULE_0___default()(event.target).id);
+        event.originalEvent.dataTransfer.effectAllowed = "move";
+        event.originalEvent.dataTransfer.dropEffect = "move";
+        event.currentTarget.classList.add('dragging');
+      });
+      $body.off('drop');
+      $body.on('drop', function (event) {
+        if (event !== undefined) {
+          event.preventDefault();
+        }
+      });
+      $body.off('dragover', '.columns-container .column');
+      $body.on('dragover', '.columns-container .column', function (event) {
+        var $column = jquery__WEBPACK_IMPORTED_MODULE_0___default()(event.target);
+        $column.addClass('drop-valid');
+      });
+      $body.off('dragleave', '.columns-container .column');
+      $body.on('dragleave', '.columns-container .column', function (event) {
+        var $column = jquery__WEBPACK_IMPORTED_MODULE_0___default()(event.target);
+        $column.removeClass('drop-valid');
+      });
+      $body.off('dragend', '.whiteboard-issue');
+      $body.on('dragend', '.whiteboard-issue', function (event) {
+        // event.originalEvent.dataTransfer.clearData();
+        event.currentTarget.classList.remove('dragging');
       });
     }
   }]);
@@ -1066,10 +1100,13 @@ var Issue = /*#__PURE__*/function () {
       this.save_url = json.save_url;
       this.choices_url = json.choices_url;
       this.backdrop_url = json.backdrop_url;
+      this.project = json.project;
+      this.transitions = json.transitions;
       this.blocking = json.blocking;
       this.closed = json.closed;
       this.deleted = json.deleted;
       this.state = json.state;
+      this.editable = json.editable;
       this.description = json.description;
       this.description_formatted = json.description_formatted;
       this.reproduction_steps = json.reproduction_steps;
@@ -1121,8 +1158,8 @@ var Issue = /*#__PURE__*/function () {
     key: "triggerEditField",
     value: function triggerEditField(field) {
       var $container_element = jquery__WEBPACK_IMPORTED_MODULE_1___default()("#".concat(field, "_field"));
-      var $element = jquery__WEBPACK_IMPORTED_MODULE_1___default()("[data-editable-field][data-issue-id=".concat(this.id, "][data-field=").concat(field, "]"));
-      var $textarea = jquery__WEBPACK_IMPORTED_MODULE_1___default()("[data-editable-textarea][data-issue-id=".concat(this.id, "][data-field=").concat(field, "]"));
+      var $element = jquery__WEBPACK_IMPORTED_MODULE_1___default()("[data-editable-field][data-issue-id=\"".concat(this.id, "\"][data-field=\"").concat(field, "\"]"));
+      var $textarea = jquery__WEBPACK_IMPORTED_MODULE_1___default()("[data-editable-textarea][data-issue-id=\"".concat(this.id, "\"][data-field=\"").concat(field, "\"]"));
       var editor = Object(_widgets_editor__WEBPACK_IMPORTED_MODULE_5__["getEditor"])($textarea.attr('id'));
       $container_element.addClass('force-visible');
       $element.addClass('editing');
@@ -1136,21 +1173,21 @@ var Issue = /*#__PURE__*/function () {
     value: function setupListeners() {
       var $body = jquery__WEBPACK_IMPORTED_MODULE_1___default()('body');
       var issue = this;
-      $body.off('click', "input[data-trigger-issue-update][data-issue-id=".concat(this.id, "]"));
-      $body.on('click', "input[data-trigger-issue-update][data-issue-id=".concat(this.id, "]"), function () {
+      $body.off('click', "input[data-trigger-issue-update][data-issue-id=\"".concat(this.id, "\"]"));
+      $body.on('click', "input[data-trigger-issue-update][data-issue-id=\"".concat(this.id, "\"]"), function () {
         var $element = jquery__WEBPACK_IMPORTED_MODULE_1___default()(this);
         $element.addClass('submitting');
         issue.postAndUpdate($element.data('field'), $element.val()).then(function () {
           $element.removeClass('submitting');
         });
       });
-      $body.off('click', ".editable[data-editable-field][data-issue-id=".concat(this.id, "]"));
-      $body.on('click', ".editable[data-editable-field][data-issue-id=".concat(this.id, "]"), function () {
+      $body.off('click', ".editable[data-editable-field][data-issue-id=\"".concat(this.id, "\"]"));
+      $body.on('click', ".editable[data-editable-field][data-issue-id=\"".concat(this.id, "\"]"), function () {
         var $element = jquery__WEBPACK_IMPORTED_MODULE_1___default()(this);
         issue.triggerEditField($element.data('field'));
       });
-      $body.off('click', "[data-trigger-save][data-issue-id=".concat(this.id, "]"));
-      $body.on('click', "[data-trigger-save][data-issue-id=".concat(this.id, "]"), function () {
+      $body.off('click', "[data-trigger-save][data-issue-id=\"".concat(this.id, "\"]"));
+      $body.on('click', "[data-trigger-save][data-issue-id=\"".concat(this.id, "\"]"), function () {
         var $element = jquery__WEBPACK_IMPORTED_MODULE_1___default()(this);
         var $textarea = jquery__WEBPACK_IMPORTED_MODULE_1___default()("[data-editable-textarea][data-issue-id=".concat(issue.id, "][data-field=").concat($element.data('field'), "]"));
         var $value_container = jquery__WEBPACK_IMPORTED_MODULE_1___default()("[data-editable-field][data-issue-id=".concat(issue.id, "][data-field=").concat($element.data('field'), "]"));
@@ -1162,8 +1199,8 @@ var Issue = /*#__PURE__*/function () {
           $container_element.removeClass('force-visible');
         });
       });
-      $body.off('click', "[data-trigger-cancel-editing][data-issue-id=".concat(this.id, "]"));
-      $body.on('click', "[data-trigger-cancel-editing][data-issue-id=".concat(this.id, "]"), function () {
+      $body.off('click', "[data-trigger-cancel-editing][data-issue-id=\"".concat(this.id, "\"]"));
+      $body.on('click', "[data-trigger-cancel-editing][data-issue-id=\"".concat(this.id, "\"]"), function () {
         var $element = jquery__WEBPACK_IMPORTED_MODULE_1___default()(this);
         var $value_container = jquery__WEBPACK_IMPORTED_MODULE_1___default()("[data-editable-field][data-issue-id=".concat(issue.id, "][data-field=").concat($element.data('field'), "]"));
         var $textarea = jquery__WEBPACK_IMPORTED_MODULE_1___default()("[data-editable-textarea][data-issue-id=".concat(issue.id, "][data-field=").concat($element.data('field'), "]"));
@@ -1258,6 +1295,7 @@ var Issue = /*#__PURE__*/function () {
         var issue_json = data.json.issue !== undefined ? data.json.issue : data.json;
         issue.updateFromJson(issue_json);
         issue.updateVisibleValues(issue_json);
+        _pachno__WEBPACK_IMPORTED_MODULE_2__["default"].trigger(_pachno__WEBPACK_IMPORTED_MODULE_2__["default"].EVENTS.issue.updateJsonComplete, issue);
       });
     }
   }, {
@@ -1373,7 +1411,7 @@ var Issue = /*#__PURE__*/function () {
     value: function updateVisibleValues(json) {
       var _this$_field;
 
-      var $value_fields = jquery__WEBPACK_IMPORTED_MODULE_1___default()("[data-dynamic-field-value][data-issue-id=".concat(this.id, "]"));
+      var $value_fields = jquery__WEBPACK_IMPORTED_MODULE_1___default()("[data-dynamic-field-value][data-issue-id=\"".concat(this.id, "\"]"));
 
       var _iterator2 = _createForOfIteratorHelper($value_fields),
           _step2;
@@ -1402,9 +1440,12 @@ var Issue = /*#__PURE__*/function () {
             case 'severity':
               if (((_this$_field = this[_field]) === null || _this$_field === void 0 ? void 0 : _this$_field.name) !== undefined) {
                 $element.html(this[_field].name);
+                $element.removeClass('no-value');
+                $element.removeClass('faded_out');
                 $value_input = jquery__WEBPACK_IMPORTED_MODULE_1___default()("#issue_".concat(this.id, "_field_").concat(_field, "_").concat(this[_field].value));
               } else {
-                $element.html(_pachno__WEBPACK_IMPORTED_MODULE_2__["default"].T.issue.value_not_set);
+                $element.html($element.data('unknown') !== undefined ? $element.data('unknown') : _pachno__WEBPACK_IMPORTED_MODULE_2__["default"].T.issue.value_not_set);
+                $element.addClass('no-value');
                 $value_input = jquery__WEBPACK_IMPORTED_MODULE_1___default()("#issue_".concat(this.id, "_field_").concat(_field, "_0"));
               }
 
@@ -1412,6 +1453,14 @@ var Issue = /*#__PURE__*/function () {
                 $value_input.checked = true;
               }
 
+              break;
+
+            case 'status':
+              $element.css({
+                backgroundColor: this.status.color,
+                color: this.status.text_color
+              });
+              $element.html("<span>".concat(this.status.name, "</span>"));
               break;
 
             case 'description':
@@ -1433,7 +1482,74 @@ var Issue = /*#__PURE__*/function () {
               break;
 
             case 'number_of_files':
-              $element.html(this.number_of_files);
+              var $files_value_element = $element.find('.value');
+
+              if ($files_value_element.length) {
+                $files_value_element.html(this.number_of_files);
+              } else {
+                $element.html(this.number_of_files);
+              }
+
+              if (this.number_of_files > 0) {
+                $element.removeClass('hidden');
+              } else {
+                $element.addClass('hidden');
+              }
+
+              break;
+
+            case 'number_of_comments':
+              var $comments_value_element = $element.find('.value');
+
+              if ($comments_value_element.length) {
+                $comments_value_element.html(this.number_of_comments);
+              } else {
+                $element.html(this.number_of_comments);
+              }
+
+              if (this.number_of_comments > 0) {
+                $element.removeClass('hidden');
+              } else {
+                $element.addClass('hidden');
+              }
+
+              break;
+
+            case 'closed-message':
+              if (this['closed']) {
+                var message = $element.data('message').replace('%status_name', this.status.name).replace('%resolution', this.resolution !== undefined ? this.resolution.name : $element.data('unknown'));
+                $element.find('.content').html(message);
+                $element.removeClass('hidden');
+              } else {
+                $element.addClass('hidden');
+              }
+
+              break;
+
+            case 'closed':
+              if (this[_field]) {
+                $element.removeClass('hidden');
+              } else {
+                $element.addClass('hidden');
+              }
+
+              break;
+
+            case 'editable':
+              if (!this[_field]) {
+                $element.removeClass('hidden');
+              } else {
+                $element.addClass('hidden');
+              }
+
+              break;
+
+            case 'menu':
+              $element.addClass('dynamic_menu');
+              $element.removeData('is-loaded');
+              $element.html("<div class=\"list-mode\"><div class=\"list-item\"><span class=\"icon\">".concat(_helpers_ui__WEBPACK_IMPORTED_MODULE_0__["default"].fa_image_tag('spinner', {
+                classes: 'fa-spin'
+              }), "</span></div></div>"));
               break;
 
             case 'percent_complete':
@@ -1447,6 +1563,38 @@ var Issue = /*#__PURE__*/function () {
         _iterator2.e(err);
       } finally {
         _iterator2.f();
+      }
+
+      var $workflowTransitionsContainer = jquery__WEBPACK_IMPORTED_MODULE_1___default()("[data-issue-workflow-transitions-container][data-issue-id=\"".concat(this.id, "\"]"));
+
+      if ($workflowTransitionsContainer.length) {
+        $workflowTransitionsContainer.html('');
+
+        var _iterator3 = _createForOfIteratorHelper(this.transitions),
+            _step3;
+
+        try {
+          for (_iterator3.s(); !(_step3 = _iterator3.n()).done;) {
+            var transition = _step3.value;
+            var tooltip = "<div class=\"tooltip from-above from-left\">".concat(transition.description, "</div>");
+            var html = "<div class=\"tooltip-container\">".concat(tooltip);
+
+            if (transition.template !== '') {
+              html += "<button class=\"button secondary highlight trigger-backdrop\" type=\"button\" data-url=\"".concat(transition.backdrop_url, "?project_id=").concat(this.project.id, "&issue_id=").concat(this.id, "\">").concat(transition.name, "</button>");
+            } else {
+              html += "<button class=\"button secondary highlight trigger-workflow-transition\" data-url=\"".concat(transition.url.replace('%25project_key%25', this.project.key).replace('%25issue_id%25', this.id), "\"><span>").concat(transition.name, "</span>").concat(_helpers_ui__WEBPACK_IMPORTED_MODULE_0__["default"].fa_image_tag('spinner', {
+                classes: 'fa-spin indicator'
+              }), "</button>");
+            }
+
+            html += '</div>';
+            $workflowTransitionsContainer.append(html);
+          }
+        } catch (err) {
+          _iterator3.e(err);
+        } finally {
+          _iterator3.f();
+        }
       }
 
       if (json !== undefined) {
@@ -1483,25 +1631,20 @@ var Issue = /*#__PURE__*/function () {
       var classes = [];
       if (this.closed) classes.push('issue_closed');
       if (this.blocking) classes.push('blocking');
-      var html = "\n<div id=\"whiteboard_issue_".concat(this.id, "\" class=\"whiteboard-issue trigger-backdrop ").concat(classes.join(','), "\" data-issue-id=\"").concat(this.id, "\" data-url=\"").concat(this.card_url, "/board_id/").concat(this.board_id, "\">\n    <div class=\"issue-header\">\n        <span class=\"issue-number\">").concat(this.issue_no, "</span>\n        <span class=\"issue-title\">").concat(this.title, "</span>\n        <div class=\"dropper-container\">\n            <button class=\"button icon dropper dynamic_menu_link\" type=\"button\">").concat(_helpers_ui__WEBPACK_IMPORTED_MODULE_0__["default"].fa_image_tag('ellipsis-v'), "</button>\n            <div class=\"dropdown-container dynamic_menu\" data-menu-url=\"").concat(this.more_actions_url, "\">\n                <div class=\"list-mode\">\n                    <div class=\"list-item disabled\">\n                        <span class=\"icon\">").concat(_helpers_ui__WEBPACK_IMPORTED_MODULE_0__["default"].fa_image_tag('spinner', {
+      var html = "\n<div id=\"whiteboard_issue_".concat(this.id, "\" draggable=\"true\" class=\"whiteboard-issue trigger-backdrop ").concat(classes.join(','), "\" data-issue-id=\"").concat(this.id, "\" data-url=\"").concat(this.card_url, "/board_id/").concat(this.board_id, "\">\n    <div class=\"issue-header\">\n        <span class=\"issue-number\">").concat(this.issue_no, "</span>\n        <span class=\"issue-title\" data-dynamic-field-value data-field=\"title\" data-issue-id=\"").concat(this.id, "\">").concat(this.title, "</span>\n        <div class=\"dropper-container\">\n            <button class=\"button icon dropper dynamic_menu_link\" type=\"button\">").concat(_helpers_ui__WEBPACK_IMPORTED_MODULE_0__["default"].fa_image_tag('ellipsis-v'), "</button>\n            <div class=\"dropdown-container dynamic_menu\" data-menu-url=\"").concat(this.more_actions_url, "\">\n                <div class=\"list-mode\">\n                    <div class=\"list-item disabled\">\n                        <span class=\"icon\">").concat(_helpers_ui__WEBPACK_IMPORTED_MODULE_0__["default"].fa_image_tag('spinner', {
         'classes': 'fa-spin'
       }), "</span>\n                    </div>\n                </div>\n            </div>\n        </div>\n    </div>\n    <div class=\"issue-info\">\n    </div>\n</div>\n");
       var $html = jquery__WEBPACK_IMPORTED_MODULE_1___default()(html);
       var $info = $html.find('.issue-info');
-
-      if (this.number_of_files > 0) {
-        $info.append("<span class=\"attachments\">".concat(_helpers_ui__WEBPACK_IMPORTED_MODULE_0__["default"].fa_image_tag('paperclip'), "<span>").concat(this.number_of_files, "</span></span>"));
-      }
-
-      if (this.number_of_comments > 0) {
-        $info.append("<span class=\"attachments\">".concat(_helpers_ui__WEBPACK_IMPORTED_MODULE_0__["default"].fa_image_tag('comments', [], 'far'), "<span>").concat(this.number_of_comments, "</span></span>"));
-      }
-
-      $info.append("<span class=\"status-badge\" style=\"background-color: ".concat(this.status.color, "; color: ").concat(this.status.text_color, ";\"><span>").concat(this.status.name, "</span></span>"));
+      var files_hidden_class = this.number_of_files > 0 ? '' : 'hidden';
+      var comments_hidden_class = this.number_of_comments > 0 ? '' : 'hidden';
+      $info.append("<span class=\"attachments ".concat(files_hidden_class, "\" data-dynamic-field-value data-field=\"number_of_files\" data-issue-id=\"").concat(this.id, "\">").concat(_helpers_ui__WEBPACK_IMPORTED_MODULE_0__["default"].fa_image_tag('paperclip'), "<span class=\"value\">").concat(this.number_of_files, "</span></span>"));
+      $info.append("<span class=\"attachments ".concat(comments_hidden_class, "\" data-dynamic-field-value data-field=\"number_of_comments\" data-issue-id=\"").concat(this.id, "\">").concat(_helpers_ui__WEBPACK_IMPORTED_MODULE_0__["default"].fa_image_tag('comments', [], 'far'), "<span class=\"value\">").concat(this.number_of_comments, "</span></span>"));
+      $info.append("<span class=\"status-badge\" style=\"background-color: ".concat(this.status.color, "; color: ").concat(this.status.text_color, ";\" data-dynamic-field-value data-field=\"status\" data-issue-id=\"").concat(this.id, "\"><span>").concat(this.status.name, "</span></span>"));
 
       if (this.assignee !== undefined && this.assignee !== null) {
         if (this.assignee.type == 'user') {
-          $info.append("<span class=\"assignee\"><span class=\"avatar medium\"><img src=\"".concat(this.assignee.avatar_url_small, "\"></span></span>"));
+          $info.append("<span class=\"assignee\" data-dynamic-field-value data-field=\"assignee\" data-issue-id=\"".concat(this.id, "\"><span class=\"avatar medium\"><img src=\"").concat(this.assignee.avatar_url_small, "\"></span></span>"));
         }
       }
 
@@ -1884,15 +2027,16 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _helpers_comments__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../helpers/comments */ "./js/helpers/comments.js");
 /* harmony import */ var _helpers_favourites__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ../helpers/favourites */ "./js/helpers/favourites.js");
 /* harmony import */ var _helpers_agile__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ../helpers/agile */ "./js/helpers/agile.js");
-/* harmony import */ var _board__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./board */ "./js/classes/board.js");
-/* harmony import */ var _search__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./search */ "./js/classes/search.js");
-/* harmony import */ var _issuereporter__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ./issuereporter */ "./js/classes/issuereporter.js");
-/* harmony import */ var _issue__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ./issue */ "./js/classes/issue.js");
-/* harmony import */ var _uploader__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ./uploader */ "./js/classes/uploader.js");
-/* harmony import */ var _roadmap__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ./roadmap */ "./js/classes/roadmap.js");
-/* harmony import */ var _quicksearch__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! ./quicksearch */ "./js/classes/quicksearch.js");
-/* harmony import */ var _i18n_en_US_strings_json__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! ../../i18n/en_US/strings.json */ "./i18n/en_US/strings.json");
-var _i18n_en_US_strings_json__WEBPACK_IMPORTED_MODULE_19___namespace = /*#__PURE__*/__webpack_require__.t(/*! ../../i18n/en_US/strings.json */ "./i18n/en_US/strings.json", 1);
+/* harmony import */ var _helpers_workflow__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ../helpers/workflow */ "./js/helpers/workflow.js");
+/* harmony import */ var _board__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./board */ "./js/classes/board.js");
+/* harmony import */ var _search__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ./search */ "./js/classes/search.js");
+/* harmony import */ var _issuereporter__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ./issuereporter */ "./js/classes/issuereporter.js");
+/* harmony import */ var _issue__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ./issue */ "./js/classes/issue.js");
+/* harmony import */ var _uploader__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ./uploader */ "./js/classes/uploader.js");
+/* harmony import */ var _roadmap__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! ./roadmap */ "./js/classes/roadmap.js");
+/* harmony import */ var _quicksearch__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! ./quicksearch */ "./js/classes/quicksearch.js");
+/* harmony import */ var _i18n_en_US_strings_json__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(/*! ../../i18n/en_US/strings.json */ "./i18n/en_US/strings.json");
+var _i18n_en_US_strings_json__WEBPACK_IMPORTED_MODULE_20___namespace = /*#__PURE__*/__webpack_require__.t(/*! ../../i18n/en_US/strings.json */ "./i18n/en_US/strings.json", 1);
 function _createForOfIteratorHelper(o, allowArrayLike) { var it; if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = o[Symbol.iterator](); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
 
 function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
@@ -1931,8 +2075,9 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
 
 
+
 var translations = {
-  en_US: _i18n_en_US_strings_json__WEBPACK_IMPORTED_MODULE_19__
+  en_US: _i18n_en_US_strings_json__WEBPACK_IMPORTED_MODULE_20__
 };
 
 var PachnoApplication = /*#__PURE__*/function () {
@@ -1973,6 +2118,7 @@ var PachnoApplication = /*#__PURE__*/function () {
           triggerEdit: 'issue-trigger-edit',
           updateDone: 'issue-update-done',
           updateJson: 'issue-update-json',
+          updateJsonComplete: 'issue-update-json-complete',
           loadDynamicChoices: 'issue-load-dynamic-choices'
         },
         upload: {
@@ -2004,7 +2150,7 @@ var PachnoApplication = /*#__PURE__*/function () {
       this.debug = options.debug;
       this.basepath = options.basepath;
       this.data_url = options.dataUrl;
-      this.quicksearch = new _quicksearch__WEBPACK_IMPORTED_MODULE_18__["default"](options.autocompleterUrl);
+      this.quicksearch = new _quicksearch__WEBPACK_IMPORTED_MODULE_19__["default"](options.autocompleterUrl);
       this.trigger(this.EVENTS.quicksearchAddDefaultChoice, {
         icon: {
           name: 'search',
@@ -2014,7 +2160,7 @@ var PachnoApplication = /*#__PURE__*/function () {
         name: 'Find something',
         description: 'Search through issues, projects, documentation and people',
         action: {
-          type: _quicksearch__WEBPACK_IMPORTED_MODULE_18__["TYPES"].navigate,
+          type: _quicksearch__WEBPACK_IMPORTED_MODULE_19__["TYPES"].navigate,
           url: '/account'
         }
       });
@@ -2027,7 +2173,7 @@ var PachnoApplication = /*#__PURE__*/function () {
         name: 'Show an issue',
         description: 'Go directly to an issue',
         action: {
-          type: _quicksearch__WEBPACK_IMPORTED_MODULE_18__["TYPES"].event,
+          type: _quicksearch__WEBPACK_IMPORTED_MODULE_19__["TYPES"].event,
           event: '/find'
         }
       });
@@ -2108,6 +2254,7 @@ var PachnoApplication = /*#__PURE__*/function () {
       Object(_helpers_fetch__WEBPACK_IMPORTED_MODULE_4__["setupListeners"])();
       Object(_helpers_issues__WEBPACK_IMPORTED_MODULE_8__["setupListeners"])();
       Object(_helpers_profile__WEBPACK_IMPORTED_MODULE_6__["default"])();
+      Object(_helpers_workflow__WEBPACK_IMPORTED_MODULE_12__["setupListeners"])();
       Object(_helpers_ui__WEBPACK_IMPORTED_MODULE_3__["setupListeners"])();
       Object(_widgets__WEBPACK_IMPORTED_MODULE_5__["default"])(); // $('#fullpage_backdrop_content').on('click', Core._resizeWatcher);
     }
@@ -2164,8 +2311,18 @@ var PachnoApplication = /*#__PURE__*/function () {
         return this.issues[json.id];
       }
 
-      this.issues[json.id] = new _issue__WEBPACK_IMPORTED_MODULE_15__["default"](json, board_id);
+      this.issues[json.id] = new _issue__WEBPACK_IMPORTED_MODULE_16__["default"](json, board_id);
       return this.issues[json.id];
+    }
+    /**
+     * @param issue_id
+     * @returns Issue
+     */
+
+  }, {
+    key: "getIssue",
+    value: function getIssue(issue_id) {
+      return this.issues[issue_id];
     }
   }]);
 
@@ -3103,6 +3260,20 @@ var Search = /*#__PURE__*/function () {
             update: '#search-results'
           }
         }).then(function (json) {
+          var _iterator2 = _createForOfIteratorHelper(json.issues),
+              _step2;
+
+          try {
+            for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
+              var issue_json = _step2.value;
+              Pachno.addIssue(issue_json, undefined, false);
+            }
+          } catch (err) {
+            _iterator2.e(err);
+          } finally {
+            _iterator2.f();
+          }
+
           if (!search.results_loaded) {
             search.updateSavedSearchCounts();
           }
@@ -4966,8 +5137,13 @@ var loadComponentOptions = function loadComponentOptions($item) {
 };
 
 var autoBackdropLink = function autoBackdropLink(event) {
+  if (event.isPropagationStopped()) {
+    return;
+  }
+
   if (event) {
     event.preventDefault();
+    event.stopPropagation();
   }
 
   var $button = jquery__WEBPACK_IMPORTED_MODULE_0___default()(this);
@@ -5136,6 +5312,99 @@ var setupListeners = function setupListeners() {
 };
 
 /* harmony default export */ __webpack_exports__["default"] = (UI);
+
+
+/***/ }),
+
+/***/ "./js/helpers/workflow.js":
+/*!********************************!*\
+  !*** ./js/helpers/workflow.js ***!
+  \********************************/
+/*! exports provided: setupListeners */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "setupListeners", function() { return setupListeners; });
+/* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! jquery */ "./node_modules/jquery/dist/jquery.js");
+/* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(jquery__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _classes_pachno__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../classes/pachno */ "./js/classes/pachno.js");
+/* harmony import */ var _widgets__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../widgets */ "./js/widgets/index.js");
+function _createForOfIteratorHelper(o, allowArrayLike) { var it; if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = o[Symbol.iterator](); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
+
+
+
+
+var loadTransitionPopup = function loadTransitionPopup(event) {
+  if (event.isPropagationStopped()) {
+    return;
+  }
+
+  event.preventDefault();
+  event.stopPropagation();
+  var $element = jquery__WEBPACK_IMPORTED_MODULE_0___default()(this);
+  $element.addClass('submitting');
+  $element.addClass('disabled');
+  var url = $element.data('url');
+  _classes_pachno__WEBPACK_IMPORTED_MODULE_1__["default"].fetch(url, {
+    method: 'POST'
+  }).then(function (json) {
+    var _iterator = _createForOfIteratorHelper(json.issues),
+        _step;
+
+    try {
+      for (_iterator.s(); !(_step = _iterator.n()).done;) {
+        var issue = _step.value;
+        _classes_pachno__WEBPACK_IMPORTED_MODULE_1__["default"].trigger(_classes_pachno__WEBPACK_IMPORTED_MODULE_1__["default"].EVENTS.issue.updateJson, {
+          json: issue
+        });
+      }
+    } catch (err) {
+      _iterator.e(err);
+    } finally {
+      _iterator.f();
+    }
+
+    $element.removeClass('submitting');
+    $element.removeClass('disabled');
+    Object(_widgets__WEBPACK_IMPORTED_MODULE_2__["clearPopupsAndButtons"])();
+  });
+};
+
+var setupListeners = function setupListeners() {
+  var $body = jquery__WEBPACK_IMPORTED_MODULE_0___default()('body');
+  $body.off('click', '.trigger-workflow-transition');
+  $body.on('click', '.trigger-workflow-transition', loadTransitionPopup);
+  _classes_pachno__WEBPACK_IMPORTED_MODULE_1__["default"].on(_classes_pachno__WEBPACK_IMPORTED_MODULE_1__["default"].EVENTS.formSubmitResponse, function (_, data) {
+    var json = data.json;
+    var $form = jquery__WEBPACK_IMPORTED_MODULE_0___default()("#".concat(data.form));
+    if ($form.data('workflow-form') === undefined) return;
+
+    var _iterator2 = _createForOfIteratorHelper(json.issues),
+        _step2;
+
+    try {
+      for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
+        var issue = _step2.value;
+        _classes_pachno__WEBPACK_IMPORTED_MODULE_1__["default"].trigger(_classes_pachno__WEBPACK_IMPORTED_MODULE_1__["default"].EVENTS.issue.updateJson, {
+          json: issue
+        });
+      }
+    } catch (err) {
+      _iterator2.e(err);
+    } finally {
+      _iterator2.f();
+    }
+
+    _classes_pachno__WEBPACK_IMPORTED_MODULE_1__["default"].UI.Backdrop.reset();
+  });
+};
+
 
 
 /***/ }),
@@ -10143,12 +10412,20 @@ var loadDynamicMenu = function loadDynamicMenu($menu) {
     return;
   }
 
+  var populateOnce = $menu.hasClass('populate-once');
   var url = $menu.data('menu-url');
   _classes_pachno__WEBPACK_IMPORTED_MODULE_1__["default"].fetch(url, {
     method: 'GET',
     success: {
       callback: function callback(json) {
-        $menu.replaceWith(json.menu);
+        var $newMenu = jquery__WEBPACK_IMPORTED_MODULE_0___default()(json.menu);
+        $newMenu.data('menu-url', url);
+
+        if (populateOnce) {
+          $newMenu.addClass('populate-once');
+        }
+
+        $menu.replaceWith($newMenu);
       }
     }
   });

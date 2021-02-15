@@ -42,10 +42,14 @@ class Issue {
         this.choices_url = json.choices_url;
         this.backdrop_url = json.backdrop_url;
 
+        this.project = json.project;
+        this.transitions = json.transitions;
+
         this.blocking = json.blocking;
         this.closed = json.closed;
         this.deleted = json.deleted;
         this.state = json.state;
+        this.editable = json.editable;
 
         this.description = json.description;
         this.description_formatted = json.description_formatted;
@@ -96,8 +100,8 @@ class Issue {
 
     triggerEditField(field) {
         const $container_element = $(`#${field}_field`);
-        const $element = $(`[data-editable-field][data-issue-id=${this.id}][data-field=${field}]`);
-        const $textarea = $(`[data-editable-textarea][data-issue-id=${this.id}][data-field=${field}]`);
+        const $element = $(`[data-editable-field][data-issue-id="${this.id}"][data-field="${field}"]`);
+        const $textarea = $(`[data-editable-textarea][data-issue-id="${this.id}"][data-field="${field}"]`);
         const editor = getEditor($textarea.attr('id'));
 
         $container_element.addClass('force-visible');
@@ -112,8 +116,8 @@ class Issue {
         const $body = $('body');
         const issue = this;
 
-        $body.off('click', `input[data-trigger-issue-update][data-issue-id=${this.id}]`);
-        $body.on('click', `input[data-trigger-issue-update][data-issue-id=${this.id}]`, function () {
+        $body.off('click', `input[data-trigger-issue-update][data-issue-id="${this.id}"]`);
+        $body.on('click', `input[data-trigger-issue-update][data-issue-id="${this.id}"]`, function () {
             const $element = $(this);
             $element.addClass('submitting');
             issue.postAndUpdate($element.data('field'), $element.val())
@@ -122,14 +126,14 @@ class Issue {
                 })
         });
 
-        $body.off('click', `.editable[data-editable-field][data-issue-id=${this.id}]`);
-        $body.on('click', `.editable[data-editable-field][data-issue-id=${this.id}]`, function () {
+        $body.off('click', `.editable[data-editable-field][data-issue-id="${this.id}"]`);
+        $body.on('click', `.editable[data-editable-field][data-issue-id="${this.id}"]`, function () {
             const $element = $(this);
             issue.triggerEditField($element.data('field'));
         });
 
-        $body.off('click', `[data-trigger-save][data-issue-id=${this.id}]`);
-        $body.on('click', `[data-trigger-save][data-issue-id=${this.id}]`, function () {
+        $body.off('click', `[data-trigger-save][data-issue-id="${this.id}"]`);
+        $body.on('click', `[data-trigger-save][data-issue-id="${this.id}"]`, function () {
             const $element = $(this);
             const $textarea = $(`[data-editable-textarea][data-issue-id=${issue.id}][data-field=${$element.data('field')}]`);
             const $value_container = $(`[data-editable-field][data-issue-id=${issue.id}][data-field=${$element.data('field')}]`);
@@ -143,8 +147,8 @@ class Issue {
                 })
         });
 
-        $body.off('click', `[data-trigger-cancel-editing][data-issue-id=${this.id}]`);
-        $body.on('click', `[data-trigger-cancel-editing][data-issue-id=${this.id}]`, function () {
+        $body.off('click', `[data-trigger-cancel-editing][data-issue-id="${this.id}"]`);
+        $body.on('click', `[data-trigger-cancel-editing][data-issue-id="${this.id}"]`, function () {
             const $element = $(this);
             const $value_container = $(`[data-editable-field][data-issue-id=${issue.id}][data-field=${$element.data('field')}]`);
             const $textarea = $(`[data-editable-textarea][data-issue-id=${issue.id}][data-field=${$element.data('field')}]`);
@@ -239,6 +243,7 @@ class Issue {
 
             issue.updateFromJson(issue_json);
             issue.updateVisibleValues(issue_json);
+            Pachno.trigger(Pachno.EVENTS.issue.updateJsonComplete, issue);
         });
     }
 
@@ -317,7 +322,7 @@ class Issue {
     }
 
     updateVisibleValues(json) {
-        const $value_fields = $(`[data-dynamic-field-value][data-issue-id=${this.id}]`);
+        const $value_fields = $(`[data-dynamic-field-value][data-issue-id="${this.id}"]`);
 
         for (const element of $value_fields) {
             let $element = $(element);
@@ -338,14 +343,21 @@ class Issue {
                 case 'severity':
                     if (this[field]?.name !== undefined) {
                         $element.html(this[field].name);
+                        $element.removeClass('no-value');
+                        $element.removeClass('faded_out');
                         $value_input = $(`#issue_${this.id}_field_${field}_${this[field].value}`);
                     } else {
-                        $element.html(Pachno.T.issue.value_not_set);
+                        $element.html(($element.data('unknown') !== undefined) ? $element.data('unknown') : Pachno.T.issue.value_not_set);
+                        $element.addClass('no-value');
                         $value_input = $(`#issue_${this.id}_field_${field}_0`);
                     }
                     if ($value_input.length) {
                         $value_input.checked = true;
                     }
+                    break;
+                case 'status':
+                    $element.css({ backgroundColor: this.status.color, color: this.status.text_color });
+                    $element.html(`<span>${this.status.name}</span>`);
                     break;
                 case 'description':
                     $element.html(this.description_formatted);
@@ -362,11 +374,78 @@ class Issue {
                     $element.html(this.number_of_subscribers);
                     break;
                 case 'number_of_files':
-                    $element.html(this.number_of_files);
+                    let $files_value_element = $element.find('.value');
+                    if ($files_value_element.length) {
+                        $files_value_element.html(this.number_of_files);
+                    } else {
+                        $element.html(this.number_of_files);
+                    }
+                    if (this.number_of_files > 0) {
+                        $element.removeClass('hidden');
+                    } else {
+                        $element.addClass('hidden');
+                    }
+                    break;
+                case 'number_of_comments':
+                    let $comments_value_element = $element.find('.value');
+                    if ($comments_value_element.length) {
+                        $comments_value_element.html(this.number_of_comments);
+                    } else {
+                        $element.html(this.number_of_comments);
+                    }
+                    if (this.number_of_comments > 0) {
+                        $element.removeClass('hidden');
+                    } else {
+                        $element.addClass('hidden');
+                    }
+                    break;
+                case 'closed-message':
+                    if (this['closed']) {
+                        const message = $element.data('message').replace('%status_name', this.status.name).replace('%resolution', (this.resolution !== undefined) ? this.resolution.name : $element.data('unknown'));
+                        $element.find('.content').html(message);
+                        $element.removeClass('hidden');
+                    } else {
+                        $element.addClass('hidden');
+                    }
+                    break;
+                case 'closed':
+                    if (this[field]) {
+                        $element.removeClass('hidden');
+                    } else {
+                        $element.addClass('hidden');
+                    }
+                    break;
+                case 'editable':
+                    if (!this[field]) {
+                        $element.removeClass('hidden');
+                    } else {
+                        $element.addClass('hidden');
+                    }
+                    break;
+                case 'menu':
+                    $element.addClass('dynamic_menu');
+                    $element.removeData('is-loaded');
+                    $element.html(`<div class="list-mode"><div class="list-item"><span class="icon">${UI.fa_image_tag('spinner', { classes: 'fa-spin' })}</span></div></div>`);
                     break;
                 case 'percent_complete':
                     $($element.find('.percent_filled')).css({ width: this.percent_complete + '%'});
                     break;
+            }
+        }
+
+        const $workflowTransitionsContainer = $(`[data-issue-workflow-transitions-container][data-issue-id="${this.id}"]`);
+        if ($workflowTransitionsContainer.length) {
+            $workflowTransitionsContainer.html('');
+            for (const transition of this.transitions) {
+                const tooltip = `<div class="tooltip from-above from-left">${transition.description}</div>`;
+                let html = `<div class="tooltip-container">${tooltip}`;
+                if (transition.template !== '') {
+                    html += `<button class="button secondary highlight trigger-backdrop" type="button" data-url="${transition.backdrop_url}?project_id=${this.project.id}&issue_id=${this.id}">${transition.name}</button>`;
+                } else {
+                    html += `<button class="button secondary highlight trigger-workflow-transition" data-url="${transition.url.replace('%25project_key%25', this.project.key).replace('%25issue_id%25', this.id)}"><span>${transition.name}</span>${UI.fa_image_tag('spinner', { classes: 'fa-spin indicator' })}</button>`;
+                }
+                html += '</div>';
+                $workflowTransitionsContainer.append(html);
             }
         }
 
@@ -405,10 +484,10 @@ class Issue {
         if (this.blocking) classes.push('blocking');
 
         let html = `
-<div id="whiteboard_issue_${this.id}" class="whiteboard-issue trigger-backdrop ${classes.join(',')}" data-issue-id="${this.id}" data-url="${this.card_url}/board_id/${this.board_id}">
+<div id="whiteboard_issue_${this.id}" draggable="true" class="whiteboard-issue trigger-backdrop ${classes.join(',')}" data-issue-id="${this.id}" data-url="${this.card_url}/board_id/${this.board_id}">
     <div class="issue-header">
         <span class="issue-number">${this.issue_no}</span>
-        <span class="issue-title">${this.title}</span>
+        <span class="issue-title" data-dynamic-field-value data-field="title" data-issue-id="${this.id}">${this.title}</span>
         <div class="dropper-container">
             <button class="button icon dropper dynamic_menu_link" type="button">${UI.fa_image_tag('ellipsis-v')}</button>
             <div class="dropdown-container dynamic_menu" data-menu-url="${this.more_actions_url}">
@@ -426,18 +505,16 @@ class Issue {
 `;
         let $html = $(html);
         let $info = $html.find('.issue-info');
-        if (this.number_of_files > 0) {
-            $info.append(`<span class="attachments">${UI.fa_image_tag('paperclip')}<span>${this.number_of_files}</span></span>`);
-        }
-        if (this.number_of_comments > 0) {
-            $info.append(`<span class="attachments">${UI.fa_image_tag('comments', [], 'far')}<span>${this.number_of_comments}</span></span>`);
-        }
+        let files_hidden_class = (this.number_of_files > 0) ? '' : 'hidden';
+        let comments_hidden_class = (this.number_of_comments > 0) ? '' : 'hidden';
 
-        $info.append(`<span class="status-badge" style="background-color: ${this.status.color}; color: ${this.status.text_color};"><span>${this.status.name}</span></span>`);
+        $info.append(`<span class="attachments ${files_hidden_class}" data-dynamic-field-value data-field="number_of_files" data-issue-id="${this.id}">${UI.fa_image_tag('paperclip')}<span class="value">${this.number_of_files}</span></span>`);
+        $info.append(`<span class="attachments ${comments_hidden_class}" data-dynamic-field-value data-field="number_of_comments" data-issue-id="${this.id}">${UI.fa_image_tag('comments', [], 'far')}<span class="value">${this.number_of_comments}</span></span>`);
+        $info.append(`<span class="status-badge" style="background-color: ${this.status.color}; color: ${this.status.text_color};" data-dynamic-field-value data-field="status" data-issue-id="${this.id}"><span>${this.status.name}</span></span>`);
 
         if (this.assignee !== undefined && this.assignee !== null) {
             if (this.assignee.type == 'user') {
-                $info.append(`<span class="assignee"><span class="avatar medium"><img src="${this.assignee.avatar_url_small}"></span></span>`)
+                $info.append(`<span class="assignee" data-dynamic-field-value data-field="assignee" data-issue-id="${this.id}"><span class="avatar medium"><img src="${this.assignee.avatar_url_small}"></span></span>`)
             }
         }
         return $html;

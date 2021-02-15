@@ -119,8 +119,16 @@
 
       .header {
         padding-left: .7em;
-        padding-top: .5em;
-        font-size: 1.1em;
+        padding-top: 1.5em;
+        font-size: .85em;
+        text-transform: uppercase;
+        font-weight: 500;
+        align-items: flex-start;
+        justify-content: flex-start;
+
+        &:first-child {
+          padding-top: .5em;
+        }
       }
 
       .list-item:not(.separator) {

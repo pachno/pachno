@@ -278,7 +278,7 @@ class Board {
                     if (!isInColumn(issue)) continue;
 
                     num_issues[`status_${issue.status.id}`] += 1;
-                    if (issue.processed) continue;
+                    if (issue.processed && issue.swimlane === swimlane.identifier) continue;
 
                     if (issue.assignee && issue.assignee.type == 'user') {
                         this.users.add(JSON.stringify(issue.assignee));
@@ -286,11 +286,12 @@ class Board {
 
                     $swimlaneContainer.removeClass('empty');
                     if (this.swimlane_type == SwimlaneTypes.NONE || !swimlane.has_identifiables) {
-                        $add_card_form.before(issue.element);
+                        $add_card_form.before(issue.element.detach());
                     } else {
-                        $swimlane.append(issue.element);
+                        $swimlane.append(issue.element.detach());
                     }
                     issue.processed = true;
+                    issue.swimlane = swimlane.identifier;
                 }
             }
             let count_total = 0;
@@ -514,6 +515,43 @@ class Board {
                     board.updateSelectedMilestone(true);
                     break;
             }
+        });
+
+        Pachno.on(Pachno.EVENTS.issue.updateJsonComplete, () => {
+            this.verifyIssues();
+        });
+
+        $body.off('dragstart', '.whiteboard-issue');
+        $body.on('dragstart', '.whiteboard-issue', function (event) {
+            event.originalEvent.dataTransfer.setData('text/plain', $(event.target).id);
+            event.originalEvent.dataTransfer.effectAllowed = "move";
+            event.originalEvent.dataTransfer.dropEffect = "move";
+            event.currentTarget.classList.add('dragging');
+        });
+
+        $body.off('drop');
+        $body.on('drop', function (event) {
+            if (event !== undefined) {
+                event.preventDefault();
+            }
+        });
+
+        $body.off('dragover', '.columns-container .column');
+        $body.on('dragover', '.columns-container .column', function (event) {
+            const $column = $(event.target);
+            $column.addClass('drop-valid');
+        });
+
+        $body.off('dragleave', '.columns-container .column');
+        $body.on('dragleave', '.columns-container .column', function (event) {
+            const $column = $(event.target);
+            $column.removeClass('drop-valid');
+        });
+
+        $body.off('dragend', '.whiteboard-issue');
+        $body.on('dragend', '.whiteboard-issue', function (event) {
+            // event.originalEvent.dataTransfer.clearData();
+            event.currentTarget.classList.remove('dragging');
         });
     }
 }

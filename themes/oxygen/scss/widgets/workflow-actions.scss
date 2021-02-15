@@ -10,7 +10,7 @@
     justify-content: $flex-align;
     flex-wrap: wrap;
 
-    > ul {
+    .workflow-list {
       flex: 1 1 auto;
       display: flex;
       flex-direction: row;
@@ -23,33 +23,16 @@
       padding: .35em 0;
       margin: 0;
 
-      > li {
-        position: relative;
-
-        &.workflow {
-          flex: 1 1 auto;
-          display: flex;
-          flex-direction: row;
-          flex-wrap: wrap;
-          align-items: center;
-          justify-content: $flex-align;
-
-          .button.highlight {
-            border: 1px solid $theme-primary-color;
-          }
-
-          .tooltip-container {
-            position: relative;
-
-            & + .tooltip-container {
-              margin-left: .15rem;
-            }
-          }
-        }
+      .button.highlight {
+        border: 1px solid $theme-primary-color;
       }
 
-      li + li {
-        margin-left: .35rem;
+      .tooltip-container {
+        position: relative;
+
+        & + .tooltip-container {
+          margin-left: .15rem;
+        }
       }
     }
   }

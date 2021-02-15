@@ -10,6 +10,7 @@ import {setupListeners as issueSetupListeners} from "../helpers/issues";
 import {setupListeners as commentSetupListeners} from "../helpers/comments";
 import {setupListeners as favouriteSetupListeners} from "../helpers/favourites";
 import {setupListeners as agileSetupListeners} from "../helpers/agile";
+import {setupListeners as workflowSetupListeners} from "../helpers/workflow";
 import Board from "./board";
 import Search from "./search";
 import Issuereporter from "./issuereporter";
@@ -46,6 +47,7 @@ class PachnoApplication {
                 triggerEdit: 'issue-trigger-edit',
                 updateDone: 'issue-update-done',
                 updateJson: 'issue-update-json',
+                updateJsonComplete: 'issue-update-json-complete',
                 loadDynamicChoices: 'issue-load-dynamic-choices',
             },
             upload: {
@@ -167,6 +169,7 @@ class PachnoApplication {
         formSetupListeners();
         issueSetupListeners();
         profileSetupListeners();
+        workflowSetupListeners();
         uiSetupListeners();
         widgetSetupListeners();
         // $('#fullpage_backdrop_content').on('click', Core._resizeWatcher);
@@ -228,6 +231,14 @@ class PachnoApplication {
         this.issues[json.id] = new Issue(json, board_id);
 
         return this.issues[json.id];
+    }
+
+    /**
+     * @param issue_id
+     * @returns Issue
+     */
+    getIssue(issue_id) {
+        return this.issues[issue_id];
     }
 
 }

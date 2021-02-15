@@ -4525,7 +4525,7 @@
 
         public function toJSON($detailed = true)
         {
-            $return_values = [
+            $json = [
                 'id' => $this->getID(),
                 'issue_no' => $this->getFormattedIssueNo(true),
                 'state' => $this->getState(),
@@ -4533,7 +4533,10 @@
                 'deleted' => $this->isDeleted(),
                 'archived' => $this->isArchived(),
                 'blocking' => $this->isBlocking(),
+                'locked' => $this->isLocked(),
+                'editable' => $this->isEditable(),
                 'created_at' => $this->getPosted(),
+                'project' => $this->getProject()->toJSON(false),
                 'created_at_iso' => date('c', $this->getPosted()),
                 'updated_at' => $this->getLastUpdatedTime(),
                 'updated_at_iso' => date('c', $this->getLastUpdatedTime()),
@@ -4566,17 +4569,22 @@
                 'number_of_comments' => $this->getNumberOfUserComments(),
                 'number_of_files' => $this->getNumberOfFiles(),
                 'number_of_subscribers' => count($this->getSubscribers()),
-                'tags' => []
+                'tags' => [],
+                'transitions' => [],
             ];
+
+            foreach ($this->getAvailableWorkflowTransitions() as $transition) {
+                $json['transitions'][] = $transition->toJSON(false);
+            }
 
             if ($this->isChildIssue()) {
                 foreach ($this->getParentIssues() as $parentIssue) {
-                    $return_values['parent_issue_id'] = $parentIssue->getID();
+                    $json['parent_issue_id'] = $parentIssue->getID();
                 }
             }
 
             foreach ($this->getTags() as $tag) {
-                $return_values['tags'][] = $tag->toJSON(false);
+                $json['tags'][] = $tag->toJSON(false);
             }
 
             if ($detailed) {
@@ -4638,9 +4646,9 @@
                     }
                     if (isset($value)) {
                         if ($identifiable)
-                            $return_values[$field] = ($value instanceof common\Identifiable) ? $value->toJSON() : null;
+                            $json[$field] = ($value instanceof common\Identifiable) ? $value->toJSON() : null;
                         else
-                            $return_values[$field] = $value;
+                            $json[$field] = $value;
                     }
 
                 }
@@ -4650,12 +4658,12 @@
                     $comments[$comment->getCommentNumber()] = $comment->toJSON();
                 }
 
-                $return_values['comments'] = $comments;
-                $return_values['visible_fields'] = $visible_fields;
-                $return_values['fields'] = $fields;
+                $json['comments'] = $comments;
+                $json['visible_fields'] = $visible_fields;
+                $json['fields'] = $fields;
             }
 
-            return $return_values;
+            return $json;
         }
 
         /**

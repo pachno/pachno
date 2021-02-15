@@ -6388,8 +6388,14 @@ h1 .button, h1 .button:hover, h2 .button, h2 .button:hover, h3 .button, h3 .butt
           padding: .3em 0; }
       .dropper-container .dropdown-container .list-mode .header {
         padding-left: .7em;
-        padding-top: .5em;
-        font-size: 1.1em; }
+        padding-top: 1.5em;
+        font-size: .85em;
+        text-transform: uppercase;
+        font-weight: 500;
+        align-items: flex-start;
+        justify-content: flex-start; }
+        .dropper-container .dropdown-container .list-mode .header:first-child {
+          padding-top: .5em; }
       .dropper-container .dropdown-container .list-mode .list-item:not(.separator), .dropper-container .dropdown-container .list-mode .list-item:not(.separator):hover {
         margin-left: 0;
         margin-right: 0;
@@ -7126,7 +7132,9 @@ input[data-interactive-toggle].submitting + label .indicator {
       white-space: normal;
       overflow: hidden; }
     .list-mode .list-item .indicator,
-    .list-mode .list-item:hover .indicator {
+    .list-mode .list-item .icon.indicator,
+    .list-mode .list-item:hover .indicator,
+    .list-mode .list-item:hover .icon.indicator {
       display: none;
       flex: 0 0 auto;
       text-align: center; }
@@ -8608,6 +8616,13 @@ nav.sidebar {
     position: relative;
     overflow: visible;
     padding: 0; }
+    .comment-container:not(.reply) .comment .commentheader {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      padding: .75em; }
+      .comment-container:not(.reply) .comment .commentheader .header {
+        padding: 0; }
   .comment-container:not(.reply):target .comment {
     border-color: rgba(100, 100, 100, 0.2);
     background-color: rgba(240, 247, 255, 0.6); }
@@ -8642,7 +8657,7 @@ nav.sidebar {
 
 .comment-container .tools {
   position: absolute;
-  top: -20px;
+  top: -3em;
   right: 10px; }
   .comment-container .tools.action-buttons a.action-button {
     color: rgba(200, 200, 200, 0.7); }
@@ -8687,9 +8702,6 @@ nav.sidebar {
 
 .comments-list-none {
   font-weight: 400; }
-
-.comment:hover > .commentheader .action-buttons.commenttools a.action-button {
-  color: rgba(100, 100, 100, 0.7); }
 
 .comment-replies .commentheader {
   border-top: 1px solid rgba(200, 200, 200, 0.3); }
@@ -10264,24 +10276,17 @@ img.userstate {
   border-radius: 3px;
   transform: translateY(0);
   color: #141823;
-  transition: box-shadow .25s ease-in-out; }
+  transition: box-shadow .25s ease-in-out, transform .25s ease-in-out; }
+  .whiteboard-issue.dragging {
+    opacity: 0; }
   .whiteboard-issue + .whiteboard-issue {
     margin-top: .75em; }
-  .whiteboard-issue.gs-draggable {
-    box-shadow: 0 5px 16px rgba(0, 0, 0, 0.19); }
   .whiteboard-issue:hover {
-    cursor: pointer; }
-  .whiteboard-issue:not(.gs-draggable) {
-    transition: box-shadow .25s ease-in-out, transform .25s ease-in-out; }
-    .whiteboard-issue:not(.gs-draggable):hover {
-      z-index: 10;
-      border: none;
-      transform: translateY(-2px);
-      box-shadow: 0 3px 5px 0 rgba(27, 27, 36, 0.2); }
-  .whiteboard-issue.ui-draggable {
-    cursor: move; }
-  .whiteboard-issue.ui-draggable-dragging, .whiteboard-issue.gs-draggable {
-    z-index: 1011 !important; }
+    cursor: pointer;
+    z-index: 10;
+    border: none;
+    transform: translateY(-2px);
+    box-shadow: 0 3px 5px 0 rgba(27, 27, 36, 0.2); }
   .whiteboard-issue .priority.priority_1 {
     background-color: rgba(191, 3, 3, 0.15); }
   .whiteboard-issue .priority.priority_2, .whiteboard-issue .priority.priority_3 {
@@ -10350,7 +10355,9 @@ img.userstate {
       flex-direction: row;
       align-items: center;
       justify-content: flex-start; }
-      .whiteboard-issue .issue-info > span + span {
+      .whiteboard-issue .issue-info > span.hidden {
+        display: none; }
+      .whiteboard-issue .issue-info > span:not(.hidden) + span:not(.assignee) {
         margin-left: 1em; }
     .whiteboard-issue .issue-info .assignee {
       margin-left: auto; }
@@ -11039,6 +11046,8 @@ img.userstate {
       align-items: center;
       height: 100%;
       position: relative; }
+      .viewissue-container .top-search-filters-container .header-container .not-editable.hidden {
+        display: none; }
       .viewissue-container .top-search-filters-container .header-container .not-editable .fas, .viewissue-container .top-search-filters-container .header-container .not-editable far {
         margin-right: .35em; }
     .viewissue-container .top-search-filters-container .header-container .created-times {
@@ -11311,6 +11320,8 @@ img.userstate {
         margin-right: 0;
         width: auto;
         flex: 1 1 auto; }
+        .viewissue-container .issue-card .issue-card-main .messages-container .message-box.hidden {
+          display: none; }
         .viewissue-container .issue-card .issue-card-main .messages-container .message-box + .message-box {
           margin-top: 1em; }
     .viewissue-container .issue-card .issue-card-main .card-header {
@@ -11327,7 +11338,7 @@ img.userstate {
         align-items: center;
         justify-content: flex-start;
         flex-wrap: wrap; }
-        .viewissue-container .issue-card .issue-card-main .card-header .workflow-actions-container > ul {
+        .viewissue-container .issue-card .issue-card-main .card-header .workflow-actions-container .workflow-list {
           flex: 1 1 auto;
           display: flex;
           flex-direction: row;
@@ -11339,23 +11350,12 @@ img.userstate {
           list-style: none;
           padding: .35em 0;
           margin: 0; }
-          .viewissue-container .issue-card .issue-card-main .card-header .workflow-actions-container > ul > li {
+          .viewissue-container .issue-card .issue-card-main .card-header .workflow-actions-container .workflow-list .button.highlight {
+            border: 1px solid #00adc7; }
+          .viewissue-container .issue-card .issue-card-main .card-header .workflow-actions-container .workflow-list .tooltip-container {
             position: relative; }
-            .viewissue-container .issue-card .issue-card-main .card-header .workflow-actions-container > ul > li.workflow {
-              flex: 1 1 auto;
-              display: flex;
-              flex-direction: row;
-              flex-wrap: wrap;
-              align-items: center;
-              justify-content: flex-start; }
-              .viewissue-container .issue-card .issue-card-main .card-header .workflow-actions-container > ul > li.workflow .button.highlight {
-                border: 1px solid #00adc7; }
-              .viewissue-container .issue-card .issue-card-main .card-header .workflow-actions-container > ul > li.workflow .tooltip-container {
-                position: relative; }
-                .viewissue-container .issue-card .issue-card-main .card-header .workflow-actions-container > ul > li.workflow .tooltip-container + .tooltip-container {
-                  margin-left: .15rem; }
-          .viewissue-container .issue-card .issue-card-main .card-header .workflow-actions-container > ul li + li {
-            margin-left: .35rem; }
+            .viewissue-container .issue-card .issue-card-main .card-header .workflow-actions-container .workflow-list .tooltip-container + .tooltip-container {
+              margin-left: .15rem; }
     .viewissue-container .issue-card .issue-card-main .issue-details {
       flex: 1 1 auto;
       display: flex;
@@ -13925,7 +13925,7 @@ DEL {
     align-items: center;
     justify-content: flex-start;
     flex-wrap: wrap; }
-    #issue-card-popup > .backdrop_detail_header .workflow-actions-container > ul {
+    #issue-card-popup > .backdrop_detail_header .workflow-actions-container .workflow-list {
       flex: 1 1 auto;
       display: flex;
       flex-direction: row;
@@ -13937,23 +13937,12 @@ DEL {
       list-style: none;
       padding: .35em 0;
       margin: 0; }
-      #issue-card-popup > .backdrop_detail_header .workflow-actions-container > ul > li {
+      #issue-card-popup > .backdrop_detail_header .workflow-actions-container .workflow-list .button.highlight {
+        border: 1px solid #00adc7; }
+      #issue-card-popup > .backdrop_detail_header .workflow-actions-container .workflow-list .tooltip-container {
         position: relative; }
-        #issue-card-popup > .backdrop_detail_header .workflow-actions-container > ul > li.workflow {
-          flex: 1 1 auto;
-          display: flex;
-          flex-direction: row;
-          flex-wrap: wrap;
-          align-items: center;
-          justify-content: flex-start; }
-          #issue-card-popup > .backdrop_detail_header .workflow-actions-container > ul > li.workflow .button.highlight {
-            border: 1px solid #00adc7; }
-          #issue-card-popup > .backdrop_detail_header .workflow-actions-container > ul > li.workflow .tooltip-container {
-            position: relative; }
-            #issue-card-popup > .backdrop_detail_header .workflow-actions-container > ul > li.workflow .tooltip-container + .tooltip-container {
-              margin-left: .15rem; }
-      #issue-card-popup > .backdrop_detail_header .workflow-actions-container > ul li + li {
-        margin-left: .35rem; }
+        #issue-card-popup > .backdrop_detail_header .workflow-actions-container .workflow-list .tooltip-container + .tooltip-container {
+          margin-left: .15rem; }
   #issue-card-popup > .backdrop_detail_header .indicator {
     display: none;
     margin-right: 0.35em;

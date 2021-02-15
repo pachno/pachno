@@ -307,7 +307,8 @@
       overflow: hidden;
     }
 
-    .indicator {
+    .indicator,
+    .icon.indicator {
       display: none;
       flex: 0 0 auto;
       text-align: center;

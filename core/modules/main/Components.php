@@ -4,6 +4,7 @@
 
     use Exception;
     use pachno\core\entities;
+    use pachno\core\entities\AgileBoard;
     use pachno\core\entities\Comment;
     use pachno\core\entities\Issue;
     use pachno\core\entities\Issuetype;
@@ -139,38 +140,38 @@
                 $fields_list = [];
                 $fields_list['category'] = ['title' => $i18n->__('Category'), 'fa_icon' => 'chart-pie', 'fa_icon_style' => 'fas', 'choices' => [], 'visible' => $this->issue->isCategoryVisible(), 'value' => (($this->issue->getCategory() instanceof entities\Category) ? $this->issue->getCategory()->getId() : 0), 'icon' => false, 'change_tip' => $i18n->__('Click to change category'), 'change_header' => $i18n->__('Change category'), 'clear' => $i18n->__('No category selected'), 'select' => $i18n->__('%clear_the_category or click to select a new category', ['%clear_the_category' => ''])];
 
-                if ($this->issue->isUpdateable() && $this->issue->canEditCategory()) {
+                if ($this->issue->canEditCategory()) {
                     $fields_list['category']['choices'] = entities\Category::getAll();
                 }
 
                 $fields_list['resolution'] = ['title' => $i18n->__('Resolution'), 'choices' => [], 'visible' => $this->issue->isResolutionVisible(), 'value' => (($this->issue->getResolution() instanceof entities\Resolution) ? $this->issue->getResolution()->getId() : 0), 'icon' => false, 'change_tip' => $i18n->__('Click to change resolution'), 'change_header' => $i18n->__('Change resolution'), 'clear' => $i18n->__('No resolution selected'), 'select' => $i18n->__('%clear_the_resolution or click to select a new resolution', ['%clear_the_resolution' => ''])];
 
-                if ($this->issue->isUpdateable() && $this->issue->canEditResolution()) {
+                if ($this->issue->canEditResolution()) {
                     $fields_list['resolution']['choices'] = entities\Resolution::getAll();
                 }
 
                 $has_priority = $this->issue->getPriority() instanceof entities\Priority;
                 $fields_list['priority'] = ['title' => $i18n->__('Priority'), 'choices' => [], 'visible' => $this->issue->isPriorityVisible(), 'extra_classes' => (($has_priority) ? 'priority_' . $this->issue->getPriority()->getItemdata() : ''), 'value' => (($has_priority) ? $this->issue->getPriority()->getId() : 0), 'fa_icon' => (($has_priority) ? $this->issue->getPriority()->getFontAwesomeIcon() : ''), 'fa_icon_style' => (($has_priority) ? $this->issue->getPriority()->getFontAwesomeIconStyle() : ''), 'icon' => false, 'change_tip' => $i18n->__('Click to change priority'), 'change_header' => $i18n->__('Change priority'), 'clear' => $i18n->__('No priority selected'), 'select' => $i18n->__('%clear_the_priority or click to select a new priority', ['%clear_the_priority' => ''])];
 
-                if ($this->issue->isUpdateable() && $this->issue->canEditPriority()) {
+                if ($this->issue->canEditPriority()) {
                     $fields_list['priority']['choices'] = entities\Priority::getAll();
                 }
 
                 $fields_list['reproducability'] = ['title' => $i18n->__('Reproducability'), 'choices' => [], 'visible' => $this->issue->isReproducabilityVisible(), 'value' => (($this->issue->getReproducability() instanceof entities\Reproducability) ? $this->issue->getReproducability()->getId() : 0), 'icon' => false, 'change_tip' => $i18n->__('Click to change reproducability'), 'change_header' => $i18n->__('Change reproducability'), 'clear' => $i18n->__('No reproducability selected'), 'select' => $i18n->__('%clear_the_reproducability or click to select a new reproducability', ['%clear_the_reproducability' => ''])];
 
-                if ($this->issue->isUpdateable() && $this->issue->canEditReproducability()) {
+                if ($this->issue->canEditReproducability()) {
                     $fields_list['reproducability']['choices'] = entities\Reproducability::getAll();
                 }
 
                 $fields_list['severity'] = ['title' => $i18n->__('Severity'), 'choices' => [], 'visible' => $this->issue->isSeverityVisible(), 'value' => (($this->issue->getSeverity() instanceof entities\Severity) ? $this->issue->getSeverity()->getId() : 0), 'icon' => false, 'change_tip' => $i18n->__('Click to change severity'), 'change_header' => $i18n->__('Change severity'), 'clear' => $i18n->__('No severity selected'), 'select' => $i18n->__('%clear_the_severity or click to select a new severity', ['%clear_the_severity' => ''])];
 
-                if ($this->issue->isUpdateable() && $this->issue->canEditSeverity()) {
+                if ($this->issue->canEditSeverity()) {
                     $fields_list['severity']['choices'] = entities\Severity::getAll();
                 }
 
                 $fields_list['milestone'] = ['title' => $i18n->__('Targetted for'), 'fa_icon' => 'list-alt', 'fa_style' => 'far', 'choices' => [], 'visible' => $this->issue->isMilestoneVisible(), 'value' => (($this->issue->getMilestone() instanceof entities\Milestone) ? $this->issue->getMilestone()->getId() : 0), 'icon' => true, 'icon_name' => 'icon_milestones.png', 'change_tip' => $i18n->__('Click to change which milestone this issue is targetted for'), 'change_header' => $i18n->__('Set issue target / milestone'), 'clear' => $i18n->__('Set as not targetted'), 'select' => $i18n->__('%set_as_not_targetted or click to set a new target milestone', ['%set_as_not_targetted' => '']), 'url' => true, 'current_url' => (($this->issue->getMilestone() instanceof entities\Milestone) ? $this->getRouting()->generate('project_roadmap', ['project_key' => $this->issue->getProject()->getKey()]) . '#roadmap_milestone_' . $this->issue->getMilestone()->getID() : '')];
 
-                if ($this->issue->isUpdateable() && $this->issue->canEditMilestone()) {
+                if ($this->issue->canEditMilestone()) {
                     $fields_list['milestone']['choices'] = $this->project->getMilestonesForIssues();
                 }
 
@@ -295,6 +296,17 @@
         {
             $this->issue = $this->issue ?? null;
             $this->setupVariables();
+            if (isset($this->interactive) && $this->interactive && $this->issue instanceof Issue) {
+                $this->form_url = $this->getRouting()->generate('transition_issues', array('project_key' => $this->project->getKey(), 'transition_id' => $this->transition->getID()));
+                $this->form_id = "workflow_transition_form";
+            } elseif ($this->issue instanceof Issue) {
+                $this->form_url = $this->getRouting()->generate('transition_issue', array('project_key' => $this->project->getKey(), 'issue_id' => $this->issue->getID(), 'transition_id' => $this->transition->getID()));
+                $this->form_id = "workflow_transition_{$this->transition->getID()}_form";
+            } else {
+                $this->form_url = $this->getRouting()->generate('transition_issues', array('project_key' => $this->project->getKey(), 'transition_id' => $this->transition->getID()));
+                $this->form_id = "bulk_workflow_transition_form";
+            }
+
         }
 
         public function componentNotifications()
@@ -395,6 +407,17 @@
         {
             $this->views = entities\DashboardView::getAvailableViews($this->target_type);
             $this->dashboardViews = entities\DashboardView::getViews($this->tid, $this->target_type);
+        }
+
+        public function componentReportIssueContainer()
+        {
+            if (isset($this->board) && $this->board instanceof AgileBoard && isset($this->selected_issuetype) && $this->selected_issuetype instanceof Issuetype && $this->board->isIssuetypeSwimlaneIdentifier($this->selected_issuetype)) {
+                $this->title = $this->getI18n()->__('Add swimlane');
+            } elseif (isset($this->parent_issue) && $this->parent_issue instanceof Issue) {
+                $this->title = $this->getI18n()->__('Add card');
+            } else {
+                $this->title = $this->getI18n()->__('Add an issue');
+            }
         }
 
         public function componentReportIssue()

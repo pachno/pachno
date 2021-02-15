@@ -1,6 +1,7 @@
 <?php
 
     use pachno\core\entities\Issue;
+    use pachno\core\entities\Status;
     use pachno\core\entities\User;
     use pachno\core\framework\Context;
     use pachno\core\framework\Response;
@@ -41,9 +42,8 @@
                 <div class="status-badge dropper" style="
                         background-color: <?php echo ($issue->getStatus() instanceof \pachno\core\entities\Datatype) ? $issue->getStatus()->getColor() : '#FFF'; ?>;
                         color: <?php echo ($issue->getStatus() instanceof \pachno\core\entities\Datatype) ? $issue->getStatus()->getTextColor() : '#333'; ?>;
-                <?php if (!$issue->getStatus() instanceof \pachno\core\entities\Datatype): ?> display: none;<?php endif; ?>
-                        " id="status_<?php echo $issue->getID(); ?>_color">
-                    <span id="status_content"><?php if ($issue->getStatus() instanceof \pachno\core\entities\Datatype) echo __($issue->getStatus()->getName()); ?></span>
+                        " id="status_<?php echo $issue->getID(); ?>_color" data-dynamic-field-value data-field="status" data-issue-id="<?= $issue->getId(); ?>">
+                    <span><?php if ($issue->getStatus() instanceof \pachno\core\entities\Datatype) echo __($issue->getStatus()->getName()); ?></span>
                 </div>
                 <?php if ($issue->canEditStatus()): ?>
                     <div class="dropdown-container">
@@ -53,13 +53,12 @@
                             </div>
                             <?php foreach ($statuses as $status): ?>
                                 <?php if (!$status->canUserSet($pachno_user)) continue; ?>
-                                <div class="list-item">
-                                    <a href="javascript:void(0);" onclick="Pachno.Issues.Field.set('<?php echo make_url('issue_setfield', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => 'status', 'status_id' => $status->getID())); ?>', 'status');">
-                                        <div class="status-badge" style="background-color: <?php echo $status->getColor(); ?>;color: <?php echo $status->getTextColor(); ?>;">
+                                    <input type="radio" class="fancy-checkbox" name="status_id" id="issue_status_<?= $status->getId(); ?>_radio" value="<?= $status->getId(); ?>" <?php if ($issue->getStatus() instanceof Status && $issue->getStatus()->getID() == $status->getId()) echo ' checked'; ?> data-trigger-issue-update data-field="status" data-issue-id="<?= $issue->getId(); ?>">
+                                    <label for="issue_status_<?= $status->getId(); ?>_radio" class="list-item">
+                                        <span class="status-badge" style="background-color: <?php echo $status->getColor(); ?>;color: <?php echo $status->getTextColor(); ?>;">
                                             <span><?php echo __($status->getName()); ?></span>
-                                        </div>
-                                    </a>
-                                </div>
+                                        </span>
+                                    </label>
                             <?php endforeach; ?>
                         </div>
                     </div>
@@ -67,17 +66,16 @@
             </div>
         </div>
         <div class="fields-header">
-            <?php if ($issue->isClosed()): ?>
-                <div class="not-editable">
-                    <?= fa_image_tag('check'); ?>
-                    <span class="name"><?= __('Done'); ?></span>
-                    <span class="tooltip from-above"><?= __('This issue is marked as done / closed'); ?></span>
-                </div>
-            <?php elseif ((!isset($showLockedStatus) || $showLockedStatus) && !$issue->isEditable()): ?>
-                <div class="not-editable">
+            <div class="not-editable tooltip-container <?php if (!$issue->isClosed()) echo 'hidden'; ?>" data-dynamic-field-value data-field="closed" data-issue-id="<?= $issue->getId(); ?>">
+                <?= fa_image_tag('check'); ?>
+                <span class="name"><?= __('Done'); ?></span>
+                <span class="tooltip from-above from-right"><?= __('This issue is marked as done / closed'); ?></span>
+            </div>
+            <?php if (!isset($showLockedStatus) || $showLockedStatus): ?>
+                <div class="not-editable tooltip-container <?php if ($issue->isEditable()) echo 'hidden'; ?>" data-dynamic-field-value data-field="editable" data-issue-id="<?= $issue->getId(); ?>">
                     <?= fa_image_tag('lock'); ?>
                     <span class="name"><?= __('Locked'); ?></span>
-                    <span class="tooltip from-above"><?= __('Most details of this issue cannot be edited because the workflow defines this step as "locked"'); ?></span>
+                    <span class="tooltip from-above from-right"><?= __('Most details of this issue cannot be edited because the workflow defines this step as "locked"'); ?></span>
                 </div>
             <?php endif; ?>
             <?php include_component('project/issuefieldissuetype', ['issue' => $issue]); ?>

@@ -94,6 +94,10 @@
         height: 100%;
         position: relative;
 
+        &.hidden {
+          display: none;
+        }
+
         .fas, far {
           margin-right: .35em;
         }
@@ -201,6 +205,10 @@
           margin-right: 0;
           width: auto;
           flex: 1 1 auto;
+
+          &.hidden {
+            display: none;
+          }
 
           + .message-box {
             margin-top: 1em;

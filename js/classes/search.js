@@ -233,6 +233,9 @@ class Search {
                 },
                 success: {update: '#search-results'}
             }).then((json) => {
+                for (const issue_json of json.issues) {
+                    Pachno.addIssue(issue_json, undefined, false);
+                }
                 if (!search.results_loaded) {
                     search.updateSavedSearchCounts();
                 }

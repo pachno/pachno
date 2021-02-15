@@ -116,7 +116,7 @@ $current_spent_time = $current_estimated_time;
     <?php endif; ?>
         <div class="column result_issue">
             <?php $title_visible = (in_array('title', $visible_columns)) ? '' : ' style="display: none;'; ?>
-            <a class="issue_link" href="<?php echo make_url('viewissue', array('project_key' => $issue->getProject()->getKey(), 'issue_no' => $issue->getFormattedIssueNo())); ?>">
+            <a class="issue_link" href="<?php echo make_url('viewissue', ['project_key' => $issue->getProject()->getKey(), 'issue_no' => $issue->getFormattedIssueNo()]); ?>">
                 <?php echo fa_image_tag((($issue->hasIssueType()) ? $issue->getIssueType()->getFontAwesomeIcon() : 'unknown'), ['class' => (($issue->hasIssueType()) ? 'issuetype-icon issuetype-' . $issue->getIssueType()->getIcon() : 'issuetype-icon issuetype-unknown'), 'title' => (($issue->hasIssueType()) ? $issue->getIssueType()->getName() : __('Unknown issuetype'))]); ?>
                 <span class="issue_no"><?php echo $issue->getFormattedIssueNo(true); ?></span>
                 <span class="sc_title"<?php echo $title_visible; ?>><span class="sc_dash"> - </span><?php echo $issue->getTitle(); ?></span>
@@ -142,12 +142,12 @@ $current_spent_time = $current_estimated_time;
         </div>
         <div class="column sc_status<?php if (!$issue->getStatus() instanceof Datatype): ?> faded_out<?php endif; ?> <?php if (!in_array('status', $visible_columns)) echo 'hidden'; ?>">
             <?php if ($issue->getStatus() instanceof Datatype): ?>
-                <div class="sc_status_color status-badge" style="background-color: <?php echo ($issue->getStatus() instanceof Datatype) ? $issue->getStatus()->getColor() : '#FFF'; ?>;"><span class="sc_status_name" style="color: <?php echo $issue->getStatus()->getTextColor(); ?>;"><?php echo $issue->getStatus()->getName(); ?></span></div>
+                <div class="sc_status_color status-badge" data-dynamic-field-value data-field="status" data-issue-id="<?= $issue->getId(); ?>" style="background-color: <?php echo ($issue->getStatus() instanceof Datatype) ? $issue->getStatus()->getColor() : '#FFF'; ?>; color: <?php echo $issue->getStatus()->getTextColor(); ?>;"><span><?php echo $issue->getStatus()->getName(); ?></span></div>
             <?php else: ?>
                 -
             <?php endif; ?>
         </div>
-        <div class="column sc_resolution<?php if (!$issue->getResolution() instanceof Resolution): ?> faded_out<?php endif; ?> <?php if (!in_array('resolution', $visible_columns)) echo 'hidden'; ?>">
+        <div class="column sc_resolution<?php if (!$issue->getResolution() instanceof Resolution): ?> faded_out<?php endif; ?> <?php if (!in_array('resolution', $visible_columns)) echo 'hidden'; ?>" data-dynamic-field-value data-field="resolution" data-issue-id="<?= $issue->getId(); ?>" data-unknown="-">
             <?php echo ($issue->getResolution() instanceof Resolution) ? mb_strtoupper($issue->getResolution()->getName()) : '-'; ?>
         </div>
         <div class="column sc_category<?php if (!$issue->getCategory() instanceof Category): ?> faded_out<?php endif; ?> <?php if (!in_array('category', $visible_columns)) echo 'hidden'; ?>">

@@ -223,8 +223,13 @@ const loadComponentOptions = function ($item) {
 };
 
 const autoBackdropLink = function (event) {
+    if (event.isPropagationStopped()) {
+        return;
+    }
+
     if (event) {
         event.preventDefault();
+        event.stopPropagation();
     }
     const $button = $(this);
     $button.prop('disabled', true);

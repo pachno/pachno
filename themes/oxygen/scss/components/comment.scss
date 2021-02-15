@@ -96,6 +96,17 @@
       position: relative;
       overflow: visible;
       padding: 0;
+
+      .commentheader {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        padding: .75em;
+
+        .header {
+          padding: 0;
+        }
+      }
     }
 
     &:target {
@@ -145,7 +156,7 @@
 
   .tools {
     position: absolute;
-    top: -20px;
+    top: -3em;
     right: 10px;
 
     &.action-buttons a.action-button {
@@ -211,10 +222,6 @@
 
 .comments-list-none {
   font-weight: $theme-font-weight-regular;
-}
-
-.comment:hover > .commentheader .action-buttons.commenttools a.action-button {
-  color: rgba(100, 100, 100, .7);
 }
 
 .comment-replies .commentheader {

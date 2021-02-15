@@ -595,16 +595,10 @@
                 if ($transition->validateFromRequest($request)) {
                     $transition->transitionIssueToOutgoingStepFromRequest($issue, $request);
                 } else {
-                    Context::setMessage('issue_error', 'transition_error');
-                    Context::setMessage('issue_workflow_errors', $transition->getValidationErrors());
-
-                    if ($request->isResponseFormatAccepted('application/json', false)) {
-                        $this->getResponse()->setHttpStatus(400);
-
-                        return $this->renderJSON(['error' => Context::getI18n()->__('There was an error trying to move this issue to the next step in the workflow'), 'message' => preg_replace('/\s+/', ' ', $this->getComponentHTML('main/issue_transition_error'))]);
-                    }
+                    $this->getResponse()->setHttpStatus(400);
+                    return $this->renderJSON(['error' => Context::getI18n()->__('There was an error trying to move this issue to the next step in the workflow'), 'message' => preg_replace('/\s+/', ' ', $this->getComponentHTML('main/issue_transition_error'))]);
                 }
-                $this->forward(Context::getRouting()->generate('viewissue', ['project_key' => $issue->getProject()->getKey(), 'issue_no' => $issue->getFormattedIssueNo()]));
+                return $this->renderJSON(['last_updated' => Context::getI18n()->formatTime(time(), 20), 'issues' => [$issue->toJSON()]]);
             } catch (Exception $e) {
                 return $this->return404();
             }
@@ -614,7 +608,7 @@
         {
             try {
                 try {
-                    $transition = entities\WorkflowTransition::getB2DBTable()->selectById($request['transition_id']);
+                    $transition = entities\tables\WorkflowTransitions::getTable()->selectById($request['transition_id']);
                 } catch (Exception $e) {
                     $this->getResponse()->setHttpStatus(400);
 
@@ -623,6 +617,7 @@
                 $issue_ids = $request['issue_ids'];
                 $status = null;
                 $closed = false;
+                $issues = [];
                 foreach ($issue_ids as $issue_id) {
                     $issue = entities\Issue::getB2DBTable()->selectById((int)$issue_id);
                     if (!$issue->isWorkflowTransitionsAvailable() || !$transition->validateFromRequest($request)) {
@@ -644,10 +639,11 @@
                         $status = $issue->getStatus();
 
                     $closed = $issue->isClosed();
+                    $issues[] = $issue->toJSON();
                 }
 
                 Context::loadLibrary('common');
-                $options = ['issue_ids' => array_keys($issue_ids), 'last_updated' => Context::getI18n()->formatTime(time(), 20), 'closed' => $closed];
+                $options = ['last_updated' => Context::getI18n()->formatTime(time(), 20), 'closed' => $closed, 'issues' => $issues];
                 $options['status'] = ['color' => $status->getColor(), 'name' => $status->getName(), 'id' => $status->getID()];
                 if ($request->hasParameter('milestone_id')) {
                     $milestone = new entities\Milestone($request['milestone_id']);

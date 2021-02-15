@@ -11,16 +11,6 @@
     /**
      * Workflow transition class
      *
-     * @author Daniel Andre Eikeland <zegenie@zegeniestudios.net>
-     * @version 3.0
-     * @license http://opensource.org/licenses/MPL-2.0 Mozilla Public License 2.0 (MPL 2.0)
-     * @package pachno
-     * @subpackage core
-     */
-
-    /**
-     * Workflow transition class
-     *
      * @package pachno
      * @subpackage core
      *
@@ -807,18 +797,21 @@
 
         public function toJSON($detailed = true)
         {
-            $details = [
-                'name' => $this->getName(),
-                'description' => $this->getDescription(),
-                'template' => $this->getTemplate(),
-                'post_validations' => []
-            ];
+            $json = parent::toJSON($detailed);
+            $json['name'] = $this->getName();
+            $json['description'] = $this->getDescription();
+            $json['template'] = $this->getTemplate();
+            $json['url'] = framework\Context::getRouting()->generate('transition_issue', ['project_key' => '%project_key%', 'issue_id' => '%issue_id%', 'transition_id' => $this->getID()]);
+            $json['backdrop_url'] = framework\Context::getRouting()->generate('get_partial_for_backdrop', ['key' => 'workflow_transition', 'transition_id' => $this->getID()]);
 
-            foreach ($this->getPostValidationRules() as $rule) {
-                $details['post_validations'][] = $rule->toJSON();
+            if ($detailed) {
+                $json['post_validations'] = [];
+                foreach ($this->getPostValidationRules() as $rule) {
+                    $json['post_validations'][] = $rule->toJSON();
+                }
             }
 
-            return $details;
+            return $json;
         }
 
         /**

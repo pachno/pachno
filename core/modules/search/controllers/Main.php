@@ -358,7 +358,7 @@
         {
             $this->getResponse()->setDecoration(framework\Response::DECORATE_NONE);
 
-            return $this->renderJSON([
+            $json = [
                 'content' => $this->getComponentHTML('search/issues_paginated', ['search_object' => $this->search_object, 'cc' => 1, 'prevgroup_id' => null]),
                 'default_columns' => entities\SavedSearch::getDefaultVisibleColumns(),
                 'available_columns' => entities\SavedSearch::getAvailableColumns(),
@@ -366,8 +366,15 @@
                 'applied_filters' => array_keys($this->search_object->getFilters()),
                 'template' => entities\SavedSearch::getTemplate($this->search_object->getTemplateName()),
                 'template_parameter' => $this->search_object->getTemplateParameter(),
-                'num_issues' => $this->search_object->getTotalNumberOfIssues()
-            ]);
+                'num_issues' => $this->search_object->getTotalNumberOfIssues(),
+                'issues' => [],
+            ];
+
+            foreach ($this->search_object->getIssues() as $issue) {
+                $json['issues'][] = $issue->toJSON(false);
+            }
+
+            return $this->renderJSON($json);
         }
 
         public function runAddFilter(framework\Request $request)
