@@ -42,6 +42,37 @@
                             </div>
                         </div>
                     <?php endif; ?>
+                    <?php if (isset($parent_issue)): ?>
+                        <div class="form-row locked additional_information" id="parent_issue_div">
+                            <div class="fancy-dropdown-container">
+                                <div class="fancy-dropdown locked">
+                                    <label>
+                                        <span><?= __('Parent issue'); ?></span>
+                                        <?= fa_image_tag('lock', ['class' => 'icon locked']); ?>
+                                    </label>
+                                    <span class="value">
+                                        <?php if ($parent_issue instanceof Issue): ?>
+                                            <?= fa_image_tag(($parent_issue->hasIssueType()) ? $parent_issue->getIssueType()->getFontAwesomeIcon() : 'unknown', ['class' => (($parent_issue->hasIssueType()) ? 'issuetype-icon issuetype-' . $parent_issue->getIssueType()->getIcon() : 'issuetype-icon issuetype-unknown')]); ?>
+                                            <span class="name"><?= $parent_issue->getFormattedTitle(); ?></span>
+                                        <?php else: ?>
+                                            <span class="name"><?= __('No parent issue'); ?></span>
+                                        <?php endif; ?>
+                                    </span>
+                                    <div class="dropdown-container list-mode">
+                                        <input type="radio" value="<?= ($parent_issue instanceof Issue) ? $parent_issue->getID() : 0; ?>" name="parent_issue_id" id="transition_<?= $transition->getId(); ?>_parent_issue_radio" class="fancy-checkbox" checked>
+                                        <label for="transition_<?= $transition->getId(); ?>_parent_issue_radio" class="list-item">
+                                            <?php if ($parent_issue instanceof Issue): ?>
+                                                <?= fa_image_tag(($parent_issue->hasIssueType()) ? $parent_issue->getIssueType()->getFontAwesomeIcon() : 'unknown', ['class' => (($parent_issue->hasIssueType()) ? 'issuetype-icon issuetype-' . $parent_issue->getIssueType()->getIcon() : 'issuetype-icon issuetype-unknown')]); ?>
+                                                <span class="name"><?= $parent_issue->getFormattedTitle(); ?></span>
+                                            <?php else: ?>
+                                                <span class="name"><?= __('No parent issue'); ?></span>
+                                            <?php endif; ?>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    <?php endif; ?>
                     <?php if ((($issue instanceof Issue && $issue->isUpdateable() && $issue->canEditAssignee()) || isset($issues)) && $transition->hasAction(\pachno\core\entities\WorkflowTransitionAction::ACTION_ASSIGN_ISSUE) && !$transition->getAction(\pachno\core\entities\WorkflowTransitionAction::ACTION_ASSIGN_ISSUE)->hasTargetValue()): ?>
                         <div class="form-row" id="transition_popup_assignee_div_<?= $transition->getID(); ?>" style="display: none;">
                             <input type="hidden" name="assignee_id" id="popup_assigned_to_id_<?= $transition->getID(); ?>" value="<?= ($issue instanceof Issue && $issue->hasAssignee() ? $issue->getAssignee()->getID() : 0); ?>">

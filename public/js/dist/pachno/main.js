@@ -523,7 +523,7 @@ var Board = /*#__PURE__*/function () {
                   var issue = _step10.value;
                   if (!isInColumn(issue)) continue;
                   num_issues["status_".concat(issue.status.id)] += 1;
-                  if (issue.processed && issue.swimlane === swimlane.identifier) continue;
+                  if (issue.processed || !swimlane.has(issue)) continue;
 
                   if (issue.assignee && issue.assignee.type == 'user') {
                     _this4.users.add(JSON.stringify(issue.assignee));
@@ -651,6 +651,23 @@ var Board = /*#__PURE__*/function () {
       }
     }
   }, {
+    key: "getSwimlane",
+    value: function getSwimlane(swimlane_identifier) {
+      var _iterator12 = _createForOfIteratorHelper(this.swimlanes),
+          _step12;
+
+      try {
+        for (_iterator12.s(); !(_step12 = _iterator12.n()).done;) {
+          var swimlane = _step12.value;
+          if (swimlane.identifier === swimlane_identifier) return swimlane;
+        }
+      } catch (err) {
+        _iterator12.e(err);
+      } finally {
+        _iterator12.f();
+      }
+    }
+  }, {
     key: "filterInput",
     value: function filterInput(event) {
       var $filter_input = jquery__WEBPACK_IMPORTED_MODULE_0___default()(event.target);
@@ -722,21 +739,21 @@ var Board = /*#__PURE__*/function () {
         }, this.id);
         this.swimlanes.splice(this.swimlanes.length - 1, 0, swimlane);
       } else {
-        var _iterator12 = _createForOfIteratorHelper(this.swimlanes),
-            _step12;
+        var _iterator13 = _createForOfIteratorHelper(this.swimlanes),
+            _step13;
 
         try {
-          for (_iterator12.s(); !(_step12 = _iterator12.n()).done;) {
-            var _swimlane = _step12.value;
+          for (_iterator13.s(); !(_step13 = _iterator13.n()).done;) {
+            var _swimlane = _step13.value;
 
             if (_swimlane.has(issue)) {
               _swimlane.addIssue(issue);
             }
           }
         } catch (err) {
-          _iterator12.e(err);
+          _iterator13.e(err);
         } finally {
-          _iterator12.f();
+          _iterator13.f();
         }
       }
 
@@ -752,12 +769,12 @@ var Board = /*#__PURE__*/function () {
       if (this.swimlanes === undefined || !this.swimlanes.length) {
         this.setSwimlanes(swimlanes);
       } else {
-        var _iterator13 = _createForOfIteratorHelper(swimlanes),
-            _step13;
+        var _iterator14 = _createForOfIteratorHelper(swimlanes),
+            _step14;
 
         try {
           var _loop2 = function _loop2() {
-            var swimlane = _step13.value;
+            var swimlane = _step14.value;
 
             var board_swimlane = _this5.swimlanes.find(function (lane) {
               return lane.identifier == swimlane.identifier;
@@ -766,42 +783,42 @@ var Board = /*#__PURE__*/function () {
             board_swimlane.addIssues(swimlane.issues);
           };
 
-          for (_iterator13.s(); !(_step13 = _iterator13.n()).done;) {
+          for (_iterator14.s(); !(_step14 = _iterator14.n()).done;) {
             _loop2();
           }
         } catch (err) {
-          _iterator13.e(err);
+          _iterator14.e(err);
         } finally {
-          _iterator13.f();
+          _iterator14.f();
         }
       }
 
-      var _iterator14 = _createForOfIteratorHelper(this.columns),
-          _step14;
+      var _iterator15 = _createForOfIteratorHelper(this.columns),
+          _step15;
 
       try {
-        for (_iterator14.s(); !(_step14 = _iterator14.n()).done;) {
-          var _column = _step14.value;
+        for (_iterator15.s(); !(_step15 = _iterator15.n()).done;) {
+          var _column = _step15.value;
 
-          var _iterator15 = _createForOfIteratorHelper(_column.status_ids),
-              _step15;
+          var _iterator16 = _createForOfIteratorHelper(_column.status_ids),
+              _step16;
 
           try {
-            for (_iterator15.s(); !(_step15 = _iterator15.n()).done;) {
-              var status_id = _step15.value;
+            for (_iterator16.s(); !(_step16 = _iterator16.n()).done;) {
+              var status_id = _step16.value;
               jquery__WEBPACK_IMPORTED_MODULE_0___default()("#add_next_column_status_".concat(status_id)).attr('disabled', true);
               jquery__WEBPACK_IMPORTED_MODULE_0___default()("label[for=add_next_column_status_".concat(status_id, "]")).addClass('disabled');
             }
           } catch (err) {
-            _iterator15.e(err);
+            _iterator16.e(err);
           } finally {
-            _iterator15.f();
+            _iterator16.f();
           }
         }
       } catch (err) {
-        _iterator14.e(err);
+        _iterator15.e(err);
       } finally {
-        _iterator14.f();
+        _iterator15.f();
       }
 
       this.updateWhiteboard();
@@ -809,8 +826,6 @@ var Board = /*#__PURE__*/function () {
   }, {
     key: "setupListeners",
     value: function setupListeners() {
-      var _this6 = this;
-
       var board = this;
       var $body = jquery__WEBPACK_IMPORTED_MODULE_0___default()('body');
       $body.on('click', '#selected_milestone_input li', function (event) {
@@ -880,37 +895,187 @@ var Board = /*#__PURE__*/function () {
             break;
         }
       });
-      _pachno__WEBPACK_IMPORTED_MODULE_4__["default"].on(_pachno__WEBPACK_IMPORTED_MODULE_4__["default"].EVENTS.issue.updateJsonComplete, function () {
-        _this6.verifyIssues();
+      _pachno__WEBPACK_IMPORTED_MODULE_4__["default"].on(_pachno__WEBPACK_IMPORTED_MODULE_4__["default"].EVENTS.issue.updateJsonComplete, function (_, issue) {
+        var found = false;
+
+        var _iterator17 = _createForOfIteratorHelper(board.swimlanes),
+            _step17;
+
+        try {
+          for (_iterator17.s(); !(_step17 = _iterator17.n()).done;) {
+            var swimlane = _step17.value;
+            var updated = swimlane.addOrRemove(issue, !found);
+
+            if (found === false) {
+              found = updated;
+            }
+          }
+        } catch (err) {
+          _iterator17.e(err);
+        } finally {
+          _iterator17.f();
+        }
+
+        board.verifyIssues();
       });
+      var dragged_issue = undefined;
       $body.off('dragstart', '.whiteboard-issue');
       $body.on('dragstart', '.whiteboard-issue', function (event) {
-        event.originalEvent.dataTransfer.setData('text/plain', jquery__WEBPACK_IMPORTED_MODULE_0___default()(event.target).id);
+        var $issue = jquery__WEBPACK_IMPORTED_MODULE_0___default()(event.target);
+        dragged_issue = _pachno__WEBPACK_IMPORTED_MODULE_4__["default"].getIssue($issue.data('issue-id'));
+        dragged_issue.startDragging(event.clientX, event.clientY);
+        event.originalEvent.dataTransfer.setData('text/plain', dragged_issue.id);
         event.originalEvent.dataTransfer.effectAllowed = "move";
         event.originalEvent.dataTransfer.dropEffect = "move";
         event.currentTarget.classList.add('dragging');
-      });
-      $body.off('drop');
-      $body.on('drop', function (event) {
-        if (event !== undefined) {
-          event.preventDefault();
+        jquery__WEBPACK_IMPORTED_MODULE_0___default()('#whiteboard').addClass('is-dragging');
+        var $columns = jquery__WEBPACK_IMPORTED_MODULE_0___default()('.whiteboard-columns .column[data-status-ids]');
+        var current_swimlane = board.swimlanes.find(function (swimlane) {
+          return swimlane.has(dragged_issue);
+        });
+
+        var _iterator18 = _createForOfIteratorHelper($columns),
+            _step18;
+
+        try {
+          for (_iterator18.s(); !(_step18 = _iterator18.n()).done;) {
+            var column = _step18.value;
+            var $column = jquery__WEBPACK_IMPORTED_MODULE_0___default()(column);
+            var status_id_data = $column.data('status-ids');
+            var status_ids = Number.isNaN(status_id_data) ? status_id_data.split(',') : [status_id_data];
+            $column.removeClass('drop-valid');
+            $column.removeClass('drop-highlight');
+
+            if (status_ids.includes(parseInt(dragged_issue.status.id))) {
+              if (current_swimlane.identifier !== $column.data('swimlane-identifier')) {
+                $column.addClass('drop-valid');
+              }
+
+              continue;
+            }
+
+            var _iterator19 = _createForOfIteratorHelper(dragged_issue.available_statuses),
+                _step19;
+
+            try {
+              for (_iterator19.s(); !(_step19 = _iterator19.n()).done;) {
+                var status = _step19.value;
+
+                if (status_ids.includes(parseInt(status.id))) {
+                  $column.addClass('drop-valid');
+                }
+              }
+            } catch (err) {
+              _iterator19.e(err);
+            } finally {
+              _iterator19.f();
+            }
+          }
+        } catch (err) {
+          _iterator18.e(err);
+        } finally {
+          _iterator18.f();
         }
-      });
+      }); // $body.off('drop');
+      // $body.on('drop', function (event) {
+      //     if (event !== undefined) {
+      //         event.preventDefault();
+      //     }
+      // });
+
       $body.off('dragover', '.columns-container .column');
       $body.on('dragover', '.columns-container .column', function (event) {
+        if (event.isPropagationStopped()) return;
         var $column = jquery__WEBPACK_IMPORTED_MODULE_0___default()(event.target);
-        $column.addClass('drop-valid');
+        $column.addClass('drop-highlight');
+        dragged_issue.dragDetect(event);
+        event.preventDefault();
+        event.stopPropagation();
       });
+
+      var drop = function drop(event) {
+        if (event.isPropagationStopped()) return; // event.originalEvent.dataTransfer.clearData();
+        // const issue = Pachno.getIssue(event.originalEvent.dataTransfer.getData('text/plain'));
+
+        var $dropped_target = jquery__WEBPACK_IMPORTED_MODULE_0___default()('.whiteboard-columns .column.drop-valid.drop-highlight');
+
+        if ($dropped_target.length) {
+          dragged_issue.stopDragging(true);
+          var $target_issue = $dropped_target.find('.whiteboard-issue.drop-target');
+
+          if ($target_issue.length) {
+            if ($target_issue.hasClass('drop-indicator-above')) {
+              dragged_issue.clone_element.detach().insertBefore($target_issue);
+            } else {
+              dragged_issue.clone_element.detach().insertAfter($target_issue);
+            }
+          } else {
+            $dropped_target.append(dragged_issue.clone_element.detach());
+          }
+
+          dragged_issue.clone_element.removeClass('clone');
+          dragged_issue.clone_element.css({
+            top: '',
+            transform: '',
+            left: ''
+          });
+          var swimlane_identifier = $dropped_target.data('swimlane-identifier');
+          var swimlane = board.getSwimlane(swimlane_identifier);
+          var status_id_data = $dropped_target.data('status-ids');
+          var status_ids = Number.isNaN(status_id_data) ? status_id_data.split(',') : [status_id_data];
+          dragged_issue.triggerTransition(board, swimlane, status_ids, event.shiftKey);
+        } else {
+          dragged_issue.stopDragging();
+        }
+
+        jquery__WEBPACK_IMPORTED_MODULE_0___default()('#whiteboard').removeClass('is-dragging');
+        jquery__WEBPACK_IMPORTED_MODULE_0___default()('.whiteboard-columns .column').removeClass('drop-valid');
+        var $whiteboard_issues = jquery__WEBPACK_IMPORTED_MODULE_0___default()('.whiteboard-issue');
+        $whiteboard_issues.removeClass('drop-target');
+        $whiteboard_issues.removeClass('drop-indicator-above');
+        $whiteboard_issues.removeClass('drop-indicator-below');
+        event.stopPropagation();
+        event.preventDefault(); // event.originalEvent.dataTransfer.setData('text/plain', $(event.target).id);
+        // event.currentTarget.classList.remove('dragging');
+      };
+
+      $body.off('drop', '.columns-container .column');
+      $body.on('drop', '.columns-container .column', drop);
       $body.off('dragleave', '.columns-container .column');
       $body.on('dragleave', '.columns-container .column', function (event) {
+        if (event.isPropagationStopped() || event.isDefaultPrevented()) return;
         var $column = jquery__WEBPACK_IMPORTED_MODULE_0___default()(event.target);
-        $column.removeClass('drop-valid');
+        $column.removeClass('drop-highlight');
+        event.stopPropagation();
       });
-      $body.off('dragend', '.whiteboard-issue');
-      $body.on('dragend', '.whiteboard-issue', function (event) {
-        // event.originalEvent.dataTransfer.clearData();
-        event.currentTarget.classList.remove('dragging');
+      $body.off('dragover', '.columns-container .column .whiteboard-issue:not(.dragging):not(.clone)');
+      $body.on('dragover', '.columns-container .column .whiteboard-issue:not(.dragging):not(.clone)', function (event) {
+        var $element = jquery__WEBPACK_IMPORTED_MODULE_0___default()(this);
+        var $column = $element.parents('.column');
+        var rect = $element[0].getBoundingClientRect();
+        var y = event.clientY - rect.top;
+        var above = y < rect.height / 2;
+        var issue = _pachno__WEBPACK_IMPORTED_MODULE_4__["default"].getIssue($element.data('issue-id'));
+        issue.element.addClass('drop-target');
+        issue.element.addClass(above ? 'drop-indicator-above' : 'drop-indicator-below');
+        dragged_issue.dragDetect(event);
+        $column.addClass('drop-highlight');
+        event.stopImmediatePropagation();
+        event.preventDefault();
       });
+      $body.off('dragleave', '.columns-container .column .whiteboard-issue:not(.dragging):not(.clone)');
+      $body.on('dragleave', '.columns-container .column .whiteboard-issue:not(.dragging):not(.clone)', function (event) {
+        var $element = jquery__WEBPACK_IMPORTED_MODULE_0___default()(this);
+        var $column = $element.parents('.column');
+        $element.removeClass('drop-indicator-above');
+        $element.removeClass('drop-indicator-below');
+        $element.removeClass('drop-target');
+        $column.removeClass('drop-highlight');
+        event.preventDefault();
+      });
+      $body.off('drop', '.columns-container .column .whiteboard-issue:not(.dragging):not(.clone)');
+      $body.on('drop', '.columns-container .column .whiteboard-issue:not(.dragging):not(.clone)', drop); // $body.off('dragend', '.whiteboard-issue');
+      // $body.on('dragend', '.whiteboard-issue', drop);
     }
   }]);
 
@@ -1038,6 +1203,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _uploader__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./uploader */ "./js/classes/uploader.js");
 /* harmony import */ var _quicksearch__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./quicksearch */ "./js/classes/quicksearch.js");
 /* harmony import */ var _widgets_editor__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../widgets/editor */ "./js/widgets/editor.js");
+/* harmony import */ var throttle_debounce__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! throttle-debounce */ "./node_modules/throttle-debounce/esm/index.js");
+/* harmony import */ var _board__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./board */ "./js/classes/board.js");
 function _createForOfIteratorHelper(o, allowArrayLike) { var it; if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = o[Symbol.iterator](); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
 
 function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
@@ -1049,6 +1216,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+
 
 
 
@@ -1070,6 +1239,8 @@ var Issue = /*#__PURE__*/function () {
       this.element = this.createHtmlElement();
     }
 
+    this.clone_element = undefined;
+    this.event_throttled = false;
     this.setupListeners();
     this.uploader = new _uploader__WEBPACK_IMPORTED_MODULE_3__["default"]({
       uploader_container: jquery__WEBPACK_IMPORTED_MODULE_1___default()('#viewissue_attached_information_container'),
@@ -1102,6 +1273,18 @@ var Issue = /*#__PURE__*/function () {
       this.backdrop_url = json.backdrop_url;
       this.project = json.project;
       this.transitions = json.transitions;
+
+      for (var index in this.transitions) {
+        if (this.transitions.hasOwnProperty(index)) {
+          for (var status_index in this.transitions[index].status_ids) {
+            if (this.transitions[index].status_ids.hasOwnProperty(status_index)) {
+              this.transitions[index].status_ids[status_index] = parseInt(this.transitions[index].status_ids[status_index]);
+            }
+          }
+        }
+      }
+
+      this.available_statuses = json.available_statuses;
       this.blocking = json.blocking;
       this.closed = json.closed;
       this.deleted = json.deleted;
@@ -1293,6 +1476,16 @@ var Issue = /*#__PURE__*/function () {
         }
 
         var issue_json = data.json.issue !== undefined ? data.json.issue : data.json;
+
+        if (issue.clone_element !== undefined) {
+          var id = issue.element.id;
+          issue.element.remove();
+          issue.element = issue.clone_element;
+          issue.element.id = id;
+          issue.clone_element = undefined;
+        }
+
+        issue.element.removeClass('loading');
         issue.updateFromJson(issue_json);
         issue.updateVisibleValues(issue_json);
         _pachno__WEBPACK_IMPORTED_MODULE_2__["default"].trigger(_pachno__WEBPACK_IMPORTED_MODULE_2__["default"].EVENTS.issue.updateJsonComplete, issue);
@@ -1626,6 +1819,123 @@ var Issue = /*#__PURE__*/function () {
       }
     }
   }, {
+    key: "triggerTransition",
+    value: function triggerTransition(board, swimlane, status_ids, force_popup) {
+      var _this = this;
+
+      var show_popup = force_popup;
+      var processed = false;
+      this.clone_element.addClass('loading');
+
+      var _iterator4 = _createForOfIteratorHelper(this.transitions),
+          _step4;
+
+      try {
+        var _loop = function _loop() {
+          var transition = _step4.value;
+          var includes = transition.status_ids.filter(function (value) {
+            return status_ids.includes(value);
+          });
+          if (!includes.length) return "continue";
+          processed = true;
+
+          if (!show_popup) {
+            _pachno__WEBPACK_IMPORTED_MODULE_2__["default"].fetch(transition.url.replace('%25project_key%25', _this.project.key).replace('%25issue_id%25', _this.id) + "?board_id=".concat(board.id, "&milestone_id=").concat(board.selected_milestone_id, "&swimlane_identifier=").concat(swimlane.identifier), {
+              method: 'POST'
+            }).then(function (json) {
+              var _iterator5 = _createForOfIteratorHelper(json.issues),
+                  _step5;
+
+              try {
+                for (_iterator5.s(); !(_step5 = _iterator5.n()).done;) {
+                  var issue = _step5.value;
+                  _pachno__WEBPACK_IMPORTED_MODULE_2__["default"].trigger(_pachno__WEBPACK_IMPORTED_MODULE_2__["default"].EVENTS.issue.updateJson, {
+                    json: issue
+                  });
+                }
+              } catch (err) {
+                _iterator5.e(err);
+              } finally {
+                _iterator5.f();
+              }
+            })["catch"](function (error) {
+              console.error(error);
+              _helpers_ui__WEBPACK_IMPORTED_MODULE_0__["default"].Backdrop.show(transition.backdrop_url + "?issue_id=".concat(_this.id, "&board_id=").concat(board.id, "&milestone_id=").concat(board.selected_milestone_id, "&swimlane_identifier=").concat(swimlane.identifier));
+            });
+          } else {
+            _helpers_ui__WEBPACK_IMPORTED_MODULE_0__["default"].Backdrop.show(transition.backdrop_url + "?issue_id=".concat(_this.id, "&board_id=").concat(board.id, "&milestone_id=").concat(board.selected_milestone_id, "&swimlane_identifier=").concat(swimlane.identifier));
+          }
+        };
+
+        for (_iterator4.s(); !(_step4 = _iterator4.n()).done;) {
+          var _ret = _loop();
+
+          if (_ret === "continue") continue;
+        }
+      } catch (err) {
+        _iterator4.e(err);
+      } finally {
+        _iterator4.f();
+      }
+
+      if (!processed && !swimlane.has(this)) {
+        switch (swimlane.identifier_type) {
+          case _board__WEBPACK_IMPORTED_MODULE_7__["SwimlaneTypes"].ISSUES:
+            this.postAndUpdate('parent_issue_id', swimlane.identifier_issue !== undefined ? swimlane.identifier_issue.id : 0);
+            return;
+        }
+      }
+    }
+  }, {
+    key: "startDragging",
+    value: function startDragging(x, y) {
+      this.clone_element = this.createHtmlElement();
+      this.clone_element.id = "whiteboard_issue_".concat(this.id, "_CLONE");
+      this.clone_element.insertAfter(this.element);
+      this.clone_element.addClass('clone');
+      var rect = this.element[0].getBoundingClientRect();
+      this.clone_element.css({
+        top: "".concat(rect.top, "px"),
+        left: "".concat(rect.left, "px")
+      });
+      this.clone_element.data('original-x', x);
+      this.clone_element.data('original-y', y);
+      var $body = jquery__WEBPACK_IMPORTED_MODULE_1___default()('body');
+      $body.off('dragover', this.dragDetect);
+      $body.on('dragover', this.dragDetect.bind(this));
+      this.event_throttled = false;
+      return this.clone_element;
+    }
+  }, {
+    key: "dragDetect",
+    value: function dragDetect(event) {
+      var _this2 = this;
+
+      if (this.event_throttled == true) return;
+      this.event_throttled = true;
+      var X = this.clone_element.data('original-x');
+      var Y = this.clone_element.data('original-y');
+      var mouseX = event.pageX;
+      var mouseY = event.pageY;
+      this.clone_element.css({
+        transform: "rotate(4deg) translateX(".concat(mouseX - X, "px) translateY(").concat(mouseY - Y, "px)")
+      });
+      setTimeout(function () {
+        _this2.event_throttled = false;
+      }, 30);
+    }
+  }, {
+    key: "stopDragging",
+    value: function stopDragging(keep) {
+      var $body = jquery__WEBPACK_IMPORTED_MODULE_1___default()('body');
+      $body.off('dragover', this.dragDetect);
+
+      if (keep === undefined) {
+        this.clone_element.remove();
+        this.element.removeClass('dragging');
+      }
+    }
+  }, {
     key: "createHtmlElement",
     value: function createHtmlElement() {
       var classes = [];
@@ -1633,7 +1943,9 @@ var Issue = /*#__PURE__*/function () {
       if (this.blocking) classes.push('blocking');
       var html = "\n<div id=\"whiteboard_issue_".concat(this.id, "\" draggable=\"true\" class=\"whiteboard-issue trigger-backdrop ").concat(classes.join(','), "\" data-issue-id=\"").concat(this.id, "\" data-url=\"").concat(this.card_url, "/board_id/").concat(this.board_id, "\">\n    <div class=\"issue-header\">\n        <span class=\"issue-number\">").concat(this.issue_no, "</span>\n        <span class=\"issue-title\" data-dynamic-field-value data-field=\"title\" data-issue-id=\"").concat(this.id, "\">").concat(this.title, "</span>\n        <div class=\"dropper-container\">\n            <button class=\"button icon dropper dynamic_menu_link\" type=\"button\">").concat(_helpers_ui__WEBPACK_IMPORTED_MODULE_0__["default"].fa_image_tag('ellipsis-v'), "</button>\n            <div class=\"dropdown-container dynamic_menu\" data-menu-url=\"").concat(this.more_actions_url, "\">\n                <div class=\"list-mode\">\n                    <div class=\"list-item disabled\">\n                        <span class=\"icon\">").concat(_helpers_ui__WEBPACK_IMPORTED_MODULE_0__["default"].fa_image_tag('spinner', {
         'classes': 'fa-spin'
-      }), "</span>\n                    </div>\n                </div>\n            </div>\n        </div>\n    </div>\n    <div class=\"issue-info\">\n    </div>\n</div>\n");
+      }), "</span>\n                    </div>\n                </div>\n            </div>\n        </div>\n    </div>\n    <div class=\"issue-info\"></div>\n    <div class=\"indicator\">").concat(_helpers_ui__WEBPACK_IMPORTED_MODULE_0__["default"].fa_image_tag('spinner', {
+        'classes': 'fa-spin icon'
+      }), "</div>\n</div>\n");
       var $html = jquery__WEBPACK_IMPORTED_MODULE_1___default()(html);
       var $info = $html.find('.issue-info');
       var files_hidden_class = this.number_of_files > 0 ? '' : 'hidden';
@@ -3555,6 +3867,33 @@ var Swimlane = /*#__PURE__*/function () {
     value: function addIssue(issue) {
       this.issues.push(issue);
     }
+  }, {
+    key: "addOrRemove",
+    value: function addOrRemove(issue) {
+      var add = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
+
+      if (!this.has(issue)) {
+        for (var index in this.issues) {
+          if (!this.issues.hasOwnProperty(index)) continue; // if (this.issues[index].id == issue.id)
+
+          this.issues = this.issues.filter(function (existing_issue) {
+            return existing_issue.id != issue.id;
+          });
+        }
+      } else if (add) {
+        var found = this.issues.some(function (existing_issue) {
+          return existing_issue.id == issue.id;
+        });
+
+        if (!found) {
+          this.issues.push(issue);
+        }
+
+        return true;
+      }
+
+      return false;
+    }
     /**
      * Check if an issue is inside this swimlane
      * @param {Issue} issue
@@ -4364,9 +4703,11 @@ var fetchHelper = function fetchHelper(url, options) {
             if (options.failure && options.failure.callback) {
               options.failure.callback(json);
             }
-          });
 
-          _reject(response);
+            _reject(json);
+          })["catch"](function () {
+            return _reject(response);
+          });
         }
       });
     }).then(function (json, responseText) {
@@ -4474,6 +4815,7 @@ var fetchHelper = function fetchHelper(url, options) {
     })["catch"](function (error) {
       console.error(error);
       console.error('OPTIONS', options);
+      reject(error);
       Object(_tools_tools__WEBPACK_IMPORTED_MODULE_1__["clearFormSubmit"])($form);
     });
   });
@@ -5320,11 +5662,12 @@ var setupListeners = function setupListeners() {
 /*!********************************!*\
   !*** ./js/helpers/workflow.js ***!
   \********************************/
-/*! exports provided: setupListeners */
+/*! exports provided: TRANSITION_ACTIONS, setupListeners */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "TRANSITION_ACTIONS", function() { return TRANSITION_ACTIONS; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "setupListeners", function() { return setupListeners; });
 /* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! jquery */ "./node_modules/jquery/dist/jquery.js");
 /* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(jquery__WEBPACK_IMPORTED_MODULE_0__);
@@ -5405,6 +5748,28 @@ var setupListeners = function setupListeners() {
   });
 };
 
+var TRANSITION_ACTIONS = {
+  ACTION_ASSIGN_ISSUE_SELF: 'assign_self',
+  ACTION_ASSIGN_ISSUE: 'assign_user',
+  ACTION_CLEAR_ASSIGNEE: 'clear_assignee',
+  ACTION_SET_DUPLICATE: 'set_duplicate',
+  ACTION_CLEAR_DUPLICATE: 'clear_duplicate',
+  ACTION_SET_RESOLUTION: 'set_resolution',
+  ACTION_CLEAR_RESOLUTION: 'clear_resolution',
+  ACTION_SET_STATUS: 'set_status',
+  ACTION_SET_MILESTONE: 'set_milestone',
+  ACTION_CLEAR_MILESTONE: 'clear_milestone',
+  ACTION_SET_PRIORITY: 'set_priority',
+  ACTION_CLEAR_PRIORITY: 'clear_priority',
+  ACTION_SET_PERCENT: 'set_percent',
+  ACTION_CLEAR_PERCENT: 'clear_percent',
+  ACTION_SET_REPRODUCABILITY: 'set_reproducability',
+  ACTION_CLEAR_REPRODUCABILITY: 'clear_reproducability',
+  ACTION_USER_START_WORKING: 'user_start_working',
+  ACTION_USER_STOP_WORKING: 'user_stop_working',
+  CUSTOMFIELD_CLEAR_PREFIX: 'customfield_clear_',
+  CUSTOMFIELD_SET_PREFIX: 'customfield_set_'
+};
 
 
 /***/ }),
@@ -50489,6 +50854,161 @@ module.exports = function (list, options) {
     lastIdentifiers = newLastIdentifiers;
   };
 };
+
+/***/ }),
+
+/***/ "./node_modules/throttle-debounce/esm/index.js":
+/*!*****************************************************!*\
+  !*** ./node_modules/throttle-debounce/esm/index.js ***!
+  \*****************************************************/
+/*! exports provided: debounce, throttle */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "debounce", function() { return debounce; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "throttle", function() { return throttle; });
+/* eslint-disable no-undefined,no-param-reassign,no-shadow */
+
+/**
+ * Throttle execution of a function. Especially useful for rate limiting
+ * execution of handlers on events like resize and scroll.
+ *
+ * @param  {number}    delay -          A zero-or-greater delay in milliseconds. For event callbacks, values around 100 or 250 (or even higher) are most useful.
+ * @param  {boolean}   [noTrailing] -   Optional, defaults to false. If noTrailing is true, callback will only execute every `delay` milliseconds while the
+ *                                    throttled-function is being called. If noTrailing is false or unspecified, callback will be executed one final time
+ *                                    after the last throttled-function call. (After the throttled-function has not been called for `delay` milliseconds,
+ *                                    the internal counter is reset).
+ * @param  {Function}  callback -       A function to be executed after delay milliseconds. The `this` context and all arguments are passed through, as-is,
+ *                                    to `callback` when the throttled-function is executed.
+ * @param  {boolean}   [debounceMode] - If `debounceMode` is true (at begin), schedule `clear` to execute after `delay` ms. If `debounceMode` is false (at end),
+ *                                    schedule `callback` to execute after `delay` ms.
+ *
+ * @returns {Function}  A new, throttled, function.
+ */
+function throttle (delay, noTrailing, callback, debounceMode) {
+  /*
+   * After wrapper has stopped being called, this timeout ensures that
+   * `callback` is executed at the proper times in `throttle` and `end`
+   * debounce modes.
+   */
+  var timeoutID;
+  var cancelled = false; // Keep track of the last time `callback` was executed.
+
+  var lastExec = 0; // Function to clear existing timeout
+
+  function clearExistingTimeout() {
+    if (timeoutID) {
+      clearTimeout(timeoutID);
+    }
+  } // Function to cancel next exec
+
+
+  function cancel() {
+    clearExistingTimeout();
+    cancelled = true;
+  } // `noTrailing` defaults to falsy.
+
+
+  if (typeof noTrailing !== 'boolean') {
+    debounceMode = callback;
+    callback = noTrailing;
+    noTrailing = undefined;
+  }
+  /*
+   * The `wrapper` function encapsulates all of the throttling / debouncing
+   * functionality and when executed will limit the rate at which `callback`
+   * is executed.
+   */
+
+
+  function wrapper() {
+    for (var _len = arguments.length, arguments_ = new Array(_len), _key = 0; _key < _len; _key++) {
+      arguments_[_key] = arguments[_key];
+    }
+
+    var self = this;
+    var elapsed = Date.now() - lastExec;
+
+    if (cancelled) {
+      return;
+    } // Execute `callback` and update the `lastExec` timestamp.
+
+
+    function exec() {
+      lastExec = Date.now();
+      callback.apply(self, arguments_);
+    }
+    /*
+     * If `debounceMode` is true (at begin) this is used to clear the flag
+     * to allow future `callback` executions.
+     */
+
+
+    function clear() {
+      timeoutID = undefined;
+    }
+
+    if (debounceMode && !timeoutID) {
+      /*
+       * Since `wrapper` is being called for the first time and
+       * `debounceMode` is true (at begin), execute `callback`.
+       */
+      exec();
+    }
+
+    clearExistingTimeout();
+
+    if (debounceMode === undefined && elapsed > delay) {
+      /*
+       * In throttle mode, if `delay` time has been exceeded, execute
+       * `callback`.
+       */
+      exec();
+    } else if (noTrailing !== true) {
+      /*
+       * In trailing throttle mode, since `delay` time has not been
+       * exceeded, schedule `callback` to execute `delay` ms after most
+       * recent execution.
+       *
+       * If `debounceMode` is true (at begin), schedule `clear` to execute
+       * after `delay` ms.
+       *
+       * If `debounceMode` is false (at end), schedule `callback` to
+       * execute after `delay` ms.
+       */
+      timeoutID = setTimeout(debounceMode ? clear : exec, debounceMode === undefined ? delay - elapsed : delay);
+    }
+  }
+
+  wrapper.cancel = cancel; // Return the wrapper function.
+
+  return wrapper;
+}
+
+/* eslint-disable no-undefined */
+/**
+ * Debounce execution of a function. Debouncing, unlike throttling,
+ * guarantees that a function is only executed a single time, either at the
+ * very beginning of a series of calls, or at the very end.
+ *
+ * @param  {number}   delay -         A zero-or-greater delay in milliseconds. For event callbacks, values around 100 or 250 (or even higher) are most useful.
+ * @param  {boolean}  [atBegin] -     Optional, defaults to false. If atBegin is false or unspecified, callback will only be executed `delay` milliseconds
+ *                                  after the last debounced-function call. If atBegin is true, callback will be executed only at the first debounced-function call.
+ *                                  (After the throttled-function has not been called for `delay` milliseconds, the internal counter is reset).
+ * @param  {Function} callback -      A function to be executed after delay milliseconds. The `this` context and all arguments are passed through, as-is,
+ *                                  to `callback` when the debounced-function is executed.
+ *
+ * @returns {Function} A new, debounced function.
+ */
+
+function debounce (delay, atBegin, callback) {
+  return callback === undefined ? throttle(delay, atBegin, false) : throttle(delay, callback, atBegin !== false);
+}
+
+
+//# sourceMappingURL=index.js.map
+
 
 /***/ }),
 

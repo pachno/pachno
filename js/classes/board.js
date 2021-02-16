@@ -264,7 +264,7 @@ class Board {
 
     verifyIssues() {
         for (const column of this.columns) {
-            const isInColumn = (issue) => issue.status.id && column.status_ids.includes(issue.status.id);
+            const isInColumn = function (issue) { return issue.status.id && column.status_ids.includes(issue.status.id)};
             let num_issues = {};
             for (const status_id of column.status_ids) {
                 num_issues[`status_${status_id}`] = 0;
@@ -278,7 +278,7 @@ class Board {
                     if (!isInColumn(issue)) continue;
 
                     num_issues[`status_${issue.status.id}`] += 1;
-                    if (issue.processed && issue.swimlane === swimlane.identifier) continue;
+                    if (issue.processed || !swimlane.has(issue)) continue;
 
                     if (issue.assignee && issue.assignee.type == 'user') {
                         this.users.add(JSON.stringify(issue.assignee));
@@ -355,6 +355,13 @@ class Board {
         for (const assignee of this.users) {
             const assignee_json = JSON.parse(assignee);
             $avatar_container.append(`<span class="avatar-container"><span class="avatar medium"><img src="${assignee_json.avatar_url_small}"></span><span class="name-container"><span class="name">${assignee_json.display_name}</span><span class="username">@${assignee_json.username}</span></span></span>`);
+        }
+    }
+
+    getSwimlane(swimlane_identifier) {
+        for (const swimlane of this.swimlanes) {
+            if (swimlane.identifier === swimlane_identifier)
+                return swimlane;
         }
     }
 
@@ -517,42 +524,166 @@ class Board {
             }
         });
 
-        Pachno.on(Pachno.EVENTS.issue.updateJsonComplete, () => {
-            this.verifyIssues();
+        Pachno.on(Pachno.EVENTS.issue.updateJsonComplete, (_, issue) => {
+            let found = false;
+            for (const swimlane of board.swimlanes) {
+                let updated = swimlane.addOrRemove(issue, !found);
+                if (found === false) {
+                    found = updated;
+                }
+            }
+
+            board.verifyIssues();
         });
+
+        let dragged_issue = undefined;
 
         $body.off('dragstart', '.whiteboard-issue');
         $body.on('dragstart', '.whiteboard-issue', function (event) {
-            event.originalEvent.dataTransfer.setData('text/plain', $(event.target).id);
+            const $issue = $(event.target);
+            dragged_issue = Pachno.getIssue($issue.data('issue-id'));
+            dragged_issue.startDragging(event.clientX, event.clientY);
+            event.originalEvent.dataTransfer.setData('text/plain', dragged_issue.id);
             event.originalEvent.dataTransfer.effectAllowed = "move";
             event.originalEvent.dataTransfer.dropEffect = "move";
             event.currentTarget.classList.add('dragging');
-        });
+            $('#whiteboard').addClass('is-dragging');
 
-        $body.off('drop');
-        $body.on('drop', function (event) {
-            if (event !== undefined) {
-                event.preventDefault();
+            const $columns = $('.whiteboard-columns .column[data-status-ids]');
+            const current_swimlane = board.swimlanes.find(swimlane => swimlane.has(dragged_issue));
+
+            for (const column of $columns) {
+                let $column = $(column);
+                let status_id_data = $column.data('status-ids');
+                let status_ids = (Number.isNaN(status_id_data)) ? status_id_data.split(',') : [status_id_data];
+
+                $column.removeClass('drop-valid');
+                $column.removeClass('drop-highlight');
+
+                if (status_ids.includes(parseInt(dragged_issue.status.id))) {
+                    if (current_swimlane.identifier !== $column.data('swimlane-identifier')) {
+                        $column.addClass('drop-valid');
+                    }
+
+                    continue;
+                }
+
+                for (const status of dragged_issue.available_statuses) {
+                    if (status_ids.includes(parseInt(status.id))) {
+                        $column.addClass('drop-valid');
+                    }
+                }
             }
         });
 
+        // $body.off('drop');
+        // $body.on('drop', function (event) {
+        //     if (event !== undefined) {
+        //         event.preventDefault();
+        //     }
+        // });
+
         $body.off('dragover', '.columns-container .column');
         $body.on('dragover', '.columns-container .column', function (event) {
+            if (event.isPropagationStopped())
+                return
+
             const $column = $(event.target);
-            $column.addClass('drop-valid');
+            $column.addClass('drop-highlight');
+            dragged_issue.dragDetect(event);
+            event.preventDefault();
+            event.stopPropagation();
         });
+
+        const drop = function (event) {
+            if (event.isPropagationStopped())
+                return
+
+            // event.originalEvent.dataTransfer.clearData();
+            // const issue = Pachno.getIssue(event.originalEvent.dataTransfer.getData('text/plain'));
+            const $dropped_target = $('.whiteboard-columns .column.drop-valid.drop-highlight');
+            if ($dropped_target.length) {
+                dragged_issue.stopDragging(true);
+                const $target_issue = $dropped_target.find('.whiteboard-issue.drop-target');
+                if ($target_issue.length) {
+                    if ($target_issue.hasClass('drop-indicator-above')) {
+                        dragged_issue.clone_element.detach().insertBefore($target_issue);
+                    } else {
+                        dragged_issue.clone_element.detach().insertAfter($target_issue);
+                    }
+                } else {
+                    $dropped_target.append(dragged_issue.clone_element.detach());
+                }
+                dragged_issue.clone_element.removeClass('clone');
+                dragged_issue.clone_element.css({ top: '', transform: '', left: ''});
+                let swimlane_identifier = $dropped_target.data('swimlane-identifier');
+                let swimlane = board.getSwimlane(swimlane_identifier);
+                let status_id_data = $dropped_target.data('status-ids');
+                let status_ids = (Number.isNaN(status_id_data)) ? status_id_data.split(',') : [status_id_data];
+                dragged_issue.triggerTransition(board, swimlane, status_ids, event.shiftKey);
+            } else {
+                dragged_issue.stopDragging();
+            }
+
+            $('#whiteboard').removeClass('is-dragging');
+            $('.whiteboard-columns .column').removeClass('drop-valid');
+
+            const $whiteboard_issues = $('.whiteboard-issue');
+            $whiteboard_issues.removeClass('drop-target');
+            $whiteboard_issues.removeClass('drop-indicator-above');
+            $whiteboard_issues.removeClass('drop-indicator-below');
+
+            event.stopPropagation();
+            event.preventDefault();
+            // event.originalEvent.dataTransfer.setData('text/plain', $(event.target).id);
+            // event.currentTarget.classList.remove('dragging');
+        };
+
+        $body.off('drop', '.columns-container .column');
+        $body.on('drop', '.columns-container .column', drop);
 
         $body.off('dragleave', '.columns-container .column');
         $body.on('dragleave', '.columns-container .column', function (event) {
+            if (event.isPropagationStopped() || event.isDefaultPrevented())
+                return;
+
             const $column = $(event.target);
-            $column.removeClass('drop-valid');
+            $column.removeClass('drop-highlight');
+            event.stopPropagation();
         });
 
-        $body.off('dragend', '.whiteboard-issue');
-        $body.on('dragend', '.whiteboard-issue', function (event) {
-            // event.originalEvent.dataTransfer.clearData();
-            event.currentTarget.classList.remove('dragging');
+        $body.off('dragover', '.columns-container .column .whiteboard-issue:not(.dragging):not(.clone)');
+        $body.on('dragover', '.columns-container .column .whiteboard-issue:not(.dragging):not(.clone)', function (event) {
+            const $element = $(this);
+            const $column = $element.parents('.column');
+            const rect = $element[0].getBoundingClientRect();
+            const y = event.clientY - rect.top;
+            const above = (y < rect.height / 2);
+            const issue = Pachno.getIssue($element.data('issue-id'));
+            issue.element.addClass('drop-target');
+            issue.element.addClass((above) ? 'drop-indicator-above' : 'drop-indicator-below');
+            dragged_issue.dragDetect(event);
+            $column.addClass('drop-highlight');
+            event.stopImmediatePropagation();
+            event.preventDefault();
         });
+
+        $body.off('dragleave', '.columns-container .column .whiteboard-issue:not(.dragging):not(.clone)');
+        $body.on('dragleave', '.columns-container .column .whiteboard-issue:not(.dragging):not(.clone)', function (event) {
+            const $element = $(this);
+            const $column = $element.parents('.column');
+            $element.removeClass('drop-indicator-above');
+            $element.removeClass('drop-indicator-below');
+            $element.removeClass('drop-target');
+            $column.removeClass('drop-highlight');
+            event.preventDefault();
+        });
+
+        $body.off('drop', '.columns-container .column .whiteboard-issue:not(.dragging):not(.clone)');
+        $body.on('drop', '.columns-container .column .whiteboard-issue:not(.dragging):not(.clone)', drop);
+
+        // $body.off('dragend', '.whiteboard-issue');
+        // $body.on('dragend', '.whiteboard-issue', drop);
     }
 }
 

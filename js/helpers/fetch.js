@@ -180,8 +180,8 @@ export const fetchHelper = function (url, options) {
                             if (options.failure && options.failure.callback) {
                                 options.failure.callback(json);
                             }
-                        });
-                        _reject(response);
+                            _reject(json);
+                        }).catch(() => _reject(response));
                     }
                 });
             })
@@ -270,6 +270,7 @@ export const fetchHelper = function (url, options) {
             .catch(error => {
                 console.error(error);
                 console.error('OPTIONS', options);
+                reject(error);
 
                 clearFormSubmit($form);
             });

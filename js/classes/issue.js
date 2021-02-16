@@ -4,6 +4,8 @@ import Pachno from "./pachno";
 import Uploader from "./uploader";
 import { TYPES as QuicksearchTypes } from "./quicksearch";
 import {getEditor} from "../widgets/editor";
+import { throttle } from 'throttle-debounce';
+import {SwimlaneTypes} from "./board";
 
 class Issue {
     constructor(json, board_id, create_element = true) {
@@ -12,6 +14,8 @@ class Issue {
         if (create_element) {
             this.element = this.createHtmlElement();
         }
+        this.clone_element = undefined;
+        this.event_throttled = false;
         this.setupListeners();
         this.uploader = new Uploader({
             uploader_container: $('#viewissue_attached_information_container'),
@@ -44,6 +48,16 @@ class Issue {
 
         this.project = json.project;
         this.transitions = json.transitions;
+        for (const index in this.transitions) {
+            if (this.transitions.hasOwnProperty(index)) {
+                for (const status_index in this.transitions[index].status_ids) {
+                    if (this.transitions[index].status_ids.hasOwnProperty(status_index)) {
+                        this.transitions[index].status_ids[status_index] = parseInt(this.transitions[index].status_ids[status_index]);
+                    }
+                }
+            }
+        }
+        this.available_statuses = json.available_statuses;
 
         this.blocking = json.blocking;
         this.closed = json.closed;
@@ -241,6 +255,15 @@ class Issue {
 
             const issue_json = (data.json.issue !== undefined) ? data.json.issue : data.json;
 
+            if (issue.clone_element !== undefined) {
+                const id = issue.element.id;
+                issue.element.remove();
+                issue.element = issue.clone_element;
+                issue.element.id = id;
+                issue.clone_element = undefined;
+            }
+
+            issue.element.removeClass('loading');
             issue.updateFromJson(issue_json);
             issue.updateVisibleValues(issue_json);
             Pachno.trigger(Pachno.EVENTS.issue.updateJsonComplete, issue);
@@ -478,6 +501,83 @@ class Issue {
         }
     }
 
+    triggerTransition(board, swimlane, status_ids, force_popup) {
+        let show_popup = force_popup;
+        let processed = false;
+        this.clone_element.addClass('loading');
+
+        for (const transition of this.transitions) {
+            const includes = transition.status_ids.filter(value => status_ids.includes(value));
+            if (!includes.length)
+                continue;
+
+            processed = true;
+            if (!show_popup) {
+                Pachno.fetch(transition.url.replace('%25project_key%25', this.project.key).replace('%25issue_id%25', this.id) + `?board_id=${board.id}&milestone_id=${board.selected_milestone_id}&swimlane_identifier=${swimlane.identifier}`, { method: 'POST' })
+                    .then((json) => {
+                        for (const issue of json.issues) {
+                            Pachno.trigger(Pachno.EVENTS.issue.updateJson, { json: issue });
+                        }
+                    })
+                    .catch(error => {
+                        console.error(error);
+                        UI.Backdrop.show(transition.backdrop_url + `?issue_id=${this.id}&board_id=${board.id}&milestone_id=${board.selected_milestone_id}&swimlane_identifier=${swimlane.identifier}`);
+                    })
+            } else {
+                UI.Backdrop.show(transition.backdrop_url + `?issue_id=${this.id}&board_id=${board.id}&milestone_id=${board.selected_milestone_id}&swimlane_identifier=${swimlane.identifier}`);
+            }
+        }
+
+        if (!processed && !swimlane.has(this)) {
+            switch (swimlane.identifier_type) {
+                case SwimlaneTypes.ISSUES:
+                    this.postAndUpdate('parent_issue_id', (swimlane.identifier_issue !== undefined) ? swimlane.identifier_issue.id : 0)
+                    return;
+            }
+        }
+    }
+
+    startDragging(x, y) {
+        this.clone_element = this.createHtmlElement();
+        this.clone_element.id = `whiteboard_issue_${this.id}_CLONE`;
+        this.clone_element.insertAfter(this.element);
+        this.clone_element.addClass('clone');
+        const rect = this.element[0].getBoundingClientRect();
+        this.clone_element.css({ top: `${rect.top}px`, left: `${rect.left}px` });
+        this.clone_element.data('original-x', x);
+        this.clone_element.data('original-y', y);
+
+        const $body = $('body');
+        $body.off('dragover', this.dragDetect);
+        $body.on('dragover', this.dragDetect.bind(this));
+        this.event_throttled = false;
+
+        return this.clone_element;
+    }
+
+    dragDetect(event) {
+        if (this.event_throttled == true)
+            return;
+
+        this.event_throttled = true;
+        const X = this.clone_element.data('original-x');
+        const Y = this.clone_element.data('original-y');
+        const mouseX = event.pageX;
+        const mouseY = event.pageY;
+        this.clone_element.css({ transform: `rotate(4deg) translateX(${mouseX - X}px) translateY(${mouseY - Y}px)` });
+        setTimeout(() => { this.event_throttled = false; }, 30);
+    }
+
+    stopDragging(keep) {
+        const $body = $('body');
+        $body.off('dragover', this.dragDetect);
+
+        if (keep === undefined) {
+            this.clone_element.remove();
+            this.element.removeClass('dragging');
+        }
+    }
+
     createHtmlElement() {
         let classes = [];
         if (this.closed) classes.push('issue_closed');
@@ -499,8 +599,8 @@ class Issue {
             </div>
         </div>
     </div>
-    <div class="issue-info">
-    </div>
+    <div class="issue-info"></div>
+    <div class="indicator">${UI.fa_image_tag('spinner', {'classes': 'fa-spin icon'})}</div>
 </div>
 `;
         let $html = $(html);

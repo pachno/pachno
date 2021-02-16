@@ -1736,6 +1736,20 @@
                         ];
                     }
                     break;
+                case 'parent_issue_id':
+                    $new_parent_issue = tables\Issues::getTable()->selectById($request['value']);
+                    foreach ($issue->getParentIssues() as $parent_issue) {
+                        if (!$new_parent_issue instanceof entities\Issue || $parent_issue->getID() !== $new_parent_issue->getID()) {
+                            $issue->removeDependantIssue($parent_issue->getID());
+                        }
+                    }
+
+                    if ($new_parent_issue instanceof entities\Issue) {
+                        $issue->addParentIssue($new_parent_issue);
+                    }
+
+                    $return_details['changed']['parent_issue_id'] = $request['parent_issue_id'];
+                    break;
                 case 'category':
                 case 'resolution':
                 case 'severity':
@@ -1856,6 +1870,8 @@
                     return $issue->canEditIssuetype();
                 case 'status':
                     return $issue->canEditStatus();
+                case 'parent_issue_id':
+                    return $issue->canAddRelatedIssues();
                 case 'pain_bug_type':
                 case 'pain_likelihood':
                 case 'pain_effect':
@@ -2612,6 +2628,11 @@
                             }
                         } else {
                             $options['issue'] = new Issue($request['issue_id']);
+                        }
+                        if ($request->hasParameter('board_id')) {
+                            $options['board'] = tables\AgileBoards::getTable()->selectById($request['board_id']);
+                            $options['milestone'] = ($request['milestone_id']) ? Milestones::getTable()->selectById($request['milestone_id']) : null;
+                            $options['swimlane_identifier'] = $request['swimlane_identifier'];
                         }
                         $options['show'] = true;
                         $options['interactive'] = true;

@@ -10113,19 +10113,36 @@ img.userstate {
             left: 0; }
           .whiteboard-columns-container .whiteboard-columns .row .column#add-next-column-input-container + .form-container {
             display: none; }
-        .whiteboard-columns-container .whiteboard-columns .row .column.drop-valid {
-          background-color: rgba(12, 137, 144, 0.2);
-          border: 1px solid rgba(12, 137, 144, 0.4); }
-          .whiteboard-columns-container .whiteboard-columns .row .column.drop-valid.drop-hover {
-            background-color: rgba(12, 137, 144, 0.5);
-            border: 1px solid rgba(12, 137, 144, 0.7); }
-        .whiteboard-columns-container .whiteboard-columns .row .column .ui-sortable-placeholder {
-          width: 35px;
-          border: 2px dotted #CCC;
-          background-color: rgba(225, 225, 225, 0.3);
-          height: 100%;
-          display: inline-block;
-          visibility: visible; }
+        .whiteboard-columns-container .whiteboard-columns .row .column.drop-valid.drop-highlight {
+          background-color: rgba(12, 137, 144, 0.1); }
+        .whiteboard-columns-container .whiteboard-columns .row .column.drop-valid .whiteboard-issue.drop-indicator-above::before, .whiteboard-columns-container .whiteboard-columns .row .column.drop-valid .whiteboard-issue.drop-indicator-below::before {
+          content: '';
+          position: absolute;
+          width: 100%;
+          box-sizing: border-box;
+          background-color: rgba(255, 255, 255, 0.8);
+          border: 2px solid rgba(225, 225, 225, 0.2);
+          border-radius: 4px;
+          height: 7em;
+          top: 0; }
+        .whiteboard-columns-container .whiteboard-columns .row .column.drop-valid .whiteboard-issue:not(.clone).drop-indicator-below {
+          margin-bottom: 8em; }
+          .whiteboard-columns-container .whiteboard-columns .row .column.drop-valid .whiteboard-issue:not(.clone).drop-indicator-below:not(:last-child) {
+            margin-bottom: 8.25em; }
+          .whiteboard-columns-container .whiteboard-columns .row .column.drop-valid .whiteboard-issue:not(.clone).drop-indicator-below:not(:first-child) {
+            margin-top: .75em; }
+          .whiteboard-columns-container .whiteboard-columns .row .column.drop-valid .whiteboard-issue:not(.clone).drop-indicator-below::before {
+            transform: translateY(calc(100% + .75em)); }
+        .whiteboard-columns-container .whiteboard-columns .row .column.drop-valid .whiteboard-issue:not(.clone).drop-indicator-above {
+          margin-bottom: .75em;
+          margin-top: 7.5em; }
+          .whiteboard-columns-container .whiteboard-columns .row .column.drop-valid .whiteboard-issue:not(.clone).drop-indicator-above:not(:first-child) {
+            margin-top: 8em; }
+          .whiteboard-columns-container .whiteboard-columns .row .column.drop-valid .whiteboard-issue:not(.clone).drop-indicator-above::before {
+            transform: translateY(calc(-100% - .5em)); }
+        .whiteboard-columns-container .whiteboard-columns .row .column.drop-valid.drop-hover {
+          background-color: rgba(12, 137, 144, 0.5);
+          border: 1px solid rgba(12, 137, 144, 0.7); }
         .whiteboard-columns-container .whiteboard-columns .row .column > .form-container > .row,
         .whiteboard-columns-container .whiteboard-columns .row .column > .row {
           flex: 1 1 auto;
@@ -10228,6 +10245,8 @@ img.userstate {
         .whiteboard-columns-container .whiteboard-columns .row.swimlane .column {
           padding-top: 1em;
           padding-bottom: 1em; }
+    .whiteboard-columns-container .whiteboard-columns.is-dragging .column {
+      min-height: 6em; }
     .whiteboard-columns-container .whiteboard-columns.swimlanes .row.swimlane[data-swimlane-identifier=swimlane_0] .column {
       background-image: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255, 255, 255, 0.4) 10px, rgba(255, 255, 255, 0.4) 20px); }
     .whiteboard-columns-container .whiteboard-columns .edit-column {
@@ -10278,8 +10297,18 @@ img.userstate {
   color: #141823;
   transition: box-shadow .25s ease-in-out, transform .25s ease-in-out; }
   .whiteboard-issue.dragging {
-    opacity: 0; }
-  .whiteboard-issue + .whiteboard-issue {
+    opacity: 0;
+    z-index: 100; }
+  .whiteboard-issue.clone {
+    position: fixed;
+    width: calc(300px - 1em);
+    z-index: 101;
+    margin-top: 0;
+    transform: rotateX(3deg);
+    box-shadow: 0 0 8px -3px rgba(27, 27, 36, 0.4);
+    pointer-events: none;
+    transition: none; }
+  .whiteboard-issue:not(.drop-target) + .whiteboard-issue:not(.clone):not(.drop-indicator-above):not(.drop-indicator-below) {
     margin-top: .75em; }
   .whiteboard-issue:hover {
     cursor: pointer;
@@ -10393,6 +10422,22 @@ img.userstate {
     opacity: 0.6; }
   .whiteboard-issue.blocking img.blocking {
     opacity: 1; }
+  .whiteboard-issue > .indicator {
+    display: none; }
+  .whiteboard-issue.loading {
+    position: relative; }
+    .whiteboard-issue.loading > .indicator {
+      box-sizing: border-box;
+      position: absolute;
+      width: 100%;
+      background-color: rgba(255, 255, 255, 0.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2em; }
+      .whiteboard-issue.loading > .indicator .icon {
+        flex: 0 0 auto;
+        font-size: 2em; }
 
 #main_container.shaded .whiteboard-issue {
   box-shadow: rgba(9, 30, 66, 0.26) 0 2px 2px, rgba(9, 30, 66, 0.31) 0 0 3px; }

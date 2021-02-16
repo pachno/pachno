@@ -1,7 +1,6 @@
 <?php echo __('The following actions could not be performed because of missing or invalid values: %list', array('%list' => '')); ?><br>
-<ul>
-  <?php foreach (\pachno\core\framework\Context::getMessageAndClear('issue_workflow_errors') as $error_field): ?>
-    <li><?php
+  <?php foreach ($errors as $error_field): ?>
+    <?php
 
       switch ($error_field)
       {
@@ -49,6 +48,5 @@
           break;
       }
 
-      ?></li>
+      ?>
   <?php endforeach; ?>
-</ul>

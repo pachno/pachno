@@ -9,6 +9,7 @@
     use pachno\core\entities\Issue;
     use pachno\core\entities\Issuetype;
     use pachno\core\entities\tables;
+    use pachno\core\entities\tables\Milestones;
     use pachno\core\framework;
     use pachno\core\framework\Event;
     use pachno\core\framework\interfaces\AuthenticationProvider;
@@ -296,6 +297,23 @@
         {
             $this->issue = $this->issue ?? null;
             $this->setupVariables();
+            if (isset($this->board) && $this->board instanceof AgileBoard) {
+                if ($this->board->usesSwimlanes()) {
+                    switch ($this->board->getSwimlaneType()) {
+                        case entities\AgileBoard::SWIMLANES_ISSUES:
+                            foreach ($this->board->getMilestoneSwimlanes($this->milestone) as $swimlane) {
+                                if ($swimlane->getIdentifier() != $this->swimlane_identifier)
+                                    continue;
+
+                                $this->parent_issue = $swimlane->getIdentifierIssue();
+                            }
+                            break;
+                        default:
+                            throw new Exception('Woops');
+                    }
+                }
+            }
+
             if (isset($this->interactive) && $this->interactive && $this->issue instanceof Issue) {
                 $this->form_url = $this->getRouting()->generate('transition_issues', array('project_key' => $this->project->getKey(), 'transition_id' => $this->transition->getID()));
                 $this->form_id = "workflow_transition_form";

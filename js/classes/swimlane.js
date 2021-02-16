@@ -32,6 +32,26 @@ class Swimlane {
         this.issues.push(issue);
     }
 
+    addOrRemove(issue, add = true) {
+        if (!this.has(issue)) {
+            for (const index in this.issues) {
+                if (!this.issues.hasOwnProperty(index))
+                    continue;
+
+                // if (this.issues[index].id == issue.id)
+                this.issues = this.issues.filter(existing_issue => existing_issue.id != issue.id);
+            }
+        } else if (add) {
+            let found = this.issues.some(existing_issue => existing_issue.id == issue.id);
+            if (!found) {
+                this.issues.push(issue);
+            }
+            return true;
+        }
+
+        return false;
+    }
+
     /**
      * Check if an issue is inside this swimlane
      * @param {Issue} issue

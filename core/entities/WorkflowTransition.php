@@ -615,6 +615,9 @@
             return (bool)count($this->getActions());
         }
 
+        /**
+         * @return WorkflowTransitionAction[]
+         */
         public function getActions()
         {
             $this->_populateActions();
@@ -654,10 +657,7 @@
             $request = new Request;
 
             if (!$this->validateFromRequest($request)) {
-                framework\Context::setMessage('issue_error', 'transition_error');
-                framework\Context::setMessage('issue_workflow_errors', $this->getValidationErrors());
-
-                return false;
+                return $this->getValidationErrors();
             }
 
             $this->getOutgoingStep()->applyToIssue($issue);
@@ -674,10 +674,7 @@
             }
 
             if (count($this->getValidationErrors())) {
-                framework\Context::setMessage('issue_error', 'transition_error');
-                framework\Context::setMessage('issue_workflow_errors', $this->getValidationErrors());
-
-                return false;
+                return $this->getValidationErrors();
             }
 
             $issue->save();
@@ -702,7 +699,7 @@
                 $this->_validation_errors[WorkflowTransitionAction::ACTION_SET_STATUS] = true;
             }
 
-            return empty($this->_validation_errors);
+            return empty($this->_validation_errors) ? true : $this->_validation_errors;
         }
 
         public function getValidationErrors()
@@ -720,7 +717,9 @@
         {
             $request = ($request !== null) ? $request : $this->_request;
             $this->getOutgoingStep()->applyToIssue($issue);
-            if (!empty($this->_validation_errors)) return false;
+            if (!empty($this->_validation_errors)) {
+                return $this->_validation_errors;
+            }
 
             foreach ($this->getActions() as $action) {
                 $action->perform($issue, $request);
@@ -732,7 +731,9 @@
                 }
             }
 
-            if (!empty($this->_validation_errors)) return false;
+            if (!empty($this->_validation_errors)) {
+                return $this->_validation_errors;
+            }
 
             if ($request->hasParameter('comment_body') && trim($request['comment_body'] != '')) {
                 $comment = new Comment();
@@ -748,6 +749,8 @@
             }
 
             $issue->save();
+
+            return true;
         }
 
         public function copy(Workflow $new_workflow)
@@ -803,12 +806,26 @@
             $json['template'] = $this->getTemplate();
             $json['url'] = framework\Context::getRouting()->generate('transition_issue', ['project_key' => '%project_key%', 'issue_id' => '%issue_id%', 'transition_id' => $this->getID()]);
             $json['backdrop_url'] = framework\Context::getRouting()->generate('get_partial_for_backdrop', ['key' => 'workflow_transition', 'transition_id' => $this->getID()]);
+            $json['status_ids'] = [];
+            if ($this->getOutgoingStep()->getLinkedStatus() instanceof Status) {
+                $json['status_ids'][] = $this->getOutgoingStep()->getLinkedStatus()->getID();
+            }
 
-            if ($detailed) {
-                $json['post_validations'] = [];
-                foreach ($this->getPostValidationRules() as $rule) {
-                    $json['post_validations'][] = $rule->toJSON();
+            $json['actions'] = [];
+
+            foreach ($this->getActions() as $action) {
+                $json['actions'][] = $action->toJSON();
+            }
+
+            $json['post_validations'] = [];
+            foreach ($this->getPostValidationRules() as $rule) {
+                if ($rule->getRule() == WorkflowTransitionValidationRule::RULE_STATUS_VALID) {
+                    $values = explode(',', $rule->getRuleValue());
+                    foreach ($values as $value) {
+                        $json['status_ids'][] = $value;
+                    }
                 }
+                $json['post_validations'][] = $rule->toJSON();
             }
 
             return $json;

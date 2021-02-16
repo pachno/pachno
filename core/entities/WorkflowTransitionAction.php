@@ -567,4 +567,13 @@
             }
         }
 
+        public function toJSON($detailed = true)
+        {
+            $json = parent::toJSON($detailed);
+            $json['type'] = $this->getActionType();
+            $json['value'] = $this->getTargetValue();
+
+            return $json;
+        }
+
     }

@@ -4571,7 +4571,12 @@
                 'number_of_subscribers' => count($this->getSubscribers()),
                 'tags' => [],
                 'transitions' => [],
+                'available_statuses' => [],
             ];
+
+            foreach ($this->getAvailableStatuses() as $status) {
+                $json['available_statuses'][] = $status->toJSON();
+            }
 
             foreach ($this->getAvailableWorkflowTransitions() as $transition) {
                 $json['transitions'][] = $transition->toJSON(false);

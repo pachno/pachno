@@ -592,12 +592,55 @@
                     throw new Exception(Context::getI18n()->__('You are not allowed to perform any workflow transitions on this issue'));
                 }
 
-                if ($transition->validateFromRequest($request)) {
-                    $transition->transitionIssueToOutgoingStepFromRequest($issue, $request);
-                } else {
-                    $this->getResponse()->setHttpStatus(400);
-                    return $this->renderJSON(['error' => Context::getI18n()->__('There was an error trying to move this issue to the next step in the workflow'), 'message' => preg_replace('/\s+/', ' ', $this->getComponentHTML('main/issue_transition_error'))]);
+                $validation_results = $transition->validateFromRequest($request);
+                if ($validation_results === true) {
+                    $validation_results = $transition->transitionIssueToOutgoingStepFromRequest($issue, $request);
                 }
+
+                if ($validation_results !== true) {
+                    $this->getResponse()->setHttpStatus(400);
+                    return $this->renderJSON(['error' => Context::getI18n()->__('There was an error trying to move this issue to the next step in the workflow'), 'message' => preg_replace('/\s+/', ' ', $this->getComponentHTML('main/issue_transition_error', ['errors' => $validation_results]))]);
+                }
+
+                if ($request->hasParameter('board_id')) {
+                    $board = tables\AgileBoards::getTable()->selectById($request['board_id']);
+                    $milestone = ($request['milestone_id']) ? Milestones::getTable()->selectById($request['milestone_id']) : null;
+
+                    if ($board->usesSwimlanes()) {
+                        switch ($board->getSwimlaneType()) {
+                            case entities\AgileBoard::SWIMLANES_ISSUES:
+                                foreach ($board->getMilestoneSwimlanes($milestone) as $swimlane) {
+                                    if ($swimlane->getIdentifier() != $request['swimlane_identifier'])
+                                        continue;
+
+                                    foreach ($issue->getParentIssues() as $parent_issue) {
+                                        if (!$swimlane->getIdentifierIssue() instanceof entities\Issue || $parent_issue->getID() !== $swimlane->getIdentifierIssue()->getID()) {
+                                            $issue->removeDependantIssue($parent_issue->getID());
+                                        }
+                                    }
+
+                                    if ($swimlane->getIdentifierIssue() instanceof entities\Issue) {
+                                        $issue->addParentIssue($swimlane->getIdentifierIssue());
+                                    }
+                                }
+                                break;
+                            default:
+                                throw new Exception('Woops');
+                        }
+                    }
+                } elseif ($request->hasParameter('parent_issue_id')) {
+                    $new_parent_issue = tables\Issues::getTable()->selectById($request['parent_issue_id']);
+                    foreach ($issue->getParentIssues() as $parent_issue) {
+                        if (!$new_parent_issue instanceof entities\Issue || $parent_issue->getID() !== $new_parent_issue->getID()) {
+                            $issue->removeDependantIssue($parent_issue->getID());
+                        }
+                    }
+
+                    if ($new_parent_issue instanceof entities\Issue) {
+                        $issue->addParentIssue($new_parent_issue);
+                    }
+                }
+
                 return $this->renderJSON(['last_updated' => Context::getI18n()->formatTime(time(), 20), 'issues' => [$issue->toJSON()]]);
             } catch (Exception $e) {
                 return $this->return404();
@@ -637,6 +680,19 @@
                     }
                     if ($status === null)
                         $status = $issue->getStatus();
+
+                    if ($request->hasParameter('parent_issue_id')) {
+                        $new_parent_issue = tables\Issues::getTable()->selectById($request['parent_issue_id']);
+                        foreach ($issue->getParentIssues() as $parent_issue) {
+                            if (!$new_parent_issue instanceof entities\Issue || $parent_issue->getID() !== $new_parent_issue->getID()) {
+                                $issue->removeDependantIssue($parent_issue->getID());
+                            }
+                        }
+
+                        if ($new_parent_issue instanceof entities\Issue) {
+                            $issue->addParentIssue($new_parent_issue);
+                        }
+                    }
 
                     $closed = $issue->isClosed();
                     $issues[] = $issue->toJSON();
