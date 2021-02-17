@@ -16,6 +16,7 @@
 
         const TYPE_PROJECT_ICON = 'project_icon';
         const TYPE_ATTACHMENT = 'attachment';
+        const TYPE_COVER = 'cover';
 
         /**
          * @Column(type="string", length=200)
@@ -126,17 +127,17 @@
             $extension = strtolower(explode('.', $filename)[1]);
             if (in_array($extension, ['php', 'cpp', 'h', 'java', 'js', 'tsx', 'jsp', 'pl', 'ts', 'jsx', 'htm', 'html', 'asp', 'rb', 'class', 'cmd', 'cxx', 'json', 'patch', 'xml', 'css', 'scss', 'yml', 'xlf'])) {
                 return 'file-code';
-            } elseif (in_array($extension, ['jpg', 'jpeg', 'bmp', 'png', 'webp', 'gif', 'img'])) {
+            } elseif (in_array($extension, ['jpg', 'jpeg', 'bmp', 'png', 'webp', 'gif', 'img', 'svg'])) {
                 return 'file-image';
             } elseif (in_array($extension, ['ppt', 'pptx', 'odp', 'odpt'])) {
                 return 'file-powerpoint';
-            } elseif (in_array($extension, ['doc', 'docx', 'odt', 'odtt'])) {
+            } elseif (in_array($extension, ['doc', 'docx', 'odt', 'odtt', 'gddoc'])) {
                 return 'file-word';
             } elseif (in_array($extension, ['xls', 'xlsx', 'ods', 'odst'])) {
                 return 'file-excel';
             } elseif (in_array($extension, ['mpg', 'mp4', 'mpeg', 'avi', 'mov'])) {
                 return 'file-video';
-            } elseif (in_array($extension, ['txt', 'info', 'nfo', 'inf', 'ini', 'cfg', 'md'])) {
+            } elseif (in_array($extension, ['txt', 'info', 'nfo', 'inf', 'ini', 'cfg', 'md', 'conf', 'log'])) {
                 return 'file-alt';
             } elseif (in_array($extension, ['zip', 'rar', 'gz', 'tar', 'xz', 'jar', 'deb', 'rpm', 'appimage', 'flatpak'])) {
                 return 'file-archive';
@@ -170,7 +171,7 @@
 
         public static function getImageContentTypes()
         {
-            return ['image/png', 'image/jpeg', 'image/jpg', 'image/bmp', 'image/gif'];
+            return ['image/png', 'image/jpeg', 'image/jpg', 'image/bmp', 'image/gif', 'image/svg', 'image/svg+xml'];
         }
 
         /**
@@ -352,7 +353,11 @@
         {
             return [
                 'id' => $this->getID(),
-                'url' => $this->getUrl(true)
+                'type' => $this->getType(),
+                'content_type' => $this->getContentType(),
+                'is_image' => $this->isImage(),
+                'icon' => $this->getIcon(),
+                'url' => $this->getUrl()
             ];
         }
 

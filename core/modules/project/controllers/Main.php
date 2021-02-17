@@ -13,6 +13,7 @@
     use pachno\core\framework\Request;
     use pachno\core\framework\Settings;
     use pachno\core\helpers;
+    use pachno\core\modules\main\cli\entities\tbg\AgileBoard;
 
     /**
      * actions for the project module
@@ -622,6 +623,31 @@
                                     if ($swimlane->getIdentifierIssue() instanceof entities\Issue) {
                                         $issue->addParentIssue($swimlane->getIdentifierIssue());
                                     }
+
+                                    break;
+                                }
+                                break;
+                            case entities\AgileBoard::SWIMLANES_EXPEDITE:
+                            case entities\AgileBoard::SWIMLANES_GROUPING:
+                                foreach ($board->getMilestoneSwimlanes($milestone) as $swimlane) {
+                                    if ($swimlane->getIdentifier() != $request['swimlane_identifier'])
+                                        continue;
+
+                                    if (!$swimlane->hasIssue($issue)) {
+                                        $identifiables = $swimlane->getIdentifiables();
+                                        $identifiable = array_shift($identifiables);
+
+                                        if ($swimlane->getIdentifierGrouping() == 'priority') {
+                                            $issue->setPriority($identifiable);
+                                        } elseif ($swimlane->getIdentifierGrouping() == 'category') {
+                                            $issue->setCategory($identifiable);
+                                        } elseif ($swimlane->getIdentifierGrouping() == 'severity') {
+                                            $issue->setSeverity($identifiable);
+                                        }
+
+                                        $issue->save();
+                                        break;
+                                    }
                                 }
                                 break;
                             default:
@@ -692,6 +718,18 @@
                         if ($new_parent_issue instanceof entities\Issue) {
                             $issue->addParentIssue($new_parent_issue);
                         }
+                    }
+                    if ($request->hasParameter('priority_id')) {
+                        $priority = ($request['priority_id']) ? tables\ListTypes::getTable()->selectById($request['priority_id']) : null;
+                        $issue->setPriority($priority);
+                    }
+                    if ($request->hasParameter('severity_id')) {
+                        $severity = ($request['severity_id']) ? tables\ListTypes::getTable()->selectById($request['severity_id']) : null;
+                        $issue->setSeverity($severity);
+                    }
+                    if ($request->hasParameter('category_id')) {
+                        $category = ($request['category_id']) ? tables\ListTypes::getTable()->selectById($request['category_id']) : null;
+                        $issue->setCategory($category);
                     }
 
                     $closed = $issue->isClosed();

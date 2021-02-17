@@ -76,6 +76,7 @@ class PachnoApplication {
         this.debug = false;
         this.basepath = '';
         this.data_url = '';
+        this.upload_url = '';
         this.quicksearch = undefined;
         this.debugger = undefined;
         this.listeners = {};
@@ -87,6 +88,7 @@ class PachnoApplication {
         this.debug = options.debug;
         this.basepath = options.basepath;
         this.data_url = options.dataUrl;
+        this.upload_url = options.uploadUrl;
         this.quicksearch = new Quicksearch(options.autocompleterUrl);
 
         this.trigger(this.EVENTS.quicksearchAddDefaultChoice, {
@@ -253,12 +255,14 @@ $(document).ready(() => {
     const dataUrl = $body.data('data-url');
     const debugUrl = $body.data('debug-url');
     const autocompleterUrl = $body.data('autocompleter-url');
+    const uploadUrl = $body.data('upload-url');
 
     Pachno.initialize({
         debug,
         webroot,
         dataUrl,
         debugUrl,
+        uploadUrl,
         autocompleterUrl
     });
 

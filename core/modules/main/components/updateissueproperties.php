@@ -146,17 +146,24 @@
                             </div>
                         </div>
                     <?php endif; ?>
-                    <?php if ((($issue instanceof Issue && $issue->canEditPriority()) | isset($issues)) && $transition->hasAction(\pachno\core\entities\WorkflowTransitionAction::ACTION_SET_PRIORITY) && !$transition->getAction(\pachno\core\entities\WorkflowTransitionAction::ACTION_SET_PRIORITY)->hasTargetValue()): ?>
-                        <div class="form-row">
+                    <?php if ((($issue instanceof Issue && $issue->canEditPriority()) | isset($issues)) && (isset($selected_priorities) || $transition->hasAction(\pachno\core\entities\WorkflowTransitionAction::ACTION_SET_PRIORITY) && !$transition->getAction(\pachno\core\entities\WorkflowTransitionAction::ACTION_SET_PRIORITY)->hasTargetValue())): ?>
+                        <div class="form-row <?php if (isset($selected_priorities)) echo 'locked'; ?>">
                             <div class="fancy-dropdown-container">
                                 <div class="fancy-dropdown" data-default-label="<?= __('Pick a priority from the list'); ?>">
                                     <label><?= __('Priority'); ?></label>
                                     <span class="value"></span>
                                     <?= fa_image_tag('angle-down', ['class' => 'expander']); ?>
                                     <div class="dropdown-container list-mode filter-values-container">
+                                        <?php if (isset($selected_priorities) && !is_array($selected_priorities)): ?>
+                                            <input type="radio" name="priority_id" class="fancy-checkbox" value="0" checked id="transition_<?= $transition->getId(); ?>_priority_0">
+                                            <label for="transition_<?= $transition->getId(); ?>_priority_0" class="list-item">
+                                                <span class="name value"><?= __('Clear the priority value'); ?></span>
+                                            </label>
+                                        <?php endif; ?>
                                         <?php foreach ($fields_list['priority']['choices'] as $priority): ?>
+                                            <?php if (isset($selected_priorities) && is_array($selected_priorities) && !array_key_exists($priority->getId(), $selected_priorities)) continue; ?>
                                             <?php if (!$transition->hasPostValidationRule(\pachno\core\entities\WorkflowTransitionValidationRule::RULE_PRIORITY_VALID) || $transition->getPostValidationRule(\pachno\core\entities\WorkflowTransitionValidationRule::RULE_PRIORITY_VALID)->isValueValid($priority)): ?>
-                                                <input type="radio" name="priority_id" class="fancy-checkbox" value="<?= $priority->getID(); ?>" <?php if ($issue instanceof Issue && $issue->getPriority() instanceof \pachno\core\entities\Priority && $issue->getPriority()->getID() == $priority->getID()) echo 'checked'; ?> id="transition_<?= $transition->getId(); ?>_priority_<?= $priority->getId(); ?>">
+                                                <input type="radio" name="priority_id" class="fancy-checkbox" value="<?= $priority->getID(); ?>" <?php if (isset($selected_priorities) || ($issue instanceof Issue && $issue->getPriority() instanceof \pachno\core\entities\Priority && $issue->getPriority()->getID() == $priority->getID())) echo 'checked'; ?> id="transition_<?= $transition->getId(); ?>_priority_<?= $priority->getId(); ?>">
                                                 <label for="transition_<?= $transition->getId(); ?>_priority_<?= $priority->getId(); ?>" class="list-item">
                                                     <span class="name value"><?= __($priority->getName()); ?></span>
                                                 </label>
@@ -171,6 +178,78 @@
                                 <div class="helper-text">
                                     <?= fa_image_tag('info-circle'); ?>
                                     <span><?= __("Priority isn't visible for this issuetype / project combination, unless you specify a value here"); ?></span>
+                                </div>
+                            </div>
+                        <?php endif; ?>
+                    <?php endif; ?>
+                    <?php if ((($issue instanceof Issue && $issue->canEditSeverity()) | isset($issues)) && (isset($selected_severities) || $transition->hasAction(\pachno\core\entities\WorkflowTransitionAction::ACTION_SET_SEVERITY) && !$transition->getAction(\pachno\core\entities\WorkflowTransitionAction::ACTION_SET_SEVERITY)->hasTargetValue())): ?>
+                        <div class="form-row <?php if (isset($selected_severities)) echo 'locked'; ?>">
+                            <div class="fancy-dropdown-container">
+                                <div class="fancy-dropdown" data-default-label="<?= __('Pick a severity from the list'); ?>">
+                                    <label><?= __('Severity'); ?></label>
+                                    <span class="value"></span>
+                                    <?= fa_image_tag('angle-down', ['class' => 'expander']); ?>
+                                    <div class="dropdown-container list-mode filter-values-container">
+                                        <?php if (isset($selected_severities) && !is_array($selected_severities)): ?>
+                                            <input type="radio" name="severity_id" class="fancy-checkbox" value="0" checked id="transition_<?= $transition->getId(); ?>_severity_0">
+                                            <label for="transition_<?= $transition->getId(); ?>_severity_0" class="list-item">
+                                                <span class="name value"><?= __('Clear the severity value'); ?></span>
+                                            </label>
+                                        <?php endif; ?>
+                                        <?php foreach ($fields_list['severity']['choices'] as $severity): ?>
+                                            <?php if (isset($selected_severities) && is_array($selected_severities) && !array_key_exists($severity->getId(), $selected_severities)) continue; ?>
+                                            <?php if (!$transition->hasPostValidationRule(\pachno\core\entities\WorkflowTransitionValidationRule::RULE_SEVERITY_VALID) || $transition->getPostValidationRule(\pachno\core\entities\WorkflowTransitionValidationRule::RULE_SEVERITY_VALID)->isValueValid($severity)): ?>
+                                                <input type="radio" name="severity_id" class="fancy-checkbox" value="<?= $severity->getID(); ?>" <?php if (isset($selected_severities) || ($issue instanceof Issue && $issue->getSeverity() instanceof \pachno\core\entities\Severity && $issue->getSeverity()->getID() == $severity->getID())) echo 'checked'; ?> id="transition_<?= $transition->getId(); ?>_severity_<?= $severity->getId(); ?>">
+                                                <label for="transition_<?= $transition->getId(); ?>_severity_<?= $severity->getId(); ?>" class="list-item">
+                                                    <span class="name value"><?= __($severity->getName()); ?></span>
+                                                </label>
+                                            <?php endif; ?>
+                                        <?php endforeach; ?>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <?php if ($issue instanceof Issue && !$issue->isSeverityVisible()): ?>
+                            <div class="form-row">
+                                <div class="helper-text">
+                                    <?= fa_image_tag('info-circle'); ?>
+                                    <span><?= __("Severity isn't visible for this issuetype / project combination, unless you specify a value here"); ?></span>
+                                </div>
+                            </div>
+                        <?php endif; ?>
+                    <?php endif; ?>
+                    <?php if ((($issue instanceof Issue && $issue->canEditCategory()) | isset($issues)) && (isset($selected_categories) || $transition->hasAction(\pachno\core\entities\WorkflowTransitionAction::ACTION_SET_CATEGORY) && !$transition->getAction(\pachno\core\entities\WorkflowTransitionAction::ACTION_SET_CATEGORY)->hasTargetValue())): ?>
+                        <div class="form-row <?php if (isset($selected_categories)) echo 'locked'; ?>">
+                            <div class="fancy-dropdown-container">
+                                <div class="fancy-dropdown" data-default-label="<?= __('Pick a category from the list'); ?>">
+                                    <label><?= __('Category'); ?></label>
+                                    <span class="value"></span>
+                                    <?= fa_image_tag('angle-down', ['class' => 'expander']); ?>
+                                    <div class="dropdown-container list-mode filter-values-container">
+                                        <?php if (isset($selected_categories) && !is_array($selected_categories)): ?>
+                                            <input type="radio" name="category_id" class="fancy-checkbox" value="0" checked id="transition_<?= $transition->getId(); ?>_category_0">
+                                            <label for="transition_<?= $transition->getId(); ?>_category_0" class="list-item">
+                                                <span class="name value"><?= __('Clear the category value'); ?></span>
+                                            </label>
+                                        <?php endif; ?>
+                                        <?php foreach ($fields_list['category']['choices'] as $category): ?>
+                                            <?php if (isset($selected_categories) && is_array($selected_categories) && !array_key_exists($category->getId(), $selected_categories)) continue; ?>
+                                            <?php if (!$transition->hasPostValidationRule(\pachno\core\entities\WorkflowTransitionValidationRule::RULE_CATEGORY_VALID) || $transition->getPostValidationRule(\pachno\core\entities\WorkflowTransitionValidationRule::RULE_CATEGORY_VALID)->isValueValid($category)): ?>
+                                                <input type="radio" name="category_id" class="fancy-checkbox" value="<?= $category->getID(); ?>" <?php if (isset($selected_categories) || ($issue instanceof Issue && $issue->getCategory() instanceof \pachno\core\entities\Category && $issue->getCategory()->getID() == $category->getID())) echo 'checked'; ?> id="transition_<?= $transition->getId(); ?>_category_<?= $category->getId(); ?>">
+                                                <label for="transition_<?= $transition->getId(); ?>_category_<?= $category->getId(); ?>" class="list-item">
+                                                    <span class="name value"><?= __($category->getName()); ?></span>
+                                                </label>
+                                            <?php endif; ?>
+                                        <?php endforeach; ?>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <?php if ($issue instanceof Issue && !$issue->isCategoryVisible()): ?>
+                            <div class="form-row">
+                                <div class="helper-text">
+                                    <?= fa_image_tag('info-circle'); ?>
+                                    <span><?= __("Category isn't visible for this issuetype / project combination, unless you specify a value here"); ?></span>
                                 </div>
                             </div>
                         <?php endif; ?>

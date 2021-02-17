@@ -107,3 +107,7 @@ input.shaded,
     border-bottom-color: transparent;
   }
 }
+
+input[type=file] {
+  display: none;
+}

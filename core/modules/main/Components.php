@@ -308,6 +308,21 @@
                                 $this->parent_issue = $swimlane->getIdentifierIssue();
                             }
                             break;
+                        case entities\AgileBoard::SWIMLANES_EXPEDITE:
+                        case entities\AgileBoard::SWIMLANES_GROUPING:
+                            foreach ($this->board->getMilestoneSwimlanes($this->milestone) as $swimlane) {
+                                if ($swimlane->getIdentifier() != $this->swimlane_identifier)
+                                    continue;
+
+                                if ($swimlane->getIdentifierGrouping() == 'priority') {
+                                    $this->selected_priorities = ($swimlane->hasIdentifiables()) ? $swimlane->getIdentifiables() : null;
+                                } elseif ($swimlane->getIdentifierGrouping() == 'severity') {
+                                    $this->selected_severities = ($swimlane->hasIdentifiables()) ? $swimlane->getIdentifiables() : null;
+                                } elseif ($swimlane->getIdentifierGrouping() == 'category') {
+                                    $this->selected_categories = ($swimlane->hasIdentifiables()) ? $swimlane->getIdentifiables() : null;
+                                }
+                            }
+                            break;
                         default:
                             throw new Exception('Woops');
                     }
@@ -462,11 +477,14 @@
             $this->parent_issue = $this->parent_issue ?? null;
             $this->selected_component = $this->selected_component ?? null;
             $this->selected_category = $this->selected_category ?? null;
+            $this->selected_categories = $this->selected_categories ?? null;
             $this->selected_status = $this->selected_status ?? null;
             $this->selected_resolution = $this->selected_resolution ?? null;
             $this->selected_priority = $this->selected_priority ?? null;
+            $this->selected_priorities = $this->selected_priorities ?? null;
             $this->selected_reproducability = $this->selected_reproducability ?? null;
             $this->selected_severity = $this->selected_severity ?? null;
+            $this->selected_severities = $this->selected_severities ?? null;
             $this->selected_estimated_time = $this->selected_estimated_time ?? null;
             $this->selected_spent_time = $this->selected_spent_time ?? null;
             $this->selected_percent_complete = $this->selected_percent_complete ?? null;

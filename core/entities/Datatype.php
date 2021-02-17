@@ -116,9 +116,11 @@
             return $types;
         }
 
-        public static function has($item_id)
+        public static function has($item_id, $items = null)
         {
-            $items = static::getAll();
+            if ($items === null) {
+                $items = static::getAll();
+            }
 
             return array_key_exists($item_id, $items);
         }

@@ -81,6 +81,10 @@ use pachno\core\entities\Milestone;
                                             <?= __('Set status to %status', ['%status' => '']); ?>
                                         <?php elseif ($action->getActionType() == WorkflowTransitionAction::ACTION_SET_PRIORITY): ?>
                                             <?= __('Set priority to %priority', ['%priority' => '']); ?>
+                                        <?php elseif ($action->getActionType() == WorkflowTransitionAction::ACTION_SET_SEVERITY): ?>
+                                            <?= __('Set severity to %severity', ['%severity' => '']); ?>
+                                        <?php elseif ($action->getActionType() == WorkflowTransitionAction::ACTION_SET_CATEGORY): ?>
+                                            <?= __('Set category to %category', ['%category' => '']); ?>
                                         <?php elseif ($action->getActionType() == WorkflowTransitionAction::ACTION_SET_PERCENT): ?>
                                             <?= __('Set percent completed to %percentcompleted', ['%percentcompleted' => '']); ?>
                                         <?php elseif ($action->getActionType() == WorkflowTransitionAction::ACTION_SET_RESOLUTION): ?>

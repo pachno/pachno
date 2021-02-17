@@ -201,18 +201,34 @@ class Board {
                     header_name = '<span class="issue-container">';
                     header_name += `<a class="issue-number" href="${swimlane.identifier_issue.href}">`;
                     header_name += `<span>${swimlane.identifier_issue.issue_no}</span>`;
-                    header_name += `<span class="status-badge" style="background-color: ${swimlane.identifier_issue.status.color}; color: ${swimlane.identifier_issue.status.text_color};"><span>${swimlane.identifier_issue.status.name}</span></span>`
+                    header_name += `<span class="status-badge" data-dynamic-field-value data-field="status" data-issue-id="${swimlane.identifier_issue.id}" style="background-color: ${swimlane.identifier_issue.status.color}; color: ${swimlane.identifier_issue.status.text_color};"><span>${swimlane.identifier_issue.status.name}</span></span>`
                     header_name += `</a>`;
                     header_name += `<span class="name issue_header ${closed_class} trigger-backdrop" data-url="${swimlane.identifier_issue.card_url}">`;
                     header_name += `<span>${swimlane.identifier_issue.title}</span>`;
                     header_name += '</span>';
                     header_name += '</span>';
                     header_name += `<button class="button secondary highlight trigger-report-issue trigger-backdrop" data-url="${this.report_issue_url}" data-additional-params="parent_issue_id=${swimlane.identifier_issue.id}">${UI.fa_image_tag('sticky-note', { classes: 'icon' }, 'far')}<span>${Pachno.T.agile.add_card_here}</span></button>`
+                    header_name += `            
+                        <div class="dropper-container">
+                            <button class="button icon dropper dynamic_menu_link" type="button">${UI.fa_image_tag('ellipsis-v')}</button>
+                            <div class="dropdown-container dynamic_menu" data-menu-url="${swimlane.identifier_issue.more_actions_url}">
+                                <div class="list-mode">
+                                    <div class="list-item disabled">
+                                        <span class="icon">${UI.fa_image_tag('spinner', {'classes': 'fa-spin'})}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
                 } else {
                     header_name = '<span class="issue-container">';
                     header_name += `<span class="name issue_header">${swimlane.name}</span>`;
                     header_name += '</span>';
-                    header_name += `<button class="button secondary highlight trigger-report-issue trigger-backdrop" data-url="${this.report_issue_url}" data-additional-params="issuetype_id=${this.swimlane_field_values}">${UI.fa_image_tag('stream', { classes: 'icon'})}<span>${Pachno.T.agile.add_swimlane}</span></button>`
+                    if (swimlane.has_identifiables) {
+                        header_name += `<button class="button secondary highlight trigger-report-issue trigger-backdrop" data-url="${this.report_issue_url}" data-additional-params="${swimlane.identifier_grouping}_ids=${swimlane.identifiables.map(i => i.id).join(',')}">${UI.fa_image_tag('sticky-note', { classes: 'icon' }, 'far')}<span>${Pachno.T.agile.add_card_here}</span></button>`
+                    } else {
+                        header_name += `<button class="button secondary highlight trigger-report-issue trigger-backdrop" data-url="${this.report_issue_url}" data-additional-params="issuetype_id=${this.swimlane_field_values}">${UI.fa_image_tag('stream', { classes: 'icon'})}<span>${Pachno.T.agile.add_swimlane}</span></button>`
+                    }
                 }
                 const header_html = `<div class="swimlane-header"><div class="header">${header_name}</div>`;
                 $swimlane.append(header_html);
@@ -457,6 +473,165 @@ class Board {
         this.updateWhiteboard();
     }
 
+    setupDragDrop() {
+        let dragged_issue = undefined;
+        const board = this;
+        const $body = $('body');
+
+        const dragStart = function (event) {
+            const $issue = $(event.target);
+            dragged_issue = Pachno.getIssue($issue.data('issue-id'));
+            dragged_issue.startDragging(event.clientX, event.clientY);
+            event.originalEvent.dataTransfer.setData('text/plain', dragged_issue.id);
+            event.originalEvent.dataTransfer.effectAllowed = "move";
+            event.originalEvent.dataTransfer.dropEffect = "move";
+            event.currentTarget.classList.add('dragging');
+            $('#whiteboard').addClass('is-dragging');
+
+            const $columns = $('.whiteboard-columns .column[data-status-ids]');
+            const current_swimlane = board.swimlanes.find(swimlane => swimlane.has(dragged_issue));
+
+            for (const column of $columns) {
+                let $column = $(column);
+                let status_id_data = $column.data('status-ids');
+                let status_ids = (Number.isNaN(status_id_data)) ? status_id_data.split(',') : [status_id_data];
+
+                $column.removeClass('drop-valid drop-highlight drop-origin');
+
+                if (status_ids.includes(parseInt(dragged_issue.status.id))) {
+                    if (current_swimlane.identifier !== $column.data('swimlane-identifier')) {
+                        $column.addClass('drop-valid');
+                    } else {
+                        $column.addClass('drop-origin');
+                    }
+
+                    continue;
+                }
+
+                for (const status of dragged_issue.available_statuses) {
+                    if (status_ids.includes(parseInt(status.id))) {
+                        $column.addClass('drop-valid');
+                    }
+                }
+            }
+        };
+
+        const dragOverColumn = function (event) {
+            if (event.isPropagationStopped())
+                return
+
+            const $column = $(event.target);
+            $column.addClass('drop-highlight');
+            dragged_issue.dragDetect(event);
+            event.preventDefault();
+            event.stopPropagation();
+        };
+
+        const drop = function (event) {
+            if (event.isPropagationStopped())
+                return;
+
+            // event.originalEvent.dataTransfer.clearData();
+            // const issue = Pachno.getIssue(event.originalEvent.dataTransfer.getData('text/plain'));
+            const $dropped_target = $('.whiteboard-columns .column.drop-valid.drop-highlight');
+            if ($dropped_target.length) {
+                dragged_issue.stopDragging(true);
+                const $target_issue = $dropped_target.find('.whiteboard-issue.drop-target');
+                if ($target_issue.length) {
+                    if ($target_issue.hasClass('drop-indicator-above')) {
+                        dragged_issue.clone_element.detach().insertBefore($target_issue);
+                    } else {
+                        dragged_issue.clone_element.detach().insertAfter($target_issue);
+                    }
+                } else {
+                    const $add_card_indicator = $dropped_target.find('.form-container');
+                    if ($add_card_indicator.length) {
+                        dragged_issue.clone_element.detach().insertBefore($add_card_indicator);
+                    } else {
+                        $dropped_target.append(dragged_issue.clone_element.detach());
+                    }
+                }
+                dragged_issue.clone_element.removeClass('clone');
+                dragged_issue.clone_element.css({ top: '', transform: '', left: ''});
+                let swimlane_identifier = $dropped_target.data('swimlane-identifier');
+                let swimlane = board.getSwimlane(swimlane_identifier);
+                let status_id_data = $dropped_target.data('status-ids');
+                let status_ids = (Number.isNaN(status_id_data)) ? status_id_data.split(',') : [status_id_data];
+                dragged_issue.triggerTransition(board, swimlane, status_ids, event.shiftKey);
+            } else {
+                dragged_issue.stopDragging();
+            }
+
+            $('#whiteboard').removeClass('is-dragging');
+            $('.whiteboard-columns .column').removeClass('drop-valid drop-highlight drop-origin');
+
+            const $whiteboard_issues = $('.whiteboard-issue');
+            $whiteboard_issues.removeClass('drop-target drop-indicator-above drop-indicator-below');
+
+            event.stopPropagation();
+            event.preventDefault();
+        };
+
+        const dragLeaveColumn = function (event) {
+            if (event.isPropagationStopped() || event.isDefaultPrevented())
+                return;
+
+            const $column = $(event.target);
+            $column.removeClass('drop-highlight');
+            event.stopPropagation();
+        };
+
+        const dragOverIssue = function (event) {
+            const $element = $(this);
+            const $column = $element.parents('.column');
+            const detectAbove = function ($element) {
+                const rect = $element[0].getBoundingClientRect();
+                const y = event.clientY - rect.top;
+
+                return (y < rect.height / 2);
+            }
+
+            const above = detectAbove($element);
+            const issue = Pachno.getIssue($element.data('issue-id'));
+
+            issue.element.addClass('drop-target');
+            issue.element.addClass((above) ? 'drop-indicator-above' : 'drop-indicator-below');
+            dragged_issue.dragDetect(event);
+            $column.addClass('drop-highlight');
+            event.stopImmediatePropagation();
+            event.preventDefault();
+        };
+
+        const dragLeaveIssue = function (event) {
+            const $element = $(this);
+            const $column = $element.parents('.column');
+            $element.removeClass('drop-indicator-above drop-indicator-below drop-target');
+            $column.removeClass('drop-highlight');
+            event.preventDefault();
+        };
+
+        $body.off('dragstart', '.whiteboard-issue');
+        $body.on('dragstart', '.whiteboard-issue', dragStart);
+
+        $body.off('dragover', '.columns-container .column');
+        $body.on('dragover', '.columns-container .column', dragOverColumn);
+
+        $body.off('drop', '.columns-container .column');
+        $body.on('drop', '.columns-container .column', drop);
+
+        $body.off('dragleave', '.columns-container .column');
+        $body.on('dragleave', '.columns-container .column', dragLeaveColumn);
+
+        $body.off('dragover', '.columns-container .column .whiteboard-issue:not(.dragging):not(.clone)');
+        $body.on('dragover', '.columns-container .column .whiteboard-issue:not(.dragging):not(.clone)', dragOverIssue);
+
+        $body.off('dragleave', '.columns-container .column .whiteboard-issue:not(.dragging):not(.clone)');
+        $body.on('dragleave', '.columns-container .column .whiteboard-issue:not(.dragging):not(.clone)', dragLeaveIssue);
+
+        $body.off('drop', '.columns-container .column .whiteboard-issue:not(.dragging):not(.clone)');
+        $body.on('drop', '.columns-container .column .whiteboard-issue:not(.dragging):not(.clone)', drop);
+    }
+
     setupListeners() {
         const board = this;
         const $body = $('body');
@@ -527,6 +702,9 @@ class Board {
         Pachno.on(Pachno.EVENTS.issue.updateJsonComplete, (_, issue) => {
             let found = false;
             for (const swimlane of board.swimlanes) {
+                if (swimlane.identifier_issue && swimlane.identifier_issue.id === issue.id)
+                    return;
+
                 let updated = swimlane.addOrRemove(issue, !found);
                 if (found === false) {
                     found = updated;
@@ -536,154 +714,7 @@ class Board {
             board.verifyIssues();
         });
 
-        let dragged_issue = undefined;
-
-        $body.off('dragstart', '.whiteboard-issue');
-        $body.on('dragstart', '.whiteboard-issue', function (event) {
-            const $issue = $(event.target);
-            dragged_issue = Pachno.getIssue($issue.data('issue-id'));
-            dragged_issue.startDragging(event.clientX, event.clientY);
-            event.originalEvent.dataTransfer.setData('text/plain', dragged_issue.id);
-            event.originalEvent.dataTransfer.effectAllowed = "move";
-            event.originalEvent.dataTransfer.dropEffect = "move";
-            event.currentTarget.classList.add('dragging');
-            $('#whiteboard').addClass('is-dragging');
-
-            const $columns = $('.whiteboard-columns .column[data-status-ids]');
-            const current_swimlane = board.swimlanes.find(swimlane => swimlane.has(dragged_issue));
-
-            for (const column of $columns) {
-                let $column = $(column);
-                let status_id_data = $column.data('status-ids');
-                let status_ids = (Number.isNaN(status_id_data)) ? status_id_data.split(',') : [status_id_data];
-
-                $column.removeClass('drop-valid');
-                $column.removeClass('drop-highlight');
-
-                if (status_ids.includes(parseInt(dragged_issue.status.id))) {
-                    if (current_swimlane.identifier !== $column.data('swimlane-identifier')) {
-                        $column.addClass('drop-valid');
-                    }
-
-                    continue;
-                }
-
-                for (const status of dragged_issue.available_statuses) {
-                    if (status_ids.includes(parseInt(status.id))) {
-                        $column.addClass('drop-valid');
-                    }
-                }
-            }
-        });
-
-        // $body.off('drop');
-        // $body.on('drop', function (event) {
-        //     if (event !== undefined) {
-        //         event.preventDefault();
-        //     }
-        // });
-
-        $body.off('dragover', '.columns-container .column');
-        $body.on('dragover', '.columns-container .column', function (event) {
-            if (event.isPropagationStopped())
-                return
-
-            const $column = $(event.target);
-            $column.addClass('drop-highlight');
-            dragged_issue.dragDetect(event);
-            event.preventDefault();
-            event.stopPropagation();
-        });
-
-        const drop = function (event) {
-            if (event.isPropagationStopped())
-                return
-
-            // event.originalEvent.dataTransfer.clearData();
-            // const issue = Pachno.getIssue(event.originalEvent.dataTransfer.getData('text/plain'));
-            const $dropped_target = $('.whiteboard-columns .column.drop-valid.drop-highlight');
-            if ($dropped_target.length) {
-                dragged_issue.stopDragging(true);
-                const $target_issue = $dropped_target.find('.whiteboard-issue.drop-target');
-                if ($target_issue.length) {
-                    if ($target_issue.hasClass('drop-indicator-above')) {
-                        dragged_issue.clone_element.detach().insertBefore($target_issue);
-                    } else {
-                        dragged_issue.clone_element.detach().insertAfter($target_issue);
-                    }
-                } else {
-                    $dropped_target.append(dragged_issue.clone_element.detach());
-                }
-                dragged_issue.clone_element.removeClass('clone');
-                dragged_issue.clone_element.css({ top: '', transform: '', left: ''});
-                let swimlane_identifier = $dropped_target.data('swimlane-identifier');
-                let swimlane = board.getSwimlane(swimlane_identifier);
-                let status_id_data = $dropped_target.data('status-ids');
-                let status_ids = (Number.isNaN(status_id_data)) ? status_id_data.split(',') : [status_id_data];
-                dragged_issue.triggerTransition(board, swimlane, status_ids, event.shiftKey);
-            } else {
-                dragged_issue.stopDragging();
-            }
-
-            $('#whiteboard').removeClass('is-dragging');
-            $('.whiteboard-columns .column').removeClass('drop-valid');
-
-            const $whiteboard_issues = $('.whiteboard-issue');
-            $whiteboard_issues.removeClass('drop-target');
-            $whiteboard_issues.removeClass('drop-indicator-above');
-            $whiteboard_issues.removeClass('drop-indicator-below');
-
-            event.stopPropagation();
-            event.preventDefault();
-            // event.originalEvent.dataTransfer.setData('text/plain', $(event.target).id);
-            // event.currentTarget.classList.remove('dragging');
-        };
-
-        $body.off('drop', '.columns-container .column');
-        $body.on('drop', '.columns-container .column', drop);
-
-        $body.off('dragleave', '.columns-container .column');
-        $body.on('dragleave', '.columns-container .column', function (event) {
-            if (event.isPropagationStopped() || event.isDefaultPrevented())
-                return;
-
-            const $column = $(event.target);
-            $column.removeClass('drop-highlight');
-            event.stopPropagation();
-        });
-
-        $body.off('dragover', '.columns-container .column .whiteboard-issue:not(.dragging):not(.clone)');
-        $body.on('dragover', '.columns-container .column .whiteboard-issue:not(.dragging):not(.clone)', function (event) {
-            const $element = $(this);
-            const $column = $element.parents('.column');
-            const rect = $element[0].getBoundingClientRect();
-            const y = event.clientY - rect.top;
-            const above = (y < rect.height / 2);
-            const issue = Pachno.getIssue($element.data('issue-id'));
-            issue.element.addClass('drop-target');
-            issue.element.addClass((above) ? 'drop-indicator-above' : 'drop-indicator-below');
-            dragged_issue.dragDetect(event);
-            $column.addClass('drop-highlight');
-            event.stopImmediatePropagation();
-            event.preventDefault();
-        });
-
-        $body.off('dragleave', '.columns-container .column .whiteboard-issue:not(.dragging):not(.clone)');
-        $body.on('dragleave', '.columns-container .column .whiteboard-issue:not(.dragging):not(.clone)', function (event) {
-            const $element = $(this);
-            const $column = $element.parents('.column');
-            $element.removeClass('drop-indicator-above');
-            $element.removeClass('drop-indicator-below');
-            $element.removeClass('drop-target');
-            $column.removeClass('drop-highlight');
-            event.preventDefault();
-        });
-
-        $body.off('drop', '.columns-container .column .whiteboard-issue:not(.dragging):not(.clone)');
-        $body.on('drop', '.columns-container .column .whiteboard-issue:not(.dragging):not(.clone)', drop);
-
-        // $body.off('dragend', '.whiteboard-issue');
-        // $body.on('dragend', '.whiteboard-issue', drop);
+        this.setupDragDrop();
     }
 }
 

@@ -32,18 +32,29 @@ const watchIssuePopupForms = () => {
 }
 
 const setupListeners = () => {
-    // const $body = $('body');
-    // $body.off('click', 'input[data-trigger-issue-update]');
-    // $body.on('click', 'input[data-trigger-issue-update]', function () {
-    //     const $element = $(this);
-    //     $element.addClass('submitting');
-    //     const url = $element.data('url');
-    //
-    //     Pachno.fetch(url, { method: 'POST' })
-    //         .then(() => {
-    //             $element.removeClass('submitting');
-    //         })
-    // });
+    const $body = $('body');
+    $body.off('click', '.trigger-set-cover');
+    $body.on('click', '.trigger-set-cover', function (event) {
+        event.preventDefault();
+        event.stopPropagation();
+
+        const $element = $(this);
+        const issue = Pachno.getIssue($element.data('issue-id'));
+
+        issue.postAndUpdate('cover_image', $element.data('file-id'));
+    });
+
+    $body.off('click', '.trigger-clear-cover');
+    $body.on('click', '.trigger-clear-cover', function (event) {
+        event.preventDefault();
+        event.stopPropagation();
+
+        const $element = $(this);
+        const issue = Pachno.getIssue($element.data('issue-id'));
+
+        issue.postAndUpdate('cover_image', 0);
+    });
+
 }
 
 export {

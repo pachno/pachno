@@ -34,6 +34,18 @@
      * @var Issue $parent_issue
      * @var Issuetype[] $issuetypes
      * @var Issuetype $selected_issuetype
+     * @var Status $selected_status
+     * @var Status[] $selected_statuses
+     * @var Status[] $statuses
+     * @var Priority $selected_priority
+     * @var Priority[] $selected_priorities
+     * @var Priority[] $priorities
+     * @var Category $selected_category
+     * @var Category[] $selected_categories
+     * @var Category[] $categories
+     * @var Severity $selected_severity
+     * @var Severity[] $selected_severities
+     * @var Severity[] $severities
      * @var entities\AgileBoard $board
      */
 
@@ -369,23 +381,28 @@
                             </label>
                             <div class="helper-text"><?= __('Enter time spent on this issue here. Use keywords such as "points", "minutes", "hours", "days", "weeks" and "months" to describe your effort'); ?></div>
                         </div>
-                        <div class="form-row hidden additional_information <?php if (array_key_exists('category', $errors)): ?>invalid<?php endif; ?>" id="category_div">
+                        <div class="form-row additional_information <?= ($selected_categories || $selected_category) ? 'locked' : 'hidden'; ?>" id="category_div">
                             <div class="fancy-dropdown-container">
                                 <div class="fancy-dropdown" data-default-label="<?= __('Not selected'); ?>">
-                                    <label id="category_label"><?php echo __('Select category'); ?></label>
+                                    <label id="category_label">
+                                        <span><?php echo __('Select category'); ?></span>
+                                        <?= fa_image_tag('lock', ['class' => 'icon locked']); ?>
+                                    </label>
                                     <span class="value"></span>
                                     <?= fa_image_tag('angle-down', ['class' => 'expander']); ?>
                                     <div class="dropdown-container list-mode">
-                                        <input type="radio" value="" name="category_id" id="report_issue_category_id_0"
-                                               class="fancy-checkbox" <?php if (!$selected_category instanceof Category) echo ' checked'; ?>>
-                                        <label for="report_issue_category_id_0" class="list-item">
-                                            <span class="name value"><?= __('Not selected'); ?></span>
-                                        </label>
+                                        <?php if (!$selected_category instanceof Category && !$selected_categories): ?>
+                                            <input type="radio" value="" name="category_id" id="report_issue_category_id_0"
+                                                   class="fancy-checkbox" checked>
+                                            <label for="report_issue_category_id_0" class="list-item">
+                                                <span class="name value"><?= __('Not selected'); ?></span>
+                                            </label>
+                                        <?php endif; ?>
                                         <?php foreach ($categories as $category): ?>
-                                            <?php if (!$category->hasAccess()) continue; ?>
+                                            <?php if ($selected_categories && !array_key_exists($category->getId(), $selected_categories)) continue; ?>
                                             <input type="radio" value="<?php echo $category->getID(); ?>" name="category_id"
                                                    id="report_issue_category_id_<?php echo $category->getID(); ?>"
-                                                   class="fancy-checkbox" <?php if ($selected_category instanceof Datatype && $selected_category->getID() == $category->getID()) echo ' checked'; ?>>
+                                                   class="fancy-checkbox" <?php if (($selected_category instanceof Datatype && $selected_category->getID() == $category->getID()) || $selected_categories) echo ' checked'; ?>>
                                             <label for="report_issue_category_id_<?php echo $category->getID(); ?>"
                                                    class="list-item">
                                                 <span class="name value"><?php echo __($category->getName()); ?></span>
@@ -448,22 +465,28 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="form-row hidden additional_information <?php if (array_key_exists('priority', $errors)): ?>invalid<?php endif; ?>" id="priority_div">
+                        <div class="form-row additional_information <?= ($selected_priorities || $selected_priority) ? 'locked' : 'hidden'; ?>" id="priority_div">
                             <div class="fancy-dropdown-container">
                                 <div class="fancy-dropdown" data-default-label="<?= __('Not selected'); ?>">
-                                    <label id="priority_label"><?php echo __('Select priority'); ?></label>
+                                    <label id="priority_label">
+                                        <span><?php echo __('Select priority'); ?></span>
+                                        <?= fa_image_tag('lock', ['class' => 'icon locked']); ?>
+                                    </label>
                                     <span class="value"></span>
                                     <?= fa_image_tag('angle-down', ['class' => 'expander']); ?>
                                     <div class="dropdown-container list-mode">
-                                        <input type="radio" value="" name="priority_id" id="report_issue_priority_id_0"
-                                               class="fancy-checkbox" <?php if (!$selected_priority instanceof Priority) echo ' checked'; ?>>
-                                        <label for="report_issue_priority_id_0" class="list-item">
-                                            <span class="name value"><?= __('Not selected'); ?></span>
-                                        </label>
+                                        <?php if (!$selected_priority instanceof Priority && !$selected_priorities): ?>
+                                            <input type="radio" value="" name="priority_id" id="report_issue_priority_id_0"
+                                                   class="fancy-checkbox" checked>
+                                            <label for="report_issue_priority_id_0" class="list-item">
+                                                <span class="name value"><?= __('Not selected'); ?></span>
+                                            </label>
+                                        <?php endif; ?>
                                         <?php foreach ($priorities as $priority): ?>
+                                            <?php if ($selected_priorities && !array_key_exists($priority->getId(), $selected_priorities)) continue; ?>
                                             <input type="radio" value="<?php echo $priority->getID(); ?>" name="priority_id"
                                                    id="report_issue_priority_id_<?php echo $priority->getID(); ?>"
-                                                   class="fancy-checkbox" <?php if ($selected_priority instanceof Datatype && $selected_priority->getID() == $priority->getID()) echo ' checked'; ?>>
+                                                   class="fancy-checkbox" <?php if (($selected_priority instanceof Datatype && $selected_priority->getID() == $priority->getID())|| $selected_priorities) echo ' checked'; ?>>
                                             <label for="report_issue_priority_id_<?php echo $priority->getID(); ?>"
                                                    class="list-item">
                                                 <span class="name value"><?php echo __($priority->getName()); ?></span>
@@ -473,22 +496,28 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="form-row hidden additional_information <?php if (array_key_exists('severity', $errors)): ?>invalid<?php endif; ?>" id="severity_div">
+                        <div class="form-row additional_information <?= ($selected_severities || $selected_severity) ? 'locked' : 'hidden'; ?>" id="severity_div">
                             <div class="fancy-dropdown-container">
                                 <div class="fancy-dropdown" data-default-label="<?= __('Not selected'); ?>">
-                                    <label id="severity_label"><?php echo __('Select severity'); ?></label>
+                                    <label id="severity_label">
+                                        <span><?php echo __('Select severity'); ?></span>
+                                        <?= fa_image_tag('lock', ['class' => 'icon locked']); ?>
+                                    </label>
                                     <span class="value"></span>
                                     <?= fa_image_tag('angle-down', ['class' => 'expander']); ?>
                                     <div class="dropdown-container list-mode">
-                                        <input type="radio" value="" name="severity_id" id="report_issue_severity_id_0"
-                                               class="fancy-checkbox" <?php if (!$selected_severity instanceof Severity) echo ' checked'; ?>>
-                                        <label for="report_issue_severity_id_0" class="list-item">
-                                            <span class="name value"><?= __('Not selected'); ?></span>
-                                        </label>
+                                        <?php if (!$selected_severity instanceof Severity && !$selected_severities): ?>
+                                            <input type="radio" value="" name="severity_id" id="report_issue_severity_id_0"
+                                                   class="fancy-checkbox" checked>
+                                            <label for="report_issue_severity_id_0" class="list-item">
+                                                <span class="name value"><?= __('Not selected'); ?></span>
+                                            </label>
+                                        <?php endif; ?>
                                         <?php foreach ($severities as $severity): ?>
+                                            <?php if ($selected_severities && !array_key_exists($severity->getId(), $selected_severities)) continue; ?>
                                             <input type="radio" value="<?php echo $severity->getID(); ?>" name="severity_id"
                                                    id="report_issue_severity_id_<?php echo $severity->getID(); ?>"
-                                                   class="fancy-checkbox" <?php if ($selected_severity instanceof Datatype && $selected_severity->getID() == $severity->getID()) echo ' checked'; ?>>
+                                                   class="fancy-checkbox" <?php if (($selected_severity instanceof Datatype && $selected_severity->getID() == $severity->getID()) || $selected_severities) echo ' checked'; ?>>
                                             <label for="report_issue_severity_id_<?php echo $severity->getID(); ?>"
                                                    class="list-item">
                                                 <span class="name value"><?php echo __($severity->getName()); ?></span>

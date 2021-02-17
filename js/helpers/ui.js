@@ -287,9 +287,11 @@ const submitForm = function ($form) {
         });
 };
 
-const submitInteractiveForm = function (event, $form) {
+const submitInteractiveForm = function (event, $form, prevent_default = false) {
     $form.addClass('submitting');
-    event.preventDefault();
+    if (prevent_default) {
+        event.preventDefault();
+    }
     submitForm($form)
         .then(() => {
             $form.removeClass('submitting');
@@ -369,7 +371,7 @@ const setupListeners = function() {
         Pachno.fetch(data.url, { method: 'DELETE' });
     });
 
-    $body.on('submit', 'form[data-interactive-form]', (event) => submitInteractiveForm(event, $(event.target)));
+    $body.on('submit', 'form[data-interactive-form]', (event) => submitInteractiveForm(event, $(event.target), true));
     $body.on('blur', 'form[data-interactive-form] input[type=text], form[data-interactive-form] textarea', (event) => submitInteractiveForm(event, $(event.target).parents('form')));
     $body.on('change', 'form[data-interactive-form] input[type=radio], form[data-interactive-form] input[type=checkbox]', (event) => submitInteractiveForm(event, $(event.target).parents('form')));
     $body.on('click', 'form[data-interactive-form] input[type=radio], form[data-interactive-form] input[type=checkbox]', (event) => submitInteractiveForm(event, $(event.target).parents('form')));

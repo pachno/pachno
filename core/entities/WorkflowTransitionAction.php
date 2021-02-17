@@ -53,6 +53,14 @@
 
         const ACTION_CLEAR_PRIORITY = 'clear_priority';
 
+        const ACTION_SET_CATEGORY = 'set_category';
+
+        const ACTION_CLEAR_CATEGORY = 'clear_category';
+
+        const ACTION_SET_SEVERITY = 'set_severity';
+
+        const ACTION_CLEAR_SEVERITY = 'clear_severity';
+
         const ACTION_SET_PERCENT = 'set_percent';
 
         const ACTION_CLEAR_PERCENT = 'clear_percent';
@@ -119,11 +127,15 @@
                 $initial_list['special'][self::ACTION_USER_STOP_WORKING] = $i18n->__('Stop logging time and optionally add time spent');
                 $initial_list['clear'][self::ACTION_CLEAR_ASSIGNEE] = $i18n->__('Clear issue assignee');
                 $initial_list['clear'][self::ACTION_CLEAR_PRIORITY] = $i18n->__('Clear issue priority');
+                $initial_list['clear'][self::ACTION_CLEAR_SEVERITY] = $i18n->__('Clear issue severity');
+                $initial_list['clear'][self::ACTION_CLEAR_CATEGORY] = $i18n->__('Clear issue category');
                 $initial_list['clear'][self::ACTION_CLEAR_PERCENT] = $i18n->__('Clear issue percent');
                 $initial_list['clear'][self::ACTION_CLEAR_REPRODUCABILITY] = $i18n->__('Clear issue reproducability');
                 $initial_list['clear'][self::ACTION_CLEAR_RESOLUTION] = $i18n->__('Clear issue resolution');
                 $initial_list['clear'][self::ACTION_CLEAR_MILESTONE] = $i18n->__('Clear issue milestone');
                 $initial_list['set'][self::ACTION_SET_PRIORITY] = $i18n->__('Set issue priority');
+                $initial_list['set'][self::ACTION_SET_SEVERITY] = $i18n->__('Set issue severity');
+                $initial_list['set'][self::ACTION_SET_CATEGORY] = $i18n->__('Set issue category');
                 $initial_list['set'][self::ACTION_SET_PERCENT] = $i18n->__('Set issue percent');
                 $initial_list['set'][self::ACTION_SET_REPRODUCABILITY] = $i18n->__('Set issue reproducability');
                 $initial_list['set'][self::ACTION_SET_RESOLUTION] = $i18n->__('Set issue resolution');
@@ -194,6 +206,10 @@
                     return __('Clear issue assignee');
                 case self::ACTION_CLEAR_PRIORITY:
                     return __('Clear issue priority');
+                case self::ACTION_CLEAR_SEVERITY:
+                    return __('Clear issue severity');
+                case self::ACTION_CLEAR_CATEGORY:
+                    return __('Clear issue category');
                 case self::ACTION_CLEAR_PERCENT:
                     return __('Clear issue percent completed');
                 case self::ACTION_CLEAR_REPRODUCABILITY:
@@ -255,6 +271,8 @@
                 case self::ACTION_ASSIGN_ISSUE_SELF:
                 case self::ACTION_CLEAR_ASSIGNEE:
                 case self::ACTION_CLEAR_PRIORITY:
+                case self::ACTION_CLEAR_SEVERITY:
+                case self::ACTION_CLEAR_CATEGORY:
                 case self::ACTION_CLEAR_PERCENT:
                 case self::ACTION_CLEAR_REPRODUCABILITY:
                 case self::ACTION_CLEAR_RESOLUTION:
@@ -300,6 +318,24 @@
                         $issue->setPriority(Priority::getB2DBTable()->selectById((int)$this->getTargetValue()));
                     else
                         $issue->setPriority($request['priority_id']);
+                    break;
+                case self::ACTION_CLEAR_SEVERITY:
+                    $issue->setSeverity(null);
+                    break;
+                case self::ACTION_SET_SEVERITY:
+                    if ($this->getTargetValue())
+                        $issue->setSeverity(Severity::getB2DBTable()->selectById((int)$this->getTargetValue()));
+                    else
+                        $issue->setSeverity($request['severity_id']);
+                    break;
+                case self::ACTION_CLEAR_CATEGORY:
+                    $issue->setCategory(null);
+                    break;
+                case self::ACTION_SET_CATEGORY:
+                    if ($this->getTargetValue())
+                        $issue->setCategory(Category::getB2DBTable()->selectById((int)$this->getTargetValue()));
+                    else
+                        $issue->setCategory($request['category_id']);
                     break;
                 case self::ACTION_CLEAR_PERCENT:
                     $issue->setPercentCompleted(0);
@@ -455,6 +491,12 @@
                 case self::ACTION_SET_PRIORITY:
                     return (bool)Priority::has($this->_target_value);
                     break;
+                case self::ACTION_SET_SEVERITY:
+                    return (bool)Severity::has($this->_target_value);
+                    break;
+                case self::ACTION_SET_CATEGORY:
+                    return (bool)Category::has($this->_target_value);
+                    break;
                 case self::ACTION_SET_STATUS:
                     return (bool)Status::has($this->_target_value);
                     break;
@@ -488,6 +530,12 @@
                 case self::ACTION_SET_PRIORITY:
                     return (bool)$request->hasParameter('priority_id');
                     break;
+                case self::ACTION_SET_SEVERITY:
+                    return (bool)$request->hasParameter('severity_id');
+                    break;
+                case self::ACTION_SET_CATEGORY:
+                    return (bool)$request->hasParameter('category_id');
+                    break;
                 case self::ACTION_SET_STATUS:
                     return (bool)$request->hasParameter('status_id') && ($status = Status::getB2DBTable()->selectById((int)$request->getParameter('status_id'))) instanceof Status && $status->canUserSet(framework\Context::getUser());
                     break;
@@ -513,6 +561,12 @@
 
                 case self::ACTION_SET_PRIORITY:
                     return Priority::getAll();
+
+                case self::ACTION_SET_SEVERITY:
+                    return Severity::getAll();
+
+                case self::ACTION_SET_CATEGORY:
+                    return Category::getAll();
 
                 case self::ACTION_SET_PERCENT:
                     return range(1, 100);
@@ -558,6 +612,8 @@
             switch ($this->getActionType()) {
                 case self::ACTION_SET_STATUS:
                 case self::ACTION_SET_PRIORITY:
+                case self::ACTION_SET_SEVERITY:
+                case self::ACTION_SET_CATEGORY:
                 case self::ACTION_SET_PERCENT:
                 case self::ACTION_SET_RESOLUTION:
                 case self::ACTION_SET_REPRODUCABILITY:

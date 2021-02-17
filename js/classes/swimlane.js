@@ -11,7 +11,7 @@ class Swimlane {
         this.name = json.name;
         this.board_id = board_id;
         this.has_identifiables = (json.has_identifiables);
-        this.identifier_issue = json.identifier_issue;
+        this.identifier_issue = (json.identifier_issue) ? Pachno.addIssue(json.identifier_issue, board_id) : undefined;
         this.identifier_grouping = json.identifier_grouping;
         this.identifier_type = json.identifier_type;
         this.identifiables = json.identifiables;
@@ -67,15 +67,15 @@ class Swimlane {
                 return (this.identifier_issue.id === issue.parent_issue_id);
             case SwimlaneTypes.GROUPING:
             case SwimlaneTypes.EXPEDITE:
+                // debugger;
                 if (!this.identifiables) {
                     return false;
                 }
 
-                // debugger;
                 for (const identifiable_id in this.identifiables) {
                     if (!this.identifiables.hasOwnProperty(identifiable_id)) continue;
 
-                    if (issue[this.identifier_grouping] !== undefined && identifiable_id === issue[this.identifier_grouping].id) {
+                    if (issue[this.identifier_grouping] !== undefined && this.identifiables[identifiable_id].id === issue[this.identifier_grouping].id) {
                         return true;
                     }
                 }

@@ -587,7 +587,7 @@
                             $swimlanes[] = ['identifiables' => 0];
                         } else {
                             foreach ($items as $item) {
-                                $swimlanes[] = ['identifiables' => $item];
+                                $swimlanes[] = ['identifiables' => [$item->getID() => $item]];
                             }
                             $swimlanes[] = ['identifiables' => 0];
                         }

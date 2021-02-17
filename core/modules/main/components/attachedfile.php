@@ -1,12 +1,15 @@
 <?php
 
+    use pachno\core\entities\Article;
+    use pachno\core\entities\Issue;
     use pachno\core\entities\User;
+    use pachno\core\entities\File;
 
     /**
-     * @var \pachno\core\entities\Issue $issue
-     * @var \pachno\core\entities\Article $article
-     * @var \pachno\core\entities\File $file
-     * @var \pachno\core\entities\User $pachno_user
+     * @var Issue $issue
+     * @var Article $article
+     * @var File $file
+     * @var User $pachno_user
      */
 
     $can_remove = false;
@@ -17,7 +20,7 @@
     }
 
 ?>
-<?php if ($file instanceof \pachno\core\entities\File): ?>
+<?php if ($file instanceof File): ?>
     <div id="attachment_<?= $file_id; ?>" class="attachment <?php if ($file->isImage()) echo 'type-image'; ?>" data-attachment data-file-id="<?= $file->getId(); ?>">
         <?php if ($file->isImage()): ?>
             <a href="<?php echo make_url('showfile', array('id' => $file_id)); ?>" target="_new" class="preview" title="<?php echo $file->getOriginalFilename(); ?>"><?php echo image_tag(make_url('showfile', array('id' => $file_id)), [], true); ?></a>
@@ -40,6 +43,11 @@
             </a>
             <?php if ($file->isImage()): ?>
                 <?php echo javascript_link_tag(fa_image_tag('code'), ['onclick' => "Pachno.UI.Dialog.showModal('" . __('Embedding this file in descriptions or comments') . "', '" . __('Use this tag to include this image: [[Image:%filename|thumb|Image description]]', ['%filename' => $file->getRealFilename()]) . "');", 'class' => 'button icon secondary']); ?>
+                <?php if ($mode == 'issue'): ?>
+                    <button class="button secondary icon <?= ($issue->getCoverImageFile() instanceof File && $issue->getCoverImageFile()->getId() == $file->getId()) ? 'trigger-clear-cover' : 'trigger-set-cover'; ?>" data-dynamic-field-value data-field="cover_image_file" data-file-id="<?= $file->getId(); ?>" data-issue-id="<?= $issue->getId(); ?>">
+                        <?= fa_image_tag(($issue->getCoverImageFile() instanceof File && $issue->getCoverImageFile()->getId() == $file->getId()) ? 'minus-square' : 'images', ['class' => 'icon'], 'far'); ?>
+                    </button>
+                <?php endif; ?>
             <?php endif; ?>
             <?php if ($can_remove): ?>
                 <?php if ($mode == 'issue'): ?>

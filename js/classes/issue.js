@@ -2,9 +2,9 @@ import UI from "../helpers/ui";
 import $ from "jquery";
 import Pachno from "./pachno";
 import Uploader from "./uploader";
-import { TYPES as QuicksearchTypes } from "./quicksearch";
+import {TYPES as QuicksearchTypes} from "./quicksearch";
 import {getEditor} from "../widgets/editor";
-import { throttle } from 'throttle-debounce';
+import {throttle} from 'throttle-debounce';
 import {SwimlaneTypes} from "./board";
 
 class Issue {
@@ -18,7 +18,7 @@ class Issue {
         this.event_throttled = false;
         this.setupListeners();
         this.uploader = new Uploader({
-            uploader_container: $('#viewissue_attached_information_container'),
+            uploader_container: `#viewissue_attached_information_container[data-issue-id='${this.id}']`,
             mode: 'list',
             only_images: false,
             type: 'attachment',
@@ -45,6 +45,7 @@ class Issue {
         this.save_url = json.save_url;
         this.choices_url = json.choices_url;
         this.backdrop_url = json.backdrop_url;
+        this.cover_image = json.cover_image;
 
         this.project = json.project;
         this.transitions = json.transitions;
@@ -87,6 +88,7 @@ class Issue {
         this.number_of_files = parseInt(json.number_of_files);
         this.number_of_comments = parseInt(json.number_of_comments);
         this.number_of_subscribers = parseInt(json.number_of_subscribers);
+        this.number_of_child_issues = parseInt(json.number_of_child_issues);
 
         this.processed = false;
     }
@@ -200,7 +202,7 @@ class Issue {
             $(`[data-attachment][data-file-id="${data.file_id}"]`).remove();
             Pachno.UI.Dialog.dismiss();
 
-            Pachno.fetch(data.url, { method: 'DELETE' })
+            Pachno.fetch(data.url, {method: 'DELETE'})
                 .then((json) => {
                     issue.updateFromJson(json.issue);
                     issue.updateVisibleValues();
@@ -231,14 +233,14 @@ class Issue {
                     let index = 1;
 
                     for (const choice of json.data.choices) {
-                        const icon = (choice.icon) ? { type: choice.icon.style, name: choice.icon.name } : undefined;
+                        const icon = (choice.icon) ? {type: choice.icon.style, name: choice.icon.name} : undefined;
                         choices.push({
                             icon,
                             shortcut: `set ${field} ${index}`,
                             name: choice.name,
                             type: QuicksearchTypes.event,
                             event: Pachno.EVENTS.issue.triggerUpdate,
-                            event_value: { field, value: choice.id, issue_id: issue.id }
+                            event_value: {field, value: choice.id, issue_id: issue.id}
                         })
                         index += 1;
                     }
@@ -272,7 +274,7 @@ class Issue {
 
     allowShortcuts(fields) {
         let choice = {
-            icon: { name: 'edit', type: 'fas' },
+            icon: {name: 'edit', type: 'fas'},
             shortcut: 'set',
             name: 'Set issue properties',
             description: 'Update one or more properties of an issue',
@@ -293,31 +295,31 @@ class Issue {
                 case FIELD_TYPES.BUILTIN:
                     switch (field_key) {
                         case 'priority':
-                            field_choice.icon = { name: 'exclamation-circle', type: 'fas' };
+                            field_choice.icon = {name: 'exclamation-circle', type: 'fas'};
                             break;
                         case 'resolution':
-                            field_choice.icon = { name: 'clipboard-check', type: 'fas' };
+                            field_choice.icon = {name: 'clipboard-check', type: 'fas'};
                             break;
                         case 'category':
-                            field_choice.icon = { name: 'chart-pie', type: 'fas' };
+                            field_choice.icon = {name: 'chart-pie', type: 'fas'};
                             break;
                         case 'milestone':
-                            field_choice.icon = { name: 'list-alt', type: 'fas' };
+                            field_choice.icon = {name: 'list-alt', type: 'fas'};
                             break;
                         default:
-                            field_choice.icon = { name: 'edit', type: 'far' };
+                            field_choice.icon = {name: 'edit', type: 'far'};
                     }
 
                     if (['title', 'reproduction_steps', 'description'].includes(field_key)) {
                         field_choice.type = QuicksearchTypes.event;
                         field_choice.event = Pachno.EVENTS.issue.triggerEdit;
-                        field_choice.event_value = { field: field_key, issue_id: this.id };
+                        field_choice.event_value = {field: field_key, issue_id: this.id};
                     } else if (field_key === 'votes') {
                         field_choice.name = 'Vote / unvote';
                         field_choice.description = 'Toggle your vote for this issue';
                         field_choice.type = QuicksearchTypes.event;
                         field_choice.event = Pachno.EVENTS.issue.triggerUpdate;
-                        field_choice.event_value = { field: field_key, value: 1, issue_id: this.id }
+                        field_choice.event_value = {field: field_key, value: 1, issue_id: this.id}
                     } else {
                         field_choice.type = QuicksearchTypes.dynamic_choices;
                         field_choice.event = Pachno.EVENTS.issue.loadDynamicChoices;
@@ -331,7 +333,7 @@ class Issue {
                 case FIELD_TYPES.RADIO_CHOICE:
                 case FIELD_TYPES.RELEASES_CHOICE:
                 case FIELD_TYPES.STATUS_CHOICE:
-                    field_choice.icon = { name: 'list-alt', type: 'fas' };
+                    field_choice.icon = {name: 'list-alt', type: 'fas'};
                     field_choice.type = QuicksearchTypes.dynamic_choices;
                     field_choice.event = Pachno.EVENTS.issue.loadDynamicChoices;
                     field_choice.event_value = field_key;
@@ -379,7 +381,7 @@ class Issue {
                     }
                     break;
                 case 'status':
-                    $element.css({ backgroundColor: this.status.color, color: this.status.text_color });
+                    $element.css({backgroundColor: this.status.color, color: this.status.text_color});
                     $element.html(`<span>${this.status.name}</span>`);
                     break;
                 case 'description':
@@ -397,26 +399,15 @@ class Issue {
                     $element.html(this.number_of_subscribers);
                     break;
                 case 'number_of_files':
-                    let $files_value_element = $element.find('.value');
-                    if ($files_value_element.length) {
-                        $files_value_element.html(this.number_of_files);
-                    } else {
-                        $element.html(this.number_of_files);
-                    }
-                    if (this.number_of_files > 0) {
-                        $element.removeClass('hidden');
-                    } else {
-                        $element.addClass('hidden');
-                    }
-                    break;
                 case 'number_of_comments':
-                    let $comments_value_element = $element.find('.value');
-                    if ($comments_value_element.length) {
-                        $comments_value_element.html(this.number_of_comments);
+                case 'number_of_child_issues':
+                    let $number_value_element = $element.find('.value');
+                    if ($number_value_element.length) {
+                        $number_value_element.html(this[field]);
                     } else {
-                        $element.html(this.number_of_comments);
+                        $element.html(this[field]);
                     }
-                    if (this.number_of_comments > 0) {
+                    if (this[field] > 0) {
                         $element.removeClass('hidden');
                     } else {
                         $element.addClass('hidden');
@@ -429,6 +420,31 @@ class Issue {
                         $element.removeClass('hidden');
                     } else {
                         $element.addClass('hidden');
+                    }
+                    break;
+                case 'cover_image_toggle':
+                    if (this.cover_image) {
+                        $element.addClass('with-cover');
+                    } else {
+                        $element.removeClass('with-cover');
+                    }
+                    break;
+                case 'cover_image':
+                    if (this[field]) {
+                        $element.css({ backgroundImage: `url('${this[field].url}')` });
+                    } else {
+                        $element.css({ backgroundImage: '' });
+                    }
+                    break;
+                case 'cover_image_file':
+                    if (this.cover_image && this.cover_image.id == $element.data('file-id')) {
+                        $element.removeClass('trigger-set-cover');
+                        $element.addClass('trigger-clear-cover');
+                        $element.html(UI.fa_image_tag('minus-square', { classes: 'icon' }, 'far'));
+                    } else {
+                        $element.addClass('trigger-set-cover');
+                        $element.removeClass('trigger-clear-cover');
+                        $element.html(UI.fa_image_tag('images', { classes: 'icon' }, 'far'));
                     }
                     break;
                 case 'closed':
@@ -448,10 +464,10 @@ class Issue {
                 case 'menu':
                     $element.addClass('dynamic_menu');
                     $element.removeData('is-loaded');
-                    $element.html(`<div class="list-mode"><div class="list-item"><span class="icon">${UI.fa_image_tag('spinner', { classes: 'fa-spin' })}</span></div></div>`);
+                    $element.html(`<div class="list-mode"><div class="list-item"><span class="icon">${UI.fa_image_tag('spinner', {classes: 'fa-spin'})}</span></div></div>`);
                     break;
                 case 'percent_complete':
-                    $($element.find('.percent_filled')).css({ width: this.percent_complete + '%'});
+                    $($element.find('.percent_filled')).css({width: this.percent_complete + '%'});
                     break;
             }
         }
@@ -465,7 +481,7 @@ class Issue {
                 if (transition.template !== '') {
                     html += `<button class="button secondary highlight trigger-backdrop" type="button" data-url="${transition.backdrop_url}?project_id=${this.project.id}&issue_id=${this.id}">${transition.name}</button>`;
                 } else {
-                    html += `<button class="button secondary highlight trigger-workflow-transition" data-url="${transition.url.replace('%25project_key%25', this.project.key).replace('%25issue_id%25', this.id)}"><span>${transition.name}</span>${UI.fa_image_tag('spinner', { classes: 'fa-spin indicator' })}</button>`;
+                    html += `<button class="button secondary highlight trigger-workflow-transition" data-url="${transition.url.replace('%25project_key%25', this.project.key).replace('%25issue_id%25', this.id)}"><span>${transition.name}</span>${UI.fa_image_tag('spinner', {classes: 'fa-spin indicator'})}</button>`;
                 }
                 html += '</div>';
                 $workflowTransitionsContainer.append(html);
@@ -504,6 +520,7 @@ class Issue {
     triggerTransition(board, swimlane, status_ids, force_popup) {
         let show_popup = force_popup;
         let processed = false;
+
         this.clone_element.addClass('loading');
 
         for (const transition of this.transitions) {
@@ -513,10 +530,10 @@ class Issue {
 
             processed = true;
             if (!show_popup) {
-                Pachno.fetch(transition.url.replace('%25project_key%25', this.project.key).replace('%25issue_id%25', this.id) + `?board_id=${board.id}&milestone_id=${board.selected_milestone_id}&swimlane_identifier=${swimlane.identifier}`, { method: 'POST' })
+                Pachno.fetch(transition.url.replace('%25project_key%25', this.project.key).replace('%25issue_id%25', this.id) + `?board_id=${board.id}&milestone_id=${board.selected_milestone_id}&swimlane_identifier=${swimlane.identifier}`, {method: 'POST'})
                     .then((json) => {
                         for (const issue of json.issues) {
-                            Pachno.trigger(Pachno.EVENTS.issue.updateJson, { json: issue });
+                            Pachno.trigger(Pachno.EVENTS.issue.updateJson, {json: issue});
                         }
                     })
                     .catch(error => {
@@ -533,6 +550,10 @@ class Issue {
                 case SwimlaneTypes.ISSUES:
                     this.postAndUpdate('parent_issue_id', (swimlane.identifier_issue !== undefined) ? swimlane.identifier_issue.id : 0)
                     return;
+                case SwimlaneTypes.GROUPING:
+                case SwimlaneTypes.EXPEDITE:
+                    this.postAndUpdate(swimlane.identifier_grouping, (swimlane.has_identifiables) ? swimlane.identifiables.find(() => true).id : 0);
+                    return;
             }
         }
     }
@@ -543,7 +564,7 @@ class Issue {
         this.clone_element.insertAfter(this.element);
         this.clone_element.addClass('clone');
         const rect = this.element[0].getBoundingClientRect();
-        this.clone_element.css({ top: `${rect.top}px`, left: `${rect.left}px` });
+        this.clone_element.css({top: `${rect.top}px`, left: `${rect.left}px`});
         this.clone_element.data('original-x', x);
         this.clone_element.data('original-y', y);
 
@@ -559,13 +580,18 @@ class Issue {
         if (this.event_throttled == true)
             return;
 
+        if (this.clone_element === undefined)
+            return;
+
         this.event_throttled = true;
         const X = this.clone_element.data('original-x');
         const Y = this.clone_element.data('original-y');
         const mouseX = event.pageX;
         const mouseY = event.pageY;
-        this.clone_element.css({ transform: `rotate(4deg) translateX(${mouseX - X}px) translateY(${mouseY - Y}px)` });
-        setTimeout(() => { this.event_throttled = false; }, 30);
+        this.clone_element.css({transform: `rotate(4deg) translateX(${mouseX - X}px) translateY(${mouseY - Y}px)`});
+        setTimeout(() => {
+            this.event_throttled = false;
+        }, 30);
     }
 
     stopDragging(keep) {
@@ -582,10 +608,12 @@ class Issue {
         let classes = [];
         if (this.closed) classes.push('issue_closed');
         if (this.blocking) classes.push('blocking');
+        if (this.cover_image) classes.push('with-cover');
+        const background = (this.cover_image) ? `background-image: url('${this.cover_image.url}');` : '';
 
         let html = `
-<div id="whiteboard_issue_${this.id}" draggable="true" class="whiteboard-issue trigger-backdrop ${classes.join(',')}" data-issue-id="${this.id}" data-url="${this.card_url}/board_id/${this.board_id}">
-    <div class="issue-header">
+<div id="whiteboard_issue_${this.id}" draggable="true" data-dynamic-field-value data-field="cover_image_toggle" data-issue-id="${this.id}" class="whiteboard-issue trigger-backdrop ${classes.join(' ')}" data-issue-id="${this.id}" data-url="${this.card_url}/board_id/${this.board_id}">
+    <div class="issue-header" style="${background}" data-dynamic-field-value data-field="cover_image" data-issue-id="${this.id}">
         <span class="issue-number">${this.issue_no}</span>
         <span class="issue-title" data-dynamic-field-value data-field="title" data-issue-id="${this.id}">${this.title}</span>
         <div class="dropper-container">
@@ -605,9 +633,11 @@ class Issue {
 `;
         let $html = $(html);
         let $info = $html.find('.issue-info');
+        let child_issues_hidden_class = (this.number_of_child_issues > 0) ? '' : 'hidden';
         let files_hidden_class = (this.number_of_files > 0) ? '' : 'hidden';
         let comments_hidden_class = (this.number_of_comments > 0) ? '' : 'hidden';
 
+        $info.append(`<span class="attachments ${child_issues_hidden_class}" data-dynamic-field-value data-field="number_of_child_issues" data-issue-id="${this.id}">${UI.fa_image_tag('tasks')}<span class="value">${this.number_of_child_issues}</span></span>`);
         $info.append(`<span class="attachments ${files_hidden_class}" data-dynamic-field-value data-field="number_of_files" data-issue-id="${this.id}">${UI.fa_image_tag('paperclip')}<span class="value">${this.number_of_files}</span></span>`);
         $info.append(`<span class="attachments ${comments_hidden_class}" data-dynamic-field-value data-field="number_of_comments" data-issue-id="${this.id}">${UI.fa_image_tag('comments', [], 'far')}<span class="value">${this.number_of_comments}</span></span>`);
         $info.append(`<span class="status-badge" style="background-color: ${this.status.color}; color: ${this.status.text_color};" data-dynamic-field-value data-field="status" data-issue-id="${this.id}"><span>${this.status.name}</span></span>`);

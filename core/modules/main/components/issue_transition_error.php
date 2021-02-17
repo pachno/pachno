@@ -34,6 +34,12 @@
         case \pachno\core\entities\WorkflowTransitionAction::ACTION_SET_PRIORITY:
           echo __('Could not set issue priority because none was provided');
           break;
+        case \pachno\core\entities\WorkflowTransitionAction::ACTION_SET_SEVERITY:
+          echo __('Could not set issue severity because none was provided');
+          break;
+        case \pachno\core\entities\WorkflowTransitionAction::ACTION_SET_CATEGORY:
+          echo __('Could not set issue category because none was provided');
+          break;
         case \pachno\core\entities\WorkflowTransitionAction::ACTION_SET_REPRODUCABILITY:
           echo __('Could not set issue reproducability because none was provided');
           break;

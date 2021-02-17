@@ -1187,10 +1187,13 @@
 
                 if (trim($this->title) == '' || $this->title == $this->default_title)
                     $errors['title'] = true;
+
                 if (isset($fields_array['shortname']) && $fields_array['shortname']['required'] && trim($this->selected_shortname) == '')
                     $errors['shortname'] = true;
+
                 if (isset($fields_array['description']) && $fields_array['description']['required'] && trim($this->selected_description) == '')
                     $errors['description'] = true;
+
                 if (isset($fields_array['reproduction_steps']) && !$request->isAjaxCall() && $fields_array['reproduction_steps']['required'] && trim($this->selected_reproduction_steps) == '')
                     $errors['reproduction_steps'] = true;
 
@@ -1203,7 +1206,7 @@
                 if (isset($fields_array['component']) && $component_id && !in_array($component_id, array_keys($fields_array['component']['values'])))
                     $errors['component'] = true;
 
-                if ($category_id = (int)$request['category_id']) {
+                if ($category_id = (int) $request['category_id']) {
                     $category = tables\ListTypes::getTable()->selectById($category_id);
 
                     if (!$category->hasAccess()) {
@@ -1352,6 +1355,63 @@
             }
         }
 
+        protected function _getPrioritiesFromRequest($request)
+        {
+            if ($request->hasParameter('priority_ids')) {
+                try {
+                    $priorities = entities\Priority::getAll();
+                    $request_priorities = explode(',', $request['priority_ids']);
+                    $selected_priorities = [];
+                    foreach ($priorities as $priority) {
+                        if (in_array($priority->getID(), $request_priorities)) {
+                            $selected_priorities[$priority->getID()] = $priority;
+                        }
+                    }
+
+                    return $selected_priorities;
+                } catch (Exception $e) {
+                }
+            }
+        }
+
+        protected function _getCategoriesFromRequest($request)
+        {
+            if ($request->hasParameter('category_ids')) {
+                try {
+                    $categories = entities\Category::getAll();
+                    $request_categories = explode(',', $request['category_ids']);
+                    $selected_categories = [];
+                    foreach ($categories as $category) {
+                        if (in_array($category->getID(), $request_categories)) {
+                            $selected_categories[$category->getID()] = $category;
+                        }
+                    }
+
+                    return $selected_categories;
+                } catch (Exception $e) {
+                }
+            }
+        }
+
+        protected function _getSeveritiesFromRequest($request)
+        {
+            if ($request->hasParameter('severity_ids')) {
+                try {
+                    $severities = entities\Severity::getAll();
+                    $request_severities = explode(',', $request['severity_ids']);
+                    $selected_severities = [];
+                    foreach ($severities as $severity) {
+                        if (in_array($severity->getID(), $request_severities)) {
+                            $selected_severities[$severity->getID()] = $severity;
+                        }
+                    }
+
+                    return $selected_severities;
+                } catch (Exception $e) {
+                }
+            }
+        }
+
         protected function _postIssue(Request $request)
         {
             $fields_array = $this->selected_project->getReportableFieldsArray($this->issuetype_id);
@@ -1359,30 +1419,41 @@
             $issue->setProject($this->selected_project);
             $issue->setIssuetype($this->issuetype_id);
             $issue->setTitle($this->title);
+
             if (isset($fields_array['shortname']))
                 $issue->setShortname($this->selected_shortname);
+
             if (isset($fields_array['description'])) {
                 $issue->setDescription($this->selected_description);
                 $issue->setDescriptionSyntax($this->selected_description_syntax);
             }
+
             if (isset($fields_array['reproduction_steps'])) {
                 $issue->setReproductionSteps($this->selected_reproduction_steps);
                 $issue->setReproductionStepsSyntax($this->selected_reproduction_steps_syntax);
             }
-            if (isset($fields_array['category']) && $this->selected_category instanceof entities\Datatype)
-                $issue->setCategory($this->selected_category->getID());
+
+            if (isset($fields_array['category']) || $this->selected_category instanceof entities\Datatype)
+                $issue->setCategory($this->selected_category);
+
             if ($this->selected_status instanceof entities\Datatype)
-                $issue->setStatus($this->selected_status->getID());
+                $issue->setStatus($this->selected_status);
+
             if (isset($fields_array['reproducability']) && $this->selected_reproducability instanceof entities\Datatype)
                 $issue->setReproducability($this->selected_reproducability->getID());
+
             if (isset($fields_array['resolution']) && $this->selected_resolution instanceof entities\Datatype)
                 $issue->setResolution($this->selected_resolution->getID());
-            if (isset($fields_array['severity']) && $this->selected_severity instanceof entities\Datatype)
-                $issue->setSeverity($this->selected_severity->getID());
-            if (isset($fields_array['priority']) && $this->selected_priority instanceof entities\Datatype)
-                $issue->setPriority($this->selected_priority->getID());
+
+            if (isset($fields_array['severity']) || $this->selected_severity instanceof entities\Datatype)
+                $issue->setSeverity($this->selected_severity);
+
+            if (isset($fields_array['priority']) || $this->selected_priority instanceof entities\Datatype)
+                $issue->setPriority($this->selected_priority);
+
             if (isset($fields_array['estimated_time']))
                 $issue->setEstimatedTime($this->selected_estimated_time);
+
             if (isset($fields_array['spent_time']))
                 $issue->setSpentTime($this->selected_spent_time);
             if (isset($fields_array['milestone']) || isset($this->selected_milestone))
@@ -1800,6 +1871,23 @@
                         return $this->renderJSON(['error' => $e->getMessage()]);
                     }
                     break;
+                case 'cover_image':
+                    if (!$request['value']) {
+                        $issue->setCoverImageFile(null);
+                    }
+                    foreach ($issue->getFiles() as $file) {
+                        if ($file->getID() == $request['value']) {
+                            $file->setType(entities\File::TYPE_COVER);
+                            $file->save();
+                            $issue->setCoverImageFile($file);
+                        } elseif ($file->getType() == entities\File::TYPE_COVER) {
+                            $file->setType(entities\File::TYPE_ATTACHMENT);
+                            $file->save();
+                        }
+                    }
+
+                    $issue->save();
+                    break;
                 default:
                     $custom_field = entities\CustomDatatype::getByKey($request['field']);
                     if (!$custom_field instanceof entities\CustomDatatype) {
@@ -1872,6 +1960,8 @@
                     return $issue->canEditStatus();
                 case 'parent_issue_id':
                     return $issue->canAddRelatedIssues();
+                case 'cover_image':
+                    return $issue->canAttachFiles();
                 case 'pain_bug_type':
                 case 'pain_likelihood':
                 case 'pain_effect':
@@ -2647,6 +2737,9 @@
                             $options['locked_issuetype'] = $this->locked_issuetype;
                             $options['selected_milestone'] = $this->_getMilestoneFromRequest($request);
                             $options['selected_statuses'] = $this->_getStatusesFromRequest($request);
+                            $options['selected_priorities'] = $this->_getPrioritiesFromRequest($request);
+                            $options['selected_severities'] = $this->_getSeveritiesFromRequest($request);
+                            $options['selected_categories'] = $this->_getCategoriesFromRequest($request);
                             $options['parent_issue'] = $this->_getParentIssueFromRequest($request);
                             $options['board'] = $this->_getBoardFromRequest($request);
                             $options['selected_build'] = $this->_getBuildFromRequest($request);

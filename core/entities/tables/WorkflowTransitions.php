@@ -2,6 +2,7 @@
 
     namespace pachno\core\entities\tables;
 
+    use b2db\Query;
     use b2db\Update;
     use pachno\core\entities\WorkflowTransition;
     use pachno\core\framework;
@@ -21,6 +22,8 @@
      *
      * @package pachno
      * @subpackage tables
+     *
+     * @method WorkflowTransition selectById($id, Query $query = null, $join = 'all')
      *
      * @Table(name="workflow_transitions")
      * @Entity(class="\pachno\core\entities\WorkflowTransition")

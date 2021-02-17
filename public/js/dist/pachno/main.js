@@ -386,7 +386,7 @@ var Board = /*#__PURE__*/function () {
               header_name = '<span class="issue-container">';
               header_name += "<a class=\"issue-number\" href=\"".concat(swimlane.identifier_issue.href, "\">");
               header_name += "<span>".concat(swimlane.identifier_issue.issue_no, "</span>");
-              header_name += "<span class=\"status-badge\" style=\"background-color: ".concat(swimlane.identifier_issue.status.color, "; color: ").concat(swimlane.identifier_issue.status.text_color, ";\"><span>").concat(swimlane.identifier_issue.status.name, "</span></span>");
+              header_name += "<span class=\"status-badge\" data-dynamic-field-value data-field=\"status\" data-issue-id=\"".concat(swimlane.identifier_issue.id, "\" style=\"background-color: ").concat(swimlane.identifier_issue.status.color, "; color: ").concat(swimlane.identifier_issue.status.text_color, ";\"><span>").concat(swimlane.identifier_issue.status.name, "</span></span>");
               header_name += "</a>";
               header_name += "<span class=\"name issue_header ".concat(closed_class, " trigger-backdrop\" data-url=\"").concat(swimlane.identifier_issue.card_url, "\">");
               header_name += "<span>".concat(swimlane.identifier_issue.title, "</span>");
@@ -395,13 +395,25 @@ var Board = /*#__PURE__*/function () {
               header_name += "<button class=\"button secondary highlight trigger-report-issue trigger-backdrop\" data-url=\"".concat(this.report_issue_url, "\" data-additional-params=\"parent_issue_id=").concat(swimlane.identifier_issue.id, "\">").concat(_helpers_ui__WEBPACK_IMPORTED_MODULE_3__["default"].fa_image_tag('sticky-note', {
                 classes: 'icon'
               }, 'far'), "<span>").concat(_pachno__WEBPACK_IMPORTED_MODULE_4__["default"].T.agile.add_card_here, "</span></button>");
+              header_name += "            \n                        <div class=\"dropper-container\">\n                            <button class=\"button icon dropper dynamic_menu_link\" type=\"button\">".concat(_helpers_ui__WEBPACK_IMPORTED_MODULE_3__["default"].fa_image_tag('ellipsis-v'), "</button>\n                            <div class=\"dropdown-container dynamic_menu\" data-menu-url=\"").concat(swimlane.identifier_issue.more_actions_url, "\">\n                                <div class=\"list-mode\">\n                                    <div class=\"list-item disabled\">\n                                        <span class=\"icon\">").concat(_helpers_ui__WEBPACK_IMPORTED_MODULE_3__["default"].fa_image_tag('spinner', {
+                'classes': 'fa-spin'
+              }), "</span>\n                                    </div>\n                                </div>\n                            </div>\n                        </div>\n                    ");
             } else {
               header_name = '<span class="issue-container">';
               header_name += "<span class=\"name issue_header\">".concat(swimlane.name, "</span>");
               header_name += '</span>';
-              header_name += "<button class=\"button secondary highlight trigger-report-issue trigger-backdrop\" data-url=\"".concat(this.report_issue_url, "\" data-additional-params=\"issuetype_id=").concat(this.swimlane_field_values, "\">").concat(_helpers_ui__WEBPACK_IMPORTED_MODULE_3__["default"].fa_image_tag('stream', {
-                classes: 'icon'
-              }), "<span>").concat(_pachno__WEBPACK_IMPORTED_MODULE_4__["default"].T.agile.add_swimlane, "</span></button>");
+
+              if (swimlane.has_identifiables) {
+                header_name += "<button class=\"button secondary highlight trigger-report-issue trigger-backdrop\" data-url=\"".concat(this.report_issue_url, "\" data-additional-params=\"").concat(swimlane.identifier_grouping, "_ids=").concat(swimlane.identifiables.map(function (i) {
+                  return i.id;
+                }).join(','), "\">").concat(_helpers_ui__WEBPACK_IMPORTED_MODULE_3__["default"].fa_image_tag('sticky-note', {
+                  classes: 'icon'
+                }, 'far'), "<span>").concat(_pachno__WEBPACK_IMPORTED_MODULE_4__["default"].T.agile.add_card_here, "</span></button>");
+              } else {
+                header_name += "<button class=\"button secondary highlight trigger-report-issue trigger-backdrop\" data-url=\"".concat(this.report_issue_url, "\" data-additional-params=\"issuetype_id=").concat(this.swimlane_field_values, "\">").concat(_helpers_ui__WEBPACK_IMPORTED_MODULE_3__["default"].fa_image_tag('stream', {
+                  classes: 'icon'
+                }), "<span>").concat(_pachno__WEBPACK_IMPORTED_MODULE_4__["default"].T.agile.add_swimlane, "</span></button>");
+              }
             }
 
             var header_html = "<div class=\"swimlane-header\"><div class=\"header\">".concat(header_name, "</div>");
@@ -824,6 +836,180 @@ var Board = /*#__PURE__*/function () {
       this.updateWhiteboard();
     }
   }, {
+    key: "setupDragDrop",
+    value: function setupDragDrop() {
+      var dragged_issue = undefined;
+      var board = this;
+      var $body = jquery__WEBPACK_IMPORTED_MODULE_0___default()('body');
+
+      var dragStart = function dragStart(event) {
+        var $issue = jquery__WEBPACK_IMPORTED_MODULE_0___default()(event.target);
+        dragged_issue = _pachno__WEBPACK_IMPORTED_MODULE_4__["default"].getIssue($issue.data('issue-id'));
+        dragged_issue.startDragging(event.clientX, event.clientY);
+        event.originalEvent.dataTransfer.setData('text/plain', dragged_issue.id);
+        event.originalEvent.dataTransfer.effectAllowed = "move";
+        event.originalEvent.dataTransfer.dropEffect = "move";
+        event.currentTarget.classList.add('dragging');
+        jquery__WEBPACK_IMPORTED_MODULE_0___default()('#whiteboard').addClass('is-dragging');
+        var $columns = jquery__WEBPACK_IMPORTED_MODULE_0___default()('.whiteboard-columns .column[data-status-ids]');
+        var current_swimlane = board.swimlanes.find(function (swimlane) {
+          return swimlane.has(dragged_issue);
+        });
+
+        var _iterator17 = _createForOfIteratorHelper($columns),
+            _step17;
+
+        try {
+          for (_iterator17.s(); !(_step17 = _iterator17.n()).done;) {
+            var column = _step17.value;
+            var $column = jquery__WEBPACK_IMPORTED_MODULE_0___default()(column);
+            var status_id_data = $column.data('status-ids');
+            var status_ids = Number.isNaN(status_id_data) ? status_id_data.split(',') : [status_id_data];
+            $column.removeClass('drop-valid drop-highlight drop-origin');
+
+            if (status_ids.includes(parseInt(dragged_issue.status.id))) {
+              if (current_swimlane.identifier !== $column.data('swimlane-identifier')) {
+                $column.addClass('drop-valid');
+              } else {
+                $column.addClass('drop-origin');
+              }
+
+              continue;
+            }
+
+            var _iterator18 = _createForOfIteratorHelper(dragged_issue.available_statuses),
+                _step18;
+
+            try {
+              for (_iterator18.s(); !(_step18 = _iterator18.n()).done;) {
+                var status = _step18.value;
+
+                if (status_ids.includes(parseInt(status.id))) {
+                  $column.addClass('drop-valid');
+                }
+              }
+            } catch (err) {
+              _iterator18.e(err);
+            } finally {
+              _iterator18.f();
+            }
+          }
+        } catch (err) {
+          _iterator17.e(err);
+        } finally {
+          _iterator17.f();
+        }
+      };
+
+      var dragOverColumn = function dragOverColumn(event) {
+        if (event.isPropagationStopped()) return;
+        var $column = jquery__WEBPACK_IMPORTED_MODULE_0___default()(event.target);
+        $column.addClass('drop-highlight');
+        dragged_issue.dragDetect(event);
+        event.preventDefault();
+        event.stopPropagation();
+      };
+
+      var drop = function drop(event) {
+        if (event.isPropagationStopped()) return; // event.originalEvent.dataTransfer.clearData();
+        // const issue = Pachno.getIssue(event.originalEvent.dataTransfer.getData('text/plain'));
+
+        var $dropped_target = jquery__WEBPACK_IMPORTED_MODULE_0___default()('.whiteboard-columns .column.drop-valid.drop-highlight');
+
+        if ($dropped_target.length) {
+          dragged_issue.stopDragging(true);
+          var $target_issue = $dropped_target.find('.whiteboard-issue.drop-target');
+
+          if ($target_issue.length) {
+            if ($target_issue.hasClass('drop-indicator-above')) {
+              dragged_issue.clone_element.detach().insertBefore($target_issue);
+            } else {
+              dragged_issue.clone_element.detach().insertAfter($target_issue);
+            }
+          } else {
+            var $add_card_indicator = $dropped_target.find('.form-container');
+
+            if ($add_card_indicator.length) {
+              dragged_issue.clone_element.detach().insertBefore($add_card_indicator);
+            } else {
+              $dropped_target.append(dragged_issue.clone_element.detach());
+            }
+          }
+
+          dragged_issue.clone_element.removeClass('clone');
+          dragged_issue.clone_element.css({
+            top: '',
+            transform: '',
+            left: ''
+          });
+          var swimlane_identifier = $dropped_target.data('swimlane-identifier');
+          var swimlane = board.getSwimlane(swimlane_identifier);
+          var status_id_data = $dropped_target.data('status-ids');
+          var status_ids = Number.isNaN(status_id_data) ? status_id_data.split(',') : [status_id_data];
+          dragged_issue.triggerTransition(board, swimlane, status_ids, event.shiftKey);
+        } else {
+          dragged_issue.stopDragging();
+        }
+
+        jquery__WEBPACK_IMPORTED_MODULE_0___default()('#whiteboard').removeClass('is-dragging');
+        jquery__WEBPACK_IMPORTED_MODULE_0___default()('.whiteboard-columns .column').removeClass('drop-valid drop-highlight drop-origin');
+        var $whiteboard_issues = jquery__WEBPACK_IMPORTED_MODULE_0___default()('.whiteboard-issue');
+        $whiteboard_issues.removeClass('drop-target drop-indicator-above drop-indicator-below');
+        event.stopPropagation();
+        event.preventDefault();
+      };
+
+      var dragLeaveColumn = function dragLeaveColumn(event) {
+        if (event.isPropagationStopped() || event.isDefaultPrevented()) return;
+        var $column = jquery__WEBPACK_IMPORTED_MODULE_0___default()(event.target);
+        $column.removeClass('drop-highlight');
+        event.stopPropagation();
+      };
+
+      var dragOverIssue = function dragOverIssue(event) {
+        var $element = jquery__WEBPACK_IMPORTED_MODULE_0___default()(this);
+        var $column = $element.parents('.column');
+
+        var detectAbove = function detectAbove($element) {
+          var rect = $element[0].getBoundingClientRect();
+          var y = event.clientY - rect.top;
+          return y < rect.height / 2;
+        };
+
+        var above = detectAbove($element);
+        var issue = _pachno__WEBPACK_IMPORTED_MODULE_4__["default"].getIssue($element.data('issue-id'));
+        issue.element.addClass('drop-target');
+        issue.element.addClass(above ? 'drop-indicator-above' : 'drop-indicator-below');
+        dragged_issue.dragDetect(event);
+        $column.addClass('drop-highlight');
+        event.stopImmediatePropagation();
+        event.preventDefault();
+      };
+
+      var dragLeaveIssue = function dragLeaveIssue(event) {
+        var $element = jquery__WEBPACK_IMPORTED_MODULE_0___default()(this);
+        var $column = $element.parents('.column');
+        $element.removeClass('drop-indicator-above drop-indicator-below drop-target');
+        $column.removeClass('drop-highlight');
+        event.preventDefault();
+      };
+
+      $body.off('dragstart', '.whiteboard-issue');
+      $body.on('dragstart', '.whiteboard-issue', dragStart);
+      $body.off('dragover', '.columns-container .column');
+      $body.on('dragover', '.columns-container .column', dragOverColumn);
+      $body.off('drop', '.columns-container .column');
+      $body.on('drop', '.columns-container .column', drop);
+      $body.off('dragleave', '.columns-container .column');
+      $body.on('dragleave', '.columns-container .column', dragLeaveColumn);
+      $body.off('dragover', '.columns-container .column .whiteboard-issue:not(.dragging):not(.clone)');
+      $body.on('dragover', '.columns-container .column .whiteboard-issue:not(.dragging):not(.clone)', dragOverIssue);
+      $body.off('dragleave', '.columns-container .column .whiteboard-issue:not(.dragging):not(.clone)');
+      $body.on('dragleave', '.columns-container .column .whiteboard-issue:not(.dragging):not(.clone)', dragLeaveIssue);
+      $body.off('drop', '.columns-container .column .whiteboard-issue:not(.dragging):not(.clone)');
+      $body.on('drop', '.columns-container .column .whiteboard-issue:not(.dragging):not(.clone)', drop);
+    }
+  }, {
     key: "setupListeners",
     value: function setupListeners() {
       var board = this;
@@ -898,12 +1084,13 @@ var Board = /*#__PURE__*/function () {
       _pachno__WEBPACK_IMPORTED_MODULE_4__["default"].on(_pachno__WEBPACK_IMPORTED_MODULE_4__["default"].EVENTS.issue.updateJsonComplete, function (_, issue) {
         var found = false;
 
-        var _iterator17 = _createForOfIteratorHelper(board.swimlanes),
-            _step17;
+        var _iterator19 = _createForOfIteratorHelper(board.swimlanes),
+            _step19;
 
         try {
-          for (_iterator17.s(); !(_step17 = _iterator17.n()).done;) {
-            var swimlane = _step17.value;
+          for (_iterator19.s(); !(_step19 = _iterator19.n()).done;) {
+            var swimlane = _step19.value;
+            if (swimlane.identifier_issue && swimlane.identifier_issue.id === issue.id) return;
             var updated = swimlane.addOrRemove(issue, !found);
 
             if (found === false) {
@@ -911,171 +1098,14 @@ var Board = /*#__PURE__*/function () {
             }
           }
         } catch (err) {
-          _iterator17.e(err);
+          _iterator19.e(err);
         } finally {
-          _iterator17.f();
+          _iterator19.f();
         }
 
         board.verifyIssues();
       });
-      var dragged_issue = undefined;
-      $body.off('dragstart', '.whiteboard-issue');
-      $body.on('dragstart', '.whiteboard-issue', function (event) {
-        var $issue = jquery__WEBPACK_IMPORTED_MODULE_0___default()(event.target);
-        dragged_issue = _pachno__WEBPACK_IMPORTED_MODULE_4__["default"].getIssue($issue.data('issue-id'));
-        dragged_issue.startDragging(event.clientX, event.clientY);
-        event.originalEvent.dataTransfer.setData('text/plain', dragged_issue.id);
-        event.originalEvent.dataTransfer.effectAllowed = "move";
-        event.originalEvent.dataTransfer.dropEffect = "move";
-        event.currentTarget.classList.add('dragging');
-        jquery__WEBPACK_IMPORTED_MODULE_0___default()('#whiteboard').addClass('is-dragging');
-        var $columns = jquery__WEBPACK_IMPORTED_MODULE_0___default()('.whiteboard-columns .column[data-status-ids]');
-        var current_swimlane = board.swimlanes.find(function (swimlane) {
-          return swimlane.has(dragged_issue);
-        });
-
-        var _iterator18 = _createForOfIteratorHelper($columns),
-            _step18;
-
-        try {
-          for (_iterator18.s(); !(_step18 = _iterator18.n()).done;) {
-            var column = _step18.value;
-            var $column = jquery__WEBPACK_IMPORTED_MODULE_0___default()(column);
-            var status_id_data = $column.data('status-ids');
-            var status_ids = Number.isNaN(status_id_data) ? status_id_data.split(',') : [status_id_data];
-            $column.removeClass('drop-valid');
-            $column.removeClass('drop-highlight');
-
-            if (status_ids.includes(parseInt(dragged_issue.status.id))) {
-              if (current_swimlane.identifier !== $column.data('swimlane-identifier')) {
-                $column.addClass('drop-valid');
-              }
-
-              continue;
-            }
-
-            var _iterator19 = _createForOfIteratorHelper(dragged_issue.available_statuses),
-                _step19;
-
-            try {
-              for (_iterator19.s(); !(_step19 = _iterator19.n()).done;) {
-                var status = _step19.value;
-
-                if (status_ids.includes(parseInt(status.id))) {
-                  $column.addClass('drop-valid');
-                }
-              }
-            } catch (err) {
-              _iterator19.e(err);
-            } finally {
-              _iterator19.f();
-            }
-          }
-        } catch (err) {
-          _iterator18.e(err);
-        } finally {
-          _iterator18.f();
-        }
-      }); // $body.off('drop');
-      // $body.on('drop', function (event) {
-      //     if (event !== undefined) {
-      //         event.preventDefault();
-      //     }
-      // });
-
-      $body.off('dragover', '.columns-container .column');
-      $body.on('dragover', '.columns-container .column', function (event) {
-        if (event.isPropagationStopped()) return;
-        var $column = jquery__WEBPACK_IMPORTED_MODULE_0___default()(event.target);
-        $column.addClass('drop-highlight');
-        dragged_issue.dragDetect(event);
-        event.preventDefault();
-        event.stopPropagation();
-      });
-
-      var drop = function drop(event) {
-        if (event.isPropagationStopped()) return; // event.originalEvent.dataTransfer.clearData();
-        // const issue = Pachno.getIssue(event.originalEvent.dataTransfer.getData('text/plain'));
-
-        var $dropped_target = jquery__WEBPACK_IMPORTED_MODULE_0___default()('.whiteboard-columns .column.drop-valid.drop-highlight');
-
-        if ($dropped_target.length) {
-          dragged_issue.stopDragging(true);
-          var $target_issue = $dropped_target.find('.whiteboard-issue.drop-target');
-
-          if ($target_issue.length) {
-            if ($target_issue.hasClass('drop-indicator-above')) {
-              dragged_issue.clone_element.detach().insertBefore($target_issue);
-            } else {
-              dragged_issue.clone_element.detach().insertAfter($target_issue);
-            }
-          } else {
-            $dropped_target.append(dragged_issue.clone_element.detach());
-          }
-
-          dragged_issue.clone_element.removeClass('clone');
-          dragged_issue.clone_element.css({
-            top: '',
-            transform: '',
-            left: ''
-          });
-          var swimlane_identifier = $dropped_target.data('swimlane-identifier');
-          var swimlane = board.getSwimlane(swimlane_identifier);
-          var status_id_data = $dropped_target.data('status-ids');
-          var status_ids = Number.isNaN(status_id_data) ? status_id_data.split(',') : [status_id_data];
-          dragged_issue.triggerTransition(board, swimlane, status_ids, event.shiftKey);
-        } else {
-          dragged_issue.stopDragging();
-        }
-
-        jquery__WEBPACK_IMPORTED_MODULE_0___default()('#whiteboard').removeClass('is-dragging');
-        jquery__WEBPACK_IMPORTED_MODULE_0___default()('.whiteboard-columns .column').removeClass('drop-valid');
-        var $whiteboard_issues = jquery__WEBPACK_IMPORTED_MODULE_0___default()('.whiteboard-issue');
-        $whiteboard_issues.removeClass('drop-target');
-        $whiteboard_issues.removeClass('drop-indicator-above');
-        $whiteboard_issues.removeClass('drop-indicator-below');
-        event.stopPropagation();
-        event.preventDefault(); // event.originalEvent.dataTransfer.setData('text/plain', $(event.target).id);
-        // event.currentTarget.classList.remove('dragging');
-      };
-
-      $body.off('drop', '.columns-container .column');
-      $body.on('drop', '.columns-container .column', drop);
-      $body.off('dragleave', '.columns-container .column');
-      $body.on('dragleave', '.columns-container .column', function (event) {
-        if (event.isPropagationStopped() || event.isDefaultPrevented()) return;
-        var $column = jquery__WEBPACK_IMPORTED_MODULE_0___default()(event.target);
-        $column.removeClass('drop-highlight');
-        event.stopPropagation();
-      });
-      $body.off('dragover', '.columns-container .column .whiteboard-issue:not(.dragging):not(.clone)');
-      $body.on('dragover', '.columns-container .column .whiteboard-issue:not(.dragging):not(.clone)', function (event) {
-        var $element = jquery__WEBPACK_IMPORTED_MODULE_0___default()(this);
-        var $column = $element.parents('.column');
-        var rect = $element[0].getBoundingClientRect();
-        var y = event.clientY - rect.top;
-        var above = y < rect.height / 2;
-        var issue = _pachno__WEBPACK_IMPORTED_MODULE_4__["default"].getIssue($element.data('issue-id'));
-        issue.element.addClass('drop-target');
-        issue.element.addClass(above ? 'drop-indicator-above' : 'drop-indicator-below');
-        dragged_issue.dragDetect(event);
-        $column.addClass('drop-highlight');
-        event.stopImmediatePropagation();
-        event.preventDefault();
-      });
-      $body.off('dragleave', '.columns-container .column .whiteboard-issue:not(.dragging):not(.clone)');
-      $body.on('dragleave', '.columns-container .column .whiteboard-issue:not(.dragging):not(.clone)', function (event) {
-        var $element = jquery__WEBPACK_IMPORTED_MODULE_0___default()(this);
-        var $column = $element.parents('.column');
-        $element.removeClass('drop-indicator-above');
-        $element.removeClass('drop-indicator-below');
-        $element.removeClass('drop-target');
-        $column.removeClass('drop-highlight');
-        event.preventDefault();
-      });
-      $body.off('drop', '.columns-container .column .whiteboard-issue:not(.dragging):not(.clone)');
-      $body.on('drop', '.columns-container .column .whiteboard-issue:not(.dragging):not(.clone)', drop); // $body.off('dragend', '.whiteboard-issue');
-      // $body.on('dragend', '.whiteboard-issue', drop);
+      this.setupDragDrop();
     }
   }]);
 
@@ -1243,7 +1273,7 @@ var Issue = /*#__PURE__*/function () {
     this.event_throttled = false;
     this.setupListeners();
     this.uploader = new _uploader__WEBPACK_IMPORTED_MODULE_3__["default"]({
-      uploader_container: jquery__WEBPACK_IMPORTED_MODULE_1___default()('#viewissue_attached_information_container'),
+      uploader_container: "#viewissue_attached_information_container[data-issue-id='".concat(this.id, "']"),
       mode: 'list',
       only_images: false,
       type: 'attachment',
@@ -1271,6 +1301,7 @@ var Issue = /*#__PURE__*/function () {
       this.save_url = json.save_url;
       this.choices_url = json.choices_url;
       this.backdrop_url = json.backdrop_url;
+      this.cover_image = json.cover_image;
       this.project = json.project;
       this.transitions = json.transitions;
 
@@ -1310,6 +1341,7 @@ var Issue = /*#__PURE__*/function () {
       this.number_of_files = parseInt(json.number_of_files);
       this.number_of_comments = parseInt(json.number_of_comments);
       this.number_of_subscribers = parseInt(json.number_of_subscribers);
+      this.number_of_child_issues = parseInt(json.number_of_child_issues);
       this.processed = false;
     }
   }, {
@@ -1675,32 +1707,17 @@ var Issue = /*#__PURE__*/function () {
               break;
 
             case 'number_of_files':
-              var $files_value_element = $element.find('.value');
-
-              if ($files_value_element.length) {
-                $files_value_element.html(this.number_of_files);
-              } else {
-                $element.html(this.number_of_files);
-              }
-
-              if (this.number_of_files > 0) {
-                $element.removeClass('hidden');
-              } else {
-                $element.addClass('hidden');
-              }
-
-              break;
-
             case 'number_of_comments':
-              var $comments_value_element = $element.find('.value');
+            case 'number_of_child_issues':
+              var $number_value_element = $element.find('.value');
 
-              if ($comments_value_element.length) {
-                $comments_value_element.html(this.number_of_comments);
+              if ($number_value_element.length) {
+                $number_value_element.html(this[_field]);
               } else {
-                $element.html(this.number_of_comments);
+                $element.html(this[_field]);
               }
 
-              if (this.number_of_comments > 0) {
+              if (this[_field] > 0) {
                 $element.removeClass('hidden');
               } else {
                 $element.addClass('hidden');
@@ -1715,6 +1732,45 @@ var Issue = /*#__PURE__*/function () {
                 $element.removeClass('hidden');
               } else {
                 $element.addClass('hidden');
+              }
+
+              break;
+
+            case 'cover_image_toggle':
+              if (this.cover_image) {
+                $element.addClass('with-cover');
+              } else {
+                $element.removeClass('with-cover');
+              }
+
+              break;
+
+            case 'cover_image':
+              if (this[_field]) {
+                $element.css({
+                  backgroundImage: "url('".concat(this[_field].url, "')")
+                });
+              } else {
+                $element.css({
+                  backgroundImage: ''
+                });
+              }
+
+              break;
+
+            case 'cover_image_file':
+              if (this.cover_image && this.cover_image.id == $element.data('file-id')) {
+                $element.removeClass('trigger-set-cover');
+                $element.addClass('trigger-clear-cover');
+                $element.html(_helpers_ui__WEBPACK_IMPORTED_MODULE_0__["default"].fa_image_tag('minus-square', {
+                  classes: 'icon'
+                }, 'far'));
+              } else {
+                $element.addClass('trigger-set-cover');
+                $element.removeClass('trigger-clear-cover');
+                $element.html(_helpers_ui__WEBPACK_IMPORTED_MODULE_0__["default"].fa_image_tag('images', {
+                  classes: 'icon'
+                }, 'far'));
               }
 
               break;
@@ -1883,6 +1939,13 @@ var Issue = /*#__PURE__*/function () {
           case _board__WEBPACK_IMPORTED_MODULE_7__["SwimlaneTypes"].ISSUES:
             this.postAndUpdate('parent_issue_id', swimlane.identifier_issue !== undefined ? swimlane.identifier_issue.id : 0);
             return;
+
+          case _board__WEBPACK_IMPORTED_MODULE_7__["SwimlaneTypes"].GROUPING:
+          case _board__WEBPACK_IMPORTED_MODULE_7__["SwimlaneTypes"].EXPEDITE:
+            this.postAndUpdate(swimlane.identifier_grouping, swimlane.has_identifiables ? swimlane.identifiables.find(function () {
+              return true;
+            }).id : 0);
+            return;
         }
       }
     }
@@ -1912,6 +1975,7 @@ var Issue = /*#__PURE__*/function () {
       var _this2 = this;
 
       if (this.event_throttled == true) return;
+      if (this.clone_element === undefined) return;
       this.event_throttled = true;
       var X = this.clone_element.data('original-x');
       var Y = this.clone_element.data('original-y');
@@ -1941,15 +2005,19 @@ var Issue = /*#__PURE__*/function () {
       var classes = [];
       if (this.closed) classes.push('issue_closed');
       if (this.blocking) classes.push('blocking');
-      var html = "\n<div id=\"whiteboard_issue_".concat(this.id, "\" draggable=\"true\" class=\"whiteboard-issue trigger-backdrop ").concat(classes.join(','), "\" data-issue-id=\"").concat(this.id, "\" data-url=\"").concat(this.card_url, "/board_id/").concat(this.board_id, "\">\n    <div class=\"issue-header\">\n        <span class=\"issue-number\">").concat(this.issue_no, "</span>\n        <span class=\"issue-title\" data-dynamic-field-value data-field=\"title\" data-issue-id=\"").concat(this.id, "\">").concat(this.title, "</span>\n        <div class=\"dropper-container\">\n            <button class=\"button icon dropper dynamic_menu_link\" type=\"button\">").concat(_helpers_ui__WEBPACK_IMPORTED_MODULE_0__["default"].fa_image_tag('ellipsis-v'), "</button>\n            <div class=\"dropdown-container dynamic_menu\" data-menu-url=\"").concat(this.more_actions_url, "\">\n                <div class=\"list-mode\">\n                    <div class=\"list-item disabled\">\n                        <span class=\"icon\">").concat(_helpers_ui__WEBPACK_IMPORTED_MODULE_0__["default"].fa_image_tag('spinner', {
+      if (this.cover_image) classes.push('with-cover');
+      var background = this.cover_image ? "background-image: url('".concat(this.cover_image.url, "');") : '';
+      var html = "\n<div id=\"whiteboard_issue_".concat(this.id, "\" draggable=\"true\" data-dynamic-field-value data-field=\"cover_image_toggle\" data-issue-id=\"").concat(this.id, "\" class=\"whiteboard-issue trigger-backdrop ").concat(classes.join(' '), "\" data-issue-id=\"").concat(this.id, "\" data-url=\"").concat(this.card_url, "/board_id/").concat(this.board_id, "\">\n    <div class=\"issue-header\" style=\"").concat(background, "\" data-dynamic-field-value data-field=\"cover_image\" data-issue-id=\"").concat(this.id, "\">\n        <span class=\"issue-number\">").concat(this.issue_no, "</span>\n        <span class=\"issue-title\" data-dynamic-field-value data-field=\"title\" data-issue-id=\"").concat(this.id, "\">").concat(this.title, "</span>\n        <div class=\"dropper-container\">\n            <button class=\"button icon dropper dynamic_menu_link\" type=\"button\">").concat(_helpers_ui__WEBPACK_IMPORTED_MODULE_0__["default"].fa_image_tag('ellipsis-v'), "</button>\n            <div class=\"dropdown-container dynamic_menu\" data-menu-url=\"").concat(this.more_actions_url, "\">\n                <div class=\"list-mode\">\n                    <div class=\"list-item disabled\">\n                        <span class=\"icon\">").concat(_helpers_ui__WEBPACK_IMPORTED_MODULE_0__["default"].fa_image_tag('spinner', {
         'classes': 'fa-spin'
       }), "</span>\n                    </div>\n                </div>\n            </div>\n        </div>\n    </div>\n    <div class=\"issue-info\"></div>\n    <div class=\"indicator\">").concat(_helpers_ui__WEBPACK_IMPORTED_MODULE_0__["default"].fa_image_tag('spinner', {
         'classes': 'fa-spin icon'
       }), "</div>\n</div>\n");
       var $html = jquery__WEBPACK_IMPORTED_MODULE_1___default()(html);
       var $info = $html.find('.issue-info');
+      var child_issues_hidden_class = this.number_of_child_issues > 0 ? '' : 'hidden';
       var files_hidden_class = this.number_of_files > 0 ? '' : 'hidden';
       var comments_hidden_class = this.number_of_comments > 0 ? '' : 'hidden';
+      $info.append("<span class=\"attachments ".concat(child_issues_hidden_class, "\" data-dynamic-field-value data-field=\"number_of_child_issues\" data-issue-id=\"").concat(this.id, "\">").concat(_helpers_ui__WEBPACK_IMPORTED_MODULE_0__["default"].fa_image_tag('tasks'), "<span class=\"value\">").concat(this.number_of_child_issues, "</span></span>"));
       $info.append("<span class=\"attachments ".concat(files_hidden_class, "\" data-dynamic-field-value data-field=\"number_of_files\" data-issue-id=\"").concat(this.id, "\">").concat(_helpers_ui__WEBPACK_IMPORTED_MODULE_0__["default"].fa_image_tag('paperclip'), "<span class=\"value\">").concat(this.number_of_files, "</span></span>"));
       $info.append("<span class=\"attachments ".concat(comments_hidden_class, "\" data-dynamic-field-value data-field=\"number_of_comments\" data-issue-id=\"").concat(this.id, "\">").concat(_helpers_ui__WEBPACK_IMPORTED_MODULE_0__["default"].fa_image_tag('comments', [], 'far'), "<span class=\"value\">").concat(this.number_of_comments, "</span></span>"));
       $info.append("<span class=\"status-badge\" style=\"background-color: ".concat(this.status.color, "; color: ").concat(this.status.text_color, ";\" data-dynamic-field-value data-field=\"status\" data-issue-id=\"").concat(this.id, "\"><span>").concat(this.status.name, "</span></span>"));
@@ -2399,6 +2467,7 @@ var PachnoApplication = /*#__PURE__*/function () {
     this.debug = false;
     this.basepath = '';
     this.data_url = '';
+    this.upload_url = '';
     this.quicksearch = undefined;
     this["debugger"] = undefined;
     this.listeners = {};
@@ -2462,6 +2531,7 @@ var PachnoApplication = /*#__PURE__*/function () {
       this.debug = options.debug;
       this.basepath = options.basepath;
       this.data_url = options.dataUrl;
+      this.upload_url = options.uploadUrl;
       this.quicksearch = new _quicksearch__WEBPACK_IMPORTED_MODULE_19__["default"](options.autocompleterUrl);
       this.trigger(this.EVENTS.quicksearchAddDefaultChoice, {
         icon: {
@@ -2650,11 +2720,13 @@ jquery__WEBPACK_IMPORTED_MODULE_0___default()(document).ready(function () {
   var dataUrl = $body.data('data-url');
   var debugUrl = $body.data('debug-url');
   var autocompleterUrl = $body.data('autocompleter-url');
+  var uploadUrl = $body.data('upload-url');
   Pachno.initialize({
     debug: debug,
     webroot: webroot,
     dataUrl: dataUrl,
     debugUrl: debugUrl,
+    uploadUrl: uploadUrl,
     autocompleterUrl: autocompleterUrl
   });
   Pachno.trigger(Pachno.EVENTS.ready);
@@ -3824,7 +3896,7 @@ var Swimlane = /*#__PURE__*/function () {
     this.name = json.name;
     this.board_id = board_id;
     this.has_identifiables = json.has_identifiables;
-    this.identifier_issue = json.identifier_issue;
+    this.identifier_issue = json.identifier_issue ? _pachno__WEBPACK_IMPORTED_MODULE_1__["default"].addIssue(json.identifier_issue, board_id) : undefined;
     this.identifier_grouping = json.identifier_grouping;
     this.identifier_type = json.identifier_type;
     this.identifiables = json.identifiables;
@@ -3913,15 +3985,15 @@ var Swimlane = /*#__PURE__*/function () {
 
         case _board__WEBPACK_IMPORTED_MODULE_2__["SwimlaneTypes"].GROUPING:
         case _board__WEBPACK_IMPORTED_MODULE_2__["SwimlaneTypes"].EXPEDITE:
+          // debugger;
           if (!this.identifiables) {
             return false;
-          } // debugger;
-
+          }
 
           for (var identifiable_id in this.identifiables) {
             if (!this.identifiables.hasOwnProperty(identifiable_id)) continue;
 
-            if (issue[this.identifier_grouping] !== undefined && identifiable_id === issue[this.identifier_grouping].id) {
+            if (issue[this.identifier_grouping] !== undefined && this.identifiables[identifiable_id].id === issue[this.identifier_grouping].id) {
               return true;
             }
           }
@@ -3987,8 +4059,7 @@ var Uploader = /*#__PURE__*/function () {
     this.only_images = options.only_images;
     this.type = options.type;
     this.form_data = options.data;
-    this.file_input_element = $('#file_upload_dummy');
-    this.upload_url = options.url || this.file_input_element.data('upload-url');
+    this.upload_url = options.url || _pachno__WEBPACK_IMPORTED_MODULE_1__["default"].upload_url;
     var $body = $('body');
 
     if (this.dropzone !== undefined && 'ondrop' in document.createElement('span')) {
@@ -4003,14 +4074,17 @@ var Uploader = /*#__PURE__*/function () {
       });
     }
 
-    $body.off('change', '#file_upload_dummy');
-    $body.on('change', '#file_upload_dummy', function (event) {
-      return _this.selectFiles(event);
-    });
+    var uploader = this;
 
     if (this.uploader_container !== undefined) {
-      this.uploader_container.off('click', '.trigger-file-upload');
-      this.uploader_container.on('click', '.trigger-file-upload', function (event) {
+      this.file_input_element = $('<input type="file">');
+      $body.append(this.file_input_element);
+      this.file_input_element.off('change');
+      this.file_input_element.on('change', function (event) {
+        return uploader.selectFiles(event);
+      });
+      $body.off('click', this.uploader_container + ' .trigger-file-upload');
+      $body.on('click', this.uploader_container + ' .trigger-file-upload', function (event) {
         event.preventDefault();
 
         _this.file_input_element.trigger('click');
@@ -4052,12 +4126,11 @@ var Uploader = /*#__PURE__*/function () {
   }, {
     key: "uploadFile",
     value: function uploadFile(url, file) {
-      var _this2 = this;
-
+      var uploader = this;
       return new Promise(function (resolve, reject) {
         var is_image = file.type.indexOf("image") == 0;
 
-        if (_this2.only_images && !is_image) {
+        if (uploader.only_images && !is_image) {
           console.error('Not an image', file);
         } // $upload_status_container.addClass('active');
         // $upload_status_container.addClass('expanded');
@@ -4074,13 +4147,14 @@ var Uploader = /*#__PURE__*/function () {
 
 
         var $input_element, $label_element;
+        var $container = $(uploader.uploader_container);
 
-        if (_this2.mode === 'grid') {
-          $input_element = $("<input type=\"radio\" name=\"".concat(_this2.input_name, "\">"));
+        if (uploader.mode === 'grid') {
+          $input_element = $("<input type=\"radio\" name=\"".concat(uploader.input_name, "\">"));
           $label_element = $("<label><img class=\"icon_preview\" src=\"\"><i class=\"fa-spin fas fa-circle-notch indicator\"></i></label>");
-          $input_element.insertBefore(_this2.uploader_container.find('.file-upload-placeholder'));
-          $label_element.insertBefore(_this2.uploader_container.find('.file-upload-placeholder'));
-        } else if (_this2.mode === 'list') {
+          $input_element.insertBefore($container.find('.file-upload-placeholder'));
+          $label_element.insertBefore($container.find('.file-upload-placeholder'));
+        } else if (uploader.mode === 'list') {
           var link_element;
 
           if (is_image) {
@@ -4092,7 +4166,7 @@ var Uploader = /*#__PURE__*/function () {
           }
 
           $label_element = $("<div class=\"attachment\">".concat(link_element, "<div class=\"information\">").concat(fileSize, "</div><div class=\"actions-container\"></div></div>"));
-          $label_element.insertBefore(_this2.uploader_container.find('.file-upload-placeholder'));
+          $label_element.insertBefore($container.find('.file-upload-placeholder'));
         }
 
         if (is_image) {
@@ -4109,21 +4183,21 @@ var Uploader = /*#__PURE__*/function () {
 
         var file_key = file.name.replace('[', '(').replace(']', ')');
         var data = {
-          'type': _this2.type
+          'type': uploader.type
         };
         data[file_key] = file;
 
-        if (_this2.form_data !== undefined) {
-          if (_this2.form_data.project_id !== undefined) {
-            data.project_id = _this2.form_data.project_id;
+        if (uploader.form_data !== undefined) {
+          if (uploader.form_data.project_id !== undefined) {
+            data.project_id = uploader.form_data.project_id;
           }
 
-          if (_this2.form_data.issue_id !== undefined) {
-            data.issue_id = _this2.form_data.issue_id;
+          if (uploader.form_data.issue_id !== undefined) {
+            data.issue_id = uploader.form_data.issue_id;
           }
 
-          if (_this2.form_data.article_id !== undefined) {
-            data.article_id = _this2.form_data.article_id;
+          if (uploader.form_data.article_id !== undefined) {
+            data.article_id = uploader.form_data.article_id;
           }
         }
 
@@ -4134,16 +4208,16 @@ var Uploader = /*#__PURE__*/function () {
         _pachno__WEBPACK_IMPORTED_MODULE_1__["default"].fetch(url, options).then(function (json) {
           if (json.element !== undefined) {
             $label_element.replaceWith(json.element);
-            _pachno__WEBPACK_IMPORTED_MODULE_1__["default"].trigger(_pachno__WEBPACK_IMPORTED_MODULE_1__["default"].EVENTS.upload.complete, _objectSpread(_objectSpread({}, _this2.form_data), {}, {
-              mode: _this2.mode
+            _pachno__WEBPACK_IMPORTED_MODULE_1__["default"].trigger(_pachno__WEBPACK_IMPORTED_MODULE_1__["default"].EVENTS.upload.complete, _objectSpread(_objectSpread({}, uploader.form_data), {}, {
+              mode: uploader.mode
             }));
-          } else if (_this2.mode === 'grid') {
+          } else if (uploader.mode === 'grid') {
             var _data = json.file;
             $label_element.addClass('confirmed');
             $label_element.find('.indicator').remove();
             $input_element.attr('value', _data.id);
-            $input_element.attr('id', "".concat(_this2.input_name, "_").concat(_data.id));
-            $label_element.attr('for', "".concat(_this2.input_name, "_").concat(_data.id));
+            $input_element.attr('id', "".concat(uploader.input_name, "_").concat(_data.id));
+            $label_element.attr('for', "".concat(uploader.input_name, "_").concat(_data.id));
           }
 
           resolve();
@@ -4151,7 +4225,7 @@ var Uploader = /*#__PURE__*/function () {
           _pachno__WEBPACK_IMPORTED_MODULE_1__["default"].UI.Message.error(error);
           $label_element.remove();
 
-          if (_this2.mode === 'grid') {
+          if (uploader.mode === 'grid') {
             $input_element.remove();
           }
 
@@ -4169,6 +4243,8 @@ var Uploader = /*#__PURE__*/function () {
         $('#upload_drop_hint').addClass('active');
       }
 
+      var uploader = this;
+
       if (files.length > 0) {
         var _iterator = _createForOfIteratorHelper(files),
             _step;
@@ -4176,7 +4252,7 @@ var Uploader = /*#__PURE__*/function () {
         try {
           for (_iterator.s(); !(_step = _iterator.n()).done;) {
             var file = _step.value;
-            uploads.push(this.uploadFile(url, file));
+            uploads.push(uploader.uploadFile(url, file));
           }
         } catch (err) {
           _iterator.e(err);
@@ -4897,18 +4973,24 @@ var watchIssuePopupForms = function watchIssuePopupForms() {
   });
 };
 
-var setupListeners = function setupListeners() {// const $body = $('body');
-  // $body.off('click', 'input[data-trigger-issue-update]');
-  // $body.on('click', 'input[data-trigger-issue-update]', function () {
-  //     const $element = $(this);
-  //     $element.addClass('submitting');
-  //     const url = $element.data('url');
-  //
-  //     Pachno.fetch(url, { method: 'POST' })
-  //         .then(() => {
-  //             $element.removeClass('submitting');
-  //         })
-  // });
+var setupListeners = function setupListeners() {
+  var $body = jquery__WEBPACK_IMPORTED_MODULE_0___default()('body');
+  $body.off('click', '.trigger-set-cover');
+  $body.on('click', '.trigger-set-cover', function (event) {
+    event.preventDefault();
+    event.stopPropagation();
+    var $element = jquery__WEBPACK_IMPORTED_MODULE_0___default()(this);
+    var issue = _classes_pachno__WEBPACK_IMPORTED_MODULE_1__["default"].getIssue($element.data('issue-id'));
+    issue.postAndUpdate('cover_image', $element.data('file-id'));
+  });
+  $body.off('click', '.trigger-clear-cover');
+  $body.on('click', '.trigger-clear-cover', function (event) {
+    event.preventDefault();
+    event.stopPropagation();
+    var $element = jquery__WEBPACK_IMPORTED_MODULE_0___default()(this);
+    var issue = _classes_pachno__WEBPACK_IMPORTED_MODULE_1__["default"].getIssue($element.data('issue-id'));
+    issue.postAndUpdate('cover_image', 0);
+  });
 };
 
 
@@ -5562,8 +5644,13 @@ var submitForm = function submitForm($form) {
 };
 
 var submitInteractiveForm = function submitInteractiveForm(event, $form) {
+  var prevent_default = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
   $form.addClass('submitting');
-  event.preventDefault();
+
+  if (prevent_default) {
+    event.preventDefault();
+  }
+
   submitForm($form).then(function () {
     $form.removeClass('submitting');
   })["catch"](function (error) {
@@ -5640,7 +5727,7 @@ var setupListeners = function setupListeners() {
     });
   });
   $body.on('submit', 'form[data-interactive-form]', function (event) {
-    return submitInteractiveForm(event, jquery__WEBPACK_IMPORTED_MODULE_0___default()(event.target));
+    return submitInteractiveForm(event, jquery__WEBPACK_IMPORTED_MODULE_0___default()(event.target), true);
   });
   $body.on('blur', 'form[data-interactive-form] input[type=text], form[data-interactive-form] textarea', function (event) {
     return submitInteractiveForm(event, jquery__WEBPACK_IMPORTED_MODULE_0___default()(event.target).parents('form'));
@@ -26930,11 +27017,12 @@ function toggleFullScreen(editor) {
         document.body.style.overflow = saved_overflow;
     }
 
-
-    // Hide side by side if needed
-    var sidebyside = cm.getWrapperElement().nextSibling;
-    if (/editor-preview-active-side/.test(sidebyside.className))
-        toggleSideBySide(editor);
+    // Hide side by side if needed, retain current state if sideBySideFullscreen is disabled
+    if (editor.options.sideBySideFullscreen !== false) {
+        var sidebyside = cm.getWrapperElement().nextSibling;
+        if (/editor-preview-active-side/.test(sidebyside.className))
+            toggleSideBySide(editor);
+    }
 
     if (editor.options.onToggleFullScreen) {
         editor.options.onToggleFullScreen(cm.getOption('fullScreen') || false);
@@ -27409,7 +27497,17 @@ function afterImageUploaded(editor, url) {
     var stat = getState(cm);
     var options = editor.options;
     var imageName = url.substr(url.lastIndexOf('/') + 1);
-    _replaceSelection(cm, stat.image, options.insertTexts.uploadedImage, url);
+    var ext = imageName.substring(imageName.lastIndexOf('.') + 1);
+
+    // Check if media is an image
+    if (['png', 'jpg', 'jpeg', 'gif', 'svg'].includes(ext)) {
+      _replaceSelection(cm, stat.image, options.insertTexts.uploadedImage, url);
+    } else {
+      var text_link = options.insertTexts.link;
+      text_link[0] = '[' + imageName;
+      _replaceSelection(cm, stat.link, text_link, url);
+    }
+
     // show uploaded image filename for 1000ms
     editor.updateStatusBar('upload-image', editor.options.imageTexts.sbOnUploaded.replace('#image_name#', imageName));
     setTimeout(function () {
@@ -27481,9 +27579,11 @@ function toggleSideBySide(editor) {
     }
 
     function removeNoFullscreenClass(el) {
-        el.className = el.className.replace(
-            /\s*sided--no-fullscreen\s*/g, ''
-        );
+        if (el != null) {
+            el.className = el.className.replace(
+                /\s*sided--no-fullscreen\s*/g, ''
+            );
+        }
     }
 
     if (/editor-preview-active-side/.test(preview.className)) {
@@ -27507,7 +27607,9 @@ function toggleSideBySide(editor) {
                 if (editor.options.sideBySideFullscreen === false) {
                     cm.setOption('sideBySideNoFullscreen', true);
                     noFullscreenItems.forEach(function(el) {
-                        addNoFullscreenClass(el);
+                        if (el != null) {
+                            addNoFullscreenClass(el);
+                        }
                     });
                 } else {
                     toggleFullScreen(editor);
@@ -28594,15 +28696,12 @@ EasyMDE.prototype.render = function (el) {
       mode = 'overlay-mode';
       backdrop = options.parsingConfig;
       backdrop.gitHubSpice = false;
-
-      if (options.spellChecker !== false) {
-        backdrop.name = 'gfm';
-
-        CodeMirrorSpellChecker({
-          codeMirrorInstance: CodeMirror,
-        });
-
-      } else if (options.spellChecker !== false) {
+    } else {
+        mode = options.parsingConfig;
+        mode.name = 'gfm';
+        mode.gitHubSpice = false;
+    }
+    if (options.spellChecker !== false) {
         mode = 'spell-checker';
         backdrop = options.parsingConfig;
         backdrop.name = 'gfm';
@@ -28611,11 +28710,6 @@ EasyMDE.prototype.render = function (el) {
         CodeMirrorSpellChecker({
             codeMirrorInstance: CodeMirror,
         });
-      }
-    } else {
-        mode = options.parsingConfig;
-        mode.name = 'gfm';
-        mode.gitHubSpice = false;
     }
 
     // eslint-disable-next-line no-unused-vars
@@ -28639,6 +28733,7 @@ EasyMDE.prototype.render = function (el) {
         allowDropFileTypes: ['text/plain'],
         placeholder: options.placeholder || el.getAttribute('placeholder') || '',
         styleSelectedText: (options.styleSelectedText != undefined) ? options.styleSelectedText : !isMobile(),
+        scrollbarStyle: (options.scrollbarStyle != undefined) ? options.scrollbarStyle : 'native',
         configureMouse: configureMouse,
         inputStyle: (options.inputStyle != undefined) ? options.inputStyle : isMobile() ? 'contenteditable' : 'textarea',
         spellcheck: (options.nativeSpellcheck != undefined) ? options.nativeSpellcheck : true,
@@ -28684,53 +28779,67 @@ EasyMDE.prototype.render = function (el) {
         });
     }
 
+    function calcHeight(naturalWidth, naturalHeight) {
+        var height;
+        var viewportWidth = window.getComputedStyle(document.querySelector('.CodeMirror-sizer')).width.replace('px', '');
+        if (naturalWidth < viewportWidth) {
+            height = naturalHeight + 'px';
+        } else {
+            height = (naturalHeight / naturalWidth * 100) + '%';
+        }
+        return height;
+    }
+
+    var _vm = this;
+
+
+    function assignImageBlockAttributes(parentEl, img) {
+        parentEl.setAttribute('data-img-src', img.url);
+        parentEl.setAttribute('style', '--bg-image:url('+img.url+');--width:'+img.naturalWidth+'px;--height:'+calcHeight(img.naturalWidth, img.naturalHeight));
+        _vm.codemirror.setSize();
+    }
+
     function handleImages() {
         if (!options.previewImagesInEditor) {
             return;
         }
 
-        function calcHeight(naturalWidth, naturalHeight) {
-            var height;
-            var viewportWidth = window.getComputedStyle(document.querySelector('.CodeMirror-sizer')).width.replace('px', '');
-            if (naturalWidth < viewportWidth) {
-                height = naturalHeight + 'px';
-            } else {
-                height = (naturalHeight / naturalWidth * 100) + '%';
-            }
-            return height;
-        }
-        easyMDEContainer.querySelectorAll('.cm-formatting-image').forEach(function(e) {
+        easyMDEContainer.querySelectorAll('.cm-image-marker').forEach(function(e) {
             var parentEl =  e.parentElement;
+            if (!parentEl.innerText.match(/^!\[.*?\]\(.*\)/g)) {
+                // if img pasted on the same line with other text, don't preview, preview only images on separate line
+                return;
+            }
             if (!parentEl.hasAttribute('data-img-src')) {
                 var srcAttr = parentEl.innerText.match('\\((.*)\\)'); // might require better parsing according to markdown spec
-                if (srcAttr && srcAttr.length >= 2) {
-                    var img = document.createElement('img');
-                    img.onload = function() {
-                        parentEl.setAttribute('data-img-src', srcAttr[1]);
-                        parentEl.setAttribute('data-img-width', img.naturalWidth);
-                        parentEl.setAttribute('data-img-height', img.naturalHeight);
-                        parentEl.setAttribute('style', '--bg-image:url('+srcAttr[1]+');--width:'+img.naturalWidth+'px;--height:'+calcHeight(img.naturalWidth, img.naturalHeight));
-                    };
-                    img.src = srcAttr[1];
+                if (!window.EMDEimagesCache) {
+                    window.EMDEimagesCache = {};
                 }
-            } else {
-                // handle resizes case
-                var src = parentEl.getAttribute('data-img-src');
-                var naturalWidth = +parentEl.getAttribute('data-img-width');
-                var naturalHeight = +parentEl.getAttribute('data-img-height');
-                parentEl.setAttribute('style', '--bg-image:url('+src+');--width:'+naturalWidth+'px;--height:'+calcHeight(naturalWidth, naturalHeight));
+
+                if (srcAttr && srcAttr.length >= 2) {
+                    var keySrc = srcAttr[1];
+
+                    if (! window.EMDEimagesCache[keySrc]) {
+                        var img = document.createElement('img');
+                        img.onload = function() {
+                            window.EMDEimagesCache[keySrc] = {
+                                naturalWidth: img.naturalWidth,
+                                naturalHeight: img.naturalHeight,
+                                url: keySrc,
+                            };
+                            assignImageBlockAttributes(parentEl, window.EMDEimagesCache[keySrc]);
+                        };
+                        img.src = keySrc;
+                    } else {
+                        assignImageBlockAttributes(parentEl, window.EMDEimagesCache[keySrc]);
+                    }
+                }
             }
         });
     }
     this.codemirror.on('update', function () {
         handleImages();
     });
-
-    this.onWindowResize = function() {
-        handleImages();
-    };
-
-    window.addEventListener('resize', this.onWindowResize, true);
 
     this.gui.sideBySide = this.createSideBySide();
     this._rendered = this.element;
@@ -28743,7 +28852,6 @@ EasyMDE.prototype.render = function (el) {
 };
 
 EasyMDE.prototype.cleanup = function () {
-    window.removeEventListener(this.onWindowResize);
     document.removeEventListener('keydown', this.documentOnKeyDown);
 };
 
@@ -42374,19 +42482,10 @@ module.exports = throttle;
       }
     };
 
-    _proto.code = function code(src, tokens) {
+    _proto.code = function code(src) {
       var cap = this.rules.block.code.exec(src);
 
       if (cap) {
-        var lastToken = tokens[tokens.length - 1]; // An indented code block cannot interrupt a paragraph.
-
-        if (lastToken && lastToken.type === 'paragraph') {
-          return {
-            raw: cap[0],
-            text: cap[0].trimRight()
-          };
-        }
-
         var text = cap[0].replace(/^ {1,4}/gm, '');
         return {
           type: 'code',
@@ -42698,19 +42797,10 @@ module.exports = throttle;
       }
     };
 
-    _proto.text = function text(src, tokens) {
+    _proto.text = function text(src) {
       var cap = this.rules.block.text.exec(src);
 
       if (cap) {
-        var lastToken = tokens[tokens.length - 1];
-
-        if (lastToken && lastToken.type === 'text') {
-          return {
-            raw: cap[0],
-            text: cap[0]
-          };
-        }
-
         return {
           type: 'text',
           raw: cap[0],
@@ -42841,54 +42931,66 @@ module.exports = throttle;
       }
     };
 
-    _proto.strong = function strong(src, maskedSrc, prevChar) {
+    _proto.emStrong = function emStrong(src, maskedSrc, prevChar) {
       if (prevChar === void 0) {
         prevChar = '';
       }
 
-      var match = this.rules.inline.strong.start.exec(src);
+      var match = this.rules.inline.emStrong.lDelim.exec(src);
+      if (!match) return;
+      if (match[3] && prevChar.match(/(?:[0-9A-Za-z\xAA\xB2\xB3\xB5\xB9\xBA\xBC-\xBE\xC0-\xD6\xD8-\xF6\xF8-\u02C1\u02C6-\u02D1\u02E0-\u02E4\u02EC\u02EE\u0370-\u0374\u0376\u0377\u037A-\u037D\u037F\u0386\u0388-\u038A\u038C\u038E-\u03A1\u03A3-\u03F5\u03F7-\u0481\u048A-\u052F\u0531-\u0556\u0559\u0560-\u0588\u05D0-\u05EA\u05EF-\u05F2\u0620-\u064A\u0660-\u0669\u066E\u066F\u0671-\u06D3\u06D5\u06E5\u06E6\u06EE-\u06FC\u06FF\u0710\u0712-\u072F\u074D-\u07A5\u07B1\u07C0-\u07EA\u07F4\u07F5\u07FA\u0800-\u0815\u081A\u0824\u0828\u0840-\u0858\u0860-\u086A\u08A0-\u08B4\u08B6-\u08C7\u0904-\u0939\u093D\u0950\u0958-\u0961\u0966-\u096F\u0971-\u0980\u0985-\u098C\u098F\u0990\u0993-\u09A8\u09AA-\u09B0\u09B2\u09B6-\u09B9\u09BD\u09CE\u09DC\u09DD\u09DF-\u09E1\u09E6-\u09F1\u09F4-\u09F9\u09FC\u0A05-\u0A0A\u0A0F\u0A10\u0A13-\u0A28\u0A2A-\u0A30\u0A32\u0A33\u0A35\u0A36\u0A38\u0A39\u0A59-\u0A5C\u0A5E\u0A66-\u0A6F\u0A72-\u0A74\u0A85-\u0A8D\u0A8F-\u0A91\u0A93-\u0AA8\u0AAA-\u0AB0\u0AB2\u0AB3\u0AB5-\u0AB9\u0ABD\u0AD0\u0AE0\u0AE1\u0AE6-\u0AEF\u0AF9\u0B05-\u0B0C\u0B0F\u0B10\u0B13-\u0B28\u0B2A-\u0B30\u0B32\u0B33\u0B35-\u0B39\u0B3D\u0B5C\u0B5D\u0B5F-\u0B61\u0B66-\u0B6F\u0B71-\u0B77\u0B83\u0B85-\u0B8A\u0B8E-\u0B90\u0B92-\u0B95\u0B99\u0B9A\u0B9C\u0B9E\u0B9F\u0BA3\u0BA4\u0BA8-\u0BAA\u0BAE-\u0BB9\u0BD0\u0BE6-\u0BF2\u0C05-\u0C0C\u0C0E-\u0C10\u0C12-\u0C28\u0C2A-\u0C39\u0C3D\u0C58-\u0C5A\u0C60\u0C61\u0C66-\u0C6F\u0C78-\u0C7E\u0C80\u0C85-\u0C8C\u0C8E-\u0C90\u0C92-\u0CA8\u0CAA-\u0CB3\u0CB5-\u0CB9\u0CBD\u0CDE\u0CE0\u0CE1\u0CE6-\u0CEF\u0CF1\u0CF2\u0D04-\u0D0C\u0D0E-\u0D10\u0D12-\u0D3A\u0D3D\u0D4E\u0D54-\u0D56\u0D58-\u0D61\u0D66-\u0D78\u0D7A-\u0D7F\u0D85-\u0D96\u0D9A-\u0DB1\u0DB3-\u0DBB\u0DBD\u0DC0-\u0DC6\u0DE6-\u0DEF\u0E01-\u0E30\u0E32\u0E33\u0E40-\u0E46\u0E50-\u0E59\u0E81\u0E82\u0E84\u0E86-\u0E8A\u0E8C-\u0EA3\u0EA5\u0EA7-\u0EB0\u0EB2\u0EB3\u0EBD\u0EC0-\u0EC4\u0EC6\u0ED0-\u0ED9\u0EDC-\u0EDF\u0F00\u0F20-\u0F33\u0F40-\u0F47\u0F49-\u0F6C\u0F88-\u0F8C\u1000-\u102A\u103F-\u1049\u1050-\u1055\u105A-\u105D\u1061\u1065\u1066\u106E-\u1070\u1075-\u1081\u108E\u1090-\u1099\u10A0-\u10C5\u10C7\u10CD\u10D0-\u10FA\u10FC-\u1248\u124A-\u124D\u1250-\u1256\u1258\u125A-\u125D\u1260-\u1288\u128A-\u128D\u1290-\u12B0\u12B2-\u12B5\u12B8-\u12BE\u12C0\u12C2-\u12C5\u12C8-\u12D6\u12D8-\u1310\u1312-\u1315\u1318-\u135A\u1369-\u137C\u1380-\u138F\u13A0-\u13F5\u13F8-\u13FD\u1401-\u166C\u166F-\u167F\u1681-\u169A\u16A0-\u16EA\u16EE-\u16F8\u1700-\u170C\u170E-\u1711\u1720-\u1731\u1740-\u1751\u1760-\u176C\u176E-\u1770\u1780-\u17B3\u17D7\u17DC\u17E0-\u17E9\u17F0-\u17F9\u1810-\u1819\u1820-\u1878\u1880-\u1884\u1887-\u18A8\u18AA\u18B0-\u18F5\u1900-\u191E\u1946-\u196D\u1970-\u1974\u1980-\u19AB\u19B0-\u19C9\u19D0-\u19DA\u1A00-\u1A16\u1A20-\u1A54\u1A80-\u1A89\u1A90-\u1A99\u1AA7\u1B05-\u1B33\u1B45-\u1B4B\u1B50-\u1B59\u1B83-\u1BA0\u1BAE-\u1BE5\u1C00-\u1C23\u1C40-\u1C49\u1C4D-\u1C7D\u1C80-\u1C88\u1C90-\u1CBA\u1CBD-\u1CBF\u1CE9-\u1CEC\u1CEE-\u1CF3\u1CF5\u1CF6\u1CFA\u1D00-\u1DBF\u1E00-\u1F15\u1F18-\u1F1D\u1F20-\u1F45\u1F48-\u1F4D\u1F50-\u1F57\u1F59\u1F5B\u1F5D\u1F5F-\u1F7D\u1F80-\u1FB4\u1FB6-\u1FBC\u1FBE\u1FC2-\u1FC4\u1FC6-\u1FCC\u1FD0-\u1FD3\u1FD6-\u1FDB\u1FE0-\u1FEC\u1FF2-\u1FF4\u1FF6-\u1FFC\u2070\u2071\u2074-\u2079\u207F-\u2089\u2090-\u209C\u2102\u2107\u210A-\u2113\u2115\u2119-\u211D\u2124\u2126\u2128\u212A-\u212D\u212F-\u2139\u213C-\u213F\u2145-\u2149\u214E\u2150-\u2189\u2460-\u249B\u24EA-\u24FF\u2776-\u2793\u2C00-\u2C2E\u2C30-\u2C5E\u2C60-\u2CE4\u2CEB-\u2CEE\u2CF2\u2CF3\u2CFD\u2D00-\u2D25\u2D27\u2D2D\u2D30-\u2D67\u2D6F\u2D80-\u2D96\u2DA0-\u2DA6\u2DA8-\u2DAE\u2DB0-\u2DB6\u2DB8-\u2DBE\u2DC0-\u2DC6\u2DC8-\u2DCE\u2DD0-\u2DD6\u2DD8-\u2DDE\u2E2F\u3005-\u3007\u3021-\u3029\u3031-\u3035\u3038-\u303C\u3041-\u3096\u309D-\u309F\u30A1-\u30FA\u30FC-\u30FF\u3105-\u312F\u3131-\u318E\u3192-\u3195\u31A0-\u31BF\u31F0-\u31FF\u3220-\u3229\u3248-\u324F\u3251-\u325F\u3280-\u3289\u32B1-\u32BF\u3400-\u4DBF\u4E00-\u9FFC\uA000-\uA48C\uA4D0-\uA4FD\uA500-\uA60C\uA610-\uA62B\uA640-\uA66E\uA67F-\uA69D\uA6A0-\uA6EF\uA717-\uA71F\uA722-\uA788\uA78B-\uA7BF\uA7C2-\uA7CA\uA7F5-\uA801\uA803-\uA805\uA807-\uA80A\uA80C-\uA822\uA830-\uA835\uA840-\uA873\uA882-\uA8B3\uA8D0-\uA8D9\uA8F2-\uA8F7\uA8FB\uA8FD\uA8FE\uA900-\uA925\uA930-\uA946\uA960-\uA97C\uA984-\uA9B2\uA9CF-\uA9D9\uA9E0-\uA9E4\uA9E6-\uA9FE\uAA00-\uAA28\uAA40-\uAA42\uAA44-\uAA4B\uAA50-\uAA59\uAA60-\uAA76\uAA7A\uAA7E-\uAAAF\uAAB1\uAAB5\uAAB6\uAAB9-\uAABD\uAAC0\uAAC2\uAADB-\uAADD\uAAE0-\uAAEA\uAAF2-\uAAF4\uAB01-\uAB06\uAB09-\uAB0E\uAB11-\uAB16\uAB20-\uAB26\uAB28-\uAB2E\uAB30-\uAB5A\uAB5C-\uAB69\uAB70-\uABE2\uABF0-\uABF9\uAC00-\uD7A3\uD7B0-\uD7C6\uD7CB-\uD7FB\uF900-\uFA6D\uFA70-\uFAD9\uFB00-\uFB06\uFB13-\uFB17\uFB1D\uFB1F-\uFB28\uFB2A-\uFB36\uFB38-\uFB3C\uFB3E\uFB40\uFB41\uFB43\uFB44\uFB46-\uFBB1\uFBD3-\uFD3D\uFD50-\uFD8F\uFD92-\uFDC7\uFDF0-\uFDFB\uFE70-\uFE74\uFE76-\uFEFC\uFF10-\uFF19\uFF21-\uFF3A\uFF41-\uFF5A\uFF66-\uFFBE\uFFC2-\uFFC7\uFFCA-\uFFCF\uFFD2-\uFFD7\uFFDA-\uFFDC]|\uD800[\uDC00-\uDC0B\uDC0D-\uDC26\uDC28-\uDC3A\uDC3C\uDC3D\uDC3F-\uDC4D\uDC50-\uDC5D\uDC80-\uDCFA\uDD07-\uDD33\uDD40-\uDD78\uDD8A\uDD8B\uDE80-\uDE9C\uDEA0-\uDED0\uDEE1-\uDEFB\uDF00-\uDF23\uDF2D-\uDF4A\uDF50-\uDF75\uDF80-\uDF9D\uDFA0-\uDFC3\uDFC8-\uDFCF\uDFD1-\uDFD5]|\uD801[\uDC00-\uDC9D\uDCA0-\uDCA9\uDCB0-\uDCD3\uDCD8-\uDCFB\uDD00-\uDD27\uDD30-\uDD63\uDE00-\uDF36\uDF40-\uDF55\uDF60-\uDF67]|\uD802[\uDC00-\uDC05\uDC08\uDC0A-\uDC35\uDC37\uDC38\uDC3C\uDC3F-\uDC55\uDC58-\uDC76\uDC79-\uDC9E\uDCA7-\uDCAF\uDCE0-\uDCF2\uDCF4\uDCF5\uDCFB-\uDD1B\uDD20-\uDD39\uDD80-\uDDB7\uDDBC-\uDDCF\uDDD2-\uDE00\uDE10-\uDE13\uDE15-\uDE17\uDE19-\uDE35\uDE40-\uDE48\uDE60-\uDE7E\uDE80-\uDE9F\uDEC0-\uDEC7\uDEC9-\uDEE4\uDEEB-\uDEEF\uDF00-\uDF35\uDF40-\uDF55\uDF58-\uDF72\uDF78-\uDF91\uDFA9-\uDFAF]|\uD803[\uDC00-\uDC48\uDC80-\uDCB2\uDCC0-\uDCF2\uDCFA-\uDD23\uDD30-\uDD39\uDE60-\uDE7E\uDE80-\uDEA9\uDEB0\uDEB1\uDF00-\uDF27\uDF30-\uDF45\uDF51-\uDF54\uDFB0-\uDFCB\uDFE0-\uDFF6]|\uD804[\uDC03-\uDC37\uDC52-\uDC6F\uDC83-\uDCAF\uDCD0-\uDCE8\uDCF0-\uDCF9\uDD03-\uDD26\uDD36-\uDD3F\uDD44\uDD47\uDD50-\uDD72\uDD76\uDD83-\uDDB2\uDDC1-\uDDC4\uDDD0-\uDDDA\uDDDC\uDDE1-\uDDF4\uDE00-\uDE11\uDE13-\uDE2B\uDE80-\uDE86\uDE88\uDE8A-\uDE8D\uDE8F-\uDE9D\uDE9F-\uDEA8\uDEB0-\uDEDE\uDEF0-\uDEF9\uDF05-\uDF0C\uDF0F\uDF10\uDF13-\uDF28\uDF2A-\uDF30\uDF32\uDF33\uDF35-\uDF39\uDF3D\uDF50\uDF5D-\uDF61]|\uD805[\uDC00-\uDC34\uDC47-\uDC4A\uDC50-\uDC59\uDC5F-\uDC61\uDC80-\uDCAF\uDCC4\uDCC5\uDCC7\uDCD0-\uDCD9\uDD80-\uDDAE\uDDD8-\uDDDB\uDE00-\uDE2F\uDE44\uDE50-\uDE59\uDE80-\uDEAA\uDEB8\uDEC0-\uDEC9\uDF00-\uDF1A\uDF30-\uDF3B]|\uD806[\uDC00-\uDC2B\uDCA0-\uDCF2\uDCFF-\uDD06\uDD09\uDD0C-\uDD13\uDD15\uDD16\uDD18-\uDD2F\uDD3F\uDD41\uDD50-\uDD59\uDDA0-\uDDA7\uDDAA-\uDDD0\uDDE1\uDDE3\uDE00\uDE0B-\uDE32\uDE3A\uDE50\uDE5C-\uDE89\uDE9D\uDEC0-\uDEF8]|\uD807[\uDC00-\uDC08\uDC0A-\uDC2E\uDC40\uDC50-\uDC6C\uDC72-\uDC8F\uDD00-\uDD06\uDD08\uDD09\uDD0B-\uDD30\uDD46\uDD50-\uDD59\uDD60-\uDD65\uDD67\uDD68\uDD6A-\uDD89\uDD98\uDDA0-\uDDA9\uDEE0-\uDEF2\uDFB0\uDFC0-\uDFD4]|\uD808[\uDC00-\uDF99]|\uD809[\uDC00-\uDC6E\uDC80-\uDD43]|[\uD80C\uD81C-\uD820\uD822\uD840-\uD868\uD86A-\uD86C\uD86F-\uD872\uD874-\uD879\uD880-\uD883][\uDC00-\uDFFF]|\uD80D[\uDC00-\uDC2E]|\uD811[\uDC00-\uDE46]|\uD81A[\uDC00-\uDE38\uDE40-\uDE5E\uDE60-\uDE69\uDED0-\uDEED\uDF00-\uDF2F\uDF40-\uDF43\uDF50-\uDF59\uDF5B-\uDF61\uDF63-\uDF77\uDF7D-\uDF8F]|\uD81B[\uDE40-\uDE96\uDF00-\uDF4A\uDF50\uDF93-\uDF9F\uDFE0\uDFE1\uDFE3]|\uD821[\uDC00-\uDFF7]|\uD823[\uDC00-\uDCD5\uDD00-\uDD08]|\uD82C[\uDC00-\uDD1E\uDD50-\uDD52\uDD64-\uDD67\uDD70-\uDEFB]|\uD82F[\uDC00-\uDC6A\uDC70-\uDC7C\uDC80-\uDC88\uDC90-\uDC99]|\uD834[\uDEE0-\uDEF3\uDF60-\uDF78]|\uD835[\uDC00-\uDC54\uDC56-\uDC9C\uDC9E\uDC9F\uDCA2\uDCA5\uDCA6\uDCA9-\uDCAC\uDCAE-\uDCB9\uDCBB\uDCBD-\uDCC3\uDCC5-\uDD05\uDD07-\uDD0A\uDD0D-\uDD14\uDD16-\uDD1C\uDD1E-\uDD39\uDD3B-\uDD3E\uDD40-\uDD44\uDD46\uDD4A-\uDD50\uDD52-\uDEA5\uDEA8-\uDEC0\uDEC2-\uDEDA\uDEDC-\uDEFA\uDEFC-\uDF14\uDF16-\uDF34\uDF36-\uDF4E\uDF50-\uDF6E\uDF70-\uDF88\uDF8A-\uDFA8\uDFAA-\uDFC2\uDFC4-\uDFCB\uDFCE-\uDFFF]|\uD838[\uDD00-\uDD2C\uDD37-\uDD3D\uDD40-\uDD49\uDD4E\uDEC0-\uDEEB\uDEF0-\uDEF9]|\uD83A[\uDC00-\uDCC4\uDCC7-\uDCCF\uDD00-\uDD43\uDD4B\uDD50-\uDD59]|\uD83B[\uDC71-\uDCAB\uDCAD-\uDCAF\uDCB1-\uDCB4\uDD01-\uDD2D\uDD2F-\uDD3D\uDE00-\uDE03\uDE05-\uDE1F\uDE21\uDE22\uDE24\uDE27\uDE29-\uDE32\uDE34-\uDE37\uDE39\uDE3B\uDE42\uDE47\uDE49\uDE4B\uDE4D-\uDE4F\uDE51\uDE52\uDE54\uDE57\uDE59\uDE5B\uDE5D\uDE5F\uDE61\uDE62\uDE64\uDE67-\uDE6A\uDE6C-\uDE72\uDE74-\uDE77\uDE79-\uDE7C\uDE7E\uDE80-\uDE89\uDE8B-\uDE9B\uDEA1-\uDEA3\uDEA5-\uDEA9\uDEAB-\uDEBB]|\uD83C[\uDD00-\uDD0C]|\uD83E[\uDFF0-\uDFF9]|\uD869[\uDC00-\uDEDD\uDF00-\uDFFF]|\uD86D[\uDC00-\uDF34\uDF40-\uDFFF]|\uD86E[\uDC00-\uDC1D\uDC20-\uDFFF]|\uD873[\uDC00-\uDEA1\uDEB0-\uDFFF]|\uD87A[\uDC00-\uDFE0]|\uD87E[\uDC00-\uDE1D]|\uD884[\uDC00-\uDF4A])/)) return; // _ can't be between two alphanumerics. \p{L}\p{N} includes non-english alphabet/numbers as well
 
-      if (match && (!match[1] || match[1] && (prevChar === '' || this.rules.inline.punctuation.exec(prevChar)))) {
-        maskedSrc = maskedSrc.slice(-1 * src.length);
-        var endReg = match[0] === '**' ? this.rules.inline.strong.endAst : this.rules.inline.strong.endUnd;
+      var nextChar = match[1] || match[2] || '';
+
+      if (!nextChar || nextChar && (prevChar === '' || this.rules.inline.punctuation.exec(prevChar))) {
+        var lLength = match[0].length - 1;
+        var rDelim,
+            rLength,
+            delimTotal = lLength,
+            midDelimTotal = 0;
+        var endReg = match[0][0] === '*' ? this.rules.inline.emStrong.rDelimAst : this.rules.inline.emStrong.rDelimUnd;
         endReg.lastIndex = 0;
-        var cap;
+        maskedSrc = maskedSrc.slice(-1 * src.length + lLength); // Bump maskedSrc to same section of string as src (move to lexer?)
 
         while ((match = endReg.exec(maskedSrc)) != null) {
-          cap = this.rules.inline.strong.middle.exec(maskedSrc.slice(0, match.index + 3));
+          rDelim = match[1] || match[2] || match[3] || match[4] || match[5] || match[6];
+          if (!rDelim) continue; // matched the first alternative in rules.js (skip the * in __abc*abc__)
 
-          if (cap) {
-            return {
-              type: 'strong',
-              raw: src.slice(0, cap[0].length),
-              text: src.slice(2, cap[0].length - 2)
-            };
+          rLength = rDelim.length;
+
+          if (match[3] || match[4]) {
+            // found another Left Delim
+            delimTotal += rLength;
+            continue;
+          } else if (match[5] || match[6]) {
+            // either Left or Right Delim
+            if (lLength % 3 && !((lLength + rLength) % 3)) {
+              midDelimTotal += rLength;
+              continue; // CommonMark Emphasis Rules 9-10
+            }
           }
-        }
-      }
-    };
 
-    _proto.em = function em(src, maskedSrc, prevChar) {
-      if (prevChar === void 0) {
-        prevChar = '';
-      }
+          delimTotal -= rLength;
+          if (delimTotal > 0) continue; // Haven't found enough closing delimiters
+          // If this is the last rDelimiter, remove extra characters. *a*** -> *a*
 
-      var match = this.rules.inline.em.start.exec(src);
+          if (delimTotal + midDelimTotal - rLength <= 0 && !maskedSrc.slice(endReg.lastIndex).match(endReg)) {
+            rLength = Math.min(rLength, rLength + delimTotal + midDelimTotal);
+          }
 
-      if (match && (!match[1] || match[1] && (prevChar === '' || this.rules.inline.punctuation.exec(prevChar)))) {
-        maskedSrc = maskedSrc.slice(-1 * src.length);
-        var endReg = match[0] === '*' ? this.rules.inline.em.endAst : this.rules.inline.em.endUnd;
-        endReg.lastIndex = 0;
-        var cap;
-
-        while ((match = endReg.exec(maskedSrc)) != null) {
-          cap = this.rules.inline.em.middle.exec(maskedSrc.slice(0, match.index + 2));
-
-          if (cap) {
+          if (Math.min(lLength, rLength) % 2) {
             return {
               type: 'em',
-              raw: src.slice(0, cap[0].length),
-              text: src.slice(1, cap[0].length - 1)
+              raw: src.slice(0, lLength + match.index + rLength + 1),
+              text: src.slice(1, lLength + match.index + rLength)
+            };
+          }
+
+          if (Math.min(lLength, rLength) % 2 === 0) {
+            return {
+              type: 'strong',
+              raw: src.slice(0, lLength + match.index + rLength + 1),
+              text: src.slice(2, lLength + match.index + rLength - 1)
             };
           }
         }
@@ -43137,48 +43239,31 @@ module.exports = throttle;
     reflink: /^!?\[(label)\]\[(?!\s*\])((?:\\[\[\]]?|[^\[\]\\])+)\]/,
     nolink: /^!?\[(?!\s*\])((?:\[[^\[\]]*\]|\\[\[\]]|[^\[\]])*)\](?:\[\])?/,
     reflinkSearch: 'reflink|nolink(?!\\()',
-    strong: {
-      start: /^(?:(\*\*(?=[*punctuation]))|\*\*)(?![\s])|__/,
-      // (1) returns if starts w/ punctuation
-      middle: /^\*\*(?:(?:(?!overlapSkip)(?:[^*]|\\\*)|overlapSkip)|\*(?:(?!overlapSkip)(?:[^*]|\\\*)|overlapSkip)*?\*)+?\*\*$|^__(?![\s])((?:(?:(?!overlapSkip)(?:[^_]|\\_)|overlapSkip)|_(?:(?!overlapSkip)(?:[^_]|\\_)|overlapSkip)*?_)+?)__$/,
-      endAst: /[^punctuation\s]\*\*(?!\*)|[punctuation]\*\*(?!\*)(?:(?=[punctuation_\s]|$))/,
-      // last char can't be punct, or final * must also be followed by punct (or endline)
-      endUnd: /[^\s]__(?!_)(?:(?=[punctuation*\s])|$)/ // last char can't be a space, and final _ must preceed punct or \s (or endline)
-
-    },
-    em: {
-      start: /^(?:(\*(?=[punctuation]))|\*)(?![*\s])|_/,
-      // (1) returns if starts w/ punctuation
-      middle: /^\*(?:(?:(?!overlapSkip)(?:[^*]|\\\*)|overlapSkip)|\*(?:(?!overlapSkip)(?:[^*]|\\\*)|overlapSkip)*?\*)+?\*$|^_(?![_\s])(?:(?:(?!overlapSkip)(?:[^_]|\\_)|overlapSkip)|_(?:(?!overlapSkip)(?:[^_]|\\_)|overlapSkip)*?_)+?_$/,
-      endAst: /[^punctuation\s]\*(?!\*)|[punctuation]\*(?!\*)(?:(?=[punctuation_\s]|$))/,
-      // last char can't be punct, or final * must also be followed by punct (or endline)
-      endUnd: /[^\s]_(?!_)(?:(?=[punctuation*\s])|$)/ // last char can't be a space, and final _ must preceed punct or \s (or endline)
+    emStrong: {
+      lDelim: /^(?:\*+(?:([punct_])|[^\s*]))|^_+(?:([punct*])|([^\s_]))/,
+      //        (1) and (2) can only be a Right Delimiter. (3) and (4) can only be Left.  (5) and (6) can be either Left or Right.
+      //        () Skip other delimiter (1) #***                (2) a***#, a***                   (3) #***a, ***a                 (4) ***#              (5) #***#                 (6) a***a
+      rDelimAst: /\_\_[^_]*?\*[^_]*?\_\_|[punct_](\*+)(?=[\s]|$)|[^punct*_\s](\*+)(?=[punct_\s]|$)|[punct_\s](\*+)(?=[^punct*_\s])|[\s](\*+)(?=[punct_])|[punct_](\*+)(?=[punct_])|[^punct*_\s](\*+)(?=[^punct*_\s])/,
+      rDelimUnd: /\*\*[^*]*?\_[^*]*?\*\*|[punct*](\_+)(?=[\s]|$)|[^punct*_\s](\_+)(?=[punct*\s]|$)|[punct*\s](\_+)(?=[^punct*_\s])|[\s](\_+)(?=[punct*])|[punct*](\_+)(?=[punct*])/ // ^- Not allowed for _
 
     },
     code: /^(`+)([^`]|[^`][\s\S]*?[^`])\1(?!`)/,
     br: /^( {2,}|\\)\n(?!\s*$)/,
     del: noopTest$1,
-    text: /^(`+|[^`])(?:(?= {2,}\n)|[\s\S]*?(?:(?=[\\<!\[`*]|\b_|$)|[^ ](?= {2,}\n)))/,
-    punctuation: /^([\s*punctuation])/
-  }; // list of punctuation marks from common mark spec
-  // without * and _ to workaround cases with double emphasis
+    text: /^(`+|[^`])(?:(?= {2,}\n)|[\s\S]*?(?:(?=[\\<!\[`*_]|\b_|$)|[^ ](?= {2,}\n)))/,
+    punctuation: /^([\spunctuation])/
+  }; // list of punctuation marks from CommonMark spec
+  // without * and _ to handle the different emphasis markers * and _
 
   inline._punctuation = '!"#$%&\'()+\\-.,/:;<=>?@\\[\\]`^{|}~';
   inline.punctuation = edit$1(inline.punctuation).replace(/punctuation/g, inline._punctuation).getRegex(); // sequences em should skip over [title](link), `code`, <html>
 
-  inline._blockSkip = '\\[[^\\]]*?\\]\\([^\\)]*?\\)|`[^`]*?`|<[^>]*?>';
-  inline._overlapSkip = '__[^_]*?__|\\*\\*\\[^\\*\\]*?\\*\\*';
+  inline.blockSkip = /\[[^\]]*?\]\([^\)]*?\)|`[^`]*?`|<[^>]*?>/g;
+  inline.escapedEmSt = /\\\*|\\_/g;
   inline._comment = edit$1(block._comment).replace('(?:-->|$)', '-->').getRegex();
-  inline.em.start = edit$1(inline.em.start).replace(/punctuation/g, inline._punctuation).getRegex();
-  inline.em.middle = edit$1(inline.em.middle).replace(/punctuation/g, inline._punctuation).replace(/overlapSkip/g, inline._overlapSkip).getRegex();
-  inline.em.endAst = edit$1(inline.em.endAst, 'g').replace(/punctuation/g, inline._punctuation).getRegex();
-  inline.em.endUnd = edit$1(inline.em.endUnd, 'g').replace(/punctuation/g, inline._punctuation).getRegex();
-  inline.strong.start = edit$1(inline.strong.start).replace(/punctuation/g, inline._punctuation).getRegex();
-  inline.strong.middle = edit$1(inline.strong.middle).replace(/punctuation/g, inline._punctuation).replace(/overlapSkip/g, inline._overlapSkip).getRegex();
-  inline.strong.endAst = edit$1(inline.strong.endAst, 'g').replace(/punctuation/g, inline._punctuation).getRegex();
-  inline.strong.endUnd = edit$1(inline.strong.endUnd, 'g').replace(/punctuation/g, inline._punctuation).getRegex();
-  inline.blockSkip = edit$1(inline._blockSkip, 'g').getRegex();
-  inline.overlapSkip = edit$1(inline._overlapSkip, 'g').getRegex();
+  inline.emStrong.lDelim = edit$1(inline.emStrong.lDelim).replace(/punct/g, inline._punctuation).getRegex();
+  inline.emStrong.rDelimAst = edit$1(inline.emStrong.rDelimAst, 'g').replace(/punct/g, inline._punctuation).getRegex();
+  inline.emStrong.rDelimUnd = edit$1(inline.emStrong.rDelimUnd, 'g').replace(/punct/g, inline._punctuation).getRegex();
   inline._escapes = /\\([!"#$%&'()*+,\-./:;<=>?@\[\]\\^_`{|}~])/g;
   inline._scheme = /[a-zA-Z][a-zA-Z0-9+.-]{1,31}/;
   inline._email = /[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+(@)[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+(?![-_])/;
@@ -43226,7 +43311,7 @@ module.exports = throttle;
     url: /^((?:ftp|https?):\/\/|www\.)(?:[a-zA-Z0-9\-]+\.?)+[^\s<]*|^email/,
     _backpedal: /(?:[^?!.,:;*_~()&]+|\([^)]*\)|&(?![a-zA-Z0-9]+;$)|[?!.,:;*_~)]+(?!$))+/,
     del: /^(~~?)(?=[^\s~])([\s\S]*?[^\s~])\1(?=[^~]|$)/,
-    text: /^([`~]+|[^`~])(?:(?= {2,}\n)|[\s\S]*?(?:(?=[\\<!\[`*~]|\b_|https?:\/\/|ftp:\/\/|www\.|$)|[^ ](?= {2,}\n)|[^a-zA-Z0-9.!#$%&'*+\/=?_`{\|}~-](?=[a-zA-Z0-9.!#$%&'*+\/=?_`{\|}~-]+@))|(?=[a-zA-Z0-9.!#$%&'*+\/=?_`{\|}~-]+@))/
+    text: /^([`~]+|[^`~])(?:(?= {2,}\n)|[\s\S]*?(?:(?=[\\<!\[`*~_]|\b_|https?:\/\/|ftp:\/\/|www\.|$)|[^ ](?= {2,}\n)|[^a-zA-Z0-9.!#$%&'*+\/=?_`{\|}~-](?=[a-zA-Z0-9.!#$%&'*+\/=?_`{\|}~-]+@))|(?=[a-zA-Z0-9.!#$%&'*+\/=?_`{\|}~-]+@))/
   });
   inline.gfm.url = edit$1(inline.gfm.url, 'i').replace('email', inline.gfm._extended_email).getRegex();
   /**
@@ -43383,15 +43468,15 @@ module.exports = throttle;
         } // code
 
 
-        if (token = this.tokenizer.code(src, tokens)) {
+        if (token = this.tokenizer.code(src)) {
           src = src.substring(token.raw.length);
+          lastToken = tokens[tokens.length - 1]; // An indented code block cannot interrupt a paragraph.
 
-          if (token.type) {
-            tokens.push(token);
-          } else {
-            lastToken = tokens[tokens.length - 1];
+          if (lastToken && lastToken.type === 'paragraph') {
             lastToken.raw += '\n' + token.raw;
             lastToken.text += '\n' + token.text;
+          } else {
+            tokens.push(token);
           }
 
           continue;
@@ -43489,15 +43574,15 @@ module.exports = throttle;
         } // text
 
 
-        if (token = this.tokenizer.text(src, tokens)) {
+        if (token = this.tokenizer.text(src)) {
           src = src.substring(token.raw.length);
+          lastToken = tokens[tokens.length - 1];
 
-          if (token.type) {
-            tokens.push(token);
-          } else {
-            lastToken = tokens[tokens.length - 1];
+          if (lastToken && lastToken.type === 'text') {
             lastToken.raw += '\n' + token.raw;
             lastToken.text += '\n' + token.text;
+          } else {
+            tokens.push(token);
           }
 
           continue;
@@ -43604,7 +43689,7 @@ module.exports = throttle;
         inRawBlock = false;
       }
 
-      var token; // String with links masked to avoid interference with em and strong
+      var token, lastToken; // String with links masked to avoid interference with em and strong
 
       var maskedSrc = src;
       var match;
@@ -43625,6 +43710,11 @@ module.exports = throttle;
 
       while ((match = this.tokenizer.rules.inline.blockSkip.exec(maskedSrc)) != null) {
         maskedSrc = maskedSrc.slice(0, match.index) + '[' + repeatString$1('a', match[0].length - 2) + ']' + maskedSrc.slice(this.tokenizer.rules.inline.blockSkip.lastIndex);
+      } // Mask out escaped em & strong delimiters
+
+
+      while ((match = this.tokenizer.rules.inline.escapedEmSt.exec(maskedSrc)) != null) {
+        maskedSrc = maskedSrc.slice(0, match.index) + '++' + maskedSrc.slice(this.tokenizer.rules.inline.escapedEmSt.lastIndex);
       }
 
       while (src) {
@@ -43645,7 +43735,15 @@ module.exports = throttle;
           src = src.substring(token.raw.length);
           inLink = token.inLink;
           inRawBlock = token.inRawBlock;
-          tokens.push(token);
+          var _lastToken = tokens[tokens.length - 1];
+
+          if (_lastToken && token.type === 'text' && _lastToken.type === 'text') {
+            _lastToken.raw += token.raw;
+            _lastToken.text += token.text;
+          } else {
+            tokens.push(token);
+          }
+
           continue;
         } // link
 
@@ -43664,25 +43762,23 @@ module.exports = throttle;
 
         if (token = this.tokenizer.reflink(src, this.tokens.links)) {
           src = src.substring(token.raw.length);
+          var _lastToken2 = tokens[tokens.length - 1];
 
           if (token.type === 'link') {
             token.tokens = this.inlineTokens(token.text, [], true, inRawBlock);
+            tokens.push(token);
+          } else if (_lastToken2 && token.type === 'text' && _lastToken2.type === 'text') {
+            _lastToken2.raw += token.raw;
+            _lastToken2.text += token.text;
+          } else {
+            tokens.push(token);
           }
 
-          tokens.push(token);
           continue;
-        } // strong
+        } // em & strong
 
 
-        if (token = this.tokenizer.strong(src, maskedSrc, prevChar)) {
-          src = src.substring(token.raw.length);
-          token.tokens = this.inlineTokens(token.text, [], inLink, inRawBlock);
-          tokens.push(token);
-          continue;
-        } // em
-
-
-        if (token = this.tokenizer.em(src, maskedSrc, prevChar)) {
+        if (token = this.tokenizer.emStrong(src, maskedSrc, prevChar)) {
           src = src.substring(token.raw.length);
           token.tokens = this.inlineTokens(token.text, [], inLink, inRawBlock);
           tokens.push(token);
@@ -43728,9 +43824,22 @@ module.exports = throttle;
 
         if (token = this.tokenizer.inlineText(src, inRawBlock, smartypants)) {
           src = src.substring(token.raw.length);
-          prevChar = token.raw.slice(-1);
+
+          if (token.raw.slice(-1) !== '_') {
+            // Track prevChar before string of ____ started
+            prevChar = token.raw.slice(-1);
+          }
+
           keepPrevChar = true;
-          tokens.push(token);
+          lastToken = tokens[tokens.length - 1];
+
+          if (lastToken && lastToken.type === 'text') {
+            lastToken.raw += token.raw;
+            lastToken.text += token.text;
+          } else {
+            tokens.push(token);
+          }
+
           continue;
         }
 

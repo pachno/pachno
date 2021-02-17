@@ -2042,6 +2042,12 @@
                                 case entities\WorkflowTransitionAction::ACTION_SET_PRIORITY:
                                     $text = ($this->action->getTargetValue()) ? ListTypes::getTable()->selectById((int)$this->action->getTargetValue())->getName() : $this->getI18n()->__('Priority specified by user');
                                     break;
+                                case entities\WorkflowTransitionAction::ACTION_SET_SEVERITY:
+                                    $text = ($this->action->getTargetValue()) ? ListTypes::getTable()->selectById((int)$this->action->getTargetValue())->getName() : $this->getI18n()->__('Severity specified by user');
+                                    break;
+                                case entities\WorkflowTransitionAction::ACTION_SET_CATEGORY:
+                                    $text = ($this->action->getTargetValue()) ? ListTypes::getTable()->selectById((int)$this->action->getTargetValue())->getName() : $this->getI18n()->__('Category specified by user');
+                                    break;
                                 case entities\WorkflowTransitionAction::ACTION_SET_MILESTONE:
                                     $target = ($this->action->getTargetValue()) ? ListTypes::getTable()->selectById((int)$this->action->getTargetValue()) : null;
                                     $text = ($this->action->getTargetValue()) ? $target->getProject()->getName() . ' - ' . $target->getName() : $this->getI18n()->__('Milestone specified by user');

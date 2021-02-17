@@ -3963,8 +3963,14 @@
             if ($this->_num_files !== null) {
                 $this->_num_files--;
             }
+            if ($this->getCoverImageFile() instanceof File && $this->getCoverImageFile()->getId() == $file->getID()) {
+                $this->setCoverImageFile(null);
+                $this->save();
+            } else {
+                $this->touch();
+            }
+
             $file->delete();
-            $this->touch();
         }
 
         /**
@@ -4551,8 +4557,7 @@
                 'reproduction_steps' => $this->getReproductionSteps(),
                 'reproduction_steps_formatted' => $this->getParsedReproductionSteps(),
                 'issue_type' => $this->getIssueType()->toJSON(false),
-                'cover_image_file_id' => ($this->getCoverImageFile() instanceof File) ? $this->getCoverImageFile()->getID() : 0,
-                'cover_image_url' => ($this->getCoverImageFile() instanceof File) ? Context::getRouting()->generate('showfile', ['id' => $this->getCoverImageFile()->getID()]) : '',
+                'cover_image' => ($this->getCoverImageFile() instanceof File) ? $this->getCoverImageFile()->toJSON() : null,
                 'href' => Context::getRouting()->generate('viewissue', ['project_key' => $this->getProject()->getKey(), 'issue_no' => $this->getFormattedIssueNo()], false),
                 'more_actions_url' => Context::getRouting()->generate('issue_moreactions', ['project_key' => $this->getProject()->getKey(), 'issue_id' => $this->getID()]),
                 'choices_url' => Context::getRouting()->generate('issue_load_dynamic_choices', ['project_key' => $this->getProject()->getKey(), 'issue_id' => $this->getID()]),
@@ -4569,6 +4574,7 @@
                 'number_of_comments' => $this->getNumberOfUserComments(),
                 'number_of_files' => $this->getNumberOfFiles(),
                 'number_of_subscribers' => count($this->getSubscribers()),
+                'number_of_child_issues' => count($this->getChildIssues()),
                 'tags' => [],
                 'transitions' => [],
                 'available_statuses' => [],

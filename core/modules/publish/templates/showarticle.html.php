@@ -112,7 +112,7 @@
             const article = <?= json_encode($article->toJSON()); ?>;
             <?php if (\pachno\core\framework\Settings::isUploadsEnabled() && $article->canEdit()): ?>
                 const uploader = new Uploader({
-                    uploader_container: $('#article_attachments'),
+                    uploader_container: '#article_attachments',
                     mode: 'list',
                     only_images: false,
                     type: '<?= \pachno\core\entities\File::TYPE_ATTACHMENT; ?>',

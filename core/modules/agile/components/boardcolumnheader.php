@@ -7,7 +7,7 @@
      */
 
 ?>
-<div class="column form-container" data-column-id="<?= $column->getID(); ?>" data-min-workitems="<?php echo $column->getMinWorkitems(); ?>" data-max-workitems="<?php echo $column->getMaxWorkitems(); ?>">
+<div class="column form-container" data-column-id="<?= $column->getID(); ?>" data-min-workitems="<?php echo $column->getMinWorkitems(); ?>" data-max-workitems="<?php echo $column->getMaxWorkitems(); ?>" data-status-ids="<?= implode(',', $column->getStatusIds()); ?>">
     <div class="row" title="<?php echo $column->getName(); ?>">
         <form class="name" method="POST" action="<?php echo make_url('agile_whiteboardcolumn', array('project_key' => $column->getBoard()->getProject()->getKey(), 'board_id' => $column->getBoard()->getID(), 'column_id' => $column->getID())); ?>" data-interactive-form id="column_<?= $column->getID(); ?>_header_form">
             <div class="form-row">
