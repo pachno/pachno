@@ -1,8 +1,7 @@
 <?php
 
     use pachno\core\entities\Issue;
-    use pachno\core\framework\Settings;
-    use pachno\core\framework\Context;
+    use pachno\core\entities\File;
 
     /**
      * @var string $set_field_route
@@ -32,14 +31,14 @@
         <button class="closer"><?= fa_image_tag('times'); ?></button>
     </div>
     <div id="backdrop_detail_content" class="backdrop_detail_content with-sidebar sidebar-right">
-        <div class="content">
-            <div id="title-field" class="title-container">
+        <div class="content <?php if ($issue->getCoverImageFile() instanceof File) echo 'with-cover'; ?>" data-dynamic-field-value data-field="cover_image_toggle" data-issue-id="<?= $issue->getId(); ?>">
+            <div id="title-field" class="title-container" style="<?php if ($issue->getCoverImageFile() instanceof File) echo "background-image: url('{$issue->getCoverImageFile()->getURL()}');"; ?>" data-dynamic-field-value data-field="cover_image" data-issue-id="<?= $issue->getId(); ?>">
                 <?php if ($issue->isWorkflowTransitionsAvailable()): ?>
                     <span class="title-crumbs">
                         <?php include_component('project/issueparent_crumbs', array('issue' => $issue)); ?>
                     </span>
                 <?php endif; ?>
-                <div id="title_content">
+                <div id="title_content" class="title-content">
                     <span id="title-name" class="title-name" title="<?php echo \pachno\core\framework\Context::getI18n()->decodeUTF8($issue->getTitle()); ?>">
                         <?php echo \pachno\core\framework\Context::getI18n()->decodeUTF8($issue->getTitle()); ?>
                     </span>

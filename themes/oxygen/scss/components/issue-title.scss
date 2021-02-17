@@ -14,14 +14,33 @@
       justify-content: flex-start;
       line-height: 1.25em;
 
-      > a,
-      > a:hover {
-        border: none;
-        color: #141823;
-        font-size: 1.1em;
-        flex: 0 0 auto;
-        margin-left: .5em;
-        font-weight: $theme-font-weight-bold;
+      .crumb-item {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: flex-start;
+        line-height: 1.25em;
+        padding: 0 .5em 0 0;
+
+        &:last-child {
+          > a {
+            font-size: 1.4em;
+          }
+        }
+
+        > a,
+        > a:hover {
+          border: none;
+          color: #141823;
+          font-size: 1.1em;
+          flex: 0 0 auto;
+          margin-left: .5em;
+          font-weight: $theme-font-weight-bold;
+        }
+
+        .issuetype-icon {
+          margin: 0 0 0 .5em;
+        }
       }
     }
 

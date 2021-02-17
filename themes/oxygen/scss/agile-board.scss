@@ -854,6 +854,12 @@
         font-size: 2em;
       }
     }
+
+    &.with-cover {
+      > .indicator {
+        padding: 5em;
+      }
+    }
   }
 }
 
