@@ -300,7 +300,7 @@
                 $issues = $this->search_object->getQuickfoundIssues();
                 $issue = array_shift($issues);
                 if ($issue instanceof entities\Issue) {
-                    return $this->forward($this->getRouting()->generate('viewissue', ['project_key' => $issue->getProject()->getKey(), 'issue_no' => $issue->getFormattedIssueNo()]));
+                    return $this->forward($issue->getUrl());
                 }
             }
             $this->search_error = Context::getMessageAndClear('search_error');

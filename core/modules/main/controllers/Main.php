@@ -97,10 +97,10 @@
             } while ($found_issue instanceof Issue && !$found_issue->hasAccess());
 
             if ($found_issue instanceof Issue) {
-                $this->forward($this->getRouting()->generate('viewissue', ['project_key' => $found_issue->getProject()->getKey(), 'issue_no' => $found_issue->getFormattedIssueNo()]));
+                $this->forward($found_issue->getUrl());
             } else {
                 framework\Context::setMessage('issue_message', $this->getI18n()->__('There are no more issues in that direction.'));
-                $this->forward($this->getRouting()->generate('viewissue', ['project_key' => $issue->getProject()->getKey(), 'issue_no' => $issue->getFormattedIssueNo()]));
+                $this->forward($issue->getUrl());
             }
         }
 
@@ -288,7 +288,7 @@
                 framework\Context::setMessage('issue_error', framework\Context::getI18n()->__('The issue was not moved, since the project is the same'));
             }
 
-            return $this->forward($this->getRouting()->generate('viewissue', ['project_key' => $project->getKey(), 'issue_no' => $issue->getFormattedIssueNo()]));
+            return $this->forward($issue->getUrl());
         }
 
         /**
@@ -2150,7 +2150,7 @@
             $issue->save();
 
             framework\Context::setMessage('issue_deleted', true);
-            $this->forward($this->getRouting()->generate('viewissue', ['project_key' => $issue->getProject()->getKey(), 'issue_no' => $issue->getFormattedIssueNo()]) . '?referer=' . $request_referer);
+            $this->forward($issue->getUrl() . '?referer=' . $request_referer);
         }
 
         /**

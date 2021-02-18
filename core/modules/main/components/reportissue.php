@@ -56,7 +56,7 @@
     <?php elseif ($issue instanceof Issue): ?>
         <div class="message-box type-info" id="report_issue_reported_issue_details">
             <div class="message">
-                <?= __('The following issue was reported: %link_to_issue', ['%link_to_issue' => link_tag(make_url('viewissue', ['project_key' => $issue->getProject()->getKey(), 'issue_no' => $issue->getFormattedIssueNo()]), $issue->getFormattedIssueNo(true) . ' - ' . $issue->getTitle())]); ?>
+                <?= __('The following issue was reported: %link_to_issue', ['%link_to_issue' => link_tag($issue->getUrl(), $issue->getFormattedIssueNo(true) . ' - ' . $issue->getTitle())]); ?>
             </div>
             <div class="actions">
                 <a class="button primary" id="report_issue_report_another_button"

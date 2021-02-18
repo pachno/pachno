@@ -4,7 +4,7 @@
  *  @var \pachno\core\framework\Routing $pachno_routing
  */
 ?>
-<a href="<?= make_url('viewissue', array('project_key' => $issue->getProject()->getKey(), 'issue_no' => $issue->getFormattedIssueNo())); ?>" title="<?= $issue->getFormattedTitle(true); ?>" class="list-item multiline <?php if ($pachno_routing->getCurrentRoute()->getName() == 'viewissue' && $pachno_request->getParameter('issue_no') == $issue->getFormattedIssueNo(true, false)) echo 'selected'; ?>">
+<a href="<?= $issue->getUrl(); ?>" title="<?= $issue->getFormattedTitle(true); ?>" class="list-item multiline <?php if ($pachno_routing->getCurrentRoute()->getName() == 'viewissue' && $pachno_request->getParameter('issue_no') == $issue->getFormattedIssueNo(true, false)) echo 'selected'; ?>">
     <span class="icon"><?php if ($issue->hasIssueType()) echo fa_image_tag($issue->getIssueType()->getFontAwesomeIcon(), ['class' => (($issue->hasIssueType()) ? 'issuetype-icon issuetype-' . $issue->getIssueType()->getIcon() : 'issuetype-icon issuetype-unknown')]); ?></span>
     <span class="name">
         <span class="title"><?php echo $issue->getFormattedTitle(true); ?></span>

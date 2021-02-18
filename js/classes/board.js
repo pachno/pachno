@@ -129,6 +129,11 @@ class Board {
         const $selectedInput = $('input[name=selected_milestone]:checked');
         const previous_milestone_id = this.selected_milestone_id;
         this.selected_milestone_id = ($selectedInput.length) ? parseInt($selectedInput.val()) : 0;
+        if (this.swimlanes) {
+            for (const swimlane of this.swimlanes) {
+                swimlane.selected_milestone_id = this.selected_milestone_id;
+            }
+        }
 
         this.updateVisibleWhiteboard();
         if (this.selected_milestone_id !== previous_milestone_id && trigger_reload) {
@@ -159,7 +164,7 @@ class Board {
     setSwimlanes(swimlanes) {
         const $whiteboard_indicator = $('#whiteboard_indicator');
         if (swimlanes.length) {
-            this.swimlanes = swimlanes.map(json => new Swimlane(json, this.id));
+            this.swimlanes = swimlanes.map(json => new Swimlane(json, this.id, this.selected_milestone_id));
             this.updateWhiteboard();
         } else {
             this.swimlanes = swimlanes;
@@ -204,7 +209,7 @@ class Board {
                     header_name += `<span class="status-badge" data-dynamic-field-value data-field="status" data-issue-id="${swimlane.identifier_issue.id}" style="background-color: ${swimlane.identifier_issue.status.color}; color: ${swimlane.identifier_issue.status.text_color};"><span>${swimlane.identifier_issue.status.name}</span></span>`
                     header_name += `</a>`;
                     header_name += `<span class="name issue_header ${closed_class} trigger-backdrop" data-url="${swimlane.identifier_issue.card_url}">`;
-                    header_name += `<span>${swimlane.identifier_issue.title}</span>`;
+                    header_name += `<span data-dynamic-field-value data-field="title" data-issue-id="${swimlane.identifier_issue.id}">${swimlane.identifier_issue.title}</span>`;
                     header_name += '</span>';
                     header_name += '</span>';
                     header_name += `<button class="button secondary highlight trigger-report-issue trigger-backdrop" data-url="${this.report_issue_url}" data-additional-params="parent_issue_id=${swimlane.identifier_issue.id}">${UI.fa_image_tag('sticky-note', { classes: 'icon' }, 'far')}<span>${Pachno.T.agile.add_card_here}</span></button>`
@@ -441,7 +446,7 @@ class Board {
                 has_identifiables: true,
                 identifier_issue: issue_json,
                 identifier: 'swimlane_' + issue.id
-            }, this.id);
+            }, this.id, this.selected_milestone_id);
 
             this.swimlanes.splice(this.swimlanes.length - 1, 0, swimlane);
         } else {

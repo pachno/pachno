@@ -16,7 +16,7 @@
                 </div>
             </td>
             <td class="result_issue"<?php if (\pachno\core\framework\Context::isProjectContext()): ?> style="padding-left: 3px;"<?php endif; ?>>
-                <?php echo link_tag(make_url('viewissue', array('project_key' => $issue->getProject()->getKey(), 'issue_no' => $issue->getFormattedIssueNo())), '<span class="issue_no">' . $issue->getFormattedIssueNo(true) . '</span> - <span class="issue_title">' . $issue->getTitle() . '</span>', array('class' => 'issue_link')); ?>
+                <?php echo link_tag($issue->getUrl(), '<span class="issue_no">' . $issue->getFormattedIssueNo(true) . '</span> - <span class="issue_title">' . $issue->getTitle() . '</span>', array('class' => 'issue_link')); ?>
             </td>
             <td<?php if (!$issue->getStatus() instanceof \pachno\core\entities\Datatype): ?> class="faded_out"<?php endif; ?>>
                 <?php if ($issue->getStatus() instanceof \pachno\core\entities\Datatype): ?>

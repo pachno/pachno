@@ -296,26 +296,22 @@
         {
             Context::loadLibrary('ui');
 
-            $theIssue = Issue::getIssueFromLink($matches[2]);
+            $issue = Issue::getIssueFromLink($matches[2]);
             $output = '';
             $classname = '';
-            if ($theIssue instanceof Issue && ($theIssue->isClosed() || $theIssue->isDeleted())) {
+            if ($issue instanceof Issue && ($issue->isClosed() || $issue->isDeleted())) {
                 $classname = 'closed';
             }
-            if ($theIssue instanceof Issue) {
-                $theIssueUrl = make_url('viewissue', ['issue_no' => $theIssue->getFormattedIssueNo(false), 'project_key' => $theIssue->getProject()->getKey()]);
+            if ($issue instanceof Issue) {
                 $urlPrefix = framework\Event::createNew('core', 'pachno\core\framework\helpers\TextParser::_parseIssuelink::urlPrefix')->triggerUntilProcessed()->getReturnValue();
-
-                if ($urlPrefix) {
-                    $theIssueUrl = $urlPrefix . $theIssueUrl;
-                }
+                $url = $urlPrefix . $issue->getUrl();
 
                 if ($markdown_format) {
                     if ($classname == 'closed') $classname = ' (' . Context::getI18n()->__('Closed') . ')';
 
-                    $output = "{$matches[1]}[{$matches[2]}]($theIssueUrl \"{$theIssue->getFormattedTitle()}\")$classname";
+                    $output = "{$matches[1]}[{$matches[2]}]($url \"{$issue->getFormattedTitle()}\")$classname";
                 } else {
-                    $output = $matches[1] . link_tag($theIssueUrl, $matches[2], ['class' => $classname, 'title' => $theIssue->getFormattedTitle()]);
+                    $output = $matches[1] . link_tag($url, $matches[2], ['class' => $classname, 'title' => $issue->getFormattedTitle()]);
                 }
             } else {
                 $output = $matches[1] . $matches[2];

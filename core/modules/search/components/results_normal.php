@@ -116,7 +116,7 @@ $current_spent_time = $current_estimated_time;
     <?php endif; ?>
         <div class="column result_issue">
             <?php $title_visible = (in_array('title', $visible_columns)) ? '' : ' style="display: none;'; ?>
-            <a class="issue_link" href="<?php echo make_url('viewissue', ['project_key' => $issue->getProject()->getKey(), 'issue_no' => $issue->getFormattedIssueNo()]); ?>">
+            <a class="issue_link" href="<?php echo $issue->getUrl(); ?>">
                 <?php echo fa_image_tag((($issue->hasIssueType()) ? $issue->getIssueType()->getFontAwesomeIcon() : 'unknown'), ['class' => (($issue->hasIssueType()) ? 'issuetype-icon issuetype-' . $issue->getIssueType()->getIcon() : 'issuetype-icon issuetype-unknown'), 'title' => (($issue->hasIssueType()) ? $issue->getIssueType()->getName() : __('Unknown issuetype'))]); ?>
                 <span class="issue_no"><?php echo $issue->getFormattedIssueNo(true); ?></span>
                 <span class="sc_title"<?php echo $title_visible; ?>><span class="sc_dash"> - </span><?php echo $issue->getTitle(); ?></span>

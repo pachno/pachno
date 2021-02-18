@@ -27,8 +27,8 @@
             <description><![CDATA[<?php echo strip_tags($issue->getDescription()); ?>]]></description>
             <?php endif; ?>
             <pubDate><?php echo \pachno\core\framework\Context::getI18n()->formatTime($issue->getLastUpdatedTime(), 21); ?></pubDate>
-            <link><?php echo make_url('viewissue', array('issue_no' => $issue->getFormattedIssueNo(), 'project_key' => $issue->getProject()->getKey()), false); ?></link>
-            <guid><?php echo make_url('viewissue', array('issue_no' => $issue->getFormattedIssueNo(), 'project_key' => $issue->getProject()->getKey()), false); ?></guid>
+            <link><?php echo $issue->getUrl(false); ?></link>
+            <guid><?php echo $issue->getUrl(false); ?></guid>
         </item>
 <?php endforeach; ?>
 <?php endif; ?>

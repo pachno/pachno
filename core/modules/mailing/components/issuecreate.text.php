@@ -10,7 +10,7 @@
     <?php echo \pachno\core\helpers\TextParser::parseText($issue->getReproductionSteps()); ?>
 <?php endif; ?>
 
-<?php echo __('Show issue:') . ' ' . $module->generateURL('viewissue', array('project_key' => $issue->getProject()->getKey(), 'issue_no' => $issue->getFormattedIssueNo())); ?>
+<?php echo __('Show issue:') . ' ' . $module->getPrefixedUrl($issue->getUrl()); ?>
 
 <?php echo __('Show %project project dashboard:', array('%project' => $issue->getProject()->getName())) . ' ' . $module->generateURL('project_dashboard', array('project_key' => $issue->getProject()->getKey())); ?>
 

@@ -410,9 +410,16 @@
             $this->count = count($this->editions) + count($this->components) + count($this->builds);
         }
 
-        public function componentRelatedissues()
+        public function componentRelatedissue()
         {
-            $this->child_issues = $this->issue->getChildIssues();
+            $this->backdrop = $this->backdrop ?? false;
+            $this->link_url = ($this->backdrop) ? 'javascript:void(0);' : $this->issue->getUrl();
+            $this->link_data = ($this->backdrop) ? 'data-url="' . $this->issue->getCardUrl() . '"' : '';
+        }
+
+        public function componentIssueDetails()
+        {
+            $this->backdrop = $this->backdrop ?? false;
         }
 
         public function componentDuplicateissues()

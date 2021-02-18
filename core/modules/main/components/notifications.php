@@ -42,7 +42,7 @@
                             <time><?= \pachno\core\framework\Context::getI18n()->formatTime($notification->getCreatedAt(), 20); ?></time>
                             <?= __('%user_name created a new issue under %project_name', array('%user_name' => get_component_html('main/userdropdown_inline', array('user' => $notification->getTarget()->getPostedBy())), '%project_name' => link_tag(make_url('project_dashboard', array('project_key' => $notification->getTarget()->getProject()->getKey())), $notification->getTarget()->getProject()->getName()))); ?>
                         </h1>
-                        <div class="notification_content"><?= link_tag(make_url('viewissue', array('project_key' => $notification->getTarget()->getProject()->getKey(), 'issue_no' => $notification->getTarget()->getFormattedIssueNo())), $notification->getTarget()->getFormattedIssueNo(true)); ?> - <?= $notification->getTarget()->getTitle(); ?></div>
+                        <div class="notification_content"><?= link_tag($notification->getTarget()->getUrl(), $notification->getTarget()->getFormattedIssueNo(true)); ?> - <?= $notification->getTarget()->getTitle(); ?></div>
                         <?php
                         break;
                     case \pachno\core\entities\Notification::TYPE_ISSUE_UPDATED:
@@ -50,7 +50,7 @@
                         <h1>
                             <?= image_tag($notification->getTarget()->getProject()->getIconName(), array('class' => 'notification-project-logo'), true); ?>
                             <time><?= \pachno\core\framework\Context::getI18n()->formatTime($notification->getCreatedAt(), 20); ?></time>
-                            <?= __('%issue_no was updated by %user_name', array('%user_name' => get_component_html('main/userdropdown_inline', array('user' => $notification->getTriggeredByUser())), '%issue_no' => link_tag(make_url('viewissue', array('project_key' => $notification->getTarget()->getProject()->getKey(), 'issue_no' => $notification->getTarget()->getFormattedIssueNo())), $notification->getTarget()->getFormattedIssueNo(true)) .' - '. $notification->getTarget()->getTitle())); ?>
+                            <?= __('%issue_no was updated by %user_name', array('%user_name' => get_component_html('main/userdropdown_inline', array('user' => $notification->getTriggeredByUser())), '%issue_no' => link_tag($notification->getTarget()->getUrl(), $notification->getTarget()->getFormattedIssueNo(true)) .' - '. $notification->getTarget()->getTitle())); ?>
                         </h1>
                         <?php
                         break;
@@ -59,7 +59,7 @@
                         <h1>
                             <?= image_tag($notification->getTarget()->getTarget()->getProject()->getIconName(), array('class' => 'notification-project-logo'), true); ?>
                             <time><?= \pachno\core\framework\Context::getI18n()->formatTime($notification->getCreatedAt(), 20); ?></time>
-                            <?= __('%user_name posted a %comment on %issue_no', array('%user_name' => get_component_html('main/userdropdown_inline', array('user' => $notification->getTriggeredByUser())), '%comment' => link_tag(make_url('viewissue', array('project_key' => $notification->getTarget()->getTarget()->getProject()->getKey(), 'issue_no' => $notification->getTarget()->getTarget()->getFormattedIssueNo())).'#comment_'.$notification->getTarget()->getID(), __('%username_posted_a comment %on_issue', array('%username_posted_a' => '', '%on_issue' => ''))), '%issue_no' => link_tag(make_url('viewissue', array('project_key' => $notification->getTarget()->getTarget()->getProject()->getKey(), 'issue_no' => $notification->getTarget()->getTarget()->getFormattedIssueNo())), $notification->getTarget()->getTarget()->getFormattedIssueNo(true)) .' - '. $notification->getTarget()->getTarget()->getTitle())); ?>
+                            <?= __('%user_name posted a %comment on %issue_no', array('%user_name' => get_component_html('main/userdropdown_inline', array('user' => $notification->getTriggeredByUser())), '%comment' => link_tag($notification->getTarget()->getTarget()->getUrl().'#comment_'.$notification->getTarget()->getID(), __('%username_posted_a comment %on_issue', array('%username_posted_a' => '', '%on_issue' => ''))), '%issue_no' => link_tag($notification->getTarget()->getTarget()->getUrl(), $notification->getTarget()->getTarget()->getFormattedIssueNo(true)) .' - '. $notification->getTarget()->getTarget()->getTitle())); ?>
                         </h1>
                         <?php
                         break;
@@ -68,7 +68,7 @@
                             <h1>
                                 <?= image_tag($notification->getTarget()->getTarget()->getProject()->getIconName(), array('class' => 'notification-project-logo'), true); ?>
                                 <time><?= \pachno\core\framework\Context::getI18n()->formatTime($notification->getCreatedAt(), 20); ?></time>
-                                <?= __('%user_name mentioned you in a %comment on %issue_no', array('%user_name' => get_component_html('main/userdropdown_inline', array('user' => $notification->getTriggeredByUser())), '%comment' => link_tag(make_url('viewissue', array('project_key' => $notification->getTarget()->getTarget()->getProject()->getKey(), 'issue_no' => $notification->getTarget()->getTarget()->getFormattedIssueNo())).'#comment_'.$notification->getTarget()->getID(), __('%username_posted_a comment %on_issue', array('%username_posted_a' => '', '%on_issue' => ''))), '%issue_no' => link_tag(make_url('viewissue', array('project_key' => $notification->getTarget()->getTarget()->getProject()->getKey(), 'issue_no' => $notification->getTarget()->getTarget()->getFormattedIssueNo())), $notification->getTarget()->getTarget()->getFormattedIssueNo(true)) .' - '. $notification->getTarget()->getTarget()->getTitle())); ?>
+                                <?= __('%user_name mentioned you in a %comment on %issue_no', array('%user_name' => get_component_html('main/userdropdown_inline', array('user' => $notification->getTriggeredByUser())), '%comment' => link_tag($notification->getTarget()->getTarget()->getUrl().'#comment_'.$notification->getTarget()->getID(), __('%username_posted_a comment %on_issue', array('%username_posted_a' => '', '%on_issue' => ''))), '%issue_no' => link_tag($notification->getTarget()->getTarget()->getUrl(), $notification->getTarget()->getTarget()->getFormattedIssueNo(true)) .' - '. $notification->getTarget()->getTarget()->getTitle())); ?>
                             </h1>
                         <?php else: ?>
                             <h1>
@@ -111,7 +111,7 @@
                         <h1>
                             <?= image_tag($notification->getTarget()->getProject()->getIconName(), array('class' => 'notification-project-logo'), true); ?>
                             <time><?= \pachno\core\framework\Context::getI18n()->formatTime($notification->getCreatedAt(), 20); ?></time>
-                            <?= __('%user_name mentioned you in an issue %issue_no', array('%user_name' => get_component_html('main/userdropdown_inline', array('user' => $notification->getTriggeredByUser())), '%issue_no' => link_tag(make_url('viewissue', array('project_key' => $notification->getTarget()->getProject()->getKey(), 'issue_no' => $notification->getTarget()->getFormattedIssueNo())), $notification->getTarget()->getFormattedIssueNo(true)) .' - '. $notification->getTarget()->getTitle())); ?>
+                            <?= __('%user_name mentioned you in an issue %issue_no', array('%user_name' => get_component_html('main/userdropdown_inline', array('user' => $notification->getTriggeredByUser())), '%issue_no' => link_tag($notification->getTarget()->getUrl(), $notification->getTarget()->getFormattedIssueNo(true)) .' - '. $notification->getTarget()->getTitle())); ?>
                         </h1>
                         <?php
                         break;

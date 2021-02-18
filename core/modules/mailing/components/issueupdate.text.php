@@ -102,9 +102,9 @@ echo $issue->getFormattedTitle(true); ?> *
 <?php endif; ?>
 
 
-<?php echo __('Show issue:') . ' ' . $module->generateURL('viewissue', array('project_key' => $issue->getProject()->getKey(), 'issue_no' => $issue->getFormattedIssueNo())); ?>
+<?php echo __('Show issue:') . ' ' . $module->getPrefixedUrl($issue->getUrl()); ?>
 
-<?php if (isset($comment) && $comment instanceof \pachno\core\entities\Comment) { echo __('Show comment:') . ' ' . $module->generateURL('viewissue', array('project_key' => $issue->getProject()->getKey(), 'issue_no' => $issue->getFormattedIssueNo())) . '#comment_' . $comment->getID(); } ?>
+<?php if (isset($comment) && $comment instanceof \pachno\core\entities\Comment) { echo __('Show comment:') . ' ' . $module->getPrefixedUrl($issue->getUrl()) . '#comment_' . $comment->getID(); } ?>
 
 <?php echo __('Show %project project dashboard:', array('%project' => $issue->getProject()->getName())) . ' ' . $module->generateURL('project_dashboard', array('project_key' => $issue->getProject()->getKey())); ?>
 

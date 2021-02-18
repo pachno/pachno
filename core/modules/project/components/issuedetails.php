@@ -89,7 +89,12 @@
             <span class="name"><?= __('Subtasks'); ?><span id="viewissue_related_issues_count" class="count-badge"><?= $issue->countChildIssues(); ?></span></span>
         </div>
         <div id="viewissue_related_information" class="related-issues content">
-            <?php include_component('main/relatedissues', array('issue' => $issue)); ?>
+            <div class="related-issues-list" id="related_child_issues_inline">
+                <?php foreach ($issue->getChildIssues() as $child_issue): ?>
+                    <?php include_component('main/relatedissue', array('issue' => $child_issue, 'related_issue' => $issue, 'backdrop' => $backdrop)); ?>
+                <?php endforeach; ?>
+            </div>
+            <div id="no_related_issues"<?php if (count($issue->getChildIssues()) > 0): ?> style="display: none;"<?php endif; ?>><?php echo __('This issue does not have any child issues'); ?></div>
         </div>
     </div>
     <?php include_component('main/issuemaincustomfields', ['issue' => $issue]); ?>

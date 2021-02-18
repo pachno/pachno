@@ -100,7 +100,7 @@ echo \pachno\core\framework\Context::getI18n()->getCharset(); ?>" ?>
                 ?>: <?php echo $issue->getFormattedIssueNo(true) . ' - ' . $issue->getTitle(); ?>]]></title>
             <description><![CDATA[<?php echo strip_tags($issue->getDescription()); ?>]]></description>
             <pubDate><?php echo \pachno\core\framework\Context::getI18n()->formatTime($issue->getLastUpdatedTime(), 21); ?></pubDate>
-            <link><?php echo make_url('viewissue', array('issue_no' => $issue->getFormattedIssueNo(), 'project_key' => $issue->getProject()->getKey()), false); ?></link>
+            <link><?php echo $issue->getUrl(false); ?></link>
             <guid isPermaLink="false"><?php echo sha1($timestamp.$activity['text']); ?></guid>
         </item>
         

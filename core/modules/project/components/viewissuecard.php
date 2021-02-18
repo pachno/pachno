@@ -15,10 +15,6 @@
     <div class="backdrop_detail_header">
         <?php if ($issue->isWorkflowTransitionsAvailable()): ?>
             <?php include_component('project/viewissueworkflowbuttons', ['issue' => $issue, 'showLockedStatus' => false]); ?>
-        <?php else: ?>
-            <span class="title-crumbs">
-                <?php include_component('project/issueparent_crumbs', array('issue' => $issue)); ?>
-            </span>
         <?php endif; ?>
         <div class="indicator issue-update-indicator" data-issue-id="<?= $issue->getID(); ?>">
             <?= fa_image_tag('spinner', ['class' => 'fa-spin']); ?>
@@ -33,15 +29,18 @@
     <div id="backdrop_detail_content" class="backdrop_detail_content with-sidebar sidebar-right">
         <div class="content <?php if ($issue->getCoverImageFile() instanceof File) echo 'with-cover'; ?>" data-dynamic-field-value data-field="cover_image_toggle" data-issue-id="<?= $issue->getId(); ?>">
             <div id="title-field" class="title-container" style="<?php if ($issue->getCoverImageFile() instanceof File) echo "background-image: url('{$issue->getCoverImageFile()->getURL()}');"; ?>" data-dynamic-field-value data-field="cover_image" data-issue-id="<?= $issue->getId(); ?>">
-                <?php if ($issue->isWorkflowTransitionsAvailable()): ?>
-                    <span class="title-crumbs">
-                        <?php include_component('project/issueparent_crumbs', array('issue' => $issue)); ?>
-                    </span>
-                <?php endif; ?>
                 <div id="title_content" class="title-content">
-                    <span id="title-name" class="title-name" title="<?php echo \pachno\core\framework\Context::getI18n()->decodeUTF8($issue->getTitle()); ?>">
-                        <?php echo \pachno\core\framework\Context::getI18n()->decodeUTF8($issue->getTitle()); ?>
-                    </span>
+                    <?php if ($issue->getParentIssues()): ?>
+                        <span class="title-crumbs">
+                            <?php include_component('project/issueparent_crumbs', ['issue' => $issue, 'backdrop' => true]); ?>
+                        </span>
+                    <?php endif; ?>
+                    <div id="title-name" class="title-name" title="<?php echo \pachno\core\framework\Context::getI18n()->decodeUTF8($issue->getTitle()); ?>">
+                        <?= fa_image_tag(($issue->hasIssueType()) ? $issue->getIssueType()->getFontAwesomeIcon() : 'unknown', ['class' => (($issue->hasIssueType()) ? 'issuetype-icon issuetype-' . $issue->getIssueType()->getIcon() : 'issuetype-icon issuetype-unknown')]); ?>
+                        <span><?= $issue->getFormattedIssueNo(true); ?>&nbsp;&ndash;&nbsp;</span>
+                        <input type="text" name="title" value="<?= $issue->getTitle(); ?>" class="invisible" id="issue_<?= $issue->getID(); ?>_title_input" data-trigger-save-on-blur data-field="title" data-issue-id="<?= $issue->getId(); ?>">
+                        <?= fa_image_tag('spinner', ['class' => 'fa-spin indicator']); ?>
+                    </div>
                 </div>
             </div>
             <div id="status-field" class="dropper-container status-field">
@@ -72,7 +71,7 @@
                     </div>
                 <?php endif; ?>
             </div>
-            <?php include_component('project/issuedetails', ['issue' => $issue]); ?>
+            <?php include_component('project/issuedetails', ['issue' => $issue, 'backdrop' => true]); ?>
             <?php include_component('project/issuecomments', ['issue' => $issue]); ?>
         </div>
         <div class="sidebar" id="issue-card-issuefields-container">

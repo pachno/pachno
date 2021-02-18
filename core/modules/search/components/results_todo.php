@@ -60,7 +60,7 @@
                             -
                         <?php endif; ?>
                     </td>
-                    <td class="result_issue"><?php echo link_tag(make_url('viewissue', array('project_key' => $issue->getProject()->getKey(), 'issue_no' => $issue->getFormattedIssueNo())), $issue->getFormattedIssueNo(true), array('class' => 'issue_link')); ?></td>
+                    <td class="result_issue"><?php echo link_tag($issue->getUrl(), $issue->getFormattedIssueNo(true), array('class' => 'issue_link')); ?></td>
                 </tr>
     <?php if ($cc == $search_object->getTotalNumberOfIssues()): ?>
             </tbody>

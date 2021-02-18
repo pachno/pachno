@@ -30,10 +30,10 @@
         <?php endif; ?>
     </div>
     <?php /* if ($issue->hasChildIssues()): ?>
-         link_tag(make_url('viewissue', array('issue_no' => $issue->getFormattedIssueNo(), 'project_key' => $issue->getProject()->getKey())), $issue->getFormattedTitle(true, false), array('title' => $issue->getFormattedTitle(), 'target' => '_blank', 'class' => 'issue_header'))
+         link_tag($issue->getUrl(), $issue->getFormattedTitle(true, false), array('title' => $issue->getFormattedTitle(), 'target' => '_blank', 'class' => 'issue_header'))
         <ol class="child-issues">
             <?php foreach ($issue->getChildIssues() as $child_issue): ?>
-                <li title="<?php echo __e($child_issue->getFormattedTitle()); ?>" class="<?php if ($child_issue->isClosed()) echo 'closed'; ?>"><?php echo link_tag(make_url('viewissue', array('issue_no' => $child_issue->getFormattedIssueNo(), 'project_key' => $child_issue->getProject()->getKey())), $child_issue->getFormattedTitle(true), array('title' => $child_issue->getFormattedTitle(), 'target' => '_blank')); ?></li>
+                <li title="<?php echo __e($child_issue->getFormattedTitle()); ?>" class="<?php if ($child_issue->isClosed()) echo 'closed'; ?>"><?php echo link_tag($chile_issue->getUrl(), $child_issue->getFormattedTitle(true), array('title' => $child_issue->getFormattedTitle(), 'target' => '_blank')); ?></li>
             <?php endforeach; ?>
         </ol>
     <?php endif; */ ?>
@@ -50,7 +50,7 @@
                 <?php if ($swimlane->getBoard()->getEpicIssuetypeID() && $issue->hasParentIssuetype($swimlane->getBoard()->getEpicIssuetypeID())): ?>
                     <?php foreach ($issue->getParentIssues() as $parent): ?>
                         <?php if ($parent->getIssueType()->getID() == $swimlane->getBoard()->getEpicIssuetypeID()): ?>
-                            <?php echo link_tag(make_url('viewissue', array('issue_no' => $parent->getFormattedIssueNo(), 'project_key' => $parent->getProject()->getKey())), $parent->getShortname(), array('title' => $parent->getFormattedTitle(), 'target' => '_blank', 'class' => 'epic_badge', 'style' => 'background-color: ' . $parent->getCoverColor().'; color: ' . $parent->getAgileTextColor(), 'data-parent-epic-id' => $parent->getID())); ?>
+                            <?php echo link_tag($parent->getUrl(), $parent->getShortname(), array('title' => $parent->getFormattedTitle(), 'target' => '_blank', 'class' => 'epic_badge', 'style' => 'background-color: ' . $parent->getCoverColor().'; color: ' . $parent->getAgileTextColor(), 'data-parent-epic-id' => $parent->getID())); ?>
                         <?php endif; ?>
                     <?php endforeach; ?>
                 <?php endif; ?>

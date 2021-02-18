@@ -35,7 +35,7 @@ $parent_prefix = isset($parent_issue) ? 'issue_'.$parent_issue->getID().'_child_
         </div>
         <div class="issue-link-container">
             <div class="issue-link">
-                <a href="<?= make_url('viewissue', array('issue_no' => $issue->getFormattedIssueNo(), 'project_key' => $issue->getProject()->getKey())); ?>" title="<?= $issue->getFormattedTitle(); ?>" target="_blank">
+                <a href="<?= $issue->getUrl(); ?>" title="<?= $issue->getFormattedTitle(); ?>" target="_blank">
                     <?= fa_image_tag(($issue->hasIssueType()) ? $issue->getIssueType()->getFontAwesomeIcon() : 'unknown', ['class' => (($issue->hasIssueType()) ? 'issuetype-icon issuetype-' . $issue->getIssueType()->getIcon() : 'issuetype-icon issuetype-unknown')]); ?>
                     <span><?= $issue->getFormattedTitle(true); ?></span>
                 </a>

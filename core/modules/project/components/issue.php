@@ -19,7 +19,7 @@
                 </div>
             </div>
             <?php \pachno\core\framework\Event::createNew('core', 'viewissue::afterWorkflowButtons', $issue)->trigger(); ?>
-            <?php include_component('project/issuedetails', ['issue' => $issue]); ?>
+            <?php include_component('project/issuedetails', ['issue' => $issue, 'backdrop' => false]); ?>
             <?php \pachno\core\framework\Event::createNew('core', 'viewissue::afterMainDetails', $issue)->trigger(); ?>
             <?php /*
                     <div class="fancy-tabs" id="viewissue_activity">

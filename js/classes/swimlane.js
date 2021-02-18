@@ -3,13 +3,14 @@ import Pachno from "./pachno";
 import {SwimlaneTypes} from "./board";
 
 class Swimlane {
-    constructor(json, board_id) {
+    constructor(json, board_id, milestone_id) {
         /**
          * @type {Issue[]}
          */
         this.issues = [];
         this.name = json.name;
         this.board_id = board_id;
+        this.selected_milestone_id = milestone_id;
         this.has_identifiables = (json.has_identifiables);
         this.identifier_issue = (json.identifier_issue) ? Pachno.addIssue(json.identifier_issue, board_id) : undefined;
         this.identifier_grouping = json.identifier_grouping;
@@ -58,9 +59,11 @@ class Swimlane {
      * @returns {boolean}
      */
     has(issue) {
-        if (this.identifier === 'swimlane_0') {
+        if (this.selected_milestone_id && (!issue.milestone || issue.milestone.id != this.selected_milestone_id))
+            return false;
+
+        if (this.identifier === 'swimlane_0')
             return true;
-        }
 
         switch (this.identifier_type) {
             case SwimlaneTypes.ISSUES:

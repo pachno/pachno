@@ -264,6 +264,11 @@
             return $this->getMailingUrl() . $url;
         }
 
+        public function getPrefixedUrl($url)
+        {
+            return $this->getMailingUrl() . $url;
+        }
+
         public function getTranslatedMessages($template, $parameters, $users, $subject, $subject_parameters = [])
         {
             if (empty($users))

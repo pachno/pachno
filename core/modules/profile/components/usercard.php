@@ -73,7 +73,7 @@
                 <?php if (count($issues)): try { ?>
                     <?php foreach ($issues as $issue): ?>
                         <?php if ($issue->hasAccess()): ?>
-                            <a class="list-item multiline" href="<?= ($issue->getProject() instanceof \pachno\core\entities\Project) ? make_url('viewissue', ['project_key' => $issue->getProject()->getKey(), 'issue_no' => $issue->getFormattedIssueNo()]) : '#'; ?>">
+                            <a class="list-item multiline" href="<?= ($issue->getProject() instanceof \pachno\core\entities\Project) ? $issue->getUrl() : '#'; ?>">
                                 <?= ($issue->getProject() instanceof \pachno\core\entities\Project) ? image_tag($issue->getProject()->getIconName(), ['class' => 'icon issuelog-project-logo', ['title' => $issue->getProject()->getName()]], true) : fa_image_tag('file'); ?>
                                 <?= fa_image_tag(($issue->hasIssueType()) ? $issue->getIssueType()->getFontAwesomeIcon() : 'unknown', ['class' => (($issue->hasIssueType()) ? 'icon issuetype-icon issuetype-' . $issue->getIssueType()->getIcon() : 'icon issuetype-icon issuetype-unknown')]); ?>
                                 <span class="name">

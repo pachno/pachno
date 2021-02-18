@@ -1,14 +1,14 @@
 <?php
 
-/**
+    /**
  * @var \pachno\core\entities\Issue $issue
  */
 
 ?>
-<a class="<?php if ($issue->isClosed()): ?> closed<?php endif; ?> related-issue" id="related_issue_<?php echo $issue->getID(); ?>"  href="<?php echo make_url('viewissue', array('project_key' => $issue->getProject()->getKey(), 'issue_no' => $issue->getFormattedIssueNo())); ?>">
-    <span class="issue-state <?php echo $issue->isClosed() ? 'closed' : 'open'; ?>"><?php echo $issue->isClosed() ? __('Closed') : __('Open'); ?></span>
+<a class="<?php if ($issue->isClosed()) echo 'closed'; ?> <?php if ($backdrop) echo 'trigger-backdrop'; ?> related-issue" id="related_issue_<?= $issue->getID(); ?>"  href="<?= $link_url; ?>" <?= $link_data; ?>>
+    <span class="issue-state <?= $issue->isClosed() ? 'closed' : 'open'; ?>"><?= $issue->isClosed() ? __('Closed') : __('Open'); ?></span>
     <span class="count-badge"><?= $issue->getFormattedIssueNo(true); ?></span>
-    <span class="issue-title" title="<?php echo \pachno\core\framework\Context::getI18n()->decodeUTF8($issue->getTitle()); ?>"><?php echo \pachno\core\framework\Context::getI18n()->decodeUTF8($issue->getTitle()); ?></span>
+    <span class="issue-title" title="<?= \pachno\core\framework\Context::getI18n()->decodeUTF8($issue->getTitle()); ?>"><?= \pachno\core\framework\Context::getI18n()->decodeUTF8($issue->getTitle()); ?></span>
     <?php if ($issue->getNumberOfFiles()): ?>
         <span class="information"><?= fa_image_tag('paperclip'); ?><span><?= $issue->getNumberOfFiles(); ?></span></span>
     <?php endif; ?>

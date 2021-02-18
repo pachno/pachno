@@ -4529,6 +4529,16 @@
             return (bool)($this->_pain_effect > 0);
         }
 
+        public function getUrl($relative = true)
+        {
+            return Context::getRouting()->generate('viewissue', ['project_key' => $this->getProject()->getKey(), 'issue_no' => $this->getFormattedIssueNo()], $relative);
+        }
+
+        public function getCardUrl()
+        {
+            return Context::getRouting()->generate('get_partial_for_backdrop', ['key' => 'viewissue', 'issue_id' => $this->getID()]);
+        }
+
         public function toJSON($detailed = true)
         {
             $json = [
@@ -4558,12 +4568,12 @@
                 'reproduction_steps_formatted' => $this->getParsedReproductionSteps(),
                 'issue_type' => $this->getIssueType()->toJSON(false),
                 'cover_image' => ($this->getCoverImageFile() instanceof File) ? $this->getCoverImageFile()->toJSON() : null,
-                'href' => Context::getRouting()->generate('viewissue', ['project_key' => $this->getProject()->getKey(), 'issue_no' => $this->getFormattedIssueNo()], false),
-                'more_actions_url' => Context::getRouting()->generate('issue_moreactions', ['project_key' => $this->getProject()->getKey(), 'issue_id' => $this->getID()]),
-                'choices_url' => Context::getRouting()->generate('issue_load_dynamic_choices', ['project_key' => $this->getProject()->getKey(), 'issue_id' => $this->getID()]),
-                'backdrop_url' => Context::getRouting()->generate('get_partial_for_backdrop', ['key' => '%key%', 'issue_id' => $this->getID()]),
-                'save_url' => Context::getRouting()->generate('edit_issue', ['project_key' => $this->getProject()->getKey(), 'issue_id' => $this->getID()]),
-                'card_url' => Context::getRouting()->generate('get_partial_for_backdrop', ['key' => 'viewissue', 'issue_id' => $this->getID()]),
+                'href' => $this->getUrl(),
+                'more_actions_url' => $this->getMoreActionsUrl(),
+                'choices_url' => $this->getDynamicChoicesUrl(),
+                'backdrop_url' => $this->getBackdropUrl(),
+                'save_url' => $this->getSaveUrl(),
+                'card_url' => $this->getCardUrl(),
                 'posted_by' => ($this->getPostedBy() instanceof common\Identifiable) ? $this->getPostedBy()->toJSON() : null,
                 'assignee' => ($this->getAssignee() instanceof common\Identifiable) ? $this->getAssignee()->toJSON() : null,
                 'status' => ($this->getStatus() instanceof common\Identifiable) ? $this->getStatus()->toJSON() : null,
@@ -4932,6 +4942,42 @@
                 $time = $this->getSpentTime(true, true);
 
             return $this->getFormattedTime($time);
+        }
+
+        /**
+         * @return string
+         * @throws framework\exceptions\InvalidRouteException
+         */
+        public function getSaveUrl(): string
+        {
+            return Context::getRouting()->generate('edit_issue', ['project_key' => $this->getProject()->getKey(), 'issue_id' => $this->getID()]);
+        }
+
+        /**
+         * @return string
+         * @throws framework\exceptions\InvalidRouteException
+         */
+        public function getBackdropUrl(): string
+        {
+            return Context::getRouting()->generate('get_partial_for_backdrop', ['key' => '%key%', 'issue_id' => $this->getID()]);
+        }
+
+        /**
+         * @return string
+         * @throws framework\exceptions\InvalidRouteException
+         */
+        public function getDynamicChoicesUrl(): string
+        {
+            return Context::getRouting()->generate('issue_load_dynamic_choices', ['project_key' => $this->getProject()->getKey(), 'issue_id' => $this->getID()]);
+        }
+
+        /**
+         * @return string
+         * @throws framework\exceptions\InvalidRouteException
+         */
+        public function getMoreActionsUrl(): string
+        {
+            return Context::getRouting()->generate('issue_moreactions', ['project_key' => $this->getProject()->getKey(), 'issue_id' => $this->getID()]);
         }
 
         /**

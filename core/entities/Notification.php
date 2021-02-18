@@ -166,14 +166,14 @@
                 case self::TYPE_ISSUE_CREATED:
                 case self::TYPE_ISSUE_UPDATED:
                 case self::TYPE_ISSUE_MENTIONED:
-                    $url = make_url('viewissue', ['project_key' => $this->getTarget()->getProject()->getKey(), 'issue_no' => $this->getTarget()->getFormattedIssueNo()], false);
+                    $url = $issue->getUrl(false);
                     break;
                 case self::TYPE_ISSUE_COMMENTED:
-                    $url = make_url('viewissue', ['project_key' => $this->getTarget()->getTarget()->getProject()->getKey(), 'issue_no' => $this->getTarget()->getTarget()->getFormattedIssueNo()], false) . '#comment_' . $this->getTarget()->getID();
+                    $url = $this->getTarget()->getTarget()->getUrl(false) . '#comment_' . $this->getTarget()->getID();
                     break;
                 case self::TYPE_COMMENT_MENTIONED:
                     if ($this->getTarget()->getTargetType() == Comment::TYPE_ISSUE) {
-                        $url = make_url('viewissue', ['project_key' => $this->getTarget()->getTarget()->getProject()->getKey(), 'issue_no' => $this->getTarget()->getTarget()->getFormattedIssueNo()], false) . '#comment_' . $this->getTarget()->getID();
+                        $url = $this->getTarget()->getTarget()->getUrl(false) . '#comment_' . $this->getTarget()->getID();
                     } else {
                         $url = make_url('publish_article', ['article_name' => $this->getTarget()->getTarget()->getName()], false) . '#comment_' . $this->getTarget()->getID();
                     }

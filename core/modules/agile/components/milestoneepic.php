@@ -1,7 +1,7 @@
 <li class="epic" id="epic_<?php echo $epic->getId(); ?>" data-issue-id="<?php echo $epic->getID(); ?>" data-assign-issue-url="<?php echo make_url('agile_assignepic', array('project_key' => $board->getProject()->getKey(), 'epic_id' => $epic->getID())); ?>" title="<?php echo __e($epic->getFormattedTitle(true)); ?>" data-shortname="<?php echo __e($epic->getShortname()); ?>">
     <?php include_component('agile/colorpicker', array('issue' => $epic)); ?>
     <div class="planning_indicator" id="issue_<?php echo $epic->getId(); ?>_indicator" style="display: none;"><?php echo image_tag('spinning_30.gif'); ?></div>
-    <a class="epic_name" href="<?php echo make_url('viewissue', array('issue_no' => $epic->getFormattedIssueNo(), 'project_key' => $epic->getProject()->getKey())); ?>"><?php echo $epic->getTitle(); ?></a>
+    <a class="epic_name" href="<?php echo $epic->getUrl(); ?>"><?php echo $epic->getTitle(); ?></a>
     <div class="epic_percentage">
         <div class="filler" id="epic_<?php echo $epic->getID(); ?>_percentage_filler" style="width: <?php echo $epic->getEstimatedPercentCompleted(); ?>%;"></div>
     </div>

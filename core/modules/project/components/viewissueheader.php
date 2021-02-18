@@ -19,8 +19,11 @@
                 <?php include_component('project/issueparent_crumbs', array('issue' => $issue)); ?>
             </span>
             <div id="title_content">
-                <span id="title-name" class="title-name" title="<?php echo \pachno\core\framework\Context::getI18n()->decodeUTF8($issue->getTitle()); ?>">
-                    <?php echo \pachno\core\framework\Context::getI18n()->decodeUTF8($issue->getTitle()); ?>
+                <span id="title-name" class="title-name">
+                    <?= fa_image_tag(($issue->hasIssueType()) ? $issue->getIssueType()->getFontAwesomeIcon() : 'unknown', ['class' => (($issue->hasIssueType()) ? 'issuetype-icon issuetype-' . $issue->getIssueType()->getIcon() : 'issuetype-icon issuetype-unknown')]); ?>
+                    <span><?= $issue->getFormattedIssueNo(true); ?>&nbsp;&ndash;&nbsp;</span>
+                    <input type="text" name="title" value="<?= $issue->getTitle(); ?>" class="invisible" id="issue_<?= $issue->getID(); ?>_title_input" data-trigger-save-on-blur data-field="title" data-issue-id="<?= $issue->getId(); ?>">
+                    <?= fa_image_tag('spinner', ['class' => 'fa-spin indicator']); ?>
                 </span>
             </div>
         </div>

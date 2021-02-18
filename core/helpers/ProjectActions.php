@@ -176,10 +176,10 @@
             } while ($found_issue instanceof entities\Issue && !$found_issue->hasAccess());
 
             if ($found_issue instanceof entities\Issue) {
-                $this->forward(framework\Context::getRouting()->generate('viewissue', ['project_key' => $found_issue->getProject()->getKey(), 'issue_no' => $found_issue->getFormattedIssueNo()]));
+                $this->forward($found_issue->getUrl());
             } else {
                 framework\Context::setMessage('issue_message', $this->getI18n()->__('There are no more issues in that direction.'));
-                $this->forward(framework\Context::getRouting()->generate('viewissue', ['project_key' => $issue->getProject()->getKey(), 'issue_no' => $issue->getFormattedIssueNo()]));
+                $this->forward($issue->getUrl());
             }
         }
 

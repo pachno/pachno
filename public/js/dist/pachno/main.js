@@ -265,6 +265,23 @@ var Board = /*#__PURE__*/function () {
       var $selectedInput = jquery__WEBPACK_IMPORTED_MODULE_0___default()('input[name=selected_milestone]:checked');
       var previous_milestone_id = this.selected_milestone_id;
       this.selected_milestone_id = $selectedInput.length ? parseInt($selectedInput.val()) : 0;
+
+      if (this.swimlanes) {
+        var _iterator = _createForOfIteratorHelper(this.swimlanes),
+            _step;
+
+        try {
+          for (_iterator.s(); !(_step = _iterator.n()).done;) {
+            var swimlane = _step.value;
+            swimlane.selected_milestone_id = this.selected_milestone_id;
+          }
+        } catch (err) {
+          _iterator.e(err);
+        } finally {
+          _iterator.f();
+        }
+      }
+
       this.updateVisibleWhiteboard();
 
       if (this.selected_milestone_id !== previous_milestone_id && trigger_reload) {
@@ -279,31 +296,31 @@ var Board = /*#__PURE__*/function () {
       jquery__WEBPACK_IMPORTED_MODULE_0___default()('#whiteboard .row.swimlane').remove();
 
       if (this.swimlanes) {
-        var _iterator = _createForOfIteratorHelper(this.swimlanes),
-            _step;
+        var _iterator2 = _createForOfIteratorHelper(this.swimlanes),
+            _step2;
 
         try {
-          for (_iterator.s(); !(_step = _iterator.n()).done;) {
-            var swimlane = _step.value;
+          for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
+            var swimlane = _step2.value;
 
-            var _iterator2 = _createForOfIteratorHelper(swimlane.issues),
-                _step2;
+            var _iterator3 = _createForOfIteratorHelper(swimlane.issues),
+                _step3;
 
             try {
-              for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
-                var issue = _step2.value;
+              for (_iterator3.s(); !(_step3 = _iterator3.n()).done;) {
+                var issue = _step3.value;
                 issue.processed = false;
               }
             } catch (err) {
-              _iterator2.e(err);
+              _iterator3.e(err);
             } finally {
-              _iterator2.f();
+              _iterator3.f();
             }
           }
         } catch (err) {
-          _iterator.e(err);
+          _iterator2.e(err);
         } finally {
-          _iterator.f();
+          _iterator2.f();
         }
       }
 
@@ -329,7 +346,7 @@ var Board = /*#__PURE__*/function () {
 
       if (swimlanes.length) {
         this.swimlanes = swimlanes.map(function (json) {
-          return new _swimlane__WEBPACK_IMPORTED_MODULE_2__["default"](json, _this3.id);
+          return new _swimlane__WEBPACK_IMPORTED_MODULE_2__["default"](json, _this3.id, _this3.selected_milestone_id);
         });
         this.updateWhiteboard();
       } else {
@@ -363,12 +380,12 @@ var Board = /*#__PURE__*/function () {
       var $whiteboard_content = jquery__WEBPACK_IMPORTED_MODULE_0___default()('#whiteboard-content');
       var has_swimlanes = false;
 
-      var _iterator3 = _createForOfIteratorHelper(this.swimlanes),
-          _step3;
+      var _iterator4 = _createForOfIteratorHelper(this.swimlanes),
+          _step4;
 
       try {
-        for (_iterator3.s(); !(_step3 = _iterator3.n()).done;) {
-          var swimlane = _step3.value;
+        for (_iterator4.s(); !(_step4 = _iterator4.n()).done;) {
+          var swimlane = _step4.value;
 
           if (jquery__WEBPACK_IMPORTED_MODULE_0___default()(".swimlane[data-swimlane-identifier=".concat(swimlane.identifier, "]")).length) {
             has_swimlanes = true;
@@ -389,7 +406,7 @@ var Board = /*#__PURE__*/function () {
               header_name += "<span class=\"status-badge\" data-dynamic-field-value data-field=\"status\" data-issue-id=\"".concat(swimlane.identifier_issue.id, "\" style=\"background-color: ").concat(swimlane.identifier_issue.status.color, "; color: ").concat(swimlane.identifier_issue.status.text_color, ";\"><span>").concat(swimlane.identifier_issue.status.name, "</span></span>");
               header_name += "</a>";
               header_name += "<span class=\"name issue_header ".concat(closed_class, " trigger-backdrop\" data-url=\"").concat(swimlane.identifier_issue.card_url, "\">");
-              header_name += "<span>".concat(swimlane.identifier_issue.title, "</span>");
+              header_name += "<span data-dynamic-field-value data-field=\"title\" data-issue-id=\"".concat(swimlane.identifier_issue.id, "\">").concat(swimlane.identifier_issue.title, "</span>");
               header_name += '</span>';
               header_name += '</span>';
               header_name += "<button class=\"button secondary highlight trigger-report-issue trigger-backdrop\" data-url=\"".concat(this.report_issue_url, "\" data-additional-params=\"parent_issue_id=").concat(swimlane.identifier_issue.id, "\">").concat(_helpers_ui__WEBPACK_IMPORTED_MODULE_3__["default"].fa_image_tag('sticky-note', {
@@ -429,20 +446,20 @@ var Board = /*#__PURE__*/function () {
           }
         }
       } catch (err) {
-        _iterator3.e(err);
+        _iterator4.e(err);
       } finally {
-        _iterator3.f();
+        _iterator4.f();
       }
     }
   }, {
     key: "verifyColumns",
     value: function verifyColumns() {
-      var _iterator4 = _createForOfIteratorHelper(this.swimlanes),
-          _step4;
+      var _iterator5 = _createForOfIteratorHelper(this.swimlanes),
+          _step5;
 
       try {
-        for (_iterator4.s(); !(_step4 = _iterator4.n()).done;) {
-          var swimlane = _step4.value;
+        for (_iterator5.s(); !(_step5 = _iterator5.n()).done;) {
+          var swimlane = _step5.value;
           var $swimlane = jquery__WEBPACK_IMPORTED_MODULE_0___default()(".swimlane[data-swimlane-identifier=".concat(swimlane.identifier, "]"));
           var columnCount = this.columns.length;
           var paddingCount = columnCount - 1;
@@ -451,12 +468,12 @@ var Board = /*#__PURE__*/function () {
           });
           var $swimlaneColumnsContainer = jquery__WEBPACK_IMPORTED_MODULE_0___default()(".swimlane[data-swimlane-identifier=".concat(swimlane.identifier, "] .columns"));
 
-          var _iterator5 = _createForOfIteratorHelper(this.columns),
-              _step5;
+          var _iterator6 = _createForOfIteratorHelper(this.columns),
+              _step6;
 
           try {
-            for (_iterator5.s(); !(_step5 = _iterator5.n()).done;) {
-              var column = _step5.value;
+            for (_iterator6.s(); !(_step6 = _iterator6.n()).done;) {
+              var column = _step6.value;
               var status_ids = column.status_ids.join(',');
               var column_id = "swimlane_".concat(swimlane.identifier, "_column_").concat(column.id);
 
@@ -474,15 +491,15 @@ var Board = /*#__PURE__*/function () {
               $swimlaneColumnsContainer.append(html);
             }
           } catch (err) {
-            _iterator5.e(err);
+            _iterator6.e(err);
           } finally {
-            _iterator5.f();
+            _iterator6.f();
           }
         }
       } catch (err) {
-        _iterator4.e(err);
+        _iterator5.e(err);
       } finally {
-        _iterator4.f();
+        _iterator5.f();
       }
     }
   }, {
@@ -490,12 +507,12 @@ var Board = /*#__PURE__*/function () {
     value: function verifyIssues() {
       var _this4 = this;
 
-      var _iterator6 = _createForOfIteratorHelper(this.columns),
-          _step6;
+      var _iterator7 = _createForOfIteratorHelper(this.columns),
+          _step7;
 
       try {
         var _loop = function _loop() {
-          var column = _step6.value;
+          var column = _step7.value;
 
           var isInColumn = function isInColumn(issue) {
             return issue.status.id && column.status_ids.includes(issue.status.id);
@@ -503,36 +520,36 @@ var Board = /*#__PURE__*/function () {
 
           var num_issues = {};
 
-          var _iterator7 = _createForOfIteratorHelper(column.status_ids),
-              _step7;
-
-          try {
-            for (_iterator7.s(); !(_step7 = _iterator7.n()).done;) {
-              var status_id = _step7.value;
-              num_issues["status_".concat(status_id)] = 0;
-            }
-          } catch (err) {
-            _iterator7.e(err);
-          } finally {
-            _iterator7.f();
-          }
-
-          var _iterator8 = _createForOfIteratorHelper(_this4.swimlanes),
+          var _iterator8 = _createForOfIteratorHelper(column.status_ids),
               _step8;
 
           try {
             for (_iterator8.s(); !(_step8 = _iterator8.n()).done;) {
-              var swimlane = _step8.value;
+              var status_id = _step8.value;
+              num_issues["status_".concat(status_id)] = 0;
+            }
+          } catch (err) {
+            _iterator8.e(err);
+          } finally {
+            _iterator8.f();
+          }
+
+          var _iterator9 = _createForOfIteratorHelper(_this4.swimlanes),
+              _step9;
+
+          try {
+            for (_iterator9.s(); !(_step9 = _iterator9.n()).done;) {
+              var swimlane = _step9.value;
               var $swimlane = jquery__WEBPACK_IMPORTED_MODULE_0___default()("#swimlane_".concat(swimlane.identifier, "_column_").concat(column.id));
               var $add_card_form = jquery__WEBPACK_IMPORTED_MODULE_0___default()("#swimlane_".concat(swimlane.identifier, "_column_").concat(column.id, " .form-container"));
               var $swimlaneContainer = $swimlane.parents('.swimlane');
 
-              var _iterator10 = _createForOfIteratorHelper(swimlane.issues),
-                  _step10;
+              var _iterator11 = _createForOfIteratorHelper(swimlane.issues),
+                  _step11;
 
               try {
-                for (_iterator10.s(); !(_step10 = _iterator10.n()).done;) {
-                  var issue = _step10.value;
+                for (_iterator11.s(); !(_step11 = _iterator11.n()).done;) {
+                  var issue = _step11.value;
                   if (!isInColumn(issue)) continue;
                   num_issues["status_".concat(issue.status.id)] += 1;
                   if (issue.processed || !swimlane.has(issue)) continue;
@@ -553,28 +570,10 @@ var Board = /*#__PURE__*/function () {
                   issue.swimlane = swimlane.identifier;
                 }
               } catch (err) {
-                _iterator10.e(err);
+                _iterator11.e(err);
               } finally {
-                _iterator10.f();
+                _iterator11.f();
               }
-            }
-          } catch (err) {
-            _iterator8.e(err);
-          } finally {
-            _iterator8.f();
-          }
-
-          var count_total = 0;
-          var $primary_count = jquery__WEBPACK_IMPORTED_MODULE_0___default()(".column[data-column-id=".concat(column.id, "] .column-count.primary"));
-
-          var _iterator9 = _createForOfIteratorHelper(column.status_ids),
-              _step9;
-
-          try {
-            for (_iterator9.s(); !(_step9 = _iterator9.n()).done;) {
-              var _status_id = _step9.value;
-              jquery__WEBPACK_IMPORTED_MODULE_0___default()(".column-count[data-status-id=".concat(_status_id, "]")).html(num_issues["status_".concat(_status_id)]);
-              count_total += parseInt(num_issues["status_".concat(_status_id)]);
             }
           } catch (err) {
             _iterator9.e(err);
@@ -582,18 +581,36 @@ var Board = /*#__PURE__*/function () {
             _iterator9.f();
           }
 
+          var count_total = 0;
+          var $primary_count = jquery__WEBPACK_IMPORTED_MODULE_0___default()(".column[data-column-id=".concat(column.id, "] .column-count.primary"));
+
+          var _iterator10 = _createForOfIteratorHelper(column.status_ids),
+              _step10;
+
+          try {
+            for (_iterator10.s(); !(_step10 = _iterator10.n()).done;) {
+              var _status_id = _step10.value;
+              jquery__WEBPACK_IMPORTED_MODULE_0___default()(".column-count[data-status-id=".concat(_status_id, "]")).html(num_issues["status_".concat(_status_id)]);
+              count_total += parseInt(num_issues["status_".concat(_status_id)]);
+            }
+          } catch (err) {
+            _iterator10.e(err);
+          } finally {
+            _iterator10.f();
+          }
+
           if ($primary_count.length) {
             $primary_count.html(count_total);
           }
         };
 
-        for (_iterator6.s(); !(_step6 = _iterator6.n()).done;) {
+        for (_iterator7.s(); !(_step7 = _iterator7.n()).done;) {
           _loop();
         }
       } catch (err) {
-        _iterator6.e(err);
+        _iterator7.e(err);
       } finally {
-        _iterator6.f();
+        _iterator7.f();
       }
     }
   }, {
@@ -647,36 +664,36 @@ var Board = /*#__PURE__*/function () {
       var $avatar_container = jquery__WEBPACK_IMPORTED_MODULE_0___default()('#board-assignees-list');
       $avatar_container.html('');
 
-      var _iterator11 = _createForOfIteratorHelper(this.users),
-          _step11;
-
-      try {
-        for (_iterator11.s(); !(_step11 = _iterator11.n()).done;) {
-          var assignee = _step11.value;
-          var assignee_json = JSON.parse(assignee);
-          $avatar_container.append("<span class=\"avatar-container\"><span class=\"avatar medium\"><img src=\"".concat(assignee_json.avatar_url_small, "\"></span><span class=\"name-container\"><span class=\"name\">").concat(assignee_json.display_name, "</span><span class=\"username\">@").concat(assignee_json.username, "</span></span></span>"));
-        }
-      } catch (err) {
-        _iterator11.e(err);
-      } finally {
-        _iterator11.f();
-      }
-    }
-  }, {
-    key: "getSwimlane",
-    value: function getSwimlane(swimlane_identifier) {
-      var _iterator12 = _createForOfIteratorHelper(this.swimlanes),
+      var _iterator12 = _createForOfIteratorHelper(this.users),
           _step12;
 
       try {
         for (_iterator12.s(); !(_step12 = _iterator12.n()).done;) {
-          var swimlane = _step12.value;
-          if (swimlane.identifier === swimlane_identifier) return swimlane;
+          var assignee = _step12.value;
+          var assignee_json = JSON.parse(assignee);
+          $avatar_container.append("<span class=\"avatar-container\"><span class=\"avatar medium\"><img src=\"".concat(assignee_json.avatar_url_small, "\"></span><span class=\"name-container\"><span class=\"name\">").concat(assignee_json.display_name, "</span><span class=\"username\">@").concat(assignee_json.username, "</span></span></span>"));
         }
       } catch (err) {
         _iterator12.e(err);
       } finally {
         _iterator12.f();
+      }
+    }
+  }, {
+    key: "getSwimlane",
+    value: function getSwimlane(swimlane_identifier) {
+      var _iterator13 = _createForOfIteratorHelper(this.swimlanes),
+          _step13;
+
+      try {
+        for (_iterator13.s(); !(_step13 = _iterator13.n()).done;) {
+          var swimlane = _step13.value;
+          if (swimlane.identifier === swimlane_identifier) return swimlane;
+        }
+      } catch (err) {
+        _iterator13.e(err);
+      } finally {
+        _iterator13.f();
       }
     }
   }, {
@@ -748,24 +765,24 @@ var Board = /*#__PURE__*/function () {
           has_identifiables: true,
           identifier_issue: issue_json,
           identifier: 'swimlane_' + issue.id
-        }, this.id);
+        }, this.id, this.selected_milestone_id);
         this.swimlanes.splice(this.swimlanes.length - 1, 0, swimlane);
       } else {
-        var _iterator13 = _createForOfIteratorHelper(this.swimlanes),
-            _step13;
+        var _iterator14 = _createForOfIteratorHelper(this.swimlanes),
+            _step14;
 
         try {
-          for (_iterator13.s(); !(_step13 = _iterator13.n()).done;) {
-            var _swimlane = _step13.value;
+          for (_iterator14.s(); !(_step14 = _iterator14.n()).done;) {
+            var _swimlane = _step14.value;
 
             if (_swimlane.has(issue)) {
               _swimlane.addIssue(issue);
             }
           }
         } catch (err) {
-          _iterator13.e(err);
+          _iterator14.e(err);
         } finally {
-          _iterator13.f();
+          _iterator14.f();
         }
       }
 
@@ -781,12 +798,12 @@ var Board = /*#__PURE__*/function () {
       if (this.swimlanes === undefined || !this.swimlanes.length) {
         this.setSwimlanes(swimlanes);
       } else {
-        var _iterator14 = _createForOfIteratorHelper(swimlanes),
-            _step14;
+        var _iterator15 = _createForOfIteratorHelper(swimlanes),
+            _step15;
 
         try {
           var _loop2 = function _loop2() {
-            var swimlane = _step14.value;
+            var swimlane = _step15.value;
 
             var board_swimlane = _this5.swimlanes.find(function (lane) {
               return lane.identifier == swimlane.identifier;
@@ -795,42 +812,42 @@ var Board = /*#__PURE__*/function () {
             board_swimlane.addIssues(swimlane.issues);
           };
 
-          for (_iterator14.s(); !(_step14 = _iterator14.n()).done;) {
+          for (_iterator15.s(); !(_step15 = _iterator15.n()).done;) {
             _loop2();
           }
         } catch (err) {
-          _iterator14.e(err);
+          _iterator15.e(err);
         } finally {
-          _iterator14.f();
+          _iterator15.f();
         }
       }
 
-      var _iterator15 = _createForOfIteratorHelper(this.columns),
-          _step15;
+      var _iterator16 = _createForOfIteratorHelper(this.columns),
+          _step16;
 
       try {
-        for (_iterator15.s(); !(_step15 = _iterator15.n()).done;) {
-          var _column = _step15.value;
+        for (_iterator16.s(); !(_step16 = _iterator16.n()).done;) {
+          var _column = _step16.value;
 
-          var _iterator16 = _createForOfIteratorHelper(_column.status_ids),
-              _step16;
+          var _iterator17 = _createForOfIteratorHelper(_column.status_ids),
+              _step17;
 
           try {
-            for (_iterator16.s(); !(_step16 = _iterator16.n()).done;) {
-              var status_id = _step16.value;
+            for (_iterator17.s(); !(_step17 = _iterator17.n()).done;) {
+              var status_id = _step17.value;
               jquery__WEBPACK_IMPORTED_MODULE_0___default()("#add_next_column_status_".concat(status_id)).attr('disabled', true);
               jquery__WEBPACK_IMPORTED_MODULE_0___default()("label[for=add_next_column_status_".concat(status_id, "]")).addClass('disabled');
             }
           } catch (err) {
-            _iterator16.e(err);
+            _iterator17.e(err);
           } finally {
-            _iterator16.f();
+            _iterator17.f();
           }
         }
       } catch (err) {
-        _iterator15.e(err);
+        _iterator16.e(err);
       } finally {
-        _iterator15.f();
+        _iterator16.f();
       }
 
       this.updateWhiteboard();
@@ -856,12 +873,12 @@ var Board = /*#__PURE__*/function () {
           return swimlane.has(dragged_issue);
         });
 
-        var _iterator17 = _createForOfIteratorHelper($columns),
-            _step17;
+        var _iterator18 = _createForOfIteratorHelper($columns),
+            _step18;
 
         try {
-          for (_iterator17.s(); !(_step17 = _iterator17.n()).done;) {
-            var column = _step17.value;
+          for (_iterator18.s(); !(_step18 = _iterator18.n()).done;) {
+            var column = _step18.value;
             var $column = jquery__WEBPACK_IMPORTED_MODULE_0___default()(column);
             var status_id_data = $column.data('status-ids');
             var status_ids = Number.isNaN(status_id_data) ? status_id_data.split(',') : [status_id_data];
@@ -877,27 +894,27 @@ var Board = /*#__PURE__*/function () {
               continue;
             }
 
-            var _iterator18 = _createForOfIteratorHelper(dragged_issue.available_statuses),
-                _step18;
+            var _iterator19 = _createForOfIteratorHelper(dragged_issue.available_statuses),
+                _step19;
 
             try {
-              for (_iterator18.s(); !(_step18 = _iterator18.n()).done;) {
-                var status = _step18.value;
+              for (_iterator19.s(); !(_step19 = _iterator19.n()).done;) {
+                var status = _step19.value;
 
                 if (status_ids.includes(parseInt(status.id))) {
                   $column.addClass('drop-valid');
                 }
               }
             } catch (err) {
-              _iterator18.e(err);
+              _iterator19.e(err);
             } finally {
-              _iterator18.f();
+              _iterator19.f();
             }
           }
         } catch (err) {
-          _iterator17.e(err);
+          _iterator18.e(err);
         } finally {
-          _iterator17.f();
+          _iterator18.f();
         }
       };
 
@@ -1084,12 +1101,12 @@ var Board = /*#__PURE__*/function () {
       _pachno__WEBPACK_IMPORTED_MODULE_4__["default"].on(_pachno__WEBPACK_IMPORTED_MODULE_4__["default"].EVENTS.issue.updateJsonComplete, function (_, issue) {
         var found = false;
 
-        var _iterator19 = _createForOfIteratorHelper(board.swimlanes),
-            _step19;
+        var _iterator20 = _createForOfIteratorHelper(board.swimlanes),
+            _step20;
 
         try {
-          for (_iterator19.s(); !(_step19 = _iterator19.n()).done;) {
-            var swimlane = _step19.value;
+          for (_iterator20.s(); !(_step20 = _iterator20.n()).done;) {
+            var swimlane = _step20.value;
             if (swimlane.identifier_issue && swimlane.identifier_issue.id === issue.id) return;
             var updated = swimlane.addOrRemove(issue, !found);
 
@@ -1098,9 +1115,9 @@ var Board = /*#__PURE__*/function () {
             }
           }
         } catch (err) {
-          _iterator19.e(err);
+          _iterator20.e(err);
         } finally {
-          _iterator19.f();
+          _iterator20.f();
         }
 
         board.verifyIssues();
@@ -1414,6 +1431,22 @@ var Issue = /*#__PURE__*/function () {
           $container_element.removeClass('force-visible');
         });
       });
+      $body.off('keypress', "[data-trigger-save-on-blur][data-issue-id=\"".concat(this.id, "\"]"));
+      $body.on('keypress', "[data-trigger-save-on-blur][data-issue-id=\"".concat(this.id, "\"]"), function (event) {
+        if (event.key === 'Enter') {
+          jquery__WEBPACK_IMPORTED_MODULE_1___default()(this).blur();
+        }
+      });
+      $body.off('blur', "[data-trigger-save-on-blur][data-issue-id=\"".concat(this.id, "\"]"));
+      $body.on('blur', "[data-trigger-save-on-blur][data-issue-id=\"".concat(this.id, "\"]"), function () {
+        var $element = jquery__WEBPACK_IMPORTED_MODULE_1___default()(this);
+        var field = $element.data('field');
+        if ($element.val() === issue[field]) return;
+        $element.addClass('saving');
+        issue.postAndUpdate(field, $element.val()).then(function () {
+          $element.removeClass('saving');
+        });
+      });
       $body.off('click', "[data-trigger-cancel-editing][data-issue-id=\"".concat(this.id, "\"]"));
       $body.on('click', "[data-trigger-cancel-editing][data-issue-id=\"".concat(this.id, "\"]"), function () {
         var $element = jquery__WEBPACK_IMPORTED_MODULE_1___default()(this);
@@ -1680,12 +1713,28 @@ var Issue = /*#__PURE__*/function () {
 
               break;
 
+            case 'priority-icon':
+              if (!this.priority) {
+                $element.addClass('hidden');
+              } else {
+                $element.html("<span class=\"priority priority_".concat(this.priority.itemdata, "\" title=\"").concat(this.priority.name, "\">").concat(_helpers_ui__WEBPACK_IMPORTED_MODULE_0__["default"].fa_image_tag(this.priority.icon.name, {
+                  classes: 'priority-icon'
+                }, this.priority.icon.style), "</span>"));
+                $element.removeClass('hidden');
+              }
+
+              break;
+
             case 'status':
               $element.css({
                 backgroundColor: this.status.color,
                 color: this.status.text_color
               });
               $element.html("<span>".concat(this.status.name, "</span>"));
+              break;
+
+            case 'title':
+              $element.html(this.title);
               break;
 
             case 'description':
@@ -2017,10 +2066,17 @@ var Issue = /*#__PURE__*/function () {
       var child_issues_hidden_class = this.number_of_child_issues > 0 ? '' : 'hidden';
       var files_hidden_class = this.number_of_files > 0 ? '' : 'hidden';
       var comments_hidden_class = this.number_of_comments > 0 ? '' : 'hidden';
+      var priority_hidden_class = this.priority ? '' : 'hidden';
+      var priority_icon = this.priority ? _helpers_ui__WEBPACK_IMPORTED_MODULE_0__["default"].fa_image_tag(this.priority.icon.name, {
+        classes: 'priority-icon'
+      }, this.priority.icon.style) : '';
+      var priority_class = this.priority ? "priority priority_".concat(this.priority.itemdata) : '';
+      var priority_span = this.priority ? "<span class=\"".concat(priority_class, "\" title=\"").concat(this.priority.name, "\">").concat(priority_icon, "</span>") : '';
       $info.append("<span class=\"attachments ".concat(child_issues_hidden_class, "\" data-dynamic-field-value data-field=\"number_of_child_issues\" data-issue-id=\"").concat(this.id, "\">").concat(_helpers_ui__WEBPACK_IMPORTED_MODULE_0__["default"].fa_image_tag('tasks'), "<span class=\"value\">").concat(this.number_of_child_issues, "</span></span>"));
       $info.append("<span class=\"attachments ".concat(files_hidden_class, "\" data-dynamic-field-value data-field=\"number_of_files\" data-issue-id=\"").concat(this.id, "\">").concat(_helpers_ui__WEBPACK_IMPORTED_MODULE_0__["default"].fa_image_tag('paperclip'), "<span class=\"value\">").concat(this.number_of_files, "</span></span>"));
       $info.append("<span class=\"attachments ".concat(comments_hidden_class, "\" data-dynamic-field-value data-field=\"number_of_comments\" data-issue-id=\"").concat(this.id, "\">").concat(_helpers_ui__WEBPACK_IMPORTED_MODULE_0__["default"].fa_image_tag('comments', [], 'far'), "<span class=\"value\">").concat(this.number_of_comments, "</span></span>"));
       $info.append("<span class=\"status-badge\" style=\"background-color: ".concat(this.status.color, "; color: ").concat(this.status.text_color, ";\" data-dynamic-field-value data-field=\"status\" data-issue-id=\"").concat(this.id, "\"><span>").concat(this.status.name, "</span></span>"));
+      $info.append("<span class=\"attachments ".concat(priority_hidden_class, "\" data-dynamic-field-value data-field=\"priority-icon\" data-issue-id=\"").concat(this.id, "\">").concat(priority_span, "</span>"));
 
       if (this.assignee !== undefined && this.assignee !== null) {
         if (this.assignee.type == 'user') {
@@ -3886,7 +3942,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
 
 var Swimlane = /*#__PURE__*/function () {
-  function Swimlane(json, board_id) {
+  function Swimlane(json, board_id, milestone_id) {
     _classCallCheck(this, Swimlane);
 
     /**
@@ -3895,6 +3951,7 @@ var Swimlane = /*#__PURE__*/function () {
     this.issues = [];
     this.name = json.name;
     this.board_id = board_id;
+    this.selected_milestone_id = milestone_id;
     this.has_identifiables = json.has_identifiables;
     this.identifier_issue = json.identifier_issue ? _pachno__WEBPACK_IMPORTED_MODULE_1__["default"].addIssue(json.identifier_issue, board_id) : undefined;
     this.identifier_grouping = json.identifier_grouping;
@@ -3975,9 +4032,8 @@ var Swimlane = /*#__PURE__*/function () {
   }, {
     key: "has",
     value: function has(issue) {
-      if (this.identifier === 'swimlane_0') {
-        return true;
-      }
+      if (this.selected_milestone_id && (!issue.milestone || issue.milestone.id != this.selected_milestone_id)) return false;
+      if (this.identifier === 'swimlane_0') return true;
 
       switch (this.identifier_type) {
         case _board__WEBPACK_IMPORTED_MODULE_2__["SwimlaneTypes"].ISSUES:
@@ -10975,6 +11031,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var easymde__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! easymde */ "./node_modules/easymde/src/js/easymde.js");
 /* harmony import */ var easymde__WEBPACK_IMPORTED_MODULE_13___default = /*#__PURE__*/__webpack_require__.n(easymde__WEBPACK_IMPORTED_MODULE_13__);
 /* harmony import */ var _index__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ./index */ "./js/widgets/index.js");
+/* harmony import */ var _helpers_ui__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ../helpers/ui */ "./js/helpers/ui.js");
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+
 
 
 
@@ -10991,6 +11055,101 @@ __webpack_require__.r(__webpack_exports__);
 
 
 var editors = {};
+/**
+ * @typedef {object} MarkerConfig
+ * @property {string} placeholder - placeholder for the empty paragraph
+ * @property {boolean} preserveBlank - Whether or not to keep blank paragraphs when saving editor data
+ */
+
+var MarkerTool = /*#__PURE__*/function () {
+  /**
+   * Render plugin`s main Element and fill it with saved data
+   *
+   * @param {object} params - constructor params
+   * @param {MarkerConfig} params.config - user config for Tool
+   * @param {object} params.api - editor.js api
+   * @param {boolean} readOnly - read only mode flag
+   */
+  function MarkerTool(_ref) {
+    var api = _ref.api,
+        config = _ref.config;
+
+    _classCallCheck(this, MarkerTool);
+
+    this.api = api;
+    this.button = null;
+    this._state = false;
+    this.tag = 'MARK';
+    debugger;
+    var element = jquery__WEBPACK_IMPORTED_MODULE_0___default()('.editor-input-container.wysiwyg-editor');
+    api.listeners.on(element[0], 'keypress', function (event) {
+      if (event.key === '@') {
+        console.log(api.selection);
+        console.log('df');
+      }
+    });
+  }
+
+  _createClass(MarkerTool, [{
+    key: "state",
+    get: function get() {
+      return this._state;
+    },
+    set: function set(state) {
+      this._state = state;
+      this.button.classList.toggle(this.api.styles.inlineToolButtonActive, state);
+    }
+  }, {
+    key: "render",
+    value: function render() {
+      this.button = document.createElement('button');
+      this.button.type = 'button';
+      this.button.innerHTML = _helpers_ui__WEBPACK_IMPORTED_MODULE_15__["default"].fa_image_tag('user');
+      this.button.classList.add(this.api.styles.inlineToolButton);
+      return this.button;
+    }
+  }, {
+    key: "wrap",
+    value: function wrap(range) {
+      var selectedText = range.extractContents();
+      var mark = document.createElement(this.tag);
+      mark.appendChild(selectedText);
+      range.insertNode(mark);
+      this.api.selection.expandToTag(mark);
+    }
+  }, {
+    key: "unwrap",
+    value: function unwrap(range) {
+      var mark = this.api.selection.findParentTag(this.tag);
+      var text = range.extractContents();
+      mark.remove();
+      range.insertNode(text);
+    }
+  }, {
+    key: "surround",
+    value: function surround(range) {
+      if (this.state) {
+        this.unwrap(range);
+        return;
+      }
+
+      this.wrap(range);
+    }
+  }, {
+    key: "checkState",
+    value: function checkState() {
+      var mark = this.api.selection.findParentTag(this.tag);
+      this.state = Boolean(mark);
+    }
+  }], [{
+    key: "isInline",
+    get: function get() {
+      return false;
+    }
+  }]);
+
+  return MarkerTool;
+}();
 
 var initializeEditorJsArea = function initializeEditorJsArea() {
   var $editor_element = jquery__WEBPACK_IMPORTED_MODULE_0___default()(this);
@@ -11050,6 +11209,9 @@ var initializeEditorJsArea = function initializeEditorJsArea() {
       table: {
         "class": _editorjs_table__WEBPACK_IMPORTED_MODULE_9___default.a,
         inlineToolbar: true
+      },
+      bob: {
+        "class": MarkerTool
       },
       quote: {
         "class": _editorjs_quote__WEBPACK_IMPORTED_MODULE_7___default.a,

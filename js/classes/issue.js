@@ -163,6 +163,28 @@ class Issue {
                 })
         });
 
+        $body.off('keypress', `[data-trigger-save-on-blur][data-issue-id="${this.id}"]`);
+        $body.on('keypress', `[data-trigger-save-on-blur][data-issue-id="${this.id}"]`, function (event) {
+            if (event.key === 'Enter') {
+                $(this).blur();
+            }
+        });
+
+        $body.off('blur', `[data-trigger-save-on-blur][data-issue-id="${this.id}"]`);
+        $body.on('blur', `[data-trigger-save-on-blur][data-issue-id="${this.id}"]`, function () {
+            const $element = $(this);
+            const field = $element.data('field');
+
+            if ($element.val() === issue[field])
+                return;
+
+            $element.addClass('saving');
+            issue.postAndUpdate(field, $element.val())
+                .then(() => {
+                    $element.removeClass('saving');
+                })
+        });
+
         $body.off('click', `[data-trigger-cancel-editing][data-issue-id="${this.id}"]`);
         $body.on('click', `[data-trigger-cancel-editing][data-issue-id="${this.id}"]`, function () {
             const $element = $(this);
@@ -380,9 +402,20 @@ class Issue {
                         $value_input.checked = true;
                     }
                     break;
+                case 'priority-icon':
+                    if (!this.priority) {
+                        $element.addClass('hidden');
+                    } else {
+                        $element.html(`<span class="priority priority_${this.priority.itemdata}" title="${this.priority.name}">${UI.fa_image_tag(this.priority.icon.name, { classes: 'priority-icon' }, this.priority.icon.style)}</span>`);
+                        $element.removeClass('hidden');
+                    }
+                    break;
                 case 'status':
                     $element.css({backgroundColor: this.status.color, color: this.status.text_color});
                     $element.html(`<span>${this.status.name}</span>`);
+                    break;
+                case 'title':
+                    $element.html(this.title);
                     break;
                 case 'description':
                     $element.html(this.description_formatted);
@@ -636,11 +669,16 @@ class Issue {
         let child_issues_hidden_class = (this.number_of_child_issues > 0) ? '' : 'hidden';
         let files_hidden_class = (this.number_of_files > 0) ? '' : 'hidden';
         let comments_hidden_class = (this.number_of_comments > 0) ? '' : 'hidden';
+        let priority_hidden_class = (this.priority) ? '' : 'hidden';
+        let priority_icon = (this.priority) ? UI.fa_image_tag(this.priority.icon.name, { classes: 'priority-icon' }, this.priority.icon.style) : '';
+        let priority_class = (this.priority) ? `priority priority_${this.priority.itemdata}` : '';
+        let priority_span = (this.priority) ? `<span class="${priority_class}" title="${this.priority.name}">${priority_icon}</span>` : '';
 
         $info.append(`<span class="attachments ${child_issues_hidden_class}" data-dynamic-field-value data-field="number_of_child_issues" data-issue-id="${this.id}">${UI.fa_image_tag('tasks')}<span class="value">${this.number_of_child_issues}</span></span>`);
         $info.append(`<span class="attachments ${files_hidden_class}" data-dynamic-field-value data-field="number_of_files" data-issue-id="${this.id}">${UI.fa_image_tag('paperclip')}<span class="value">${this.number_of_files}</span></span>`);
         $info.append(`<span class="attachments ${comments_hidden_class}" data-dynamic-field-value data-field="number_of_comments" data-issue-id="${this.id}">${UI.fa_image_tag('comments', [], 'far')}<span class="value">${this.number_of_comments}</span></span>`);
         $info.append(`<span class="status-badge" style="background-color: ${this.status.color}; color: ${this.status.text_color};" data-dynamic-field-value data-field="status" data-issue-id="${this.id}"><span>${this.status.name}</span></span>`);
+        $info.append(`<span class="attachments ${priority_hidden_class}" data-dynamic-field-value data-field="priority-icon" data-issue-id="${this.id}">${priority_span}</span>`);
 
         if (this.assignee !== undefined && this.assignee !== null) {
             if (this.assignee.type == 'user') {

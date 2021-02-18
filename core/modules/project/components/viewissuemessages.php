@@ -16,7 +16,7 @@
     <div class="message-box type-info <?php if (!$issue->isDuplicate()) echo 'hidden'; ?>" data-dynamic-field-value data-field="duplicate-message" data-issue-id="<?= $issue->getId(); ?>">
         <?php if ($issue->isDuplicate()): ?>
             <?php echo fa_image_tag('info-circle', ['class' => 'icon']); ?>
-            <span class="content"><?php echo __('This issue is a duplicate of issue %link_to_duplicate_issue', array('%link_to_duplicate_issue' => link_tag(make_url('viewissue', array('project_key' => $issue->getProject()->getKey(), 'issue_no' => $issue->getDuplicateOf()->getFormattedIssueNo())), $issue->getDuplicateOf()->getFormattedIssueNo(true)) . ' - "' . $issue->getDuplicateOf()->getTitle() . '"')); ?></span>
+            <span class="content"><?php echo __('This issue is a duplicate of issue %link_to_duplicate_issue', array('%link_to_duplicate_issue' => link_tag($issue->getUrl(), $issue->getDuplicateOf()->getFormattedIssueNo(true)) . ' - "' . $issue->getDuplicateOf()->getTitle() . '"')); ?></span>
         <?php endif; ?>
     </div>
     <div class="message-box type-info <?php if (!$issue->isClosed()) echo 'hidden'; ?>" data-dynamic-field-value data-field="closed-message" data-issue-id="<?= $issue->getId(); ?>" data-message="<?php echo __('This issue has been closed with status "%status_name" and resolution "%resolution".'); ?>" data-unknown="<?= __('Not determined'); ?>">

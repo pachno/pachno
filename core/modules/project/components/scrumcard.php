@@ -26,7 +26,7 @@
     <?php endif; ?>
     <div class="actions">
         <label><?php echo __('Actions'); ?>:</label>
-        <?php echo link_tag(make_url('viewissue', array('issue_no' => $issue->getFormattedIssueNo(), 'project_key' => $issue->getProject()->getKey())), image_tag('tab_new.png', array('title' => __('Open in new window'))), array('target' => '_blank')); ?>
+        <?php echo link_tag($issue->getUrl(), image_tag('tab_new.png', array('title' => __('Open in new window'))), array('target' => '_blank')); ?>
         <?php if ($issue->canAddRelatedIssues()): ?>
             <a href="javascript:void(0);" onclick="$('#scrum_story_<?php echo $issue->getID(); ?>_add_task_div').toggle();"><?php echo image_tag('scrum_add_task.png', array('title' => __('Add a task to this user story'))); ?></a>
         <?php endif; ?>

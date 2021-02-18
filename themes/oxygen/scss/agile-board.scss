@@ -644,29 +644,29 @@
     box-shadow: 0 3px 5px 0 rgba(27, 27, 36, .2);
   }
 
-  .priority {
-    &.priority_1 {
-      background-color: rgba(191, 3, 3, 0.15);
-    }
-
-    &.priority_2,
-    &.priority_3 {
-      background-color: rgba(195, 149, 0, 0.15);
-    }
-
-    &.priority_4 {
-      background-color: rgba(0, 137, 44, 0.15);
-    }
-
-    &.priority_5,
-    &.priority_6 {
-      background-color: rgba(136, 136, 136, 0.15);
-    }
-
-    &.priority_0 {
-      background-color: rgba(221, 221, 221, 0.2);
-    }
-  }
+  //.priority {
+  //  &.priority_1 {
+  //    background-color: rgba(191, 3, 3, 0.15);
+  //  }
+  //
+  //  &.priority_2,
+  //  &.priority_3 {
+  //    background-color: rgba(195, 149, 0, 0.15);
+  //  }
+  //
+  //  &.priority_4 {
+  //    background-color: rgba(0, 137, 44, 0.15);
+  //  }
+  //
+  //  &.priority_5,
+  //  &.priority_6 {
+  //    background-color: rgba(136, 136, 136, 0.15);
+  //  }
+  //
+  //  &.priority_0 {
+  //    background-color: rgba(221, 221, 221, 0.2);
+  //  }
+  //}
 
   .issue-header {
     display: flex;
@@ -764,9 +764,12 @@
 
     .fas,
     .far {
-      color: $theme-text-color-lightest;
+      &:not(.priority-icon) {
+        color: $theme-text-color-lightest;
+        margin-right: .25em;
+      }
+
       font-size: .9em;
-      margin-right: .25em;
     }
 
     > span {

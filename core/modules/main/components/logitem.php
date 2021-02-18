@@ -87,7 +87,7 @@
                     <?php if ($include_project): ?>
                         <span class="faded_out smaller"><?php echo image_tag($item->getIssue()->getProject()->getIconName(), array('class' => 'issuelog-project-logo'), true); ?></span>
                     <?php endif; ?>
-                    <a href="<?= make_url('viewissue', ['project_key' => $item->getIssue()->getProject()->getKey(), 'issue_no' => $item->getIssue()->getFormattedIssueNo()]); ?>" class="issue-link <?= (($item->getChangeType() == LogItem::ACTION_ISSUE_CLOSE) ? 'issue_closed' : 'issue_open'); ?>">
+                    <a href="<?= $item->getIssue()->getUrl(); ?>" class="issue-link <?= (($item->getChangeType() == LogItem::ACTION_ISSUE_CLOSE) ? 'issue_closed' : 'issue_open'); ?>">
                         <?php if ($include_time): ?>
                             <span class="time count-badge"><?php echo Context::getI18n()->formatTime($item->getTime(), 19); ?></span>
                         <?php endif; ?>
