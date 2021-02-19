@@ -12,6 +12,9 @@ import Warning from '@editorjs/warning';
 import InlineCode from '@editorjs/inline-code';
 import Delimiter from '@editorjs/delimiter';
 
+import Mention from './mention';
+import MentionableParagraph from './paragraph';
+
 import EasyMDE from "easymde";
 import {EVENTS as WidgetEvents} from "./index";
 
@@ -28,7 +31,7 @@ const initializeEditorJsArea = function () {
 
     const $form = $editor_element.parents('form');
     const form_id = $form.attr('id');
-    const content_html = $editor_element.html();
+    const content_html = $editor_element.find('textarea').val();
 
     $editor_element.html('');
     $editor_element.addClass('active');
@@ -76,6 +79,14 @@ const initializeEditorJsArea = function () {
             table: {
                 class: TableTool,
                 inlineToolbar: true
+            },
+            paragraph: {
+                class: MentionableParagraph,
+                inlineToolbar: true
+            },
+            mention: {
+                class: Mention,
+                inlineToolbar: false
             },
             quote: {
                 class: Quote,
@@ -162,6 +173,21 @@ const setupListeners = function() {
     Pachno.on(WidgetEvents.update, () => {
         $('.markuppable:not([data-processed])').each(initializeEasyMde);
     });
+
+    const $body = $('body');
+    $body.on('click', function (event) {
+        let remove_mentions = true;
+
+        if (event !== undefined) {
+            if (event.target.classList.contains('inline-mention')) {
+                remove_mentions = false;
+            }
+        }
+
+        if (remove_mentions) {
+            $('.dropper-container.mentions-container').remove();
+        }
+    })
 };
 
 export default setupListeners;

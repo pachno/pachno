@@ -24,8 +24,8 @@
             </div>
         <?php endif; ?>
         <?php if ($message): ?>
-            <div class="greenbox" style="margin: 0 0 5px 5px; font-size: 14px;">
-                <b><?php echo $message; ?></b>
+            <div class="message-box type-info">
+                <span class="message"><?php echo $message; ?></span>
             </div>
         <?php endif; ?>
         <?php if (isset($revision) && !$error): ?>

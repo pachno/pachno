@@ -3,7 +3,6 @@
     namespace pachno\core\entities;
 
     use b2db\Row;
-    use EditorJS\EditorJS;
     use Exception;
     use pachno\core\entities\common\Identifiable;
     use pachno\core\entities\common\IdentifiableScoped;

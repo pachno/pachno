@@ -2,7 +2,7 @@
 
     namespace pachno\core\helpers;
 
-    use EditorJS\EditorJS;
+    use pachno\core\helpers\EditorJS\EditorJS;
     use pachno\core\entities\User;
     use pachno\core\framework;
 

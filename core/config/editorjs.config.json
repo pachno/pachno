@@ -42,7 +42,7 @@
     "paragraph": {
       "text": {
         "type": "string",
-        "allowedTags": "i,b,u,a[href]"
+        "allowedTags": "i,b,u,span[data-user-id|data-article-id|class]"
       }
     },
     "list": {

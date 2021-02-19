@@ -211,10 +211,76 @@
     max-width: 1024px;
     margin: 0 auto;
 
+    .codex-editor {
+        //.ce-paragraph {
+        //    display: flex;
+        //    align-items: center;
+        //}
+
+        .inline-mention {
+            background-color: rgba(240, 240, 240, .3);
+            color: $theme-primary-color;
+            border-bottom: none;
+            padding: .1em .25em .1em 1.35em;
+            border-radius: 4px;
+            text-decoration: none;
+            font-size: .95em;
+            font-weight: $theme-font-weight-bold;
+            display: inline-block;
+            min-height: 1.5em;
+            min-width: 1em;
+            box-sizing: border-box;
+            position: relative;
+            vertical-align: middle;
+            margin: 0;
+
+            &.user-link {
+                &::after {
+                    content: '@';
+                    position: absolute;
+                    left: .25em;
+                    top: .1em;
+                }
+            }
+
+            &.article-link {
+                min-width: 1.5em;
+                padding-right: .75em;
+                padding-left: .85em;
+
+                &::before {
+                    content: '[';
+                    position: absolute;
+                    left: .3em;
+                    top: .1em;
+                }
+
+                &::after {
+                    content: ']';
+                    position: absolute;
+                    right: .3em;
+                    top: .1em;
+                }
+            }
+        }
+    }
+
     .content {
         a {
-            color: $theme-primary;
+            color: $theme-primary-color;
             border-bottom: 1px dotted $theme-primary;
+
+            &.inline-mention {
+                background-color: rgba(240, 240, 240, .3);
+                border-bottom: none;
+                padding: .1em .25em;
+                border-radius: 4px;
+                text-decoration: none;
+                font-size: .95em;
+                font-weight: $theme-font-weight-bold;
+                display: inline-block;
+                box-sizing: border-box;
+            }
         }
     }
     h1, h2, h3, h4, h5, h6 {

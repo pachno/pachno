@@ -13,7 +13,7 @@ apache-access.log
 apache-error.log
 artefacts/
 pachno.log
-/nbproject/private/
+/nbproject
 .idea
 .eslintrc.js
 *-VBoxSVC-*.log

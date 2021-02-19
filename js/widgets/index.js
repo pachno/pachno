@@ -44,6 +44,7 @@ const clearPopupsAndButtons = function (event) {
             return;
         }
     }
+
     $('.dropper.active').removeClass('active');
     $('.fancy-dropdown.active').removeClass('active');
 }

@@ -11,6 +11,7 @@ import {setupListeners as commentSetupListeners} from "../helpers/comments";
 import {setupListeners as favouriteSetupListeners} from "../helpers/favourites";
 import {setupListeners as agileSetupListeners} from "../helpers/agile";
 import {setupListeners as workflowSetupListeners} from "../helpers/workflow";
+import {setupListeners as articleSetupListeners} from "../helpers/article";
 import Board from "./board";
 import Search from "./search";
 import Issuereporter from "./issuereporter";
@@ -172,6 +173,7 @@ class PachnoApplication {
         issueSetupListeners();
         profileSetupListeners();
         workflowSetupListeners();
+        articleSetupListeners();
         uiSetupListeners();
         widgetSetupListeners();
         // $('#fullpage_backdrop_content').on('click', Core._resizeWatcher);

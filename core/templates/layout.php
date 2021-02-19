@@ -58,7 +58,8 @@
       data-webroot="<?= $webroot; ?>"
       data-language="<?= Context::getI18n()->getCurrentLanguage(); ?>"
       data-data-url="<?= make_url('userdata'); ?>"
-      data-upload-url="<?php echo make_url('upload_file'); ?>"
+      data-upload-url="<?= make_url('upload_file'); ?>"
+      data-user-backdrop-url="<?= make_url('get_partial_for_backdrop', ['key' => 'usercard', 'user_id' => 'user_id']) ?>"
       data-autocompleter-url="<?= (Context::isProjectContext()) ? make_url('project_quicksearch', array('project_key' => Context::getCurrentProject()->getKey())) : make_url('quicksearch'); ?>"
     >
     <?php foreach ($localjs as $js): ?>

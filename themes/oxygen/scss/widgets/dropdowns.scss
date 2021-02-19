@@ -150,6 +150,21 @@
     }
   }
 
+  &.mentions-container {
+    position: absolute;
+    margin-left: .5em;
+
+    .dropdown-container {
+      position: relative;
+      transform: scaleY(1);
+      opacity: 1;
+
+      .list-mode {
+        max-width: 60em;
+      }
+    }
+  }
+
   .dropper {
     cursor: pointer;
 

@@ -6197,6 +6197,15 @@ h1 .button, h1 .button:hover, h2 .button, h2 .button:hover, h3 .button, h3 .butt
           flex: 0 0 auto;
           min-width: 20px;
           width: 20px; }
+  .dropper-container.mentions-container {
+    position: absolute;
+    margin-left: .5em; }
+    .dropper-container.mentions-container .dropdown-container {
+      position: relative;
+      transform: scaleY(1);
+      opacity: 1; }
+      .dropper-container.mentions-container .dropdown-container .list-mode {
+        max-width: 60em; }
   .dropper-container .dropper {
     cursor: pointer; }
     .dropper-container .dropper + .dropdown-container.slide-out {
@@ -13077,9 +13086,54 @@ dl.info {
   margin: 0 auto;
   /* Undo some of the default styling done for code tag if it is nested
        with pre tag. */ }
+  .article .codex-editor .inline-mention {
+    background-color: rgba(240, 240, 240, 0.3);
+    color: #00adc7;
+    border-bottom: none;
+    padding: .1em .25em .1em 1.35em;
+    border-radius: 4px;
+    text-decoration: none;
+    font-size: .95em;
+    font-weight: 500;
+    display: inline-block;
+    min-height: 1.5em;
+    min-width: 1em;
+    box-sizing: border-box;
+    position: relative;
+    vertical-align: middle;
+    margin: 0; }
+    .article .codex-editor .inline-mention.user-link::after {
+      content: '@';
+      position: absolute;
+      left: .25em;
+      top: .1em; }
+    .article .codex-editor .inline-mention.article-link {
+      min-width: 1.5em;
+      padding-right: .75em;
+      padding-left: .85em; }
+      .article .codex-editor .inline-mention.article-link::before {
+        content: '[';
+        position: absolute;
+        left: .3em;
+        top: .1em; }
+      .article .codex-editor .inline-mention.article-link::after {
+        content: ']';
+        position: absolute;
+        right: .3em;
+        top: .1em; }
   .article .content a {
-    color: #0c8990;
+    color: #00adc7;
     border-bottom: 1px dotted #0c8990; }
+    .article .content a.inline-mention {
+      background-color: rgba(240, 240, 240, 0.3);
+      border-bottom: none;
+      padding: .1em .25em;
+      border-radius: 4px;
+      text-decoration: none;
+      font-size: .95em;
+      font-weight: 500;
+      display: inline-block;
+      box-sizing: border-box; }
   .article h1, .article h2, .article h3, .article h4, .article h5, .article h6 {
     margin: 20px 0 5px 0;
     padding: 5px 0;
