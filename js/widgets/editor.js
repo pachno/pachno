@@ -12,8 +12,8 @@ import Warning from '@editorjs/warning';
 import InlineCode from '@editorjs/inline-code';
 import Delimiter from '@editorjs/delimiter';
 
-import Mention from './mention';
-import MentionableParagraph from './paragraph';
+import Mention from './editor/mention';
+import MentionableParagraph from './editor/paragraph';
 
 import EasyMDE from "easymde";
 import {EVENTS as WidgetEvents} from "./index";

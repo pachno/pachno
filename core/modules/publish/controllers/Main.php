@@ -281,7 +281,7 @@
          */
         public function runGetAvailableParents(Request $request)
         {
-            $articles = Articles::getTable()->findArticles($this->article, $request['find_article'], $this->article->getProject());
+            $articles = Articles::getTable()->findArticles($request['find_article'], $this->article->getProject(), $this->article);
 
             $parent_articles = [];
             foreach ($articles as $article) {

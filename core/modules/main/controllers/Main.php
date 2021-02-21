@@ -12,6 +12,7 @@
     use pachno\core\entities\Project;
     use pachno\core\entities\SavedSearch;
     use pachno\core\entities\tables;
+    use pachno\core\entities\tables\Articles;
     use pachno\core\entities\tables\Issues;
     use pachno\core\entities\tables\Milestones;
     use pachno\core\entities\tables\Projects;
@@ -477,43 +478,100 @@
                         case 'get_themes':
                             return $this->renderComponent('configuration/onlinethemes');
                             break;
+                        case 'get_usernames':
+                            $users = tables\Users::getTable()->getByUserIDs(explode(',', $request['user_ids']));
+                            $data['users'] = [];
+                            foreach ($users as $user) {
+                                $data['users'][] = ['id' => $user->getID(), 'name' => $user->getName()];
+                            }
+                            break;
+                        case 'get_articlenames':
+                            $articles = tables\Articles::getTable()->getByArticleIds(explode(',', $request['article_ids']));
+                            $data['articles'] = [];
+                            foreach ($articles as $article) {
+                                $data['articles'][] = ['id' => $article->getID(), 'name' => $article->getName(), 'url' => $article->getLink()];
+                            }
+                            break;
                         case 'get_mentionables':
-                            switch ($request['target_type']) {
-                                case 'issue':
-                                    $target = Issues::getTable()->selectById($request['target_id']);
-                                    break;
-                                case 'article':
-                                    $target = tables\Articles::getTable()->selectById($request['target_id']);
-                                    break;
-                                case 'project':
-                                    $target = Projects::getTable()->selectById($request['target_id']);
-                                    break;
-                            }
                             $mentionables = [];
-                            if (isset($target) && $target instanceof MentionableProvider) {
-                                foreach ($target->getMentionableUsers() as $user) {
-                                    if ($user->isOpenIdLocked())
-                                        continue;
-                                    $mentionables[$user->getID()] = ['username' => $user->getUsername(), 'name' => $user->getName(), 'image' => $user->getAvatarURL()];
+                            if ($request->hasParameter('value')) {
+                                switch ($request['type']) {
+                                    case 'user':
+                                        $users = tables\Users::getTable()->getByDetails($request['value'], 10);
+
+                                        foreach ($users as $user) {
+                                            if ($user->isOpenIdLocked())
+                                                continue;
+
+                                            $mentionables[$user->getID()] = ['id' => $user->getID(), 'username' => $user->getUsername(), 'name' => $user->getName(), 'image' => $user->getAvatarURL()];
+                                        }
+
+                                        break;
+                                    case 'article':
+                                        $target = tables\Articles::getTable()->selectById($request['target_id']);
+
+                                        foreach (Articles::getTable()->findArticles($request['value'], $target->getProject(), null, 10) as $article) {
+                                            $mentionables[] = ['id' => $article->getID(), 'name' => $article->getName(), 'icon' => ['name' => 'file', 'type' => 'far']];
+                                        }
+
+                                        break;
                                 }
-                            }
-                            foreach ($this->getUser()->getFriends() as $user) {
-                                if ($user->isOpenIdLocked())
-                                    continue;
-                                $mentionables[$user->getID()] = ['username' => $user->getUsername(), 'name' => $user->getName(), 'image' => $user->getAvatarURL()];
-                            }
-                            foreach ($this->getUser()->getTeams() as $team) {
-                                foreach ($team->getMembers() as $user) {
-                                    if ($user->isOpenIdLocked())
-                                        continue;
-                                    $mentionables[$user->getID()] = ['username' => $user->getUsername(), 'name' => $user->getName(), 'image' => $user->getAvatarURL()];
+                            } else {
+                                switch ($request['target_type']) {
+                                    case 'issue':
+                                        $target = Issues::getTable()->selectById($request['target_id']);
+                                        break;
+                                    case 'article':
+                                        $target = tables\Articles::getTable()->selectById($request['target_id']);
+                                        break;
+                                    case 'project':
+                                        $target = Projects::getTable()->selectById($request['target_id']);
+                                        break;
                                 }
-                            }
-                            foreach ($this->getUser()->getClients() as $client) {
-                                foreach ($client->getMembers() as $user) {
-                                    if ($user->isOpenIdLocked())
-                                        continue;
-                                    $mentionables[$user->getID()] = ['username' => $user->getUsername(), 'name' => $user->getName(), 'image' => $user->getAvatarURL()];
+                                switch ($request['type']) {
+                                    case 'user':
+                                        if (isset($target) && $target instanceof MentionableProvider) {
+                                            foreach ($target->getMentionableUsers() as $user) {
+                                                if ($user->isOpenIdLocked())
+                                                    continue;
+
+                                                $mentionables[$user->getID()] = ['id' => $user->getID(), 'username' => $user->getUsername(), 'name' => $user->getName(), 'image' => $user->getAvatarURL()];
+                                            }
+                                        }
+                                        foreach ($this->getUser()->getFriends() as $user) {
+                                            if ($user->isOpenIdLocked())
+                                                continue;
+
+                                            $mentionables[$user->getID()] = ['id' => $user->getID(), 'username' => $user->getUsername(), 'name' => $user->getName(), 'image' => $user->getAvatarURL()];
+                                        }
+                                        foreach ($this->getUser()->getTeams() as $team) {
+                                            foreach ($team->getMembers() as $user) {
+                                                if ($user->isOpenIdLocked())
+                                                    continue;
+
+                                                $mentionables[$user->getID()] = ['id' => $user->getID(), 'username' => $user->getUsername(), 'name' => $user->getName(), 'image' => $user->getAvatarURL()];
+                                            }
+                                        }
+                                        foreach ($this->getUser()->getClients() as $client) {
+                                            foreach ($client->getMembers() as $user) {
+                                                if ($user->isOpenIdLocked())
+                                                    continue;
+
+                                                $mentionables[$user->getID()] = ['id' => $user->getID(), 'username' => $user->getUsername(), 'name' => $user->getName(), 'image' => $user->getAvatarURL()];
+                                            }
+                                        }
+                                        break;
+                                    case 'article':
+                                        $overview_article = Articles::getTable()->getArticleByName('Main Page', $target->getProject());
+                                        $mentionables[] = ['id' => $overview_article->getID(), 'name' => $overview_article->getName(), 'icon' => ['name' => 'file', 'type' => 'far']];
+                                        foreach (Articles::getTable()->getManualSidebarArticles(false, $target->getProject()) as $article) {
+                                            $mentionables[] = ['id' => $article->getID(), 'name' => $article->getName(), 'icon' => ['name' => 'file', 'type' => 'far']];
+                                        }
+                                        if (count($mentionables) > 10) {
+                                            $mentionables = array_slice($mentionables, 0, 10);
+                                        }
+
+                                        break;
                                 }
                             }
                             $data['mentionables'] = array_values($mentionables);

@@ -280,6 +280,11 @@
                 font-weight: $theme-font-weight-bold;
                 display: inline-block;
                 box-sizing: border-box;
+
+                .indicator {
+                    font-size: .8em;
+                    opacity: .7;
+                }
             }
         }
     }

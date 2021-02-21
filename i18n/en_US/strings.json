@@ -1,4 +1,9 @@
 {
+  "common": {
+    "mentions": {
+      "user_search_placeholder": "Start typing to search"
+    }
+  },
   "agile": {
     "add_card": "Add card",
     "add_card_here": "Add card",

@@ -245,6 +245,16 @@ class PachnoApplication {
         return this.issues[issue_id];
     }
 
+    /**
+     * @param {String} HTML representing a single element
+     * @return {Element}
+     */
+    htmlToElement(html) {
+        var template = document.createElement('template');
+        html = html.trim(); // Never return a text node of whitespace as the result
+        template.innerHTML = html;
+        return template.content.firstChild;
+    }
 }
 
 const Pachno = new PachnoApplication();

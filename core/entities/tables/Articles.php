@@ -90,12 +90,13 @@
         }
 
         /**
-         * @param Project|null $project
          * @param null $filter
+         * @param Project|null $project
+         * @param Article|null $current_article
          *
          * @return Article[]
          */
-        public function findArticles(Article $current_article, $filter, Project $project = null): array
+        public function findArticles($filter, Project $project = null, Article $current_article = null, $limit = null): array
         {
             $query = $this->getQuery();
             $query->where(self::SCOPE, framework\Context::getScope()->getID());
@@ -112,11 +113,16 @@
             $crit->or('articles.name', '%' . strtolower($filter), Criterion::LIKE);
             $crit->or('articles.name', strtolower($filter) . '%', Criterion::LIKE);
             $query->where($crit);
-            $query->where('articles.name', 'Main Page', Criterion::NOT_EQUALS);
-            $query->where('articles.id', $current_article->getID(), Criterion::NOT_EQUALS);
-            $query->where('articles.id', $current_article->getID(), Criterion::NOT_EQUALS);
+
+            if ($current_article instanceof Article) {
+                $query->where('articles.id', $current_article->getID(), Criterion::NOT_EQUALS);
+            }
 
             $query->addOrderBy(self::NAME, 'asc');
+
+            if ($limit !== null) {
+                $query->setLimit($limit);
+            }
 
             return $this->select($query);
         }
@@ -437,6 +443,22 @@
 //                return $res;
 //            }
 //        }
+
+        /**
+         * @param $article_ids
+         * @return Article[]
+         */
+        public function getByArticleIds($article_ids)
+        {
+            if (!$article_ids)
+                return [];
+
+            $query = $this->getQuery();
+            $query->where('articles.id', $article_ids, Criterion::IN);
+            $query->where(self::SCOPE, framework\Context::getScope()->getID());
+
+            return $this->select($query);
+        }
 
         public function getDeadEndArticles(Project $project = null)
         {

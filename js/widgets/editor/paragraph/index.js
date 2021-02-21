@@ -34,6 +34,10 @@ class Paragraph {
     return '';
   }
 
+  static get enableLineBreaks() {
+    return true;
+  }
+
   /**
    * Render plugin`s main Element and fill it with saved data
    *

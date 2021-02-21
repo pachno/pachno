@@ -137,7 +137,7 @@
             </div>
             <?php if ($article->getContentSyntax() == \pachno\core\framework\Settings::SYNTAX_EDITOR_JS): ?>
                 <div class="editor-input-container-wrapper article">
-                    <div class="editor-input-container wysiwyg-editor" data-input-name="article_content" data-placeholder="<?= __("Click here to start writing. When writing, press [tab] to see writing options"); ?>"><textarea><?= $article->getContent(); ?></textarea></div>
+                    <div class="editor-input-container wysiwyg-editor" data-article-id="<?= $article->getId(); ?>" data-input-name="article_content" data-placeholder="<?= __("Click here to start writing. When writing, press [tab] to see writing options"); ?>"><textarea><?= $article->getContent(); ?></textarea></div>
                 </div>
             <?php else: ?>
                 <?php include_component('main/textarea', [
