@@ -1,8 +1,12 @@
 <?php
 
-use pachno\core\entities\DatatypeBase;
+    use pachno\core\entities\DatatypeBase;
 
-$pachno_response->addJavascript('calendarview');
+/**
+ * @var \pachno\core\entities\SavedSearch $search_object
+ */
+
+    $pachno_response->addJavascript('calendarview');
 
 ?>
 <div id="search-builder" class="top-search-filters-container">
@@ -165,6 +169,7 @@ $pachno_response->addJavascript('calendarview');
             </div>
             <div class="search-strip">
                 <?php include_component('search/interactivefilter', array('filter' => $search_object->getFilter('project_id'))); ?>
+                <input type="hidden" name="offset" value="<?= $search_object->getOffset(); ?>" id="search_offset_input">
                 <input type="hidden" name="sortfields" value="<?= $search_object->getSortFieldsAsString(); ?>" id="search_sortfields_input">
                 <input type="hidden" name="fs[text][o]" value="=">
                 <input type="search" name="fs[text][v]" id="interactive_filter_text" value="<?= htmlentities($search_object->getSearchTerm(), ENT_QUOTES, \pachno\core\framework\Context::getI18n()->getCharset()); ?>" class="filter_searchfield" placeholder="<?= __('Enter a search term here'); ?>">

@@ -27,7 +27,7 @@ const setupListeners = () => {
             .then((json) => {
                 for (const user of json.users) {
                     $(`.inline-mention.user-link[data-user-id="${user.id}"] .name`).html(user.name);
-                    $(`.inline-mention.article-link[data-article-id="${article.id}"] .indicator`).remove();
+                    $(`.inline-mention.user-link[data-user-id="${user.id}"] .indicator`).remove();
                 }
             });
     }
@@ -39,7 +39,7 @@ const setupListeners = () => {
         const link_text = $element.html();
         if ($element.hasClass('completed')) {
             const article_id = $element.data('article-id');
-            const $link_element = $(`<a href="javascript:void(0)" class="inline-mention article-link" data-article-id="${article_id}">${UI.fa_image_tag('file-alt', { classes: 'icon' }, 'far')}<span class="name">${link_text}</span>${UI.fa_image_tag('circle-notch', { classes: 'icon fa-spin indicator' }, 'fas')}</a>`);
+            const $link_element = $(`<a href="javascript:void(0)" class="inline-mention article-link loading" data-article-id="${article_id}">${UI.fa_image_tag('file-alt', { classes: 'icon' }, 'far')}<span class="name">${link_text}</span>${UI.fa_image_tag('circle-notch', { classes: 'icon fa-spin indicator' }, 'fas')}</a>`);
             $element.replaceWith($link_element);
             article_ids.push(article_id);
         } else {
@@ -54,6 +54,36 @@ const setupListeners = () => {
                     $(`.inline-mention.article-link[data-article-id="${article.id}"] .name`).html(article.name);
                     $(`.inline-mention.article-link[data-article-id="${article.id}"] .indicator`).remove();
                     $(`.inline-mention.article-link[data-article-id="${article.id}"]`).attr('href', article.url);
+                    $(`.inline-mention.article-link[data-article-id="${article.id}"]`).removeClass('loading');
+                }
+
+                $(`.inline-mention.article-link.loading .indicator`).remove();
+                $(`.inline-mention.article-link.loading`).addClass('invalid').removeClass('loading');
+            });
+    }
+
+    const $issuementions = $('.inline-mention.issue-link');
+    let issue_ids = [];
+    for (const element of $issuementions) {
+        const $element = $(element);
+        const link_text = $element.html();
+        if (true || $element.hasClass('completed')) {
+            const issue_id = $element.data('issue-id');
+            const $link_element = $(`<a href="javascript:void(0)" class="inline-mention issue-link completed" data-issue-id="${issue_id}"><span class="name">${link_text}</span>${UI.fa_image_tag('circle-notch', { classes: 'icon fa-spin indicator' }, 'fas')}</a>`);
+            $element.replaceWith($link_element);
+            issue_ids.push(issue_id);
+        } else {
+            $element.replaceWith(`[${$element.html()}]`);
+        }
+    }
+
+    if (issue_ids.length) {
+        Pachno.fetch(`${Pachno.data_url}?say=get_issues&issue_ids=${issue_ids.join(',')}`, { method: 'GET' })
+            .then((json) => {
+                for (const issue of json.issues) {
+
+                    $(`.inline-mention.issue-link[data-issue-id="${issue.id}"]`).html(`${UI.fa_image_tag(issue.issue_type.fa_icon, {classes: `icon issuetype-icon issuetype-${issue.issue_type.type}`})}<span class="name">${issue.title}</span>`);
+                    $(`.inline-mention.issue-link[data-issue-id="${issue.id}"]`).attr('href', issue.url);
                 }
             });
     }

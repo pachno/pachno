@@ -191,6 +191,10 @@ class Paragraph {
     return {
       text: {
         br: true,
+        pre: true,
+        code: true,
+        mark: true,
+        source: true,
         span: true
       }
     };

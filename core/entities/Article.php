@@ -14,6 +14,7 @@
     use pachno\core\entities\tables\UserArticles;
     use pachno\core\entities\tables\Users;
     use pachno\core\framework;
+    use pachno\core\framework\Context;
     use pachno\core\framework\Event;
     use pachno\core\framework\Settings;
     use pachno\core\helpers\Attachable;
@@ -1277,6 +1278,314 @@
         {
             $name = str_replace(' ', '', mb_strtolower(trim($this->getName())));
             return $name == 'mainpage';
+        }
+
+        protected function convertLine($content_line)
+        {
+            $content_line = preg_replace_callback('/\!(.*?)/i', function ($matches) {
+                return $matches[1];
+            }, $content_line);
+
+            $content_line = preg_replace_callback('/<(nowiki|pre)>(.*)<\/(\\1)>(?!<\/(\\1)>)/ismU', function ($matches) {
+                return '<span class="inline-code">' . str_replace(['<', '>'], ['<', '>'], $matches[2]) . '</span>';
+            }, $content_line);
+
+            $content_line = preg_replace_callback('/<source((?:\s+[^\s]+=.*)*)>\s*?(.+)\s*?<\/source>/ismU', function ($matches) {
+                return '<span class="inline-code">' . str_replace(['<', '>'], ['<', '>'], $matches[2]) . '</span>';
+            }, $content_line);
+
+            $content_line = preg_replace_callback('/(^|[ \t\r\n])((ftp|http|https|gopher|mailto|news|nntp|telnet|wais|file|prospero|aim|webcal):(([A-Za-z0-9$_.+!*(),;\[\]\/?:@&~=-])|%[A-Fa-f0-9]{2}){2,}(#([a-zA-Z0-9][a-zA-Z0-9\[\]$_.+!*(),;\/?:@&~=-]*))?([A-Za-z0-9\[\]$_+!*();\/?:~-]))/', function ($matches) {
+                $href = html_entity_decode($matches[2], ENT_QUOTES, 'UTF-8');
+                $href = str_replace(['[', ']'], ['&#91;', '&#93;'], $href);
+
+                return link_tag($href, $href, ['target' => '_new']);;
+            }, $content_line);
+
+            $content_line = preg_replace_callback('/(\[\[(\:?([^\]]*?)\:)?([^\]]*?)(\|([^\]]*?))?\]\]([a-z]+)?)/i', function ($matches) {
+                $href = html_entity_decode($matches[4], ENT_QUOTES, 'UTF-8');
+                if (isset($matches[6]) && $matches[6]) {
+                    $title = $matches[6];
+                } else {
+                    $title = $href;
+                    if (isset($matches[7]) && $matches[7]) {
+                        $title .= $matches[7];
+                    }
+                }
+                $namespace = $matches[3];
+
+                if (mb_strtolower($namespace) == 'category') {
+                    return '';
+                }
+
+                if (in_array(mb_strtolower($namespace), ['wikipedia', 'wiki'])) {
+                    if (Context::isCLI()) return $href;
+
+                    $options = explode('|', $title);
+                    $title = (array_key_exists(5, $matches) && (mb_strpos($matches[5], '|') !== false) ? '' : $namespace . ':') . array_pop($options);
+
+                    return link_tag('http://en.wikipedia.org/wiki/' . $href, $href);
+                }
+
+                if ($namespace == 'TBG') {
+                    if (Context::isCLI()) return $href;
+                    if (!Context::getRouting()->hasRoute($href)) return $href;
+
+                    $options = explode('|', $title);
+                    $title = array_pop($options);
+
+                    try {
+                        return link_tag(make_url($href), $title); // $this->parse_image($href,$title,$options);
+                    } catch (Exception $e) {
+                        return $href;
+                    }
+                }
+
+                if (mb_substr($href, 0, 1) == '/') {
+                    if (Context::isCLI()) return $href;
+
+                    $options = explode('|', $title);
+                    $title = array_pop($options);
+
+                    return link_tag($href, $title); // $this->parse_image($href,$title,$options);
+                }
+
+                $title = preg_replace('/\(.*?\)/', '', $title);
+                $title = preg_replace('/^.*?\:/', '', $title);
+
+                if (!$namespace || !array_key_exists($namespace, ['ftp', 'http', 'https', 'gopher', 'mailto', 'news', 'nntp', 'telnet', 'wais', 'file', 'prospero', 'aim', 'webcal'])) {
+                    $project = ($namespace) ? Project::getByKey($namespace) : null;
+                    $title = (isset($title)) ? $title : $href;
+
+                    if (Context::isCLI()) return $href;
+
+                    $article = Articles::getTable()->getArticleByName($href, $project, true);
+                    if (!$article instanceof Article) {
+                        $article = Articles::getTable()->getArticleByName($href, $project, false);
+                    }
+                    $id = ($article instanceof Article) ? $article->getID() : '';
+                    $completed_class= ($article instanceof Article) ? 'completed' : 'invalid';
+                    return '<span class="inline-mention article-link ' . $completed_class . '" data-article-id="' . $id . '">' . $href . '</span>';
+                } else {
+                    $href = $namespace . ':' . $this->_wiki_link($href);
+                }
+
+                if (Context::isCLI()) return $href;
+
+                return link_tag($href, $title);
+            }, $content_line);
+
+            $content_line = preg_replace_callback('/(\[([^\]]*?)(?:\s+([^\]]*?))?\])/i', function ($matches) {
+                if (!is_array($matches)) {
+                    if (is_null($matches)) return '';
+
+                    $href = $title = html_entity_decode($matches, ENT_QUOTES, 'UTF-8');
+                } else {
+                    $href = html_entity_decode($matches[2], ENT_QUOTES, 'UTF-8');
+                    $title = (array_key_exists(3, $matches)) ? $matches[3] : $matches[2];
+
+                    if (Context::isCLI()) return $href;
+                }
+
+                return link_tag(str_replace(['[', ']'], ['&#91;', '&#93;'], $href), str_replace(['[', ']'], ['&#91;', '&#93;'], $title), ['target' => '_new']);
+            }, $content_line);
+
+            $content_line = preg_replace_callback('/(\'{2,5})(.*?)(\'{2,5})/', function ($matches) {
+                $amount = mb_strlen($matches[1]);
+                switch ($amount) {
+                    case 2:
+                    case 4:
+                        return "<i>{$matches[2]}</i>";
+                    case 3:
+                        return "<b>{$matches[2]}</b>";
+                    case 5:
+                        return "<i><b>{$matches[2]}</b></i>";
+                }
+
+            }, $content_line);
+
+            $content_line = preg_replace_callback(TextParser::getIssueRegex(), function ($matches) {
+                $issue = Issue::getIssueFromLink($matches[2]);
+                if ($issue instanceof Issue) {
+                    return $matches[1] . '<span class="inline-mention issue-link" data-issue-id="' . $issue->getId() . '">' . $matches[2] . '</span>';
+                } else {
+                    return $matches[1] . $matches[2];
+                }
+
+            }, $content_line);
+
+            return $content_line;
+        }
+
+        public function convert()
+        {
+            Context::loadLibrary('ui');
+            $this->setContentSyntax(framework\Settings::SYNTAX_EDITOR_JS);
+            $blocks = [];
+            $content = str_replace(['{{TOC}}'], [''], $this->getContent());
+            $content_lines = explode("\n", $content);
+            $previous_block = null;
+            $tablemode = false;
+
+            foreach ($content_lines as $content_line) {
+                if (!trim($content_line)) {
+                    continue;
+                }
+
+                if ($tablemode === false && strpos(strtolower($content_line), '{|') === 0) {
+                    $blocks[] = ['type' => 'table', 'data' => ['content' => []]];
+                    $tablemode = 'true';
+
+                    continue;
+                }
+
+                if (strpos(strtolower($content_line), '|}') === 0) {
+                    $tablemode = false;
+
+                    continue;
+                }
+
+                if ($tablemode && strpos(strtolower($content_line), '|-') === 0) {
+                    continue;
+                }
+
+                if ($tablemode) {
+                    $is_header = stripos($content_line, '!!') !== false;
+                    $columns = ($is_header) ? explode('!!', $content_line) : explode('||', $content_line);
+                    $items = [];
+                    foreach ($columns as $column) {
+                        $content = ltrim($column, '!|');
+                        $items[] = ($is_header) ? '<b>' . $this->convertLine($content) . '</b>' : $this->convertLine($content);
+                    }
+                    $blocks[count($blocks) - 1]['data']['content'][] = $items;
+
+                    continue;
+                }
+
+                if ($previous_block !== 'nowiki' && stripos(strtolower($content_line), '<nowiki>') === 0) {
+                    $blocks[] = ['type' => 'code', 'data' => ['code' => '']];
+                    $previous_block = 'nowiki';
+                    $content_line = substr($content_line, 8);
+
+                    if (trim($content_line) == '')
+                        continue;
+                }
+
+                if (stripos(strtolower($content_line), '</nowiki>') === 0) {
+                    $previous_block = '';
+
+                    continue;
+                }
+
+                if ($previous_block === 'nowiki') {
+                    $content_line = trim($content_line);
+
+                    if (substr($content_line, -9) == "</nowiki>") {
+                        $content_line = substr($content_line, 0, strlen($content_line) - 9);
+                        $previous_block = '';
+                    }
+
+                    $blocks[count($blocks) - 1]['data']['code'] .= str_replace(['<', '>'], ['<', '>'], $content_line) . "\n";
+
+                    if (substr($content_line, -9) == "</nowiki>") {
+                        $previous_block = '';
+                    }
+
+                    continue;
+                }
+
+                if ($previous_block !== 'source' && stripos(strtolower($content_line), '<source') === 0) {
+                    $blocks[] = ['type' => 'code', 'data' => ['code' => '']];
+                    $previous_block = 'source';
+                    $content_line = substr($content_line, strpos($content_line, '>') + 1);
+
+                    if (trim($content_line) == '')
+                        continue;
+                }
+
+                if (stripos(strtolower($content_line), '</source>') === 0) {
+                    $previous_block = '';
+
+                    continue;
+                }
+
+                if ($previous_block === 'source') {
+                    $content_line = trim($content_line);
+
+                    if (substr($content_line, -9) == "</source>") {
+                        $content_line = substr($content_line, 0, strlen($content_line) - 9);
+                        $previous_block = '';
+                    }
+
+                    $blocks[count($blocks) - 1]['data']['code'] .= str_replace(['<', '>'], ['<', '>'], $content_line) . "\n";
+
+                    if (substr($content_line, -9) == "</source>") {
+                        $previous_block = '';
+                    }
+
+                    continue;
+                }
+
+                if (stripos($content_line, '=') === 0) {
+                    preg_replace_callback('/^(\={1,6})(.*?)(\={1,6})$/', function ($matches) use (&$blocks) {
+                        $level = mb_strlen($matches[1]);
+                        $blocks[] = ['type' => 'header', 'data' => ['text' => trim($matches[2]), 'level' => $level]];
+                    }, $content_line);
+                    $previous_block = 'header';
+
+                    continue;
+                }
+
+                if (stripos($content_line, '  ') === 0) {
+                    $content_line = trim($content_line);
+                    if ($previous_block === 'code') {
+                        $blocks[count($blocks) - 1]['data']['code'] .= "\n" . $content_line;
+                    } else {
+                        $blocks[] = ['type' => 'code', 'data' => ['code' => $content_line]];
+                    }
+                    $previous_block = 'code';
+
+                    continue;
+                }
+
+                if (stripos($content_line, '*') === 0) {
+                    $content_line = trim(substr($content_line, 1));
+                    if ($previous_block === 'unordered-list') {
+                        $blocks[count($blocks) - 1]['data']['items'][] = $this->convertLine($content_line);
+                    } else {
+                        $blocks[] = ['type' => 'list', 'data' => ['style' => 'unordered', 'items' => [$this->convertLine($content_line)]]];
+                    }
+                    $previous_block = 'unordered-list';
+
+                    continue;
+                }
+
+                if (stripos($content_line, '#') === 0) {
+                    $content_line = trim(substr($content_line, 1));
+                    if ($previous_block === 'ordered-list') {
+                        $blocks[count($blocks) - 1]['data']['items'][] = $this->convertLine($content_line);
+                    } else {
+                        $blocks[] = ['type' => 'list', 'data' => ['style' => 'ordered', 'items' => [$this->convertLine($content_line)]]];
+                    }
+                    $previous_block = 'ordered-list';
+
+                    continue;
+                }
+
+                if (stripos($content_line, '----') === 0) {
+                    $blocks[] = ['type' => 'delimiter', 'data' => []];
+                    $previous_block = 'delimiter';
+
+                    continue;
+                }
+
+                $previous_block = 'paragraph';
+                $blocks[] = ['type' => 'paragraph', 'data' => ['text' => $this->convertLine($content_line)]];
+            }
+
+            $blocks[] = ['type' => 'paragraph', 'data' => ['text' => '']];
+            $json = ['time' => $this->getLastUpdatedDate() * 1000, 'blocks' => $blocks, 'version' => '2.17.0'];
+
+            $this->setContent(json_encode($json, JSON_THROW_ON_ERROR));
         }
 
     }

@@ -339,12 +339,9 @@
             }
 
             if ($request['convert']) {
-                $this->article->setContentSyntax(framework\Settings::SYNTAX_EDITOR_JS);
-                $json = ['time' => $this->article->getLastUpdatedDate() * 1000, 'blocks' => [
-                    ['type' => 'paragraph', 'data' => ['text' => $this->article->getContent()]]
-                ], 'version' => '2.17.0'];
-                $this->article->setContent(json_encode($json));
+                $this->article->convert();
                 $this->convert = true;
+//                return $this->renderJSON($this->article->getContent());
             }
 
             if ($request->isPost()) {

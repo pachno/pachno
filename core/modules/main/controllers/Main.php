@@ -492,6 +492,13 @@
                                 $data['articles'][] = ['id' => $article->getID(), 'name' => $article->getName(), 'url' => $article->getLink()];
                             }
                             break;
+                        case 'get_issues':
+                            $issues = tables\Issues::getTable()->getByIssueIDs(explode(',', $request['issue_ids']));
+                            $data['issues'] = [];
+                            foreach ($issues as $issue) {
+                                $data['issues'][] = ['id' => $issue->getID(), 'name' => $issue->getName(), 'title' => $issue->getFormattedTitle(true), 'issue_no' => $issue->getIssueNo(), 'url' => $issue->getUrl(), 'closed' => ($issue->isClosed()), 'issue_type' => $issue->getIssueType()->toJSON(), 'status' => $issue->getStatus()->toJSON()];
+                            }
+                            break;
                         case 'get_mentionables':
                             $mentionables = [];
                             if ($request->hasParameter('value')) {

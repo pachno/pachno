@@ -1135,6 +1135,21 @@
             }
         }
 
+        /**
+         * @param $issue_ids
+         * @return Issue[]
+         */
+        public function getByIssueIDs($issue_ids)
+        {
+            if (empty($issue_ids))
+                return [];
+
+            $query = $this->getQuery();
+            $query->where(self::DELETED, false);
+            $query->where(self::ID, $issue_ids, Criterion::IN);
+            return $this->select($query);
+        }
+
         protected function setupIndexes()
         {
             $this->addIndex('project', self::PROJECT_ID);

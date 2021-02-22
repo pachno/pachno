@@ -154,6 +154,34 @@
         cursor: pointer;
         font-size: .9em;
 
+        &.with-cover {
+          padding-top: 0;
+
+          .issue-header {
+            padding: 4.5em 0 0 0;
+            background-position: center top;
+            background-size: cover;
+            background-repeat: no-repeat;
+            overflow: hidden;
+            border-radius: 0;
+            align-items: flex-start;
+
+            .issue-number {
+              padding: .25em .5em;
+              background-color: rgba(0, 0, 0, .5);
+              color: #FFF;
+              font-weight: $theme-font-weight-bold;
+            }
+
+            .issue-title {
+              background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, .7) 60%);
+              color: #FFF;
+              padding: 1em .5em .5em .5em;
+              width: 100%;
+            }
+          }
+        }
+
         &.issue_closed {
           .issue-header {
             text-decoration: line-through;
@@ -203,6 +231,10 @@
             font-size: .9em;
             font-weight: $theme-font-weight-regular;
             margin-right: .5em;
+
+            &.hidden {
+              display: none;
+            }
 
             .fas,
             .far {

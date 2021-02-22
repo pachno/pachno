@@ -314,7 +314,15 @@
 
             $query = $this->getQuery();
             if ($is_manual_name) {
-                $query->where('articles.manual_name', $name, Criterion::LIKE);
+                $criteria = new Criteria();
+                $criteria->where('articles.manual_name', $name, Criterion::LIKE);
+
+                if ($project instanceof Project) {
+                    $criteria->or('articles.manual_name', ucfirst($project->getKey()) . ":" . $name, Criterion::LIKE);
+                }
+
+                $query->where($criteria);
+
                 if ($parent_id !== null) {
                     $query->where('articles.parent_article_id', $parent_id);
                 }

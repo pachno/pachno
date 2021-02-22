@@ -42,7 +42,7 @@
     "paragraph": {
       "text": {
         "type": "string",
-        "allowedTags": "i,b,u,span[data-user-id|data-article-id|class]"
+        "allowedTags": "i,b,u,span[data-user-id|data-article-id|data-issue-id|class],br,code,mark,pre,source"
       }
     },
     "list": {
@@ -74,25 +74,18 @@
       }
     },
     "table": {
-      "header": {
+      "content": {
         "type": "array",
-        "data": {
-          "description": {
-            "type": "string"
-          },
-          "author": {
-            "type": "string"
-          }
-        }
-      },
-      "rows": {
-        "type": "array",
+        "required": false,
         "data": {
           "-": {
             "type": "array",
+            "required": false,
             "data": {
               "-": {
-                "type": "string"
+                "type": "string",
+                "allowedTags": "i,b,u,span[data-user-id|data-article-id|data-issue-id|class],br,code,mark,pre,source",
+                "required": false
               }
             }
           }

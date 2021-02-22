@@ -96,6 +96,17 @@
                     $content[] = "<span>{$message}</span>";
                     $content[] = "</div>";
                     break;
+                case 'table':
+                    $content[] = "<table>";
+                    foreach ($block['data']['content'] as $row) {
+                        $content[] = "<tr>";
+                        foreach ($row as $column) {
+                            $content[] = "<td><span>{$column}</span></td>";
+                        }
+                        $content[] = "</tr>";
+                    }
+                    $content[] = "</table>";
+                    break;
                 default:
                     framework\Context::getDebugger()->watch('block', $block);
                     throw new \Exception('Invalid editorjs content type');

@@ -105,6 +105,18 @@
       border: none;
       border-bottom: 2px solid $theme-text-color;
       color: $theme-text-color;
+      box-sizing: border-box;
+
+      .sort-indicator-asc,
+      .sort-indicator-desc {
+        display: none;
+      }
+
+      &.sort_asc .sort-indicator-asc,
+      &.sort_desc .sort-indicator-desc {
+        display: inline-flex;
+        margin-left: .25em;
+      }
 
       &.invisible {
         border-bottom-color: transparent;

@@ -28,23 +28,19 @@
             <div class="actions-container">
                 <div class="button-group">
                     <?php if (!isset($convert)): ?>
-                        <button class="secondary" type="button">
-                            <?= fa_image_tag('paperclip', ['class' => 'icon']); ?><span class="name"><?= __('Manage attachments'); ?></span><span id="number_of_attachments" class="count-badge"><?= count($article->getFiles()); ?></span>
+                        <button class="button secondary" type="button">
+                            <?= fa_image_tag('paperclip', ['class' => 'icon']); ?>
+                            <span class="name"><?= __('Attachments'); ?></span>
+                            <span id="number_of_attachments" class="count-badge"><?= count($article->getFiles()); ?></span>
+                        </button>
+                        <button class="button secondary" type="button" onclick="$('#category_selector_container').show();return false;">
+                            <?= fa_image_tag('layer-group', ['class' => 'icon']); ?>
+                            <span class="name"><?= __('Categories'); ?></span>
+                            <span id="number_of_categories" class="count-badge"><?= count($article->getCategories()); ?></span>
                         </button>
                         <span class="separator"></span>
                     <?php endif; ?>
                     <button class="button icon secondary" type="button" onclick="$('#editor-container').toggleClass('wider');return false;"><?= fa_image_tag('arrows-alt-h'); ?></button>
-                    <span class="separator"></span>
-                    <?php if (!isset($convert)): ?>
-                        <button class="button icon secondary" type="button" onclick="$('#parent_selector_container').show();return false;"><?= fa_image_tag('file-export'); ?></button>
-                        <button class="button icon secondary" type="button" onclick="$('#category_selector_container').show();return false;"><?= fa_image_tag('layer-group'); ?></button>
-                        <span class="separator"></span>
-                    <?php endif; ?>
-                    <?php /*
-                    <button class="button secondary" type="submit" onclick="$('#article_preview').value = 1;">
-                        <?= fa_image_tag('eye', ['class' => 'icon']); ?>
-                        <span class="name"><?= __('Preview'); ?></span>
-                    </button> */ ?>
                     <button class="button primary enable-on-editor-ready" id="article-publish-button" disabled type="submit">
                         <?= fa_image_tag('spinner', ['class' => 'fa-spin icon indicator']); ?>
                         <?php if (isset($convert)): ?>
@@ -53,6 +49,19 @@
                             <span><?php echo ($article->getId()) ? __('Save changes') : __('Save page'); ?></span>
                         <?php endif; ?>
                     </button>
+                    <div class="dropper-container">
+                        <a class="button dropper icon secondary"><?= fa_image_tag('ellipsis-v'); ?></a>
+                        <div class="dropdown-container">
+                            <div class="list-mode">
+                                <a href="javascript:void(0);" class="list-item" type="button" onclick="$('#parent_selector_container').show();return false;">
+                                    <?= fa_image_tag('file-export', ['class' => 'icon']); ?>
+                                    <span class="name"><?= __('Move page'); ?></span>
+                                </a>
+                                <div class="list-item separator"></div>
+                                <?= javascript_link_tag(fa_image_tag('times', ['class' => 'icon']) . '<span class="name">'.__('Delete this page').'</span>', ['onclick' => "Pachno.UI.Dialog.show('".__('Please confirm')."', '".__('Do you really want to delete this article?')."', {yes: {click: function () { Pachno.Main.deleteArticle('".make_url('publish_article_delete', ['article_id' => $article->getID()])."') }}, no: {click: Pachno.UI.Dialog.dismiss}})", 'class' => 'list-item danger disabled']); ?>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

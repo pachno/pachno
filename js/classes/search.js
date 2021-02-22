@@ -8,6 +8,8 @@ class Search {
         this.results_loaded = false;
         this.sort_field = undefined;
         this.sort_direction = undefined;
+        this.offset = 0;
+        this.results_per_page = undefined;
         this.is_dirty = false;
         this.current_result_view = undefined;
         this.result_views = {};
@@ -256,11 +258,16 @@ class Search {
         }
     }
 
+    updateOffset(offset) {
+        $('#search_offset_input').val(offset);
+        this.updateResults(true);
+    }
+
     sortResults(event) {
         const $input = $(event.target);
         if ($input.data('sort-field') !== undefined) {
             const direction = ($input.data('sort-direction') == 'asc') ? 'desc' : 'asc';
-            $('#search_sortfields_input').value($input.data('sort-field') + '=' + direction);
+            $('#search_sortfields_input').val($input.data('sort-field') + '=' + direction);
             this.updateResults(true);
         }
     }
@@ -273,7 +280,7 @@ class Search {
             $('.template-picker').each(function (element) {
                 if (element == current_elm) {
                     current_elm.addClass('selected');
-                    $('#filter_selected_template').value(current_elm.dataset.templateName);
+                    $('#filter_selected_template').val(current_elm.dataset.templateName);
                     if (current_elm.dataset.grouping == '1') {
                         $('#search_grouping_container').removeClass('nogrouping');
                         $('#search_grouping_container').removeClass('parameter');
@@ -334,8 +341,11 @@ class Search {
             $body.on('click', '#search_grouping_container li', function (event) {
                 search.updateColumnVisibility(event);
             });
-            $body.on('click', '#search-results th:not(.nosort)', function (event) {
+            $body.on('click', '#search-results .row.header .header:not(.nosort)', function (event) {
                 search.sortResults(event);
+            });
+            $body.on('click', '.trigger-update-search-page', function (event) {
+                search.updateOffset($(this).data('offset'));
             });
     //     $('.template-picker').each(function (element) {
     //         element.on('click', Pachno.Search.pickTemplate);

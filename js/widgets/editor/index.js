@@ -1,22 +1,26 @@
 import $ from "jquery";
-import Pachno from "../classes/pachno";
+import Pachno from "../../classes/pachno";
 import EditorJS from '@editorjs/editorjs';
-import Header from '@editorjs/header';
-import List from '@editorjs/list';
-import LinkTool from '@editorjs/link';
-import Checklist from '@editorjs/checklist';
-import Quote from '@editorjs/quote';
-import CodeTool from '@editorjs/code';
-import TableTool from '@editorjs/table';
-import Warning from '@editorjs/warning';
-import InlineCode from '@editorjs/inline-code';
-import Delimiter from '@editorjs/delimiter';
 
-import Mention from './editor/mention';
-import MentionableParagraph from './editor/paragraph';
+import Checklist from '@editorjs/checklist';
+import CodeTool from '@editorjs/code';
+import Delimiter from '@editorjs/delimiter';
+import Header from '@editorjs/header';
+import InlineCode from '@editorjs/inline-code';
+import LinkTool from '@editorjs/link';
+import Marker from '@editorjs/marker';
+import List from '@editorjs/list';
+import Quote from '@editorjs/quote';
+import TableTool from 'editorjs-table';
+import Warning from '@editorjs/warning';
+import ImageTool from '@editorjs/image';
+import Undo from 'editorjs-undo';
+
+import Mention from './mention';
+import MentionableParagraph from './paragraph';
 
 import EasyMDE from "easymde";
-import {EVENTS as WidgetEvents} from "./index";
+import {EVENTS as WidgetEvents} from "../index";
 
 const editors = {};
 
@@ -55,7 +59,17 @@ const initializeEditorJsArea = function () {
             header: Header,
             link: LinkTool,
             inlineCode: InlineCode,
+            marker: Marker,
             delimiter: Delimiter,
+            image: {
+                class: ImageTool,
+                config: {
+                    endpoints: {
+                        byFile: 'http://localhost:8008/uploadFile', // Your backend file uploader endpoint
+                        byUrl: 'http://localhost:8008/fetchUrl', // Your endpoint that provides uploading by Url
+                    }
+                }
+            },
             warning: {
                 class: Warning,
                 inlineToolbar: true,
@@ -78,7 +92,11 @@ const initializeEditorJsArea = function () {
             },
             table: {
                 class: TableTool,
-                inlineToolbar: true
+                inlineToolbar: true,
+                config: {
+                    rows: 2,
+                    cols: 3,
+                },
             },
             paragraph: {
                 class: MentionableParagraph,
@@ -101,6 +119,8 @@ const initializeEditorJsArea = function () {
 
     editor.isReady.then(() => {
         $buttons.removeAttr('disabled');
+        // const undo = new Undo({ editor });
+        // undo.initialize(content);
 
         editors[$editor_element.attr('id')] = editor;
         Pachno.on(Pachno.EVENTS.formSubmit, (PachnoApplication, data) => {
@@ -136,10 +156,14 @@ const initializeEasyMde = function () {
         autofocus: true,
         status: [{
             className: "statustext",
-            defaultValue: function (el) { el.innerHTML = $editor_element.data('status-text'); }
+            defaultValue: function (el) {
+                el.innerHTML = $editor_element.data('status-text');
+            }
         }, {
             className: "markdown-help",
-            defaultValue: function (el) { el.innerHTML = "<a href='https://guides.github.com/features/mastering-markdown/' target='_blank'><i class='fab fa-markdown'></i></a>"; }
+            defaultValue: function (el) {
+                el.innerHTML = "<a href='https://guides.github.com/features/mastering-markdown/' target='_blank'><i class='fab fa-markdown'></i></a>";
+            }
         }],
         uploadImage: true,
         imageUploadEndpoint: $editor_element.data('upload-url'),
@@ -165,7 +189,7 @@ export const getEditor = function (editor) {
     return editors[editor];
 }
 
-const setupListeners = function() {
+const setupListeners = function () {
     Pachno.on(Pachno.EVENTS.ready, () => {
         $('.wysiwyg-editor:not([data-processed])').each(initializeEditorJsArea);
         $('.markuppable:not([data-processed])').each(initializeEasyMde);

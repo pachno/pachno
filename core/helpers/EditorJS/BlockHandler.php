@@ -123,6 +123,9 @@ class BlockHandler
             $rule = $this->expandToolSettings($rule);
 
             $elementType = $rule['type'];
+            if ($key == 'table') {
+                echo '';
+            }
 
             /**
              * Process canBeOnly rule
@@ -247,8 +250,11 @@ class BlockHandler
          */
         if ($def = $sanitizer->maybeGetRawHTMLDefinition()) {
             $def->addElement('mark', 'Inline', 'Inline', 'Common');
+            $def->addElement('source', 'Inline', 'Inline', 'Common');
+            $def->addElement('pre', 'Inline', 'Inline', 'Common');
             $def->addAttribute('span', 'data-user-id', 'Number');
             $def->addAttribute('span', 'data-article-id', 'Number');
+            $def->addAttribute('span', 'data-issue-id', 'Number');
         }
 
         $purifier = new \HTMLPurifier($sanitizer);
