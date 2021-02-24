@@ -328,3 +328,71 @@ header {
     }
   }
 }
+
+.shaded {
+  header {
+    .menu-strip {
+      background-color: rgba(255, 255, 255, 0.2);
+
+      .image-container {
+        border-radius: 50%;
+        background-color: #FFF;
+      }
+
+      .name-container {
+        color: #FFF;
+
+        .header {
+          .subtitle {
+            color: #FFF;
+          }
+        }
+      }
+
+      .fancy-tabs {
+        .tab {
+          &.selected {
+            color: #FFF;
+          }
+        }
+      }
+    }
+  }
+
+  nav {
+    &.sidebar {
+      background-color: rgba(255, 255, 255, 0.2);
+
+      > .list-mode {
+        > .list-item {
+          color: #FFF;
+
+          &.selected {
+            background-color: rgba(255, 255, 255, 0.8);
+            box-shadow: rgba(9, 30, 66, 0.25) 0 1px 1px, rgba(9, 30, 66, 0.31) 0 0 1px;
+
+            &:not(.disabled):not(.not-selectable):not(.separator):not(.header):not(.danger):not(.filter-container):not(.form-container):hover {
+              background-color: rgba(255, 255, 255, 1);
+            }
+
+            .icon,
+            .name,
+            .dropper {
+              color: $theme-text-color;
+            }
+
+            .dropper {
+              &.active {
+                + .dropdown-container {
+                  &.slide-out {
+                    background-color: rgba(255, 255, 255, .95);
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

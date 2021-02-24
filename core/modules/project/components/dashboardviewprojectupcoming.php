@@ -20,7 +20,7 @@
         </div>
         <div class="helper-text">
             <?= __("There are no milestones scheduled yet"); ?><br>
-            <?= __('A great roadmap starts with a great plany'); ?>
+            <?= __('A great roadmap starts with a great plan'); ?>
         </div>
     </div>
 <?php endif; ?>

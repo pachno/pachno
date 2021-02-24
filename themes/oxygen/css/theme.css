@@ -9065,6 +9065,34 @@ header {
           header .menu-strip .action-container .list-mode .list-item.multiline .name .title {
             font-size: 1.1em; }
 
+.shaded header .menu-strip {
+  background-color: rgba(255, 255, 255, 0.2); }
+  .shaded header .menu-strip .image-container {
+    border-radius: 50%;
+    background-color: #FFF; }
+  .shaded header .menu-strip .name-container {
+    color: #FFF; }
+    .shaded header .menu-strip .name-container .header .subtitle {
+      color: #FFF; }
+  .shaded header .menu-strip .fancy-tabs .tab.selected {
+    color: #FFF; }
+
+.shaded nav.sidebar {
+  background-color: rgba(255, 255, 255, 0.2); }
+  .shaded nav.sidebar > .list-mode > .list-item {
+    color: #FFF; }
+    .shaded nav.sidebar > .list-mode > .list-item.selected {
+      background-color: rgba(255, 255, 255, 0.8);
+      box-shadow: rgba(9, 30, 66, 0.25) 0 1px 1px, rgba(9, 30, 66, 0.31) 0 0 1px; }
+      .shaded nav.sidebar > .list-mode > .list-item.selected:not(.disabled):not(.not-selectable):not(.separator):not(.header):not(.danger):not(.filter-container):not(.form-container):hover {
+        background-color: white; }
+      .shaded nav.sidebar > .list-mode > .list-item.selected .icon,
+      .shaded nav.sidebar > .list-mode > .list-item.selected .name,
+      .shaded nav.sidebar > .list-mode > .list-item.selected .dropper {
+        color: #232323; }
+      .shaded nav.sidebar > .list-mode > .list-item.selected .dropper.active + .dropdown-container.slide-out {
+        background-color: rgba(255, 255, 255, 0.95); }
+
 .markItUp * {
   margin: 0;
   padding: 0;
@@ -11867,7 +11895,14 @@ textarea.markItUpEditor:focus {
   font-size: 1.5em;
   text-align: center;
   padding: 25px;
-  color: #AAA; }
+  color: #AAA;
+  display: flex;
+  flex-direction: column;
+  align-items: center; }
+  .dashboard_view_container .no-items button,
+  .dashboard_view_container .no-items .button {
+    margin-top: 1em;
+    font-size: .7em; }
 
 .dashboard_view_container .no-items span {
   display: block;
@@ -13800,6 +13835,9 @@ DEL {
         .fullpage_backdrop.docked-right .fullpage_backdrop_content .backdrop_box, .fullpage_backdrop.docked-right .fullpage_backdrop_content .backdrop_box.small, .fullpage_backdrop.docked-right .fullpage_backdrop_content .backdrop_box.mediumsmall, .fullpage_backdrop.docked-right .fullpage_backdrop_content .backdrop_box.medium, .fullpage_backdrop.docked-right .fullpage_backdrop_content .backdrop_box.large, .fullpage_backdrop.docked-right .fullpage_backdrop_content .backdrop_box.huge, .fullpage_backdrop.docked-left .fullpage_backdrop_content .backdrop_box, .fullpage_backdrop.docked-left .fullpage_backdrop_content .backdrop_box.small, .fullpage_backdrop.docked-left .fullpage_backdrop_content .backdrop_box.mediumsmall, .fullpage_backdrop.docked-left .fullpage_backdrop_content .backdrop_box.medium, .fullpage_backdrop.docked-left .fullpage_backdrop_content .backdrop_box.large, .fullpage_backdrop.docked-left .fullpage_backdrop_content .backdrop_box.huge {
           width: auto;
           background-color: #FFF; }
+    .fullpage_backdrop.docked-right .backdrop_detail_header button, .fullpage_backdrop.docked-right .backdrop_detail_header button:hover, .fullpage_backdrop.docked-left .backdrop_detail_header button, .fullpage_backdrop.docked-left .backdrop_detail_header button:hover {
+      margin: 0 1em;
+      font-size: .75em; }
   .fullpage_backdrop #fullpage_backdrop_indicator {
     position: absolute;
     top: 45%;
@@ -13954,9 +13992,6 @@ DEL {
   .backdrop_detail_header .count-badge {
     background-color: #00adc7;
     color: #FFF; }
-  .backdrop_detail_header button, .backdrop_detail_header button:hover {
-    margin: 0 1em;
-    font-size: .75em; }
   .backdrop_detail_header .closer,
   .backdrop_detail_header .back_link,
   .backdrop_detail_header .add_link {
@@ -13995,15 +14030,17 @@ DEL {
     font-size: .75em;
     margin-right: auto;
     padding-left: .5em; }
-  #issue-card-popup > .backdrop_detail_header span {
+  #issue-card-popup > .backdrop_detail_header > a.button {
+    font-size: .75em; }
+  #issue-card-popup > .backdrop_detail_header > span {
     flex: 0 0 auto;
     padding: 0;
     font-weight: 400; }
-    #issue-card-popup > .backdrop_detail_header span.issue-state {
+    #issue-card-popup > .backdrop_detail_header > span.issue-state {
       padding: 0.15em 0.25em; }
-      #issue-card-popup > .backdrop_detail_header span.issue-state:not(:first-child) {
+      #issue-card-popup > .backdrop_detail_header > span.issue-state:not(:first-child) {
         margin-left: 0.35em; }
-      #issue-card-popup > .backdrop_detail_header span.issue-state + a {
+      #issue-card-popup > .backdrop_detail_header > span.issue-state + a {
         margin-left: 0.25em; }
   #issue-card-popup > .backdrop_detail_header .workflow-actions-container {
     flex: 1 1 auto;

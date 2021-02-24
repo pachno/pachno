@@ -25,11 +25,11 @@
             <?php if ($list_mode == 'all'): ?>
                 <?php if ($show_project_config_link): ?>
                     <?php if ($project_state == 'archived'): ?>
-                        <?= __('There are no archived projects'); ?><br>
-                        <?= __('Archived projects can be found in this list.'); ?>
+                        <span class="title"><?= __('There are no archived projects'); ?></span>
+                        <span><?= __('Archived projects can be found in this list'); ?></span>
                     <?php else: ?>
-                        <?= __('Every journey starts with the first step.'); ?><br>
-                        <?= __('Create your first project to get started.'); ?>
+                        <span class="title"><?= __('Every journey starts with the first step'); ?></span>
+                        <span><?= __('Create your first project to get started'); ?></span>
                     <?php endif; ?>
                 <?php elseif ($project_state == 'archived'): ?>
                     <?= __("There are no archived projects."); ?>

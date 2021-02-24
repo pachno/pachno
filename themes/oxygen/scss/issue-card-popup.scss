@@ -16,7 +16,11 @@
       padding-left: .5em;
     }
 
-    span {
+    > a.button {
+      font-size: .75em;
+    }
+
+    > span {
       flex: 0 0 auto;
       padding: 0;
       font-weight: $theme-font-weight-regular;

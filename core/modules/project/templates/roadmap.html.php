@@ -104,8 +104,8 @@
                         <?= image_tag('/unthemed/no-roadmap.png', [], true); ?>
                     </div>
                     <div class="helper-text">
-                        <?= __('Plan ahead with confidence'); ?><br>
-                        <?= __('Track milestones and their progress'); ?>
+                        <span class="title"><?= __('Plan ahead with confidence'); ?></span>
+                        <span><?= __('Track milestones and their progress'); ?></span>
                     </div>
                 </div>
             </div>

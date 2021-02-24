@@ -58,6 +58,16 @@
         }
       }
     }
+
+    .backdrop_detail_header {
+      button {
+        &,
+        &:hover {
+          margin: 0 1em;
+          font-size: .75em;
+        }
+      }
+    }
   }
 
   #fullpage_backdrop_indicator {
@@ -272,14 +282,6 @@
   .count-badge {
     background-color: $theme-primary-color;
     color: #FFF;
-  }
-
-  button {
-    &,
-    &:hover {
-      margin: 0 1em;
-      font-size: .75em;
-    }
   }
 
   .closer,

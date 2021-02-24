@@ -526,6 +526,15 @@
   text-align: center;
   padding: 25px;
   color: #AAA;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  button,
+  .button {
+    margin-top: 1em;
+    font-size: .7em;
+  }
 }
 
 .dashboard_view_container .no-items span {

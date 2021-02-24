@@ -19,10 +19,7 @@
         <div class="indicator issue-update-indicator" data-issue-id="<?= $issue->getID(); ?>">
             <?= fa_image_tag('spinner', ['class' => 'fa-spin']); ?>
         </div>
-        <div class="dropper-container">
-            <button class="dropper button secondary" id="more_actions_<?= $issue->getID(); ?>_button"><span><?= __('Actions'); ?></span><?= fa_image_tag('chevron-down'); ?></button>
-            <?php include_component('main/issuemoreactions', array('issue' => $issue, 'times' => false, 'show_workflow_transitions' => false)); ?>
-        </div>
+        <a class="button secondary highlight" href="<?= $issue->getUrl(); ?>" target="_blank"><span><?= __('Go to issue'); ?></span><?= fa_image_tag('external-link-alt', ['class' => 'icon']); ?></a>
         <?php include_component('project/issuefavorite', array('issue' => $issue)); ?>
         <button class="closer"><?= fa_image_tag('times'); ?></button>
     </div>

@@ -5,7 +5,7 @@
      */
 
 ?>
-<div class="fancy-tabs">
+<div class="fancy-tabs" style="display: none;">
     <a class="tab disabled tooltip-container" href="javascript:void(0);<?php // echo make_url('agile_board', array('project_key' => $board->getProject()->getKey(), 'board_id' => $board->getID())); ?>">
         <span class="icon"><?= fa_image_tag('stream'); ?></span>
         <span class="name"><span class="label-generic"><?= __('Planning'); ?></span><span class="label-scrum"><?= __('Backlog'); ?></span><span class="label-kanban"><?= __('Backlog'); ?></span></span>

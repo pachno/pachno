@@ -23,7 +23,15 @@
             <?php if (count($recent_activities) > 0): ?>
                 <?php include_component('project/timeline', array('activities' => $recent_activities)); ?>
             <?php else: ?>
-                <div class="faded_out dark" style="font-size: 13px; padding-top: 3px;"><b><?php echo __('No recent activity registered for this project.'); ?></b><br><?php echo __('As soon as something important happens it will appear here.'); ?></div>
+                <div class="onboarding medium">
+                    <div class="image-container">
+                        <?= image_tag('/unthemed/onboarding-recent-activities.png', [], true); ?>
+                    </div>
+                    <div class="helper-text">
+                        <span class="title"><?php echo __('No recent activity registered for this project.'); ?></span>
+                        <span><?php echo __('As soon as something important happens it will appear here.'); ?></span>
+                    </div>
+                </div>
             <?php endif; ?>
         </div>
         <?php if (count($recent_activities) > 0): ?>

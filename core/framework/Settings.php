@@ -1107,7 +1107,7 @@
                 'users' => [],
                 'projects' => [],
                 'issues_workflow' => [],
-                self::CONFIGURATION_SECTION_MODULES => []
+                //self::CONFIGURATION_SECTION_MODULES => []
             ];
 
             if (Context::getScope()->getID() == 1) {
@@ -1120,13 +1120,13 @@
                 $config_sections['general'][self::CONFIGURATION_SECTION_UPLOADS] = ['route' => 'configure_files', 'description' => $i18n->__('Uploads and attachments'), 'fa_style' => 'fas', 'fa_icon' => 'upload', 'details' => $i18n->__('All settings related to file uploads are controlled from this section.')];
             }
 
-            $config_sections['general'][self::CONFIGURATION_SECTION_MODULES] = ['route' => 'configure_modules', 'description' => $i18n->__('Manage modules'), 'fa_style' => 'fas', 'fa_icon' => 'puzzle-piece', 'details' => $i18n->__('Manage Pachno extensions from this section. New modules are installed from here.'), 'module' => 'core'];
+//            $config_sections['general'][self::CONFIGURATION_SECTION_MODULES] = ['route' => 'configure_modules', 'description' => $i18n->__('Manage modules'), 'fa_style' => 'fas', 'fa_icon' => 'puzzle-piece', 'details' => $i18n->__('Manage Pachno extensions from this section. New modules are installed from here.'), 'module' => 'core'];
 
-            $config_sections['security'][self::CONFIGURATION_SECTION_AUTHENTICATION] = ['route' => 'configure_authentication', 'description' => $i18n->__('Authentication'), 'fa_style' => 'fas', 'fa_icon' => 'lock', 'details' => $i18n->__('Configure the authentication method in this section')];
+            $config_sections['security'][self::CONFIGURATION_SECTION_AUTHENTICATION] = ['route' => 'configure_authentication', 'disabled' => true, 'description' => $i18n->__('Authentication'), 'fa_style' => 'fas', 'fa_icon' => 'lock', 'details' => $i18n->__('Configure the authentication method in this section')];
             $config_sections['security'][self::CONFIGURATION_SECTION_ROLES] = ['route' => 'configure_roles', 'description' => $i18n->__('Roles'), 'fa_style' => 'fas', 'fa_icon' => 'user-tie', 'details' => $i18n->__('Configure roles in this section')];
 
             $config_sections['projects'][self::CONFIGURATION_SECTION_PROJECTS] = ['route' => 'configure_projects', 'description' => $i18n->__('Projects'), 'fa_style' => 'fas', 'fa_icon' => 'code', 'details' => $i18n->__('Set up all projects in this configuration section.')];
-            $config_sections['projects'][self::CONFIGURATION_SECTION_IMPORT] = ['route' => 'import_home', 'description' => $i18n->__('Import data'), 'fa_style' => 'fas', 'fa_icon' => 'download', 'details' => $i18n->__('Import data from CSV files and other sources.')];
+            $config_sections['projects'][self::CONFIGURATION_SECTION_IMPORT] = ['route' => 'import_home', 'disabled' => true, 'description' => $i18n->__('Import data'), 'fa_style' => 'fas', 'fa_icon' => 'download', 'details' => $i18n->__('Import data from CSV files and other sources.')];
             if (tables\IssuetypeSchemes::getTable()->getNumberOfSchemesInCurrentScope() > 1) {
                 $config_sections['issues_workflow'][self::CONFIGURATION_SECTION_ISSUETYPES] = ['route' => 'configure_issuetypes', 'fa_style' => 'fas', 'fa_icon' => 'copy', 'description' => $i18n->__('Issue types'), 'details' => $i18n->__('Manage issue types and configure issue fields for each issue type here')];
                 $config_sections['issues_workflow'][self::CONFIGURATION_SECTION_ISSUETYPE_SCHEMES] = ['route' => 'configure_issuetypes_schemes', 'fa_style' => 'fas', 'fa_icon' => 'copy', 'description' => $i18n->__('Issue type schemes'), 'details' => $i18n->__('Manage issue types and configure issue fields for each issue type here')];
@@ -1137,20 +1137,21 @@
             $config_sections['issues_workflow'][self::CONFIGURATION_SECTION_WORKFLOW] = ['route' => 'configure_workflows', 'fa_style' => 'fas', 'fa_icon' => 'share-alt', 'description' => $i18n->__('Workflow'), 'details' => $i18n->__('Set up and edit workflow configuration from this section')];
             $config_sections['issues_workflow'][self::CONFIGURATION_SECTION_WORKFLOW_SCHEMES] = ['route' => 'configure_workflow_schemes', 'fa_style' => 'fas', 'fa_icon' => 'share-alt', 'description' => $i18n->__('Workflow schemes'), 'details' => $i18n->__('Set up and edit workflow configuration from this section')];
             $config_sections['users'][self::CONFIGURATION_SECTION_USERS] = ['route' => 'configure_users', 'description' => $i18n->__('Users and groups'), 'fa_style' => 'fas', 'fa_icon' => 'users', 'details' => $i18n->__('Create, edit and manage users from this section')];
-            $config_sections['users'][self::CONFIGURATION_SECTION_TEAMS] = ['route' => 'configure_teams', 'description' => $i18n->__('Teams and clients'), 'fa_style' => 'fas', 'fa_icon' => 'users', 'details' => $i18n->__('Create and manage clients from this section.')];
-            foreach (Context::getAllModules() as $modules) {
-                foreach ($modules as $module) {
-                    if ($module->hasConfigSettings() && ($module instanceof CoreModule || $module->isEnabled())) {
-                        $module_array = ['route' => ['configure_module', ['config_module' => $module->getName()]], 'description' => Context::geti18n()->__($module->getConfigTitle()), 'icon' => $module->getName(), 'details' => Context::geti18n()->__($module->getConfigDescription()), 'module' => $module->getName()];
-                        if ($module->hasFontAwesomeIcon()) {
-                            $module_array['fa_icon'] = $module->getFontAwesomeIcon();
-                            $module_array['fa_style'] = $module->getFontAwesomeStyle();
-                            $module_array['fa_color'] = $module->getFontAwesomeColor();
-                        }
-                        $config_sections[self::CONFIGURATION_SECTION_MODULES][] = $module_array;
-                    }
-                }
-            }
+            $config_sections['users'][self::CONFIGURATION_SECTION_TEAMS] = ['route' => 'configure_teams', 'disabled' => true, 'description' => $i18n->__('Teams and clients'), 'fa_style' => 'fas', 'fa_icon' => 'users', 'details' => $i18n->__('Create and manage clients from this section.')];
+
+//            foreach (Context::getAllModules() as $modules) {
+//                foreach ($modules as $module) {
+//                    if ($module->hasConfigSettings() && ($module instanceof CoreModule || $module->isEnabled())) {
+//                        $module_array = ['route' => ['configure_module', ['config_module' => $module->getName()]], 'description' => Context::geti18n()->__($module->getConfigTitle()), 'icon' => $module->getName(), 'details' => Context::geti18n()->__($module->getConfigDescription()), 'module' => $module->getName()];
+//                        if ($module->hasFontAwesomeIcon()) {
+//                            $module_array['fa_icon'] = $module->getFontAwesomeIcon();
+//                            $module_array['fa_style'] = $module->getFontAwesomeStyle();
+//                            $module_array['fa_color'] = $module->getFontAwesomeColor();
+//                        }
+//                        $config_sections[self::CONFIGURATION_SECTION_MODULES][] = $module_array;
+//                    }
+//                }
+//            }
 
             return $config_sections;
         }
