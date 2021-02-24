@@ -49,6 +49,18 @@
             $res = $this->rawDelete($query);
         }
 
+        /**
+         * @param $article_id
+         * @return ArticleRevision
+         */
+        public function getLatestByArticleId($article_id)
+        {
+            $query = $this->getQuery();
+            $query->where(self::ARTICLE_ID, $article_name);
+            $query->where(self::SCOPE, framework\Context::getScope()->getID());
+            $res = $this->rawDelete($query);
+        }
+
         public function addArticleHistory($article_name, $old_content, $new_content, $user_id, $reason = null)
         {
             if (!Core::isTransactionActive()) $transaction = Core::startTransaction();

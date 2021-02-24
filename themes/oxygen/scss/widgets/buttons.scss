@@ -315,6 +315,16 @@ input.icon.danger {
   }
 }
 
+#dialog_backdrop {
+  &.submitting {
+    .dialog-query-buttons {
+      .indicator {
+        display: inline-flex;
+      }
+    }
+  }
+}
+
 .dialog-query-buttons {
   padding: 0 10px;
   /*height: 40px;*/
@@ -325,6 +335,12 @@ input.icon.danger {
   font-size: .75rem;
   justify-self: flex-end;
   flex: 1 1 auto;
+
+  .indicator {
+    display: none;
+    margin-right: auto;
+    font-size: 1.2em;
+  }
 }
 
 h1, h2, h3, h4, h5, h6 {

@@ -826,17 +826,17 @@ EOT;
 
         public function listen_projectconfig_tab_settings(Event $event)
         {
-            framework\ActionComponent::includeComponent('mailing/projectconfig_tab_settings', ['selected_tab' => $event->getParameter('selected_tab')]);
+            //framework\ActionComponent::includeComponent('mailing/projectconfig_tab_settings', ['selected_tab' => $event->getParameter('selected_tab')]);
         }
 
         public function listen_projectconfig_tab_other(Event $event)
         {
-            framework\ActionComponent::includeComponent('mailing/projectconfig_tab_other', ['selected_tab' => $event->getParameter('selected_tab')]);
+            //framework\ActionComponent::includeComponent('mailing/projectconfig_tab_other', ['selected_tab' => $event->getParameter('selected_tab')]);
         }
 
         public function listen_projectconfig_panel(Event $event)
         {
-            framework\ActionComponent::includeComponent('mailing/projectconfig_panels', ['selected_tab' => $event->getParameter('selected_tab'), 'access_level' => $event->getParameter('access_level'), 'project' => $event->getParameter('project')]);
+            //framework\ActionComponent::includeComponent('mailing/projectconfig_panels', ['selected_tab' => $event->getParameter('selected_tab'), 'access_level' => $event->getParameter('access_level'), 'project' => $event->getParameter('project')]);
         }
 
         public function listen_accountNotificationSettings(Event $event)

@@ -12,7 +12,7 @@
         <?php if ($project->isArchived()): ?>
             <span class="status-badge"><span class="name"><?= __('ARCHIVED'); ?> </span></span>
         <?php endif; ?>
-        <?= link_tag(make_url('project_dashboard', ['project_key' => $project->getKey()]), $project->getName()); ?>&nbsp;<span class="project_key" style="position: relative;">(<div class="tooltip leftie"><?= __('This is the project key, used in most places when accessing the project'); ?></div><?= $project->getKey(); ?>)</span>
+        <?= link_tag(make_url('project_dashboard', ['project_key' => $project->getKey()]), $project->getName()); ?>&nbsp;<span class="count-badge"><?= $project->getKey(); ?></span>
     </div>
     <div class="column">
         <?php if ($project->getOwner() != null): ?>

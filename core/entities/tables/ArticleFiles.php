@@ -47,18 +47,20 @@
 
         const ARTICLE_ID = 'articlefiles.article_id';
 
-        public function addByArticleIDandFileID($article_id, $file_id, $insert = true)
+        public function addByArticleIDandFileID($article_id, $file_id, $attached_at = null)
         {
             $query = $this->getQuery();
             $query->where(self::ARTICLE_ID, $article_id);
             $query->where(self::FILE_ID, $file_id);
             $query->where(self::SCOPE, framework\Context::getScope()->getID());
             if ($this->count($query) == 0) {
-                if (!$insert) return true;
-
                 $insertion = new Insertion();
                 $insertion->add(self::SCOPE, framework\Context::getScope()->getID());
-                $insertion->add(self::ATTACHED_AT, NOW);
+                if ($attached_at === null) {
+                    $insertion->add(self::ATTACHED_AT, NOW);
+                } else {
+                    $insertion->add(self::ATTACHED_AT, $attached_at);
+                }
                 $insertion->add(self::ARTICLE_ID, $article_id);
                 $insertion->add(self::FILE_ID, $file_id);
                 $this->rawInsert($insertion);

@@ -32,10 +32,10 @@
             $articles = [];
 
             foreach ($this->getUser()->getAssociatedProjects() as $project) {
-                $articles[$project->getID()] = Articles::getTable()->getArticleByName('Main Page', $project);
+                $articles[$project->getID()] = Articles::getTable()->getOrCreateMainPage($project);
             }
             $this->articles = $articles;
-            $this->main_article = Articles::getTable()->getArticleByName('Main Page');
+            $this->main_article = Articles::getTable()->getOrCreateMainPage();
         }
 
         public function componentArticledisplay()
@@ -81,6 +81,12 @@
             $this->links = framework\Context::getModule('publish')->getMenuItems($this->links_target_id);
         }
 
+        public function componentEditCategorySidebarLink()
+        {
+            $this->is_parent = array_key_exists($this->category->getID(), $this->parents);
+            $this->children = $this->category->getChildren();
+        }
+
         public function componentManualSidebarLink()
         {
             $this->is_parent = array_key_exists($this->main_article->getID(), $this->parents);
@@ -97,7 +103,7 @@
             usort($top_level_categories, '\pachno\core\entities\Article::sortArticleChildren');
             $this->parents = $this->article->getParentsArray();
 
-            $this->overview_article = Articles::getTable()->getArticleByName('Main Page', framework\Context::getCurrentProject());
+            $this->overview_article = Articles::getTable()->getOrCreateMainPage(framework\Context::getCurrentProject());
             $this->main_article = $this->article;
             $this->top_level_articles = $top_level_articles;
             $this->top_level_categories = $top_level_categories;

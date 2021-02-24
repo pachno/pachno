@@ -256,15 +256,30 @@
   margin: 0;
   text-transform: uppercase;
   display: flex;
-  //background-color: rgba(225, 225, 225, 0.15);
+  align-items: center;
   border-top-left-radius: 3px;
   border-top-right-radius: 3px;
 
-  span {
+  > span {
     flex: 1 1 auto;
-    padding: 10px 15px;
+    padding: .8em 1.2em;
     text-align: left;
+    display: flex;
+    align-items: center;
     font-weight: $theme-font-weight-heavy;
+  }
+
+  .count-badge {
+    background-color: $theme-primary-color;
+    color: #FFF;
+  }
+
+  button {
+    &,
+    &:hover {
+      margin: 0 1em;
+      font-size: .75em;
+    }
   }
 
   .closer,

@@ -76,7 +76,9 @@
       background-color: $theme-secondary-color;
       color: #FFF;
 
-      .icon {
+      .name,
+      .icon,
+      .expander {
         color: #FFF;
       }
     }

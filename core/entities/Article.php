@@ -13,6 +13,7 @@
     use pachno\core\entities\tables\Articles;
     use pachno\core\entities\tables\UserArticles;
     use pachno\core\entities\tables\Users;
+    use pachno\core\entities\traits\Commentable;
     use pachno\core\framework;
     use pachno\core\framework\Context;
     use pachno\core\framework\Event;
@@ -30,6 +31,8 @@
      */
     class Article extends IdentifiableScoped implements Attachable
     {
+
+        use Commentable;
 
         const TYPE_WIKI = 1;
 
@@ -189,6 +192,8 @@
 
         protected $_namespaces = null;
 
+        protected $_is_clone = false;
+
         /**
          * The article this slug redirects to
          *
@@ -241,6 +246,14 @@
             ArticleLinks::getTable()->deleteLinksByArticle($article_name);
         }
 
+        /**
+         * @param $name
+         * @param $content
+         * @param null $scope
+         * @param array $options
+         * @param null $project
+         * @return Article
+         */
         public static function createNew($name, $content, $scope = null, $options = [], $project = null)
         {
             $user_id = (framework\Context::getUser() instanceof User) ? framework\Context::getUser()->getID() : 0;
@@ -252,17 +265,19 @@
                 $article->setProject($project->getID());
             }
 
-            if (!isset($options['noauthor']))
+            if (!isset($options['noauthor'])) {
                 $article->setAuthor($user_id);
-            else
+            } else {
                 $article->setAuthor(0);
+            }
 
-            if ($scope !== null)
+            if ($scope !== null) {
                 $article->setScope($scope);
+            }
 
-            $article->doSave($options);
+            $article->save();
 
-            return $article->getID();
+            return $article;
         }
 
         public static function sortArticleChildren ($a, $b)
@@ -289,42 +304,6 @@
         public function setProject($project_id)
         {
             $this->_project_id = $project_id;
-        }
-
-        public function doSave($options = [], $reason = null)
-        {
-            $user_id = (framework\Context::getUser() instanceof User) ? framework\Context::getUser()->getID() : 0;
-
-            if (!isset($options['revert']) || !$options['revert']) {
-                $revision = ArticleHistory::getTable()->addArticleHistory($this->_name, $this->_old_content, $this->_content, $user_id, $reason);
-            } else {
-                $revision = null;
-            }
-
-//            ArticleLinks::getTable()->deleteLinksByArticle($this->_name);
-//            ArticleCategoryLinks::getTable()->deleteCategoriesByArticle($this->_name);
-
-            $this->save();
-
-            $this->_old_content = $this->_content;
-
-            $links = $this->_retrieveLinksFromContent($options);
-
-            foreach ($links as $link => $occurrences) {
-                $linked_article = Publish::getArticleLink($link, $this->getProject());
-                if ($linked_article instanceof Article) {
-                    $article_link = new ArticleLink();
-                    $article_link->setArticle($this);
-                    $article_link->setLinkedArticle($linked_article);
-                    $article_link->save();
-                }
-            }
-
-            $this->_history = null;
-
-            Event::createNew('core', 'pachno\core\entities\Article::doSave', $this, compact('reason', 'revision', 'user_id'))->trigger();
-
-            return true;
         }
 
         public function getArticleType()
@@ -550,7 +529,50 @@
         protected function _populateCategories()
         {
             if ($this->_categories === null) {
-                $this->_categories = ArticleCategoryLinks::getTable()->getCategoriesByArticleId($this->getID());
+                $this->_categories = [];
+                $categories = ArticleCategoryLinks::getTable()->getCategoriesByArticleId($this->getID());
+                foreach ($categories as $index => $category) {
+                    if (!$category->getCategory() instanceof Article || $category->getCategory()->getProject() instanceof Project != $this->getProject() instanceof Project) {
+                        $category->delete();
+                        continue;
+                    }
+
+                    if ($category->getCategory()->getProject() instanceof Project && (!$this->getProject() instanceof Project || $this->getProject()->getID() !== $category->getCategory()->getProject()->getID())) {
+                        $category->delete();
+                        continue;
+                    }
+
+                    $this->_categories[$index] = $category;
+                }
+            }
+        }
+
+        /**
+         * @param Article $category
+         * @return bool
+         */
+        public function hasCategory(Article $category)
+        {
+            foreach ($this->getCategories() as $article_category) {
+                if ($category->getID() == $article_category->getCategory()->getID())
+                    return true;
+            }
+
+            return false;
+        }
+
+        public function addCategory($category, $save = true)
+        {
+            $article_category = new ArticleCategoryLink();
+            $article_category->setArticle($this);
+            $article_category->setCategory($category);
+            if ($save) {
+                $article_category->save();
+            } else {
+                if ($this->_categories === null) {
+                    $this->_categories = [];
+                }
+                $this->_categories[] = $article_category;
             }
         }
 
@@ -662,7 +684,7 @@
         /**
          * Return an array with all files attached to this issue
          *
-         * @return array
+         * @return File[]
          */
         public function getFiles()
         {
@@ -703,10 +725,11 @@
          * Attach a file to the issue
          *
          * @param File $file The file to attach
+         * @param null $timestamp
          */
-        public function attachFile(File $file, $file_comment = '', $file_description = '')
+        public function attachFile(File $file, $timestamp = null)
         {
-            ArticleFiles::getTable()->addByArticleIDandFileID($this->getID(), $file->getID());
+            ArticleFiles::getTable()->addByArticleIDandFileID($this->getID(), $file->getID(), $timestamp);
             if ($this->_files !== null) {
                 $this->_files[$file->getID()] = $file;
             }
@@ -860,6 +883,9 @@
             }
         }
 
+        /**
+         * @return Article[]
+         */
         public function getChildArticles()
         {
             $this->_populateChildArticles();
@@ -956,7 +982,7 @@
                         return framework\Context::getRouting()->generate('publish_project_article', ['project_key' => $this->getProject()->getKey(), 'article_id' => (int)$this->getId(), 'article_name' => $this->getName()]);
                     }
 
-                    return framework\Context::getRouting()->generate('publish_article', ['article_id' => (int)$this->getId(), 'article_name' => $this->getName()]);
+                    return framework\Context::getRouting()->generate('publish_article', ['article_id' => (int) $this->getId(), 'article_name' => $this->getName()]);
 
                 case 'history':
                     return framework\Context::getRouting()->generate('publish_article_history', ['article_id' => (int)$this->getId(), 'article_name' => $this->getName()]);
@@ -979,14 +1005,19 @@
                 $this->_date = NOW;
                 $this->_author = framework\Context::getUser();
             }
+
+//            if (!$is_new) {
+//                $user_id = (framework\Context::getUser() instanceof User) ? framework\Context::getUser()->getID() : 0;
+//                ArticleHistory::getTable()->addArticleHistory($this->_name, $this->_old_content, $this->_content, $user_id);
+//            }
         }
 
         protected function _postDelete()
         {
-//            ArticleLinks::getTable()->deleteLinksByArticle($this->getName());
-            ArticleCategoryLinks::getTable()->deleteByArticleId($this->getID());
-//            ArticleHistory::getTable()->deleteHistoryByArticle($this->getName());
             ArticleFiles::getTable()->deleteFilesByArticleID($this->getID());
+            ArticleCategoryLinks::getTable()->deleteByArticleId($this->getID());
+            $new_parent_id = ($this->getParentArticle() instanceof self) ? $this->getParentArticle()->getID() : 0;
+            Articles::getTable()->updateParentArticleId($this->getID(), $new_parent_id);
         }
 
         /**
@@ -1010,8 +1041,16 @@
             $this->_name = $name;
         }
 
+        protected function _clone()
+        {
+            $this->_is_clone = true;
+        }
+
         protected function _postSave($is_new)
         {
+            if ($this->_is_clone)
+                return;
+
             if ($is_new) {
                 if ($this->hasMentions()) {
                     foreach ($this->getMentions() as $user) {
@@ -1029,6 +1068,14 @@
 
                 if ($history_item !== null) $this->_addUpdateNotifications($history_item['author']);
             }
+
+            //            if (!$is_new) {
+//                $this->_old_content = $this->_content;
+//                $this->_history = null;
+//
+//                $revision = ArticleHistory::getTable()->getLatestByArticleId($this->getID());
+//                Event::createNew('core', 'pachno\core\entities\Article::doSave', $this, ['revision' => $revision, 'user_id' => $revision->getUserId()])->trigger();
+//            }
 
             if (framework\Context::getUser() instanceof User && framework\Context::getUser()->getNotificationSetting(Settings::SETTINGS_USER_SUBSCRIBE_CREATED_UPDATED_COMMENTED_ARTICLES, false)->isOn() && !$this->isSubscriber(framework\Context::getUser())) {
                 $this->addSubscriber(framework\Context::getUser()->getID());
@@ -1253,6 +1300,27 @@
             $this->_redirect_slug = $redirect_slug;
         }
 
+        public function getCategoryParentsArray()
+        {
+            $parents = [];
+            $article = $this;
+
+            foreach ($article->getCategories() as $articleCategoryLink) {
+                $category_id = $articleCategoryLink->getCategory()->getID();
+                $parents[$category_id] = $articleCategoryLink->getCategory()->getName();
+
+                do {
+                    $parent = ($articleCategoryLink instanceof self) ? $articleCategoryLink->getParentArticle() : $articleCategoryLink->getCategory()->getParentArticle();
+                    if ($parent instanceof self) {
+                        $parents[$parent->getId()] = $parent->getName();
+                        $articleCategoryLink = $parent;
+                    }
+                } while ($parent instanceof self);
+            }
+
+            return $parents;
+        }
+
         public function getParentsArray()
         {
             $parents = [];
@@ -1274,13 +1342,62 @@
             return $parents;
         }
 
+        /**
+         * @param $include_attachments
+         * @param $include_comments
+         * @param $include_child_articles
+         * @param Article|null $parent_article
+         *
+         * @return Article|null
+         */
+        public function copy($include_attachments, $include_comments, $include_child_articles, Article $parent_article = null): ?Article
+        {
+            $article = clone $this;
+            if ($parent_article instanceof self) {
+                $article->setParentArticle($parent_article);
+            } else {
+                $article->setName($article->getName() . ' (copy)');
+            }
+
+            $article->save();
+
+            foreach ($this->getCategories() as $category) {
+                $article_category = new ArticleCategoryLink();
+                $article_category->setArticle($article);
+                $article_category->setCategory($category);
+                $article_category->save();
+            }
+
+            if ($include_attachments) {
+                foreach ($this->getFiles() as $file) {
+                    $article->attachFile($file, $file->getUploadedAt());
+                }
+            }
+
+            if ($include_comments) {
+                foreach ($this->getComments() as $comment) {
+                    $new_comment = clone $comment;
+                    $new_comment->setTargetID($article->getID());
+                    $new_comment->save();
+                }
+            }
+
+            if ($include_child_articles) {
+                foreach ($this->getChildArticles() as $child_article) {
+                    $child_article->copy($include_attachments, $include_comments, $include_child_articles,  $article);
+                }
+            }
+
+            return $article;
+        }
+
         public function isMainPage()
         {
             $name = str_replace(' ', '', mb_strtolower(trim($this->getName())));
             return $name == 'mainpage';
         }
 
-        protected function convertLine($content_line)
+        protected function convertLine($content_line, &$blocks = null)
         {
             $content_line = preg_replace_callback('/\!(.*?)/i', function ($matches) {
                 return $matches[1];
@@ -1301,7 +1418,7 @@
                 return link_tag($href, $href, ['target' => '_new']);;
             }, $content_line);
 
-            $content_line = preg_replace_callback('/(\[\[(\:?([^\]]*?)\:)?([^\]]*?)(\|([^\]]*?))?\]\]([a-z]+)?)/i', function ($matches) {
+            $content_line = preg_replace_callback('/(\[\[(\:?([^\]]*?)\:)?([^\]]*?)(\|([^\]]*?))?\]\]([a-z]+)?)/i', function ($matches) use (&$blocks) {
                 $href = html_entity_decode($matches[4], ENT_QUOTES, 'UTF-8');
                 if (isset($matches[6]) && $matches[6]) {
                     $title = $matches[6];
@@ -1315,6 +1432,34 @@
 
                 if (mb_strtolower($namespace) == 'category') {
                     return '';
+                }
+
+                if (mb_strtolower($namespace) == 'image') {
+                    if ($blocks === null)
+                        return $matches[0];
+
+                    $file = $this->getFileByFilename($href);
+                    if (!$file instanceof File)
+                        return $matches[0];
+
+                    $options = explode('|', $title);
+                    $caption = (!empty($options)) ? array_pop($options) : htmlentities($file->getDescription(), ENT_COMPAT, Context::getI18n()->getCharset());
+                    $caption = ($caption != '') ? $caption : htmlentities($file->getOriginalFilename(), ENT_COMPAT, Context::getI18n()->getCharset());
+                    $file_link = make_url('showfile', ['id' => $file->getID()], false);
+
+                    $blocks[] = [
+                        'type' => 'image',
+                        'data' => [
+                            'file' => ['url' => $file_link],
+                            'caption' => $caption,
+                            'withBorder' => false,
+                            'withBackground' => false,
+                            'stretched' => false
+                        ]
+                    ];
+
+                    return '';
+                    //$file_id = \pachno\core\entities\tables\Files::get
                 }
 
                 if (in_array(mb_strtolower($namespace), ['wikipedia', 'wiki'])) {
@@ -1403,10 +1548,21 @@
 
             }, $content_line);
 
+            $content_line = preg_replace_callback('/\B\@([\w\-.]+)/i', function ($matches) {
+                $matched_user = (mb_substr($matches[1], -1) === '.') ? mb_substr($matches[1], 0, -1) : $matches[1];
+                $user = Users::getTable()->getByUsername($matched_user);
+
+                if (!$user instanceof User) {
+                    return $matches[0];
+                }
+
+                return '<span class="inline-mention user-link" data-user-id="' . $user->getId() . '">' . $matched_user . '</span>';
+            }, $content_line);
+
             $content_line = preg_replace_callback(TextParser::getIssueRegex(), function ($matches) {
                 $issue = Issue::getIssueFromLink($matches[2]);
                 if ($issue instanceof Issue) {
-                    return $matches[1] . '<span class="inline-mention issue-link" data-issue-id="' . $issue->getId() . '">' . $matches[2] . '</span>';
+                    return $matches[1] . '<span class="inline-mention issue-link completed" data-issue-id="' . $issue->getId() . '">' . $matches[2] . '</span>';
                 } else {
                     return $matches[1] . $matches[2];
                 }
@@ -1579,7 +1735,7 @@
                 }
 
                 $previous_block = 'paragraph';
-                $blocks[] = ['type' => 'paragraph', 'data' => ['text' => $this->convertLine($content_line)]];
+                $blocks[] = ['type' => 'paragraph', 'data' => ['text' => $this->convertLine($content_line, $blocks)]];
             }
 
             $blocks[] = ['type' => 'paragraph', 'data' => ['text' => '']];

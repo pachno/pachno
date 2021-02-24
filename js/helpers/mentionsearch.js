@@ -203,6 +203,9 @@ class Mentionsearch {
             this.api.listeners.off($('.wysiwyg-editor')[0], 'keyup', Mentionsearch.keyUpListener);
             this.api.listeners.on($('.wysiwyg-editor')[0], 'keyup', Mentionsearch.keyUpListener);
             $('body').on('click', '.dropper-container.mentions-container .list-item[data-index]', function (event) {
+                if (!searchInstance)
+                    return;
+
                 searchInstance.selected = $(this).data('index');
                 searchInstance.select();
                 event.preventDefault();

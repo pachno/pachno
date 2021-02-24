@@ -17,6 +17,50 @@
 <?php if ($article instanceof \pachno\core\entities\Article): ?>
     <?php include_component('manualsidebar', ['article' => $article]); ?>
     <div class="main_area" data-simplebar>
+        <div class="fullpage_backdrop" id="copy_article_form_container" style="display: none;">
+            <div class="fullpage_backdrop_content">
+                <div class="fullpage_backdrop_content backdrop_box medium">
+                    <div class="backdrop_detail_header">
+                        <span><?= __('Copy page'); ?></span>
+                        <a href="javascript:void(0);" class="closer"><?= fa_image_tag('times'); ?></a>
+                    </div>
+                    <div id="backdrop_detail_content" class="backdrop_detail_content">
+                        <div class="form-container">
+                            <form accept-charset="<?= Context::getI18n()->getCharset(); ?>" action="<?= $article->getLink('edit'); ?>" data-simple-submit id="copy_article_form">
+                                <input type="hidden" name="copy" value="1">
+                                <div class="form-row">
+                                    <input class="fancy-checkbox" type="checkbox" name="copy_attachments" value="1" id="copy_article_include_attachments" checked>
+                                    <label for="copy_article_include_attachments">
+                                        <?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far'); ?>
+                                        <span><?= __('Include attachments when copying'); ?></span>
+                                    </label>
+                                </div>
+                                <div class="form-row">
+                                    <input class="fancy-checkbox" type="checkbox" name="copy_comments" value="1" id="copy_article_include_comments" checked>
+                                    <label for="copy_article_include_comments">
+                                        <?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far'); ?>
+                                        <span><?= __('Include comments when copying'); ?></span>
+                                    </label>
+                                </div>
+                                <div class="form-row">
+                                    <input class="fancy-checkbox" type="checkbox" name="copy_child_articles" value="1" id="copy_article_include_child_articles" checked>
+                                    <label for="copy_article_include_child_articles">
+                                        <?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far'); ?>
+                                        <span><?= __('Also copy sub-pages'); ?></span>
+                                    </label>
+                                </div>
+                                <div class="form-row submit-contaner">
+                                    <button type="submit" class="button primary">
+                                        <?= fa_image_tag('copy'); ?><span><?= __('Copy page'); ?></span>
+                                        <span class="indicator"><?= fa_image_tag('spinner', ['class' => 'fa-spin']); ?></span>
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
         <a name="top"></a>
         <?php if ($error): ?>
             <div class="redbox">
@@ -61,8 +105,7 @@
             </div>
         <?php endif; ?>
         <?php if ($article->getID()): ?>
-            <?php $attachments = $article->getFiles(); ?>
-            <div id="article_attachments">
+            <div id="article_attachments" class="show-article-attachments">
                 <h4>
                     <?= fa_image_tag('paperclip', ['class' => 'icon']); ?>
                     <span class="name">
@@ -109,6 +152,8 @@
     </div>
     <script type="text/javascript">
         Pachno.on(Pachno.EVENTS.ready, function () {
+            $('body').on('click', '.trigger-copy-popup', () => $('#copy_article_form_container').show() );
+
             const article = <?= json_encode($article->toJSON()); ?>;
             <?php if (\pachno\core\framework\Settings::isUploadsEnabled() && $article->canEdit()): ?>
                 const uploader = new Uploader({

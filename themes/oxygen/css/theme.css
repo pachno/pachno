@@ -5965,6 +5965,9 @@ input.icon.danger {
     display: inline-block;
     border-right: 1px solid #676767; }
 
+#dialog_backdrop.submitting .dialog-query-buttons .indicator {
+  display: inline-flex; }
+
 .dialog-query-buttons {
   padding: 0 10px;
   /*height: 40px;*/
@@ -5975,6 +5978,10 @@ input.icon.danger {
   font-size: .75rem;
   justify-self: flex-end;
   flex: 1 1 auto; }
+  .dialog-query-buttons .indicator {
+    display: none;
+    margin-right: auto;
+    font-size: 1.2em; }
 
 h1 .button, h1 .button:hover, h2 .button, h2 .button:hover, h3 .button, h3 .button:hover, h4 .button, h4 .button:hover, h5 .button, h5 .button:hover, h6 .button, h6 .button:hover {
   font-size: .85rem; }
@@ -6302,8 +6309,12 @@ h1 .button, h1 .button:hover, h2 .button, h2 .button:hover, h3 .button, h3 .butt
   .fancy-checkbox:checked:not(:disabled):not(.submitting) + .list-item:not(.toggler):hover {
     background-color: #0cd8b6;
     color: #FFF; }
+    .fancy-checkbox:checked:not(:disabled):not(.submitting) + .list-item:not(.toggler) .name,
     .fancy-checkbox:checked:not(:disabled):not(.submitting) + .list-item:not(.toggler) .icon,
-    .fancy-checkbox:checked:not(:disabled):not(.submitting) + .list-item:not(.toggler):hover .icon {
+    .fancy-checkbox:checked:not(:disabled):not(.submitting) + .list-item:not(.toggler) .expander,
+    .fancy-checkbox:checked:not(:disabled):not(.submitting) + .list-item:not(.toggler):hover .name,
+    .fancy-checkbox:checked:not(:disabled):not(.submitting) + .list-item:not(.toggler):hover .icon,
+    .fancy-checkbox:checked:not(:disabled):not(.submitting) + .list-item:not(.toggler):hover .expander {
       color: #FFF; }
   .fancy-checkbox:checked:not(:disabled):not(.submitting) + .list-item.toggler {
     color: #141823; }
@@ -6833,21 +6844,21 @@ input[data-interactive-toggle].submitting + label .indicator {
     .list-mode .list-item:hover.active .dropper-container {
       border-radius: 4px;
       background-color: rgba(100, 100, 100, 0.1); }
-    .list-mode .list-item:not(.disabled):not(.not-selectable):not(.separator):not(.header):not(.danger):not(.filter-container):hover,
-    .list-mode .list-item:hover:not(.disabled):not(.not-selectable):not(.separator):not(.header):not(.danger):not(.filter-container):hover {
+    .list-mode .list-item:not(.disabled):not(.not-selectable):not(.separator):not(.header):not(.danger):not(.filter-container):not(.form-container):hover,
+    .list-mode .list-item:hover:not(.disabled):not(.not-selectable):not(.separator):not(.header):not(.danger):not(.filter-container):not(.form-container):hover {
       background-color: rgba(225, 225, 225, 0.2);
       color: #141823; }
-      .list-mode .list-item:not(.disabled):not(.not-selectable):not(.separator):not(.header):not(.danger):not(.filter-container):hover .issuetype-icon.issuetype-bug_report, .list-mode .list-item:not(.disabled):not(.not-selectable):not(.separator):not(.header):not(.danger):not(.filter-container):hover .issuetype-icon.issuetype-developer_report, .list-mode .list-item:not(.disabled):not(.not-selectable):not(.separator):not(.header):not(.danger):not(.filter-container):hover .issuetype-icon.issuetype-feature_request, .list-mode .list-item:not(.disabled):not(.not-selectable):not(.separator):not(.header):not(.danger):not(.filter-container):hover .issuetype-icon.issuetype-idea, .list-mode .list-item:not(.disabled):not(.not-selectable):not(.separator):not(.header):not(.danger):not(.filter-container):hover .issuetype-icon.issuetype-enhancement, .list-mode .list-item:not(.disabled):not(.not-selectable):not(.separator):not(.header):not(.danger):not(.filter-container):hover .issuetype-icon.issuetype-epic, .list-mode .list-item:not(.disabled):not(.not-selectable):not(.separator):not(.header):not(.danger):not(.filter-container):hover .issuetype-icon.issuetype-documentation_request, .list-mode .list-item:not(.disabled):not(.not-selectable):not(.separator):not(.header):not(.danger):not(.filter-container):hover .issuetype-icon.issuetype-unknown, .list-mode .list-item:not(.disabled):not(.not-selectable):not(.separator):not(.header):not(.danger):not(.filter-container):hover .issuetype-icon.issuetype-, .list-mode .list-item:not(.disabled):not(.not-selectable):not(.separator):not(.header):not(.danger):not(.filter-container):hover .issuetype-icon.issuetype-task,
-      .list-mode .list-item:hover:not(.disabled):not(.not-selectable):not(.separator):not(.header):not(.danger):not(.filter-container):hover .issuetype-icon.issuetype-bug_report,
-      .list-mode .list-item:hover:not(.disabled):not(.not-selectable):not(.separator):not(.header):not(.danger):not(.filter-container):hover .issuetype-icon.issuetype-developer_report,
-      .list-mode .list-item:hover:not(.disabled):not(.not-selectable):not(.separator):not(.header):not(.danger):not(.filter-container):hover .issuetype-icon.issuetype-feature_request,
-      .list-mode .list-item:hover:not(.disabled):not(.not-selectable):not(.separator):not(.header):not(.danger):not(.filter-container):hover .issuetype-icon.issuetype-idea,
-      .list-mode .list-item:hover:not(.disabled):not(.not-selectable):not(.separator):not(.header):not(.danger):not(.filter-container):hover .issuetype-icon.issuetype-enhancement,
-      .list-mode .list-item:hover:not(.disabled):not(.not-selectable):not(.separator):not(.header):not(.danger):not(.filter-container):hover .issuetype-icon.issuetype-epic,
-      .list-mode .list-item:hover:not(.disabled):not(.not-selectable):not(.separator):not(.header):not(.danger):not(.filter-container):hover .issuetype-icon.issuetype-documentation_request,
-      .list-mode .list-item:hover:not(.disabled):not(.not-selectable):not(.separator):not(.header):not(.danger):not(.filter-container):hover .issuetype-icon.issuetype-unknown,
-      .list-mode .list-item:hover:not(.disabled):not(.not-selectable):not(.separator):not(.header):not(.danger):not(.filter-container):hover .issuetype-icon.issuetype-,
-      .list-mode .list-item:hover:not(.disabled):not(.not-selectable):not(.separator):not(.header):not(.danger):not(.filter-container):hover .issuetype-icon.issuetype-task {
+      .list-mode .list-item:not(.disabled):not(.not-selectable):not(.separator):not(.header):not(.danger):not(.filter-container):not(.form-container):hover .issuetype-icon.issuetype-bug_report, .list-mode .list-item:not(.disabled):not(.not-selectable):not(.separator):not(.header):not(.danger):not(.filter-container):not(.form-container):hover .issuetype-icon.issuetype-developer_report, .list-mode .list-item:not(.disabled):not(.not-selectable):not(.separator):not(.header):not(.danger):not(.filter-container):not(.form-container):hover .issuetype-icon.issuetype-feature_request, .list-mode .list-item:not(.disabled):not(.not-selectable):not(.separator):not(.header):not(.danger):not(.filter-container):not(.form-container):hover .issuetype-icon.issuetype-idea, .list-mode .list-item:not(.disabled):not(.not-selectable):not(.separator):not(.header):not(.danger):not(.filter-container):not(.form-container):hover .issuetype-icon.issuetype-enhancement, .list-mode .list-item:not(.disabled):not(.not-selectable):not(.separator):not(.header):not(.danger):not(.filter-container):not(.form-container):hover .issuetype-icon.issuetype-epic, .list-mode .list-item:not(.disabled):not(.not-selectable):not(.separator):not(.header):not(.danger):not(.filter-container):not(.form-container):hover .issuetype-icon.issuetype-documentation_request, .list-mode .list-item:not(.disabled):not(.not-selectable):not(.separator):not(.header):not(.danger):not(.filter-container):not(.form-container):hover .issuetype-icon.issuetype-unknown, .list-mode .list-item:not(.disabled):not(.not-selectable):not(.separator):not(.header):not(.danger):not(.filter-container):not(.form-container):hover .issuetype-icon.issuetype-, .list-mode .list-item:not(.disabled):not(.not-selectable):not(.separator):not(.header):not(.danger):not(.filter-container):not(.form-container):hover .issuetype-icon.issuetype-task,
+      .list-mode .list-item:hover:not(.disabled):not(.not-selectable):not(.separator):not(.header):not(.danger):not(.filter-container):not(.form-container):hover .issuetype-icon.issuetype-bug_report,
+      .list-mode .list-item:hover:not(.disabled):not(.not-selectable):not(.separator):not(.header):not(.danger):not(.filter-container):not(.form-container):hover .issuetype-icon.issuetype-developer_report,
+      .list-mode .list-item:hover:not(.disabled):not(.not-selectable):not(.separator):not(.header):not(.danger):not(.filter-container):not(.form-container):hover .issuetype-icon.issuetype-feature_request,
+      .list-mode .list-item:hover:not(.disabled):not(.not-selectable):not(.separator):not(.header):not(.danger):not(.filter-container):not(.form-container):hover .issuetype-icon.issuetype-idea,
+      .list-mode .list-item:hover:not(.disabled):not(.not-selectable):not(.separator):not(.header):not(.danger):not(.filter-container):not(.form-container):hover .issuetype-icon.issuetype-enhancement,
+      .list-mode .list-item:hover:not(.disabled):not(.not-selectable):not(.separator):not(.header):not(.danger):not(.filter-container):not(.form-container):hover .issuetype-icon.issuetype-epic,
+      .list-mode .list-item:hover:not(.disabled):not(.not-selectable):not(.separator):not(.header):not(.danger):not(.filter-container):not(.form-container):hover .issuetype-icon.issuetype-documentation_request,
+      .list-mode .list-item:hover:not(.disabled):not(.not-selectable):not(.separator):not(.header):not(.danger):not(.filter-container):not(.form-container):hover .issuetype-icon.issuetype-unknown,
+      .list-mode .list-item:hover:not(.disabled):not(.not-selectable):not(.separator):not(.header):not(.danger):not(.filter-container):not(.form-container):hover .issuetype-icon.issuetype-,
+      .list-mode .list-item:hover:not(.disabled):not(.not-selectable):not(.separator):not(.header):not(.danger):not(.filter-container):not(.form-container):hover .issuetype-icon.issuetype-task {
         background-color: rgba(225, 225, 225, 0.2);
         color: #141823; }
     .list-mode .list-item.selected,
@@ -6880,6 +6891,9 @@ input[data-interactive-toggle].submitting + label .indicator {
       .list-mode .list-item:hover.selected > a .name {
         color: #232323;
         font-weight: 400; }
+    .list-mode .list-item.multiline .icon,
+    .list-mode .list-item:hover.multiline .icon {
+      font-size: 1.2em; }
     .list-mode .list-item.multiline span.name,
     .list-mode .list-item:hover.multiline span.name {
       flex: 1 1 auto;
@@ -6993,6 +7007,10 @@ input[data-interactive-toggle].submitting + label .indicator {
       .list-mode .list-item .icon:not(.issuetype-icon),
       .list-mode .list-item:hover .icon:not(.issuetype-icon) {
         padding: .35em .65em .35em 0; }
+        .list-mode .list-item .icon:not(.issuetype-icon):not(:first-child),
+        .list-mode .list-item:hover .icon:not(.issuetype-icon):not(:first-child) {
+          padding: .25em .15em;
+          flex: 0 0 30px; }
       .list-mode .list-item .icon.issuetype-icon,
       .list-mode .list-item:hover .icon.issuetype-icon {
         flex: 0 0 30px;
@@ -7057,8 +7075,9 @@ input[data-interactive-toggle].submitting + label .indicator {
 .expandable .expander, .expandable .expander:hover {
   transform: rotate(0);
   cursor: pointer;
-  padding: .3em .5em .3em 1em;
-  border-radius: 0 4px 4px 0; }
+  padding: .3em .5em;
+  border-radius: 4px;
+  margin-left: 0; }
 
 .expandable + .submenu {
   display: none; }
@@ -7069,7 +7088,8 @@ input[data-interactive-toggle].submitting + label .indicator {
 .expandable.expanded:not(button) .expander {
   transform: rotate(180deg);
   color: #0cd8b6;
-  padding: .3em 1em .3em .5em; }
+  padding: .3em .5em;
+  border-radius: 4px; }
 
 .expandable.expanded + .expandable-menu {
   display: flex;
@@ -7181,6 +7201,10 @@ input[data-interactive-toggle].submitting + label .indicator {
     .list-mode .header:hover .icon:not(.issuetype-icon), .submenu .header .icon:not(.issuetype-icon),
     .submenu .header:hover .icon:not(.issuetype-icon) {
       color: #ABABAB; }
+  .list-mode .header .name ~ .icon,
+  .list-mode .header:hover .name ~ .icon, .submenu .header .name ~ .icon,
+  .submenu .header:hover .name ~ .icon {
+    margin-left: 0; }
   .list-mode .header .dropper-container,
   .list-mode .header .link-container, .list-mode .header.hover,
   .list-mode .header:hover .dropper-container,
@@ -7240,6 +7264,14 @@ input[data-interactive-toggle].submitting + label .indicator {
       .submenu .header:hover.hover .link.active {
         border-radius: 4px;
         background-color: rgba(100, 100, 100, 0.1); }
+
+.list-mode .form-container .form-row, .submenu .form-container .form-row {
+  padding: 0; }
+  .list-mode .form-container .form-row.add-placeholder .icon, .submenu .form-container .form-row.add-placeholder .icon {
+    padding-right: .35em;
+    flex: 0 0 30px; }
+    .list-mode .form-container .form-row.add-placeholder .icon + input[type=text], .submenu .form-container .form-row.add-placeholder .icon + input[type=text] {
+      margin-left: 0; }
 
 /* paginator */
 .paginator {
@@ -7980,10 +8012,13 @@ nav.sidebar {
   nav.sidebar .list-mode {
     padding-top: .9em; }
     nav.sidebar .list-mode .filter-container, nav.sidebar .list-mode .filter-container:hover {
-      border-bottom: none; }
+      border-bottom: none;
+      margin-bottom: 1em; }
     nav.sidebar .list-mode .filter-container input[type=text],
     nav.sidebar .list-mode .filter-container input[type=search] {
       background: rgba(225, 225, 225, 0.1); }
+    nav.sidebar .list-mode .filter-container + .list-item.separator {
+      margin-bottom: 1em; }
     nav.sidebar .list-mode .tooltip {
       max-width: 320px; }
   nav.sidebar .onboarding {
@@ -9021,7 +9056,14 @@ header {
         header .menu-strip .action-container .button.highlight {
           font-size: .95em; }
       header .menu-strip .action-container .list-mode {
-        font-size: .85em; }
+        font-size: .85em;
+        max-width: none; }
+        header .menu-strip .action-container .list-mode .list-item .name {
+          white-space: nowrap; }
+        header .menu-strip .action-container .list-mode .list-item.multiline .name {
+          line-height: 1.4em; }
+          header .menu-strip .action-container .list-mode .list-item.multiline .name .title {
+            font-size: 1.1em; }
 
 .markItUp * {
   margin: 0;
@@ -9724,7 +9766,7 @@ textarea.markItUpEditor:focus {
       text-align: center; }
 
 .userlink {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   font-weight: 400;
   padding: .25em .35em;
@@ -9732,52 +9774,36 @@ textarea.markItUpEditor:focus {
   border: 0;
   background-color: transparent;
   transition: border-color 0.3s ease-in-out, background-color 0.3s ease-in-out, color 0.3s ease-in-out; }
+  .userlink:hover {
+    text-decoration: none;
+    background: rgba(225, 225, 225, 0.2);
+    border: none;
+    font-weight: 400; }
   .userlink .avatar {
     margin-right: .35em; }
 
-.userlink:hover {
-  text-decoration: none;
-  background: rgba(225, 225, 225, 0.2);
-  border: none;
-  font-weight: 400; }
-
 .userstate {
   display: none; }
-
-img.userstate {
-  width: 12px;
-  height: 12px;
-  display: inline-block;
-  margin: 1px 2px 2px 0;
-  vertical-align: middle; }
-
-.fas.userstate,
-.far.userstate {
-  display: inline-block;
-  width: 12px;
-  font-size: 0.8em; }
-
-.fas.userstate.online,
-.far.userstate.online {
-  color: #329632; }
-
-.fas.userstate.busy,
-.fas.userstate.unavailable,
-.far.userstate.busy,
-.far.userstate.unavailable {
-  color: #c83232; }
-
-.fas.userstate.in-meeting,
-.far.userstate.in-meeting {
-  color: #3232c8; }
-
-.fas.userstate.absent,
-.far.userstate.absent {
-  color: #c8c800; }
-
-.fas.userstate.offline,
-.far.userstate.offline {
-  color: #c8c8c8; }
+  .userstateimg {
+    width: 12px;
+    height: 12px;
+    display: inline-block;
+    margin: 1px 2px 2px 0;
+    vertical-align: middle; }
+  .userstate.fas, .userstate.far {
+    display: inline-block;
+    width: 12px;
+    font-size: 0.8em; }
+    .userstate.fas.online, .userstate.far.online {
+      color: #329632; }
+    .userstate.fas.busy, .userstate.fas.unavailable, .userstate.far.busy, .userstate.far.unavailable {
+      color: #c83232; }
+    .userstate.fas.in-meeting, .userstate.far.in-meeting {
+      color: #3232c8; }
+    .userstate.fas.absent, .userstate.far.absent {
+      color: #c8c800; }
+    .userstate.fas.offline, .userstate.far.offline {
+      color: #c8c8c8; }
 
 #main_container {
   transition: background-color .25s ease-in-out; }
@@ -12998,14 +13024,27 @@ dl.info {
   .content-with-sidebar.article-container nav.sidebar .list-mode .header-banner {
     background: linear-gradient(to bottom, #fbfbfb 92%, rgba(251, 251, 251, 0) 100%);
     box-shadow: -3px 3px 3px -3px rgba(27, 27, 36, 0.2) inset; }
-  .content-with-sidebar.article-container nav.sidebar .list-mode .list-item,
-  .content-with-sidebar.article-container nav.sidebar .list-mode .list-item:hover {
+  .content-with-sidebar.article-container nav.sidebar .list-mode .list-item:not(.filter-container),
+  .content-with-sidebar.article-container nav.sidebar .list-mode .list-item:hover:not(.filter-container) {
     margin-top: .2em;
     margin-bottom: 0; }
-    .content-with-sidebar.article-container nav.sidebar .list-mode .list-item .name, .content-with-sidebar.article-container nav.sidebar .list-mode .list-item .name:hover,
-    .content-with-sidebar.article-container nav.sidebar .list-mode .list-item:hover .name,
-    .content-with-sidebar.article-container nav.sidebar .list-mode .list-item:hover .name:hover {
+    .content-with-sidebar.article-container nav.sidebar .list-mode .list-item:not(.filter-container) .name, .content-with-sidebar.article-container nav.sidebar .list-mode .list-item:not(.filter-container) .name:hover,
+    .content-with-sidebar.article-container nav.sidebar .list-mode .list-item:hover:not(.filter-container) .name,
+    .content-with-sidebar.article-container nav.sidebar .list-mode .list-item:hover:not(.filter-container) .name:hover {
       padding: .3em 0; }
+    .content-with-sidebar.article-container nav.sidebar .list-mode .list-item:not(.filter-container) .icon.new-page-button,
+    .content-with-sidebar.article-container nav.sidebar .list-mode .list-item:hover:not(.filter-container) .icon.new-page-button {
+      display: none; }
+    .content-with-sidebar.article-container nav.sidebar .list-mode .list-item:not(.filter-container):hover .icon.new-page-button,
+    .content-with-sidebar.article-container nav.sidebar .list-mode .list-item:hover:not(.filter-container):hover .icon.new-page-button {
+      display: inline-flex; }
+  .content-with-sidebar.article-container nav.sidebar .list-mode.slide-out .list-item:not(.filter-container) .name, .content-with-sidebar.article-container nav.sidebar .list-mode.slide-out .list-item:not(.filter-container) .name:hover,
+  .content-with-sidebar.article-container nav.sidebar .list-mode.slide-out .list-item:hover:not(.filter-container) .name,
+  .content-with-sidebar.article-container nav.sidebar .list-mode.slide-out .list-item:hover:not(.filter-container) .name:hover {
+    padding: .7em 0; }
+  .content-with-sidebar.article-container nav.sidebar .list-mode.slide-out .list-item:not(.filter-container) .pop-out-expander,
+  .content-with-sidebar.article-container nav.sidebar .list-mode.slide-out .list-item:hover:not(.filter-container) .pop-out-expander {
+    display: none; }
 
 .content-with-sidebar.article-container > div:not(.sidebar):not(.fixed-position) {
   background-color: #FFF;
@@ -13080,7 +13119,7 @@ dl.info {
     background-color: #FFF;
     padding: .75em;
     border-radius: .25em;
-    font-size: 1em;
+    font-size: .9em;
     margin-bottom: .5em;
     transition: border .25s ease-in-out;
     border: none;
@@ -13115,6 +13154,19 @@ dl.info {
   margin: 0 auto;
   /* Undo some of the default styling done for code tag if it is nested
      with pre tag. */ }
+  .article .image-container {
+    border-radius: 4px;
+    display: flex;
+    flex-direction: column;
+    align-items: center; }
+    .article .image-container img {
+      display: inline-flex;
+      width: 100%; }
+    .article .image-container.stretched:not(.with-background) img {
+      width: 100%; }
+    .article .image-container.with-background {
+      padding: 1em;
+      background-color: rgba(225, 225, 225, 0.2); }
   .article table {
     border: 1px solid #DDD;
     border-collapse: collapse;
@@ -13322,6 +13374,13 @@ dl.info {
   padding-top: 5.5em;
   box-sizing: border-box;
   overflow: auto; }
+  .main_area.edit-article #article_attachments {
+    align-items: stretch;
+    display: flex;
+    flex-direction: row;
+    margin: 0 1em; }
+    .main_area.edit-article #article_attachments .attachments-container {
+      flex: 1 1 auto; }
   .main_area.edit-article #article-header-container {
     position: fixed;
     top: 0;
@@ -13437,6 +13496,21 @@ dl.info {
       offset-distance: 16px; }
     .main_area.edit-article .editor-container .ce-block--selected .ce-block__content {
       background: rgba(12, 137, 144, 0.3); }
+    .main_area.edit-article .editor-container .cdx-list {
+      margin: 0;
+      padding-left: 40px;
+      outline: none; }
+      .main_area.edit-article .editor-container .cdx-list__item {
+        padding: 5.5px 0 5.5px 3px;
+        line-height: 1.6em; }
+      .main_area.edit-article .editor-container .cdx-list--unordered {
+        list-style: disc; }
+      .main_area.edit-article .editor-container .cdx-list--ordered {
+        list-style: decimal; }
+      .main_area.edit-article .editor-container .cdx-list-settings {
+        display: flex; }
+        .main_area.edit-article .editor-container .cdx-list-settings .cdx-settings-button {
+          width: 50%; }
     .main_area.edit-article .editor-container .cdx-warning {
       background-color: rgba(249, 245, 178, 0.6); }
       .main_area.edit-article .editor-container .cdx-warning .cdx-warning__message {
@@ -13568,6 +13642,9 @@ dl.info {
     display: flex;
     flex-direction: column; }
 
+#article_attachments.show-article-attachments .button.trigger-embed {
+  display: none; }
+
 .article .header, #article_attachments > h4, #article_comments > h4 {
   margin: 0 0 5px 0;
   padding: 2px 3px 3px 0;
@@ -13638,18 +13715,6 @@ DEL {
   text-decoration: line-through;
   background-color: #D88;
   color: white; }
-
-.article .image_container img {
-  margin-bottom: -6px; }
-
-.article .image_container a img {
-  vertical-align: text-top; }
-
-.article .image_container a {
-  border-bottom: none !important; }
-
-.article .image_container a:hover {
-  border-bottom: 1px dotted #AAA !important; }
 
 #article_comments, #article_attachments, #article_categories {
   max-width: 1024px;
@@ -13876,13 +13941,22 @@ DEL {
   margin: 0;
   text-transform: uppercase;
   display: flex;
+  align-items: center;
   border-top-left-radius: 3px;
   border-top-right-radius: 3px; }
-  .backdrop_detail_header span {
+  .backdrop_detail_header > span {
     flex: 1 1 auto;
-    padding: 10px 15px;
+    padding: .8em 1.2em;
     text-align: left;
+    display: flex;
+    align-items: center;
     font-weight: 600; }
+  .backdrop_detail_header .count-badge {
+    background-color: #00adc7;
+    color: #FFF; }
+  .backdrop_detail_header button, .backdrop_detail_header button:hover {
+    margin: 0 1em;
+    font-size: .75em; }
   .backdrop_detail_header .closer,
   .backdrop_detail_header .back_link,
   .backdrop_detail_header .add_link {

@@ -9,12 +9,11 @@ import Header from '@editorjs/header';
 import InlineCode from '@editorjs/inline-code';
 import LinkTool from '@editorjs/link';
 import Marker from '@editorjs/marker';
-import List from '@editorjs/list';
+import List from './list';
 import Quote from '@editorjs/quote';
 import TableTool from 'editorjs-table';
 import Warning from '@editorjs/warning';
 import ImageTool from '@editorjs/image';
-import Undo from 'editorjs-undo';
 
 import Mention from './mention';
 import MentionableParagraph from './paragraph';
@@ -183,7 +182,7 @@ const initializeEasyMde = function () {
 /**
  *
  * @param editor
- * @returns {EasyMDE}
+ * @returns {EasyMDE|EditorJS}
  */
 export const getEditor = function (editor) {
     return editors[editor];

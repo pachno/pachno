@@ -80,6 +80,8 @@ const UI = {
             $('#dialog_no').off('click');
             $('#dialog_yes').removeClass('disabled');
             $('#dialog_no').removeClass('disabled');
+            $('#dialog_yes').removeAttr('disabled');
+            $('#dialog_no').removeAttr('disabled');
             if (options.yes.click) {
                 $('#dialog_yes').on('click', options.yes.click);
             }
@@ -92,8 +94,17 @@ const UI = {
             if (options.no.href) {
                 $('#dialog_no').attr('href', options.no.href);
             }
+            $('#dialog_backdrop').removeClass('submitting');
             $('#dialog_backdrop_content').show();
             $('#dialog_backdrop').show();
+        },
+
+        setSubmitting: () => {
+            $('#dialog_yes').addClass('disabled');
+            $('#dialog_yes').attr('disabled', true);
+            $('#dialog_no').addClass('disabled');
+            $('#dialog_no').attr('disabled', true);
+            $('#dialog_backdrop').addClass('submitting');
         },
 
         showModal: (title, content) => {
@@ -254,17 +265,16 @@ const autoSubmitForm = function (event) {
     return submitForm($form);
 };
 
-const submitForm = function ($form) {
-    const url = $form.attr('action');
-    let options;
+const submitForm = function ($form, options = {}) {
+    const url = $form.data('url') || $form.attr('action');
 
     if ($form.data('update-container')) {
         if ($form.data('update-insert') !== undefined) {
-            options = { success: { update: { element: $form.data('update-container'), insertion: true }}};
+            options.success = { update: { element: $form.data('update-container'), insertion: true }};
         } else if ($form.data('update-replace') !== undefined) {
-            options = { success: { update: { element: $form.data('update-container'), replace: true }}};
+            options.success = { update: { element: $form.data('update-container'), replace: true }};
         } else {
-            options = { success: { update: $form.data('update-container') }};
+            options.success = { update: $form.data('update-container') };
         }
     }
 
@@ -289,10 +299,34 @@ const submitForm = function ($form) {
 
 const submitInteractiveForm = function (event, $form, prevent_default = false) {
     $form.addClass('submitting');
+    $form.find('input[type=text]').blur();
     if (prevent_default) {
         event.preventDefault();
     }
     submitForm($form)
+        .then(() => {
+            $form.removeClass('submitting');
+        })
+        .catch((error) => {
+            console.error(error);
+            $form.removeClass('submitting');
+        });
+}
+
+const submitStandaloneInput = function (event, $element) {
+    const $form = $element.parents('.form');
+
+    $form.addClass('submitting');
+    $form.find('input[type=text]').blur();
+    const key = $element.attr('name');
+    const options = {
+        data: {
+            [key]: $element.val()
+        }
+    }
+    event.preventDefault();
+
+    submitForm($form, options)
         .then(() => {
             $form.removeClass('submitting');
         })
@@ -371,10 +405,19 @@ const setupListeners = function() {
         Pachno.fetch(data.url, { method: 'DELETE' });
     });
 
+    $body.on('blur', '.form-container .form[data-standalone-input]:not(.submitting) input[type=text]', (event) => submitStandaloneInput(event, $(event.target)));
+    $body.on('keypress', '.form-container .form[data-standalone-input]:not(.submitting) input[type=text]', (event) => {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            event.stopPropagation();
+            submitStandaloneInput(event, $(event.target));
+        }
+    });
+
     $body.on('submit', 'form[data-interactive-form]', (event) => submitInteractiveForm(event, $(event.target), true));
-    $body.on('blur', 'form[data-interactive-form] input[type=text], form[data-interactive-form] textarea', (event) => submitInteractiveForm(event, $(event.target).parents('form')));
-    $body.on('change', 'form[data-interactive-form] input[type=radio], form[data-interactive-form] input[type=checkbox]', (event) => submitInteractiveForm(event, $(event.target).parents('form')));
-    $body.on('click', 'form[data-interactive-form] input[type=radio], form[data-interactive-form] input[type=checkbox]', (event) => submitInteractiveForm(event, $(event.target).parents('form')));
+    $body.on('blur', 'form[data-interactive-form]:not(.submitting) input[type=text], form[data-interactive-form]:not(.submitting) textarea', (event) => submitInteractiveForm(event, $(event.target).parents('form')));
+    $body.on('change', 'form[data-interactive-form]:not(.submitting) input[type=radio], form[data-interactive-form]:not(.submitting) input[type=checkbox]', (event) => submitInteractiveForm(event, $(event.target).parents('form')));
+    $body.on('click', 'form[data-interactive-form]:not(.submitting) input[type=radio], form[data-interactive-form]:not(.submitting) input[type=checkbox]', (event) => submitInteractiveForm(event, $(event.target).parents('form')));
 }
 
 export default UI;

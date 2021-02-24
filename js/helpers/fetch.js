@@ -120,7 +120,7 @@ export const fetchHelper = function (url, options) {
             if ($form !== undefined) {
                 $form.addClass('submitting');
                 $form.find('button[type=submit]').each(function () {
-                    var $button = $(this);
+                    let $button = $(this);
                     $button.addClass('auto-disabled');
                     $button.prop('disabled', true);
                 });
@@ -138,7 +138,7 @@ export const fetchHelper = function (url, options) {
 
         if (['POST', 'PUT'].indexOf(method) !== -1) {
             let data;
-            if ($form !== undefined && $form.length) {
+            if ($form !== undefined && $form.length && $form[0].tagName.toLowerCase() === 'form') {
                 data = new FormData($form[0]);
             } else {
                 data = new FormData();
@@ -191,14 +191,28 @@ export const fetchHelper = function (url, options) {
                         document.location = json.forward;
                     } else {
                         if (options.success && options.success.update) {
-                            let json_content_element = (is_string(options.success.update) || options.success.update.from == undefined) ? 'content' : options.success.update.from;
-                            let content = (json) ? json[json_content_element] : responseText;
+                            let json_content_element = (is_string(options.success.update) || options.success.update.from === undefined) ? 'content' : options.success.update.from;
+                            json_content_element = json_content_element || (json.component !== undefined) ? 'component' : 'content';
+
+                            let content;
+                            if (false && json && json_content_element !== undefined && json[json_content_element] !== undefined) {
+                                content = json[json_content_element];
+                            } else if (json) {
+                                content = json.component || json.content;
+                            } else {
+                                content = responseText;
+                            }
                             let update_element = (is_string(options.success.update)) ? options.success.update : options.success.update.element;
                             if ($(update_element).length) {
                                 let insertion = (is_string(options.success.update)) ? false : (options.success.update.insertion) ? options.success.update.insertion : false;
                                 let replace = (is_string(options.success.update)) ? false : (options.success.update.replace) ? options.success.update.replace : false;
                                 if (insertion) {
-                                    $(update_element).append(content);
+                                    let $form_container = $(update_element).find('> .form-container');
+                                    if ($form_container.length) {
+                                        $(content).insertBefore($form_container);
+                                    } else {
+                                        $(update_element).append(content);
+                                    }
                                 } else if (replace) {
                                     $(update_element).replaceWith(content);
                                 } else {
@@ -213,9 +227,9 @@ export const fetchHelper = function (url, options) {
                                 UI.Message.success(json.message);
                             }
                         } else if (options.success && options.success.replace) {
-                            var json_content_element = (is_string(options.success.replace) || options.success.replace.from == undefined) ? 'content' : options.success.replace.from;
-                            var content = (json) ? json[json_content_element] : responseText;
-                            var replace_element = (is_string(options.success.replace)) ? options.success.replace : options.success.replace.element;
+                            let json_content_element = (is_string(options.success.replace) || options.success.replace.from == undefined) ? 'content' : options.success.replace.from;
+                            let content = (json) ? json[json_content_element] : responseText;
+                            let replace_element = (is_string(options.success.replace)) ? options.success.replace : options.success.replace.element;
                             if ($(replace_element)) {
                                 Element.replace(replace_element, content);
                             }
@@ -240,7 +254,7 @@ export const fetchHelper = function (url, options) {
             .then((json) => {
                 if (fetch_debugger !== undefined) {
                     $('#___PACHNO_DEBUG_INFO___indicator').hide();
-                    var d = new Date(),
+                    let d = new Date(),
                         d_id = response.headers.get('x-pachno-debugid'),
                         d_time = response.headers.get('x-pachno-loadtime'),
                         d_session_time = response.headers.get('x-pachno-sessiontime'),
@@ -257,7 +271,7 @@ export const fetchHelper = function (url, options) {
                 if (options.complete) {
                     processCommonAjaxPostEvents(options.complete);
                     if (options.complete.callback) {
-                        var json = (response.responseJSON) ? response.responseJSON : undefined;
+                        let json = (response.responseJSON) ? response.responseJSON : undefined;
                         options.complete.callback(json);
                     }
                 }
@@ -280,15 +294,15 @@ export const fetchHelper = function (url, options) {
 export const formSubmitHelper = function (url, form_id, options) {
     const fetchOptions = {
         form: form_id,
-        method: 'POST',
-        loading: {indicator: form_id + '_indicator', disable: form_id + '_button'},
-        success: {enable: form_id + '_button'},
-        failure: {enable: form_id + '_button'}
+        method: 'POST'
     };
 
     if (options !== undefined) {
         if (options.success !== undefined) {
             fetchOptions.success = { ...fetchOptions.success, ...options.success }
+        }
+        if (options.data !== undefined) {
+            fetchOptions.data = options.data;
         }
     }
 

@@ -2383,29 +2383,17 @@
          * Attach a file to the issue
          *
          * @param File $file The file to attach
+         * @param null $timestamp
          */
-        public function attachFile(File $file, $file_comment = '', $file_description = '', $return_comment = false)
+        public function attachFile(File $file, $timestamp = null)
         {
-            $existed = !tables\IssueFiles::getTable()->addByIssueIDandFileID($this->getID(), $file->getID());
+            $existed = !tables\IssueFiles::getTable()->addByIssueIDandFileID($this->getID(), $file->getID(), $timestamp);
             if (!$existed) {
-                $comment = new Comment();
-                $comment->setPostedBy(Context::getUser()->getID());
-                $comment->setSystemComment(true);
-                $comment->setTargetID($this->getID());
-                $comment->setTargetType(Comment::TYPE_ISSUE);
-                if ($file_comment) {
-                    $comment->setContent(Context::getI18n()->__("A file was uploaded.%link_to_file \n\nThis comment was attached: %comment", ['%comment' => "\n\n" . $file_comment, '%link_to_file' => "\n\n[[File:{$file->getRealFilename()}|thumb|{$file_description}]]"]));
-                } else {
-                    $comment->setContent(Context::getI18n()->__('A file was uploaded.%link_to_file', ['%link_to_file' => "\n\n[[File:{$file->getRealFilename()}|thumb|{$file_description}]]"]));
-                }
-                $comment->save();
                 if ($this->_files !== null) {
                     $this->_files[$file->getID()] = $file;
                 }
                 $this->touch();
-                if ($return_comment) return $comment;
             }
-            if ($return_comment) return null;
         }
 
         public function touch($last_updated = null)

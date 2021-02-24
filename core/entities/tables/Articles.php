@@ -254,6 +254,24 @@
 
         /**
          * @param $parent_id
+         * @param int $new_parent_id
+         * @return Article[]
+         * @throws Exception
+         */
+        public function updateParentArticleId($parent_id, $new_parent_id = 0)
+        {
+            $query = $this->getQuery();
+            $query->where(self::SCOPE, framework\Context::getScope()->getID());
+            $query->where('articles.parent_article_id', $parent_id);
+
+            $update = new Update();
+            $update->update('articles.parent_article_id', $new_parent_id);
+
+            $this->rawUpdate($update, $query);
+        }
+
+        /**
+         * @param $parent_id
          * @param bool $is_category
          *
          * @return int
@@ -342,6 +360,22 @@
             $query->where('articles.redirect_article_id', 0);
 
             return $this->selectOne($query, 'none');
+        }
+
+        /**
+         * @param null $project
+         * @return Article
+         *
+         * @throws \Exception
+         */
+        public function getOrCreateMainPage($project = null): Article
+        {
+            $article = $this->getArticleByName('Main Page', $project);
+            if (!$article instanceof Article) {
+                $article = framework\Context::getModule('publish')->createMainPageArticle($project);
+            }
+
+            return $article;
         }
 
         public function deleteArticleByName($name)

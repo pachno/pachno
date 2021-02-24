@@ -150,6 +150,8 @@
 
         protected $_replies_count;
 
+        protected $_is_clone = false;
+
         /**
          * List of log items linked to this comment
          *
@@ -674,6 +676,11 @@
             return $this->_getParser()->getMentions();
         }
 
+        protected function _clone()
+        {
+            $this->_is_clone = true;
+        }
+
         protected function _preSave($is_new)
         {
             parent::_preSave($is_new);
@@ -689,7 +696,7 @@
 
         protected function _postSave($is_new)
         {
-            if ($is_new) {
+            if (!$this->_is_clone && $is_new) {
                 $tty = $this->getTargetType();
                 $tid = $this->getTargetID();
                 if (array_key_exists($tty, self::$_comment_count) && array_key_exists($tid, self::$_comment_count[$tty]) && array_key_exists((int)$this->isSystemComment(), self::$_comment_count[$tty][$tid]))

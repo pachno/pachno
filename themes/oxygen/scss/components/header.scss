@@ -309,6 +309,21 @@ header {
 
       .list-mode {
         font-size: .85em;
+        max-width: none;
+
+        .list-item {
+          .name {
+            white-space: nowrap;
+          }
+          &.multiline {
+            .name {
+              line-height: 1.4em;
+              .title {
+                font-size: 1.1em;
+              }
+            }
+          }
+        }
       }
     }
   }

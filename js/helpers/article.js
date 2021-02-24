@@ -1,6 +1,7 @@
 import $ from "jquery";
 import Pachno from "../classes/pachno";
 import UI from "./ui";
+import {getEditor} from "../widgets/editor";
 
 const setupListeners = () => {
     const $body = $('body');
@@ -87,6 +88,28 @@ const setupListeners = () => {
                 }
             });
     }
+
+    Pachno.on(Pachno.EVENTS.article.delete, function (PachnoApplication, data) {
+        Pachno.UI.Dialog.setSubmitting();
+        Pachno.fetch(data.url, { method: 'DELETE' });
+    });
+
+    $('body').on('click', '.trigger-embed', function (event) {
+        event.preventDefault();
+        event.stopPropagation();
+
+        const editor = getEditor('article-editor');
+        const url = $(this).data('url');
+        const image_data = {
+            file: { url },
+            'caption': '',
+            'withBorder': false,
+            'withBackground': false,
+            'stretched': false
+        };
+
+        editor.blocks.insert('image', image_data, {}, editor.blocks.getCurrentBlockIndex() + 1);
+    });
 };
 
 export {

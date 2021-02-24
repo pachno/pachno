@@ -6,7 +6,7 @@
 
 use pachno\core\entities\tables\Articles;
 
-$url = Articles::getTable()->getArticleByName('Main Page')->getLink();
+$url = Articles::getTable()->getOrCreateMainPage()->getLink();
 
 ?>
 <a class="<?php if ($pachno_routing->getCurrentRoute()->getModuleName() === 'publish') echo 'selected'; ?>" href="<?= $url; ?>">

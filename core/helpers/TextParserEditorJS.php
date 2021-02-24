@@ -84,6 +84,14 @@
 
                     $content[] = "<a href='{$url}' target='_blank'>{$url}</a>";
                     break;
+                case 'image':
+                    $url = $block['data']['file']['url'];
+                    $stretched = ($block['data']['stretched'] == true) ? 'stretched' : '';
+                    $withBorder = ($block['data']['withBorder'] == true) ? 'with-border' : '';
+                    $withBackground = ($block['data']['withBackground'] == true) ? 'with-background' : '';
+
+                    $content[] = "<div class='image-container {$stretched} {$withBackground} {$withBorder}'><img src='{$url}'></div>";
+                    break;
                 case 'delimiter':
                     $content[] = "<div class='separator'></div>";
                     break;

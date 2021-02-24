@@ -55,9 +55,9 @@
             <div class="backdrop_details_submit">
                 <span class="explanation"></span>
                 <div class="dialog-query-buttons">
-                    <?php echo image_tag('spinning_20.gif', array('style' => 'display: none;', 'id' => 'dialog_indicator')); ?>
-                    <a href="javascript:void(0)" id="dialog_no" class="button secondary"><?php echo __('No'); ?></a>
-                    <a href="javascript:void(0)" id="dialog_yes" class="button primary"><?php echo __('Yes'); ?></a>
+                    <?= fa_image_tag('spinner', ['class' => 'indicator fa-spin']); ?>
+                    <a href="javascript:void(0)" id="dialog_no" class="button secondary"><span><?php echo __('No'); ?></span></a>
+                    <a href="javascript:void(0)" id="dialog_yes" class="button primary"><span><?php echo __('Yes'); ?></span></a>
                 </div>
             </div>
         </div>

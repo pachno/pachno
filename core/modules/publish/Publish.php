@@ -192,7 +192,7 @@
                 }
             }
 
-            return ($project_context) ? $i18n->__('Project wiki') : $i18n->__('Wiki');
+            return $i18n->__('Documentation');
         }
 
         public function listen_fileHasAccess(Event $event)
@@ -276,10 +276,7 @@
          */
         public function listen_MenustripLinks(Event $event)
         {
-            $article = Articles::getTable()->getArticleByName('Main Page', $event->getSubject());
-            if (!$article instanceof Article) {
-                return;
-            }
+            $article = Articles::getTable()->getOrCreateMainPage($event->getSubject());
 
             if ($event->getSubject() instanceof Project) {
                 $project_url = framework\Context::getRouting()->generate('publish_project_article', ['project_key' => $event->getSubject()->getKey(), 'article_id' => $article->getId(), 'article_name' => 'Main Page']);
@@ -290,7 +287,7 @@
             $wiki_url = ($event->getSubject() instanceof Project && $event->getSubject()->hasWikiURL()) ? $event->getSubject()->getWikiURL() : null;
             $top_level_articles = Articles::getTable()->getManualSidebarArticles(false, $article->getProject());
             $top_level_categories = Articles::getTable()->getManualSidebarArticles(true, $article->getProject());
-            $overview_article = Articles::getTable()->getArticleByName('Main Page', $event->getSubject());
+            $overview_article = $article;
             usort($top_level_articles, '\pachno\core\entities\Article::sortArticleChildren');
             usort($top_level_categories, '\pachno\core\entities\Article::sortArticleChildren');
             framework\ActionComponent::includeComponent('publish/menustriplinks', ['project_url' => $project_url, 'project' => $event->getSubject(), 'wiki_url' => $wiki_url, 'top_level_articles' => $top_level_articles, 'top_level_categories' => $top_level_categories, 'overview_article' => $overview_article]);
@@ -317,11 +314,28 @@
             }
         }
 
-        public function listen_createNewProject(Event $event)
+        /**
+         * @param null $project
+         * @param null $scope
+         *
+         * @return Article
+         */
+        public function createMainPageArticle($project = null, $scope = null): Article
         {
             $fixtures_path = PACHNO_CORE_PATH . 'modules' . DS . 'publish' . DS . 'fixtures' . DS;
-            $data = file_get_contents($fixtures_path . 'project.json');
-            Article::createNew("Main Page", str_replace('%projectname', $event->getSubject()->getName(), $data), null, ['noauthor' => true], $event->getSubject());
+            if ($project instanceof Project) {
+                $data = file_get_contents($fixtures_path . 'project.json');
+                $content = str_replace('%projectname', $project->getName(), $data);
+            } else {
+                $content = file_get_contents($fixtures_path . 'main.json');
+            }
+
+            return Article::createNew("Main Page", $content, $scope, ['noauthor' => true], $project);
+        }
+
+        public function listen_createNewProject(Event $event)
+        {
+            $this->createMainPageArticle($event->getSubject());
 
             framework\Context::setPermission(self::PERMISSION_READ_ARTICLE, 'project_' . $event->getSubject()->getID(), "publish", framework\Context::getUser()->getID(), 0, 0, true);
             framework\Context::setPermission(self::PERMISSION_EDIT_ARTICLE, 'project_' . $event->getSubject()->getID(), "publish", framework\Context::getUser()->getID(), 0, 0, true);
@@ -599,10 +613,7 @@
         public function loadArticles($project = null, $overwrite = true, $scope = null)
         {
             $scope = $scope ?? framework\Context::getScope()->getID();
-
-            $fixtures_path = PACHNO_CORE_PATH . 'modules' . DS . 'publish' . DS . 'fixtures' . DS;
-            $data = file_get_contents($fixtures_path . 'main.json');
-            Article::createNew("Main Page", $data, $scope, ['noauthor' => true]);
+            $this->createMainPageArticle(null, $scope);
 
 //            $_path_handle = opendir($fixtures_path);
 //            while ($original_article_name = readdir($_path_handle)) {

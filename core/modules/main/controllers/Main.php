@@ -569,7 +569,7 @@
                                         }
                                         break;
                                     case 'article':
-                                        $overview_article = Articles::getTable()->getArticleByName('Main Page', $target->getProject());
+                                        $overview_article = Articles::getTable()->getOrCreateMainPage($target->getProject());
                                         $mentionables[] = ['id' => $overview_article->getID(), 'name' => $overview_article->getName(), 'icon' => ['name' => 'file', 'type' => 'far']];
                                         foreach (Articles::getTable()->getManualSidebarArticles(false, $target->getProject()) as $article) {
                                             $mentionables[] = ['id' => $article->getID(), 'name' => $article->getName(), 'icon' => ['name' => 'file', 'type' => 'far']];
@@ -2322,7 +2322,7 @@
                 $file->save();
                 if (in_array($file_id, $saved_file_ids)) {
                     if ($target instanceof Issue) {
-                        $comment = $target->attachFile($file, '', '', true);
+                        $comment = $target->attachFile($file);
 
                         if ($comment instanceof entities\Comment) $comments = $this->getComponentHTML('main/comment', ['comment' => $comment, 'issue' => $target, 'mentionable_target_type' => 'issue', 'comment_count_div' => 'viewissue_comment_count']) . $comments;
                     } else {

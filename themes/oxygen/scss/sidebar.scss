@@ -48,11 +48,16 @@ nav.sidebar {
       &,
       &:hover {
         border-bottom: none;
+        margin-bottom: 1em;
       }
 
       input[type=text],
       input[type=search] {
         background: rgba(225, 225, 225, .1);
+      }
+
+      + .list-item.separator {
+        margin-bottom: 1em;
       }
     }
 

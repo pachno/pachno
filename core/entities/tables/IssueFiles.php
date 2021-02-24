@@ -40,18 +40,20 @@
 
         protected $_preloaded_issue_counts;
 
-        public function addByIssueIDandFileID($issue_id, $file_id, $insert = true)
+        public function addByIssueIDandFileID($issue_id, $file_id, $timestamp = null)
         {
             $query = $this->getQuery();
             $query->where(self::ISSUE_ID, $issue_id);
             $query->where(self::FILE_ID, $file_id);
             $query->where(self::SCOPE, framework\Context::getScope()->getID());
             if ($this->count($query) == 0) {
-                if (!$insert) return true;
-
                 $insertion = new Insertion();
                 $insertion->add(self::SCOPE, framework\Context::getScope()->getID());
-                $insertion->add(self::ATTACHED_AT, NOW);
+                if ($timestamp === null) {
+                    $insertion->add(self::ATTACHED_AT, NOW);
+                } else {
+                    $insertion->add(self::ATTACHED_AT, $timestamp);
+                }
                 $insertion->add(self::ISSUE_ID, $issue_id);
                 $insertion->add(self::FILE_ID, $file_id);
                 $this->rawInsert($insertion);

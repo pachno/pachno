@@ -17,7 +17,7 @@
 </a>
 <?php \pachno\core\framework\Event::createNew('core', 'project_sidebar_links_dashboard')->trigger(array('submenu' => false)); ?>
 <?php if ($pachno_user->hasProjectPageAccess('project_releases', $selected_project) && $selected_project->isBuildsEnabled()): ?>
-    <a href="<?= make_url('project_releases', array('project_key' => \pachno\core\framework\Context::getCurrentProject()->getKey())); ?>" class="list-item <?php if ($pachno_response->getPage() == 'project_releases') echo 'selected'; ?>">
+    <a href="<?= 'javascript:void(0)'; // make_url('project_releases', array('project_key' => \pachno\core\framework\Context::getCurrentProject()->getKey())); ?>" class="list-item <?php if ($pachno_response->getPage() == 'project_releases') echo 'selected'; ?> disabled">
         <?= fa_image_tag('box', ['class' => 'icon']); ?>
         <span class="name"><?= __('Releases'); ?></span>
     </a>

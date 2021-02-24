@@ -22,10 +22,10 @@
             <span class="name"><?php echo __('Categories'); ?></span>
         </h4>
         <?php $category_links = array(); ?>
-        <?php foreach ($article->getCategories() as $category): ?>
-            <a href="<?php $category->getCategory()->getLink(); ?>" class="card-badge">
+        <?php foreach ($article->getCategories() as $categoryLink): ?>
+            <a href="<?= $categoryLink->getCategory()->getLink(); ?>" class="card-badge">
                 <?= fa_image_tag('layer-group', ['class' => 'icon']); ?>
-                <span><?= $category->getCategory()->getName(); ?></span>
+                <span><?= $categoryLink->getCategory()->getName(); ?></span>
             </a>
         <?php endforeach; ?>
     </div>

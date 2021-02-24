@@ -29,64 +29,94 @@ use pachno\core\framework\Context;
         <?php else: ?>
             <div class="dropper-container">
                 <a class="button dropper primary">
-                    <?= fa_image_tag('plus', ['class' => 'icon']); ?>
-                    <span class="name"><?= __('Create'); ?></span>
+                    <?= fa_image_tag('plus-square', ['class' => 'icon']); ?>
+                    <span class="name"><?= __('Create page'); ?></span>
+                    <?= fa_image_tag('angle-down', ['class' => 'icon']); ?>
                 </a>
                 <div class="dropdown-container">
                     <div class="list-mode">
                         <?php if ($article->isCategory()): ?>
                             <?php if ($article->getProject() instanceof \pachno\core\entities\Project): ?>
-                                <a href="<?= make_url('publish_project_article_edit', ['article_id' => 0, 'parent_article_id' => $article->getID(), 'project_key' => $article->getProject()->getKey()]); ?>" class="list-item">
+                                <a href="<?= make_url('publish_project_article_edit', ['article_id' => 0, 'parent_article_id' => $article->getID(), 'project_key' => $article->getProject()->getKey()]); ?>?category_id=<?= $article->getID(); ?>" class="list-item multiline">
                                     <?= fa_image_tag('file-alt', ['class' => 'icon'], 'far'); ?>
-                                    <span class="name"><?= __('Create a page'); ?></span>
+                                    <span class="name">
+                                        <span class="title"><?= __('Create a page here'); ?></span>
+                                        <span class="description"><?= __('Create a page in this category'); ?></span>
+                                    </span>
                                 </a>
                                 <span class="separator"></span>
-                                <a href="<?= make_url('publish_project_article_edit', ['article_id' => 0, 'parent_article_id' => $article->getID(), 'project_key' => $article->getProject()->getKey()]); ?>" class="list-item">
+                                <a href="<?= make_url('publish_project_article_edit', ['article_id' => 0, 'parent_article_id' => $article->getID(), 'project_key' => $article->getProject()->getKey()]); ?>?is_category=1&parent_article_id=<?= $article->getID(); ?>" class="list-item multiline">
                                     <?= fa_image_tag('layer-group', ['class' => 'icon']); ?>
-                                    <span class="name"><?= __('Create a sub-category'); ?></span>
+                                    <span class="name">
+                                        <span class="title"><?= __('Create a sub-category'); ?></span>
+                                        <span class="description"><?= __('Create a new category under this category'); ?></span>
+                                    </span>
                                 </a>
                             <?php else: ?>
-                                <a href="<?= make_url('publish_article_edit', ['article_id' => 0, 'parent_article_id' => $article->getID()]); ?>" class="list-item">
+                                <a href="<?= make_url('publish_article_edit', ['article_id' => 0, 'parent_article_id' => $article->getID()]); ?>?category_id=<?= $article->getID(); ?>" class="list-item multiline">
                                     <?= fa_image_tag('file-alt', ['class' => 'icon'], 'far'); ?>
-                                    <span class="name"><?= __('Create a page'); ?></span>
+                                    <span class="name">
+                                        <span class="title"><?= __('Create a page here'); ?></span>
+                                        <span class="description"><?= __('Create a page in this category'); ?></span>
+                                    </span>
                                 </a>
                                 <span class="separator"></span>
-                                <a href="<?= make_url('publish_article_edit', ['article_id' => 0, 'parent_article_id' => $article->getID()]); ?>" class="list-item">
+                                <a href="<?= make_url('publish_article_edit', ['article_id' => 0, 'parent_article_id' => $article->getID()]); ?>?is_category=1&parent_article_id=<?= $article->getID(); ?>" class="list-item multiline">
                                     <?= fa_image_tag('layer-group', ['class' => 'icon']); ?>
-                                    <span class="name"><?= __('Create a sub-category'); ?></span>
+                                    <span class="name">
+                                        <span class="title"><?= __('Create a sub-category'); ?></span>
+                                        <span class="description"><?= __('Create a new category under this category'); ?></span>
+                                    </span>
                                 </a>
                             <?php endif; ?>
                         <?php else: ?>
                             <?php if (Context::isProjectContext()): ?>
                                 <?php if ($article->getParentArticle() instanceof Article): ?>
-                                    <a href="<?= make_url('publish_project_article_edit', ['article_id' => 0, 'project_key' => $article->getProject()->getKey()]) . '?parent_article_id=' . $article->getParentArticle()->getID(); ?>" class="list-item">
+                                    <a href="<?= make_url('publish_project_article_edit', ['article_id' => 0, 'project_key' => $article->getProject()->getKey()]); ?>?parent_article_id=<?= $article->getParentArticle()->getID(); ?>" class="list-item multiline">
                                         <?= fa_image_tag('file-alt', ['class' => 'icon'], 'far'); ?>
-                                        <span class="name"><?= __('Create another page here'); ?></span>
+                                        <span class="name">
+                                            <span class="title"><?= __('Create another page here'); ?></span>
+                                            <span class="description"><?= __('Create another page under "%parent_name"', ['%parent_name' => $article->getParentArticle()->getName()]); ?></span>
+                                        </span>
                                     </a>
                                 <?php else: ?>
-                                    <a href="<?= make_url('publish_project_article_edit', ['article_id' => 0, 'project_key' => $article->getProject()->getKey()]); ?>" class="list-item">
+                                    <a href="<?= make_url('publish_project_article_edit', ['article_id' => 0, 'project_key' => $article->getProject()->getKey()]); ?>" class="list-item multiline">
                                         <?= fa_image_tag('file-alt', ['class' => 'icon'], 'far'); ?>
-                                        <span class="name"><?= __('Create another page here'); ?></span>
+                                        <span class="name">
+                                            <span class="title"><?= __('Create another page here'); ?></span>
+                                            <span class="description"><?= __('Create another page at the top level'); ?></span>
+                                        </span>
                                     </a>
                                 <?php endif; ?>
                                 <?php if (!$article->isMainPage()): ?>
-                                    <a href="<?= make_url('publish_project_article_edit', ['article_id' => 0, 'project_key' => $article->getProject()->getKey()]) . '?parent_article_id=' . $article->getID(); ?>" class="list-item">
+                                    <a href="<?= make_url('publish_project_article_edit', ['article_id' => 0, 'project_key' => $article->getProject()->getKey()]) . '?parent_article_id=' . $article->getID(); ?>" class="list-item multiline">
                                         <?= fa_image_tag('book', ['class' => 'icon']); ?>
-                                        <span class="name"><?= __('Create new page under this page'); ?></span>
+                                        <span class="name">
+                                            <span class="title"><?= __('Create a new sub-page'); ?></span>
+                                            <span class="description"><?= __('Create a new page under the current page'); ?></span>
+                                        </span>
                                     </a>
                                 <?php endif; ?>
                             <?php else: ?>
                                 <?php if ($article->getParentArticle() instanceof Article): ?>
-                                    <a href="<?= make_url('publish_article_edit', ['article_id' => 0]) . '?parent_article_id=' . $article->getParentArticle()->getID(); ?>" class="list-item">
+                                    <a href="<?= make_url('publish_article_edit', ['article_id' => 0]); ?>?parent_article_id=<?= $article->getParentArticle()->getID(); ?>" class="list-item multiline">
                                         <?= fa_image_tag('file-alt', ['class' => 'icon'], 'far'); ?>
-                                        <span class="name"><?= __('Create another page here'); ?></span>
+                                        <span class="name">
+                                            <span class="title"><?= __('Create another page here'); ?></span>
+                                            <span class="description"><?= __('Create another page under "%parent_name"', ['%parent_name' => $article->getParentArticle()->getName()]); ?></span>
+                                        </span>
                                     </a>
                                 <?php endif; ?>
                                 <?php if (!$article->isMainPage()): ?>
-                                    <a href="<?= make_url('publish_article_edit', ['article_id' => 0]) . '?parent_article_id=' . $article->getID(); ?>" class="list-item">
+                                    <a href="<?= make_url('publish_article_edit', ['article_id' => 0]); ?>?parent_article_id=<?= $article->getID(); ?>" class="list-item multline">
                                         <?= fa_image_tag('book', ['class' => 'icon']); ?>
                                         <?= fa_image_tag('file-alt', ['class' => 'icon'], 'far'); ?>
-                                        <span class="name"><?= __('Create new page under this page'); ?></span>
+                                        <span class="name">
+                                            <span class="title">
+                                                <span class="name"><?= __('Create a new sub-page'); ?></span>
+                                                <span class="description"><?= __('Create a new page under the current page'); ?></span>
+                                            </span>
+                                        </span>
                                     </a>
                                 <?php endif; ?>
                             <?php endif; ?>
@@ -118,41 +148,51 @@ use pachno\core\framework\Context;
             <div class="dropdown-container">
                 <div class="list-mode">
                     <div class="header"><?= __('Download this page'); ?></div>
-                    <a href="<?= $article->getLink('download'); ?>?format=pdf" class="list-item disabled">
+                    <a href="javascript:void(0);" class="list-item disabled">
                         <?= fa_image_tag('file-pdf', ['class' => 'icon'], 'far'); ?>
                         <span class="name"><?= __('Download as pdf'); ?></span>
                     </a>
-                    <a href="<?= $article->getLink('download'); ?>?format=odt" class="list-item disabled">
+                    <a href="javascript:void(0);" class="list-item disabled">
                         <?= fa_image_tag('file-word', ['class' => 'icon'], 'far'); ?>
                         <span class="name"><?= __('Download as .odt'); ?></span>
                     </a>
-                    <a href="<?= $article->getLink('download'); ?>?format=docx" class="list-item disabled">
+                    <a href="javascript:void(0);" class="list-item disabled">
                         <?= fa_image_tag('file-word', ['class' => 'icon'], 'far'); ?>
                         <span class="name"><?= __('Download as .docx'); ?></span>
                     </a>
                     <div class="list-item separator"></div>
-                    <a href="<?= $article->getLink('edit'); ?>?convert=template" class="list-item disabled">
+                    <a href="javascript:void(0);" class="list-item disabled">
                         <?= fa_image_tag('file', ['class' => 'icon'], 'far'); ?>
                         <span class="name"><?= __('Convert to template'); ?></span>
                     </a>
                     <div class="list-item separator"></div>
-                    <a href="<?= $article->getLink('edit'); ?>?copy=true" class="list-item disabled">
+                    <div class="list-item trigger-copy-popup">
                         <?= fa_image_tag('copy', ['class' => 'icon'], 'far'); ?>
                         <span class="name"><?= __('Copy page'); ?></span>
-                    </a>
-                    <a href="<?= $article->getLink('history'); ?>" class="list-item disabled">
+                    </div>
+                    <a href="javascript:void(0);" class="list-item disabled">
                         <?= fa_image_tag('history', ['class' => 'icon']); ?>
                         <span class="name"><?= __('History'); ?></span>
                     </a>
                     <?php if ($article->canEdit()): ?>
-                        <a href="<?= $article->getLink('permissions'); ?>" class="list-item disabled">
+                        <a href="javascript:void(0);" class="list-item disabled">
                             <?= fa_image_tag('lock', ['class' => 'icon']); ?>
                             <span class="name"><?= __('Permissions'); ?></span>
                         </a>
                     <?php endif; ?>
                     <?php if ($article->canDelete()): ?>
                         <div class="list-item separator"></div>
-                        <?= javascript_link_tag(fa_image_tag('times', ['class' => 'icon']) . '<span class="name">'.__('Delete this page').'</span>', ['onclick' => "Pachno.UI.Dialog.show('".__('Please confirm')."', '".__('Do you really want to delete this article?')."', {yes: {click: function () { Pachno.Main.deleteArticle('".make_url('publish_article_delete', ['article_id' => $article->getID()])."') }}, no: {click: Pachno.UI.Dialog.dismiss}})", 'class' => 'list-item danger disabled']); ?>
+                        <?php if ($article->isMainPage()): ?>
+                            <div class="list-item disabled">
+                                <?= fa_image_tag('info-circle', ['class' => 'icon']); ?>
+                                <span class="name"><?= __('This page cannot be deleted'); ?></span>
+                            </div>
+                        <?php else: ?>
+                            <a href="javascript:void(0);" onclick="Pachno.UI.Dialog.show('<?= ($article->isCategory()) ? __('Delete this category?') : __('Delete this page?'); ?>', '<?= $article->isCategory() ? __('Do you really want to delete this category?') : __('Do you really want to delete this page?'); ?>', {yes: {click: function () { Pachno.trigger(Pachno.EVENTS.article.delete, { url: '<?= make_url('publish_article_delete', ['article_id' => $article->getID()]); ?>' }) }}, no: {click: Pachno.UI.Dialog.dismiss}})" class="list-item danger">
+                                <?= fa_image_tag('times', ['class' => 'icon']); ?>
+                                <span class="name"><?= $article->isCategory() ? __('Delete this category') : __('Delete this page'); ?></span>
+                            </a>
+                        <?php endif; ?>
                     <?php endif; ?>
                 </div>
             </div>

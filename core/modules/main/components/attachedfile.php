@@ -42,10 +42,14 @@
                 <?php //echo ($file->hasDescription()) ? $file->getDescription() : $file->getOriginalFilename(); ?>
             </a>
             <?php if ($file->isImage()): ?>
-                <?php echo javascript_link_tag(fa_image_tag('code'), ['onclick' => "Pachno.UI.Dialog.showModal('" . __('Embedding this file in descriptions or comments') . "', '" . __('Use this tag to include this image: [[Image:%filename|thumb|Image description]]', ['%filename' => $file->getRealFilename()]) . "');", 'class' => 'button icon secondary']); ?>
                 <?php if ($mode == 'issue'): ?>
+                    <?php echo javascript_link_tag(fa_image_tag('code'), ['onclick' => "Pachno.UI.Dialog.showModal('" . __('Embedding this file in descriptions or comments') . "', '" . __('Use this tag to include this image: [[Image:%filename|thumb|Image description]]', ['%filename' => $file->getRealFilename()]) . "');", 'class' => 'button icon secondary']); ?>
                     <button class="button secondary icon <?= ($issue->getCoverImageFile() instanceof File && $issue->getCoverImageFile()->getId() == $file->getId()) ? 'trigger-clear-cover' : 'trigger-set-cover'; ?>" data-dynamic-field-value data-field="cover_image_file" data-file-id="<?= $file->getId(); ?>" data-issue-id="<?= $issue->getId(); ?>">
                         <?= fa_image_tag(($issue->getCoverImageFile() instanceof File && $issue->getCoverImageFile()->getId() == $file->getId()) ? 'minus-square' : 'images', ['class' => 'icon'], 'far'); ?>
+                    </button>
+                <?php else: ?>
+                    <button class="button secondary highlight icon trigger-embed" data-url="<?= $file->getURL(false); ?>">
+                        <?= fa_image_tag('file-import'); ?>
                     </button>
                 <?php endif; ?>
             <?php endif; ?>

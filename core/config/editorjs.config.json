@@ -17,12 +17,39 @@
       },
       "message": {
         "type": "string",
-        "allowedTags": "i,u,a[href]"
+        "allowedTags": "i,b,u,a[href],span[data-user-id|data-article-id|data-issue-id|class],br,code,mark,pre,source"
       }
     },
     "delimiter": {},
     "code": {
       "code": "string"
+    },
+    "image": {
+      "file": {
+        "type": "array",
+        "data": {
+          "url": {
+            "type": "string",
+            "required": true
+          }
+        }
+      },
+      "caption": {
+        "type": "string",
+        "required": false
+      },
+      "withBorder": {
+        "type": "boolean",
+        "required": false
+      },
+      "withBackground": {
+        "type": "boolean",
+        "required": false
+      },
+      "stretched": {
+        "type": "boolean",
+        "required": false
+      }
     },
     "link": {
       "link": {
@@ -42,7 +69,7 @@
     "paragraph": {
       "text": {
         "type": "string",
-        "allowedTags": "i,b,u,span[data-user-id|data-article-id|data-issue-id|class],br,code,mark,pre,source"
+        "allowedTags": "i,b,u,a[href],span[data-user-id|data-article-id|data-issue-id|class],br,code,mark,pre,source"
       }
     },
     "list": {
@@ -55,7 +82,7 @@
         "data": {
           "-": {
             "type": "string",
-            "allowedTags": "i,b,u"
+            "allowedTags": "i,b,u,a[href],span[data-user-id|data-article-id|data-issue-id|class],br,code,mark,pre,source"
           }
         }
       }
@@ -63,7 +90,7 @@
     "quote": {
       "text": {
         "type": "string",
-        "allowedTags": "i,b,u"
+        "allowedTags": "i,b,u,a[href]"
       },
       "caption": {
         "type": "string"
@@ -84,7 +111,7 @@
             "data": {
               "-": {
                 "type": "string",
-                "allowedTags": "i,b,u,span[data-user-id|data-article-id|data-issue-id|class],br,code,mark,pre,source",
+                "allowedTags": "i,b,u,a[href],span[data-user-id|data-article-id|data-issue-id|class],br,code,mark,pre,source",
                 "required": false
               }
             }

@@ -34,6 +34,7 @@ class PachnoApplication {
             },
             article: {
                 removeFile: 'article-remove-file',
+                delete: 'article-trigger-delete'
             },
             configuration: {
                 deleteComponent: 'configuration-delete-component',
