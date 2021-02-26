@@ -7,7 +7,7 @@
      */
 
 ?>
-<div class="backdrop_box medium usercard" id="user_details_popup">
+<div class="backdrop_box medium usercard avatar-header" id="user_details_popup">
     <div class="backdrop_detail_header">
         <div class="avatar-container">
             <?php echo image_tag($user->getAvatarURL(false), array('alt' => ' '), true); ?>

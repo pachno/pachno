@@ -1,3 +1,5 @@
+@import url("https://fonts.googleapis.com/css?family=DM+Sans:700|Fira+Sans:200,300,300i,400,400i,600,600i|Fira+Mono:400,500,700&subset=cyrillic,cyrillic-ext,latin-ext&display=swap");
+
 $theme-primary-color: #00adc7;
 @function theme-primary-color-alpha ($alpha) { @return rgba(0, 173, 199, $alpha); }
 $theme-secondary-color: #0cd8b6;

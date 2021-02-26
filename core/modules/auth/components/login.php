@@ -1,8 +1,8 @@
 <div class="logindiv form-container active" id="regular_login_container">
-    <?php if ($loginintro instanceof \pachno\core\entities\Article): ?>
-        <?php include_component('publish/articledisplay', array('article' => $loginintro, 'show_title' => false, 'show_details' => false, 'show_actions' => false, 'embedded' => true)); ?>
-    <?php endif; ?>
     <form accept-charset="<?= \pachno\core\framework\Context::getI18n()->getCharset(); ?>" action="<?= make_url('auth_login'); ?>" method="post" id="login-form" data-simple-submit>
+        <div class="form-row">
+            <div class="login_header"></div>
+        </div>
         <?php if (!\pachno\core\framework\Context::hasMessage('login_force_redirect') || \pachno\core\framework\Context::getMessage('login_force_redirect') !== true): ?>
             <input type="hidden" id="pachno_referer" name="referer" value="<?= $referer; ?>" />
         <?php else: ?>
