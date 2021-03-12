@@ -414,6 +414,44 @@ const setupListeners = function() {
         }
     });
 
+    $body.on('change', 'input[data-interactive-toggle]', function (event) {
+        const $input = $(this),
+            value = $input.is(':checked') ? '1' : '0';
+
+        event.preventDefault();
+        event.stopPropagation();
+
+        if ($input.hasClass('submitting')) return;
+
+        $input.addClass('submitting');
+        $input.prop('disabled', true);
+
+        if ($input.data('event-key')) {
+            Pachno.listen($input.data('event-key'), () => {
+                $input.removeClass('submitting');
+                $input.prop('disabled', false);
+            });
+            Pachno.trigger($input.data('event-key'), $input);
+        } else {
+            Pachno.fetch($input.data('url'), {
+                method: 'POST',
+                data: { value }
+            })
+                .then((json) => {
+                    $input.removeClass('submitting');
+                    $input.prop('disabled', false);
+                    // response.json().then(resolve);
+                    // res = response;
+                    // console.log(response);
+                    // resolve($form, res);
+                    // response.json()
+                    //     .then(function (json) {
+                    //     });
+                })
+        }
+
+    });
+
     $body.on('submit', 'form[data-interactive-form]', (event) => submitInteractiveForm(event, $(event.target), true));
     $body.on('blur', 'form[data-interactive-form]:not(.submitting) input[type=text], form[data-interactive-form]:not(.submitting) textarea', (event) => submitInteractiveForm(event, $(event.target).parents('form')));
     $body.on('change', 'form[data-interactive-form]:not(.submitting) input[type=radio], form[data-interactive-form]:not(.submitting) input[type=checkbox]', (event) => submitInteractiveForm(event, $(event.target).parents('form')));

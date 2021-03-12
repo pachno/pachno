@@ -86,11 +86,13 @@
 
     a,
     a:hover {
-      display: flex;
-      align-items: center;
-      border: none;
-      font-weight: $theme-font-weight-light;
-      padding: .2em;
+      &:not(.button):not(.list-item) {
+        display: flex;
+        align-items: center;
+        border: none;
+        font-weight: $theme-font-weight-light;
+        padding: .2em;
+      }
     }
 
     .count-badge {
@@ -245,7 +247,7 @@
       }
 
       .title {
-        font-weight: $theme-font-weight-regular;
+        font-weight: $theme-font-weight-bold;
         flex: 0 0 auto;
       }
 

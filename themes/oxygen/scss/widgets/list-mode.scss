@@ -271,7 +271,54 @@
           }
         }
       }
+      .information {
+        flex: 0 0 auto;
+        display: flex;
+        flex-direction: column;
+        font-size: 1em;
+        align-items: flex-start;
+        justify-content: center;
 
+        &:last-child {
+          align-items: flex-end;
+        }
+
+        .row {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          justify-content: flex-start;
+
+          + .row {
+            margin-top: .15em;
+          }
+
+          .item {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: flex-start;
+            padding: .25em .6em;
+            border-radius: 4px;
+            background-color: rgba(225, 225, 225, .3);
+            color: $theme-text-color-lighter;
+
+            .icon {
+              padding: 0;
+              margin: 0;
+              flex: 0 0 auto;
+
+              + span {
+                margin-left: .25em;
+              }
+            }
+
+            + .item {
+              margin-left: .25em;
+            }
+          }
+        }
+      }
     }
 
     &.with-pop-out {

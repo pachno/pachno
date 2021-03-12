@@ -1768,7 +1768,7 @@
 
             if (framework\Context::isProjectContext()) {
                 $project = framework\Context::getCurrentProject();
-            } elseif (framework\Context::getRequest()->hasParameter('issue_id')) {
+            } elseif (!framework\Context::isCLI() && framework\Context::getRequest()->hasParameter('issue_id')) {
                 $issue = Issue::getB2DBTable()->selectById(framework\Context::getRequest()->getParameter('issue_id'));
 
                 if ($issue instanceof Issue && $issue->getProject() instanceof Project) $project = $issue->getProject();

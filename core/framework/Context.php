@@ -339,7 +339,7 @@
          *
          * @return Scope
          */
-        public static function getScope()
+        public static function getScope(): ?Scope
         {
             return self::$_scope;
         }
@@ -1072,10 +1072,13 @@
                 if (is_dir(PACHNO_MODULES_PATH . $module_name) && file_exists(PACHNO_MODULES_PATH . $module_name . DS . ucfirst($module_name) . '.php')) {
                     if (self::isModuleLoaded($module_name))
                         continue;
-                    $module_class = "\\pachno\\modules\\{$module_name}\\" . ucfirst($module_name);
-                    if (class_exists($module_class)) {
-                        $modules[$module_name] = new $module_class();
-                    }
+
+                    try {
+                        $module_class = "\\pachno\\modules\\{$module_name}\\" . ucfirst($module_name);
+                        if (class_exists($module_class)) {
+                            $modules[$module_name] = new $module_class();
+                        }
+                    } catch (\Exception $e) {}
                 }
             }
 
@@ -1980,7 +1983,7 @@
                 self::getResponse()->setHttpStatus(403);
                 $message = $e->getMessage();
 
-                if (self::getRequest()->isResponseFormatAccepted('application/json', false)) {
+                if (!self::isCLI() && self::getRequest()->isResponseFormatAccepted('application/json', false)) {
                     self::getResponse()->setContentType('application/json');
                     $message = json_encode(['message' => $message]);
                 }
@@ -2417,10 +2420,10 @@
                     self::getResponse()->addStylesheet(self::getRouting()->generate('asset_css', ['theme_name' => $theme, 'css' => "{$module_name}.css"]));
                 }
                 if (file_exists($themepath . 'js' . DS . "theme.js")) {
-                    self::getResponse()->addJavascript(self::getRouting()->generate('asset_js', ['theme_name' => $theme, 'js' => "theme.js"], false));
+                    //self::getResponse()->addJavascript(self::getRouting()->generate('asset_js', ['theme_name' => $theme, 'js' => "theme.js"], false));
                 }
                 if (file_exists($basepath . 'js' . DS . "{$module_name}.js")) {
-                    self::getResponse()->addJavascript(self::getRouting()->generate('asset_js_unthemed', ['js' => "{$module_name}.js"]));
+                    //self::getResponse()->addJavascript(self::getRouting()->generate('asset_js_unthemed', ['js' => "{$module_name}.js"]));
                 }
             }
 

@@ -875,17 +875,17 @@
                     }
                 } else {
                     $module = framework\Context::getModule($request['module_key']);
-                    if (!$module->isCore())
+                    if ($module->getID())
                         switch ($request['mode']) {
-                            case 'disable':
-                                if ($module->getType() !== framework\interfaces\ModuleInterface::MODULE_AUTH):
-                                    $module->disable();
-                                endif;
-                                break;
-                            case 'enable':
-                                if ($module->getType() !== framework\interfaces\ModuleInterface::MODULE_AUTH):
-                                    $module->enable();
-                                endif;
+                            case 'toggleDisable':
+                                if ($module->getType() !== framework\interfaces\ModuleInterface::MODULE_AUTH) {
+                                    if ($module->isEnabled()) {
+                                        $module->disable();
+                                    } else {
+                                        $module->enable();
+                                    }
+                                }
+                                return $this->renderJSON(['enabled' => $module->isEnabled()]);
                                 break;
                             case 'uninstall':
                                 $module->uninstall();
@@ -914,7 +914,7 @@
          * Configure the selected theme
          *
          * @param framework\Request $request
-         * @Route(name="configuration_themes", url="/configure/themes")
+         * @Route(name="themes", url="/configure/themes")
          * @Parameters(config_module="core", section=19)
          */
         public function runConfigureThemes(framework\Request $request)
@@ -931,7 +931,7 @@
          * Perform the module update for a specific module
          *
          * @param framework\Request $request
-         * @Route(name="configuration_module_update", url="/configure/modules/:module_key/update")
+         * @Route(name="module_update", url="/configure/modules/:module_key/update")
          */
         public function runUpdateModule(framework\Request $request)
         {
@@ -948,7 +948,7 @@
          * Enable a theme
          *
          * @param framework\Request $request
-         * @Route(name="configuration_enable_theme", url="/configure/themes/:theme_key/enable/:csrf_token")
+         * @Route(name="enable_theme", url="/configure/themes/:theme_key/enable/:csrf_token")
          *
          * @CsrfProtected
          */
@@ -978,7 +978,7 @@
          * Download the update file for a specific theme
          *
          * @param framework\Request $request
-         * @Route(name="configuration_download_theme_update", url="/configure/themes/:theme_key/update/download")
+         * @Route(name="download_theme_update", url="/configure/themes/:theme_key/update/download")
          */
         public function runDownloadThemeUpdate(framework\Request $request)
         {
@@ -1008,7 +1008,7 @@
          * Download the update file for a specific module
          *
          * @param framework\Request $request
-         * @Route(name="configuration_download_module_update", url="/configure/modules/:module_key/update/download")
+         * @Route(name="download_module_update", url="/configure/modules/:module_key/update/download")
          */
         public function runDownloadModuleUpdate(framework\Request $request)
         {
@@ -1108,13 +1108,11 @@
                     if ($request->isPost() && $this->access_level == framework\Settings::ACCESS_FULL) {
                         try {
                             $module->postConfigSettings($request);
-                            if (!framework\Context::hasMessage('module_message')) {
-                                framework\Context::setMessage('module_message', framework\Context::getI18n()->__('Settings saved successfully'));
-                            }
+                            return $this->renderJSON(['message' => framework\Context::getI18n()->__('Settings saved successfully')]);
                         } catch (Exception $e) {
                             framework\Context::setMessage('module_error', $e->getMessage());
+                            return $this->renderJSON(['error' => $e->getMessage()]);
                         }
-                        $this->forward(framework\Context::getRouting()->generate('configure_module', ['config_module' => $request['config_module']]));
                     }
                     $this->module = $module;
                 }
@@ -2424,10 +2422,13 @@
                         $enabled_modules = $request['module_enabled'];
                         $prev_scope = framework\Context::getScope();
                         foreach ($enabled_modules as $module => $enabled) {
-                            if (!framework\Context::getModule($module)->isCore() && !$enabled && array_key_exists($module, $modules)) {
+                            if (framework\Context::getModule($module) instanceof framework\CoreModule)
+                                continue;
+
+                            if (!$enabled && array_key_exists($module, $modules)) {
                                 $module = tables\Modules::getTable()->getModuleForScope($module, $this->scope->getID());
                                 $module->uninstall($this->scope->getID());
-                            } elseif (!framework\Context::getModule($module)->isCore() && $enabled && !array_key_exists($module, $modules)) {
+                            } elseif ($enabled && !array_key_exists($module, $modules)) {
                                 framework\Context::setScope($this->scope);
                                 entities\Module::installModule($module);
                                 framework\Context::setScope($prev_scope);

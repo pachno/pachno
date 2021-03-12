@@ -156,19 +156,20 @@
          */
         public static function downloadPlugin($plugin_type, $plugin_key)
         {
-            try {
-                $client = new GuzzleClient(['base_uri' => 'https://pachno.com']);
-                $response = $client->get('/' . $plugin_type . 's/' . $plugin_key . '.json');
+//            try {
+                $client = new GuzzleClient(['base_uri' => 'https://thebuggenie.com']);
+//                $response = $client->get('/' . $plugin_type . 's/' . $plugin_key . '.json');
+//
+//                if ($response->getStatusCode() === 200) {
+//                    $plugin_json = json_decode($response->getBody());
+//                }
+//            } catch (Exception $e) {
+//                throw $e;
+//            }
 
-                if ($response->getStatusCode() === 200) {
-                    $plugin_json = json_decode($response->getBody());
-                }
-            } catch (Exception $e) {
-            }
-
-            if (isset($plugin_json) && $plugin_json !== false) {
-                $filename = PACHNO_CACHE_PATH . $plugin_type . '_' . $plugin_json->key . '.zip';
-                $response = $client->get($plugin_json->download);
+//            if (isset($plugin_json) && $plugin_json !== false) {
+                $filename = PACHNO_CACHE_PATH . $plugin_type . '_' . $plugin_key . '.zip';
+                $response = $client->get('/' . $plugin_type . 's/' . $plugin_key . '/download');
                 if ($response->getStatusCode() != 200) {
                     throw new framework\exceptions\ModuleDownloadException("", framework\exceptions\ModuleDownloadException::JSON_NOT_FOUND);
                 }
@@ -188,9 +189,9 @@
                 }
                 $module_zip->extractTo(realpath($target_folder));
                 $module_zip->close();
-            } else {
-                throw new framework\exceptions\ModuleDownloadException("", framework\exceptions\ModuleDownloadException::FILE_NOT_FOUND);
-            }
+//            } else {
+//                throw new framework\exceptions\ModuleDownloadException("", framework\exceptions\ModuleDownloadException::FILE_NOT_FOUND);
+//            }
         }
 
         /**
@@ -291,9 +292,6 @@
 
         final public function uninstall($scope = null)
         {
-            if ($this->isCore()) {
-                throw new Exception('Cannot uninstall core modules');
-            }
             $this->_uninstall();
             $this->delete();
             $scope = ($scope === null) ? framework\Context::getScope()->getID() : $scope;

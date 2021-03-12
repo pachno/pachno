@@ -671,7 +671,7 @@
                 <target>Correo electrónico &quot;de&quot;-dirección</target>
             </trans-unit>
             <trans-unit id="507622842ac32b95f8abea10d008e50c">
-                <source>This is the name and email address email notifications from Pachno will be sent from</source>
+                <source>Outgoing emails from Pachno will use this name and address, unless configured otherwise (such as specific project notifications with a custom reply-address)</source>
                 <target>Este es el nombre y dirección de correo que Pachno utilizará</target>
             </trans-unit>
             <trans-unit id="45e5b12d39fb1610fed484dc0cddc739">

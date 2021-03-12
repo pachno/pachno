@@ -1,12 +1,20 @@
 <?php
 
+    /**
+     * @var \pachno\core\framework\Response $pachno_response
+     * @var \pachno\core\entities\Module $module
+     * @var string $module_message
+     * @var string $module_error
+     * @var string[] $module_error_details
+     * @var int $access_level
+     */
+
     $pachno_response->setTitle(__('Configure modules'));
 
 ?>
 <div class="content-with-sidebar">
     <?php include_component('configuration/sidebar', ['selected_section' => \pachno\core\framework\Settings::CONFIGURATION_SECTION_MODULES]); ?>
     <div class="configuration-container" id="config_modules">
-        <h3><?php echo __('Configure module "%module_name"', array('%module_name' => $module->getLongName())); ?></h3>
         <?php if ($module_error !== null): ?>
             <div class="redbox" style="margin: 5px 0px 5px 0px;" id="module_error">
                 <div class="header"><?php echo $module_error; ?></div>

@@ -893,14 +893,14 @@ configure_modules:
       section: 15
     csrf_enabled: false
 
-configure_disable_module:
+configure_toggle_disable_module:
     route: /configure/modules/disable/:module_key
     module: configuration
     action: moduleAction
     parameters:
       config_module: core
       section: 15
-      mode: disable
+      mode: toggleDisable
     csrf_enabled: false
 
 configure_enable_module:

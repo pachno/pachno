@@ -19,6 +19,7 @@
 @import url("https://fonts.googleapis.com/css?family=DM+Sans:700|Fira+Sans:200,300,300i,400,400i,600,600i|Fira+Mono:400,500,700&subset=cyrillic,cyrillic-ext,latin-ext&display=swap");
 @import url("https://fonts.googleapis.com/css?family=DM+Sans:700|Fira+Sans:200,300,300i,400,400i,600,600i|Fira+Mono:400,500,700&subset=cyrillic,cyrillic-ext,latin-ext&display=swap");
 @import url("https://fonts.googleapis.com/css?family=DM+Sans:700|Fira+Sans:200,300,300i,400,400i,600,600i|Fira+Mono:400,500,700&subset=cyrillic,cyrillic-ext,latin-ext&display=swap");
+@import url("https://fonts.googleapis.com/css?family=DM+Sans:700|Fira+Sans:200,300,300i,400,400i,600,600i|Fira+Mono:400,500,700&subset=cyrillic,cyrillic-ext,latin-ext&display=swap");
 @import url(~air-datepicker/dist/css/datepicker.min.css);
 @import url("https://fonts.googleapis.com/css?family=DM+Sans:700|Fira+Sans:200,300,300i,400,400i,600,600i|Fira+Mono:400,500,700&subset=cyrillic,cyrillic-ext,latin-ext&display=swap");
 @import url("https://fonts.googleapis.com/css?family=DM+Sans:700|Fira+Sans:200,300,300i,400,400i,600,600i|Fira+Mono:400,500,700&subset=cyrillic,cyrillic-ext,latin-ext&display=swap");
@@ -1188,117 +1189,6 @@ ul.project_users li {
   padding-bottom: 5px;
   margin: 0; }
 
-.commits-list {
-  margin: 0 10px; }
-
-.commits-list .row-header {
-  padding: 5px 8px;
-  font-size: 1em;
-  background-color: rgba(225, 225, 225, 0.1);
-  border-bottom: 1px solid rgba(200, 200, 200, 0.3); }
-
-.commits-list .commit {
-  padding: 10px;
-  display: flex;
-  align-items: center; }
-
-.commits-list .commit .message-author-container {
-  flex: 1 1 auto; }
-
-.commits-list .commit .message-author-container .commit-message,
-.commits-list .commit .message-author-container .commit-message:hover {
-  font-weight: 400;
-  color: #555; }
-
-.commits-list .commit .message-author-container .commit-author {
-  font-size: 0.9em; }
-
-.commit-message .overflow {
-  display: block;
-  margin: 5px 0;
-  padding: 10px;
-  background-color: rgba(225, 225, 225, 0.2);
-  border: 1px solid rgba(200, 200, 200, 0.4);
-  font-family: "Fira Mono", monospace;
-  font-size: 1em; }
-
-.commit-author {
-  display: flex;
-  align-items: baseline; }
-
-.commit-details-list .commit-sha,
-.commit-details-list .commit-sha:hover {
-  font-size: 1em;
-  padding: 3px 7px;
-  font-weight: 400;
-  margin-left: 0;
-  display: inline-block; }
-
-.commit-details-list .branch-badge {
-  font-size: 1em;
-  padding: 3px 7px;
-  margin-left: 0;
-  display: inline-block; }
-
-.commits-list .commit .commit-branches .branch {
-  display: flex;
-  flex: 0 0 auto;
-  flex-direction: row;
-  align-items: flex-end; }
-
-.commits-list .commit .commit-branches .branch,
-.branch-badge {
-  margin: 5px;
-  background-color: rgba(78, 129, 171, 0.7);
-  color: #fff;
-  border: 1px solid rgba(78, 129, 171, 0.4);
-  padding: 2px 4px;
-  border-radius: 3px; }
-
-.branch-badge {
-  display: inline-block; }
-
-.commits-list .commit .commit-branches .branch i,
-.branch-badge i {
-  margin: 0 3px; }
-
-.commits-list .commit .commit-branches .branch i,
-.branch-badge i,
-.commits-list .commit .commit-branches .branch span,
-.branch-badge span {
-  display: inline-block;
-  vertical-align: middle;
-  line-height: 1.4em; }
-
-.commit-sha,
-.commit-sha:hover {
-  margin: 0 10px;
-  border: 1px solid #0c8990;
-  padding: 2px 4px;
-  border-radius: 3px;
-  color: #333; }
-
-.commits-list .commit .commit-sha {
-  flex: 0 0 auto; }
-
-.commits-list .commit .commit-details {
-  flex: 0 0 auto;
-  white-space: nowrap;
-  text-align: right; }
-
-.commits-list .commit .commit-details .not-imported {
-  color: #e5e194;
-  margin-right: 5px; }
-
-.commits-list .commit .commit-details .commit-comments {
-  margin-right: 7px; }
-
-.commits-list .commit .commit-details .commit-comments .fa-comments {
-  margin-right: 3px; }
-
-.commits-list .commit .commit-details .button {
-  padding: 4px 7px; }
-
 .simple-list.branch-list .branch-name {
   display: block;
   color: #555;
@@ -1311,161 +1201,6 @@ ul.project_users li {
   display: block;
   font-size: 0.8em;
   color: #888; }
-
-.commit-files-summary {
-  font-weight: 400;
-  padding: 15px;
-  color: #888;
-  vertical-align: middle; }
-
-.commit-files-summary .summary {
-  vertical-align: middle;
-  margin-left: 7px; }
-
-.commit-files-summary .summary .num_changes {
-  font-weight: 400;
-  color: rgba(78, 129, 171, 0.7); }
-
-.commit-files-summary .summary .num_files {
-  font-weight: 400; }
-
-.commit-files-summary .fas {
-  vertical-align: middle;
-  font-size: 1.2em;
-  color: #aaa; }
-
-.commit-files .file-preview {
-  display: block;
-  box-sizing: border-box;
-  width: calc(100% - 40px);
-  margin: 10px 20px 25px 20px;
-  border: 1px solid rgba(200, 200, 200, 0.3);
-  background: #fff;
-  border-radius: 5px;
-  overflow: auto; }
-
-.commit-files .file-anchor:target + .file-preview {
-  border: 2px solid rgba(78, 129, 171, 0.7); }
-
-.commit-files .file-preview .filename {
-  padding: 10px;
-  background-color: rgba(225, 225, 225, 0.2);
-  font-family: "Fira Mono", monospace;
-  font-size: 0.9em; }
-
-.commit-files .file-preview .filename .added-badge {
-  display: inline-block;
-  margin-left: 3px;
-  font-weight: 400;
-  padding: 3px 5px;
-  background-color: rgba(185, 225, 185, 0.4);
-  border: 1px solid rgba(100, 100, 100, 0.3);
-  border-radius: 3px; }
-
-.commit-files .file-preview.action_D .filename {
-  text-decoration: line-through; }
-
-.commit-files .file-preview:not(.action_R) .filename {
-  border-bottom: 1px solid rgba(200, 200, 200, 0.5); }
-
-.diff-summary {
-  display: inline-block;
-  margin-left: 7px;
-  font-weight: 400;
-  padding: 3px 5px;
-  background-color: rgba(225, 225, 225, 0.4);
-  border-radius: 3px; }
-
-.diff-summary .lines-removed {
-  color: #c44;
-  display: inline-block; }
-
-.diff-summary .lines-added {
-  color: #4a4;
-  display: inline-block; }
-
-.diff-summary .lines-removed + .lines-added {
-  margin-left: 5px; }
-
-.commit-files .far,
-.commit-files .fas {
-  margin-right: 5px; }
-
-.commit-files .diffs .diff-header {
-  white-space: nowrap;
-  font-family: "Fira Mono", monospace;
-  padding: 5px;
-  background-color: rgba(199, 212, 224, 0.7);
-  color: rgba(0, 0, 0, 0.7);
-  font-size: 0.8em; }
-
-.commit-files .diffs .diff-preview {
-  width: 100%;
-  overflow: auto;
-  list-style: none;
-  margin: 0;
-  table-layout: auto;
-  white-space: nowrap;
-  padding: 0;
-  background-color: rgba(0, 0, 0, 0.7); }
-
-.commit-files .diffs .diff-preview td.text pre::before {
-  content: "";
-  width: 16px;
-  height: 16px;
-  position: absolute;
-  left: 3px; }
-
-.commit-files .diffs .diff-preview td {
-  font-family: "Fira Mono", monospace;
-  font-size: 0.9em; }
-
-.commit-files .diffs .diff-preview td.line-number {
-  color: rgba(255, 255, 255, 0.7);
-  background-color: rgba(255, 255, 255, 0.1);
-  width: 1%;
-  white-space: nowrap;
-  text-align: center;
-  user-select: none;
-  -moz-user-select: none;
-  -webkit-user-select: none; }
-
-.commit-files .diffs .diff-preview td.text {
-  color: rgba(255, 255, 255, 0.7);
-  padding: 0;
-  margin: 0;
-  position: relative; }
-
-.commit-files .diffs .message-box {
-  margin: 0;
-  border: none;
-  width: auto; }
-
-.commit-files .diffs .diff-preview pre {
-  padding: 2px;
-  margin: 0;
-  overflow: visible;
-  width: auto; }
-
-.commit-files .diffs .diff-preview td.text pre {
-  padding-left: 16px; }
-
-.commit-files .diffs .diff-preview td.line-number pre {
-  padding: 2px 8px; }
-
-.commit-files .diffs .diff-preview .add pre {
-  background-color: rgba(100, 225, 100, 0.25);
-  color: rgba(255, 255, 255, 0.9); }
-
-.commit-files .diffs .diff-preview .add td.text pre::before {
-  content: "+"; }
-
-.commit-files .diffs .diff-preview .remove pre {
-  background-color: rgba(225, 100, 100, 0.25);
-  color: rgba(255, 255, 255, 0.9); }
-
-.commit-files .diffs .diff-preview .remove td.text pre::before {
-  content: "-"; }
 
 #project_settings_roles {
   padding: 0 15px; }
@@ -4622,9 +4357,6 @@ li
 #config_modules .bluebox .permission_list > ul > li {
   padding: 3px; }
 
-#mailnotification_settings_container > table {
-  border-spacing: 0 5px; }
-
 #config_modules #modules_menu_panes .message-box.type-warning {
   margin: 10px 0;
   width: 100%; }
@@ -6126,6 +5858,22 @@ h1 .button, h1 .button:hover, h2 .button, h2 .button:hover, h3 .button, h3 .butt
   .count-badge.submitting .indicator {
     display: inline-block; }
 
+.diff-summary {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  flex: 0 0 auto;
+  font-weight: 400;
+  padding: .25em .6em;
+  border-radius: 4px;
+  background-color: rgba(225, 225, 225, 0.3); }
+  .diff-summary .lines-removed {
+    color: #c44; }
+  .diff-summary .lines-added {
+    color: #4a4; }
+  .diff-summary .lines-removed + .lines-added {
+    margin-left: .75em; }
+
 .dropper-container {
   position: relative;
   display: inline-flex;
@@ -6566,7 +6314,7 @@ h1 .button, h1 .button:hover, h2 .button, h2 .button:hover, h3 .button, h3 .butt
   display: inline-flex;
   align-items: center;
   flex-direction: row;
-  border: 1px solid #0cd8b6;
+  border: 1px solid #00adc7;
   background-color: transparent;
   color: #232323;
   border-radius: 4px; }
@@ -6575,7 +6323,7 @@ h1 .button, h1 .button:hover, h2 .button, h2 .button:hover, h3 .button, h3 .butt
     .fancy-label-select input:disabled + label {
       color: #DDD; }
     .fancy-label-select input:checked:not(:disabled) + label, .fancy-label-select input.fancy-checkbox:checked:not(:disabled) + label {
-      background-color: #0cd8b6;
+      background-color: #00adc7;
       color: #FFF; }
       .fancy-label-select input:checked:not(:disabled) + label .fas,
       .fancy-label-select input:checked:not(:disabled) + label .far, .fancy-label-select input.fancy-checkbox:checked:not(:disabled) + label .fas,
@@ -6596,7 +6344,7 @@ h1 .button, h1 .button:hover, h2 .button, h2 .button:hover, h3 .button, h3 .butt
     .fancy-label-select label:not(:first-of-type)::after {
       display: block;
       content: '';
-      border-right: 1px solid #0cd8b6;
+      border-right: 1px solid #00adc7;
       height: calc(100% - .5rem);
       position: absolute;
       left: 1px;
@@ -6936,6 +6684,47 @@ input[data-interactive-toggle].submitting + label .indicator {
           margin: 0;
           font-size: 0.8em;
           border-bottom: none; }
+    .list-mode .list-item.multiline .information,
+    .list-mode .list-item:hover.multiline .information {
+      flex: 0 0 auto;
+      display: flex;
+      flex-direction: column;
+      font-size: 1em;
+      align-items: flex-start;
+      justify-content: center; }
+      .list-mode .list-item.multiline .information:last-child,
+      .list-mode .list-item:hover.multiline .information:last-child {
+        align-items: flex-end; }
+      .list-mode .list-item.multiline .information .row,
+      .list-mode .list-item:hover.multiline .information .row {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: flex-start; }
+        .list-mode .list-item.multiline .information .row + .row,
+        .list-mode .list-item:hover.multiline .information .row + .row {
+          margin-top: .15em; }
+        .list-mode .list-item.multiline .information .row .item,
+        .list-mode .list-item:hover.multiline .information .row .item {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          justify-content: flex-start;
+          padding: .25em .6em;
+          border-radius: 4px;
+          background-color: rgba(225, 225, 225, 0.3);
+          color: #676767; }
+          .list-mode .list-item.multiline .information .row .item .icon,
+          .list-mode .list-item:hover.multiline .information .row .item .icon {
+            padding: 0;
+            margin: 0;
+            flex: 0 0 auto; }
+            .list-mode .list-item.multiline .information .row .item .icon + span,
+            .list-mode .list-item:hover.multiline .information .row .item .icon + span {
+              margin-left: .25em; }
+          .list-mode .list-item.multiline .information .row .item + .item,
+          .list-mode .list-item:hover.multiline .information .row .item + .item {
+            margin-left: .25em; }
     .list-mode .list-item.with-pop-out,
     .list-mode .list-item:hover.with-pop-out {
       padding-right: 0; }
@@ -7342,7 +7131,18 @@ input[data-interactive-toggle].submitting + label .indicator {
   .fields-list > li {
     display: flex;
     align-items: center;
-    position: relative; }
+    position: relative;
+    flex-direction: row; }
+    .fields-list > li.header, .fields-list > li.header:hover {
+      font-weight: 500;
+      font-size: 1.1em;
+      padding: .5em; }
+      .fields-list > li.header:not(:first-child), .fields-list > li.header:hover:not(:first-child) {
+        margin-top: 1em; }
+      .fields-list > li.header span, .fields-list > li.header:hover span {
+        flex: 1 1 auto; }
+      .fields-list > li.header .count-badge, .fields-list > li.header:hover .count-badge {
+        flex: 0 0 auto; }
     .fields-list > li .fancy-dropdown-container .fancy-dropdown {
       background-color: transparent; }
       .fields-list > li .fancy-dropdown-container .fancy-dropdown:hover {
@@ -7355,10 +7155,14 @@ input[data-interactive-toggle].submitting + label .indicator {
     .fields-list > li > .label {
       font-weight: 500;
       flex: 0 1 140px;
-      padding: 7px 12px; }
+      padding: .5em 1em; }
     .fields-list > li > .value {
       flex: 1 1 auto;
-      font-weight: 400; }
+      font-weight: 400;
+      display: flex; }
+      .fields-list > li > .value.disabled {
+        color: #676767;
+        padding: .5em 1em; }
       .fields-list > li > .value .value-container {
         display: flex;
         flex-direction: row;
@@ -7484,25 +7288,32 @@ input[data-interactive-toggle].submitting + label .indicator {
     .form-container .form .submit-indicator {
       opacity: 0;
       transition: opacity .25s ease-in-out; }
+    .form-container form.hidden,
+    .form-container .form.hidden {
+      display: none; }
     .form-container form.submitting.form-row > input[type=text].invisible,
+    .form-container form.submitting.form-row > input[type=password].invisible,
     .form-container form.submitting.form-row > input[type=email].invisible,
     .form-container form.submitting.form-row > input[type=search].invisible,
     .form-container form.submitting.form-row > input[type=url].invisible,
     .form-container form.submitting.form-row > input[type=password].invisible,
     .form-container form.submitting.form-row > .input.invisible,
     .form-container form.submitting .form-row > input[type=text].invisible,
+    .form-container form.submitting .form-row > input[type=password].invisible,
     .form-container form.submitting .form-row > input[type=email].invisible,
     .form-container form.submitting .form-row > input[type=search].invisible,
     .form-container form.submitting .form-row > input[type=url].invisible,
     .form-container form.submitting .form-row > input[type=password].invisible,
     .form-container form.submitting .form-row > .input.invisible,
     .form-container .form.submitting.form-row > input[type=text].invisible,
+    .form-container .form.submitting.form-row > input[type=password].invisible,
     .form-container .form.submitting.form-row > input[type=email].invisible,
     .form-container .form.submitting.form-row > input[type=search].invisible,
     .form-container .form.submitting.form-row > input[type=url].invisible,
     .form-container .form.submitting.form-row > input[type=password].invisible,
     .form-container .form.submitting.form-row > .input.invisible,
     .form-container .form.submitting .form-row > input[type=text].invisible,
+    .form-container .form.submitting .form-row > input[type=password].invisible,
     .form-container .form.submitting .form-row > input[type=email].invisible,
     .form-container .form.submitting .form-row > input[type=search].invisible,
     .form-container .form.submitting .form-row > input[type=url].invisible,
@@ -7510,24 +7321,28 @@ input[data-interactive-toggle].submitting + label .indicator {
     .form-container .form.submitting .form-row > .input.invisible {
       border: 1px dashed #0c8990; }
       .form-container form.submitting.form-row > input[type=text].invisible + label,
+      .form-container form.submitting.form-row > input[type=password].invisible + label,
       .form-container form.submitting.form-row > input[type=email].invisible + label,
       .form-container form.submitting.form-row > input[type=search].invisible + label,
       .form-container form.submitting.form-row > input[type=url].invisible + label,
       .form-container form.submitting.form-row > input[type=password].invisible + label,
       .form-container form.submitting.form-row > .input.invisible + label,
       .form-container form.submitting .form-row > input[type=text].invisible + label,
+      .form-container form.submitting .form-row > input[type=password].invisible + label,
       .form-container form.submitting .form-row > input[type=email].invisible + label,
       .form-container form.submitting .form-row > input[type=search].invisible + label,
       .form-container form.submitting .form-row > input[type=url].invisible + label,
       .form-container form.submitting .form-row > input[type=password].invisible + label,
       .form-container form.submitting .form-row > .input.invisible + label,
       .form-container .form.submitting.form-row > input[type=text].invisible + label,
+      .form-container .form.submitting.form-row > input[type=password].invisible + label,
       .form-container .form.submitting.form-row > input[type=email].invisible + label,
       .form-container .form.submitting.form-row > input[type=search].invisible + label,
       .form-container .form.submitting.form-row > input[type=url].invisible + label,
       .form-container .form.submitting.form-row > input[type=password].invisible + label,
       .form-container .form.submitting.form-row > .input.invisible + label,
       .form-container .form.submitting .form-row > input[type=text].invisible + label,
+      .form-container .form.submitting .form-row > input[type=password].invisible + label,
       .form-container .form.submitting .form-row > input[type=email].invisible + label,
       .form-container .form.submitting .form-row > input[type=search].invisible + label,
       .form-container .form.submitting .form-row > input[type=url].invisible + label,
@@ -7552,6 +7367,34 @@ input[data-interactive-toggle].submitting + label .indicator {
     .form-container .form > .row.hidden,
     .form-container form > .row.hidden {
       display: none; }
+    .form-container > .row.aligned .column + .column .form-row,
+    .form-container .form > .row.aligned .column + .column .form-row,
+    .form-container form > .row.aligned .column + .column .form-row {
+      justify-content: center; }
+      .form-container > .row.aligned .column + .column .form-row label,
+      .form-container .form > .row.aligned .column + .column .form-row label,
+      .form-container form > .row.aligned .column + .column .form-row label {
+        text-align: center;
+        justify-content: center; }
+      .form-container > .row.aligned .column + .column .form-row .helper-text,
+      .form-container .form > .row.aligned .column + .column .form-row .helper-text,
+      .form-container form > .row.aligned .column + .column .form-row .helper-text {
+        text-align: center;
+        justify-content: center; }
+    .form-container > .row.aligned .column:last-child .form-row,
+    .form-container .form > .row.aligned .column:last-child .form-row,
+    .form-container form > .row.aligned .column:last-child .form-row {
+      justify-content: flex-end; }
+      .form-container > .row.aligned .column:last-child .form-row label,
+      .form-container .form > .row.aligned .column:last-child .form-row label,
+      .form-container form > .row.aligned .column:last-child .form-row label {
+        text-align: end;
+        justify-content: flex-end; }
+      .form-container > .row.aligned .column:last-child .form-row .helper-text,
+      .form-container .form > .row.aligned .column:last-child .form-row .helper-text,
+      .form-container form > .row.aligned .column:last-child .form-row .helper-text {
+        text-align: end;
+        justify-content: flex-end; }
   .form-container > .column,
   .form-container > .row > .column,
   .form-container form > .column,
@@ -7644,6 +7487,7 @@ input[data-interactive-toggle].submitting + label .indicator {
     .form-container .form-row.centered {
       justify-content: center; }
       .form-container .form-row.centered input[type=text],
+      .form-container .form-row.centered input[type=password],
       .form-container .form-row.centered input[type=email],
       .form-container .form-row.centered input[type=search],
       .form-container .form-row.centered input[type=url],
@@ -7654,6 +7498,7 @@ input[data-interactive-toggle].submitting + label .indicator {
         justify-content: center;
         text-align: center; }
     .form-container .form-row.unified > input[type=text],
+    .form-container .form-row.unified > input[type=password],
     .form-container .form-row.unified > input[type=search],
     .form-container .form-row.unified > input[type=email],
     .form-container .form-row.unified > input[type=url],
@@ -7688,6 +7533,7 @@ input[data-interactive-toggle].submitting + label .indicator {
       flex: 0 0 auto; }
     .form-container .form-row.invalid > textarea,
     .form-container .form-row.invalid > input[type=text],
+    .form-container .form-row.invalid > input[type=password],
     .form-container .form-row.invalid > input[type=email],
     .form-container .form-row.invalid > input[type=search],
     .form-container .form-row.invalid > input[type=url],
@@ -7756,6 +7602,7 @@ input[data-interactive-toggle].submitting + label .indicator {
         margin-right: .5em; }
     .form-container .form-row > textarea,
     .form-container .form-row > input[type=text],
+    .form-container .form-row > input[type=password],
     .form-container .form-row > input[type=search],
     .form-container .form-row > input[type=url],
     .form-container .form-row > input[type=password],
@@ -7768,6 +7615,7 @@ input[data-interactive-toggle].submitting + label .indicator {
       font-weight: 300; }
       .form-container .form-row > textarea.invisible,
       .form-container .form-row > input[type=text].invisible,
+      .form-container .form-row > input[type=password].invisible,
       .form-container .form-row > input[type=search].invisible,
       .form-container .form-row > input[type=url].invisible,
       .form-container .form-row > input[type=password].invisible,
@@ -7780,6 +7628,7 @@ input[data-interactive-toggle].submitting + label .indicator {
         flex: 1 1 auto; }
         .form-container .form-row > textarea.invisible.title,
         .form-container .form-row > input[type=text].invisible.title,
+        .form-container .form-row > input[type=password].invisible.title,
         .form-container .form-row > input[type=search].invisible.title,
         .form-container .form-row > input[type=url].invisible.title,
         .form-container .form-row > input[type=password].invisible.title,
@@ -7788,6 +7637,7 @@ input[data-interactive-toggle].submitting + label .indicator {
           font-weight: 400; }
         .form-container .form-row > textarea.invisible.inline,
         .form-container .form-row > input[type=text].invisible.inline,
+        .form-container .form-row > input[type=password].invisible.inline,
         .form-container .form-row > input[type=search].invisible.inline,
         .form-container .form-row > input[type=url].invisible.inline,
         .form-container .form-row > input[type=password].invisible.inline,
@@ -7796,6 +7646,7 @@ input[data-interactive-toggle].submitting + label .indicator {
           flex: 0 0 auto; }
         .form-container .form-row > textarea.invisible + label,
         .form-container .form-row > input[type=text].invisible + label,
+        .form-container .form-row > input[type=password].invisible + label,
         .form-container .form-row > input[type=search].invisible + label,
         .form-container .form-row > input[type=url].invisible + label,
         .form-container .form-row > input[type=password].invisible + label,
@@ -7806,6 +7657,7 @@ input[data-interactive-toggle].submitting + label .indicator {
           margin-bottom: -1.8em; }
         .form-container .form-row > textarea.invisible:hover,
         .form-container .form-row > input[type=text].invisible:hover,
+        .form-container .form-row > input[type=password].invisible:hover,
         .form-container .form-row > input[type=search].invisible:hover,
         .form-container .form-row > input[type=url].invisible:hover,
         .form-container .form-row > input[type=password].invisible:hover,
@@ -7816,6 +7668,7 @@ input[data-interactive-toggle].submitting + label .indicator {
           cursor: pointer; }
         .form-container .form-row > textarea.invisible:focus,
         .form-container .form-row > input[type=text].invisible:focus,
+        .form-container .form-row > input[type=password].invisible:focus,
         .form-container .form-row > input[type=search].invisible:focus,
         .form-container .form-row > input[type=url].invisible:focus,
         .form-container .form-row > input[type=password].invisible:focus,
@@ -7825,6 +7678,7 @@ input[data-interactive-toggle].submitting + label .indicator {
           border-color: #0c8990; }
           .form-container .form-row > textarea.invisible:focus.with-label,
           .form-container .form-row > input[type=text].invisible:focus.with-label,
+          .form-container .form-row > input[type=password].invisible:focus.with-label,
           .form-container .form-row > input[type=search].invisible:focus.with-label,
           .form-container .form-row > input[type=url].invisible:focus.with-label,
           .form-container .form-row > input[type=password].invisible:focus.with-label,
@@ -7833,6 +7687,7 @@ input[data-interactive-toggle].submitting + label .indicator {
             padding-bottom: 2rem; }
           .form-container .form-row > textarea.invisible:focus:hover,
           .form-container .form-row > input[type=text].invisible:focus:hover,
+          .form-container .form-row > input[type=password].invisible:focus:hover,
           .form-container .form-row > input[type=search].invisible:focus:hover,
           .form-container .form-row > input[type=url].invisible:focus:hover,
           .form-container .form-row > input[type=password].invisible:focus:hover,
@@ -7841,6 +7696,7 @@ input[data-interactive-toggle].submitting + label .indicator {
             cursor: text; }
           .form-container .form-row > textarea.invisible:focus + label,
           .form-container .form-row > input[type=text].invisible:focus + label,
+          .form-container .form-row > input[type=password].invisible:focus + label,
           .form-container .form-row > input[type=search].invisible:focus + label,
           .form-container .form-row > input[type=url].invisible:focus + label,
           .form-container .form-row > input[type=password].invisible:focus + label,
@@ -7849,6 +7705,7 @@ input[data-interactive-toggle].submitting + label .indicator {
             display: none; }
       .form-container .form-row > textarea.name-input-enhance,
       .form-container .form-row > input[type=text].name-input-enhance,
+      .form-container .form-row > input[type=password].name-input-enhance,
       .form-container .form-row > input[type=search].name-input-enhance,
       .form-container .form-row > input[type=url].name-input-enhance,
       .form-container .form-row > input[type=password].name-input-enhance,
@@ -7859,6 +7716,7 @@ input[data-interactive-toggle].submitting + label .indicator {
         font-weight: 400; }
         .form-container .form-row > textarea.name-input-enhance:not(.invisible),
         .form-container .form-row > input[type=text].name-input-enhance:not(.invisible),
+        .form-container .form-row > input[type=password].name-input-enhance:not(.invisible),
         .form-container .form-row > input[type=search].name-input-enhance:not(.invisible),
         .form-container .form-row > input[type=url].name-input-enhance:not(.invisible),
         .form-container .form-row > input[type=password].name-input-enhance:not(.invisible),
@@ -7867,6 +7725,7 @@ input[data-interactive-toggle].submitting + label .indicator {
           border-bottom-width: 2px; }
       .form-container .form-row > textarea.code-input-6,
       .form-container .form-row > input[type=text].code-input-6,
+      .form-container .form-row > input[type=password].code-input-6,
       .form-container .form-row > input[type=search].code-input-6,
       .form-container .form-row > input[type=url].code-input-6,
       .form-container .form-row > input[type=password].code-input-6,
@@ -7877,6 +7736,9 @@ input[data-interactive-toggle].submitting + label .indicator {
       .form-container .form-row > input[type=text].number,
       .form-container .form-row > input[type=text].prefix-and-key,
       .form-container .form-row > input[type=text]:not(.invisible).number,
+      .form-container .form-row > input[type=password].number,
+      .form-container .form-row > input[type=password].prefix-and-key,
+      .form-container .form-row > input[type=password]:not(.invisible).number,
       .form-container .form-row > input[type=search].number,
       .form-container .form-row > input[type=search].prefix-and-key,
       .form-container .form-row > input[type=search]:not(.invisible).number,
@@ -7898,6 +7760,9 @@ input[data-interactive-toggle].submitting + label .indicator {
         .form-container .form-row > input[type=text].number.small,
         .form-container .form-row > input[type=text].prefix-and-key.small,
         .form-container .form-row > input[type=text]:not(.invisible).number.small,
+        .form-container .form-row > input[type=password].number.small,
+        .form-container .form-row > input[type=password].prefix-and-key.small,
+        .form-container .form-row > input[type=password]:not(.invisible).number.small,
         .form-container .form-row > input[type=search].number.small,
         .form-container .form-row > input[type=search].prefix-and-key.small,
         .form-container .form-row > input[type=search]:not(.invisible).number.small,
@@ -7917,6 +7782,8 @@ input[data-interactive-toggle].submitting + label .indicator {
       .form-container .form-row > textarea.medium, .form-container .form-row > textarea:not(.invisible).medium,
       .form-container .form-row > input[type=text].medium,
       .form-container .form-row > input[type=text]:not(.invisible).medium,
+      .form-container .form-row > input[type=password].medium,
+      .form-container .form-row > input[type=password]:not(.invisible).medium,
       .form-container .form-row > input[type=search].medium,
       .form-container .form-row > input[type=search]:not(.invisible).medium,
       .form-container .form-row > input[type=url].medium,
@@ -7933,6 +7800,8 @@ input[data-interactive-toggle].submitting + label .indicator {
       .form-container .form-row > textarea:active + label,
       .form-container .form-row > input[type=text]:focus + label,
       .form-container .form-row > input[type=text]:active + label,
+      .form-container .form-row > input[type=password]:focus + label,
+      .form-container .form-row > input[type=password]:active + label,
       .form-container .form-row > input[type=search]:focus + label,
       .form-container .form-row > input[type=search]:active + label,
       .form-container .form-row > input[type=url]:focus + label,
@@ -7964,6 +7833,7 @@ input[data-interactive-toggle].submitting + label .indicator {
       color: rgba(0, 0, 0, 0.4); }
       .form-container .form-row.add-placeholder > .icon + textarea,
       .form-container .form-row.add-placeholder > .icon + input[type=text],
+      .form-container .form-row.add-placeholder > .icon + input[type=password],
       .form-container .form-row.add-placeholder > .icon + input[type=url],
       .form-container .form-row.add-placeholder > .icon + input[type=password] {
         flex: 1 1 calc(100% - 55px);
@@ -8207,7 +8077,9 @@ nav.sidebar {
         color: #232323;
         font-weight: 400; }
       .top-search-filters-container > .header .name-container .board-name,
-      .top-search-filters-container .search-and-filters-strip > .header .name-container .board-name {
+      .top-search-filters-container > .header .name-container .item-name,
+      .top-search-filters-container .search-and-filters-strip > .header .name-container .board-name,
+      .top-search-filters-container .search-and-filters-strip > .header .name-container .item-name {
         font-size: 1.5em;
         color: #232323;
         font-weight: 500; }
@@ -8746,8 +8618,8 @@ nav.sidebar {
     border-bottom: 1px dashed rgba(12, 137, 144, 0.4); }
     .flexible-table .column.hidden {
       display: none; }
-    .flexible-table .column a,
-    .flexible-table .column a:hover {
+    .flexible-table .column a:not(.button):not(.list-item),
+    .flexible-table .column a:hover:not(.button):not(.list-item) {
       display: flex;
       align-items: center;
       border: none;
@@ -8843,7 +8715,7 @@ nav.sidebar {
       .flexible-table .column.multiline.hidden {
         display: none; }
       .flexible-table .column.multiline .title {
-        font-weight: 400;
+        font-weight: 500;
         flex: 0 0 auto; }
       .flexible-table .column.multiline .description {
         font-weight: 400;
@@ -9271,6 +9143,8 @@ textarea.markItUpEditor:focus {
     border-color: transparent;
     color: #FFF;
     background: #0cd8b6; }
+    .message-box.type-info .command_box {
+      background-color: rgba(100, 100, 100, 0.3); }
   .message-box .fas,
   .message-box .fab,
   .message-box .far {
@@ -9304,6 +9178,15 @@ textarea.markItUpEditor:focus {
       height: auto; }
   .message-box .command_box {
     font-size: .85em; }
+  .message-box ul {
+    margin: 0;
+    padding: 0; }
+    .message-box ul li {
+      margin: 0; }
+      .message-box ul li:not(.command_box) {
+        padding: 0; }
+      .message-box ul li + li {
+        margin-left: .25em; }
 
 .onboarding {
   font-size: 1.35em;
@@ -9661,6 +9544,16 @@ textarea.markItUpEditor:focus {
   .status-badge .name {
     height: auto;
     padding: .3em; }
+  .status-badge.core {
+    background-color: rgba(150, 150, 150, 0.2);
+    color: #888; }
+  .status-badge.enabled {
+    background-color: rgba(177, 210, 143, 0.6); }
+  .status-badge.disabled {
+    background-color: rgba(150, 150, 150, 0.1); }
+  .status-badge.outdated {
+    background-color: rgba(177, 143, 210, 0.1);
+    display: none; }
 
 #file_upload_dummy,
 #file_upload_dummy_label {
@@ -11412,6 +11305,8 @@ textarea.markItUpEditor:focus {
       flex-direction: column; }
       .viewissue-container .issue-card .issue-card-main .issue-details .content {
         font-size: 1.15em; }
+        .viewissue-container .issue-card .issue-card-main .issue-details .content img {
+          max-width: 100%; }
         .viewissue-container .issue-card .issue-card-main .issue-details .content.editable:hover {
           background-color: rgba(100, 100, 100, 0.05);
           cursor: pointer; }
@@ -12225,10 +12120,12 @@ dl.info {
     .configuration-container > .form-container input[type=search],
     .configuration-container > .form-container input[type=url],
     .configuration-container > .form-container input[type=email],
+    .configuration-container > .form-container input[type=password],
     .configuration-container > .form-container input[type=text],
     .configuration-container > .configuration-content > .form-container input[type=search],
     .configuration-container > .configuration-content > .form-container input[type=url],
     .configuration-container > .configuration-content > .form-container input[type=email],
+    .configuration-container > .configuration-content > .form-container input[type=password],
     .configuration-container > .configuration-content > .form-container input[type=text] {
       font-size: 1.1em;
       border-radius: 4px;
@@ -12237,10 +12134,12 @@ dl.info {
       .configuration-container > .form-container input[type=search]:not(.invisible),
       .configuration-container > .form-container input[type=url]:not(.invisible),
       .configuration-container > .form-container input[type=email]:not(.invisible),
+      .configuration-container > .form-container input[type=password]:not(.invisible),
       .configuration-container > .form-container input[type=text]:not(.invisible),
       .configuration-container > .configuration-content > .form-container input[type=search]:not(.invisible),
       .configuration-container > .configuration-content > .form-container input[type=url]:not(.invisible),
       .configuration-container > .configuration-content > .form-container input[type=email]:not(.invisible),
+      .configuration-container > .configuration-content > .form-container input[type=password]:not(.invisible),
       .configuration-container > .configuration-content > .form-container input[type=text]:not(.invisible) {
         background: white;
         border: 1px solid rgba(200, 200, 200, 0.3);
@@ -12249,10 +12148,12 @@ dl.info {
         .configuration-container > .form-container input[type=search]:not(.invisible):disabled,
         .configuration-container > .form-container input[type=url]:not(.invisible):disabled,
         .configuration-container > .form-container input[type=email]:not(.invisible):disabled,
+        .configuration-container > .form-container input[type=password]:not(.invisible):disabled,
         .configuration-container > .form-container input[type=text]:not(.invisible):disabled,
         .configuration-container > .configuration-content > .form-container input[type=search]:not(.invisible):disabled,
         .configuration-container > .configuration-content > .form-container input[type=url]:not(.invisible):disabled,
         .configuration-container > .configuration-content > .form-container input[type=email]:not(.invisible):disabled,
+        .configuration-container > .configuration-content > .form-container input[type=password]:not(.invisible):disabled,
         .configuration-container > .configuration-content > .form-container input[type=text]:not(.invisible):disabled {
           background: rgba(255, 255, 255, 0.6);
           border-color: rgba(200, 200, 200, 0.15);
@@ -12260,19 +12161,23 @@ dl.info {
         .configuration-container > .form-container input[type=search]:not(.invisible):not(.number):not(.medium):not(.prefix-and-key),
         .configuration-container > .form-container input[type=url]:not(.invisible):not(.number):not(.medium):not(.prefix-and-key),
         .configuration-container > .form-container input[type=email]:not(.invisible):not(.number):not(.medium):not(.prefix-and-key),
+        .configuration-container > .form-container input[type=password]:not(.invisible):not(.number):not(.medium):not(.prefix-and-key),
         .configuration-container > .form-container input[type=text]:not(.invisible):not(.number):not(.medium):not(.prefix-and-key),
         .configuration-container > .configuration-content > .form-container input[type=search]:not(.invisible):not(.number):not(.medium):not(.prefix-and-key),
         .configuration-container > .configuration-content > .form-container input[type=url]:not(.invisible):not(.number):not(.medium):not(.prefix-and-key),
         .configuration-container > .configuration-content > .form-container input[type=email]:not(.invisible):not(.number):not(.medium):not(.prefix-and-key),
+        .configuration-container > .configuration-content > .form-container input[type=password]:not(.invisible):not(.number):not(.medium):not(.prefix-and-key),
         .configuration-container > .configuration-content > .form-container input[type=text]:not(.invisible):not(.number):not(.medium):not(.prefix-and-key) {
           flex: 1 1 65%; }
         .configuration-container > .form-container input[type=search]:not(.invisible):not(:disabled):hover,
         .configuration-container > .form-container input[type=url]:not(.invisible):not(:disabled):hover,
         .configuration-container > .form-container input[type=email]:not(.invisible):not(:disabled):hover,
+        .configuration-container > .form-container input[type=password]:not(.invisible):not(:disabled):hover,
         .configuration-container > .form-container input[type=text]:not(.invisible):not(:disabled):hover,
         .configuration-container > .configuration-content > .form-container input[type=search]:not(.invisible):not(:disabled):hover,
         .configuration-container > .configuration-content > .form-container input[type=url]:not(.invisible):not(:disabled):hover,
         .configuration-container > .configuration-content > .form-container input[type=email]:not(.invisible):not(:disabled):hover,
+        .configuration-container > .configuration-content > .form-container input[type=password]:not(.invisible):not(:disabled):hover,
         .configuration-container > .configuration-content > .form-container input[type=text]:not(.invisible):not(:disabled):hover {
           border-color: #0c8990; }
 
@@ -12348,7 +12253,7 @@ dl.info {
       background-color: rgba(177, 210, 143, 0.6); }
     .config-plugins .plugins-list .plugin .plugin_status.disabled {
       background-color: rgba(150, 150, 150, 0.1); }
-    .config-plugins .plugins-list .plugin .plugin_status.outofdate {
+    .config-plugins .plugins-list .plugin .plugin_status.outdated {
       background-color: rgba(177, 143, 210, 0.1);
       display: none; }
     .config-plugins .plugins-list .plugin .plugin_status img {
@@ -12403,22 +12308,17 @@ dl.info {
   display: none; }
 
 .rating {
-  background: repeat-x top left;
-  display: block;
-  width: 80px;
-  height: 16px;
-  padding: 0;
-  margin: 5px 0 0 0;
-  position: relative; }
-
-.rating .score {
-  display: block;
-  height: 16px;
-  position: absolute;
-  top: 0;
-  left: 0;
-  padding: 0;
-  margin: 0; }
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  color: lightgrey; }
+  .rating .score {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    color: goldenrod; }
 
 .configurable-components-list {
   display: flex;
@@ -12494,6 +12394,12 @@ dl.info {
     .configurable-component > form > .row.options-container .form-row,
     .configurable-component > .row.options-container .form-row {
       padding: .35rem; }
+    .configurable-component > form > .row.actions-container,
+    .configurable-component > .row.actions-container {
+      padding: .75em; }
+    .configurable-component > form > .row .rating,
+    .configurable-component > .row .rating {
+      margin: 0 .75em .75em .75em; }
     .configurable-component > form > .row > .icon,
     .configurable-component > .row > .icon {
       flex: 0 0 36px;
@@ -12563,9 +12469,13 @@ dl.info {
     .configurable-component > .row > .information {
       flex: 0 0 auto;
       min-width: 50px;
+      max-width: 100%;
       display: flex;
       align-items: center;
       justify-content: flex-end; }
+    .configurable-component > form > .row .description,
+    .configurable-component > .row .description {
+      padding: .75em; }
 
 .configurable-components-container {
   display: flex;
@@ -12598,10 +12508,34 @@ dl.info {
     .configurable-components-container.active .configurable-component-options > .configurable-components-list + .form-container {
       padding-top: 0; }
 
-.configurable-component.module .name .title {
-  font-size: 1.4em;
-  text-transform: uppercase;
-  font-weight: 400; }
+.modules-list {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  flex-direction: row;
+  padding: 1em 0; }
+
+.plugins-list > .indicator {
+  display: flex;
+  flex: 1 1 100%;
+  align-items: center;
+  justify-content: center;
+  padding: 3.68em;
+  font-size: 1.9em; }
+
+.plugins-list .configurable-component.module {
+  max-width: 350px;
+  font-size: 1em; }
+  .plugins-list .configurable-component.module .name {
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    font-size: 1.1em;
+    padding: .75em; }
+  .plugins-list .configurable-component.module + .module {
+    margin-left: .5em; }
+  .plugins-list .configurable-component.module.out-of-date .plugin_status.outofdate {
+    display: inline-block; }
 
 .projectbox .permission_list ul {
   width: 670px; }
@@ -12645,186 +12579,6 @@ dl.info {
 .tab_content {
   padding-top: 5px; }
 
-.tab_header {
-  padding-top: 10px;
-  font-weight: 400;
-  border-bottom: 1px solid #DDD; }
-
-/* permissions configuration styling */
-.permissions_popup th {
-  background-color: transparent;
-  color: #888;
-  text-transform: uppercase;
-  font-weight: 400;
-  padding: 15px 2px 5px 2px; }
-
-.permissions_popup thead:first-child th {
-  padding-top: 5px; }
-
-.config_permissions {
-  font-size: 0.9em; }
-
-.config_permissions .faded_out.smaller {
-  font-size: 0.7em;
-  padding-left: 10px; }
-
-.config_permissions .permission_list .tab_pane {
-  border: 1px solid #AAA;
-  border-top: 0;
-  padding: 10px; }
-
-.config_permissions .permission_list .tab_pane p {
-  margin-bottom: 15px; }
-
-.permission_list ul {
-  list-style-type: none;
-  padding: 0;
-  margin: 0;
-  width: 715px; }
-
-.permission_list ul li {
-  margin: 0;
-  padding: 0;
-  font-weight: 400;
-  clear: both;
-  background-color: transparent; }
-
-.permission_list ul li:hover {
-  background-color: #FaFaFa; }
-
-.permission_list ul li a {
-  display: block;
-  padding: 2px 0 2px 0; }
-
-.permission_list ul li a.permission_description {
-  display: block;
-  width: 670px; }
-
-.permission_list ul li a:hover {
-  border: 0; }
-
-.permission_list ul li .content a {
-  display: inline; }
-
-.permission_list ul li ul {
-  margin: 5px 10px 20px 10px;
-  width: 665px; }
-
-.permission_list ul li ul li {
-  font-size: 0.95em; }
-
-.permission_list ul li ul li:hover {
-  background-color: #F1F1F1; }
-
-.permission_list ul li ul li a.permission_description {
-  display: block;
-  width: 580px; }
-
-.permission_list ul li ul li ul {
-  margin: 10px 10px 15px 10px;
-  width: 635px; }
-
-.permission_list ul li ul li ul li {
-  font-size: 0.9em; }
-
-.permission_list ul li ul li ul li:hover {
-  background-color: #E8E8E8; }
-
-.permission_list ul li ul li ul li ul li:hover {
-  background-color: #dfdfdf; }
-
-.permission_list ul li ul li ul li a.permission_description {
-  display: block;
-  width: 540px; }
-
-.permissions_warning {
-  background-color: rgba(255, 111, 85, 0.3);
-  border: 1px solid rgba(121, 35, 35, 0.4);
-  padding: 10px;
-  font-size: 1em;
-  font-weight: 400;
-  display: block;
-  margin: 10px 0 10px 0;
-  color: #b71818;
-  border-radius: 3px; }
-
-.permissions_warning strong {
-  display: block;
-  font-weight: 500;
-  text-transform: uppercase; }
-
-/* end permissions */
-/* configure users / teams / groups styling */
-#create_group_form input[type="text"], #create_team_form input[type="text"], #create_client_form input[type="text"] {
-  width: 200px; }
-
-#create_group_form input[type="submit"], #create_team_form input[type="submit"], #create_client_form input[type="submit"] {
-  font-size: 0.9em; }
-
-.groupbox_header, .teambox_header, .clientbox_header {
-  font-weight: 400; }
-
-.groupbox_membercount, .teambox_membercount, .clientbox_membercount {
-  font-weight: 400;
-  font-size: 0.8em;
-  color: #888; }
-
-#users_results {
-  position: relative; }
-
-#users_more_actions_container {
-  float: right; }
-
-#tab_users_pane > strong {
-  font-weight: 400;
-  display: block; }
-
-#users_more_actions_container .more_actions_dropdown li.separator {
-  height: 1px; }
-
-.finduser_container #findusers {
-  width: 300px; }
-
-.finduser_container input[type=submit], .finduser_container input[type=submit]:hover {
-  font-size: 1em; }
-
-.finduser_container label {
-  padding: 0 0 0 3px;
-  margin: 0 0 5px 0; }
-
-.teamlist_container {
-  display: inline-block;
-  width: 200px; }
-
-.teamlist_container input {
-  float: left;
-  margin-right: 2px; }
-
-.teamlist_container label {
-  font-weight: 400;
-  font-size: 0.9em; }
-
-#adduser_div .createuser_submit_container {
-  padding: 10px;
-  text-align: right; }
-
-#adduser_div .createuser_submit_container input {
-  padding: 3px 6px !important;
-  font-size: 1.1em; }
-
-.collection_user_list li {
-  padding: 3px; }
-
-.collection_user_list li:hover {
-  background-color: rgba(255, 255, 255, 0.7); }
-
-/* end users / teams / groups */
-#project_table .config_header {
-  font-size: 0.9em; }
-
-/* workflow styling */
-/* end workflow styling */
-/* end config styling */
 .fas.fa-leaf,
 .far.fa-leaf {
   color: #1aaa55;
@@ -12860,7 +12614,7 @@ dl.info {
   flex-direction: column;
   width: 100%;
   box-sizing: border-box;
-  margin: 0 10px;
+  margin: 1.5em 0 0 0;
   align-items: stretch; }
 
 .livelink_connector_accounts li .connector_logo,
@@ -13015,6 +12769,277 @@ dl.info {
 .livelink_project_badge .fab,
 .livelink_project_badge .far {
   margin-right: .35em; }
+
+.content-with-sidebar > div:not(.sidebar):not(.fixed-position).commit-navigation-container {
+  align-items: stretch; }
+
+#commit-list-with-filters-container {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: stretch;
+  align-content: stretch;
+  flex: 1 1 auto; }
+  #commit-list-with-filters-container.hidden {
+    display: none; }
+
+.commit-details-container {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: center;
+  width: 100%;
+  flex: 1 1 auto; }
+  .commit-details-container.hidden {
+    display: none; }
+  .commit-details-container .indicator-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    font-size: 3em;
+    color: #676767;
+    flex: 1 1 auto;
+    width: 100%; }
+
+.commit-files-summary {
+  font-weight: 400;
+  padding: .15em;
+  margin-left: auto;
+  color: #888;
+  display: flex;
+  flex-direction: row;
+  flex: 0 0 auto; }
+  .commit-files-summary .summary {
+    margin-left: 7px; }
+    .commit-files-summary .summary .num_changes {
+      font-weight: 400;
+      color: rgba(78, 129, 171, 0.7); }
+    .commit-files-summary .summary .num_files {
+      font-weight: 400; }
+  .commit-files-summary .fas {
+    font-size: 1.2em;
+    color: #aaa; }
+
+.commits-container {
+  display: flex;
+  align-items: stretch;
+  width: 100%;
+  flex-direction: column;
+  justify-content: stretch;
+  flex: 1 1 auto; }
+  .commits-container .list-mode .list-item.commit .avatar-container, .commits-container .list-mode .list-item.commit:hover .avatar-container {
+    position: relative;
+    border-radius: 100%;
+    border: 2px solid white;
+    overflow: hidden;
+    width: 2.5em;
+    height: 2.5em;
+    background: #FFF;
+    box-shadow: 0 -3px 6px -6px rgba(0, 0, 0, 0.36); }
+    .commits-container .list-mode .list-item.commit .avatar-container img, .commits-container .list-mode .list-item.commit:hover .avatar-container img {
+      width: 100%; }
+  .commits-container .list-mode .list-item.commit .name .title, .commits-container .list-mode .list-item.commit:hover .name .title {
+    font-size: 1.1em; }
+  .commits-container .list-mode .list-item.commit .name .description, .commits-container .list-mode .list-item.commit:hover .name .description {
+    color: #676767; }
+  .commits-container .list-mode .list-item.commit .item.commit-sha, .commits-container .list-mode .list-item.commit:hover .item.commit-sha {
+    font-family: "Fira Mono", monospace; }
+  .commits-container .list-mode .list-item.commit .item.not-imported, .commits-container .list-mode .list-item.commit:hover .item.not-imported {
+    background-color: #F4D58D; }
+    .commits-container .list-mode .list-item.commit .item.not-imported .icon, .commits-container .list-mode .list-item.commit:hover .item.not-imported .icon {
+      padding: .25em .3em;
+      font-size: .9em; }
+
+.list-mode .files-list .list-item:not(.disabled):not(.not-selectable):not(.separator):not(.header):not(.danger):not(.filter-container):not(.form-container):hover {
+  background-color: transparent; }
+
+.list-mode .files-list .list-item:not(.disabled):not(.not-selectable):not(.separator):not(.header):not(.danger):not(.filter-container):not(.form-container) .name {
+  padding: .2em 0; }
+
+.list-mode .files-list .list-item:not(.disabled):not(.not-selectable):not(.separator):not(.header):not(.danger):not(.filter-container):not(.form-container) .icon:not(.issuetype-icon), .list-mode .files-list .list-item:not(.disabled):not(.not-selectable):not(.separator):not(.header):not(.danger):not(.filter-container):not(.form-container) .icon:not(.issuetype-icon):hover {
+  padding: .35em 0;
+  flex: 0 0 20px; }
+
+.list-mode .files-list .list-item:not(.disabled):not(.not-selectable):not(.separator):not(.header):not(.danger):not(.filter-container):not(.form-container).expandable .name {
+  padding: .2em 0;
+  color: #232323; }
+
+.list-mode .files-list .list-item:not(.disabled):not(.not-selectable):not(.separator):not(.header):not(.danger):not(.filter-container):not(.form-container).expandable .expander.icon {
+  flex: 0 0 20px;
+  color: #232323; }
+
+.list-mode .files-list .list-item:not(.disabled):not(.not-selectable):not(.separator):not(.header):not(.danger):not(.filter-container):not(.form-container).expandable .icon {
+  color: #00adc7; }
+
+.list-mode .files-list .list-item:not(.disabled):not(.not-selectable):not(.separator):not(.header):not(.danger):not(.filter-container):not(.form-container).expandable.expanded:not(button) .expander {
+  transform: rotate(90deg);
+  padding: 0;
+  color: #232323; }
+
+.list-mode .files-list .list-item:not(.disabled):not(.not-selectable):not(.separator):not(.header):not(.danger):not(.filter-container):not(.form-container).expandable.expanded:not(button) + .submenu {
+  padding: 0 0 0 1em; }
+  .list-mode .files-list .list-item:not(.disabled):not(.not-selectable):not(.separator):not(.header):not(.danger):not(.filter-container):not(.form-container).expandable.expanded:not(button) + .submenu .list-item:not(.expandable) {
+    padding-left: 1.75em; }
+
+.commit-message {
+  font-family: "Fira Mono", monospace;
+  font-size: 1.1em;
+  padding: 1em; }
+
+.trigger-show-commit:hover {
+  cursor: pointer; }
+
+.commit-sha {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: flex-start;
+  border-radius: 3px;
+  background-color: rgba(225, 225, 225, 0.3);
+  border: 1px solid rgba(225, 225, 225, 0.3);
+  padding: .25em .5em;
+  font-family: "Fira Mono", monospace; }
+
+.content-with-sidebar > div:not(.sidebar):not(.fixed-position).commit-summary-container {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch; }
+
+.status-badge.branch-badge {
+  background-color: #00adc7;
+  color: #FFF;
+  display: flex;
+  flex-direction: row;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: flex-start; }
+  .status-badge.branch-badge .icon {
+    margin-right: .2em; }
+  .status-badge.branch-badge + .branch-badge {
+    margin-left: .25em; }
+
+.commit-files .file-preview {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
+  box-sizing: border-box;
+  margin: 1em 1em 1.75em 1em;
+  border: 1px solid rgba(200, 200, 200, 0.3);
+  background: #fff;
+  border-radius: 5px;
+  overflow: auto; }
+  .commit-files .file-preview:first-of-type {
+    margin-top: 0; }
+
+.commit-files .file-anchor:target + .file-preview {
+  border: 2px solid rgba(78, 129, 171, 0.7); }
+
+.commit-files .file-preview .filename {
+  padding: 10px;
+  background-color: rgba(225, 225, 225, 0.2);
+  font-family: "Fira Mono", monospace;
+  font-size: 0.9em;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start; }
+
+.commit-files .file-preview .filename .added-badge {
+  display: inline-block;
+  margin-left: 3px;
+  font-weight: 400;
+  padding: 3px 5px;
+  background-color: rgba(185, 225, 185, 0.4);
+  border: 1px solid rgba(100, 100, 100, 0.3);
+  border-radius: 3px; }
+
+.commit-files .file-preview.action_D .filename {
+  text-decoration: line-through; }
+
+.commit-files .file-preview:not(.action_R) .filename {
+  border-bottom: 1px solid rgba(200, 200, 200, 0.5); }
+
+.commit-files .far,
+.commit-files .fas {
+  margin-right: 5px; }
+
+.commit-files .diffs .diff-header {
+  white-space: nowrap;
+  font-family: "Fira Mono", monospace;
+  padding: 5px;
+  background-color: rgba(199, 212, 224, 0.7);
+  color: rgba(0, 0, 0, 0.7);
+  font-size: 0.8em; }
+
+.commit-files .diffs .diff-preview {
+  width: 100%;
+  overflow: auto;
+  list-style: none;
+  margin: 0;
+  table-layout: auto;
+  white-space: nowrap;
+  padding: 0;
+  background-color: rgba(0, 0, 0, 0.7); }
+
+.commit-files .diffs .diff-preview td.text pre::before {
+  content: "";
+  width: 16px;
+  height: 16px;
+  position: absolute;
+  left: 3px; }
+
+.commit-files .diffs .diff-preview td {
+  font-family: "Fira Mono", monospace;
+  font-size: 0.9em; }
+
+.commit-files .diffs .diff-preview td.line-number {
+  color: rgba(255, 255, 255, 0.7);
+  background-color: rgba(255, 255, 255, 0.1);
+  width: 1%;
+  white-space: nowrap;
+  text-align: center;
+  user-select: none;
+  -moz-user-select: none;
+  -webkit-user-select: none; }
+
+.commit-files .diffs .diff-preview td.text {
+  color: rgba(255, 255, 255, 0.7);
+  padding: 0;
+  margin: 0;
+  position: relative; }
+
+.commit-files .diffs .message-box {
+  margin: 0;
+  border: none;
+  width: auto; }
+
+.commit-files .diffs .diff-preview pre {
+  padding: 2px;
+  margin: 0;
+  overflow: visible;
+  width: auto; }
+
+.commit-files .diffs .diff-preview td.text pre {
+  padding-left: 16px; }
+
+.commit-files .diffs .diff-preview td.line-number pre {
+  padding: 2px 8px; }
+
+.commit-files .diffs .diff-preview .add pre {
+  background-color: rgba(100, 225, 100, 0.25);
+  color: rgba(255, 255, 255, 0.9); }
+
+.commit-files .diffs .diff-preview .add td.text pre::before {
+  content: "+"; }
+
+.commit-files .diffs .diff-preview .remove pre {
+  background-color: rgba(225, 100, 100, 0.25);
+  color: rgba(255, 255, 255, 0.9); }
+
+.commit-files .diffs .diff-preview .remove td.text pre::before {
+  content: "-"; }
 
 #reportissue_additional_information_container {
   display: none; }
@@ -14011,6 +14036,8 @@ DEL {
     display: flex;
     align-items: center;
     font-weight: 600; }
+  .backdrop_detail_header .icon + span {
+    margin-left: .25em; }
   .backdrop_detail_header .count-badge {
     background-color: #00adc7;
     color: #FFF; }
@@ -14522,6 +14549,8 @@ DEL {
   flex-direction: column; }
   #issue-card-popup > .backdrop_detail_content .issue-details .content {
     font-size: 1.15em; }
+    #issue-card-popup > .backdrop_detail_content .issue-details .content img {
+      max-width: 100%; }
     #issue-card-popup > .backdrop_detail_content .issue-details .content.editable:hover {
       background-color: rgba(100, 100, 100, 0.05);
       cursor: pointer; }

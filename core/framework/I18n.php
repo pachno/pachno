@@ -320,15 +320,15 @@
                     $tstring = '';
                     $days = self::day_delta($tstamp, $tzoffset);
                     if ($days == 0) {
-                        $tstring .= $this->__('Today') . ', ';
+                        $tstring .= $this->__('Today');
                     } elseif ($days == -1) {
-                        $tstring .= $this->__('Yesterday') . ', ';
+                        $tstring .= $this->__('Yesterday');
                     } elseif ($days == 1) {
-                        $tstring .= $this->__('Tomorrow') . ', ';
+                        $tstring .= $this->__('Tomorrow');
                     } else {
-                        $tstring .= strftime($this->getDateTimeFormat(12) . ', ', $tstamp);
+                        $tstring .= strftime($this->getDateTimeFormat(15), $tstamp);
                     }
-                    $tstring .= strftime($this->getDateTimeFormat(14), $tstamp);
+                    $tstring .= ' ' . strftime($this->getDateTimeFormat(14), $tstamp);
                     break;
                 case 13:
                     $tstring = '';
@@ -500,7 +500,7 @@
                     $format = '%H:%M';
                     break;
                 case 15 : // Dec 30, 2010
-                    $format = '%b %d, %Y';
+                    $format = '%b %d %Y';
                     break;
                 case 16 : // 14h 45m
                     $format = '%Gh %im';

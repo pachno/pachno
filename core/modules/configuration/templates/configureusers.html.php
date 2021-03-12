@@ -7,78 +7,76 @@
 ?>
 <div class="content-with-sidebar">
     <?php include_component('configuration/sidebar', ['selected_section' => \pachno\core\framework\Settings::CONFIGURATION_SECTION_USERS]); ?>
-    <div>
-        <div class="configuration-container">
-            <div class="configuration-content">
-                <h1>
-                    <span class="name"><?= __('Manage users and groups'); ?></span>
-                </h1>
-                <div class="fancy-tabs tab-switcher">
-                    <a class="tab tab-switcher-trigger selected" data-tab-target="users" href="javascript:void(0);">
-                        <?= fa_image_tag('user', ['class' => 'icon']); ?>
-                        <span class="name"><?= $users_text; ?><span class="count-badge"><?= $number_of_users; ?></span></span>
-                    </a>
-                    <a class="tab tab-switcher-trigger" data-tab-target="groups" href="javascript:void(0);">
-                        <?= fa_image_tag('users', ['class' => 'icon']); ?>
-                        <span class="name"><?= __('Groups'); ?></span>
-                    </a>
-                </div>
-                <div id="usersteamsgroups_menu_panes">
-                    <div id="tab_users_pane" class="top-search-filters-container" data-tab-id="users">
-                        <form action="<?= make_url('configure_users_find_user'); ?>" method="post" data-simple-submit data-update-container="#users_results" id="find_users_form">
-                            <div class="search-and-filters-strip">
-                                <div class="search-strip">
-                                    <div class="dropper-container">
-                                        <button type="button" class="button secondary icon dropper"><?= fa_image_tag('ellipsis-v'); ?></button>
-                                        <div class="dropdown-container from-left">
-                                            <div class="list-mode">
-                                                <a href="javascript:void(0);" class="list-item" onclick="Pachno.Config.User.show('<?= make_url('configure_users_find_user'); ?>', 'all');">
-                                                    <span class="name"><?= __('Show all users'); ?></span>
-                                                </a>
-                                                <a href="javascript:void(0);" class="list-item" onclick="Pachno.Config.User.show('<?= make_url('configure_users_find_user'); ?>', 'unactivated');">
-                                                    <span class="name"><?= __('Show unactivated users'); ?></span>
-                                                </a>
-                                                <a href="javascript:void(0);" class="list-item" onclick="Pachno.Config.User.show('<?= make_url('configure_users_find_user'); ?>', 'newusers');">
-                                                    <span class="name"><?= __('Show newly created users'); ?></span>
-                                                </a>
-                                            </div>
+    <div class="configuration-container">
+        <div class="configuration-content">
+            <h1>
+                <span class="name"><?= __('Manage users and groups'); ?></span>
+            </h1>
+            <div class="fancy-tabs tab-switcher">
+                <a class="tab tab-switcher-trigger selected" data-tab-target="users" href="javascript:void(0);">
+                    <?= fa_image_tag('user', ['class' => 'icon']); ?>
+                    <span class="name"><?= $users_text; ?><span class="count-badge"><?= $number_of_users; ?></span></span>
+                </a>
+                <a class="tab tab-switcher-trigger" data-tab-target="groups" href="javascript:void(0);">
+                    <?= fa_image_tag('users', ['class' => 'icon']); ?>
+                    <span class="name"><?= __('Groups'); ?></span>
+                </a>
+            </div>
+            <div id="usersteamsgroups_menu_panes">
+                <div id="tab_users_pane" class="top-search-filters-container" data-tab-id="users">
+                    <form action="<?= make_url('configure_users_find_user'); ?>" method="post" data-simple-submit data-update-container="#users_results" id="find_users_form">
+                        <div class="search-and-filters-strip">
+                            <div class="search-strip">
+                                <div class="dropper-container">
+                                    <button type="button" class="button secondary icon dropper"><?= fa_image_tag('ellipsis-v'); ?></button>
+                                    <div class="dropdown-container from-left">
+                                        <div class="list-mode">
+                                            <a href="javascript:void(0);" class="list-item" onclick="Pachno.Config.User.show('<?= make_url('configure_users_find_user'); ?>', 'all');">
+                                                <span class="name"><?= __('Show all users'); ?></span>
+                                            </a>
+                                            <a href="javascript:void(0);" class="list-item" onclick="Pachno.Config.User.show('<?= make_url('configure_users_find_user'); ?>', 'unactivated');">
+                                                <span class="name"><?= __('Show unactivated users'); ?></span>
+                                            </a>
+                                            <a href="javascript:void(0);" class="list-item" onclick="Pachno.Config.User.show('<?= make_url('configure_users_find_user'); ?>', 'newusers');">
+                                                <span class="name"><?= __('Show newly created users'); ?></span>
+                                            </a>
                                         </div>
                                     </div>
-                                    <input type="search" name="findstring" id="findusers" value="<?= $finduser; ?>" placeholder="<?= __('Type user details to find users'); ?>" class="filter_searchfield">
-                                    <button type="submit" class="button secondary">
-                                        <?= fa_image_tag('search', ['class' => 'icon']); ?>
-                                        <span class="name"><?= __('Find'); ?></span>
-                                        <?= fa_image_tag('spinner', ['class' => 'fa-spin icon indicator']); ?>
-                                    </button>
-                                    <button style="<?php if (!\pachno\core\framework\Context::getScope()->hasUsersAvailable()): ?>display: none;<?php endif; ?>" type="button" class="button secondary icon" onclick="$('#adduser_div').toggle();">
-                                        <?= fa_image_tag('plus', ['class' => 'icon']); ?>
-                                    </button>
                                 </div>
+                                <input type="search" name="findstring" id="findusers" value="<?= $finduser; ?>" placeholder="<?= __('Type user details to find users'); ?>" class="filter_searchfield">
+                                <button type="submit" class="button secondary">
+                                    <?= fa_image_tag('search', ['class' => 'icon']); ?>
+                                    <span class="name"><?= __('Find'); ?></span>
+                                    <?= fa_image_tag('spinner', ['class' => 'fa-spin icon indicator']); ?>
+                                </button>
+                                <button style="<?php if (!\pachno\core\framework\Context::getScope()->hasUsersAvailable()): ?>display: none;<?php endif; ?>" type="button" class="button secondary icon" onclick="$('#adduser_div').toggle();">
+                                    <?= fa_image_tag('plus', ['class' => 'icon']); ?>
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="users_results" class="search-results"></div>
+                </div>
+                <div id="tab_groups_pane" data-tab-id="groups" style="display: none;">
+                    <div class="lightyellowbox" style="margin-top: 5px; padding: 7px;">
+                        <form id="create_group_form" action="<?= make_url('configure_users_add_group'); ?>" method="post" accept-charset="<?= \pachno\core\framework\Settings::getCharset(); ?>" onsubmit="Pachno.Config.Group.add('<?= make_url('configure_users_add_group'); ?>');return false;">
+                            <div id="add_group">
+                                <label for="group_name"><?= __('Create a new group'); ?></label>
+                                <input type="text" id="group_name" name="group_name" placeholder="<?= __('Enter group name here'); ?>">
+                                <input type="submit" value="<?= __('Create'); ?>">
                             </div>
                         </form>
-                        <div id="users_results" class="search-results"></div>
                     </div>
-                    <div id="tab_groups_pane" data-tab-id="groups" style="display: none;">
-                        <div class="lightyellowbox" style="margin-top: 5px; padding: 7px;">
-                            <form id="create_group_form" action="<?= make_url('configure_users_add_group'); ?>" method="post" accept-charset="<?= \pachno\core\framework\Settings::getCharset(); ?>" onsubmit="Pachno.Config.Group.add('<?= make_url('configure_users_add_group'); ?>');return false;">
-                                <div id="add_group">
-                                    <label for="group_name"><?= __('Create a new group'); ?></label>
-                                    <input type="text" id="group_name" name="group_name" placeholder="<?= __('Enter group name here'); ?>">
-                                    <input type="submit" value="<?= __('Create'); ?>">
-                                </div>
-                            </form>
-                        </div>
-                        <table cellpadding=0 cellspacing=0 style="display: none; margin-left: 5px; width: 300px;" id="create_group_indicator">
-                            <tr>
-                                <td style="width: 20px; padding: 2px;"><?= image_tag('spinning_20.gif'); ?></td>
-                                <td style="padding: 0px; text-align: left;"><?= __('Adding group, please wait'); ?>...</td>
-                            </tr>
-                        </table>
-                        <div id="groupconfig_list">
-                            <?php foreach ($groups as $group): ?>
-                                <?php include_component('configuration/groupbox', array('group' => $group)); ?>
-                            <?php endforeach; ?>
-                        </div>
+                    <table cellpadding=0 cellspacing=0 style="display: none; margin-left: 5px; width: 300px;" id="create_group_indicator">
+                        <tr>
+                            <td style="width: 20px; padding: 2px;"><?= image_tag('spinning_20.gif'); ?></td>
+                            <td style="padding: 0px; text-align: left;"><?= __('Adding group, please wait'); ?>...</td>
+                        </tr>
+                    </table>
+                    <div id="groupconfig_list">
+                        <?php foreach ($groups as $group): ?>
+                            <?php include_component('configuration/groupbox', array('group' => $group)); ?>
+                        <?php endforeach; ?>
                     </div>
                 </div>
             </div>

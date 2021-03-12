@@ -1,12 +1,14 @@
 <div class="form-row">
-    <label for="setting_<?php echo \pachno\core\framework\Settings::SETTING_SITE_NAME; ?>"><?php echo __('Pachno custom name'); ?></label>
+    <label for="setting_<?php echo \pachno\core\framework\Settings::SETTING_SITE_NAME; ?>">
+        <span><?php echo __('Pachno custom name'); ?></span>
+        <?php echo config_explanation(
+            __('This is the name appearing in the headers and several other places, usually displaying "Pachno"')
+        ); ?>
+    </label>
     <input type="text" name="<?php echo \pachno\core\framework\Settings::SETTING_SITE_NAME; ?>" id="setting_<?php echo \pachno\core\framework\Settings::SETTING_SITE_NAME; ?>"
            value="<?php echo str_replace('"', '&quot;', \pachno\core\framework\Settings::getSiteHeaderName()); ?>"
            <?php if ($access_level != \pachno\core\framework\Settings::ACCESS_FULL): ?> disabled<?php endif; ?>
     >
-    <?php echo config_explanation(
-        __('This is the name appearing in the headers and several other places, usually displaying "Pachno"')
-    ); ?>
 </div>
 <div class="form-row">
         <label><?php echo __('Custom header and favicons'); ?></label>

@@ -363,13 +363,13 @@
                                         return $this->renderJSON(['message' => $this->getI18n()->__('The module could not be downloaded')]);
                                         break;
                                     case framework\exceptions\ModuleDownloadException::READONLY_TARGET:
-                                        return $this->renderJSON(['title' => $this->getI18n()->__('Error extracting module zip'), 'message' => $this->getI18n()->__('Could not extract the module into the destination folder. Please check permissions.')]);
+                                        return $this->renderJSON(['title' => $this->getI18n()->__('Error extracting module zip'), 'message' => $this->getI18n()->__('Could not extract the module into the destination folder. Make sure you have write access to the modules folder and try again.')]);
                                         break;
                                 }
                             } catch (Exception $e) {
                                 $this->getResponse()->setHttpStatus(400);
 
-                                return $this->renderJSON(['message' => $this->getI18n()->__('An error occured when trying to install the module')]);
+                                return $this->renderJSON(['message' => $this->getI18n()->__('An error occured when trying to install the module: ' . $e->getMessage())]);
                             }
                             break;
                         case 'install-theme':
@@ -428,7 +428,7 @@
                             }
                             try {
                                 $client = new Net_Http_Client();
-                                $client->get('https://pachno.com/addons.json?' . join('&', $addons_param));
+                                $client->get('https://pachno.com/addons.json?' . implode('&', $addons_param));
                                 $addons_json = json_decode($client->getBody(), true);
                             } catch (Exception $e) {
                             }
@@ -473,7 +473,7 @@
                             return $this->renderJSON(['verified' => (int)$exists]);
                             break;
                         case 'get_modules':
-                            return $this->renderComponent('configuration/onlinemodules');
+                            return $this->renderJSON(['component' => $this->getComponentHTML('configuration/onlinemodules')]);
                             break;
                         case 'get_themes':
                             return $this->renderComponent('configuration/onlinethemes');

@@ -1,15 +1,16 @@
 <?php if (isset($structure['filepaths'][$basepath])): ?>
     <?php foreach ($structure['filepaths'][$basepath] as $file): ?>
-        <li class="action_<?= $file->getAction(); ?>">
+        <a href="#file_<?= $file->getID(); ?>" class="list-item action_<?= $file->getAction(); ?>">
             <?php if ($file->getAction() == \pachno\core\entities\CommitFile::ACTION_DELETED): ?>
-                <a href="#file_<?= $file->getID(); ?>"><?= fa_image_tag('minus-square', ['class' => 'action-icon'], 'fas') . fa_image_tag($file->getFontAwesomeIcon(), [], $file->getFontAwesomeIconStyle()) . '<span class="filename">' . $file->getFilename() . '</span>'; ?></a>
+                <?= fa_image_tag('minus-square', ['class' => 'icon action-icon']) . fa_image_tag($file->getFontAwesomeIcon(), ['class' => 'icon'], $file->getFontAwesomeIconStyle()); ?>
             <?php elseif ($file->getAction() == \pachno\core\entities\CommitFile::ACTION_RENAMED): ?>
-                <a href="#file_<?= $file->getID(); ?>"><?= fa_image_tag('edit-square', ['class' => 'action-icon'], 'fas') . fa_image_tag($file->getFontAwesomeIcon(), [], $file->getFontAwesomeIconStyle()) . '<span class="filename">' . $file->getFilename() . '</span>'; ?></a>
+                <?= fa_image_tag('edit-square', ['class' => 'icon action-icon']) . fa_image_tag($file->getFontAwesomeIcon(), ['class' => 'icon'], $file->getFontAwesomeIconStyle()); ?>
             <?php elseif ($file->getAction() == \pachno\core\entities\CommitFile::ACTION_ADDED): ?>
-                <a href="#file_<?= $file->getID(); ?>"><?= fa_image_tag('plus-square', ['class' => 'action-icon'], 'fas') . fa_image_tag($file->getFontAwesomeIcon(), [], $file->getFontAwesomeIconStyle()) . '<span class="filename">' . $file->getFilename() . '</span>'; ?></a>
+                <?= fa_image_tag('plus-square', ['class' => 'icon action-icon']) . fa_image_tag($file->getFontAwesomeIcon(), ['class' => 'icon'], $file->getFontAwesomeIconStyle()); ?>
             <?php else: ?>
-                <a href="#file_<?= $file->getID(); ?>"><?= fa_image_tag('dot-circle', ['class' => 'action-icon'], 'far') . fa_image_tag($file->getFontAwesomeIcon(), [], $file->getFontAwesomeIconStyle()) . '<span class="filename">' . $file->getFilename() . '</span>'; ?></a>
+                <?= fa_image_tag('dot-circle', ['class' => 'icon action-icon'], 'far') . fa_image_tag($file->getFontAwesomeIcon(), ['class' => 'icon'], $file->getFontAwesomeIconStyle()); ?>
             <?php endif; ?>
-        </li>
+            <span class="name"><?= $file->getFilename(); ?></span>
+        </a>
     <?php endforeach; ?>
 <?php endif; ?>

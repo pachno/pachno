@@ -2465,15 +2465,16 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _helpers_agile__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ../helpers/agile */ "./js/helpers/agile.js");
 /* harmony import */ var _helpers_workflow__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ../helpers/workflow */ "./js/helpers/workflow.js");
 /* harmony import */ var _helpers_article__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ../helpers/article */ "./js/helpers/article.js");
-/* harmony import */ var _board__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ./board */ "./js/classes/board.js");
-/* harmony import */ var _search__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ./search */ "./js/classes/search.js");
-/* harmony import */ var _issuereporter__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ./issuereporter */ "./js/classes/issuereporter.js");
-/* harmony import */ var _issue__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ./issue */ "./js/classes/issue.js");
-/* harmony import */ var _uploader__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! ./uploader */ "./js/classes/uploader.js");
-/* harmony import */ var _roadmap__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! ./roadmap */ "./js/classes/roadmap.js");
-/* harmony import */ var _quicksearch__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(/*! ./quicksearch */ "./js/classes/quicksearch.js");
-/* harmony import */ var _i18n_en_US_strings_json__WEBPACK_IMPORTED_MODULE_21__ = __webpack_require__(/*! ../../i18n/en_US/strings.json */ "./i18n/en_US/strings.json");
-var _i18n_en_US_strings_json__WEBPACK_IMPORTED_MODULE_21___namespace = /*#__PURE__*/__webpack_require__.t(/*! ../../i18n/en_US/strings.json */ "./i18n/en_US/strings.json", 1);
+/* harmony import */ var _helpers_modules__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ../helpers/modules */ "./js/helpers/modules.js");
+/* harmony import */ var _board__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ./board */ "./js/classes/board.js");
+/* harmony import */ var _search__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ./search */ "./js/classes/search.js");
+/* harmony import */ var _issuereporter__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ./issuereporter */ "./js/classes/issuereporter.js");
+/* harmony import */ var _issue__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! ./issue */ "./js/classes/issue.js");
+/* harmony import */ var _uploader__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! ./uploader */ "./js/classes/uploader.js");
+/* harmony import */ var _roadmap__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(/*! ./roadmap */ "./js/classes/roadmap.js");
+/* harmony import */ var _quicksearch__WEBPACK_IMPORTED_MODULE_21__ = __webpack_require__(/*! ./quicksearch */ "./js/classes/quicksearch.js");
+/* harmony import */ var _i18n_en_US_strings_json__WEBPACK_IMPORTED_MODULE_22__ = __webpack_require__(/*! ../../i18n/en_US/strings.json */ "./i18n/en_US/strings.json");
+var _i18n_en_US_strings_json__WEBPACK_IMPORTED_MODULE_22___namespace = /*#__PURE__*/__webpack_require__.t(/*! ../../i18n/en_US/strings.json */ "./i18n/en_US/strings.json", 1);
 function _createForOfIteratorHelper(o, allowArrayLike) { var it; if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = o[Symbol.iterator](); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
 
 function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
@@ -2514,8 +2515,9 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
 
 
+
 var translations = {
-  en_US: _i18n_en_US_strings_json__WEBPACK_IMPORTED_MODULE_21__
+  en_US: _i18n_en_US_strings_json__WEBPACK_IMPORTED_MODULE_22__
 };
 
 var PachnoApplication = /*#__PURE__*/function () {
@@ -2537,6 +2539,7 @@ var PachnoApplication = /*#__PURE__*/function () {
     key: "EVENTS",
     get: function get() {
       return {
+        fetch: _helpers_fetch__WEBPACK_IMPORTED_MODULE_4__["EVENTS"],
         ready: 'pachno-ready',
         agile: {
           deleteBoard: 'agile-delete-board'
@@ -2591,7 +2594,7 @@ var PachnoApplication = /*#__PURE__*/function () {
       this.basepath = options.basepath;
       this.data_url = options.dataUrl;
       this.upload_url = options.uploadUrl;
-      this.quicksearch = new _quicksearch__WEBPACK_IMPORTED_MODULE_20__["default"](options.autocompleterUrl);
+      this.quicksearch = new _quicksearch__WEBPACK_IMPORTED_MODULE_21__["default"](options.autocompleterUrl);
       this.trigger(this.EVENTS.quicksearchAddDefaultChoice, {
         icon: {
           name: 'search',
@@ -2601,7 +2604,7 @@ var PachnoApplication = /*#__PURE__*/function () {
         name: 'Find something',
         description: 'Search through issues, projects, documentation and people',
         action: {
-          type: _quicksearch__WEBPACK_IMPORTED_MODULE_20__["TYPES"].navigate,
+          type: _quicksearch__WEBPACK_IMPORTED_MODULE_21__["TYPES"].navigate,
           url: '/account'
         }
       });
@@ -2614,7 +2617,7 @@ var PachnoApplication = /*#__PURE__*/function () {
         name: 'Show an issue',
         description: 'Go directly to an issue',
         action: {
-          type: _quicksearch__WEBPACK_IMPORTED_MODULE_20__["TYPES"].event,
+          type: _quicksearch__WEBPACK_IMPORTED_MODULE_21__["TYPES"].event,
           event: '/find'
         }
       });
@@ -2697,6 +2700,7 @@ var PachnoApplication = /*#__PURE__*/function () {
       Object(_helpers_profile__WEBPACK_IMPORTED_MODULE_6__["default"])();
       Object(_helpers_workflow__WEBPACK_IMPORTED_MODULE_12__["setupListeners"])();
       Object(_helpers_article__WEBPACK_IMPORTED_MODULE_13__["setupListeners"])();
+      Object(_helpers_modules__WEBPACK_IMPORTED_MODULE_14__["setupListeners"])();
       Object(_helpers_ui__WEBPACK_IMPORTED_MODULE_3__["setupListeners"])();
       Object(_widgets__WEBPACK_IMPORTED_MODULE_5__["default"])(); // $('#fullpage_backdrop_content').on('click', Core._resizeWatcher);
     }
@@ -2753,7 +2757,7 @@ var PachnoApplication = /*#__PURE__*/function () {
         return this.issues[json.id];
       }
 
-      this.issues[json.id] = new _issue__WEBPACK_IMPORTED_MODULE_17__["default"](json, board_id);
+      this.issues[json.id] = new _issue__WEBPACK_IMPORTED_MODULE_18__["default"](json, board_id);
       return this.issues[json.id];
     }
     /**
@@ -5594,6 +5598,112 @@ var Mentionsearch = /*#__PURE__*/function () {
 
 /***/ }),
 
+/***/ "./js/helpers/modules.js":
+/*!*******************************!*\
+  !*** ./js/helpers/modules.js ***!
+  \*******************************/
+/*! exports provided: setupListeners */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "setupListeners", function() { return setupListeners; });
+/* harmony import */ var _classes_pachno__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../classes/pachno */ "./js/classes/pachno.js");
+/* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! jquery */ "./node_modules/jquery/dist/jquery.js");
+/* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(jquery__WEBPACK_IMPORTED_MODULE_1__);
+
+
+
+var getModuleUpdates = function getModuleUpdates() {
+  var type = 'module';
+  var $plugins = jquery__WEBPACK_IMPORTED_MODULE_1___default()('#modules-list').find('.module');
+  var data = '';
+  $plugins.each(function () {
+    var $plugin = jquery__WEBPACK_IMPORTED_MODULE_1___default()(this);
+
+    if (!$plugin.hasClass('disabled')) {
+      data += '&addons[]=' + $plugin.data('module-key');
+    }
+  });
+  _classes_pachno__WEBPACK_IMPORTED_MODULE_0__["default"].fetch(_classes_pachno__WEBPACK_IMPORTED_MODULE_0__["default"].data_url, {
+    method: 'GET',
+    data: 'say=get_module_updates' + data
+  }).then(function (json) {
+    $plugins.each(function () {
+      var plugin = jquery__WEBPACK_IMPORTED_MODULE_1___default()(this);
+      var json_plugin = json[plugin.data('module-key')];
+
+      if (json_plugin !== undefined) {
+        if (plugin.data('version') != json_plugin.version) {
+          plugin.addClass('can-update');
+          var link = jquery__WEBPACK_IMPORTED_MODULE_1___default()(type + '_' + plugin.data('module-key') + '_download_location');
+          link.attr('href', json_plugin.download); // $('body').on('click', '.update-module-menu-item', function (e) {
+          //     var p luginbox = $(this).parents('li.'+type);
+          //     $('#update_module_help_' + pluginbox.data('id')).show();
+          //     if (!Pachno.Core.Pollers.pluginupdatepoller)
+          //         Pachno.Core.Pollers.pluginupdatepoller = new PeriodicalExecuter(Pachno.Core.validatePluginUpdateUploadedPoller(type, pluginbox.data('module-key')), 5);
+          // });
+        }
+      }
+    });
+  });
+};
+
+var getAvailableModules = function getAvailableModules() {
+  _classes_pachno__WEBPACK_IMPORTED_MODULE_0__["default"].fetch(_classes_pachno__WEBPACK_IMPORTED_MODULE_0__["default"].data_url, {
+    method: 'GET',
+    data: '&say=get_modules',
+    success: {
+      update: '#available_modules_container',
+      callback: function callback() {
+        jquery__WEBPACK_IMPORTED_MODULE_1___default()('body').on('click', '.module .install-button', installModule);
+      }
+    }
+  });
+};
+
+var installModule = function installModule() {
+  var $button = jquery__WEBPACK_IMPORTED_MODULE_1___default()(this);
+  var type = 'module';
+  var $module = $button.parents('.module');
+  $module.addClass('submitting');
+  $button.prop('disabled', true);
+  _classes_pachno__WEBPACK_IMPORTED_MODULE_0__["default"].fetch(_classes_pachno__WEBPACK_IMPORTED_MODULE_0__["default"].data_url, {
+    method: 'POST',
+    data: {
+      say: 'install-module',
+      module_key: $button.data('key')
+    },
+    success: {
+      callback: function callback(json) {
+        if (json.installed) {
+          jquery__WEBPACK_IMPORTED_MODULE_1___default()('#online-module-' + json[type + '_key']).addClass('installed');
+          jquery__WEBPACK_IMPORTED_MODULE_1___default()('#installed-modules-list').append(json[type]);
+        }
+      }
+    },
+    failure: {
+      callback: function callback() {
+        $module.removeClass('submitting');
+        $button.prop('disabled', false);
+      }
+    }
+  });
+};
+
+var setupListeners = function setupListeners() {
+  _classes_pachno__WEBPACK_IMPORTED_MODULE_0__["default"].on(_classes_pachno__WEBPACK_IMPORTED_MODULE_0__["default"].EVENTS.ready, function () {
+    if (jquery__WEBPACK_IMPORTED_MODULE_1___default()('#available_modules_container').length) {
+      getModuleUpdates();
+      getAvailableModules();
+    }
+  });
+};
+
+
+
+/***/ }),
+
 /***/ "./js/helpers/openid.js":
 /*!******************************!*\
   !*** ./js/helpers/openid.js ***!
@@ -6355,6 +6465,39 @@ var setupListeners = function setupListeners() {
       event.preventDefault();
       event.stopPropagation();
       submitStandaloneInput(event, jquery__WEBPACK_IMPORTED_MODULE_0___default()(event.target));
+    }
+  });
+  $body.on('change', 'input[data-interactive-toggle]', function (event) {
+    var $input = jquery__WEBPACK_IMPORTED_MODULE_0___default()(this),
+        value = $input.is(':checked') ? '1' : '0';
+    event.preventDefault();
+    event.stopPropagation();
+    if ($input.hasClass('submitting')) return;
+    $input.addClass('submitting');
+    $input.prop('disabled', true);
+
+    if ($input.data('event-key')) {
+      _classes_pachno__WEBPACK_IMPORTED_MODULE_1__["default"].listen($input.data('event-key'), function () {
+        $input.removeClass('submitting');
+        $input.prop('disabled', false);
+      });
+      _classes_pachno__WEBPACK_IMPORTED_MODULE_1__["default"].trigger($input.data('event-key'), $input);
+    } else {
+      _classes_pachno__WEBPACK_IMPORTED_MODULE_1__["default"].fetch($input.data('url'), {
+        method: 'POST',
+        data: {
+          value: value
+        }
+      }).then(function (json) {
+        $input.removeClass('submitting');
+        $input.prop('disabled', false); // response.json().then(resolve);
+        // res = response;
+        // console.log(response);
+        // resolve($form, res);
+        // response.json()
+        //     .then(function (json) {
+        //     });
+      });
     }
   });
   $body.on('submit', 'form[data-interactive-form]', function (event) {

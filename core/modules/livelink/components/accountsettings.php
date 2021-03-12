@@ -6,11 +6,11 @@
  */
 
 ?>
-<h3><?= __('Configured services'); ?></h3>
-<p><?= __('Link your external services (such as GitHub, GitLab, etc) from this page to enable linking projects via %pachno_live_link', ['%pachno_live_link' => link_tag('https://pachno.com/features/livelink', fa_image_tag('leaf') . 'Pachno Live Link')]); ?></p>
+<h3><?= __('External accounts'); ?></h3>
+<p><?= __('Link accounts from external services such as GitHub, GitLab, etc to enable linking or importing projects'); ?></p>
 <?php if (!$module->hasConnectors()): ?>
     <p class="livelink-intro">
-        <?= __('%pachno_live_link requires integration plugins. Download the integration plugins from %configure_modules or visit %pachno_com to get started.', ['%pachno_live_link' => link_tag('https://pachno.com/features/livelink', fa_image_tag('leaf') . 'Pachno Live Link', ['target' => '_blank']), '%pachno_com' => link_tag('https://pachno.com/register/self-hosted', fa_image_tag('globe') . ' pachno.com'), '%configure_modules' => link_tag(make_url('configure_modules'), __('Configuration center') . '&nbsp;&raquo;&nbsp;' . __('Modules'))]); ?>
+        <?= __('Download integration plugins from %configure_modules or visit %pachno_com to get started.', ['%pachno_com' => link_tag('https://pachno.com', fa_image_tag('globe') . ' pachno.com'), '%configure_modules' => link_tag(make_url('configure_modules'), __('Configuration center') . '&nbsp;&raquo;&nbsp;' . __('Modules'))]); ?>
     </p>
 <?php else: ?>
     <ul id="livelink-connector-accounts" class="livelink_connector_accounts">
@@ -23,51 +23,48 @@
         <?php endforeach; ?>
     </ul>
     <script>
-        require(['domReady', 'pachno/index', 'jquery'], function (domReady, pachno_index_js, $) {
-            domReady(function () {
+        Pachno.on(Pachno.EVENTS.ready, () => {
+            const $livelink_connector_accounts = $('#livelink-connector-accounts');
 
-                var $livelink_connector_accounts = $('#livelink-connector-accounts');
+            const disconnectConnector = function(e) {
+                const url       = '<?= make_url('disconnect_livelink_connector'); ?>',
+                    $button   = $(this),
+                    connector = $button.data('connector');
 
-                var disconnectConnector = function(e) {
-                    var url       = '<?= make_url('disconnect_livelink_connector'); ?>',
-                        $button   = $(this),
-                        connector = $button.data('connector');
+                e.preventDefault();
 
-                    e.preventDefault();
+                $button.addClass('submitting');
+                $button.prop('disabled', true);
 
-                    $button.addClass('submitting');
-                    $button.prop('disabled', true);
-
-                    var submitStep = function () {
-                        return new Promise(function (resolve, reject) {
-                            $.ajax({
-                                type: 'POST',
-                                dataType: 'text',
-                                data: 'connector=' + connector,
-                                url: url,
-                                success: resolve,
-                                error: function (details) {
-                                    $button.removeClass('submitting');
-                                    $button.prop('disabled', false);
-                                    reject(details);
-                                }
-                            });
+                const submitStep = function () {
+                    return new Promise(function (resolve, reject) {
+                        $.ajax({
+                            type: 'POST',
+                            dataType: 'text',
+                            data: 'connector=' + connector,
+                            url: url,
+                            success: resolve,
+                            error: function (details) {
+                                $button.removeClass('submitting');
+                                $button.prop('disabled', false);
+                                reject(details);
+                            }
                         });
-                    };
-
-                    submitStep()
-                        .then(function (result) {
-                            $('#livelink-' + connector + '-configuration').removeClass('connected');
-                            $button.removeClass('submitting');
-                            $button.prop('disabled', false);
-                        }, function (details) {
-                            pachno_index_js.Helpers.Message.error(details.responseJSON.error);
-                        });
+                    });
                 };
 
-                $livelink_connector_accounts.off('click');
-                $livelink_connector_accounts.on('click', '.button-disconnect-livelink-connector', disconnectConnector);
-            });
+                submitStep()
+                    .then(function (result) {
+                        $('#livelink-' + connector + '-configuration').removeClass('connected');
+                        $button.removeClass('submitting');
+                        $button.prop('disabled', false);
+                    }, function (details) {
+                        Pachno.Helpers.Message.error(details.responseJSON.error);
+                    });
+            };
+
+            $livelink_connector_accounts.off('click');
+            $livelink_connector_accounts.on('click', '.button-disconnect-livelink-connector', disconnectConnector);
         });
     </script>
 <?php endif; ?>

@@ -279,6 +279,12 @@
     font-weight: $theme-font-weight-heavy;
   }
 
+  .icon {
+    + span {
+      margin-left: .25em;
+    }
+  }
+
   .count-badge {
     background-color: $theme-primary-color;
     color: #FFF;

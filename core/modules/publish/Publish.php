@@ -43,7 +43,7 @@
 
         protected $_module_config_description = 'Set up the Wiki module from this section';
 
-        protected $_has_config_settings = true;
+        protected $_has_config_settings = false;
 
         /**
          * @var Article
@@ -371,9 +371,11 @@
             if ($retval !== null) {
                 return $retval;
             }
-            $retval = $user->hasPermission($permission_name, 'project_' . $article->getProject()->getID(), 'publish');
-            if ($retval !== null) {
-                return $retval;
+            if ($article->getProject() instanceof Project) {
+                $retval = $user->hasPermission($permission_name, 'project_' . $article->getProject()->getID(), 'publish');
+                if ($retval !== null) {
+                    return $retval;
+                }
             }
 
             $permissive = ($permission_name == self::PERMISSION_READ_ARTICLE) ? false : $permissive;

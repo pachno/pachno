@@ -36,6 +36,8 @@
 
         const CONFIGURATION_SECTION_UPLOADS = 3;
 
+        const CONFIGURATION_SECTION_MAILING = 'mailing';
+
         const CONFIGURATION_SECTION_ISSUEFIELDS = 4;
 
         const CONFIGURATION_SECTION_PERMISSIONS = 5;
@@ -270,6 +272,9 @@
 
         protected static $_ver_name = "-dev";
 
+        /**
+         * @var Scope
+         */
         protected static $_defaultscope;
 
         /**
@@ -350,7 +355,7 @@
          * @param string $name The settings key / name of the setting to store
          * @param mixed $value The value to store
          * @param string $module The name / key of the module storing the setting
-         * @param int $scope A scope id (or 0 to apply to all scopes)
+         * @param int|Scope $scope A scope id (or 0 to apply to all scopes)
          * @param int $uid A user id to save settings for
          *
          * @throws Exception
@@ -1119,8 +1124,9 @@
             if (Context::getScope()->isUploadsEnabled()) {
                 $config_sections['general'][self::CONFIGURATION_SECTION_UPLOADS] = ['route' => 'configure_files', 'description' => $i18n->__('Uploads and attachments'), 'fa_style' => 'fas', 'fa_icon' => 'upload', 'details' => $i18n->__('All settings related to file uploads are controlled from this section.')];
             }
+            $config_sections['general'][self::CONFIGURATION_SECTION_MAILING] = ['route' => ['configure_module', ['config_module' => 'mailing']], 'description' => Context::geti18n()->__(Context::getModule('mailing')->getConfigTitle()), 'icon' => Context::getModule('mailing')->getName(), 'details' => Context::geti18n()->__(Context::getModule('mailing')->getConfigDescription()), 'module' => Context::getModule('mailing')->getName(), 'fa_style' => Context::getModule('mailing')->getFontAwesomeStyle(), 'fa_icon' => Context::getModule('mailing')->getFontAwesomeIcon()];
 
-//            $config_sections['general'][self::CONFIGURATION_SECTION_MODULES] = ['route' => 'configure_modules', 'description' => $i18n->__('Manage modules'), 'fa_style' => 'fas', 'fa_icon' => 'puzzle-piece', 'details' => $i18n->__('Manage Pachno extensions from this section. New modules are installed from here.'), 'module' => 'core'];
+            $config_sections['general'][self::CONFIGURATION_SECTION_MODULES] = ['route' => 'configure_modules', 'description' => $i18n->__('Manage modules'), 'fa_style' => 'fas', 'fa_icon' => 'puzzle-piece', 'details' => $i18n->__('Manage Pachno extensions from this section. New modules are installed from here.'), 'module' => 'core'];
 
             $config_sections['security'][self::CONFIGURATION_SECTION_AUTHENTICATION] = ['route' => 'configure_authentication', 'disabled' => true, 'description' => $i18n->__('Authentication'), 'fa_style' => 'fas', 'fa_icon' => 'lock', 'details' => $i18n->__('Configure the authentication method in this section')];
             $config_sections['security'][self::CONFIGURATION_SECTION_ROLES] = ['route' => 'configure_roles', 'description' => $i18n->__('Roles'), 'fa_style' => 'fas', 'fa_icon' => 'user-tie', 'details' => $i18n->__('Configure roles in this section')];
@@ -1139,19 +1145,19 @@
             $config_sections['users'][self::CONFIGURATION_SECTION_USERS] = ['route' => 'configure_users', 'description' => $i18n->__('Users and groups'), 'fa_style' => 'fas', 'fa_icon' => 'users', 'details' => $i18n->__('Create, edit and manage users from this section')];
             $config_sections['users'][self::CONFIGURATION_SECTION_TEAMS] = ['route' => 'configure_teams', 'disabled' => true, 'description' => $i18n->__('Teams and clients'), 'fa_style' => 'fas', 'fa_icon' => 'users', 'details' => $i18n->__('Create and manage clients from this section.')];
 
-//            foreach (Context::getAllModules() as $modules) {
-//                foreach ($modules as $module) {
-//                    if ($module->hasConfigSettings() && ($module instanceof CoreModule || $module->isEnabled())) {
-//                        $module_array = ['route' => ['configure_module', ['config_module' => $module->getName()]], 'description' => Context::geti18n()->__($module->getConfigTitle()), 'icon' => $module->getName(), 'details' => Context::geti18n()->__($module->getConfigDescription()), 'module' => $module->getName()];
-//                        if ($module->hasFontAwesomeIcon()) {
-//                            $module_array['fa_icon'] = $module->getFontAwesomeIcon();
-//                            $module_array['fa_style'] = $module->getFontAwesomeStyle();
-//                            $module_array['fa_color'] = $module->getFontAwesomeColor();
-//                        }
-//                        $config_sections[self::CONFIGURATION_SECTION_MODULES][] = $module_array;
-//                    }
-//                }
-//            }
+            foreach (Context::getAllModules() as $modules) {
+                foreach ($modules as $module) {
+                    if ($module->hasConfigSettings() && !$module instanceof CoreModule && $module->isEnabled()) {
+                        $module_array = ['route' => ['configure_module', ['config_module' => $module->getName()]], 'description' => Context::geti18n()->__($module->getConfigTitle()), 'icon' => $module->getName(), 'details' => Context::geti18n()->__($module->getConfigDescription()), 'module' => $module->getName()];
+                        if ($module->hasFontAwesomeIcon()) {
+                            $module_array['fa_icon'] = $module->getFontAwesomeIcon();
+                            $module_array['fa_style'] = $module->getFontAwesomeStyle();
+                            $module_array['fa_color'] = $module->getFontAwesomeColor();
+                        }
+                        $config_sections[self::CONFIGURATION_SECTION_MODULES][] = $module_array;
+                    }
+                }
+            }
 
             return $config_sections;
         }

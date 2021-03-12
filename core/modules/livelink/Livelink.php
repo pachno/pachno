@@ -681,4 +681,25 @@
             return LivelinkImports::getTable()->hasPendingByProject($project);
         }
 
+        /**
+         * Listen to header menu strip
+         *
+         * @Listener(module="core", identifier="header_menu_strip")
+         *
+         * @param Event $event
+         */
+        public function listenerMainMenustrip(Event $event)
+        {
+            $route = $event->getSubject();
+
+            if (!$route instanceof framework\routing\Route)
+                return;
+
+            if ($route->getModuleName() == 'livelink' && framework\Context::getCurrentProject() instanceof Project) {
+                $component = framework\Action::returnComponentHTML('project/projectheader');
+                $event->setReturnValue($component);
+                $event->setProcessed();
+            }
+        }
+
     }

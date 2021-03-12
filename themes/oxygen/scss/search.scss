@@ -120,7 +120,8 @@
         font-weight: $theme-font-weight-regular;
       }
 
-      .board-name {
+      .board-name,
+      .item-name {
         font-size: 1.5em;
         color: $theme-text-color;
         font-weight: $theme-font-weight-bold;

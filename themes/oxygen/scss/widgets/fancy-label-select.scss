@@ -4,7 +4,7 @@
   display: inline-flex;
   align-items: center;
   flex-direction: row;
-  border: 1px solid $theme-secondary-color;
+  border: 1px solid $theme-primary-color;
   background-color: transparent;
   color: $theme-text-color;
   border-radius: 4px;
@@ -22,7 +22,7 @@
     &.fancy-checkbox {
       &:checked:not(:disabled) {
         + label {
-          background-color: $theme-secondary-color;
+          background-color: $theme-primary-color;
           color: #FFF;
 
           .fas,
@@ -54,7 +54,7 @@
     &:not(:first-of-type)::after {
       display: block;
       content: '';
-      border-right: 1px solid $theme-secondary-color;
+      border-right: 1px solid $theme-primary-color;
       height: calc(100% - .5rem);
       position: absolute;
       left: 1px;

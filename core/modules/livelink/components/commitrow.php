@@ -5,31 +5,42 @@
     /** @var \pachno\core\entities\Commit $commit */
     /** @var \pachno\core\entities\Project $project */
 
+    $url = (isset($branch)) ? make_url('livelink_project_commit', ['commit_hash' => $commit->getRevision(), 'project_key' => $project->getKey(), 'branch' => $branch->getName()]) : make_url('livelink_project_commit', ['commit_hash' => $commit->getRevision(), 'project_key' => $project->getKey()]);
+
 ?>
-<div class="commit <?php if (isset($branch)) echo ' branch_' . $branch->getName(); ?>" id="commit_<?= $commit->getID(); ?>">
-    <div class="message-author-container" style="flex: 1 1 auto;">
-        <?php if (isset($branch)): ?>
-            <a class="commit-message" href="<?= make_url('livelink_project_commit', ['commit_hash' => $commit->getRevision(), 'project_key' => $project->getKey(), 'branch' => $branch->getName()]); ?>"><?= trim($commit->getTitle()); ?></a>
-        <?php else: ?>
-            <a class="commit-message" href="<?= make_url('livelink_project_commit', ['commit_hash' => $commit->getRevision(), 'project_key' => $project->getKey()]); ?>"><?= trim($commit->getTitle()); ?></a>
-        <?php endif; ?>
-        <div class="commit-author"><?= __('Committed by %user %time', ['%user' => get_component_html('main/userdropdown', ['user' => $commit->getAuthor(), 'size' => 'small']), '%time' => \pachno\core\framework\Context::getI18n()->formatTime($commit->getDate(), 20)]); ?></div>
-    </div>
-    <?php if (isset($branches[$commit->getID()])): ?>
-        <div class="commit-branches">
-            <?php foreach ($branches[$commit->getID()] as $commit_branch): ?>
-                <div class="branch"><?= fa_image_tag('code-branch'); ?><span><?= $commit_branch->getName(); ?></span></div>
-            <?php endforeach; ?>
-        </div>
-    <?php endif; ?>
-    <?php if ($commit->isImported()): ?>
-        <div class="commit-diff-summary"><?php include_component('livelink/diff_summary', ['diffable' => $commit]); ?></div>
-    <?php endif; ?>
-    <div class="commit-sha"><?= $commit->getShortRevision(); ?></div>
-    <div class="commit-details">
-        <?php if (!$commit->isImported()): ?>
-            <?= fa_image_tag('exclamation-triangle', ['class' => 'not-imported', 'title' => __('This commit has been imported and is missing some information')]); ?>
-        <?php endif; ?>
-        <span class="commit-comments"><?= fa_image_tag('comments'); ?><?= $commit->getCommentCount(); ?></span>
-    </div>
+<div class="list-item trigger-show-commit commit multiline <?php if (isset($branch)) echo ' branch_' . $branch->getName(); ?>" id="commit_<?= $commit->getID(); ?>" data-url="<?= $url; ?>" data-commit-id="<?= $commit->getId(); ?>">
+    <span class="icon">
+        <span class="avatar-container">
+            <?php echo image_tag($commit->getAuthor()->getAvatarURL(false), array('alt' => ' '), true); ?>
+        </span>
+    </span>
+    <span class="name">
+        <span class="title"><?= trim($commit->getTitle(true)); ?></span>
+        <span class="description"><?= $commit->getAuthor()->getName(); ?>, <?= \pachno\core\framework\Context::getI18n()->formatTime($commit->getDate(), 12); ?></span>
+    </span>
+    <span class="information">
+        <?php /*if (isset($branches[$commit->getID()])): ?>
+            <span class="commit-branches">
+                <?php foreach ($branches[$commit->getID()] as $commit_branch): ?>
+                    <span class="branch"><?= fa_image_tag('code-branch'); ?><span><?= $commit_branch->getName(); ?></span></span>
+                <?php endforeach; ?>
+            </span>
+        <?php endif;*/ ?>
+        <span class="row">
+            <span class="item commit-sha"><?= $commit->getShortRevision(); ?></span>
+        </span>
+        <span class="row">
+            <?php if ($commit->isImported()): ?>
+                <?php include_component('livelink/diff_summary', ['diffable' => $commit]); ?>
+            <?php else: ?>
+                <span class="item tooltip-container not-imported">
+                    <?= fa_image_tag('exclamation-triangle', ['class' => 'icon']); ?>
+                    <span class="tooltip from-right">
+                        <span class="message"><?= __('This imported commit is missing some details. The details will be fetched when you open the commit details.'); ?></span>
+                    </span>
+                </span>
+            <?php endif; ?>
+            <span class="item commit-comments"><?= fa_image_tag('comments', ['class' => 'icon']); ?><span><?= $commit->getCommentCount(); ?></span></span>
+        </span>
+    </span>
 </div>

@@ -47,7 +47,7 @@
                         </div>
                         <div class="form-row">
                             <div class="helper-text">
-                                <?php echo __('When uploads are disabled, users will not be able to attach files to issues or upload documents, images or PDFs in project planning. More fine-grained permissions are available from the permissions configuration.'); ?>
+                                <?php echo __('Enabling uploads allows users to attach files to issues, use the "cover" functionality in boards, upload documents, images and PDFs. More fine-grained permissions are available from the permissions configuration.'); ?>
                             </div>
                         </div>
                         <div class="form-row">
@@ -135,7 +135,7 @@
                     <div class="form-row">
                         <div class="message-box type-warning">
                             <?php echo __('File uploads are not available in this instance of Pachno.'); ?>
-                            <?php echo __('When uploads are disabled, users will not be able to attach files to issues or upload documents, images or PDFs in project planning. More fine-grained permissions are available from the permissions configuration.'); ?>
+                            <?php echo __('When uploads are disabled, users will not be able to attach files to issues, use the "cover" functionality in boards, upload documents, images or PDFs. More fine-grained permissions are available from the permissions configuration.'); ?>
                         </div>
                     </div>
                 <?php endif; ?>

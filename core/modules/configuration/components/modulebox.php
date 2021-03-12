@@ -9,131 +9,103 @@
      */
 
 ?>
-<div class="configurable-component plugin module <?php if (!$module instanceof CoreModule && !$module->isEnabled()) echo ' disabled'; ?> <?php if (!$module instanceof CoreModule && $module->isOutdated()) echo ' can-update out-of-date'; ?>" id="module_<?php echo $module->getName(); ?>" data-module-key="<?php echo $module->getName(); ?>" <?php if (!$module instanceof CoreModule): ?>data-version="<?php echo $module->getVersion(); ?>"<?php endif; ?>>
-    <div class="row">
-        <div class="name">
-            <div class="title"><?= $module->getLongName(); ?></div>
-            <div class="status-row">
-                <?php if ($module instanceof CoreModule): ?>
-                    <div class="status-badge module_status plugin_status enabled">
-                        <?php echo __('Core module'); ?>
-                    </div>
-                <?php elseif ($module->getID()): ?>
-                    <div class="status-badge module_status plugin_status<?php echo ($module instanceof CoreModule || $module->isEnabled()) ? ' enabled' : ' disabled'; ?>">
-                        <?php echo ($module->isEnabled()) ? __('Enabled') : __('Disabled'); ?>
-                    </div>
-                    <div class="status-badge module_status plugin_status outofdate">
-                        <?php echo __('Needs update'); ?>
-                    </div>
-                <?php else: ?>
-                    <div class="status-badge module_status plugin_status outofdate">
-                        <?php echo __('Not installed'); ?>
-                    </div>
-                <?php endif; ?>
-                <?php if ($module instanceof CoreModule): ?>
-                    <div class="status-badge module_status plugin_status core">
-                        <?php echo __('Core module'); ?>
-                    </div>
-                <?php endif; ?>
-                <?php if ($module->getType() == ModuleInterface::MODULE_AUTH): ?>
-                    <div class="status-badge authentication-module">
-                        <?php echo image_tag('cfg_icon_authentication.png') . __('Authentication module'); ?>
-                    </div>
-                <?php endif; ?>
-            </div>
-            <div class="description"><?php echo __($module->getDescription()); ?></div>
-        </div>
+<div class="row module <?php if (!$module instanceof CoreModule && !$module->isEnabled()) echo ' disabled'; ?> <?php if (!$module instanceof CoreModule && $module->isOutdated()) echo ' can-update out-of-date'; ?>" id="module_<?php echo $module->getName(); ?>" data-module-key="<?php echo $module->getName(); ?>" <?php if (!$module instanceof CoreModule): ?>data-version="<?php echo $module->getVersion(); ?>"<?php endif; ?>>
+    <div class="column info-icons centered">
+        <?php if ($module->getID()): ?>
+            <input type="checkbox" class="fancy-checkbox" name="enabled" data-interactive-toggle value="1" id="toggle_enable_module_<?= $module->getId(); ?>_input" data-url="<?= make_url('configure_toggle_disable_module', array('module_key' => $module->getName())); ?>" <?php if ($module->isEnabled()) echo ' checked'; ?>><label class="button secondary icon" for="toggle_enable_module_<?= $module->getId(); ?>_input"><?= fa_image_tag('spinner', ['class' => 'fa-spin icon indicator']) . fa_image_tag('toggle-on', ['class' => 'icon checked']) . fa_image_tag('toggle-off', ['class' => 'icon unchecked']); ?></label>
+        <?php else: ?>
+            <?= fa_image_tag('certificate', ['class' => 'icon']); ?>
+        <?php endif; ?>
     </div>
-    <?php if (!$module instanceof CoreModule && $module->getID() && $is_default_scope): ?>
-        <div id="update_module_help_<?php echo $module->getID(); ?>" class="fullpage_backdrop" style="display: none;">
-            <div class="backdrop_box medium">
-                <div class="backdrop_detail_header">
-                    <span><?php echo __('Install downloaded module update file'); ?></span>
-                    <a href="javascript:void(0);" class="closer" onclick="Pachno.Core.cancelManualUpdatePoller();$('#update_module_help_<?php echo $module->getID(); ?>').hide();"><?php echo image_tag('times'); ?></a>
-                </div>
-                <div class="backdrop_detail_content">
-                    <?php echo __('Please click the download link below and download the update file. Place the downloaded file in the cache folder (%cache_folder) on this server. As soon as the file has been verified, the %update button below will be enabled, and you can press the button to update the module.',
-                        array('%cache_folder' => '<span class="command_box">'.PACHNO_CACHE_PATH.$module->getName().'.zip</span>', '%update' => '"'.__('Update').'"'));
-                    ?>
-                </div>
-                <form id="module_<?php echo $module->getName(); ?>_perform_update" style="display: inline-block; float: right; padding: 10px;" action="<?php echo make_url('configuration_module_update', array('module_key' => $module->getName())); ?>">
-                    <input type="submit" disabled value="<?php echo __('Update module'); ?>" class="button button-lightblue">
-                </form>
-                <div style="display: inline-block; float: none; padding: 10px;">
-                    <a id="module_<?php echo $module->getName(); ?>_download_location" class="button" href="#" target="_blank"><?php echo __('Download update file'); ?></a>
-                </div>
+    <div class="column name-container multiline">
+        <div class="title"><?= $module->getLongName(); ?></div>
+        <div class="description"><?php echo __($module->getDescription()); ?></div>
+    </div>
+    <div class="column">
+        <?php if ($module->getID()): ?>
+            <div class="status-badge module_status plugin_status outdated">
+                <?php echo __('Needs update'); ?>
             </div>
-        </div>
-    <?php endif; ?>
-    <div class="row actions">
-        <div class="actions plugin-actions">
-            <?php if (!$module instanceof CoreModule && $module->getID()): ?>
-                <?php if ($is_default_scope): ?>
-                    <button class="button button-lightblue update-button dropper" id="module_<?php echo $module->getID(); ?>_update" data-key="<?php echo $module->getName(); ?>"><?php echo __('Update'); ?></button>
-                    <ul id="module_<?php echo $module->getID(); ?>_update_dropdown" style="font-size: 1.1em; overflow: visible;" class="popup_box more_actions_dropdown" onclick="$(this).previous().toggleClass('button-pressed');$(this).toggle();">
-                        <?php if ($module->isOutdated()): ?>
-                            <li>
-                                <?php echo link_tag(make_url('configuration_module_update', array('module_key' => $module->getName())), __('Update to latest version')); ?>
-                            </li>
-                        <?php endif; ?>
-                        <li>
-                            <?php echo link_tag(make_url('configuration_download_module_update', array('module_key' => $module->getName())), __('Install latest version')); ?>
-                        </li>
-                        <li class="separator"></li>
-                        <li><a href="javascript:void(0);" class="update-module-menu-item"><?php echo __('Manual update'); ?></a></li>
-                    </ul>
-                <?php endif; ?>
-                <button class="button dropper" id="module_<?php echo $module->getID(); ?>_more_actions"><?php echo __('Actions'); ?></button>
-                <ul id="module_<?php echo $module->getID(); ?>_more_actions_dropdown" style="font-size: 1.1em;" class="popup_box more_actions_dropdown" onclick="$(this).previous().toggleClass('button-pressed');$(this).toggle();">
-                    <?php if ($module->hasConfigSettings()): ?>
-                        <li>
-                            <?php echo link_tag(make_url('configure_module', array('config_module' => $module->getName())), __('Configure module')); ?>
-                        </li>
-                    <?php endif; ?>
-                    <?php if ($module->getType() !== ModuleInterface::MODULE_AUTH): ?>
-                        <li>
-                            <?php if ($module->isEnabled()): ?>
-                                <a href="javascript:void(0);" onclick="$('#disable_module_<?php echo $module->getID(); ?>').toggle();$('#permissions_module_<?php echo($module->getID()); ?>').hide();$('#uninstall_module_<?php echo $module->getID(); ?>').hide();"><?php echo __('Disable module'); ?></a>
-                            <?php else: ?>
-                                <a href="javascript:void(0);" onclick="$('#enable_module_<?php echo $module->getID(); ?>').toggle();$('#permissions_module_<?php echo($module->getID()); ?>').hide();$('#uninstall_module_<?php echo $module->getID(); ?>').hide();"><?php echo __('Enable module'); ?></a>
-                            <?php endif; ?>
-                        </li>
-                    <?php endif; ?>
-                    <?php if (!$module instanceof CoreModule): ?>
-                        <li><a href="javascript:void(0);" onclick="$('#uninstall_module_<?php echo $module->getID(); ?>').toggle();$('#permissions_module_<?php echo($module->getID()); ?>').hide();$('#<?php if($module->isEnabled()): ?>disable<?php else: ?>enable<?php endif; ?>_module_<?php echo $module->getID(); ?>').hide();"><?php echo __('Uninstall module'); ?></a></li>
-                    <?php endif; ?>
-                </ul>
-            <?php else: ?>
-                <?php echo link_tag(make_url('configure_install_module', array('module_key' => $module->getName())), __('Install'), array('class' => 'button')); ?>
-            <?php endif; ?>
-        </div>
-        <?php if (!$module instanceof CoreModule && $module->getID()): ?>
-            <?php if ($module->isEnabled()): ?>
-                <div id="disable_module_<?php echo($module->getID()); ?>" style="display: none; margin-top: 10px; padding: 0 10px 5px 10px; text-align: left;" class="rounded_box white shadowed">
-                    <h4><?php echo __('Really disable "%module_name"?', array('%module_name' => $module->getLongname())); ?></h4>
-                    <span class="question_header"><?php echo __('Disabling this module will prevent users from accessing it or any associated data.'); ?></span><br>
-                    <div style="text-align: right;" id="disable_module_controls_<?php echo $module->getID(); ?>"><?php echo link_tag(make_url('configure_disable_module', array('module_key' => $module->getName())), __('Yes'), array('class' => 'xboxlink')); ?> :: <a href="javascript:void(0)" class="xboxlink" onclick="$('#disable_module_<?php echo $module->getID(); ?>').hide();"><?php echo __('No'); ?></a></div>
-                </div>
-            <?php else: ?>
-                <div id="enable_module_<?php echo($module->getID()); ?>" style="display: none; margin-top: 10px; padding: 0 10px 5px 10px; text-align: left;" class="rounded_box white shadowed">
-                    <h4><?php echo __('Really enable "%module_name"?', array('%module_name' => $module->getLongname())); ?></h4>
-                    <span class="question_header"><?php echo __('Enabling this module will give users access to it and all associated data.'); ?></span><br>
-                    <div style="text-align: right;" id="enable_module_controls_<?php echo $module->getID(); ?>"><?php echo link_tag(make_url('configure_enable_module', array('module_key' => $module->getName())), __('Yes'), array('class' => 'xboxlink')); ?> :: <a href="javascript:void(0)" class="xboxlink" onclick="$('#enable_module_<?php echo $module->getID(); ?>').hide();"><?php echo __('No'); ?></a></div>
-                </div>
-            <?php endif; ?>
-            <div id="uninstall_module_<?php echo($module->getID()); ?>" style="display: none; margin-top: 10px; padding: 0 10px 5px 10px; text-align: left;" class="rounded_box white shadowed">
-                <h4><?php echo __('Really uninstall "%module_name"?', array('%module_name' => $module->getLongname())); ?></h4>
-                <span class="question_header"><?php echo __('Uninstalling this module will permanently prevent users from accessing it or any associated data. If you just want to prevent access to the module temporarily, disable the module instead.'); ?></span><br>
-                <div style="text-align: right;" id="uninstall_module_controls_<?php echo $module->getID(); ?>"><?php echo link_tag(make_url('configure_uninstall_module', array('module_key' => $module->getName())), __('Yes'), array('class' => 'xboxlink')); ?> :: <a href="javascript:void(0)" class="xboxlink" onclick="$('#uninstall_module_<?php echo $module->getID(); ?>').hide();"><?php echo __('No'); ?></a></div>
+        <?php else: ?>
+            <div class="status-badge module_status plugin_status outdated">
+                <?php echo __('Not installed'); ?>
             </div>
         <?php endif; ?>
-        <div id="permissions_module_<?php echo($module->getName()); ?>" style="display: none; margin-top: 10px;" class="rounded_box white shadowed">
-            <div class="permission_list" style="padding: 0 10px 5px 10px; text-align: left;">
-                <div class="header_div" style="margin-top: 0;"><?php echo __('Available permissions'); ?></div>
-                <ul id="module_permission_details_<?php echo $module->getName(); ?>">
-                    <?php include_component('configuration/permissionsblock', array('base_id' => 'module_' . $module->getName() . '_permissions', 'permissions_list' => $module->getAvailablePermissions(), 'mode' => 'module_permissions', 'target_id' => 0, 'module' => $module->getName(), 'access_level' => (($pachno_user->canSaveConfiguration(\pachno\core\framework\Settings::CONFIGURATION_SECTION_PERMISSIONS) ? \pachno\core\framework\Settings::ACCESS_FULL : \pachno\core\framework\Settings::ACCESS_READ)))); ?>
-                </ul>
+        <?php if ($module->getType() == ModuleInterface::MODULE_AUTH): ?>
+            <div class="status-badge authentication-module">
+                <?php echo image_tag('cfg_icon_authentication.png') . __('Authentication module'); ?>
+            </div>
+        <?php endif; ?>
+    </div>
+    <div class="column actions">
+        <?php if ($is_default_scope): ?>
+            <?php if (!$module instanceof CoreModule && $module->getID()): ?>
+                <div class="dropper-container">
+                    <button class="dropper button secondary">
+                        <span><?= __('Actions'); ?></span>
+                        <?= fa_image_tag('angle-down', ['class' => 'icon']); ?>
+                    </button>
+                    <div class="dropdown-container">
+                        <div class="list-mode">
+                            <?php if ($module->isOutdated()): ?>
+                                <a href="<?php echo make_url('configure_module_update', array('module_key' => $module->getName())); ?>" class="list-item"><span class="name"><?= __('Update to latest version'); ?></span></a>
+                            <?php endif; ?>
+                            <a href="<?php echo make_url('configure_download_module_update', array('module_key' => $module->getName())); ?>" class="list-item"><span class="name"><?= __('Install latest version'); ?></span></a>
+                            <div class="list-item separator"></div>
+                            <a href="javascript:void(0);" class="list-item update-module-menu-item"><span class="name"><?php echo __('Manual update'); ?></span></a>
+                            <?php if ($module->hasConfigSettings()): ?>
+                                <a href="<?php echo make_url('configure_module', array('config_module' => $module->getName())); ?>" class="list-item"><span class="name"><?= __('Configure module'); ?></span></a>
+                            <?php endif; ?>
+                            <div class="list-item separator"></div>
+                            <?php if (!$module instanceof CoreModule): ?>
+                                <a href="javascript:void(0);" class="list-item danger" onclick="$('#uninstall_module_<?php echo $module->getID(); ?>').toggle();"><span class="name"><?php echo __('Uninstall module'); ?></span></a>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                </div>
+            <?php else: ?>
+                <?php echo link_tag(make_url('configure_install_module', ['module_key' => $module->getName()]), __('Install'), array('class' => 'button primary')); ?>
+            <?php endif; ?>
+        <?php endif; ?>
+    </div>
+</div>
+<?php if (!$module instanceof CoreModule && $module->getID() && $is_default_scope): ?>
+    <div id="update_module_help_<?php echo $module->getID(); ?>" class="fullpage_backdrop" style="display: none;">
+        <div class="backdrop_box medium">
+            <div class="backdrop_detail_header">
+                <span><?php echo __('Install downloaded module update file'); ?></span>
+                <a href="javascript:void(0);" class="closer" onclick="Pachno.Core.cancelManualUpdatePoller();$('#update_module_help_<?php echo $module->getID(); ?>').hide();"><?php echo image_tag('times'); ?></a>
+            </div>
+            <div class="backdrop_detail_content">
+                <?php echo __('Please click the download link below and download the update file. Place the downloaded file in the cache folder (%cache_folder) on this server. As soon as the file has been verified, the %update button below will be enabled, and you can press the button to update the module.',
+                    array('%cache_folder' => '<span class="command_box">'.PACHNO_CACHE_PATH.$module->getName().'.zip</span>', '%update' => '"'.__('Update').'"'));
+                ?>
+            </div>
+            <form id="module_<?php echo $module->getName(); ?>_perform_update" style="display: inline-block; float: right; padding: 10px;" action="<?php echo make_url('configure_module_update', array('module_key' => $module->getName())); ?>">
+                <input type="submit" disabled value="<?php echo __('Update module'); ?>" class="button button-lightblue">
+            </form>
+            <div style="display: inline-block; float: none; padding: 10px;">
+                <a id="module_<?php echo $module->getName(); ?>_download_location" class="button" href="#" target="_blank"><?php echo __('Download update file'); ?></a>
+            </div>
+        </div>
+    </div>
+<?php endif; ?>
+<?php if (!$module instanceof CoreModule && $module->getID()): ?>
+<div id="uninstall_module_<?php echo($module->getID()); ?>" class="fullpage_backdrop" style="display: none;">
+    <div class="fullpage_backdrop_content">
+        <div class="backdrop_box medium">
+            <div class="backdrop_detail_header">
+                <span><?php echo __('Really uninstall "%module_name"?', array('%module_name' => $module->getLongname())); ?></span>
+                <a href="javascript:void(0);" class="closer" onclick="$('#uninstall_module_<?php echo $module->getID(); ?>').hide();"><?php echo image_tag('times'); ?></a>
+            </div>
+            <div class="backdrop_detail_content">
+                <span class="question_header"><?php echo __('Uninstalling this module will permanently prevent users from accessing it or any associated data. If you just want to prevent access to the module temporarily, disable the module instead.'); ?></span><br>
+            </div>
+            <div class="backdrop_details_submit" id="uninstall_module_controls_<?php echo $module->getID(); ?>">
+                <?php echo link_tag(make_url('configure_uninstall_module', array('module_key' => $module->getName())), __('Yes'), array('class' => 'button primary')); ?>
+                <a href="javascript:void(0)" class="button secondary" onclick="$('#uninstall_module_<?php echo $module->getID(); ?>').hide();"><?php echo __('No'); ?></a>
             </div>
         </div>
     </div>
 </div>
+<?php endif; ?>

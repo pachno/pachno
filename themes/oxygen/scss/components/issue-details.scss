@@ -7,6 +7,10 @@
     .content {
       font-size: 1.15em;
 
+      img {
+        max-width: 100%;
+      }
+
       &.editable {
         &:hover {
           background-color: rgba(100, 100, 100, 0.05);

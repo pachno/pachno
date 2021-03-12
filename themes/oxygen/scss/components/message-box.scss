@@ -12,7 +12,7 @@
   font-weight: $theme-font-weight-bold;
 
   &.type-error {
-    background-color: #AF3E4D;
+    background-color: $theme-color-error;
     color: #FFF;
 
     .message {
@@ -21,14 +21,18 @@
   }
 
   &.type-warning {
-    background-color: #F4D58D;
+    background-color: $theme-color-warning;
     color: $theme-text-color;
   }
 
   &.type-info {
     border-color: transparent;
     color: #FFF;
-    background: #0cd8b6;
+    background: $theme-color-info;
+
+    .command_box {
+      background-color: rgba(100, 100, 100, .3);
+    }
   }
 
   .fas,
@@ -80,5 +84,21 @@
 
   .command_box {
     font-size: .85em;
+  }
+
+  ul {
+    margin: 0;
+    padding: 0;
+
+    li {
+      margin: 0;
+      &:not(.command_box) {
+        padding: 0;
+      }
+
+      + li {
+        margin-left: .25em;
+      }
+    }
   }
 }

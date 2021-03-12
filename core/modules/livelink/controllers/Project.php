@@ -125,20 +125,35 @@
         public function runProjectCommit(framework\Request $request)
         {
             $this->forward403unless($this->_checkProjectPageAccess('project_commits'));
+            $options = [
+                'project' => $this->selected_project
+            ];
 
             if ($request->hasParameter('branch')) {
-                $this->branch = Branches::getTable()->getByBranchNameAndProject($request['branch'], $this->selected_project);
-                if (!$this->branch instanceof Branch) {
+                $branch = Branches::getTable()->getByBranchNameAndProject($request['branch'], $this->selected_project);
+                if (!$branch instanceof Branch) {
                     $this->return404('Invalid branch');
                 }
+                $options['branch'] = $branch;
             }
 
-            $this->commit = Commits::getTable()->getCommitByHash($request['commit_hash'], $this->selected_project);
-            if (!$this->commit instanceof Commit) {
+            $commit = Commits::getTable()->getCommitByHash($request['commit_hash'], $this->selected_project);
+            if (!$commit instanceof Commit) {
                 $this->return404('Invalid commit');
             }
 
-            $this->is_importing = $this->getModule()->isProjectImportInProgress($this->selected_project);
+            if (!$commit->isImported()) {
+                $connector = $this->getModule()->getConnectorModule($this->getModule()->getProjectConnector($this->selected_project));
+                $connector->importSingleCommit($this->selected_project, $commit);
+            }
+
+            $options['is_importing'] = $this->getModule()->isProjectImportInProgress($this->selected_project);
+            $options['commit'] = $commit;
+
+            return $this->renderJSON([
+                'component' => $this->getComponentHTML('livelink/projectcommit', $options),
+                'commit' => $this->getComponentHTML('livelink/commitrow', $options),
+            ]);
         }
 
         /**

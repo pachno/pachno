@@ -134,7 +134,7 @@
         {
             framework\Context::loadLibrary('common');
             $settings = ['smtp_host', 'smtp_port', 'smtp_user', 'smtp_pwd', 'smtp_encryption', 'timeout', 'mail_type', 'enable_outgoing_notifications', 'cli_mailing_url',
-                'headcharset', 'from_name', 'from_addr', 'use_queue', 'activation_needed', 'sendmail_command'];
+                'from_name', 'from_addr', 'use_queue', 'activation_needed', 'sendmail_command'];
             foreach ($settings as $setting) {
                 if ($request->getParameter($setting) !== null || $setting == 'no_dash_f' || $setting == 'activation_needed') {
                     $value = $request->getParameter($setting);
@@ -159,19 +159,13 @@
                                 throw new Exception(framework\Context::getI18n()->__('Please provide a valid setting for SMTP server port'));
                             }
                             break;
-                        case 'headcharset':
-                            // list of supported character sets based on PHP doc : http://www.php.net/manual/en/function.htmlentities.php
-                            if (!pachno_check_syntax($value, "CHARSET")) {
-                                throw new Exception(framework\Context::getI18n()->__('Please provide a valid setting for email header charset'));
-                            }
-                            break;
                         case 'activation_needed':
                             $value = (int)$request->getParameter($setting, 0);
                             break;
                         case 'cli_mailing_url':
-                            $value = $request->getParameter($setting);
-                            if (substr($value, -1) == '/') {
-                                $value = substr($value, 0, strlen($value) - 1);
+                            $value = rtrim(trim($request->getParameter($setting)), '/');
+                            if (framework\Context::getScope()->isDefault() && !$value) {
+                                throw new Exception(framework\Context::getI18n()->__('Please provide a valid setting for the issue tracker url'));
                             }
                             break;
                     }
@@ -1299,7 +1293,6 @@ EOT;
             $this->saveSetting('smtp_port', 25, 0, $scope);
             $this->saveSetting('smtp_user', '', 0, $scope);
             $this->saveSetting('smtp_pwd', '', 0, $scope);
-            $this->saveSetting('headcharset', framework\Context::getI18n()->getLangCharset(), 0, $scope);
             $this->saveSetting('from_name', 'Pachno Automailer', 0, $scope);
             $this->saveSetting('from_addr', '', 0, $scope);
             $this->saveSetting('ehlo', 1, 0, $scope);

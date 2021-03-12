@@ -11,6 +11,28 @@
     display: flex;
     align-items: center;
     position: relative;
+    flex-direction: row;
+
+    &.header {
+      &,
+      &:hover {
+        font-weight: $theme-font-weight-bold;
+        font-size: 1.1em;
+        padding: .5em;
+
+        &:not(:first-child) {
+          margin-top: 1em;
+        }
+
+        span {
+          flex: 1 1 auto;
+        }
+
+        .count-badge {
+          flex: 0 0 auto;
+        }
+      }
+    }
 
     .fancy-dropdown-container {
       .fancy-dropdown {
@@ -32,12 +54,18 @@
     > .label {
       font-weight: $theme-font-weight-bold;
       flex: 0 1 140px;
-      padding: 7px 12px;
+      padding: .5em 1em;
     }
 
     > .value {
       flex: 1 1 auto;
       font-weight: $theme-font-weight-regular;
+      display: flex;
+
+      &.disabled {
+        color: $theme-text-color-lighter;
+        padding: .5em 1em;
+      }
 
       .value-container {
         display: flex;

@@ -129,9 +129,13 @@
 
         protected $_lines_added;
 
-        public function getTitle()
+        public function getTitle($full = false)
         {
             $lines = explode("\n", $this->getLog());
+
+            if ($full) {
+                return $lines[0];
+            }
 
             $title = substr($lines[0], 0, 60);
             if (strlen($lines[0]) > 60) $title .= '...';
@@ -159,11 +163,11 @@
             $this->_log = $log;
         }
 
-        public function getMessage()
+        public function getMessage($include_title = true)
         {
             $lines = explode("\n", $this->getLog());
 
-            if (count($lines) > 1) {
+            if (count($lines) > 1 || !$include_title) {
                 array_shift($lines);
 
                 return implode("\n", $lines);
@@ -511,7 +515,7 @@
          */
         public function getAuthor()
         {
-            return $this->_author;
+            return $this->_b2dbLazyLoad('_author');
         }
 
         /**

@@ -105,29 +105,31 @@
             </div>
         <?php endif; ?>
         <?php if ($article->getID()): ?>
-            <div id="article_attachments" class="show-article-attachments">
-                <h4>
-                    <?= fa_image_tag('paperclip', ['class' => 'icon']); ?>
-                    <span class="name">
-                        <span><?php echo __('Attachments'); ?></span>
-                        <span class="count-badge" id="article-attachments-count"><?= count($attachments); ?></span>
-                    </span>
-                    <?php if ($article->canEdit()): ?>
-                        <button class="button secondary trigger-file-upload">
-                            <span class="name"><?php echo __('Add attachment'); ?></span>
-                        </button>
-                    <?php elseif (!\pachno\core\framework\Settings::isUploadsEnabled()): ?>
-                        <button class="button secondary disabled" onclick="Pachno.UI.Message.error('<?php echo __('File uploads are not enabled'); ?>');"><?php echo __('Attach a file'); ?></button>
-                    <?php endif; ?>
-                </h4>
-                <?php include_component('publish/attachments', ['article' => $article, 'attachments' => $attachments]); ?>
-            </div>
-            <div class="upload-container fixed-position hidden" id="upload_drop_zone">
-                <div class="wrapper">
-                    <span class="image-container"><?= image_tag('/unthemed/icon-upload.png', [], true); ?></span>
-                    <span class="message"><?= $message ?? __('Drop the file to upload it'); ?></span>
+            <?php if (isset($attachments)): ?>
+                <div id="article_attachments" class="show-article-attachments">
+                    <h4>
+                        <?= fa_image_tag('paperclip', ['class' => 'icon']); ?>
+                        <span class="name">
+                            <span><?php echo __('Attachments'); ?></span>
+                            <span class="count-badge" id="article-attachments-count"><?= count($attachments); ?></span>
+                        </span>
+                        <?php if ($article->canEdit()): ?>
+                            <button class="button secondary trigger-file-upload">
+                                <span class="name"><?php echo __('Add attachment'); ?></span>
+                            </button>
+                        <?php elseif (!\pachno\core\framework\Settings::isUploadsEnabled()): ?>
+                            <button class="button secondary disabled" onclick="Pachno.UI.Message.error('<?php echo __('File uploads are not enabled'); ?>');"><?php echo __('Attach a file'); ?></button>
+                        <?php endif; ?>
+                    </h4>
+                    <?php include_component('publish/attachments', ['article' => $article, 'attachments' => $attachments]); ?>
                 </div>
-            </div>
+                <div class="upload-container fixed-position hidden" id="upload_drop_zone">
+                    <div class="wrapper">
+                        <span class="image-container"><?= image_tag('/unthemed/icon-upload.png', [], true); ?></span>
+                        <span class="message"><?= $message ?? __('Drop the file to upload it'); ?></span>
+                    </div>
+                </div>
+            <?php endif; ?>
             <div id="article_comments">
                 <h4>
                     <?= fa_image_tag('comment', ['class' => 'icon'], 'far'); ?>

@@ -27,10 +27,15 @@
       transition: opacity .25s ease-in-out;
     }
 
+    &.hidden {
+      display: none;
+    }
+
     &.submitting {
       &.form-row,
       .form-row {
         > input[type=text].invisible,
+        > input[type=password].invisible,
         > input[type=email].invisible,
         > input[type=search].invisible,
         > input[type=url].invisible,
@@ -66,6 +71,42 @@
 
     &.hidden {
       display: none;
+    }
+
+    &.aligned {
+      .column {
+        + .column {
+          .form-row {
+            justify-content: center;
+
+            label {
+              text-align: center;
+              justify-content: center;
+            }
+
+            .helper-text {
+              text-align: center;
+              justify-content: center;
+            }
+          }
+        }
+
+        &:last-child {
+          .form-row {
+            justify-content: flex-end;
+
+            label {
+              text-align: end;
+              justify-content: flex-end;
+            }
+
+            .helper-text {
+              text-align: end;
+              justify-content: flex-end;
+            }
+          }
+        }
+      }
     }
   }
 
@@ -170,6 +211,7 @@
       justify-content: center;
 
       input[type=text],
+      input[type=password],
       input[type=email],
       input[type=search],
       input[type=url],
@@ -186,6 +228,7 @@
 
     &.unified {
       > input[type=text],
+      > input[type=password],
       > input[type=search],
       > input[type=email],
       > input[type=url],
@@ -236,6 +279,7 @@
 
       > textarea,
       > input[type=text],
+      > input[type=password],
       > input[type=email],
       > input[type=search],
       > input[type=url],
@@ -346,6 +390,7 @@
 
     > textarea,
     > input[type=text],
+    > input[type=password],
     > input[type=search],
     > input[type=url],
     > input[type=password],
@@ -473,6 +518,7 @@
 
         & + textarea,
         & + input[type=text],
+        & + input[type=password],
         & + input[type=url],
         & + input[type=password] {
           flex: 1 1 calc(100% - 55px);

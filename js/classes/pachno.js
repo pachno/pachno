@@ -2,7 +2,7 @@ import $ from "jquery";
 import OpenID from "../helpers/openid";
 import Debugger from "./debugger";
 import UI, { setupListeners as uiSetupListeners } from "../helpers/ui";
-import {fetchHelper, formSubmitHelper, setupListeners as formSetupListeners} from "../helpers/fetch";
+import {fetchHelper, formSubmitHelper, setupListeners as formSetupListeners, EVENTS as FetchEvents } from "../helpers/fetch";
 import widgetSetupListeners, { calendars } from "../widgets";
 import profileSetupListeners from "../helpers/profile";
 import {initializeDashboards} from "../helpers/dashboard";
@@ -12,6 +12,7 @@ import {setupListeners as favouriteSetupListeners} from "../helpers/favourites";
 import {setupListeners as agileSetupListeners} from "../helpers/agile";
 import {setupListeners as workflowSetupListeners} from "../helpers/workflow";
 import {setupListeners as articleSetupListeners} from "../helpers/article";
+import {setupListeners as moduleSetupListeners} from "../helpers/modules";
 import Board from "./board";
 import Search from "./search";
 import Issuereporter from "./issuereporter";
@@ -28,6 +29,7 @@ const translations = {
 class PachnoApplication {
     get EVENTS() {
         return {
+            fetch: FetchEvents,
             ready: 'pachno-ready',
             agile: {
                 deleteBoard: 'agile-delete-board',
@@ -175,6 +177,7 @@ class PachnoApplication {
         profileSetupListeners();
         workflowSetupListeners();
         articleSetupListeners();
+        moduleSetupListeners();
         uiSetupListeners();
         widgetSetupListeners();
         // $('#fullpage_backdrop_content').on('click', Core._resizeWatcher);
