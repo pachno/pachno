@@ -73,6 +73,11 @@
       display: none;
     }
 
+    &.centered {
+      align-items: center;
+      justify-content: center;
+    }
+
     &.aligned {
       .column {
         + .column {
@@ -106,6 +111,30 @@
             }
           }
         }
+      }
+    }
+  }
+
+  fieldset {
+    border: 0;
+    border-top: 1px solid rgba(200, 200, 200, .8);
+    padding: .5em 8em;
+    max-width: 80%;
+    margin: .5em auto 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+
+    legend {
+      background-color: transparent;
+      border: none;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+
+      span {
+        padding: 0 2em;
       }
     }
   }
@@ -226,6 +255,10 @@
       }
     }
 
+    &.captcha {
+      padding: 2em;
+    }
+
     &.unified {
       > input[type=text],
       > input[type=password],
@@ -286,7 +319,7 @@
       > input[type=password],
       > .input {
         border-color: $theme-text-color-error;
-        background-color: rgba(214, 34, 70, 2);
+        background-color: rgba(214, 34, 70, .2);
       }
 
     }
@@ -397,8 +430,8 @@
     > input[type=email],
     > .input {
       flex: 1 1 100%;
-      padding: .2em;
-      font-size: 1em;
+      padding: .65em .15em .25em .15em;
+      font-size: 1.1em;
       box-sizing: border-box;
       font-weight: $theme-font-weight-light;
 

@@ -28,13 +28,13 @@
     </div>
     <div class="dismiss_me"><?php echo __('Okay'); ?></div>
 </div>
-<?php if (\pachno\core\framework\Context::getRouting()->getCurrentRoute()->getName() != 'auth_login_page' && $pachno_user->isGuest()): ?>
+<?php /*if (\pachno\core\framework\Context::getRouting()->getCurrentRoute()->getName() != 'auth_login_page' && $pachno_user->isGuest()): ?>
     <div id="login_backdrop" class="fullpage_backdrop" style="display: none;">
         <div id="login_content" class="fullpage_backdrop_content">
             <?php include_component('auth/loginpopup', array('content' => get_component_html('auth/login'), 'mandatory' => false)); ?>
         </div>
     </div>
-<?php endif; ?>
+<?php endif; */ ?>
 <div class="quicksearch-container" id="quicksearch-container">
     <div class="quicksearch-content">
         <div class="searchbox-container">

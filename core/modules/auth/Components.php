@@ -38,15 +38,6 @@
                 $this->referer = framework\Context::getRouting()->generate('dashboard');
             endif;
 
-            try {
-                $this->loginintro = null;
-                $this->registrationintro = null;
-                $this->loginintro = tables\Articles::getTable()->getArticleByName('LoginIntro');
-                $this->registrationintro = tables\Articles::getTable()->getArticleByName('RegistrationIntro');
-            } catch (Exception $e) {
-
-            }
-
             if (framework\Settings::isLoginRequired()) {
                 $authentication_backend = framework\Settings::getAuthenticationBackend();
                 if ($authentication_backend->getAuthenticationMethod() == AuthenticationProvider::AUTHENTICATION_TYPE_TOKEN) {
@@ -77,13 +68,6 @@
             $google2fa_qr_code = new \PragmaRX\Google2FAQRCode\Google2FA();
             $this->qr_code_inline = $google2fa_qr_code->getQRCodeInline('Pachno', $this->getUser()->getEmail(), $secret);
             $this->session_token = framework\Context::getRequest()->getCookie('session_token');
-        }
-
-        public function componentCaptcha()
-        {
-            if (!isset($_SESSION['activation_number'])) {
-                $_SESSION['activation_number'] = pachno_get_activation_number();
-            }
         }
 
     }

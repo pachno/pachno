@@ -119,6 +119,7 @@ export const fetchHelper = function (url, options) {
             }
             if ($form !== undefined) {
                 $form.addClass('submitting');
+                $form.find('.form-row').removeClass('invalid');
                 $form.find('button[type=submit]').each(function () {
                     let $button = $(this);
                     $button.addClass('auto-disabled');
@@ -179,6 +180,22 @@ export const fetchHelper = function (url, options) {
                             UI.Message.error(json.error, json.message);
                             if (options.failure && options.failure.callback) {
                                 options.failure.callback(json);
+                            }
+                            if ($form !== undefined) {
+                                $form.addClass('invalid');
+                                if (json.errors !== undefined) {
+                                    $form.find('.form-row.error').html();
+                                    for (const error in json.errors) {
+                                        if (!json.errors.hasOwnProperty(error))
+                                            continue;
+
+                                        const $errors = $form.find(`.form-row[data-field="${error}"]`);
+                                        $errors.addClass('invalid');
+                                        if (json.errors[error] !== "") {
+                                            $errors.find('.error').html(json.errors[error]);
+                                        }
+                                    }
+                                }
                             }
                             _reject(json);
                         }).catch(() => _reject(response));

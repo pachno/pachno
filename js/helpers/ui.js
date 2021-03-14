@@ -266,7 +266,7 @@ const autoSubmitForm = function (event) {
 };
 
 const submitForm = function ($form, options = {}) {
-    const url = $form.data('url') || $form.attr('action');
+    const url = options.url || $form.data('url') || $form.attr('action');
 
     if ($form.data('update-container')) {
         if ($form.data('update-insert') !== undefined) {
@@ -351,6 +351,18 @@ const setupListeners = function() {
     $body.on('click', '.trigger-backdrop', autoBackdropLink);
 
     $body.on('submit', 'form[data-simple-submit]', autoSubmitForm);
+    $body.on('blur', 'input[data-verify-on-blur]', function (event) {
+        event.preventDefault();
+        event.stopPropagation();
+
+        const $input = $(this);
+        const $form = $input.parents('form');
+        const options = {
+            url: $input.data('url')
+        };
+
+        return submitForm($form, options);
+    });
 
     $body.on('click', '.trigger-open-component', function(event) {
         event.preventDefault();

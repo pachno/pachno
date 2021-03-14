@@ -5033,6 +5033,7 @@ var fetchHelper = function fetchHelper(url, options) {
 
       if ($form !== undefined) {
         $form.addClass('submitting');
+        $form.find('.form-row').removeClass('invalid');
         $form.find('button[type=submit]').each(function () {
           var $button = jquery__WEBPACK_IMPORTED_MODULE_0___default()(this);
           $button.addClass('auto-disabled');
@@ -5094,6 +5095,24 @@ var fetchHelper = function fetchHelper(url, options) {
 
             if (options.failure && options.failure.callback) {
               options.failure.callback(json);
+            }
+
+            if ($form !== undefined) {
+              $form.addClass('invalid');
+
+              if (json.errors !== undefined) {
+                $form.find('.form-row.error').html();
+
+                for (var error in json.errors) {
+                  if (!json.errors.hasOwnProperty(error)) continue;
+                  var $errors = $form.find(".form-row[data-field=\"".concat(error, "\"]"));
+                  $errors.addClass('invalid');
+
+                  if (json.errors[error] !== "") {
+                    $errors.find('.error').html(json.errors[error]);
+                  }
+                }
+              }
             }
 
             _reject(json);
@@ -6311,7 +6330,7 @@ var autoSubmitForm = function autoSubmitForm(event) {
 
 var submitForm = function submitForm($form) {
   var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-  var url = $form.data('url') || $form.attr('action');
+  var url = options.url || $form.data('url') || $form.attr('action');
 
   if ($form.data('update-container')) {
     if ($form.data('update-insert') !== undefined) {
@@ -6403,6 +6422,16 @@ var setupListeners = function setupListeners() {
   });
   $body.on('click', '.trigger-backdrop', autoBackdropLink);
   $body.on('submit', 'form[data-simple-submit]', autoSubmitForm);
+  $body.on('blur', 'input[data-verify-on-blur]', function (event) {
+    event.preventDefault();
+    event.stopPropagation();
+    var $input = jquery__WEBPACK_IMPORTED_MODULE_0___default()(this);
+    var $form = $input.parents('form');
+    var options = {
+      url: $input.data('url')
+    };
+    return submitForm($form, options);
+  });
   $body.on('click', '.trigger-open-component', function (event) {
     event.preventDefault();
     event.stopPropagation();

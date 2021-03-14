@@ -161,7 +161,7 @@
         public function forward403unless($condition, $message = null)
         {
             if (!$condition) {
-                $message = ($message === null) ? Context::getI18n()->__("You are either not allowed to access this page or don't have access to perform this action") : $message;
+                $message = ($message === null) ? Context::getI18n()->__('Please log in to continue') : $message;
                 if (Context::getUser()->isGuest()) {
                     Context::setMessage('login_message_err', htmlentities($message));
                     Context::setMessage('login_force_redirect', true);

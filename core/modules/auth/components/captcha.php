@@ -1,21 +1,15 @@
-<div class="security_check form-row">
-    <?php
+<?php
 
-        if (function_exists('imagecreatetruecolor'))
-        {
-                // use of timestamped paramter in the captcha route for preventing image cache
-                echo image_tag(\pachno\core\framework\Context::getRouting()->generate('auth_captcha', array(time())), array(), true, 'core', true);
-        }
-        else
-        {
-            $chain = str_split($_SESSION['activation_number'],1);
-            foreach ($chain as $number)
-            {
-                echo image_tag('numbers/' . $number . '.png');
-            }
-        }
+    /**
+     * @var \Gregwar\Captcha\CaptchaBuilder $captcha
+     */
 
-    ?>
-    <input type="text" class="required" id="verification_no" name="verification_no" maxlength="6" value="" autocomplete="off">
+?>
+<div class="form-row captcha centered">
+    <img src="<?= $captcha->inline(100); ?>">
+</div>
+<div class="form-row" data-field="verification_no">
     <label for="verification_no"><?php echo __('Enter the number you see above'); ?></label>
+    <input type="text" class="required" id="verification_no" name="verification_no" maxlength="6" value="" autocomplete="off">
+    <div class="error"></div>
 </div>

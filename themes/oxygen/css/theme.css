@@ -627,14 +627,11 @@ footer {
   margin-left: auto;
   margin-right: auto; }
 
-.logindiv {
+.logindiv, .logindiv.form-container:not(.active) {
   display: none; }
 
 .logindiv.active {
   display: flex; }
-
-.logindiv.form-container:not(.active) {
-  display: none; }
 
 .register_success {
   width: 600px;
@@ -7163,6 +7160,9 @@ input[data-interactive-toggle].submitting + label .indicator {
       .fields-list > li > .value.disabled {
         color: #676767;
         padding: .5em 1em; }
+      .fields-list > li > .value.list {
+        flex-direction: column;
+        align-items: flex-start; }
       .fields-list > li > .value .value-container {
         display: flex;
         flex-direction: row;
@@ -7367,6 +7367,11 @@ input[data-interactive-toggle].submitting + label .indicator {
     .form-container .form > .row.hidden,
     .form-container form > .row.hidden {
       display: none; }
+    .form-container > .row.centered,
+    .form-container .form > .row.centered,
+    .form-container form > .row.centered {
+      align-items: center;
+      justify-content: center; }
     .form-container > .row.aligned .column + .column .form-row,
     .form-container .form > .row.aligned .column + .column .form-row,
     .form-container form > .row.aligned .column + .column .form-row {
@@ -7395,6 +7400,24 @@ input[data-interactive-toggle].submitting + label .indicator {
       .form-container form > .row.aligned .column:last-child .form-row .helper-text {
         text-align: end;
         justify-content: flex-end; }
+  .form-container fieldset {
+    border: 0;
+    border-top: 1px solid rgba(200, 200, 200, 0.8);
+    padding: .5em 8em;
+    max-width: 80%;
+    margin: .5em auto 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column; }
+    .form-container fieldset legend {
+      background-color: transparent;
+      border: none;
+      display: flex;
+      flex-direction: row;
+      align-items: center; }
+      .form-container fieldset legend span {
+        padding: 0 2em; }
   .form-container > .column,
   .form-container > .row > .column,
   .form-container form > .column,
@@ -7497,6 +7520,8 @@ input[data-interactive-toggle].submitting + label .indicator {
       .form-container .form-row.centered label {
         justify-content: center;
         text-align: center; }
+    .form-container .form-row.captcha {
+      padding: 2em; }
     .form-container .form-row.unified > input[type=text],
     .form-container .form-row.unified > input[type=password],
     .form-container .form-row.unified > input[type=search],
@@ -7540,7 +7565,7 @@ input[data-interactive-toggle].submitting + label .indicator {
     .form-container .form-row.invalid > input[type=password],
     .form-container .form-row.invalid > .input {
       border-color: #D62246;
-      background-color: #d62246; }
+      background-color: rgba(214, 34, 70, 0.2); }
     .form-container .form-row .helper-text {
       flex: 1 1 100%;
       color: #999999;
@@ -7609,8 +7634,8 @@ input[data-interactive-toggle].submitting + label .indicator {
     .form-container .form-row > input[type=email],
     .form-container .form-row > .input {
       flex: 1 1 100%;
-      padding: .2em;
-      font-size: 1em;
+      padding: .65em .15em .25em .15em;
+      font-size: 1.1em;
       box-sizing: border-box;
       font-weight: 300; }
       .form-container .form-row > textarea.invisible,
@@ -13910,6 +13935,8 @@ DEL {
       border: none;
       box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.16), 0 0 1px 0 rgba(0, 0, 0, 0.16);
       border-radius: 4px; }
+      .fullpage_backdrop .fullpage_backdrop_content .backdrop_box.hidden {
+        display: none; }
       .fullpage_backdrop .fullpage_backdrop_content .backdrop_box.small {
         width: 400px; }
       .fullpage_backdrop .fullpage_backdrop_content .backdrop_box.mediumsmall {

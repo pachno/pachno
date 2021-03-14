@@ -805,7 +805,15 @@
             $username = mb_strtolower(trim($request['username']));
             $available = ($username != '') ? tables\Users::getTable()->isUsernameAvailable($username) : false;
 
-            return $this->renderJSON(['available' => (bool)$available]);
+            if (!$available) {
+                $this->getResponse()->setHttpStatus(400);
+                return $this->renderJSON([
+                    'error' => $this->getI18n()->__('Woops, that username is unavailable'),
+                    'errors' => ['username' => $this->getI18n()->__('Oh no, this username is unavailable!')]
+                ]);
+            }
+
+            return $this->renderJSON(['available' => (bool) $available]);
         }
 
         /**
@@ -824,11 +832,9 @@
 
             try {
                 $username = mb_strtolower(trim($request['username']));
-                $buddyname = $request['buddyname'];
                 $email = mb_strtolower(trim($request['email_address']));
                 $confirmemail = mb_strtolower(trim($request['email_confirm']));
                 $security = $request['verification_no'];
-                $realname = $request['realname'];
 
                 $available = tables\Users::getTable()->isUsernameAvailable($username);
 
@@ -836,71 +842,79 @@
                     throw new Exception($i18n->__('This username is in use'));
                 }
 
-                if (!empty($buddyname) && !empty($email) && !empty($confirmemail) && !empty($security)) {
-                    if ($email != $confirmemail) {
-                        array_push($fields, 'email_address', 'email_confirm');
-                        throw new Exception($i18n->__('The email address must be valid, and must be typed twice.'));
+                if (empty($username)) {
+                    $fields['username'] = $i18n->__('Please enter your desired username.');
+                }
+
+                if (empty($email)) {
+                    $fields['email_address'] = $i18n->__('You need to fill out this field.');
+                }
+                if (empty($confirmemail)) {
+                    $fields['email_confirm'] = $i18n->__('You need to fill out this field.');
+                }
+                if (empty($security)) {
+                    $fields['verification_no'] = $i18n->__('You need to fill out this field.');
+                }
+
+                if (!empty($email) && !empty($confirmemail) && $email != $confirmemail) {
+                    $fields['email_address'] = $i18n->__('Please enter the email address twice');
+                    $fields['email_confirm'] = $i18n->__('Please enter the email address twice');
+                    throw new Exception($i18n->__('The email address must be valid, and must be typed twice.'));
+                }
+
+                if (!empty($security) && $security != $_SESSION['activation_number']) {
+                    $fields['verification_no'] = $i18n->__('Woops, that seems like a wrong number');
+                    throw new Exception($i18n->__('To prevent automatic sign-ups, enter the verification number shown in the image.'));
+                }
+
+                $email_ok = false;
+
+                if (pachno_check_syntax($email, "EMAIL")) {
+                    $email_ok = true;
+                }
+
+                if ($email_ok && Settings::hasRegistrationDomainWhitelist()) {
+                    $allowed_domains = preg_replace('/[[:space:]]*,[[:space:]]*/', '|', Settings::getRegistrationDomainWhitelist());
+                    if (preg_match('/@(' . $allowed_domains . ')$/i', $email) == false) {
+                        $fields['email_address'] = $i18n->__('Please enter a valid email address');
+                        throw new Exception($i18n->__('Email adresses from this domain can not be used.'));
                     }
+                }
 
-                    if ($security != $_SESSION['activation_number']) {
-                        array_push($fields, 'verification_no');
-                        throw new Exception($i18n->__('To prevent automatic sign-ups, enter the verification number shown below.'));
-                    }
+                if ($email_ok == false) {
+                    $fields['email_address'] = $i18n->__('Please enter the email address twice');
+                    $fields['email_confirm'] = $i18n->__('Please enter the email address twice');
+                    throw new Exception($i18n->__('The email address must be valid, and must be typed twice.'));
+                }
 
-                    $email_ok = false;
-
-                    if (pachno_check_syntax($email, "EMAIL")) {
-                        $email_ok = true;
-                    }
-
-                    if ($email_ok && Settings::hasRegistrationDomainWhitelist()) {
-
-                        $allowed_domains = preg_replace('/[[:space:]]*,[[:space:]]*/', '|', Settings::getRegistrationDomainWhitelist());
-                        if (preg_match('/@(' . $allowed_domains . ')$/i', $email) == false) {
-                            array_push($fields, 'email_address', 'email_confirm');
-                            throw new Exception($i18n->__('Email adresses from this domain can not be used.'));
-                        }
-                    }
-
-                    if ($email_ok == false) {
-                        array_push($fields, 'email_address', 'email_confirm');
-                        throw new Exception($i18n->__('The email address must be valid, and must be typed twice.'));
-                    }
-
-                    if ($security != $_SESSION['activation_number']) {
-                        array_push($fields, 'verification_no');
-                        throw new Exception($i18n->__('To prevent automatic sign-ups, enter the verification number shown below.'));
-                    }
-
-                    $password = entities\User::createPassword();
-                    $user = new entities\User();
-                    $user->setUsername($username);
-                    $user->setRealname($realname);
-                    $user->setBuddyname($buddyname);
-                    $user->setGroup(Settings::getDefaultGroup());
-                    $user->setEnabled();
-                    $user->setPassword($password);
-                    $user->setEmail($email);
-                    $user->setJoined();
-                    $user->save();
-
-                    $_SESSION['activation_number'] = pachno_get_activation_number();
-
-                    if ($user->isActivated()) {
-                        framework\Context::setMessage('auto_password', $password);
-
-                        return $this->renderJSON(['loginmessage' => $i18n->__('After pressing %continue, you need to set your password.', ['%continue' => $i18n->__('Continue')]), 'one_time_password' => $password, 'activated' => true]);
-                    }
-
-                    return $this->renderJSON(['loginmessage' => $i18n->__('The account has now been registered - check your email inbox for the activation email. Please be patient - this email can take up to two hours to arrive.'), 'activated' => false]);
-                } else {
-                    array_push($fields, 'email_address', 'email_confirm', 'buddyname', 'verification_no');
+                if (count($fields)) {
                     throw new Exception($i18n->__('You need to fill out all fields correctly.'));
                 }
+
+                $password = entities\User::createPassword();
+                $user = new entities\User();
+                $user->setUsername($username);
+                $user->setRealname($realname);
+                $user->setGroup(Settings::getDefaultGroup());
+                $user->setEnabled();
+                $user->setPassword($password);
+                $user->setEmail($email);
+                $user->setJoined();
+                $user->save();
+
+                unset($_SESSION['activation_number']);
+
+                if ($user->isActivated()) {
+                    framework\Context::setMessage('auto_password', $password);
+
+                    return $this->renderJSON(['loginmessage' => $i18n->__('After pressing %continue, you need to set your password.', ['%continue' => $i18n->__('Continue')]), 'one_time_password' => $password, 'activated' => true]);
+                }
+
+                return $this->renderJSON(['loginmessage' => $i18n->__('The account has now been registered - check your email inbox for the activation email. Please be patient - this email can take up to two hours to arrive.'), 'activated' => false]);
             } catch (Exception $e) {
                 $this->getResponse()->setHttpStatus(400);
 
-                return $this->renderJSON(['error' => $i18n->__($e->getMessage()), 'fields' => $fields]);
+                return $this->renderJSON(['error' => $i18n->__($e->getMessage()), 'errors' => $fields]);
             }
         }
 

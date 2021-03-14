@@ -67,6 +67,11 @@
         padding: .5em 1em;
       }
 
+      &.list {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
       .value-container {
         display: flex;
         flex-direction: row;

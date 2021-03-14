@@ -8,6 +8,7 @@
     use pachno\core\framework;
     use pachno\core\framework\Response;
     use PragmaRX\Google2FA\Google2FA;
+    use Gregwar\Captcha\CaptchaBuilder;
 
     /**
      * Login actions
@@ -27,6 +28,10 @@
         public function runLogin(framework\Request $request)
         {
             $this->section = $request->getParameter('section', 'login');
+            $captcha = new CaptchaBuilder();
+            $captcha->build();
+            $_SESSION['activation_number'] = $captcha->getPhrase();
+            $this->captcha = $captcha;
         }
 
         /**

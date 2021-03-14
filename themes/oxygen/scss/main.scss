@@ -543,15 +543,14 @@ footer {
 }
 
 .logindiv {
-  display: none;
-}
+  &,
+  &.form-container:not(.active) {
+    display: none;
+  }
 
-.logindiv.active {
-  display: flex;
-}
-
-.logindiv.form-container:not(.active) {
-  display: none;
+  &.active {
+    display: flex;
+  }
 }
 
 .register_success {

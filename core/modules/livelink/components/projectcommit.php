@@ -66,7 +66,7 @@
                     <?php endif; ?>
                     <li>
                         <div class="label"><?= __('Branch(es)'); ?></div>
-                        <div class="value">
+                        <div class="value list">
                             <?php foreach ($commit->getBranches() as $branch): ?>
                                 <div class="status-badge branch-badge"><?= fa_image_tag('code-branch', ['class' => 'icon']) . $branch->getName(); ?></div>
                             <?php endforeach; ?>
