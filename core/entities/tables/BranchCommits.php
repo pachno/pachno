@@ -3,6 +3,7 @@
     namespace pachno\core\entities\tables;
 
     use b2db\Criterion;
+    use b2db\QueryColumnSort;
     use pachno\core\entities\Branch;
     use pachno\core\entities\Commit;
 
@@ -53,6 +54,19 @@
         {
             $this->addIndex('commit', self::COMMIT_ID);
             $this->addIndex('branch', self::BRANCH_ID);
+        }
+
+        /**
+         * @param $branch_id
+         * @return int
+         */
+        public function getPaginationItemCount($branch_id)
+        {
+            $query = $this->getQuery();
+            $query->addOrderBy('branchcommits.id', QueryColumnSort::SORT_ASC);
+            $query->where('branchcommits.branch_id', $branch_id);
+
+            return $this->count($query);
         }
 
     }

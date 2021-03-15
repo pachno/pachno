@@ -220,6 +220,22 @@
     flex: 1 1 auto;
     width: 100%;
   }
+
+  .commit-details-list {
+    .fields-list {
+      .value {
+        &.list {
+          .branch-badge {
+            margin: 0;
+
+            + .branch-badge {
+              margin: .5em 0 0 0;
+            }
+          }
+        }
+      }
+    }
+  }
 }
 
 .commit-files-summary {
@@ -435,44 +451,57 @@
     &:first-of-type {
       margin-top: 0;
     }
+
+    &.seen {
+      margin-bottom: 0;
+
+      .diffs {
+        display: none;
+      }
+    }
+
+    .filename {
+      padding: 10px;
+      background-color: rgba(225, 225, 225, 0.2);
+      font-family: $theme-font-family-mono;
+      font-size: 0.9em;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: flex-start;
+
+      .added-badge {
+        display: inline-block;
+        margin-left: 3px;
+        font-weight: $theme-font-weight-regular;
+        padding: 3px 5px;
+        background-color: rgba(185, 225, 185, 0.4);
+        border: 1px solid rgba(100, 100, 100, 0.3);
+        border-radius: 3px;
+      }
+    }
+
+    &.action_D .filename {
+      text-decoration: line-through;
+    }
+
+    &:not(.action_R) .filename {
+      border-bottom: 1px solid rgba(200, 200, 200, 0.5);
+    }
+
   }
 
   .file-anchor:target + .file-preview {
     border: 2px solid rgba(78, 129, 171, 0.7);
   }
 
-  .file-preview .filename {
-    padding: 10px;
-    background-color: rgba(225, 225, 225, 0.2);
-    font-family: $theme-font-family-mono;
-    font-size: 0.9em;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: flex-start;
-  }
-
-  .file-preview .filename .added-badge {
-    display: inline-block;
-    margin-left: 3px;
-    font-weight: $theme-font-weight-regular;
-    padding: 3px 5px;
-    background-color: rgba(185, 225, 185, 0.4);
-    border: 1px solid rgba(100, 100, 100, 0.3);
-    border-radius: 3px;
-  }
-
-  .file-preview.action_D .filename {
-    text-decoration: line-through;
-  }
-
-  .file-preview:not(.action_R) .filename {
-    border-bottom: 1px solid rgba(200, 200, 200, 0.5);
-  }
-
   .far,
   .fas {
     margin-right: 5px;
+  }
+
+  .actions-container {
+    margin-left: auto;
   }
 
   .diffs .diff-header {
@@ -566,3 +595,14 @@
   }
 }
 
+#commit-comments {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: center;
+  padding: 1em;
+}
+
+.commits-paginator {
+  padding: 2em 0;
+}

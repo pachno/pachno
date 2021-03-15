@@ -3,6 +3,7 @@
     namespace pachno\core\entities\tables;
 
     use b2db\Criterion;
+    use b2db\QueryColumnSort;
     use pachno\core\entities\Commit;
     use pachno\core\entities\Project;
 

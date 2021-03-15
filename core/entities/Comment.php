@@ -6,6 +6,7 @@
     use Exception;
     use pachno\core\entities\common\Identifiable;
     use pachno\core\entities\common\IdentifiableScoped;
+    use pachno\core\entities\tables\UserCommits;
     use pachno\core\framework;
     use pachno\core\framework\Event;
     use pachno\core\helpers\ContentParser;
@@ -286,6 +287,9 @@
                         break;
                     case self::TYPE_ARTICLE:
                         $this->_target = tables\Articles::getTable()->selectById($this->_target_id);
+                        break;
+                    case self::TYPE_COMMIT:
+                        $this->_target = tables\Commits::getTable()->selectById($this->_target_id);
                         break;
                     default:
                         $event = Event::createNew('core', 'Comment::getTarget', $this);
@@ -711,28 +715,48 @@
                         }
                     }
                     if ($this->getTargetType() == self::TYPE_ISSUE) {
-                        if (framework\Settings::getUserSetting($this->getPostedByID(), framework\Settings::SETTINGS_USER_SUBSCRIBE_CREATED_UPDATED_COMMENTED_ISSUES))
+                        if (framework\Settings::getUserSetting($this->getPostedByID(), framework\Settings::SETTINGS_USER_SUBSCRIBE_CREATED_UPDATED_COMMENTED_ISSUES)) {
                             $this->getTarget()->addSubscriber($this->getPostedByID());
+                        }
                     }
                     if ($this->getTargetType() == self::TYPE_ARTICLE) {
-                        if (framework\Settings::getUserSetting($this->getPostedByID(), framework\Settings::SETTINGS_USER_SUBSCRIBE_CREATED_UPDATED_COMMENTED_ARTICLES))
+                        if (framework\Settings::getUserSetting($this->getPostedByID(), framework\Settings::SETTINGS_USER_SUBSCRIBE_CREATED_UPDATED_COMMENTED_ARTICLES)) {
                             $this->getTarget()->addSubscriber($this->getPostedByID());
+                        }
+                    }
+                    if ($this->getTargetType() == self::TYPE_COMMIT) {
+                        if (framework\Settings::getUserSetting($this->getPostedByID(), framework\Settings::SETTINGS_USER_SUBSCRIBE_CREATED_UPDATED_COMMENTED_ISSUES)) {
+                            //$this->getTarget()->addSubscriber($this->getPostedByID());
+                        }
                     }
                     $this->_addTargetNotifications();
                 }
 
-                switch ($this->getTargetType()) {
-                    case self::TYPE_ISSUE:
-                        Event::createNew('core', 'pachno\core\entities\Comment::_postSave', $this, ['issue' => $this->getTarget()])->trigger();
-                        break;
-                    case self::TYPE_ARTICLE:
-                        Event::createNew('core', 'pachno\core\entities\Comment::_postSave', $this, ['article' => $this->getTarget()])->trigger();
-                        break;
-                    default:
-                        return;
-                }
+                $target_type_name = $this->getTargetTypeName();
+                Event::createNew('core', 'pachno\core\entities\Comment::_postSave', $this, [$target_type_name => $this->getTarget()])->trigger();
             }
             $this->touchTargetIfItsIssue();
+        }
+
+        public function getTargetTypeName()
+        {
+            return self::getTargetTypeNameForType($this->_target_type);
+        }
+
+        public static function getTargetTypeNameForType($type)
+        {
+            switch ($type) {
+                case self::TYPE_ISSUE:
+                    return 'issue';
+                case self::TYPE_ARTICLE:
+                    return 'article';
+                case self::TYPE_COMMIT:
+                    return 'commit';
+                default:
+                    $event = Event::createNew('core', 'Comment::getTargetTypeName', $type);
+                    $event->trigger();
+                    return $event->getReturnValue();
+            }
         }
 
         public function getTargetID()
@@ -776,6 +800,9 @@
                     break;
                 case self::TYPE_ARTICLE:
                     $target_type_string = '_article_';
+                    break;
+                case self::TYPE_COMMIT:
+                    $target_type_string = '_commit_';
                     break;
             }
 
@@ -840,6 +867,11 @@
                     case self::TYPE_ARTICLE:
                         if ($user->getNotificationSetting(framework\Settings::SETTINGS_USER_NOTIFY_SUBSCRIBED_ARTICLES, false)->isOn()) {
                             $this->_addNotificationIfNotNotified(Notification::TYPE_ARTICLE_COMMENTED, $user, $this->getPostedBy());
+                        }
+                        break;
+                    case self::TYPE_COMMIT:
+                        if ($user->getNotificationSetting(framework\Settings::SETTINGS_USER_NOTIFY_SUBSCRIBED_DISCUSSIONS, false)->isOn()) {
+                            $this->_addNotificationIfNotNotified(Notification::TYPE_COMMIT_COMMENTED, $user, $this->getPostedBy());
                         }
                         break;
                 }

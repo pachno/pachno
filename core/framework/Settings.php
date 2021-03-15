@@ -240,6 +240,8 @@
 
         const SETTINGS_USER_NOTIFY_SUBSCRIBED_ARTICLES = 'notify_subscribed_articles';
 
+        const SETTINGS_USER_NOTIFY_SUBSCRIBED_DISCUSSIONS = 'notify_subscribed_discussion';
+
         const SETTINGS_USER_NOTIFY_UPDATED_SELF = 'notify_updated_self';
 
         const SETTINGS_USER_NOTIFY_MENTIONED = 'notify_mentioned';

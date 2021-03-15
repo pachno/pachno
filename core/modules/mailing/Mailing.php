@@ -7,6 +7,7 @@
     use pachno\core\entities\Article;
     use pachno\core\entities\Category;
     use pachno\core\entities\Comment;
+    use pachno\core\entities\Commit;
     use pachno\core\entities\File;
     use pachno\core\entities\IncomingEmailAccount;
     use pachno\core\entities\Issue;
@@ -68,6 +69,11 @@
          * Notify the user when an article he/she subscribes to is updated or commented
          */
         const NOTIFY_SUBSCRIBED_ARTICLES = 'notify_subscribed_articles';
+
+        /**
+         * Notify the user when a discussion he/she subscribes to is updated or commented
+         */
+        const NOTIFY_SUBSCRIBED_DISCUSSIONS = 'notify_subscribed_discussions';
 
         /**
          * Notify the user when he updates an issue
@@ -637,6 +643,36 @@ EOT;
             return $users;
         }
 
+        protected function _getCommitRelatedUsers(Commit $commit, User $triggered_by_user = null)
+        {
+            $u_id = ($triggered_by_user instanceof User) ? $triggered_by_user->getID() : $triggered_by_user;
+            $subscribers = $commit->getSubscribers();
+            $users = [];
+            foreach ($subscribers as $user) {
+                if ($user->getNotificationSetting(self::NOTIFY_SUBSCRIBED_DISCUSSIONS, true, 'mailing')->isOff())
+                    unset($users[$user->getID()]);
+                if ($user->getNotificationSetting(self::NOTIFY_UPDATED_SELF, true, 'mailing')->isOff() && $user->getID() == $u_id)
+                    unset($users[$user->getID()]);
+                if ($user->getNotificationSetting(self::NOTIFY_ITEM_ONCE, false, 'mailing')->isOn() && $user->getNotificationSetting(self::NOTIFY_ITEM_ONCE . '_commit_' . $commit->getID(), false, 'mailing')->isOn())
+                    unset($users[$user->getID()]);
+                if ($user->getNotificationSetting(self::NOTIFY_NOT_WHEN_ACTIVE, false, 'mailing')->isOn() && $user->isActive())
+                    unset($users[$user->getID()]);
+            }
+            $mentioned_users = $commit->getMentionedUsers();
+            foreach ($mentioned_users as $user) {
+                $users[$user->getID()] = $user;
+
+                if ($user->getNotificationSetting(self::NOTIFY_MENTIONED, true, 'mailing')->isOff())
+                    unset($users[$user->getID()]);
+                if ($user->getNotificationSetting(self::NOTIFY_ITEM_ONCE, false, 'mailing')->isOn() && $user->getNotificationSetting(self::NOTIFY_ITEM_ONCE . '_commit_' . $commit->getID(), false, 'mailing')->isOn())
+                    unset($users[$user->getID()]);
+                if ($user->getNotificationSetting(self::NOTIFY_NOT_WHEN_ACTIVE, false, 'mailing')->isOn() && $user->isActive())
+                    unset($users[$user->getID()]);
+            }
+
+            return $users;
+        }
+
         /**
          * Adds "notify once" settings for necessary articles
          *
@@ -648,6 +684,21 @@ EOT;
             foreach ($users as $user) {
                 if ($user->getNotificationSetting(self::NOTIFY_ITEM_ONCE, false, 'mailing')->isOn()) {
                     $user->setNotificationSetting(self::NOTIFY_ITEM_ONCE . '_article_' . $article->getID(), true, 'mailing');
+                }
+            }
+        }
+
+        /**
+         * Adds "notify once" settings for necessary commits
+         *
+         * @param Commit $commit
+         * @param array|User $users
+         */
+        protected function _markCommitSent(Commit $commit, $users)
+        {
+            foreach ($users as $user) {
+                if ($user->getNotificationSetting(self::NOTIFY_ITEM_ONCE, false, 'mailing')->isOn()) {
+                    $user->setNotificationSetting(self::NOTIFY_ITEM_ONCE . '_commit_' . $commit->getID(), true, 'mailing');
                 }
             }
         }
@@ -678,6 +729,15 @@ EOT;
                         $to_users = $this->_getArticleRelatedUsers($article, $comment->getPostedBy());
                         $this->_markArticleSent($article, $to_users);
                         $messages = (empty($to_users)) ? [] : $this->getTranslatedMessages('articlecomment', $parameters, $to_users, $subject, ['%article_name' => html_entity_decode($article->getTitle(), ENT_COMPAT, framework\Context::getI18n()->getCharset())]);
+                        break;
+                    case Comment::TYPE_COMMIT:
+                        $commit = $event->getParameter('commit');
+                        $project = $commit->getProject();
+                        $subject = 'Comment posted on commit %commit_hash';
+                        $parameters = compact('commit', 'comment');
+                        $to_users = $this->_getCommitRelatedUsers($commit, $comment->getPostedBy());
+                        $this->_markCommitSent($commit, $to_users);
+                        $messages = (empty($to_users)) ? [] : $this->getTranslatedMessages('commitcomment', $parameters, $to_users, $subject, ['%commit_hash' => html_entity_decode($commit->getShortRevision(), ENT_COMPAT, framework\Context::getI18n()->getCharset())]);
                         break;
                 }
 

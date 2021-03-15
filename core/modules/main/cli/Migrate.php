@@ -22,6 +22,7 @@
     use pachno\core\entities\tables\RolePermissions;
     use pachno\core\entities\tables\Scopes;
     use pachno\core\entities\tables\Settings;
+    use pachno\core\entities\tables\UserCommits;
     use pachno\core\entities\tables\Users;
     use pachno\core\entities\tables\UserSessions;
     use pachno\core\entities\tables\WorkflowSteps;
@@ -62,6 +63,9 @@
             UserSessions::getTable()->upgrade(tbg\tables\UserSessions::getTable());
 
             $this->cliMoveLeft(5);
+            $this->cliEcho('UserCommits', self::COLOR_WHITE, self::STYLE_DEFAULT);
+            UserCommits::getTable()->create();
+            $this->cliMoveLeft(11);
             $this->cliEcho('Files', self::COLOR_WHITE, self::STYLE_DEFAULT);
             Files::getTable()->upgrade(tbg\tables\Files::getTable());
             $this->cliMoveLeft(5);

@@ -1,11 +1,16 @@
 <?php
 
     use pachno\core\entities\Commit;
+    use pachno\core\entities\Comment;
+    use pachno\core\framework\Context;
 
-    /** @var \pachno\core\entities\Branch $branch */
-    /** @var \pachno\core\entities\Commit $commit */
-    /** @var \pachno\core\entities\Project $project */
-    /** @var \pachno\core\framework\Response $pachno_response */
+    /**
+     * @var \pachno\core\entities\Branch $branch
+     * @var \pachno\core\entities\Commit $commit
+     * @var \pachno\core\entities\Project $project
+     * @var \pachno\core\framework\Response $pachno_response
+     * @var \pachno\core\entities\User $pachno_user
+     */
 
     $pachno_response->setTitle(__('"%project_name" commit %commit_sha', ['%project_name' => $project->getName(), '%commit_sha' => $commit->getRevisionString()]));
     $branch_string = (isset($branch)) ? '&nbsp;&raquo;&nbsp;' . $branch->getName() : '';
@@ -64,8 +69,12 @@
                             <div class="value"><span data-url="<?= make_url('livelink_project_commit', ['commit_hash' => $commit->getPreviousCommit()->getRevision(), 'project_key' => $commit->getProject()->getKey(), 'branch' => $branch->getName()]); ?>" class="commit-sha trigger-show-commit"><?= $commit->getPreviousCommit()->getShortRevision(); ?></span></div>
                         </li>
                     <?php endif; ?>
+                    <li class="header">
+                        <?= fa_image_tag('caret-right', ['class' => 'icon expander']); ?>
+                        <span><?= __('Branch(es)'); ?></span>
+                        <span class="count-badge"><?= count($commit->getBranches()); ?></span>
+                    </li>
                     <li>
-                        <div class="label"><?= __('Branch(es)'); ?></div>
                         <div class="value list">
                             <?php foreach ($commit->getBranches() as $branch): ?>
                                 <div class="status-badge branch-badge"><?= fa_image_tag('code-branch', ['class' => 'icon']) . $branch->getName(); ?></div>
@@ -73,16 +82,21 @@
                         </div>
                     </li>
                     <li class="header">
+                        <?= fa_image_tag('caret-right', ['class' => 'icon expander']); ?>
                         <span><?= __('Affected issues'); ?></span>
                         <span class="count-badge"><?= count($commit->getIssues()); ?></span>
                     </li>
-                    <?php if ($commit->hasIssues()): ?>
-                        <?php foreach ($commit->getIssues() as $issue): ?>
-                            <?php include_component('main/relatedissue', ['issue' => $issue]); ?>
-                        <?php endforeach; ?>
-                    <?php else: ?>
-                        <li><div class="value disabled"><?= __('No issues affected by this commit'); ?></div></li>
-                    <?php endif; ?>
+                    <li class="list-mode">
+                        <?php if ($commit->hasIssues()): ?>
+                            <?php foreach ($commit->getIssues() as $issue): ?>
+                                <?php include_component('main/relatedissue', ['issue' => $issue]); ?>
+                            <?php endforeach; ?>
+                        <?php else: ?>
+                            <div class="list-item disabled">
+                                <span class="name"><?= __('No issues affected by this commit'); ?></span>
+                            </div>
+                        <?php endif; ?>
+                    </li>
                 </ul>
                 <?php if ($commit->isImported()): ?>
                     <ul class="fields-list">
@@ -144,6 +158,13 @@
                                 <?php if ($file->getAction() == \pachno\core\entities\CommitFile::ACTION_ADDED): ?>
                                     <div class="added-badge"><?= __('Added in this commit'); ?></div>
                                 <?php endif; ?>
+                                <div class="actions-container">
+                                    <input type="checkbox" class="fancy-checkbox trigger-mark-seen" data-file-id="<?= $file->getID(); ?>" id="commit-seen-file-<?= $file->getID(); ?>">
+                                    <label for="commit-seen-file-<?= $file->getID(); ?>" class="trigger-mark-seen" data-file-id="<?= $file->getID(); ?>">
+                                        <?= fa_image_tag('check-square', ['class' => 'checked'], 'far') . fa_image_tag('square', ['class' => 'unchecked'], 'far'); ?>
+                                        <?= fa_image_tag('eye'); ?>
+                                    </label>
+                                </div>
                             </div>
                             <div class="diffs">
                                 <?php foreach ($file->getDiffs() as $diff): ?>
@@ -153,6 +174,26 @@
                         <?php endif; ?>
                     </div>
                 <?php endforeach; ?>
+            </div>
+            <div id="commit-comments">
+                <h4>
+                    <?= fa_image_tag('comment', ['class' => 'icon'], 'far'); ?>
+                    <span class="name">
+                        <span><?php echo __('Comments'); ?></span>
+                        <span class="count-badge" id="commit_comment_count"><?= $comment_count; ?></span>
+                    </span>
+                    <div class="button-group">
+                        <?php echo fa_image_tag('spinner', ['class' => 'fa-spin', 'style' => 'display: none;', 'id' => 'comments_loading_indicator']); ?>
+                        <button class="secondary icon trigger-comment-sort" data-target-type="<?= Comment::TYPE_COMMIT; ?>" data-target-id="<?= $commit->getID(); ?>" id="sort-comments-button" style="<?php if (!$comment_count) echo 'display: none; '; ?>"><?= fa_image_tag('sort', ['class' => 'icon']); ?></button>
+                        <?php if ($pachno_user->canPostComments() && ((Context::isProjectContext() && !Context::getCurrentProject()->isArchived()) || !Context::isProjectContext())): ?>
+                            <button id="comment_add_button" class="button secondary highlight trigger-show-comment-post">
+                                <?= fa_image_tag('comment', ['class' => 'icon']); ?>
+                                <span class="name"><?= __('Post a comment'); ?></span>
+                            </button>
+                        <?php endif; ?>
+                    </div>
+                </h4>
+                <?php include_component('main/comments', ['target_id' => $commit->getID(), 'mentionable_target_type' => 'commit', 'target_type' => Comment::TYPE_COMMIT, 'show_button' => false, 'comment_count_div' => 'commit_comment_count']); ?>
             </div>
         </div>
     </div>

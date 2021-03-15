@@ -605,6 +605,16 @@
                                         'article' => $target
                                     ]);
                                     break;
+                                case entities\Comment::TYPE_COMMIT:
+                                    $target = tables\Commits::getTable()->selectById($request['target_id']);
+                                    $data['comments'] = $this->getComponentHTML('main/commentlist', [
+                                        'comment_count_div' => 'commit_comment_count',
+                                        'mentionable_target_type' => 'commit',
+                                        'target_type' => Comment::TYPE_COMMIT,
+                                        'target_id' => $target->getID(),
+                                        'commit' => $target
+                                    ]);
+                                    break;
                             }
                             break;
                         default:
@@ -2595,6 +2605,9 @@
                 } elseif ($comment_applies_type == entities\Comment::TYPE_ARTICLE) {
                     $article = tables\Articles::getTable()->selectById((int)$request['comment_applies_id']);
                     framework\Event::createNew('core', 'pachno\core\entities\Comment::createNew', $comment, compact('article'))->trigger();
+                } elseif ($comment_applies_type == entities\Comment::TYPE_COMMIT) {
+                    $commit = tables\Commits::getTable()->selectById((int)$request['comment_applies_id']);
+                    framework\Event::createNew('core', 'pachno\core\entities\Comment::createNew', $comment, compact('commit'))->trigger();
                 }
 
                 $component_name = ($comment->isReply()) ? 'main/comment' : 'main/commentwrapper';
@@ -2612,6 +2625,13 @@
                     case entities\Comment::TYPE_ARTICLE:
                         if ($is_new) {
                             $comment_html = $this->getComponentHTML($component_name, ['comment' => $comment, 'mentionable_target_type' => 'article', 'options' => [], 'comment_count_div' => 'article_comment_count']);
+                        } else {
+                            $comment_html = $comment->getParsedContent();
+                        }
+                        break;
+                    case entities\Comment::TYPE_COMMIT:
+                        if ($is_new) {
+                            $comment_html = $this->getComponentHTML($component_name, ['comment' => $comment, 'mentionable_target_type' => 'commit', 'options' => ['commit' => $commit], 'comment_count_div' => 'commit_comment_count']);
                         } else {
                             $comment_html = $comment->getParsedContent();
                         }

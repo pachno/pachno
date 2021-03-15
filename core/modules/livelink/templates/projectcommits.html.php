@@ -12,20 +12,20 @@
 <div class="content-with-sidebar">
     <?php include_component('project/sidebar', ['dashboard' => __('Find issues')]); ?>
     <div class="commit-navigation-container">
-        <div id="commit-list-with-filters-container">
+        <div id="commit-list-with-filters-container" data-url="<?php echo make_url('livelink_project_commits_post', ['project_key' => $selected_project->getKey()]); ?>">
             <div class="top-search-filters-container">
                 <div class="search-and-filters-strip">
                     <div class="header">&nbsp;</div>
                     <div class="search-strip">
                         <div class="fancy-dropdown-container filter from-left">
-                            <div class="fancy-dropdown" data-default-label="<?= __('All branches'); ?>">
-                                <label><?= __('Branch(es)'); ?></label>
+                            <div class="fancy-dropdown" data-default-label="<?= __('Select a branch'); ?>">
+                                <label><?= __('Branch'); ?></label>
                                 <span class="value"></span>
                                 <?= fa_image_tag('angle-down', ['class' => 'expander']); ?>
                                 <div class="dropdown-container list-mode">
                                     <?php foreach ($branches as $branch): ?>
-                                        <input type="radio" name="branch" value="<?= $branch->getName(); ?>" class="fancy-checkbox" id="commit-branch-<?= $branch->getName(); ?>" <?php if (!$branch->getLatestCommit() instanceof \pachno\core\entities\Commit) echo 'disabled' ?>>
-                                        <label for="commit-branch-<?= $branch->getName(); ?>" class="<?= ($branch->getLatestCommit() instanceof \pachno\core\entities\Commit) ? 'trigger-show-branch' : 'disabled'; ?> list-item multiline" data-url="<?php echo make_url('livelink_project_commits_post', ['project_key' => $selected_project->getKey()]); ?>" data-branch="<?php echo $branch->getName(); ?>">
+                                        <input type="radio" name="branch" value="<?= $branch->getName(); ?>" class="fancy-checkbox" id="commit-branch-<?= $branch->getName(); ?>" <?php if (in_array($branch->getName(), ['master', 'main', 'trunk'])) echo 'checked '; if (!$branch->getLatestCommit() instanceof \pachno\core\entities\Commit) echo ' disabled' ?>>
+                                        <label for="commit-branch-<?= $branch->getName(); ?>" class="<?= ($branch->getLatestCommit() instanceof \pachno\core\entities\Commit) ? 'trigger-show-branch' : 'disabled'; ?> list-item multiline" data-branch="<?php echo $branch->getName(); ?>">
                                             <span class="icon"><?= fa_image_tag('code-branch'); ?></span>
                                             <span class="name">
                                                 <span class="title value"><?php echo $branch->getName(); ?></span>
@@ -68,20 +68,54 @@
 
     Pachno.on(Pachno.EVENTS.ready, () => {
         const $body = $('body');
+        const commits_url = $('#commit-list-with-filters-container').data('url');
+
+        const showBranchCommits = (branch, from_commit, offset) => {
+            let data = { branch };
+            if (offset) {
+                data.offset = offset;
+            }
+            if (from_commit) {
+                data.from_commit = from_commit;
+            }
+
+            const $project_commits = $('#project_commits');
+            const $paginator = $project_commits.find('.paginator');
+
+            if ($paginator.length) {
+                $paginator.addClass('submitting');
+                $paginator.find('button').attr('disabled', true);
+            }
+
+            Pachno.fetch(commits_url, {
+                method: 'POST',
+                data
+            }).then((json) => {
+                if ($paginator.length) {
+                    $paginator.remove();
+                }
+
+                if ($project_commits.data('loaded') && $project_commits.data('branch') === branch) {
+                    $project_commits.append(json.content);
+                } else {
+                    $project_commits.html(json.content);
+                    $project_commits.data('loaded', true);
+                    $project_commits.data('branch', branch);
+                }
+                $('nav.sidebar').addClass('collapsed');
+            });
+        };
+
+        $body.on('change', '.trigger-mark-seen', function () {
+            const $file = $(this).parents('.file-preview');
+            $file.toggleClass('seen');
+        });
+
         $body.on('click', '.trigger-show-branch', function () {
             const branch = $(this).data('branch');
-            const url = $(this).data('url');
-            Pachno.fetch(url, {
-                method: 'POST',
-                data: { branch },
-                success: {
-                    show: 'project_commits_box',
-                    update: '#project_commits',
-                    callback: () => {
-                        $('nav.sidebar').addClass('collapsed');
-                    }
-                }
-            });
+            const from_commit = $(this).data('from-commit');
+            const offset = $(this).data('offset');
+            showBranchCommits(branch, from_commit, offset);
         });
 
         $body.on('click', '.back-to-commits-list', function (event) {
@@ -138,6 +172,11 @@
 
             return false;
         });
+
+        const $checked = $('#commit-list-with-filters-container').find('input[type=radio][name=branch]:checked');
+        if ($checked.length) {
+            showBranchCommits($checked.val());
+        }
     });
 
 </script>

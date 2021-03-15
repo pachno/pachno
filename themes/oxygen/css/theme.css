@@ -7162,7 +7162,8 @@ input[data-interactive-toggle].submitting + label .indicator {
         padding: .5em 1em; }
       .fields-list > li > .value.list {
         flex-direction: column;
-        align-items: flex-start; }
+        align-items: flex-start;
+        padding: .5em 1em; }
       .fields-list > li > .value .value-container {
         display: flex;
         flex-direction: row;
@@ -12826,6 +12827,10 @@ dl.info {
     color: #676767;
     flex: 1 1 auto;
     width: 100%; }
+  .commit-details-container .commit-details-list .fields-list .value.list .branch-badge {
+    margin: 0; }
+    .commit-details-container .commit-details-list .fields-list .value.list .branch-badge + .branch-badge {
+      margin: .5em 0 0 0; }
 
 .commit-files-summary {
   font-weight: 400;
@@ -12957,38 +12962,41 @@ dl.info {
   overflow: auto; }
   .commit-files .file-preview:first-of-type {
     margin-top: 0; }
+  .commit-files .file-preview.seen {
+    margin-bottom: 0; }
+    .commit-files .file-preview.seen .diffs {
+      display: none; }
+  .commit-files .file-preview .filename {
+    padding: 10px;
+    background-color: rgba(225, 225, 225, 0.2);
+    font-family: "Fira Mono", monospace;
+    font-size: 0.9em;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start; }
+    .commit-files .file-preview .filename .added-badge {
+      display: inline-block;
+      margin-left: 3px;
+      font-weight: 400;
+      padding: 3px 5px;
+      background-color: rgba(185, 225, 185, 0.4);
+      border: 1px solid rgba(100, 100, 100, 0.3);
+      border-radius: 3px; }
+  .commit-files .file-preview.action_D .filename {
+    text-decoration: line-through; }
+  .commit-files .file-preview:not(.action_R) .filename {
+    border-bottom: 1px solid rgba(200, 200, 200, 0.5); }
 
 .commit-files .file-anchor:target + .file-preview {
   border: 2px solid rgba(78, 129, 171, 0.7); }
 
-.commit-files .file-preview .filename {
-  padding: 10px;
-  background-color: rgba(225, 225, 225, 0.2);
-  font-family: "Fira Mono", monospace;
-  font-size: 0.9em;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: flex-start; }
-
-.commit-files .file-preview .filename .added-badge {
-  display: inline-block;
-  margin-left: 3px;
-  font-weight: 400;
-  padding: 3px 5px;
-  background-color: rgba(185, 225, 185, 0.4);
-  border: 1px solid rgba(100, 100, 100, 0.3);
-  border-radius: 3px; }
-
-.commit-files .file-preview.action_D .filename {
-  text-decoration: line-through; }
-
-.commit-files .file-preview:not(.action_R) .filename {
-  border-bottom: 1px solid rgba(200, 200, 200, 0.5); }
-
 .commit-files .far,
 .commit-files .fas {
   margin-right: 5px; }
+
+.commit-files .actions-container {
+  margin-left: auto; }
 
 .commit-files .diffs .diff-header {
   white-space: nowrap;
@@ -13065,6 +13073,16 @@ dl.info {
 
 .commit-files .diffs .diff-preview .remove td.text pre::before {
   content: "-"; }
+
+#commit-comments {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: center;
+  padding: 1em; }
+
+.commits-paginator {
+  padding: 2em 0; }
 
 #reportissue_additional_information_container {
   display: none; }

@@ -5,6 +5,7 @@ core/config/b2db.yml
 public/.htaccess
 installed
 files/*
+modules/
 
 # Development environment artefacts.
 .vagrant/

@@ -45,6 +45,8 @@
 
         const TYPE_COMMENT_MENTIONED = 'comment_mentioned';
 
+        const TYPE_COMMIT_COMMENTED = 'commit_commented';
+
         /**
          * @Column(type="integer", length=10)
          */

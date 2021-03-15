@@ -7,6 +7,12 @@
     if (isset($issue))
         $options['issue'] = $issue;
 
+    if (isset($article))
+        $options['article'] = $article;
+
+    if (isset($commit))
+        $options['commit'] = $commit;
+
     include_component('main/commentwrapper', $options);
 
     ?>

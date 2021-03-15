@@ -5,12 +5,14 @@
     use pachno\core\entities\Branch;
     use pachno\core\entities\Comment;
     use pachno\core\entities\Commit;
+    use pachno\core\entities\tables\BranchCommits;
     use pachno\core\entities\tables\Branches;
     use pachno\core\entities\tables\Comments;
     use pachno\core\entities\tables\Commits;
     use pachno\core\entities\tables\IssueCommits;
     use pachno\core\entities\tables\Issues;
     use pachno\core\framework;
+    use pachno\core\helpers\Pagination;
     use pachno\core\helpers\ProjectActions;
     use pachno\core\modules\livelink\Livelink;
 
@@ -32,16 +34,22 @@
          */
         public function runPostProjectCommits(framework\Request $request)
         {
-            $branch = Branches::getTable()->getByBranchNameAndProject($request['branch'], $this->selected_project);
-            if (!$branch instanceof Branch) {
-                $this->return404('Invalid branch');
+            $selected_branch = $request['branch'];
+            if ($selected_branch !== '*') {
+                $branch = Branches::getTable()->getByBranchNameAndProject($selected_branch, $this->selected_project);
             }
+            if (!$branch instanceof Branch) {
+                return $this->return404('Invalid branch');
+            }
+
+            $total_commits_count = BranchCommits::getTable()->getPaginationItemCount($branch->getID());
+            $offset = $request['offset'];
 
             $commit = null;
             if ($request->hasParameter('from_commit')) {
-                $from_commit_ref = trim($request['from']);
+                $from_commit_ref = trim($request['from_commit']);
                 if (strlen($from_commit_ref) < 7) {
-                    $this->return404('Invalid commit ref');
+                    return $this->return404('Invalid commit ref');
                 }
 
                 $commit = Commits::getTable()->getCommitByHash($from_commit_ref, $this->selected_project);
@@ -52,10 +60,12 @@
 
                 return $ids;
             }, []);
+            $offset += count($commit_ids);
+
             $branch_points = Branches::getTable()->getByCommitsAndProject($commit_ids, $this->selected_project);
             Comments::getTable()->preloadCommentCounts(Comment::TYPE_COMMIT, $commit_ids);
 
-            return $this->renderJSON(['content' => $this->getComponentHTML('livelink/projectcommitsbox', ['commits' => $commits, 'branches' => $branch_points, 'selected_project' => $this->selected_project, 'branch' => $branch])]);
+            return $this->renderJSON(['content' => $this->getComponentHTML('livelink/projectcommitslist', ['commits' => $commits, 'total_commits_count' => $total_commits_count, 'offset' => $offset, 'branches' => $branch_points, 'selected_project' => $this->selected_project, 'branch' => $branch])]);
         }
 
         /**

@@ -47,7 +47,7 @@
         /**
          * @var Commit[]
          */
-        protected $_commits;
+        protected $_commits = [];
 
         public static function getBranchNameFromRef($ref)
         {
@@ -124,7 +124,7 @@
                 $from_commit = $this->getLatestCommit();
             }
 
-            $this->_commits[] = $from_commit;
+            //$this->_commits[] = $from_commit;
             $last_commit = $from_commit;
             while (count($this->_commits) < $limit) {
                 if (!$last_commit->getPreviousCommit() instanceof Commit) {
