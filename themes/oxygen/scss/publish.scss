@@ -509,6 +509,28 @@
     border-radius: 4px;
   }
 
+  .checklist {
+    label {
+      font-weight: $theme-font-weight-light;
+    }
+
+    .fancy-checkbox:checked:not(:disabled):not(.submitting) {
+      + .list-item:not(.toggler) {
+        &,
+        &:hover {
+          background-color: transparent;
+          color: $theme-text-color;
+          text-decoration: line-through;
+          text-decoration-color: $theme-secondary-color;
+
+          .icon {
+            color: $theme-secondary-color;
+          }
+        }
+      }
+    }
+  }
+
   .message-box {
     margin-left: 0;
     margin-right: 0;

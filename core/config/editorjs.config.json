@@ -87,6 +87,26 @@
         }
       }
     },
+    "checklist": {
+      "items": {
+        "type": "array",
+        "data": {
+          "-": {
+            "type": "array",
+            "data": {
+              "text": {
+                "type": "string",
+                "allowedTags": "i,b,u,a[href],span[data-user-id|data-article-id|data-issue-id|class],br,code,mark,pre,source"
+              },
+              "checked": {
+                "type": "boolean",
+                "required": true
+              }
+            }
+          }
+        }
+      }
+    },
     "quote": {
       "text": {
         "type": "string",

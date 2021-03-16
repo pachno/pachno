@@ -94,6 +94,28 @@ const setupListeners = () => {
         Pachno.fetch(data.url, { method: 'DELETE' });
     });
 
+    $('body').on('change', '.article.editable .trigger-toggle-checklist', function (event) {
+        event.preventDefault();
+
+        const $input = $(this);
+        const checked = ($input.is(':checked')) ? 1 : 0;
+        const $article = $input.parents('.article');
+        const url = $article.data('url');
+
+        Pachno.fetch(url, {
+            method: 'POST',
+            data: {
+                update: true,
+                article_action: 'update-checklist-item',
+                block_index: $input.parent('.checklist').data('index'),
+                list_index: $input.data('index'),
+                checked
+            }
+        });
+
+        return false;
+    });
+
     $('body').on('click', '.trigger-embed', function (event) {
         event.preventDefault();
         event.stopPropagation();

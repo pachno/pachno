@@ -52,7 +52,7 @@
                                     <span class="name">
                                         <span class="title value"><?php echo __('Generic planning board'); ?></span>
                                         <span class="description">
-                                            <?php echo __('Just a generic planning board for planning upcoming milestones.'); ?>
+                                            <?php echo __('A generic planning board for planning and categorizing work.'); ?>
                                         </span>
                                     </span>
                                 </label>
@@ -62,7 +62,7 @@
                                     <span class="name">
                                         <span class="title value"><?php echo __('Scrum board'); ?></span>
                                         <span class="description">
-                                            <?php echo __('Board tailored for scrum-style workflows, card view as scrum stories with estimates.'); ?>
+                                            <?php echo __('A board tailored for scrum/scrum-like workflows - with story cards, stories, epics and estimates'); ?>
                                         </span>
                                     </span>
                                 </label>
@@ -72,7 +72,7 @@
                                     <span class="name">
                                         <span class="title value"><?php echo __('Kanban board'); ?></span>
                                         <span class="description">
-                                            <?php echo __('Kanban board with workload limits and powerful plan mode.'); ?>
+                                            <?php echo __('A Kanban-style board with workload limits.'); ?>
                                         </span>
                                     </span>
                                 </label>

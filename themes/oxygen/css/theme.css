@@ -13447,6 +13447,15 @@ dl.info {
     background-color: rgba(245, 235, 111, 0.29);
     padding: .15em;
     border-radius: 4px; }
+  .article .checklist label {
+    font-weight: 300; }
+  .article .checklist .fancy-checkbox:checked:not(:disabled):not(.submitting) + .list-item:not(.toggler), .article .checklist .fancy-checkbox:checked:not(:disabled):not(.submitting) + .list-item:not(.toggler):hover {
+    background-color: transparent;
+    color: #232323;
+    text-decoration: line-through;
+    text-decoration-color: #0cd8b6; }
+    .article .checklist .fancy-checkbox:checked:not(:disabled):not(.submitting) + .list-item:not(.toggler) .icon, .article .checklist .fancy-checkbox:checked:not(:disabled):not(.submitting) + .list-item:not(.toggler):hover .icon {
+      color: #0cd8b6; }
   .article .message-box {
     margin-left: 0;
     margin-right: 0;

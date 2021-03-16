@@ -43,7 +43,7 @@
             $this->parser = $parser;
         }
 
-        public function mapBlockToMarkup($block)
+        public function mapBlockToMarkup($block, $index)
         {
             $content = [];
             switch ($block['type']) {
@@ -60,6 +60,14 @@
                         $content[] = "<li>{$list_item}</li>";
                     }
                     $content[] = "</{$tag}>";
+                    break;
+                case 'checklist':
+                    $content[] = '<div class="checklist list-mode" data-index="' . $index . '">';
+                    foreach ($block['data']['items'] as $list_index => $list_item) {
+                        $checked = ($list_item['checked']) ? 'checked' : '';
+                        $content[] = "<input type=\"checkbox\" class=\"fancy-checkbox trigger-toggle-checklist\" id=\"article-checklist-item-{$index}-{$list_index}\" data-index=\"{$list_index}\" {$checked}><label for=\"article-checklist-item-{$index}-{$list_index}\" class=\"list-item\"><span class=\"icon\">" . fa_image_tag('check-circle', ['class' => 'checked'], 'far') . fa_image_tag('circle', ['class' => 'unchecked'], 'far') . "</span><span>{$list_item['text']}</span></label>";
+                    }
+                    $content[] = "</div>";
                     break;
                 case 'header':
                     $level = $block['data']['level'];
@@ -117,7 +125,7 @@
                     break;
                 default:
                     framework\Context::getDebugger()->watch('block', $block);
-                    throw new \Exception('Invalid editorjs content type');
+                    throw new \Exception('Unsupported editorjs block type "' . $block['type'] . '"');
             }
 
             return implode("\n", $content);
@@ -126,7 +134,8 @@
         public function getContent()
         {
             $this->toc = [];
-            $content = array_map([$this, 'mapBlockToMarkup'], $this->parser->getBlocks());
+            $blocks = $this->parser->getBlocks();
+            $content = array_map([$this, 'mapBlockToMarkup'], $blocks, array_keys($blocks));
 
             return implode("\n", $content);
         }

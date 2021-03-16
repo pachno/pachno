@@ -4624,6 +4624,24 @@ var setupListeners = function setupListeners() {
       method: 'DELETE'
     });
   });
+  jquery__WEBPACK_IMPORTED_MODULE_0___default()('body').on('change', '.article.editable .trigger-toggle-checklist', function (event) {
+    event.preventDefault();
+    var $input = jquery__WEBPACK_IMPORTED_MODULE_0___default()(this);
+    var checked = $input.is(':checked') ? 1 : 0;
+    var $article = $input.parents('.article');
+    var url = $article.data('url');
+    _classes_pachno__WEBPACK_IMPORTED_MODULE_1__["default"].fetch(url, {
+      method: 'POST',
+      data: {
+        update: true,
+        article_action: 'update-checklist-item',
+        block_index: $input.parent('.checklist').data('index'),
+        list_index: $input.data('index'),
+        checked: checked
+      }
+    });
+    return false;
+  });
   jquery__WEBPACK_IMPORTED_MODULE_0___default()('body').on('click', '.trigger-embed', function (event) {
     event.preventDefault();
     event.stopPropagation();

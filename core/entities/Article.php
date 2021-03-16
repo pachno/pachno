@@ -1744,4 +1744,13 @@
             $this->setContent(json_encode($json, JSON_THROW_ON_ERROR));
         }
 
+        public function updateChecklistItem($block_index, $list_index, $checked)
+        {
+            $json = json_decode($this->_content, true);
+            if (is_array($json)) {
+                $json['blocks'][$block_index]['data']['items'][$list_index]['checked'] = $checked;
+                $this->setContent(json_encode($json, JSON_THROW_ON_ERROR));
+            }
+        }
+
     }
