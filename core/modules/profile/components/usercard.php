@@ -53,7 +53,7 @@
                         <?php endif; ?>
                     </span>
                 </div>
-                <?php if (\pachno\core\entities\User::isThisGuest() == false): ?>
+                <?php /*if (\pachno\core\entities\User::isThisGuest() == false): ?>
                     <div id="friends_message_<?php echo $user->getUsername(); ?>" style="padding: 10px 0 0 0; font-size: 0.75em;"></div>
                     <?php if ($user->getID() != \pachno\core\framework\Context::getUser()->getID() && !(\pachno\core\framework\Context::getUser()->isFriend($user)) && !$user->isGuest()): ?>
                             <div id="friends_link_<?php echo $user->getUsername(); ?>" class="friends_link">
@@ -66,11 +66,11 @@
                         </span>
                             </div>
                     <?php endif; ?>
-                <?php endif; ?>
+                <?php endif; */ ?>
                 <div class="header">
                     <h3><?= __('Recently reported issues'); ?></h3>
                 </div>
-                <?php if (count($issues)): try { ?>
+                <?php if (count($issues)): ?>
                     <?php foreach ($issues as $issue): ?>
                         <?php if ($issue->hasAccess()): ?>
                             <a class="list-item multiline" href="<?= ($issue->getProject() instanceof \pachno\core\entities\Project) ? $issue->getUrl() : '#'; ?>">
@@ -86,7 +86,7 @@
                         <?= fa_image_tag('search', ['class' => 'icon']); ?>
                         <span><?= __('Show all issues reported by this user'); ?></span>
                     </a>
-                <?php  } catch (\Error $e) { var_dump($e); } else: ?>
+                <?php else: ?>
                     <div class="list-item disabled"><span class="name"><?php echo __('This user has not reported any issues yet'); ?></span></div>
                 <?php endif; ?>
                 <?php if (count($user->getTeams())): ?>

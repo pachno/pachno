@@ -95,7 +95,7 @@
                     $paginator.remove();
                 }
 
-                if ($project_commits.data('loaded') && $project_commits.data('branch') === branch) {
+                if (data.offset && $project_commits.data('loaded') && $project_commits.data('branch') === branch) {
                     $project_commits.append(json.content);
                 } else {
                     $project_commits.html(json.content);

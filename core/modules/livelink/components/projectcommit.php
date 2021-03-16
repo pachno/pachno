@@ -82,7 +82,9 @@
                         </div>
                     </li>
                     <li class="header">
-                        <?= fa_image_tag('caret-right', ['class' => 'icon expander']); ?>
+                        <?php if ($commit->hasIssues()): ?>
+                            <?= fa_image_tag('caret-right', ['class' => 'icon expander']); ?>
+                        <?php endif; ?>
                         <span><?= __('Affected issues'); ?></span>
                         <span class="count-badge"><?= count($commit->getIssues()); ?></span>
                     </li>
@@ -91,10 +93,6 @@
                             <?php foreach ($commit->getIssues() as $issue): ?>
                                 <?php include_component('main/relatedissue', ['issue' => $issue]); ?>
                             <?php endforeach; ?>
-                        <?php else: ?>
-                            <div class="list-item disabled">
-                                <span class="name"><?= __('No issues affected by this commit'); ?></span>
-                            </div>
                         <?php endif; ?>
                     </li>
                 </ul>

@@ -12,7 +12,7 @@
     <?php include_component('publish/header', array('article_name' => $article->getName(), 'article' => $article, 'show_actions' => $show_actions, 'mode' => $mode, 'embedded' => $embedded)); ?>
 <?php endif; ?>
 <?php if ($show_article): ?>
-    <div class="article syntax_<?php echo \pachno\core\framework\Settings::getSyntaxClass($article->getContentSyntax()); ?>">
+    <div class="article syntax_<?php echo \pachno\core\framework\Settings::getSyntaxClass($article->getContentSyntax()); ?> <?php if ($article->canEdit()) echo 'editable'; ?>" data-article-id="<?= $article->getID(); ?>" data-url="<?= $article->getLink('edit'); ?>">
         <div class="content"><?php echo $article->getParsedContent(['embedded' => $embedded, 'article' => $article]); ?></div>
     </div>
 <?php endif; ?>

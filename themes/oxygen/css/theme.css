@@ -12610,22 +12610,6 @@ dl.info {
   color: #1aaa55;
   margin-right: .35em; }
 
-.livelink-banner {
-  border: 1px solid rgba(200, 200, 200, 0.3);
-  padding: 10px;
-  margin-bottom: 15px;
-  background-color: rgba(225, 225, 225, 0.2); }
-
-.livelink-banner .button, .livelink_connector_accounts .button {
-  padding: 5px 8px;
-  font-size: 1em; }
-
-.livelink-header {
-  text-transform: uppercase;
-  font-weight: 500;
-  margin: 0;
-  padding: 0; }
-
 .livelink-intro {
   font-size: 1.1em; }
 

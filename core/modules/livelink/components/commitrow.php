@@ -40,7 +40,12 @@
                     </span>
                 </span>
             <?php endif; ?>
-            <span class="item commit-comments"><?= fa_image_tag('comments', ['class' => 'icon']); ?><span><?= $commit->getCommentCount(); ?></span></span>
+            <?php if ($commit->getCommentCount()): ?>
+                <span class="item commit-comments"><?= fa_image_tag('comments', ['class' => 'icon']); ?><span><?= $commit->getCommentCount(); ?></span></span>
+            <?php endif; ?>
+            <?php if ($commit->hasIssues()): ?>
+                <span class="item commit-issues"><?= fa_image_tag('file-alt', ['class' => 'icon']); ?><span><?= count($commit->getIssues()); ?></span></span>
+            <?php endif; ?>
         </span>
     </span>
 </div>

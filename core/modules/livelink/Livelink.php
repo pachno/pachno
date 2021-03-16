@@ -53,7 +53,7 @@
          */
         protected $_connectors = [];
 
-        protected $long_name = 'Pachno integrations';
+        protected $long_name = 'External accounts';
 
         public function hasAccountSettings()
         {
@@ -62,12 +62,12 @@
 
         public function getAccountSettingsLogo()
         {
-            return 'magic';
+            return 'laptop-code';
         }
 
         public function getAccountSettingsName()
         {
-            return 'Pachno integrations';
+            return 'External accounts';
         }
 
         /**

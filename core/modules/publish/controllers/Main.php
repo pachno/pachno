@@ -347,6 +347,17 @@
                 $this->convert = true;
             }
 
+            if ($request['update']) {
+                switch ($request['article_action']) {
+                    case 'update-checklist-item':
+                        $this->article->updateChecklistItem($request['block_index'], $request['list_index'], (bool) $request['checked']);
+                        $this->article->save();
+                        break;
+                }
+
+                return $this->renderJSON($this->article->toJSON());
+            }
+
             if ($request->hasParameter('is_category')) {
                 $this->article->setIsCategory($request['is_category']);
             }
