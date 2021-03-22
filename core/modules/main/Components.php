@@ -110,9 +110,7 @@
             $this->include_teams = (isset($this->include_teams)) ? $this->include_teams : false;
             $this->include_clients = (isset($this->include_clients)) ? $this->include_clients : false;
             $this->include_users = (isset($this->include_users)) ? $this->include_users : true;
-            $this->callback = (isset($this->callback)) ? $this->callback : null;
             $this->allow_clear = (isset($this->allow_clear)) ? $this->allow_clear : true;
-            $this->use_form = (isset($this->use_form)) ? $this->use_form : true;
         }
 
         public function componentIdentifiableselectorresults()

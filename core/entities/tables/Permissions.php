@@ -78,6 +78,20 @@
             $res = $this->rawDelete($query);
         }
 
+        public function removeGroupPermission($group_id, $permission_type, $module)
+        {
+            $query = $this->getQuery();
+            $query->where(self::UID, 0);
+            $query->where(self::TID, 0);
+            $query->where(self::GID, $group_id);
+            $query->where(self::MODULE, $module);
+            $query->where(self::PERMISSION_TYPE, $permission_type);
+            $query->where(self::TARGET_ID, 0);
+            $query->where(self::SCOPE, framework\Context::getScope()->getID());
+
+            $this->rawDelete($query);
+        }
+
         public function deleteAllPermissionsForCombination($uid, $gid, $tid, $target_id = 0, $role_id = null)
         {
             $query = $this->getQuery();
@@ -239,6 +253,21 @@
             $res = $this->rawInsert($insertion);
 
             return $res->getInsertID();
+        }
+
+        public function getPermissionsByGroupId($group_id)
+        {
+            $query = $this->getQuery();
+            $query->where(self::GID, $group_id);
+            $query->where(self::ALLOWED, 1);
+            $permissions = [];
+            if ($res = $this->rawSelect($query)) {
+                while ($row = $res->getNextRow()) {
+                    $permissions[] = ['permission' => $row->get(self::PERMISSION_TYPE), 'allowed' => $row->get(self::ALLOWED), 'module' => $row->get(self::MODULE)];
+                }
+            }
+
+            return $permissions;
         }
 
         public function cloneGroupPermissions($cloned_group_id, $new_group_id)

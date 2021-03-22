@@ -121,6 +121,11 @@ h6 {
   .button-group {
     flex: 0 0 auto;
     padding: 0;
+
+    button,
+    .button {
+      font-size: .85rem;
+    }
   }
 }
 
@@ -4826,14 +4831,6 @@ div.calendar tr.days td.otherDay {
 }
 
 /* Backdrop -> Add a user */
-
-.teamlist_container input[type="checkbox"] {
-  margin-top: 3px;
-}
-
-input[type="checkbox"][name="send_login_details"] {
-  margin-top: -2px;
-}
 
 /* Configure users, teams and clients -> Search button */
 

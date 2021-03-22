@@ -376,7 +376,7 @@
         {
             $retval = $this->_canPermissionOrSeeAndEditComments('candeletecommentsown');
 
-            return ($retval !== null) ? $retval : framework\Settings::isPermissive();
+            return ($retval !== null) ? $retval : false;
         }
 
         protected function _canPermissionOrSeeAndEditComments($permission)
@@ -431,7 +431,7 @@
             if ($this->isSystemComment()) return false;
             $retval = $this->_canPermissionOrSeeAndEditAllComments('candeletecomments');
 
-            return ($retval !== null) ? $retval : framework\Settings::isPermissive();
+            return ($retval !== null) ? $retval : false;
         }
 
         protected function _canPermissionOrSeeAndEditAllComments($permission)
@@ -478,7 +478,7 @@
         {
             $retval = $this->_canPermissionOrSeeAndEditComments('caneditcommentsown');
 
-            return ($retval !== null) ? $retval : framework\Settings::isPermissive();
+            return ($retval !== null) ? $retval : false;
         }
 
         /**
@@ -491,7 +491,7 @@
             if ($this->isSystemComment()) return false;
             $retval = $this->_canPermissionOrSeeAndEditAllComments('caneditcomments');
 
-            return ($retval !== null) ? $retval : framework\Settings::isPermissive();
+            return ($retval !== null) ? $retval : false;
         }
 
         /**

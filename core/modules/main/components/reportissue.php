@@ -225,7 +225,7 @@
                                             <?= javascript_link_tag(__('Add a user or team'), array('onclick' => "$('#popup_find_acl_').toggle('block');", 'style' => 'float: right;', 'class' => 'button')); ?>
                                             <?= __('Users or teams who can see this issue'); ?>
                                         </h4>
-                                        <?php include_component('main/identifiableselector', array('html_id' => "popup_find_acl_",
+                                        <?php /* include_component('main/identifiableselector', array('html_id' => "popup_find_acl_",
                                             'header' => __('Give someone access to this issue'),
                                             'callback' => "Pachno.Issues.ACL.addTarget('" . make_url('getacl_formentry', array('identifiable_type' => 'user', 'identifiable_value' => '%identifiable_value')) . "', '');",
                                             'team_callback' => "Pachno.Issues.ACL.addTarget('" . make_url('getacl_formentry', array('identifiable_type' => 'team', 'identifiable_value' => '%identifiable_value')) . "', '');",
@@ -233,7 +233,7 @@
                                             'include_teams' => true,
                                             'allow_clear' => false,
                                             'absolute' => true,
-                                            'use_form' => false)); ?>
+                                            'use_form' => false)); */ ?>
                                     </div>
                                     <div id="acl__public" style="display: none;">
                                         <ul class="issue_access_list simple-list" id="issue__public_category_access_list"
@@ -830,10 +830,12 @@
                 </div>
             </div>
             <div class="form-row submit-container">
+                <?php /* <span class="count-badge"><?= __('Disabled in this alpha release'); ?></span>
                 <input type="checkbox" name="custom_issue_access" id="report-issue-custom-access-checkbox"
                        class="fancy-checkbox" onchange="Pachno.Issues.ACL.toggle_custom_access(this);"
+                       disabled
                        value="1"><label for="report-issue-custom-access-checkbox"
-                                        class="button secondary icon"><?= fa_image_tag('user-lock', ['class' => 'checked']) . fa_image_tag('lock-open', ['class' => 'unchecked']); ?></label>
+                                        class="button secondary icon"><?= fa_image_tag('user-lock', ['class' => 'checked']) . fa_image_tag('lock-open', ['class' => 'unchecked']); ?></label> */?>
                 <button type="submit" class="button primary" id="report_issue_submit_button">
                     <span><?= __('File issue'); ?></span>
                     <?= fa_image_tag('spinner', ['class' => 'fa-spin icon indicator', 'id' => 'report_issue_indicator']); ?>

@@ -324,6 +324,19 @@
 
     }
 
+    .explanation {
+      flex: 1 1 100%;
+      color: $theme-text-color;
+      padding: .35em 0;
+      display: flex;
+    }
+
+    &.disabled {
+      .explanation {
+        color: #DDD;
+      }
+    }
+
     .helper-text {
       flex: 1 1 100%;
       color: rgb(153, 153, 153);
@@ -335,6 +348,18 @@
       .far,
       .fas {
         margin-right: .35rem;
+      }
+    }
+
+    .grid {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: flex-start;
+      flex-wrap: wrap;
+
+      label {
+        margin-right: 1.2em;
       }
     }
 

@@ -38,7 +38,7 @@
                             <?= fa_image_tag('spinner', ['class' => 'fa-spin icon indicator']); ?>
                         </a>
                         <?php if (!\pachno\core\framework\Settings::isUsingExternalAuthenticationBackend()): ?>
-                            <a href="javascript:void(0);" class="list-item">
+                            <a href="javascript:void(0);" class="list-item trigger-generate-password" data-user-id="<?= $user->getId(); ?>" data-url="<?= make_url('configure_update_user_password', ['user_id' => $user->getId()]); ?>">
                                 <?= fa_image_tag('key', ['class' => 'icon']); ?>
                                 <span class="name"><?= __('Change / reset password'); ?></span>
                             </a>

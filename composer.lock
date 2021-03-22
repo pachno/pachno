@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "671c0d03e552522316aabbaa17053ccb",
+    "content-hash": "7fc3f90f2b42fafb2d350adc86771b10",
     "packages": [
         {
             "name": "bacon/bacon-qr-code",
@@ -562,6 +562,61 @@
                 "source": "https://github.com/guzzle/psr7/tree/1.7.0"
             },
             "time": "2020-09-30T07:37:11+00:00"
+        },
+        {
+            "name": "kevinlebrun/password.php",
+            "version": "0.1.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/kevinlebrun/password.php.git",
+                "reference": "fda08da3662ba3ef301d83c4e66f8418574c5f6a"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/kevinlebrun/password.php/zipball/fda08da3662ba3ef301d83c4e66f8418574c5f6a",
+                "reference": "fda08da3662ba3ef301d83c4e66f8418574c5f6a",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "3.7.*",
+                "satooshi/php-coveralls": "dev-master",
+                "squizlabs/php_codesniffer": "1.*"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "Password": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Kevin Le Brun",
+                    "email": "lebrun.k@gmail.com",
+                    "homepage": "http://kevinlebrun.fr",
+                    "role": "developer"
+                }
+            ],
+            "description": "Helpers for password generation and validation",
+            "homepage": "https://github.com/kevinlebrun/password.php",
+            "keywords": [
+                "generate",
+                "helper",
+                "password",
+                "util",
+                "validate"
+            ],
+            "support": {
+                "issues": "https://github.com/kevinlebrun/password.php/issues",
+                "source": "https://github.com/kevinlebrun/password.php/tree/master"
+            },
+            "time": "2014-03-31T12:49:40+00:00"
         },
         {
             "name": "kriswallsmith/assetic",

@@ -88,12 +88,13 @@
       }
     }
 
-    > .value {
+    > .value,
+    > .name {
       flex: 1 1 auto;
       white-space: nowrap;
       text-overflow: ellipsis;
       overflow: hidden;
-      max-width: 250px;
+      max-width: 350px;
       min-width: 100px;
       font-weight: $theme-font-weight-light;
 

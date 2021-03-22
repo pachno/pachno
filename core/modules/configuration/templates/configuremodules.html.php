@@ -49,7 +49,15 @@
                 </div>
             <?php endif; ?>
             <?php if ($is_default_scope): ?>
-                <h3><?= __('Featured modules'); ?></h3>
+                <h3>
+                    <span><?= __('Featured modules'); ?></span>
+                    <span class="button-group">
+                        <a class="button secondary" href="https://pachno.com/addons" target="_blank">
+                            <?= fa_image_tag('globe', ['class' => 'icon']); ?>
+                            <span><?= __('Find modules online'); ?></span>
+                        </a>
+                    </span>
+                </h3>
                 <div id="available_modules_container" class="available_plugins_container plugins-list"><div class="indicator"><?= fa_image_tag('spinner', ['class' => 'fa-spin indicator']); ?></div></div>
             <?php endif; ?>
             <h3><?= __('Manage existing modules'); ?></h3>

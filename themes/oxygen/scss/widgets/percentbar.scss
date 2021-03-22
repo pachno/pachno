@@ -4,6 +4,7 @@
   background-color: $theme-secondary-color;
   display: inline-block;
   height: 6px;
+  transition: width .25s ease-in-out;
 }
 
 .percent_unfilled {

@@ -13,6 +13,7 @@ import {setupListeners as agileSetupListeners} from "../helpers/agile";
 import {setupListeners as workflowSetupListeners} from "../helpers/workflow";
 import {setupListeners as articleSetupListeners} from "../helpers/article";
 import {setupListeners as moduleSetupListeners} from "../helpers/modules";
+import {setupListeners as projectSetupListeners} from "../helpers/project";
 import Board from "./board";
 import Search from "./search";
 import Issuereporter from "./issuereporter";
@@ -40,6 +41,10 @@ class PachnoApplication {
             },
             configuration: {
                 deleteComponent: 'configuration-delete-component',
+                generatePassword: 'configuration-generate-password'
+            },
+            project: {
+                removeAssignee: 'project-remove-assignee',
             },
             formSubmit: 'form-submit',
             formSubmitResponse: 'form-submit-response',
@@ -180,6 +185,7 @@ class PachnoApplication {
         moduleSetupListeners();
         uiSetupListeners();
         widgetSetupListeners();
+        projectSetupListeners();
         // $('#fullpage_backdrop_content').on('click', Core._resizeWatcher);
     }
 

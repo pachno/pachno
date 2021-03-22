@@ -9,75 +9,44 @@
     <?php include_component('configuration/sidebar', ['selected_section' => \pachno\core\framework\Settings::CONFIGURATION_SECTION_USERS]); ?>
     <div class="configuration-container">
         <div class="configuration-content">
-            <h1>
-                <span class="name"><?= __('Manage users and groups'); ?></span>
-            </h1>
-            <div class="fancy-tabs tab-switcher">
-                <a class="tab tab-switcher-trigger selected" data-tab-target="users" href="javascript:void(0);">
-                    <?= fa_image_tag('user', ['class' => 'icon']); ?>
-                    <span class="name"><?= $users_text; ?><span class="count-badge"><?= $number_of_users; ?></span></span>
-                </a>
-                <a class="tab tab-switcher-trigger" data-tab-target="groups" href="javascript:void(0);">
-                    <?= fa_image_tag('users', ['class' => 'icon']); ?>
-                    <span class="name"><?= __('Groups'); ?></span>
-                </a>
+            <h1><?= __('Manage users and groups'); ?></h1>
+            <div class="helper-text centered">
+                <div class="image-container"><?= image_tag('/unthemed/onboarding_configure_users_groups.png', [], true); ?></div>
+                <span class="description">
+                    <?php echo __('Add, remove and manage users and user groups in this installation. For more information about user management, see the %online_documentation.', array('%online_documentation' => link_tag(\pachno\core\modules\publish\Publish::getArticleLink('ManageUsers'), __('Online documentation')))); ?>
+                </span>
             </div>
             <div id="usersteamsgroups_menu_panes">
-                <div id="tab_users_pane" class="top-search-filters-container" data-tab-id="users">
-                    <form action="<?= make_url('configure_users_find_user'); ?>" method="post" data-simple-submit data-update-container="#users_results" id="find_users_form">
+                <div id="tab_users_pane" data-tab-id="users">
+                    <form action="<?= make_url('configure_users_find_user'); ?>" class="top-search-filters-container" method="post" data-simple-submit data-update-container="#users-results" id="find_users_form">
                         <div class="search-and-filters-strip">
                             <div class="search-strip">
                                 <div class="dropper-container">
                                     <button type="button" class="button secondary icon dropper"><?= fa_image_tag('ellipsis-v'); ?></button>
                                     <div class="dropdown-container from-left">
                                         <div class="list-mode">
-                                            <a href="javascript:void(0);" class="list-item" onclick="Pachno.Config.User.show('<?= make_url('configure_users_find_user'); ?>', 'all');">
+                                            <a href="javascript:void(0);" class="list-item trigger-find-users" data-url="<?= make_url('configure_users_find_user'); ?>?findstring=all">
                                                 <span class="name"><?= __('Show all users'); ?></span>
                                             </a>
-                                            <a href="javascript:void(0);" class="list-item" onclick="Pachno.Config.User.show('<?= make_url('configure_users_find_user'); ?>', 'unactivated');">
+                                            <a href="javascript:void(0);" class="list-item trigger-find-users" data-url="<?= make_url('configure_users_find_user'); ?>?findstring=unactivated">
                                                 <span class="name"><?= __('Show unactivated users'); ?></span>
                                             </a>
-                                            <a href="javascript:void(0);" class="list-item" onclick="Pachno.Config.User.show('<?= make_url('configure_users_find_user'); ?>', 'newusers');">
+                                            <a href="javascript:void(0);" class="list-item trigger-find-users" data-url="<?= make_url('configure_users_find_user'); ?>?findstring=newusers">
                                                 <span class="name"><?= __('Show newly created users'); ?></span>
                                             </a>
                                         </div>
                                     </div>
                                 </div>
-                                <input type="search" name="findstring" id="findusers" value="<?= $finduser; ?>" placeholder="<?= __('Type user details to find users'); ?>" class="filter_searchfield">
+                                <input type="search" name="findstring" id="findusers" value="<?= $finduser; ?>" placeholder="<?= __('Enter user details here to find users'); ?>" class="filter_searchfield">
                                 <button type="submit" class="button secondary">
                                     <?= fa_image_tag('search', ['class' => 'icon']); ?>
                                     <span class="name"><?= __('Find'); ?></span>
                                     <?= fa_image_tag('spinner', ['class' => 'fa-spin icon indicator']); ?>
                                 </button>
-                                <button style="<?php if (!\pachno\core\framework\Context::getScope()->hasUsersAvailable()): ?>display: none;<?php endif; ?>" type="button" class="button secondary icon" onclick="$('#adduser_div').toggle();">
-                                    <?= fa_image_tag('plus', ['class' => 'icon']); ?>
-                                </button>
                             </div>
                         </div>
                     </form>
-                    <div id="users_results" class="search-results"></div>
-                </div>
-                <div id="tab_groups_pane" data-tab-id="groups" style="display: none;">
-                    <div class="lightyellowbox" style="margin-top: 5px; padding: 7px;">
-                        <form id="create_group_form" action="<?= make_url('configure_users_add_group'); ?>" method="post" accept-charset="<?= \pachno\core\framework\Settings::getCharset(); ?>" onsubmit="Pachno.Config.Group.add('<?= make_url('configure_users_add_group'); ?>');return false;">
-                            <div id="add_group">
-                                <label for="group_name"><?= __('Create a new group'); ?></label>
-                                <input type="text" id="group_name" name="group_name" placeholder="<?= __('Enter group name here'); ?>">
-                                <input type="submit" value="<?= __('Create'); ?>">
-                            </div>
-                        </form>
-                    </div>
-                    <table cellpadding=0 cellspacing=0 style="display: none; margin-left: 5px; width: 300px;" id="create_group_indicator">
-                        <tr>
-                            <td style="width: 20px; padding: 2px;"><?= image_tag('spinning_20.gif'); ?></td>
-                            <td style="padding: 0px; text-align: left;"><?= __('Adding group, please wait'); ?>...</td>
-                        </tr>
-                    </table>
-                    <div id="groupconfig_list">
-                        <?php foreach ($groups as $group): ?>
-                            <?php include_component('configuration/groupbox', array('group' => $group)); ?>
-                        <?php endforeach; ?>
-                    </div>
+                    <div id="users-results" class="search-results"></div>
                 </div>
             </div>
         </div>
@@ -167,9 +136,42 @@
     </div>
 </div>
 <script type="text/javascript">
-    <?php if ($finduser): ?>
-        Pachno.on(Pachno.EVENTS.ready, function () {
-            pachno_index_js.Config.User.show('<?= make_url('configure_users_find_user'); ?>', '<?= $finduser; ?>');
+    Pachno.on(Pachno.EVENTS.ready, () => {
+        const $body = $('body');
+        $body.on('click', '.trigger-find-users', function (event) {
+            event.preventDefault();
+            event.stopPropagation();
+            const $link = $(this);
+            const url = $link.data('url');
+            const $form = $('#find_users_form');
+            $form.addClass('submitting');
+
+            Pachno.fetch(url, {
+                method: 'POST'
+            })
+            .then((json) => {
+                $('#users-results').html(json.content);
+                $form.removeClass('submitting');
+            })
         });
-    <?php endif; ?>
+
+        $body.on('click', '.trigger-generate-password', function (event) {
+            const $link = $(this);
+            const url = $link.data('url');
+            Pachno.UI.Dialog.show('<?php echo __('Generate new password for this user?'); ?>', '<?= __('Please confirm that you want to generate a new password for this user.'); ?>', {yes: {click: function() { Pachno.trigger(Pachno.EVENTS.configuration.generatePassword, { url });}}, no: {click: Pachno.UI.Dialog.dismiss}});
+        });
+
+        Pachno.on(Pachno.EVENTS.configuration.generatePassword, (PachnoApplication, data) => {
+            const url = data.url;
+            Pachno.UI.Dialog.setSubmitting();
+
+            Pachno.fetch(url, {
+                method: 'POST'
+            })
+            .then((json) => {
+                Pachno.UI.Dialog.dismiss();
+                Pachno.UI.Dialog.showModal('<?= __('Password reset'); ?>', '<?= __('The password has been reset. The new password is: %password'); ?>'.replace('%password', '<span class="command_box">' + json.password + '</span>'));
+            })
+        });
+    })
 </script>

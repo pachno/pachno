@@ -94,7 +94,7 @@ const processCommonAjaxPostEvents = function (options) {
 
 export const fetchHelper = function (url, options) {
     return new Promise((resolve, reject) => {
-        const method = (options.method) ? options.method : 'GET';
+        const method = (options.method) ? options.method.toUpperCase() : 'GET';
         const $form = (options.form) ? $('#' + options.form) : undefined;
 
         if (options.form !== undefined && method === 'GET') {
@@ -316,7 +316,7 @@ export const formSubmitHelper = function (url, form_id, options) {
 
     if (options !== undefined) {
         if (options.success !== undefined) {
-            fetchOptions.success = { ...fetchOptions.success, ...options.success }
+            fetchOptions.success = options.success;
         }
         if (options.data !== undefined) {
             fetchOptions.data = options.data;

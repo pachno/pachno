@@ -675,8 +675,10 @@ configure_users_edit_user_form:
     csrf_enabled: false
 
 configure_users_add_group:
-    route: /configure/users/add/group
+    route: /configure/groups
     module: configuration
+    methods:
+      - POST
     action: addGroup
     parameters:
       config_module: core
@@ -685,9 +687,11 @@ configure_users_add_group:
     csrf_enabled: false
 
 configure_users_clone_group:
-    route: /configure/users/clone/group/:group_id
+    route: /configure/groups/:group_id/clone
     module: configuration
     action: addGroup
+    methods:
+      - POST
     parameters:
       config_module: core
       section: 2
@@ -695,18 +699,11 @@ configure_users_clone_group:
     csrf_enabled: false
 
 configure_users_delete_group:
-    route: /configure/users/delete/group/:group_id
+    route: /configure/groups/:group_id
     module: configuration
     action: deleteGroup
-    parameters:
-      config_module: core
-      section: 2
-    csrf_enabled: false
-
-configure_users_get_group_members:
-    route: /configure/users/get/members/in/group/:group_id
-    module: configuration
-    action: getGroupMembers
+    methods:
+      - DELETE
     parameters:
       config_module: core
       section: 2
@@ -858,7 +855,7 @@ configure_users_delete_user:
     csrf_enabled: false
 
 configure_users:
-    route: '/configure/users/*'
+    route: '/configure/users'
     module: configuration
     action: configureUsers
     parameters:

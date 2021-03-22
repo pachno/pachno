@@ -71,7 +71,7 @@ class Issue {
         this.reproduction_steps = json.reproduction_steps;
         this.reproduction_steps_formatted = json.reproduction_steps_formatted;
 
-        this.assignee = json.assignee;
+        this.assigned_to = json.assigned_to;
         this.category = json.category;
         this.issue_type = json.issue_type;
         this.milestone = json.milestone;
@@ -93,17 +93,18 @@ class Issue {
         this.processed = false;
     }
 
-    postAndUpdate(field, value) {
+    postAndUpdate(field, value, additional_value) {
         const issue = this;
+        let data;
+
+        data = { field, value, additional_value };
+
         Pachno.trigger(Pachno.EVENTS.issue.update, {id: this.id});
 
         return new Promise(function (resolve, reject) {
             Pachno.fetch(issue.save_url, {
                     method: 'POST',
-                    data: {
-                        field,
-                        value
-                    }
+                    data
                 })
                 .then((json) => {
                     Pachno.trigger(Pachno.EVENTS.issue.updateDone, {id: issue.id});
@@ -122,15 +123,42 @@ class Issue {
 
         $container_element.addClass('force-visible');
         $element.addClass('editing');
-        setTimeout(() => {
-            editor.focus();
-            editor.codemirror.focus();
-        }, 250);
+        editor.codemirror.focus();
     }
 
     setupListeners() {
         const $body = $('body');
         const issue = this;
+
+        $body.off('click', `.issue-field[data-issue-id="${this.id}"] .trigger-issue-set-posted-by`);
+        $body.on('click', `.issue-field[data-issue-id="${this.id}"] .trigger-issue-set-posted-by`, function (event) {
+            event.preventDefault();
+            const $element = $(this);
+            const identifiable_type = $element.data('identifiable-type');
+            const value = $element.data('identifiable-value');
+
+            issue.postAndUpdate('posted_by', value, identifiable_type);
+        });
+
+        $body.off('click', `.issue-field[data-issue-id="${this.id}"] .trigger-issue-set-assigned-to`);
+        $body.on('click', `.issue-field[data-issue-id="${this.id}"] .trigger-issue-set-assigned-to`, function (event) {
+            event.preventDefault();
+            const $element = $(this);
+            const identifiable_type = $element.data('identifiable-type');
+            const value = $element.data('identifiable-value');
+
+            issue.postAndUpdate('assigned_to', value, identifiable_type);
+        });
+
+        $body.off('click', `.issue-field[data-issue-id="${this.id}"] .trigger-issue-set-owned-by`);
+        $body.on('click', `.issue-field[data-issue-id="${this.id}"] .trigger-issue-set-owned-by`, function (event) {
+            event.preventDefault();
+            const $element = $(this);
+            const identifiable_type = $element.data('identifiable-type');
+            const value = $element.data('identifiable-value');
+
+            issue.postAndUpdate('owned_by', value, identifiable_type);
+        });
 
         $body.off('click', `input[data-trigger-issue-update][data-issue-id="${this.id}"]`);
         $body.on('click', `input[data-trigger-issue-update][data-issue-id="${this.id}"]`, function () {
@@ -414,6 +442,20 @@ class Issue {
                     $element.css({backgroundColor: this.status.color, color: this.status.text_color});
                     $element.html(`<span>${this.status.name}</span>`);
                     break;
+                case 'issue_type_icon':
+                    $element.html(`${UI.fa_image_tag(this.issue_type.fa_icon, { classes: `issuetype-icon issuetype-${this.issue_type.icon}` })}`);
+                    for (const icon of ['bug_report', 'documentation_request', 'enhancement', 'feature_request', 'idea', 'epic', 'support_request', 'task', 'developer_report']) {
+                        $element.removeClass(`issuetype-${icon}`);
+                    }
+                    $element.addClass(`issuetype-${this.issue_type.icon}`);
+                    break;
+                case 'issue_type':
+                    $element.html(`${UI.fa_image_tag(this.issue_type.fa_icon, { classes: 'icon' })}<span class="name">${this.issue_type.name}</span>`);
+                    for (const icon of ['bug_report', 'documentation_request', 'enhancement', 'feature_request', 'idea', 'epic', 'support_request', 'task', 'developer_report']) {
+                        $element.removeClass(`issuetype-${icon}`);
+                    }
+                    $element.addClass(`issuetype-${this.issue_type.icon}`);
+                    break;
                 case 'title':
                     $element.html(this.title);
                     break;
@@ -427,6 +469,19 @@ class Issue {
                     $element.html(this.updated_at_friendly);
                     $element.prop('title', this.updated_at_full);
                     $element.prop('datetime', this.updated_at_datetime);
+                    break;
+                case 'posted_by':
+                case 'assigned_to':
+                case 'owned_by':
+                    if (this[field] && this[field].id) {
+                        if (this[field].type == 'user') {
+                            $element.html(`<span class="userlink trigger-backdrop" data-url="${this[field].card_url}"><span class="avatar medium"><img src="${this[field].avatar_url_small}"></span><span class="name">${this[field].name}</span></span>`);
+                        } else {
+                            $element.html(`<span>${this[field].name}</span>`);
+                        }
+                    } else {
+                        $element.html(($element.data('unknown') !== undefined) ? $element.data('unknown') : Pachno.T.issue.value_not_set);
+                    }
                     break;
                 case 'number_of_subscribers':
                     $element.html(this.number_of_subscribers);
@@ -680,9 +735,9 @@ class Issue {
         $info.append(`<span class="status-badge" style="background-color: ${this.status.color}; color: ${this.status.text_color};" data-dynamic-field-value data-field="status" data-issue-id="${this.id}"><span>${this.status.name}</span></span>`);
         $info.append(`<span class="attachments ${priority_hidden_class}" data-dynamic-field-value data-field="priority-icon" data-issue-id="${this.id}">${priority_span}</span>`);
 
-        if (this.assignee !== undefined && this.assignee !== null) {
-            if (this.assignee.type == 'user') {
-                $info.append(`<span class="assignee" data-dynamic-field-value data-field="assignee" data-issue-id="${this.id}"><span class="avatar medium"><img src="${this.assignee.avatar_url_small}"></span></span>`)
+        if (this.assigned_to !== undefined && this.assigned_to !== null) {
+            if (this.assigned_to.type == 'user') {
+                $info.append(`<span class="assignee" data-dynamic-field-value data-field="assigned_to" data-issue-id="${this.id}"><span class="avatar medium"><img src="${this.assigned_to.avatar_url_small}"></span></span>`)
             }
         }
         return $html;

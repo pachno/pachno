@@ -1453,7 +1453,7 @@
             $permitted = ($permitted !== null) ? $permitted : $this->getProject()->permissionCheck($key, !$this->isInvolved());
 
             if ($defaultPermissiveSetting) {
-                $permitted = ($permitted !== null) ? $permitted : Settings::isPermissive();
+                $permitted = ($permitted !== null) ? $permitted : false;
             }
 
             $this->_can_permission_cache[$key] = $permitted;
@@ -4563,7 +4563,8 @@
                 'save_url' => $this->getSaveUrl(),
                 'card_url' => $this->getCardUrl(),
                 'posted_by' => ($this->getPostedBy() instanceof common\Identifiable) ? $this->getPostedBy()->toJSON() : null,
-                'assignee' => ($this->getAssignee() instanceof common\Identifiable) ? $this->getAssignee()->toJSON() : null,
+                'assigned_to' => ($this->getAssignee() instanceof common\Identifiable) ? $this->getAssignee()->toJSON() : null,
+                'owned_by' => ($this->getOwner() instanceof common\Identifiable) ? $this->getOwner()->toJSON() : null,
                 'status' => ($this->getStatus() instanceof common\Identifiable) ? $this->getStatus()->toJSON() : null,
                 'category' => ($this->getCategory() instanceof common\Identifiable) ? $this->getCategory()->toJSON() : null,
                 'priority' => ($this->getPriority() instanceof common\Identifiable) ? $this->getPriority()->toJSON() : null,

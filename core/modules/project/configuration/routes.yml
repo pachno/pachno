@@ -22,7 +22,7 @@ configure_project_developers:
     csrf_enabled: false
 
 configure_project_set_leadby:
-    route: '/configure/project/:project_id/set/:field/*'
+    route: '/configure/project/:project_id/set/assignee/*'
     module: project
     action: setItemLead
     parameters:
@@ -48,7 +48,7 @@ configure_project_find_assignee:
     csrf_enabled: false
 
 configure_project_add_assignee:
-    route: '/configure/project/:project_id/add/:assignee_type/:assignee_id/*'
+    route: '/configure/project/:project_id/add/assignee'
     module: project
     action: assignToProject
     methods:

@@ -3,6 +3,7 @@
     namespace pachno\core\entities;
 
     use pachno\core\entities\common\IdentifiableScoped;
+    use pachno\core\framework\Context;
     use pachno\core\framework\Settings;
 
     /**
@@ -31,6 +32,8 @@
         protected $_members = null;
 
         protected $_num_members = null;
+
+        protected $_permissions = null;
 
         /**
          * The name of the object
@@ -162,6 +165,58 @@
         protected function _preDelete()
         {
             tables\UserScopes::getTable()->clearUserGroups($this->getID());
+        }
+
+        public function addPermission($permission_name, $module = 'core')
+        {
+            tables\Permissions::getTable()->setPermission(0, $this->getID(), 0, true, $module, $permission_name, 0, Context::getScope()->getID());
+        }
+
+        /**
+         * Removes permission from the role.
+         *
+         * @param string $permission_name
+         * @param string $module
+         */
+        public function removePermission($permission_name, $module = 'core')
+        {
+            tables\Permissions::getTable()->removeGroupPermission($this->getID(), $permission_name, $module);
+            if ($this->_permissions !== null) {
+                foreach ($this->_permissions as $index => $permission) {
+                    if ($permission['permission'] == $permission_name && $permission['module'] == $module) {
+                        unset($this->_permissions[$index]);
+                        break;
+                    }
+                }
+            }
+        }
+
+        protected function _populatePermissions()
+        {
+            if ($this->_permissions === null) {
+                $this->_permissions = tables\Permissions::getTable()->getPermissionsByGroupId($this->getID());
+            }
+        }
+
+        public function hasPermission($permission_name, $module = 'core')
+        {
+            foreach ($this->getPermissions() as $permission) {
+                if ($permission['permission'] == $permission_name && $permission['module'] == $module) return true;
+            }
+
+            return false;
+        }
+
+        /**
+         * Returns all permissions assigned to this role
+         *
+         * @return mixed[]
+         */
+        public function getPermissions()
+        {
+            $this->_populatePermissions();
+
+            return $this->_permissions;
         }
 
     }

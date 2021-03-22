@@ -100,10 +100,16 @@ const UI = {
         },
 
         setSubmitting: () => {
-            $('#dialog_yes').addClass('disabled');
-            $('#dialog_yes').attr('disabled', true);
-            $('#dialog_no').addClass('disabled');
-            $('#dialog_no').attr('disabled', true);
+            const $dialogYes = $('#dialog_yes');
+            const $dialogNo = $('#dialog_no');
+
+            $dialogYes.blur();
+            $dialogYes.addClass('disabled');
+            $dialogYes.attr('disabled', true);
+
+            $dialogNo.addClass('disabled');
+            $dialogNo.attr('disabled', true);
+
             $('#dialog_backdrop').addClass('submitting');
         },
 

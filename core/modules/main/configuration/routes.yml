@@ -213,10 +213,11 @@ account_regenerate_rss_key:
     csrf_enabled: true
 
 account_change_password:
-    route: '/account/change/password/*'
+    route: '/account/change/password/:csrf_token'
     module: main
     action: accountChangePassword
     parameters: [ ]
+    methods: ['POST']
     csrf_enabled: true
 
 account_check_username:

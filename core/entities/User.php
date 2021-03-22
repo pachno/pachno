@@ -429,20 +429,13 @@
          */
         public static function createPassword($len = 16)
         {
-            $pass = '';
-            $lchar = 0;
-            $char = 0;
-            for ($i = 0; $i < $len; $i++) {
-                while ($char == $lchar) {
-                    $char = mt_rand(48, 109);
-                    if ($char > 57) $char += 7;
-                    if ($char > 90) $char += 6;
-                }
-                $pass .= chr($char);
-                $lchar = $char;
-            }
+            $generator = new \Password\Generator();
+            $generator->setMinLength($len);
+            $generator->setNumberOfUpperCaseLetters(2);
+            $generator->setNumberOfNumbers(2);
+            $generator->setNumberOfSymbols(1);
 
-            return $pass;
+            return $generator->generate();
         }
 
         /**
@@ -1245,7 +1238,7 @@
          *
          * @param string $newpassword
          */
-        public function changePassword($newpassword)
+        protected function changePassword($newpassword)
         {
             if (!$newpassword) {
                 throw new Exception("Cannot set empty password");
@@ -1445,7 +1438,7 @@
          *
          * @param string $newpassword
          *
-         * @see self::changePassword
+         * @see self::changePassword()
          */
         public function setPassword($newpassword)
         {
@@ -1647,7 +1640,7 @@
                 if ($project->getLeader() instanceof User && $project->getLeader()->getID() == $this->getID()) return true;
             }
 
-            return ($retval !== null) ? $retval : framework\Settings::isPermissive();
+            return ($retval !== null) ? $retval : false;
         }
 
         /**
@@ -1871,7 +1864,7 @@
                 $retval = ($retval !== null) ? $retval : $this->hasPermission('cancreateandeditissues', $project_id);
             }
 
-            return ($retval !== null) ? $retval : framework\Settings::isPermissive();
+            return ($retval !== null) ? $retval : false;
         }
 
         /**
@@ -1881,7 +1874,7 @@
          */
         public function canSearchForIssues()
         {
-            return (bool)$this->_dualPermissionsCheck('canfindissues', 0, 'canfindissuesandsavesearches', 0, framework\Settings::isPermissive());
+            return (bool)$this->_dualPermissionsCheck('canfindissues', 0, 'canfindissuesandsavesearches', 0, false);
         }
 
         protected function _dualPermissionsCheck($permission_1, $permission_1_target, $permission_2, $permission_2_target, $fallback)
@@ -1899,7 +1892,7 @@
          */
         public function canViewComments()
         {
-            return $this->_dualPermissionsCheck('canviewcomments', 0, 'canpostseeandeditallcomments', 0, framework\Settings::isPermissive());
+            return $this->_dualPermissionsCheck('canviewcomments', 0, 'canpostseeandeditallcomments', 0, false);
         }
 
         /**
@@ -1909,7 +1902,7 @@
          */
         public function canPostComments()
         {
-            return $this->_dualPermissionsCheck('canpostcomments', 0, 'canpostseeandeditallcomments', 0, framework\Settings::isPermissive());
+            return $this->_dualPermissionsCheck('canpostcomments', 0, 'canpostseeandeditallcomments', 0, false);
         }
 
         /**
@@ -1919,7 +1912,7 @@
          */
         public function canSeeNonPublicComments()
         {
-            return $this->_dualPermissionsCheck('canseenonpubliccomments', 0, 'canpostseeandeditallcomments', 0, framework\Settings::isPermissive());
+            return $this->_dualPermissionsCheck('canseenonpubliccomments', 0, 'canpostseeandeditallcomments', 0, false);
         }
 
         /**
@@ -1929,7 +1922,7 @@
          */
         public function canCreatePublicSearches()
         {
-            return $this->_dualPermissionsCheck('cancreatepublicsearches', 0, 'canfindissuesandsavesearches', 0, framework\Settings::isPermissive());
+            return $this->_dualPermissionsCheck('cancreatepublicsearches', 0, 'canfindissuesandsavesearches', 0, false);
         }
 
         /**
@@ -2474,6 +2467,11 @@
             return $setting_object;
         }
 
+        public function getUserCardUrl()
+        {
+            return framework\Context::getRouting()->generate('get_partial_for_backdrop', ['key' => 'usercard', 'user_id' => $this->getID()]);
+        }
+
         public function toJSON($detailed = true)
         {
             $returnJSON = [
@@ -2488,6 +2486,7 @@
                 'avatar_url_small' => $this->getAvatarURL(true),
                 'url_homepage' => $this->getHomepage(),
                 'last_seen' => $this->getLastSeen(),
+                'card_url' => $this->getUserCardUrl(),
                 'type' => 'user' // This is for distinguishing of assignees & similar "ambiguous" values in JSON.
             ];
 

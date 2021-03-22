@@ -17,7 +17,7 @@
                     <img src="<?= $qr_code_inline; ?>">
                 </div>
                 <div class="helper-text">
-                    <?= __('Scan the code above with your 2FA application (such as Google authenticator, Bitwarden, Authy or similar. Alternatively, use the code below as the 2FA key.'); ?>
+                    <?= __('Scan the code above with your 2FA application (such as Google authenticator, Bitwarden, Authy or similar). Alternatively, use the code below as the 2FA key.'); ?>
                 </div>
                 <div class="form-row">
                     <div class="application_password_preview password-preview">

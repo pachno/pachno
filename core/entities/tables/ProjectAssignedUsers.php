@@ -59,6 +59,15 @@
             return $res;
         }
 
+        public function deleteById($id)
+        {
+            $query = $this->getQuery();
+            $query->where(self::ID, $id);
+            $res = $this->rawDelete($query);
+
+            return $res;
+        }
+
         public function addUserToProject($project_id, $user_id, $role_id)
         {
             $query = $this->getQuery();

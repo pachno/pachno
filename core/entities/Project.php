@@ -237,6 +237,7 @@
 
         /**
          * @Relates(class="\pachno\core\entities\User", collection=true, manytomany=true, joinclass="\pachno\core\entities\tables\ProjectAssignedUsers")
+         * @var User[]
          */
         protected $_assigned_users;
 
@@ -1176,6 +1177,25 @@
                 }
             }
             framework\Context::removeAllPermissionsForCombination($user_id, 0, $team_id, $this->getID());
+        }
+
+        public function isAssigned(Identifiable $assignee)
+        {
+            if ($assignee instanceof User) {
+                $user_id = $assignee->getID();
+                foreach ($this->getAssignedUsers() as $user) {
+                    if ($user->getID() == $user_id)
+                        return true;
+                }
+            } else {
+                $team_id = $assignee->getID();
+                foreach ($this->getAssignedTeams() as $team) {
+                    if ($team->getID() == $team_id)
+                        return true;
+                }
+            }
+
+            return false;
         }
 
         public function getAssignedUsers()
@@ -2132,7 +2152,7 @@
             if ($retval !== null) {
                 return $retval;
             } else {
-                return ($fallback !== null) ? $fallback : framework\Settings::isPermissive();
+                return ($fallback !== null) ? $fallback : false;
             }
         }
 

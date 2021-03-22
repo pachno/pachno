@@ -108,14 +108,12 @@ use pachno\core\framework\Context;
                                     </a>
                                 <?php endif; ?>
                                 <?php if (!$article->isMainPage()): ?>
-                                    <a href="<?= make_url('publish_article_edit', ['article_id' => 0]); ?>?parent_article_id=<?= $article->getID(); ?>" class="list-item multline">
+                                    <a href="<?= make_url('publish_article_edit', ['article_id' => 0]); ?>?parent_article_id=<?= $article->getID(); ?>" class="list-item multiline">
                                         <?= fa_image_tag('book', ['class' => 'icon']); ?>
                                         <?= fa_image_tag('file-alt', ['class' => 'icon'], 'far'); ?>
                                         <span class="name">
-                                            <span class="title">
-                                                <span class="name"><?= __('Create a new sub-page'); ?></span>
-                                                <span class="description"><?= __('Create a new page under the current page'); ?></span>
-                                            </span>
+                                            <span class="title"><?= __('Create a new sub-page'); ?></span>
+                                            <span class="description"><?= __('Create a new page under the current page'); ?></span>
                                         </span>
                                     </a>
                                 <?php endif; ?>

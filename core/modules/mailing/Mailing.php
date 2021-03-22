@@ -218,6 +218,34 @@
             return $url;
         }
 
+        /**
+         * @Listener(module='core', identifier='projectActions::addAssignee')
+         * @param Event $event
+         */
+        public function listen_addAssignee(Event $event)
+        {
+            if (!$this->isOutgoingNotificationsEnabled()) {
+                return;
+            }
+
+            $project = $event->getSubject();
+            $user = $event->getParameter('assignee');
+
+            if ($user->getEmail()) {
+                //                The following line is included for the i18n parser to pick up the translatable string:
+                //                __('You have been invited to collaborate');
+                $subject = 'You have been invited to collaborate';
+                $link_to_activate = $this->generateURL('activate', ['user' => str_replace('.', '%2E', $user->getUsername()), 'key' => $user->getActivationKey()]);
+                $parameters = compact('user', 'project', 'link_to_activate');
+                $messages = $this->getTranslatedMessages('project_useradded', $parameters, [$user], $subject);
+
+                foreach ($messages as $message) {
+                    $this->sendMail($message);
+                }
+            }
+            $event->setProcessed();
+        }
+
         public function listen_registerUser(Event $event)
         {
             if (!$this->isOutgoingNotificationsEnabled()) {
@@ -325,7 +353,7 @@
                 $parameters['module'] = $this;
             $message_plain = framework\Action::returnComponentHTML("mailing/{$template}.text", $parameters);
             $html = framework\Action::returnComponentHTML("mailing/{$template}.html", $parameters);
-            $styles = file_get_contents(PACHNO_MODULES_PATH . 'mailing' . DS . 'fixtures' . DS . framework\Settings::getThemeName() . '.css');
+            $styles = file_get_contents(PACHNO_CORE_PATH . 'modules' . DS . 'mailing' . DS . 'fixtures' . DS . 'oxygen.css');
             $message_html = <<<EOT
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
     <html>

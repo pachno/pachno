@@ -138,7 +138,10 @@
 }
 .livelink_integration_settings .integrations_list .explanation {
   padding: 5px;
-  display: block;
+
+  &.disabled {
+    color: #CCC;
+  }
 }
 .step-form .visible-step {
   display: none;

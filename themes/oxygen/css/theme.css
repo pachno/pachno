@@ -184,6 +184,43 @@ h6 {
   h6 .button-group {
     flex: 0 0 auto;
     padding: 0; }
+    h1 .dropper-container button,
+    h1 .dropper-container .button,
+    h1 .action-buttons button,
+    h1 .action-buttons .button,
+    h1 .button-group button,
+    h1 .button-group .button,
+    h2 .dropper-container button,
+    h2 .dropper-container .button,
+    h2 .action-buttons button,
+    h2 .action-buttons .button,
+    h2 .button-group button,
+    h2 .button-group .button,
+    h3 .dropper-container button,
+    h3 .dropper-container .button,
+    h3 .action-buttons button,
+    h3 .action-buttons .button,
+    h3 .button-group button,
+    h3 .button-group .button,
+    h4 .dropper-container button,
+    h4 .dropper-container .button,
+    h4 .action-buttons button,
+    h4 .action-buttons .button,
+    h4 .button-group button,
+    h4 .button-group .button,
+    h5 .dropper-container button,
+    h5 .dropper-container .button,
+    h5 .action-buttons button,
+    h5 .action-buttons .button,
+    h5 .button-group button,
+    h5 .button-group .button,
+    h6 .dropper-container button,
+    h6 .dropper-container .button,
+    h6 .action-buttons button,
+    h6 .action-buttons .button,
+    h6 .button-group button,
+    h6 .button-group .button {
+      font-size: .85rem; }
 
 table,
 img,
@@ -4188,12 +4225,6 @@ select {
   margin-top: 5px; }
 
 /* Backdrop -> Add a user */
-.teamlist_container input[type="checkbox"] {
-  margin-top: 3px; }
-
-input[type="checkbox"][name="send_login_details"] {
-  margin-top: -2px; }
-
 /* Configure users, teams and clients -> Search button */
 #users_more_actions_container {
   margin-top: 10px; }
@@ -6210,15 +6241,17 @@ h1 .button, h1 .button:hover, h2 .button, h2 .button:hover, h3 .button, h3 .butt
       margin-right: .5em; }
       .fancy-dropdown-container .fancy-dropdown > label .locked {
         display: none; }
-    .fancy-dropdown-container .fancy-dropdown > .value {
+    .fancy-dropdown-container .fancy-dropdown > .value,
+    .fancy-dropdown-container .fancy-dropdown > .name {
       flex: 1 1 auto;
       white-space: nowrap;
       text-overflow: ellipsis;
       overflow: hidden;
-      max-width: 250px;
+      max-width: 350px;
       min-width: 100px;
       font-weight: 300; }
-      .fancy-dropdown-container .fancy-dropdown > .value.no-value {
+      .fancy-dropdown-container .fancy-dropdown > .value.no-value,
+      .fancy-dropdown-container .fancy-dropdown > .name.no-value {
         color: #C8C8C8; }
     .fancy-dropdown-container .fancy-dropdown:not(.locked).no-value > .value {
       color: #C8C8C8; }
@@ -6510,7 +6543,7 @@ input[data-interactive-toggle].submitting + label .indicator {
         flex: 0 0 2.8em;
         margin-right: 1em;
         padding: 0; }
-        .list-mode .header-banner .header-name .image-container > img {
+        .list-mode .header-banner .header-name .image-container > img:not(.avatar) {
           width: 100%; }
       .list-mode .header-banner .header-name .name-container {
         flex: 1 1 auto;
@@ -6825,8 +6858,8 @@ input[data-interactive-toggle].submitting + label .indicator {
       .list-mode .list-item .icon.large,
       .list-mode .list-item:hover .icon.large {
         flex: 0 0 36px; }
-      .list-mode .list-item .icon img,
-      .list-mode .list-item:hover .icon img {
+      .list-mode .list-item .icon img:not(.avatar),
+      .list-mode .list-item:hover .icon img:not(.avatar) {
         width: 100%; }
       .list-mode .list-item .icon:not(.issuetype-icon),
       .list-mode .list-item:hover .icon:not(.issuetype-icon) {
@@ -7112,7 +7145,8 @@ input[data-interactive-toggle].submitting + label .indicator {
 .percent_filled {
   background-color: #0cd8b6;
   display: inline-block;
-  height: 6px; }
+  height: 6px;
+  transition: width .25s ease-in-out; }
 
 .percent_unfilled {
   background-color: rgba(12, 216, 182, 0.4);
@@ -7567,6 +7601,13 @@ input[data-interactive-toggle].submitting + label .indicator {
     .form-container .form-row.invalid > .input {
       border-color: #D62246;
       background-color: rgba(214, 34, 70, 0.2); }
+    .form-container .form-row .explanation {
+      flex: 1 1 100%;
+      color: #232323;
+      padding: .35em 0;
+      display: flex; }
+    .form-container .form-row.disabled .explanation {
+      color: #DDD; }
     .form-container .form-row .helper-text {
       flex: 1 1 100%;
       color: #999999;
@@ -7577,6 +7618,14 @@ input[data-interactive-toggle].submitting + label .indicator {
       .form-container .form-row .helper-text .far,
       .form-container .form-row .helper-text .fas {
         margin-right: .35rem; }
+    .form-container .form-row .grid {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: flex-start;
+      flex-wrap: wrap; }
+      .form-container .form-row .grid label {
+        margin-right: 1.2em; }
     .form-container .form-row .image-grid label {
       margin: .5em;
       padding: .75em 1em;
@@ -8965,9 +9014,10 @@ header {
       flex-direction: row;
       align-items: center;
       justify-content: flex-start;
-      border-left: 2px solid rgba(225, 225, 225, 0.2);
       margin: .5em 0;
       padding: 0 1em 0 .75em; }
+      header .menu-strip .action-container:last-child {
+        border-left: 2px solid rgba(225, 225, 225, 0.2); }
       header .menu-strip .action-container .dropper-container {
         margin-right: .5em; }
       header .menu-strip .action-container .button {
@@ -12129,6 +12179,9 @@ dl.info {
     width: 100%; }
     .configuration-container .configuration-content.centered {
       max-width: 750px; }
+    .configuration-container .configuration-content .top-search-filters-container {
+      background: transparent;
+      border-bottom: none; }
   .configuration-container > .form-container,
   .configuration-container > .configuration-content > .form-container {
     max-width: 750px; }
@@ -12742,8 +12795,9 @@ dl.info {
   padding: 5px; }
 
 .livelink_integration_settings .integrations_list .explanation {
-  padding: 5px;
-  display: block; }
+  padding: 5px; }
+  .livelink_integration_settings .integrations_list .explanation.disabled {
+    color: #CCC; }
 
 .step-form .visible-step {
   display: none; }
@@ -13976,6 +14030,9 @@ DEL {
         .fullpage_backdrop .fullpage_backdrop_content .backdrop_box .backdrop_detail_content.dialog {
           border-radius: .75em;
           padding: 1em .5em; }
+        .fullpage_backdrop .fullpage_backdrop_content .backdrop_box .backdrop_detail_content.onboarding-popup .content {
+          padding: 1.5em;
+          font-size: 1.05em; }
         .fullpage_backdrop .fullpage_backdrop_content .backdrop_box .backdrop_detail_content.with-sidebar {
           flex-direction: row;
           align-items: stretch;

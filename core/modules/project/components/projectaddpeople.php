@@ -6,17 +6,17 @@
         </div>
         <div id="backdrop_detail_content" class="backdrop_detail_content">
             <div class="form-container">
-                <form accept-charset="<?= \pachno\core\framework\Context::getI18n()->getCharset(); ?>" action="<?= make_url('configure_project_find_assignee', array('project_id' => $project->getID())); ?>" method="post" onsubmit="Pachno.Project.findDevelopers('<?= make_url('configure_project_find_assignee', array('project_id' => $project->getID())); ?>');return false;" id="find_dev_form">
+                <form accept-charset="<?= \pachno\core\framework\Context::getI18n()->getCharset(); ?>" action="<?= make_url('configure_project_find_assignee', array('project_id' => $project->getID())); ?>" method="post" data-simple-submit data-update-container="#find_dev_results" id="find_dev_form">
                     <div class="form-row search-container">
                         <input type="search" name="find_by" id="find_by" value="" placeholder="<?= ($invite) ? __('Enter user details or email address to find or invite users') : __('Enter something to search for teams or users'); ?>">
                         <button type="submit" class="button primary">
                             <?= fa_image_tag('search', ['class' => 'icon']); ?>
                             <span class="name"><?= __('Find'); ?></span>
+                            <?= fa_image_tag('spinner', ['class' => 'fa-spin indicator']); ?>
                         </button>
                     </div>
                 </form>
             </div>
-            <div style="padding: 10px 0 10px 0; display: none;" id="find_dev_indicator"><span style="float: left;"><?= image_tag('spinning_16.gif'); ?></span>&nbsp;<?= __('Please wait'); ?></div>
             <div id="find_dev_results">
                 <div class="onboarding medium">
                     <div class="image-container">

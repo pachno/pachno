@@ -146,6 +146,13 @@
           padding: 1em .5em;
         }
 
+        &.onboarding-popup {
+          .content {
+            padding: 1.5em;
+            font-size: 1.05em;
+          }
+        }
+
         &.with-sidebar {
           flex-direction: row;
           align-items: stretch;

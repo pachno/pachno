@@ -3,7 +3,7 @@
 <?php elseif (!$user->isScopeConfirmed()): ?>
     <span class="faded_out" title="<?php echo __('This user has not been confirmed yet'); ?>"><?php echo $user->getUsername() ?></span>
 <?php else: ?>
-<span class="userlink trigger-backdrop <?php if ($pachno_user->isFriend($user)): ?>friend<?php endif; ?>" data-url="<?php echo make_url('get_partial_for_backdrop', ['key' => 'usercard', 'user_id' => $user->getID()]); ?>">
+<span class="userlink trigger-backdrop" data-url="<?php echo $user->getUserCardUrl(); ?>">
     <?php if (!isset($userstate) || $userstate): ?><span class="userstate"><?php echo pachno_get_userstate_image($user); ?></span><?php endif; ?>
     <?php if ($show_avatar): ?>
         <?php $extraClass = (isset($size)) ? $size : "small"; ?>

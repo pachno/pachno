@@ -1206,9 +1206,19 @@
         public function runConfigureUsers(framework\Request $request)
         {
             $this->finduser = $request['finduser'];
-            $this->groups = entities\Group::getAll();
             $this->teams = entities\Team::getAll();
+            $this->groups = entities\Group::getAll();
             $this->number_of_users = tables\UserScopes::getTable()->countUsers();
+        }
+
+        /**
+         * @Route(name="groups", url="/groups", methods="GET")
+         *
+         * @param framework\Request $request
+         */
+        public function runConfigureGroups(framework\Request $request)
+        {
+            $this->groups = entities\Group::getAll();
         }
 
         public function runConfigureTeams(framework\Request $request)
@@ -1556,6 +1566,38 @@
             }
         }
 
+        /**
+         * @Route(name="update_user_password", url="/users/:user_id/password/:csrf_token")
+         * @CsrfProtected
+         * @param framework\Request $request
+         */
+        public function runUpdateUserPassword(framework\Request $request)
+        {
+            if (!framework\Context::getUser()->canAccessConfigurationPage(framework\Settings::CONFIGURATION_SECTION_USERS)) {
+                $this->getResponse()->setHttpStatus(400);
+                return $this->renderJSON(['error' => $this->getI18n()->__("You don't have access to perform this action")]);
+            }
+
+            $user = entities\User::getB2DBTable()->selectByID($request['user_id']);
+            if (!$user instanceof entities\User) {
+                $this->getResponse()->setHttpStatus(400);
+                return $this->renderJSON(['error' => $this->getI18n()->__('Cannot find this user')]);
+            }
+
+            if (!$user->isConfirmedMemberOfScope(framework\Context::getScope())) {
+                $this->getResponse()->setHttpStatus(400);
+                return $this->renderJSON(['error' => $this->getI18n()->__('This user is not a confirmed member of this scope')]);
+            }
+
+            $random_password = entities\User::createPassword();
+            $user->setPassword($random_password);
+            $user->save();
+
+            return $this->renderJSON([
+                'password' => $random_password
+            ]);
+        }
+
         public function runUpdateUser(framework\Request $request)
         {
             try {
@@ -1576,27 +1618,12 @@
                             return $this->renderJSON(['error' => $this->getI18n()->__('This username is already taken')]);
                         }
                     }
-                    $password_changed = false;
-                    if ($request['password_action'] == 'change' && $request['new_password_1'] && $request['new_password_2']) {
-                        if ($request['new_password_1'] == $request['new_password_2']) {
-                            $user->setPassword($request['new_password_1']);
-                            $password_changed = true;
-                        } else {
-                            $this->getResponse()->setHttpStatus(400);
-
-                            return $this->renderJSON(['error' => $this->getI18n()->__('Please enter the new password twice')]);
-                        }
-                    } elseif ($request['password_action'] == 'random') {
-                        $random_password = entities\User::createPassword();
-                        $user->setPassword($random_password);
-                        $password_changed = true;
-                    }
                     if (isset($request['realname'])) {
                         $user->setRealname($request['realname']);
                     }
                     $return_options = [];
                     try {
-                        if ($group = entities\Group::getB2DBTable()->selectById($request['group'])) {
+                        if ($group = tables\Groups::getTable()->selectById($request['group'])) {
                             if ($user->getGroupID() != $group->getID()) {
                                 $groups = [$user->getGroupID(), $group->getID()];
                                 $return_options['update_groups'] = ['ids' => [], 'membercounts' => []];
@@ -1666,14 +1693,8 @@
                         }
                     }
                     $template_options = ['user' => $user];
-                    if (isset($random_password)) {
-                        $template_options['random_password'] = $random_password;
-                    }
                     $return_options['content'] = $this->getComponentHTML('configuration/finduser_row', $template_options);
                     $return_options['title'] = $this->getI18n()->__('User updated!');
-                    if ($password_changed) {
-                        $return_options['message'] = $this->getI18n()->__('The password was changed');
-                    }
 
                     return $this->renderJSON($return_options);
                 }
@@ -2441,6 +2462,60 @@
                     framework\Context::setMessage('scope_save_error', $e->getMessage());
                 }
             }
+        }
+
+        /**
+         * @Route(name="group", url="/groups/:group_id", methods="POST")
+         * @param framework\Request $request
+         * @return bool
+         */
+        public function runEditGroup(framework\Request $request)
+        {
+            $access_level = $this->getAccessLevel(framework\Settings::CONFIGURATION_SECTION_USERS, 'core');
+            if (!$access_level == framework\Settings::ACCESS_FULL) {
+                $this->getResponse()->setHttpStatus(400);
+
+                return $this->renderJSON(['error' => $this->getI18n()->__('You do not have access to edit these permissions')]);
+            }
+
+            try {
+                if ($request['group_id']) {
+                    $group = tables\Groups::getTable()->selectById($request['group_id']);
+                } else {
+                    $group = new entities\Group();
+                }
+            } catch (Exception $e) {}
+
+            if (!isset($group) || !$group instanceof entities\Group) {
+                $this->getResponse()->setHttpStatus(400);
+
+                return $this->renderJSON(['error' => $this->getI18n()->__('This is not a valid group')]);
+            }
+
+            $group->setName($request['name']);
+            $group->save();
+
+            $new_permissions = [];
+            foreach ($request['permissions'] ?: [] as $new_permission) {
+                $permission_details = explode(',', $new_permission);
+                $new_permissions[$permission_details[1]] = $permission_details[0];
+            }
+            $existing_permissions = [];
+            foreach ($group->getPermissions() as $existing_permission) {
+                if (!array_key_exists($existing_permission['permission'], $new_permissions)) {
+                    $group->removePermission($existing_permission['permission'], $existing_permission['module']);
+                } else {
+                    $existing_permissions[$existing_permission['permission']] = $new_permissions[$existing_permission['permission']];
+                    unset($new_permissions[$existing_permission['permission']]);
+                }
+            }
+            foreach ($new_permissions as $permission_key => $module) {
+                $group->addPermission($permission_key, $module);
+            }
+            framework\Context::clearPermissionsCache();
+            framework\Context::cacheAllPermissions();
+
+            return $this->renderJSON(['message' => $this->getI18n()->__('Group updated')]);
         }
 
         public function runConfigureRole(framework\Request $request)

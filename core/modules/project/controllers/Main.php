@@ -827,19 +827,12 @@
             $this->message = false;
 
             $find_by = trim($request['find_by']);
-            if ($find_by) {
-                $this->selected_project = entities\Project::getB2DBTable()->selectById($request['project_id']);
-                $this->users = tables\Users::getTable()->getByDetails($find_by, 10, true);
-                $this->teams = tables\Teams::getTable()->quickfind($find_by);
-                $this->global_roles = entities\Role::getGlobalRoles();
-                $this->project_roles = entities\Role::getByProjectID($this->selected_project->getID());
-
-                if (filter_var($find_by, FILTER_VALIDATE_EMAIL) == $find_by) {
-                    $this->email = $find_by;
-                }
-            } else {
-                $this->message = true;
+            if (!$find_by) {
+                return $this->renderJSON(['error' => $this->getI18n()->__('Please enter something to search for')]);
             }
+
+            $selected_project = entities\Project::getB2DBTable()->selectById($request['project_id']);
+            return $this->renderJSON(['content' => $this->getComponentHTML('project/findassignee', ['selected_project' => $selected_project, 'find_by' => $find_by])]);
         }
 
         /**
@@ -853,27 +846,47 @@
                 $assignee_type = $request['assignee_type'];
                 $assignee_id = $request['assignee_id'];
 
+                $assignee_role = tables\ListTypes::getTable()->selectById($request['role_id']);
+
+                if (!$assignee_role instanceof entities\Role) {
+                    $this->getResponse()->setHttpStatus(400);
+                    return $this->renderJSON(['error' => Context::getI18n()->__('You have to specify a role for this assignee')]);
+                }
+
                 try {
                     switch ($assignee_type) {
                         case 'user':
-                            $assignee = entities\User::getB2DBTable()->selectById($assignee_id);
+                            if (is_numeric($assignee_id)) {
+                                $assignee = tables\Users::getTable()->selectById($assignee_id);
+                            } else {
+                                $assignee = new entities\User();
+                                $assignee->setUsername($assignee_id);
+                                $assignee->setRealname($assignee_id);
+                                $assignee->setEmail($assignee_id);
+                                $assignee->setGroup(framework\Settings::get(framework\Settings::SETTING_USER_GROUP));
+                                $password = entities\User::createPassword();
+                                $assignee->setPassword($password);
+                                $assignee->save();
+                                $assignee->setActivated(false);
+                                $assignee->save();
+                            }
+
+                            framework\Event::createNew('core', 'projectActions::addAssignee', $this->selected_project)->trigger(['assignee' => $assignee]);
                             break;
                         case 'team':
-                            $assignee = entities\Team::getB2DBTable()->selectById($assignee_id);
+                            $assignee = tables\Teams::getTable()->selectById($assignee_id);
                             break;
                         default:
                             throw new Exception('Invalid assignee');
                     }
                 } catch (Exception $e) {
                     $this->getResponse()->setHttpStatus(400);
-
-                    return $this->renderJSON(['error' => Context::getI18n()->__('An error occurred when trying to assign user/team to this project')]);
+                    return $this->renderJSON(['error' => Context::getI18n()->__('An error occurred when trying to assign user/team to this project: ' . $e->getMessage())]);
                 }
 
-                $assignee_role = new entities\Role($request['role_id']);
                 $this->selected_project->addAssignee($assignee, $assignee_role);
 
-                return $this->renderComponent('projects_assignees', ['project' => $this->selected_project]);
+                return $this->renderJSON(['content' => $this->getComponentHTML('project/settings_project_assignee', ['project' => $this->selected_project, 'assignee' => $assignee])]);
             } else {
                 $this->getResponse()->setHttpStatus(403);
 
@@ -938,11 +951,11 @@
                     }
                 }
                 if ($request['field'] == 'owned_by')
-                    return $this->renderJSON(['field' => (($item->hasOwner()) ? ['id' => $item->getOwner()->getID(), 'name' => (($item->getOwner() instanceof entities\User) ? $this->getComponentHTML('main/userdropdown', ['user' => $item->getOwner()]) : $this->getComponentHTML('main/teamdropdown', ['team' => $item->getOwner()]))] : ['id' => 0])]);
+                    return $this->renderJSON(['field' => (($item->hasOwner()) ? ['id' => $item->getOwner()->getID(), 'name' => (($item->getOwner() instanceof entities\User) ? $this->getComponentHTML('main/userdropdown', ['user' => $item->getOwner()]) : $this->getComponentHTML('main/teamdropdown', ['team' => $item->getOwner()]))] : ['id' => 0, 'name' => $this->getI18n()->__('No project owner assigned')])]);
                 elseif ($request['field'] == 'lead_by')
-                    return $this->renderJSON(['field' => (($item->hasLeader()) ? ['id' => $item->getLeader()->getID(), 'name' => (($item->getLeader() instanceof entities\User) ? $this->getComponentHTML('main/userdropdown', ['user' => $item->getLeader()]) : $this->getComponentHTML('main/teamdropdown', ['team' => $item->getLeader()]))] : ['id' => 0])]);
+                    return $this->renderJSON(['field' => (($item->hasLeader()) ? ['id' => $item->getLeader()->getID(), 'name' => (($item->getLeader() instanceof entities\User) ? $this->getComponentHTML('main/userdropdown', ['user' => $item->getLeader()]) : $this->getComponentHTML('main/teamdropdown', ['team' => $item->getLeader()]))] : ['id' => 0, 'name' => $this->getI18n()->__('No project leader assigned')])]);
                 elseif ($request['field'] == 'qa_by')
-                    return $this->renderJSON(['field' => (($item->hasQaResponsible()) ? ['id' => $item->getQaResponsible()->getID(), 'name' => (($item->getQaResponsible() instanceof entities\User) ? $this->getComponentHTML('main/userdropdown', ['user' => $item->getQaResponsible()]) : $this->getComponentHTML('main/teamdropdown', ['team' => $item->getQaResponsible()]))] : ['id' => 0])]);
+                    return $this->renderJSON(['field' => (($item->hasQaResponsible()) ? ['id' => $item->getQaResponsible()->getID(), 'name' => (($item->getQaResponsible() instanceof entities\User) ? $this->getComponentHTML('main/userdropdown', ['user' => $item->getQaResponsible()]) : $this->getComponentHTML('main/teamdropdown', ['team' => $item->getQaResponsible()]))] : ['id' => 0, 'name' => $this->getI18n()->__('No QA responsible assigned')])]);
             }
         }
 
@@ -1506,7 +1519,7 @@
                     $assignee = ($request['assignee_type'] == 'user') ? new entities\User($request['assignee_id']) : new entities\Team($request['assignee_id']);
                     $this->selected_project->removeAssignee($assignee);
 
-                    return $this->renderJSON(['message' => Context::getI18n()->__('The assignee has been removed')]);
+                    return $this->renderJSON(['message' => Context::getI18n()->__('The assignee has been removed'), 'assignee_type' => $request['assignee_type'], 'assignee_id' => $request['assignee_id']]);
                 } catch (Exception $e) {
                     $this->getResponse()->setHttpStatus(400);
 

@@ -1342,7 +1342,7 @@ var Issue = /*#__PURE__*/function () {
       this.description_formatted = json.description_formatted;
       this.reproduction_steps = json.reproduction_steps;
       this.reproduction_steps_formatted = json.reproduction_steps_formatted;
-      this.assignee = json.assignee;
+      this.assigned_to = json.assigned_to;
       this.category = json.category;
       this.issue_type = json.issue_type;
       this.milestone = json.milestone;
@@ -1363,18 +1363,21 @@ var Issue = /*#__PURE__*/function () {
     }
   }, {
     key: "postAndUpdate",
-    value: function postAndUpdate(field, value) {
+    value: function postAndUpdate(field, value, additional_value) {
       var issue = this;
+      var data;
+      data = {
+        field: field,
+        value: value,
+        additional_value: additional_value
+      };
       _pachno__WEBPACK_IMPORTED_MODULE_2__["default"].trigger(_pachno__WEBPACK_IMPORTED_MODULE_2__["default"].EVENTS.issue.update, {
         id: this.id
       });
       return new Promise(function (resolve, reject) {
         _pachno__WEBPACK_IMPORTED_MODULE_2__["default"].fetch(issue.save_url, {
           method: 'POST',
-          data: {
-            field: field,
-            value: value
-          }
+          data: data
         }).then(function (json) {
           _pachno__WEBPACK_IMPORTED_MODULE_2__["default"].trigger(_pachno__WEBPACK_IMPORTED_MODULE_2__["default"].EVENTS.issue.updateDone, {
             id: issue.id
@@ -1395,16 +1398,37 @@ var Issue = /*#__PURE__*/function () {
       var editor = Object(_widgets_editor__WEBPACK_IMPORTED_MODULE_5__["getEditor"])($textarea.attr('id'));
       $container_element.addClass('force-visible');
       $element.addClass('editing');
-      setTimeout(function () {
-        editor.focus();
-        editor.codemirror.focus();
-      }, 250);
+      editor.codemirror.focus();
     }
   }, {
     key: "setupListeners",
     value: function setupListeners() {
       var $body = jquery__WEBPACK_IMPORTED_MODULE_1___default()('body');
       var issue = this;
+      $body.off('click', ".issue-field[data-issue-id=\"".concat(this.id, "\"] .trigger-issue-set-posted-by"));
+      $body.on('click', ".issue-field[data-issue-id=\"".concat(this.id, "\"] .trigger-issue-set-posted-by"), function (event) {
+        event.preventDefault();
+        var $element = jquery__WEBPACK_IMPORTED_MODULE_1___default()(this);
+        var identifiable_type = $element.data('identifiable-type');
+        var value = $element.data('identifiable-value');
+        issue.postAndUpdate('posted_by', value, identifiable_type);
+      });
+      $body.off('click', ".issue-field[data-issue-id=\"".concat(this.id, "\"] .trigger-issue-set-assigned-to"));
+      $body.on('click', ".issue-field[data-issue-id=\"".concat(this.id, "\"] .trigger-issue-set-assigned-to"), function (event) {
+        event.preventDefault();
+        var $element = jquery__WEBPACK_IMPORTED_MODULE_1___default()(this);
+        var identifiable_type = $element.data('identifiable-type');
+        var value = $element.data('identifiable-value');
+        issue.postAndUpdate('assigned_to', value, identifiable_type);
+      });
+      $body.off('click', ".issue-field[data-issue-id=\"".concat(this.id, "\"] .trigger-issue-set-owned-by"));
+      $body.on('click', ".issue-field[data-issue-id=\"".concat(this.id, "\"] .trigger-issue-set-owned-by"), function (event) {
+        event.preventDefault();
+        var $element = jquery__WEBPACK_IMPORTED_MODULE_1___default()(this);
+        var identifiable_type = $element.data('identifiable-type');
+        var value = $element.data('identifiable-value');
+        issue.postAndUpdate('owned_by', value, identifiable_type);
+      });
       $body.off('click', "input[data-trigger-issue-update][data-issue-id=\"".concat(this.id, "\"]"));
       $body.on('click', "input[data-trigger-issue-update][data-issue-id=\"".concat(this.id, "\"]"), function () {
         var $element = jquery__WEBPACK_IMPORTED_MODULE_1___default()(this);
@@ -1733,6 +1757,32 @@ var Issue = /*#__PURE__*/function () {
               $element.html("<span>".concat(this.status.name, "</span>"));
               break;
 
+            case 'issue_type_icon':
+              $element.html("".concat(_helpers_ui__WEBPACK_IMPORTED_MODULE_0__["default"].fa_image_tag(this.issue_type.fa_icon, {
+                classes: "issuetype-icon issuetype-".concat(this.issue_type.icon)
+              })));
+
+              for (var _i = 0, _arr = ['bug_report', 'documentation_request', 'enhancement', 'feature_request', 'idea', 'epic', 'support_request', 'task', 'developer_report']; _i < _arr.length; _i++) {
+                var icon = _arr[_i];
+                $element.removeClass("issuetype-".concat(icon));
+              }
+
+              $element.addClass("issuetype-".concat(this.issue_type.icon));
+              break;
+
+            case 'issue_type':
+              $element.html("".concat(_helpers_ui__WEBPACK_IMPORTED_MODULE_0__["default"].fa_image_tag(this.issue_type.fa_icon, {
+                classes: 'icon'
+              }), "<span class=\"name\">").concat(this.issue_type.name, "</span>"));
+
+              for (var _i2 = 0, _arr2 = ['bug_report', 'documentation_request', 'enhancement', 'feature_request', 'idea', 'epic', 'support_request', 'task', 'developer_report']; _i2 < _arr2.length; _i2++) {
+                var _icon = _arr2[_i2];
+                $element.removeClass("issuetype-".concat(_icon));
+              }
+
+              $element.addClass("issuetype-".concat(this.issue_type.icon));
+              break;
+
             case 'title':
               $element.html(this.title);
               break;
@@ -1749,6 +1799,21 @@ var Issue = /*#__PURE__*/function () {
               $element.html(this.updated_at_friendly);
               $element.prop('title', this.updated_at_full);
               $element.prop('datetime', this.updated_at_datetime);
+              break;
+
+            case 'posted_by':
+            case 'assigned_to':
+            case 'owned_by':
+              if (this[_field] && this[_field].id) {
+                if (this[_field].type == 'user') {
+                  $element.html("<span class=\"userlink trigger-backdrop\" data-url=\"".concat(this[_field].card_url, "\"><span class=\"avatar medium\"><img src=\"").concat(this[_field].avatar_url_small, "\"></span><span class=\"name\">").concat(this[_field].name, "</span></span>"));
+                } else {
+                  $element.html("<span>".concat(this[_field].name, "</span>"));
+                }
+              } else {
+                $element.html($element.data('unknown') !== undefined ? $element.data('unknown') : _pachno__WEBPACK_IMPORTED_MODULE_2__["default"].T.issue.value_not_set);
+              }
+
               break;
 
             case 'number_of_subscribers':
@@ -2078,9 +2143,9 @@ var Issue = /*#__PURE__*/function () {
       $info.append("<span class=\"status-badge\" style=\"background-color: ".concat(this.status.color, "; color: ").concat(this.status.text_color, ";\" data-dynamic-field-value data-field=\"status\" data-issue-id=\"").concat(this.id, "\"><span>").concat(this.status.name, "</span></span>"));
       $info.append("<span class=\"attachments ".concat(priority_hidden_class, "\" data-dynamic-field-value data-field=\"priority-icon\" data-issue-id=\"").concat(this.id, "\">").concat(priority_span, "</span>"));
 
-      if (this.assignee !== undefined && this.assignee !== null) {
-        if (this.assignee.type == 'user') {
-          $info.append("<span class=\"assignee\" data-dynamic-field-value data-field=\"assignee\" data-issue-id=\"".concat(this.id, "\"><span class=\"avatar medium\"><img src=\"").concat(this.assignee.avatar_url_small, "\"></span></span>"));
+      if (this.assigned_to !== undefined && this.assigned_to !== null) {
+        if (this.assigned_to.type == 'user') {
+          $info.append("<span class=\"assignee\" data-dynamic-field-value data-field=\"assigned_to\" data-issue-id=\"".concat(this.id, "\"><span class=\"avatar medium\"><img src=\"").concat(this.assigned_to.avatar_url_small, "\"></span></span>"));
         }
       }
 
@@ -2466,15 +2531,16 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _helpers_workflow__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ../helpers/workflow */ "./js/helpers/workflow.js");
 /* harmony import */ var _helpers_article__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ../helpers/article */ "./js/helpers/article.js");
 /* harmony import */ var _helpers_modules__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ../helpers/modules */ "./js/helpers/modules.js");
-/* harmony import */ var _board__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ./board */ "./js/classes/board.js");
-/* harmony import */ var _search__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ./search */ "./js/classes/search.js");
-/* harmony import */ var _issuereporter__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ./issuereporter */ "./js/classes/issuereporter.js");
-/* harmony import */ var _issue__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! ./issue */ "./js/classes/issue.js");
-/* harmony import */ var _uploader__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! ./uploader */ "./js/classes/uploader.js");
-/* harmony import */ var _roadmap__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(/*! ./roadmap */ "./js/classes/roadmap.js");
-/* harmony import */ var _quicksearch__WEBPACK_IMPORTED_MODULE_21__ = __webpack_require__(/*! ./quicksearch */ "./js/classes/quicksearch.js");
-/* harmony import */ var _i18n_en_US_strings_json__WEBPACK_IMPORTED_MODULE_22__ = __webpack_require__(/*! ../../i18n/en_US/strings.json */ "./i18n/en_US/strings.json");
-var _i18n_en_US_strings_json__WEBPACK_IMPORTED_MODULE_22___namespace = /*#__PURE__*/__webpack_require__.t(/*! ../../i18n/en_US/strings.json */ "./i18n/en_US/strings.json", 1);
+/* harmony import */ var _helpers_project__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ../helpers/project */ "./js/helpers/project.js");
+/* harmony import */ var _board__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ./board */ "./js/classes/board.js");
+/* harmony import */ var _search__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ./search */ "./js/classes/search.js");
+/* harmony import */ var _issuereporter__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! ./issuereporter */ "./js/classes/issuereporter.js");
+/* harmony import */ var _issue__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! ./issue */ "./js/classes/issue.js");
+/* harmony import */ var _uploader__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(/*! ./uploader */ "./js/classes/uploader.js");
+/* harmony import */ var _roadmap__WEBPACK_IMPORTED_MODULE_21__ = __webpack_require__(/*! ./roadmap */ "./js/classes/roadmap.js");
+/* harmony import */ var _quicksearch__WEBPACK_IMPORTED_MODULE_22__ = __webpack_require__(/*! ./quicksearch */ "./js/classes/quicksearch.js");
+/* harmony import */ var _i18n_en_US_strings_json__WEBPACK_IMPORTED_MODULE_23__ = __webpack_require__(/*! ../../i18n/en_US/strings.json */ "./i18n/en_US/strings.json");
+var _i18n_en_US_strings_json__WEBPACK_IMPORTED_MODULE_23___namespace = /*#__PURE__*/__webpack_require__.t(/*! ../../i18n/en_US/strings.json */ "./i18n/en_US/strings.json", 1);
 function _createForOfIteratorHelper(o, allowArrayLike) { var it; if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = o[Symbol.iterator](); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
 
 function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
@@ -2516,8 +2582,9 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
 
 
+
 var translations = {
-  en_US: _i18n_en_US_strings_json__WEBPACK_IMPORTED_MODULE_22__
+  en_US: _i18n_en_US_strings_json__WEBPACK_IMPORTED_MODULE_23__
 };
 
 var PachnoApplication = /*#__PURE__*/function () {
@@ -2549,7 +2616,11 @@ var PachnoApplication = /*#__PURE__*/function () {
           "delete": 'article-trigger-delete'
         },
         configuration: {
-          deleteComponent: 'configuration-delete-component'
+          deleteComponent: 'configuration-delete-component',
+          generatePassword: 'configuration-generate-password'
+        },
+        project: {
+          removeAssignee: 'project-remove-assignee'
         },
         formSubmit: 'form-submit',
         formSubmitResponse: 'form-submit-response',
@@ -2594,7 +2665,7 @@ var PachnoApplication = /*#__PURE__*/function () {
       this.basepath = options.basepath;
       this.data_url = options.dataUrl;
       this.upload_url = options.uploadUrl;
-      this.quicksearch = new _quicksearch__WEBPACK_IMPORTED_MODULE_21__["default"](options.autocompleterUrl);
+      this.quicksearch = new _quicksearch__WEBPACK_IMPORTED_MODULE_22__["default"](options.autocompleterUrl);
       this.trigger(this.EVENTS.quicksearchAddDefaultChoice, {
         icon: {
           name: 'search',
@@ -2604,7 +2675,7 @@ var PachnoApplication = /*#__PURE__*/function () {
         name: 'Find something',
         description: 'Search through issues, projects, documentation and people',
         action: {
-          type: _quicksearch__WEBPACK_IMPORTED_MODULE_21__["TYPES"].navigate,
+          type: _quicksearch__WEBPACK_IMPORTED_MODULE_22__["TYPES"].navigate,
           url: '/account'
         }
       });
@@ -2617,7 +2688,7 @@ var PachnoApplication = /*#__PURE__*/function () {
         name: 'Show an issue',
         description: 'Go directly to an issue',
         action: {
-          type: _quicksearch__WEBPACK_IMPORTED_MODULE_21__["TYPES"].event,
+          type: _quicksearch__WEBPACK_IMPORTED_MODULE_22__["TYPES"].event,
           event: '/find'
         }
       });
@@ -2702,7 +2773,8 @@ var PachnoApplication = /*#__PURE__*/function () {
       Object(_helpers_article__WEBPACK_IMPORTED_MODULE_13__["setupListeners"])();
       Object(_helpers_modules__WEBPACK_IMPORTED_MODULE_14__["setupListeners"])();
       Object(_helpers_ui__WEBPACK_IMPORTED_MODULE_3__["setupListeners"])();
-      Object(_widgets__WEBPACK_IMPORTED_MODULE_5__["default"])(); // $('#fullpage_backdrop_content').on('click', Core._resizeWatcher);
+      Object(_widgets__WEBPACK_IMPORTED_MODULE_5__["default"])();
+      Object(_helpers_project__WEBPACK_IMPORTED_MODULE_15__["setupListeners"])(); // $('#fullpage_backdrop_content').on('click', Core._resizeWatcher);
     }
   }, {
     key: "_initialize",
@@ -2757,7 +2829,7 @@ var PachnoApplication = /*#__PURE__*/function () {
         return this.issues[json.id];
       }
 
-      this.issues[json.id] = new _issue__WEBPACK_IMPORTED_MODULE_18__["default"](json, board_id);
+      this.issues[json.id] = new _issue__WEBPACK_IMPORTED_MODULE_19__["default"](json, board_id);
       return this.issues[json.id];
     }
     /**
@@ -4933,12 +5005,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(jquery__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var _tools_tools__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../tools/tools */ "./js/tools/tools.js");
 /* harmony import */ var _ui__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./ui */ "./js/helpers/ui.js");
-function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
-
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
 
 
 
@@ -5021,7 +5087,7 @@ var processCommonAjaxPostEvents = function processCommonAjaxPostEvents(options) 
 
 var fetchHelper = function fetchHelper(url, options) {
   return new Promise(function (resolve, reject) {
-    var method = options.method ? options.method : 'GET';
+    var method = options.method ? options.method.toUpperCase() : 'GET';
     var $form = options.form ? jquery__WEBPACK_IMPORTED_MODULE_0___default()('#' + options.form) : undefined;
 
     if (options.form !== undefined && method === 'GET') {
@@ -5272,7 +5338,7 @@ var formSubmitHelper = function formSubmitHelper(url, form_id, options) {
 
   if (options !== undefined) {
     if (options.success !== undefined) {
-      fetchOptions.success = _objectSpread(_objectSpread({}, fetchOptions.success), options.success);
+      fetchOptions.success = options.success;
     }
 
     if (options.data !== undefined) {
@@ -6041,6 +6107,88 @@ var setupListeners = function setupListeners() {
 
 /***/ }),
 
+/***/ "./js/helpers/project.js":
+/*!*******************************!*\
+  !*** ./js/helpers/project.js ***!
+  \*******************************/
+/*! exports provided: setupListeners */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "setupListeners", function() { return setupListeners; });
+/* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! jquery */ "./node_modules/jquery/dist/jquery.js");
+/* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(jquery__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _classes_pachno__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../classes/pachno */ "./js/classes/pachno.js");
+
+
+
+var addAssignee = function addAssignee(event) {
+  event.preventDefault();
+  event.stopPropagation();
+  var $button = jquery__WEBPACK_IMPORTED_MODULE_0___default()(this);
+  var $row = $button.parents('.row');
+  var $table = $row.parents('.flexible-table');
+  var url = $table.data('url');
+  var $role = $row.find('input[name=role_id]:checked');
+  var role_id = $role.length ? $role.val() : 0;
+  var assignee_type;
+  var assignee_id;
+  $row.addClass('submitting');
+  $button.attr('disabled', true);
+
+  if (!$row.data('id')) {
+    assignee_type = 'user';
+    assignee_id = $row.data('email');
+  } else {
+    assignee_type = $row.data('identifiable-type');
+    assignee_id = $row.data('id');
+  }
+
+  _classes_pachno__WEBPACK_IMPORTED_MODULE_1__["default"].fetch(url, {
+    method: 'POST',
+    data: {
+      assignee_type: assignee_type,
+      assignee_id: assignee_id,
+      role_id: role_id
+    }
+  }).then(function (json) {
+    $button.html(_classes_pachno__WEBPACK_IMPORTED_MODULE_1__["default"].UI.fa_image_tag('check', {
+      classes: 'icon'
+    }));
+    var $assignee_list = jquery__WEBPACK_IMPORTED_MODULE_0___default()('#project_team_list');
+
+    if ($assignee_list.length) {
+      $assignee_list.append(json.content);
+    }
+  })["catch"](function () {
+    $button.removeAttr('disabled');
+    $row.removeClass('submitting');
+  });
+};
+
+var removeAssignee = function removeAssignee(PachnoApplication, data) {
+  var url = data.url;
+  _classes_pachno__WEBPACK_IMPORTED_MODULE_1__["default"].UI.Dialog.setSubmitting();
+  _classes_pachno__WEBPACK_IMPORTED_MODULE_1__["default"].fetch(url, {
+    method: 'POST'
+  }).then(function (json) {
+    _classes_pachno__WEBPACK_IMPORTED_MODULE_1__["default"].UI.Dialog.dismiss();
+    var $row = jquery__WEBPACK_IMPORTED_MODULE_0___default()(".row[data-assignee-type=".concat(json.assignee_type, "][data-assignee-id=").concat(json.assignee_id, "]"));
+    $row.remove();
+  });
+};
+
+var setupListeners = function setupListeners() {
+  var $body = jquery__WEBPACK_IMPORTED_MODULE_0___default()("body");
+  $body.on('click', ".trigger-assign-to-project", addAssignee);
+  _classes_pachno__WEBPACK_IMPORTED_MODULE_1__["default"].on(_classes_pachno__WEBPACK_IMPORTED_MODULE_1__["default"].EVENTS.project.removeAssignee, removeAssignee);
+};
+
+
+
+/***/ }),
+
 /***/ "./js/helpers/ui.js":
 /*!**************************!*\
   !*** ./js/helpers/ui.js ***!
@@ -6175,10 +6323,13 @@ var UI = {
       jquery__WEBPACK_IMPORTED_MODULE_0___default()('#dialog_backdrop').show();
     },
     setSubmitting: function setSubmitting() {
-      jquery__WEBPACK_IMPORTED_MODULE_0___default()('#dialog_yes').addClass('disabled');
-      jquery__WEBPACK_IMPORTED_MODULE_0___default()('#dialog_yes').attr('disabled', true);
-      jquery__WEBPACK_IMPORTED_MODULE_0___default()('#dialog_no').addClass('disabled');
-      jquery__WEBPACK_IMPORTED_MODULE_0___default()('#dialog_no').attr('disabled', true);
+      var $dialogYes = jquery__WEBPACK_IMPORTED_MODULE_0___default()('#dialog_yes');
+      var $dialogNo = jquery__WEBPACK_IMPORTED_MODULE_0___default()('#dialog_no');
+      $dialogYes.blur();
+      $dialogYes.addClass('disabled');
+      $dialogYes.attr('disabled', true);
+      $dialogNo.addClass('disabled');
+      $dialogNo.attr('disabled', true);
       jquery__WEBPACK_IMPORTED_MODULE_0___default()('#dialog_backdrop').addClass('submitting');
     },
     showModal: function showModal(title, content) {

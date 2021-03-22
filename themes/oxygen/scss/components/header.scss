@@ -291,9 +291,12 @@ header {
       flex-direction: row;
       align-items: center;
       justify-content: flex-start;
-      border-left: 2px solid rgba(225, 225, 225, .2);
       margin: .5em 0;
       padding: 0 1em 0 .75em;
+
+      &:last-child {
+        border-left: 2px solid rgba(225, 225, 225, .2);
+      }
 
       .dropper-container {
         margin-right: .5em;

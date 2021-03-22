@@ -940,14 +940,27 @@
         {
             $this->getResponse()->setPage('login');
 
-            $user = tables\Users::getTable()->getByUsername(str_replace('%2E', '.', $request['user']));
+            $user = tables\Users::getTable()->getByUsername(str_replace(['%2E', '%2B', ' '], ['.', '+', '+'], $request->getRawParameter('user')));
             if ($user instanceof entities\User) {
                 if ($user->getActivationKey() != $request['key']) {
                     framework\Context::setMessage('login_message_err', framework\Context::getI18n()->__('This activation link is not valid'));
                 } else {
                     $user->setValidated(true);
                     $user->save();
-                    framework\Context::setMessage('login_message', framework\Context::getI18n()->__('Your account has been activated! You can now log in with the username %user and the password in your activation email.', ['%user' => $user->getUsername()]));
+
+                    $authentication_backend = framework\Settings::getAuthenticationBackend();
+                    if ($authentication_backend->getAuthenticationMethod() == framework\AuthenticationBackend::AUTHENTICATION_TYPE_TOKEN) {
+                        $token = $user->createUserSession();
+                        $authentication_backend->persistTokenSession($user, $token, false);
+                    } else {
+                        $password = $user->getHashPassword();
+                        $authentication_backend->persistPasswordSession($user, $password, false);
+                    }
+
+                    framework\Context::setMessage('auto_password', entities\User::createPassword());
+
+                    return $this->forward($this->getRouting()->generate('profile_account'));
+//                    framework\Context::setMessage('login_message', framework\Context::getI18n()->__('Your account has been activated! You can now log in with the username %user and the password in your activation email.', ['%user' => $user->getUsername()]));
                 }
             } else {
                 framework\Context::setMessage('login_message_err', framework\Context::getI18n()->__('This activation link is not valid'));
@@ -1035,32 +1048,22 @@
 
                     return $this->renderJSON(['error' => framework\Context::getI18n()->__("You're not allowed to change your password.")]);
                 }
-                if (!$request->hasParameter('current_password') || !$request['current_password']) {
-                    $this->getResponse()->setHttpStatus(400);
-
-                    return $this->renderJSON(['error' => framework\Context::getI18n()->__('Please enter your current password')]);
-                }
                 if (!$request->hasParameter('new_password_1') || !$request['new_password_1']) {
                     $this->getResponse()->setHttpStatus(400);
 
-                    return $this->renderJSON(['error' => framework\Context::getI18n()->__('Please enter a new password')]);
+                    return $this->renderJSON(['error' => framework\Context::getI18n()->__('Please enter a new password'), 'errors' => ['new_password_1' => $this->getI18n()->__('Please enter a password')]]);
                 }
                 if (!$request->hasParameter('new_password_2') || !$request['new_password_2']) {
                     $this->getResponse()->setHttpStatus(400);
 
-                    return $this->renderJSON(['error' => framework\Context::getI18n()->__('Please enter the new password twice')]);
-                }
-                if (!$this->getUser()->hasPassword($request['current_password'])) {
-                    $this->getResponse()->setHttpStatus(400);
-
-                    return $this->renderJSON(['error' => framework\Context::getI18n()->__('Please enter your current password')]);
+                    return $this->renderJSON(['error' => framework\Context::getI18n()->__('Please enter the new password twice'), 'errors' => ['new_password_1' => $this->getI18n()->__("These passwords don't match"), 'new_password_2' => $this->getI18n()->__("These passwords don't match")]]);
                 }
                 if ($request['new_password_1'] != $request['new_password_2']) {
                     $this->getResponse()->setHttpStatus(400);
 
-                    return $this->renderJSON(['error' => framework\Context::getI18n()->__('Please enter the new password twice')]);
+                    return $this->renderJSON(['error' => framework\Context::getI18n()->__('Please enter the new password twice'), 'errors' => ['new_password_2' => $this->getI18n()->__('Please enter the password again, here')]]);
                 }
-                $this->getUser()->changePassword($request['new_password_1']);
+                $this->getUser()->setPassword($request['new_password_1']);
                 $this->getUser()->save();
                 framework\Context::clearMessage('auto_password');
 
@@ -1847,7 +1850,7 @@
                 case 'posted_by':
                 case 'owned_by':
                 case 'assigned_to':
-                    $identifiable_type = ($request->hasParameter('identifiable_type')) ? $request['identifiable_type'] : 'user';
+                    $identifiable_type = ($request->hasParameter('additional_value')) ? $request['additional_value'] : 'user';
                     if ($request['value'] && in_array($identifiable_type, ['team', 'user'])) {
                         switch ($identifiable_type) {
                             case 'user':
@@ -2923,6 +2926,15 @@
                             $role = new entities\Role();
                         }
                         $options['role'] = $role;
+                        break;
+                    case 'edit_group':
+                        $template_name = 'configuration/editgroup';
+                        if ($request['group_id']) {
+                            $group = tables\Groups::getTable()->selectById($request['group_id']);
+                        } else {
+                            $group = new entities\Group();
+                        }
+                        $options['group'] = $group;
                         break;
                     case 'edit_workflow_scheme':
                         $template_name = 'configuration/editworkflowscheme';

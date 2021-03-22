@@ -275,4 +275,22 @@
             }
         }
 
+        public function componentFindAssignee()
+        {
+            $this->users = tables\Users::getTable()->getByDetails($this->find_by, 10, true);
+            $this->teams = tables\Teams::getTable()->quickfind($this->find_by);
+            $this->global_roles = entities\Role::getGlobalRoles();
+            $this->project_roles = entities\Role::getByProjectID($this->selected_project->getID());
+
+            if (filter_var($this->find_by, FILTER_VALIDATE_EMAIL) == $this->find_by) {
+                $this->email = $this->find_by;
+            }
+
+            if (!count($this->users) && isset($this->email)) {
+                $email_user = new entities\User();
+                $email_user->setEmail($this->email);
+                $this->email_user = $email_user;
+            }
+        }
+
     }

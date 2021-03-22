@@ -219,80 +219,70 @@ use pachno\core\framework\Context;
         <span class="name"><?= __('People involved'); ?></span>
     </div>
     <ul class="issue_details fields-list" id="issue_details_fieldslist_people">
-        <li id="posted_by_field" class="issue-field <?php if ($issue->isUpdateable() && $issue->canEditPostedBy()) echo 'editable'; ?>">
+        <li id="posted_by_field" class="issue-field <?php if ($issue->isUpdateable() && $issue->canEditPostedBy()) echo 'editable'; ?>" data-issue-id="<?= $issue->getId(); ?>">
             <div class="fancy-dropdown-container">
                 <div class="fancy-dropdown" data-default-label="<?= __('Unknown'); ?>">
                     <label><?= __('Posted by'); ?></label>
-                    <?= include_component('main/userdropdown', ['user' => $issue->getPostedBy(), 'size' => 'small']); ?>
+                    <span class="name" data-dynamic-field-value data-field="posted_by" data-issue-id="<?= $issue->getId(); ?>">
+                        <?= include_component('main/userdropdown', ['user' => $issue->getPostedBy(), 'size' => 'small']); ?>
+                    </span>
                     <?php if ($issue->isUpdateable() && $issue->canEditPostedBy()): ?>
                         <?php echo fa_image_tag('angle-down', ['class' => 'expander']); ?>
-                        <div class="dropdown-container">
-                            <?php include_component('main/identifiableselector', array(    'html_id'             => 'posted_by_change',
-                                                                                    'header'             => __('Change issue creator'),
-                                                                                    'callback'             => "Pachno.Issues.Field.set('" . make_url('issue_setfield', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => 'posted_by', 'identifiable_type' => 'user', 'value' => '%identifiable_value')) . "', 'posted_by');",
-                                                                                    'team_callback'         => "Pachno.Issues.Field.set('" . make_url('issue_setfield', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => 'posted_by', 'identifiable_type' => 'team', 'value' => '%identifiable_value')) . "', 'posted_by');",
-                                                                                    'teamup_callback'     => "Pachno.Issues.Field.set('" . make_url('issue_setfield', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => 'posted_by', 'identifiable_type' => 'team', 'value' => '%identifiable_value', 'teamup' => true)) . "', 'posted_by');",
-                                                                                    'clear_link_text'    => __('Clear current creator'),
-                                                                                    'base_id'            => 'posted_by',
-                                                                                    'include_teams'        => false,
-                                                                                    'absolute'            => false)); ?>
-                        </div>
+                        <?php include_component('main/identifiableselector', [
+                            'base_id'         => 'issue_posted_by_selector',
+                            'header'          => __('Change issue creator'),
+                            'trigger_class'   => 'trigger-issue-set-posted-by',
+                            'include_teams'   => false,
+                            'allow_clear'     => false
+                        ]); ?>
                     <?php endif; ?>
                 </div>
             </div>
         </li>
-        <li id="owned_by_field"class="issue-field <?php if ($issue->isUpdateable() && $issue->canEditOwner()) echo 'editable'; ?>">
+        <li id="owned_by_field" class="issue-field <?php if ($issue->isUpdateable() && $issue->canEditOwner()) echo 'editable'; ?>" data-issue-id="<?= $issue->getId(); ?>">
             <div class="fancy-dropdown-container">
                 <div class="fancy-dropdown" data-default-label="<?= __('Unknown'); ?>">
                     <label><?= __('Owned by'); ?></label>
-                    <div class="value">
+                    <span class="name" data-dynamic-field-value data-field="owned_by" data-issue-id="<?= $issue->getId(); ?>">
                         <?php if ($issue->getOwner() instanceof User): ?>
                             <?= include_component('main/userdropdown', array('user' => $issue->getOwner())); ?>
                         <?php elseif ($issue->getOwner() instanceof Team): ?>
                             <?= include_component('main/teamdropdown', array('team' => $issue->getOwner())); ?>
                         <?php endif; ?>
-                    </div>
+                    </span>
                     <?php if ($issue->isUpdateable() && $issue->canEditOwner()): ?>
                         <?php echo fa_image_tag('angle-down', ['class' => 'expander']); ?>
-                        <div class="dropdown-container">
-                            <?php include_component('main/identifiableselector', array(    'html_id'             => 'owned_by_change',
-                                                                                    'header'             => __('Change issue creator'),
-                                                                                    'callback'             => "Pachno.Issues.Field.set('" . make_url('issue_setfield', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => 'owned_by', 'identifiable_type' => 'user', 'value' => '%identifiable_value')) . "', 'owned_by');",
-                                                                                    'team_callback'         => "Pachno.Issues.Field.set('" . make_url('issue_setfield', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => 'owned_by', 'identifiable_type' => 'team', 'value' => '%identifiable_value')) . "', 'owned_by');",
-                                                                                    'teamup_callback'     => "Pachno.Issues.Field.set('" . make_url('issue_setfield', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => 'owned_by', 'identifiable_type' => 'team', 'value' => '%identifiable_value', 'teamup' => true)) . "', 'owned_by');",
-                                                                                    'clear_link_text'    => __('Clear current creator'),
-                                                                                    'base_id'            => 'owned_by',
-                                                                                    'include_teams'        => true,
-                                                                                    'absolute'            => false)); ?>
-                        </div>
+                        <?php include_component('main/identifiableselector', [
+                            'base_id'         => 'issue_owned_by_selector',
+                            'header'          => __('Change issue owner'),
+                            'clear_link_text' => __('Clear current owner'),
+                            'trigger_class'   => 'trigger-issue-set-owned-by',
+                            'include_teams'   => true
+                        ]); ?>
                     <?php endif; ?>
                 </div>
             </div>
         </li>
-        <li id="assigned_to_field"class="issue-field <?php if ($issue->isUpdateable() && $issue->canEditAssignee()) echo 'editable'; ?>">
+        <li id="assigned_to_field" class="issue-field <?php if ($issue->isUpdateable() && $issue->canEditAssignee()) echo 'editable'; ?>" data-issue-id="<?= $issue->getId(); ?>">
             <div class="fancy-dropdown-container">
                 <div class="fancy-dropdown" data-default-label="<?= __('Unknown'); ?>">
                     <label><?= __('Assigned to'); ?></label>
-                    <div class="value">
+                    <span class="name" data-dynamic-field-value data-field="assigned_to" data-issue-id="<?= $issue->getId(); ?>">
                         <?php if ($issue->getAssignee() instanceof User): ?>
                             <?= include_component('main/userdropdown', array('user' => $issue->getAssignee())); ?>
                         <?php elseif ($issue->getAssignee() instanceof Team): ?>
                             <?= include_component('main/teamdropdown', array('team' => $issue->getAssignee())); ?>
                         <?php endif; ?>
-                    </div>
+                    </span>
                     <?php if ($issue->isUpdateable() && $issue->canEditAssignee()): ?>
                         <?php echo fa_image_tag('angle-down', ['class' => 'expander']); ?>
-                        <div class="dropdown-container">
-                            <?php include_component('main/identifiableselector', array(    'html_id'             => 'assigned_to_change',
-                                                                                    'header'             => __('Change issue creator'),
-                                                                                    'callback'             => "Pachno.Issues.Field.set('" . make_url('issue_setfield', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => 'assigned_to', 'identifiable_type' => 'user', 'value' => '%identifiable_value')) . "', 'assigned_to');",
-                                                                                    'team_callback'         => "Pachno.Issues.Field.set('" . make_url('issue_setfield', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => 'assigned_to', 'identifiable_type' => 'team', 'value' => '%identifiable_value')) . "', 'assigned_to');",
-                                                                                    'teamup_callback'     => "Pachno.Issues.Field.set('" . make_url('issue_setfield', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => 'assigned_to', 'identifiable_type' => 'team', 'value' => '%identifiable_value', 'teamup' => true)) . "', 'assigned_to');",
-                                                                                    'clear_link_text'    => __('Clear current creator'),
-                                                                                    'base_id'            => 'assigned_to',
-                                                                                    'include_teams'        => true,
-                                                                                    'absolute'            => false)); ?>
-                        </div>
+                        <?php include_component('main/identifiableselector', [
+                            'base_id'         => 'issue_assigned_to_selector',
+                            'header'          => __('Change issue assignee'),
+                            'clear_link_text' => __('Clear current assignee'),
+                            'trigger_class'   => 'trigger-issue-set-assigned-to',
+                            'include_teams'   => true
+                        ]); ?>
                     <?php endif; ?>
                 </div>
             </div>
@@ -305,7 +295,7 @@ use pachno\core\framework\Context;
                 <span class="value">
                     <span class="count-badge">
                         <?= fa_image_tag('users', ['class' => 'icon']); ?>
-                        <span data-dynamic-value data-field="number_of_subscribers"><?= count($issue->getSubscribers()); ?></span>
+                        <span data-dynamic-field-value data-field="number_of_subscribers" data-issue-id="<?= $issue->getId(); ?>"><?= count($issue->getSubscribers()); ?></span>
                     </span>
                 </span>
                 <span class="tooltip from-right"><?= __('Click here to show the list of subscribers'); ?></span>

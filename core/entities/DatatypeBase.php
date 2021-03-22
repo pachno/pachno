@@ -134,7 +134,7 @@
             $retval = $user->hasPermission($this->getPermissionsKey(), $this->getID(), 'core');
             $retval = ($retval === null) ? $user->hasPermission($this->getPermissionsKey(), 0, 'core') : $retval;
 
-            return ($retval !== null) ? $retval : Settings::isPermissive();
+            return ($retval !== null) ? $retval : false;
         }
 
         public function getPermissionsKey()

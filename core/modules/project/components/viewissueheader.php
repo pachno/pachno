@@ -20,7 +20,7 @@
             </span>
             <div id="title_content">
                 <span id="title-name" class="title-name">
-                    <?= fa_image_tag(($issue->hasIssueType()) ? $issue->getIssueType()->getFontAwesomeIcon() : 'unknown', ['class' => (($issue->hasIssueType()) ? 'issuetype-icon issuetype-' . $issue->getIssueType()->getIcon() : 'issuetype-icon issuetype-unknown')]); ?>
+                    <span data-dynamic-field-value data-field="issue_type_icon" data-issue-id="<?= $issue->getId(); ?>"><?= fa_image_tag(($issue->hasIssueType()) ? $issue->getIssueType()->getFontAwesomeIcon() : 'unknown', ['class' => (($issue->hasIssueType()) ? 'issuetype-icon issuetype-' . $issue->getIssueType()->getIcon() : 'issuetype-icon issuetype-unknown')]); ?></span>
                     <span><?= $issue->getFormattedIssueNo(true); ?>&nbsp;&ndash;&nbsp;</span>
                     <input type="text" name="title" value="<?= $issue->getTitle(); ?>" class="invisible" id="issue_<?= $issue->getID(); ?>_title_input" data-trigger-save-on-blur data-field="title" data-issue-id="<?= $issue->getId(); ?>">
                     <?= fa_image_tag('spinner', ['class' => 'fa-spin indicator']); ?>
@@ -50,7 +50,7 @@
                 </div>
                 <?php if ($issue->canEditStatus()): ?>
                     <div class="dropdown-container">
-                        <div class="list-mode" id="status_change">
+                        <div class="list-mode">
                             <div class="header">
                                 <span class="name"><?= __('Change status'); ?></span>
                             </div>
