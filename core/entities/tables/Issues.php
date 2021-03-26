@@ -817,9 +817,9 @@
                             $query->join(Users::getTable(), Users::ID, self::POSTED_BY);
                             $query3->join(Users::getTable(), Users::ID, self::POSTED_BY);
                             $query->addSelectionColumn(self::POSTED_BY);
-                            $query->addSelectionColumn(Users::UNAME);
-                            $query->addOrderBy(Users::UNAME, $grouporder);
-                            $query3->addOrderBy(Users::UNAME, $grouporder);
+                            $query->addSelectionColumn(Users::USERNAME);
+                            $query->addOrderBy(Users::USERNAME, $grouporder);
+                            $query3->addOrderBy(Users::USERNAME, $grouporder);
                             break;
                         case 'state':
                             $query->addSelectionColumn(self::STATE);

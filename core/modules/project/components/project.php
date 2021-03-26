@@ -39,6 +39,24 @@
         <?php if ($pachno_user->canSearchForIssues() && $pachno_user->hasPageAccess('project_issues', $project->getID())): ?>
             <?= link_tag(make_url('project_open_issues', array('project_key' => $project->getKey())), fa_image_tag('file-alt') . '<span>'.__('Issues').'</span>', ['class' => 'button secondary']); ?>
         <?php endif; ?>
+        <?php if ($pachno_user->canManageProject($project)): ?>
+            <div class="dropper-container">
+                <button class="dropper button secondary icon"><?php echo fa_image_tag('ellipsis-v', ['class' => 'icon']); ?></button>
+                <div class="dropdown-container">
+                    <div class="list-mode">
+                        <a href="javascript:void(0);" class="list-item trigger-backdrop" data-url="<?php echo make_url('get_partial_for_backdrop', ['key' => 'project_add_people', 'invite' => true, 'project_id' => $project->getID()]); ?>">
+                            <?= fa_image_tag('user-plus', ['class' => 'icon']); ?>
+                            <span class="name"><?= __('Invite someone to this project'); ?></span>
+                        </a>
+                        <div class="list-item separator"></div>
+                        <a href="<?= make_url('project_settings', ['project_key' => $project->getKey()]); ?>" class="list-item">
+                            <?= fa_image_tag('cog', ['class' => 'icon']); ?>
+                            <span class="name"><?= __('Configure project'); ?></span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        <?php endif; ?>
         <?php if (!$project->isLocked() && $pachno_user->canReportIssues($project)): ?>
             <button class="button secondary highlight report-issue-button trigger-backdrop" data-url="<?= make_url('get_partial_for_backdrop', ['key' => 'reportissue', 'project_id' => $project->getId()]); ?>">
                 <?= fa_image_tag('plus-square', ['class' => 'icon']); ?>

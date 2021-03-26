@@ -3,6 +3,7 @@
     namespace pachno\core\entities\tables;
 
     use b2db\Criterion;
+    use b2db\Query;
     use b2db\QueryColumnSort;
     use pachno\core\entities\Team;
     use pachno\core\framework;
@@ -23,7 +24,7 @@
      * @package pachno
      * @subpackage tables
      *
-     * @method Team selectById()
+     * @method Team selectById($id, Query $query = null, $join = 'all')
      *
      * @Table(name="teams")
      * @Entity(class="\pachno\core\entities\Team")

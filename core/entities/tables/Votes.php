@@ -39,7 +39,7 @@
 
         const VOTE = 'votes.vote';
 
-        const UID = 'votes.uid';
+        const USER_ID = 'votes.uid';
 
         public function getVoteSumForIssue($issue_id)
         {
@@ -64,13 +64,13 @@
         {
             $query = $this->getQuery();
             $query->where(self::TARGET, $issue_id);
-            $query->where(self::UID, $user_id);
+            $query->where(self::USER_ID, $user_id);
             $query->where(self::SCOPE, framework\Context::getScope()->getID());
             $res = $this->rawDelete($query);
 
             $insertion = new Insertion();
             $insertion->add(self::TARGET, $issue_id);
-            $insertion->add(self::UID, $user_id);
+            $insertion->add(self::USER_ID, $user_id);
             $insertion->add(self::SCOPE, framework\Context::getScope()->getID());
             $insertion->add(self::VOTE, (($up) ? 1 : -1));
             $res = $this->rawInsert($insertion);
@@ -83,7 +83,7 @@
             parent::setup(self::B2DBNAME, self::ID);
             parent::addInteger(self::TARGET, 10);
             parent::addInteger(self::VOTE, 2);
-            parent::addForeignKeyColumn(self::UID, Users::getTable(), Users::ID);
+            parent::addForeignKeyColumn(self::USER_ID, Users::getTable(), Users::ID);
         }
 
     }

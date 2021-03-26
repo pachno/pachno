@@ -39,17 +39,23 @@
 
         const TARGET_ID = 'permissions.target_id';
 
-        const UID = 'permissions.uid';
+        const USER_ID = 'permissions.uid';
 
-        const GID = 'permissions.gid';
+        const GROUP_ID = 'permissions.gid';
 
-        const TID = 'permissions.tid';
+        const TEAM_ID = 'permissions.tid';
 
         const ALLOWED = 'permissions.allowed';
 
         const MODULE = 'permissions.module';
 
         const ROLE_ID = 'permissions.role_id';
+
+        const PERMISSION_PAGE_ACCESS_PROJECT_LIST = 'page_project_list_access';
+
+        const PERMISSION_PAGE_ACCESS_DASHBOARD = 'page_dashboard_access';
+
+        const PERMISSION_PAGE_ACCESS_ACCOUNT = 'page_account_access';
 
         public function getAll($scope_id = null)
         {
@@ -64,9 +70,9 @@
         public function removeSavedPermission($uid, $gid, $tid, $module, $permission_type, $target_id, $scope, $role_id = null)
         {
             $query = $this->getQuery();
-            $query->where(self::UID, $uid);
-            $query->where(self::GID, $gid);
-            $query->where(self::TID, $tid);
+            $query->where(self::USER_ID, $uid);
+            $query->where(self::GROUP_ID, $gid);
+            $query->where(self::TEAM_ID, $tid);
             $query->where(self::MODULE, $module);
             $query->where(self::PERMISSION_TYPE, $permission_type);
             $query->where(self::TARGET_ID, $target_id);
@@ -81,9 +87,9 @@
         public function removeGroupPermission($group_id, $permission_type, $module)
         {
             $query = $this->getQuery();
-            $query->where(self::UID, 0);
-            $query->where(self::TID, 0);
-            $query->where(self::GID, $group_id);
+            $query->where(self::USER_ID, 0);
+            $query->where(self::TEAM_ID, 0);
+            $query->where(self::GROUP_ID, $group_id);
             $query->where(self::MODULE, $module);
             $query->where(self::PERMISSION_TYPE, $permission_type);
             $query->where(self::TARGET_ID, 0);
@@ -95,9 +101,9 @@
         public function deleteAllPermissionsForCombination($uid, $gid, $tid, $target_id = 0, $role_id = null)
         {
             $query = $this->getQuery();
-            $query->where(self::UID, $uid);
-            $query->where(self::GID, $gid);
-            $query->where(self::TID, $tid);
+            $query->where(self::USER_ID, $uid);
+            $query->where(self::GROUP_ID, $gid);
+            $query->where(self::TEAM_ID, $tid);
             if ($target_id == 0) {
                 $query->where(self::TARGET_ID, $target_id);
             } else {
@@ -137,7 +143,7 @@
             $query = $this->getQuery();
             $query->where(self::ROLE_ID, $role_id);
             $query->where(self::SCOPE, $scope);
-            $query->addGroupBy(self::UID);
+            $query->addGroupBy(self::USER_ID);
 
             return (int) $this->count($query);
         }
@@ -179,21 +185,21 @@
             $this->rawDelete($query);
         }
 
-        public function loadFixtures(Scope $scope, $admin_group_id, $guest_group_id)
+        public function loadFixtures(Scope $scope, Group $user_group, Group $admin_group, Group $guest_group)
         {
             $scope_id = $scope->getID();
 
-            // Creating public searches, noone.
-            $this->setPermission(0, 0, 0, false, 'core', 'cancreatepublicsearches', 0, $scope_id);
-
             // Common pages, everyone.
-            $this->setPermission(0, 0, 0, true, 'core', 'page_home_access', 0, $scope_id);
-            $this->setPermission(0, 0, 0, true, 'core', 'page_about_access', 0, $scope_id);
-            $this->setPermission(0, 0, 0, true, 'core', 'page_search_access', 0, $scope_id);
-            $this->setPermission(0, 0, 0, true, 'core', 'page_confirm_scope_access', 0, $scope_id);
+            foreach ([$user_group, $admin_group, $guest_group] as $group) {
+//                $group->addPermission()
+                $this->setPermission(0, 0, 0, true, 'core', 'page_home_access', 0, $scope_id);
+                $this->setPermission(0, 0, 0, true, 'core', 'page_about_access', 0, $scope_id);
+                $this->setPermission(0, 0, 0, true, 'core', 'page_search_access', 0, $scope_id);
+                $this->setPermission(0, 0, 0, true, 'core', 'page_confirm_scope_access', 0, $scope_id);
 
-            // Search for issues, everyone.
-            $this->setPermission(0, 0, 0, true, 'core', 'canfindissues', 0, $scope_id);
+                // Search for issues, everyone.
+                $this->setPermission(0, 0, 0, true, 'core', 'canfindissues', 0, $scope_id);
+            }
 
             // Search for issues and save private searches, everyone except guests.
             $this->setPermission(0, 0, 0, true, 'core', 'canfindissuesandsavesearches', 0, $scope_id);
@@ -238,9 +244,9 @@
         public function setPermission($uid, $gid, $tid, $allowed, $module, $permission_type, $target_id, $scope, $role_id = null)
         {
             $insertion = new Insertion();
-            $insertion->add(self::UID, (int)$uid);
-            $insertion->add(self::GID, (int)$gid);
-            $insertion->add(self::TID, (int)$tid);
+            $insertion->add(self::USER_ID, (int)$uid);
+            $insertion->add(self::GROUP_ID, (int)$gid);
+            $insertion->add(self::TEAM_ID, (int)$tid);
             $insertion->add(self::ALLOWED, $allowed);
             $insertion->add(self::MODULE, $module);
             $insertion->add(self::PERMISSION_TYPE, $permission_type);
@@ -258,7 +264,7 @@
         public function getPermissionsByGroupId($group_id)
         {
             $query = $this->getQuery();
-            $query->where(self::GID, $group_id);
+            $query->where(self::GROUP_ID, $group_id);
             $query->where(self::ALLOWED, 1);
             $permissions = [];
             if ($res = $this->rawSelect($query)) {
@@ -280,10 +286,10 @@
             $query = $this->getQuery();
             switch ($mode) {
                 case 'group':
-                    $mode = self::GID;
+                    $mode = self::GROUP_ID;
                     break;
                 case 'team':
-                    $mode = self::TID;
+                    $mode = self::TEAM_ID;
                     break;
             }
             $query->where($mode, $cloned_id);
@@ -350,7 +356,7 @@
                 $query->where(self::SCOPE, $scope_id);
                 $query->where(self::PERMISSION_TYPE, $permission_type);
                 $query->where(self::TARGET_ID, $target_id);
-                $query->where(self::UID, $user_id);
+                $query->where(self::USER_ID, $user_id);
                 $query->where(self::ALLOWED, true);
                 $query->where(self::MODULE, $module);
                 $query->where(self::ROLE_ID, $role_id);
@@ -362,7 +368,7 @@
                     $insertion->add(self::SCOPE, $scope_id);
                     $insertion->add(self::PERMISSION_TYPE, $permission_type);
                     $insertion->add(self::TARGET_ID, $target_id);
-                    $insertion->add(self::UID, $user_id);
+                    $insertion->add(self::USER_ID, $user_id);
                     $insertion->add(self::ALLOWED, true);
                     $insertion->add(self::MODULE, $module);
                     $insertion->add(self::ROLE_ID, $role_id);
@@ -392,7 +398,7 @@
                 $query->where(self::SCOPE, $scope_id);
                 $query->where(self::PERMISSION_TYPE, $permission_type);
                 $query->where(self::TARGET_ID, $target_id);
-                $query->where(self::TID, $team_id);
+                $query->where(self::TEAM_ID, $team_id);
                 $query->where(self::ALLOWED, true);
                 $query->where(self::MODULE, $module);
                 $query->where(self::ROLE_ID, $role_id);
@@ -404,7 +410,7 @@
                     $insertion->add(self::SCOPE, $scope_id);
                     $insertion->add(self::PERMISSION_TYPE, $permission_type);
                     $insertion->add(self::TARGET_ID, $target_id);
-                    $insertion->add(self::TID, $team_id);
+                    $insertion->add(self::TEAM_ID, $team_id);
                     $insertion->add(self::ALLOWED, true);
                     $insertion->add(self::MODULE, $module);
                     $insertion->add(self::ROLE_ID, $role_id);
@@ -424,17 +430,17 @@
             if ($res = $this->rawSelect($query)) {
                 while ($row = $res->getNextRow()) {
                     $target = null;
-                    if ($uid = $row->get(self::UID)) {
+                    if ($uid = $row->get(self::USER_ID)) {
                         $target = User::getB2DBTable()->selectById($uid);
                     }
-                    if ($tid = $row->get(self::TID)) {
+                    if ($tid = $row->get(self::TEAM_ID)) {
                         $target = Team::getB2DBTable()->selectById($tid);
                     }
-                    if ($gid = $row->get(self::GID)) {
+                    if ($gid = $row->get(self::GROUP_ID)) {
                         $target = Group::getB2DBTable()->selectById($gid);
                     }
                     if ($target instanceof Identifiable) {
-                        $permissions[] = ['target' => $target, 'allowed' => (boolean)$row->get(self::ALLOWED), 'user_id' => $row->get(self::UID), 'team_id' => $row->get(self::TID), 'group_id' => $row->get(self::GID)];
+                        $permissions[] = ['target' => $target, 'allowed' => (boolean)$row->get(self::ALLOWED), 'user_id' => $row->get(self::USER_ID), 'team_id' => $row->get(self::TEAM_ID), 'group_id' => $row->get(self::GROUP_ID)];
                     }
                 }
             }
@@ -458,9 +464,9 @@
             parent::addVarchar(self::TARGET_ID, 200, 0);
             parent::addBoolean(self::ALLOWED);
             parent::addVarchar(self::MODULE, 50);
-            parent::addForeignKeyColumn(self::UID, Users::getTable());
-            parent::addForeignKeyColumn(self::GID, Groups::getTable());
-            parent::addForeignKeyColumn(self::TID, Teams::getTable());
+            parent::addForeignKeyColumn(self::USER_ID, Users::getTable());
+            parent::addForeignKeyColumn(self::GROUP_ID, Groups::getTable());
+            parent::addForeignKeyColumn(self::TEAM_ID, Teams::getTable());
             parent::addForeignKeyColumn(self::ROLE_ID, ListTypes::getTable());
         }
 

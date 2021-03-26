@@ -147,7 +147,7 @@
                 </table>
                 <div id="groupconfig_list">
                     <?php foreach ($groups as $group): ?>
-                        <?php include_component('configuration/groupbox', array('group' => $group)); ?>
+                        <?php include_component('configuration/group', array('group' => $group)); ?>
                     <?php endforeach; ?>
                 </div>
             </div>
@@ -180,7 +180,7 @@
                 </div>
                 <div id="clientconfig_list">
                     <?php foreach ($clients as $client): ?>
-                        <div id="client_<?= $client->getID(); ?>_item"><?php include_component('configuration/clientbox', array('client' => $client)); ?></div>
+                        <div id="client_<?= $client->getID(); ?>_item"><?php include_component('configuration/client', array('client' => $client)); ?></div>
                     <?php endforeach; ?>
                 </div>
             </div>

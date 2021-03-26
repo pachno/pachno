@@ -47,9 +47,9 @@
             </a>
         <?php endif; ?>
         <?php Event::createNew('core', 'header_menu_entries')->trigger(); ?>
-        <a class="<?php if ($selected_tab == 'teams') echo 'selected'; ?>" href="<?= make_url('home'); ?>">
+        <a class="<?php if ($selected_tab == 'teams') echo 'selected'; ?> disabled" href="<?= make_url('home'); ?>">
             <?= fa_image_tag('users', ['class' => 'icon']); ?>
-            <span class="name"><?= __('Teams and clients'); ?></span>
+            <span class="name"><?= __('Teams and clients'); ?><i class="count-badge"><?= __('Disabled in this alpha release'); ?></i></span>
         </a>
         <a href="javascript:void(0);" class="trigger-quicksearch">
             <?= fa_image_tag('search', ['class' => 'icon']); ?>
@@ -57,10 +57,11 @@
         </a>
         <a id="header_config_link" class="only-icon <?php if (in_array(\pachno\core\framework\Context::getRouting()->getCurrentRoute()->getModuleName(), ['configuration', 'import'])) echo ' selected'; ?>" href="<?= make_url('configure'); ?>">
             <?= fa_image_tag('cog', ['class' => 'icon']); ?>
+            <span class="name"><?= __('Configure Pachno'); ?></span>
         </a>
         <?php if (!$pachno_user->isGuest()): ?>
             <div class="notifications-container dropper-container" id="user_notifications_container">
-                <a href="javascript:void(0);" class="dropper">
+                <a href="javascript:void(0);" class="dropper disabled">
                     <?= fa_image_tag('bell', ['class' => 'icon']); ?>
                     <span id="user_notifications_count" class="notifications-indicator"><?= image_tag('spinning_16_white.gif'); ?></span>
                 </a>

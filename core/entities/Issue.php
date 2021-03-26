@@ -2526,7 +2526,7 @@
                 $this->_votes = [];
                 if ($res = tables\Votes::getTable()->getByIssueId($this->getID())) {
                     while ($row = $res->getNextRow()) {
-                        $this->_votes[$row->get(tables\Votes::UID)] = $row->get(tables\Votes::VOTE);
+                        $this->_votes[$row->get(tables\Votes::USER_ID)] = $row->get(tables\Votes::VOTE);
                     }
                 }
             }

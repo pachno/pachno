@@ -1509,7 +1509,7 @@
 
             $this->selected_project->setName($request['project_name']);
 
-            return $this->renderJSON(['content' => $this->selected_project->getKey()]);
+            return $this->renderJSON(['new_values' => ['project_key' => $this->selected_project->getKey()]]);
         }
 
         public function runUnassignFromProject(framework\Request $request)

@@ -18,6 +18,15 @@
     {
 
         /**
+         * @return Mailing
+         * @throws Exception
+         */
+        public function getModule(): Mailing
+        {
+            return framework\Context::getModule('mailing');
+        }
+
+        /**
          * Forgotten password logic (AJAX call)
          *
          * @Route(url="/mailing/forgot")
@@ -27,7 +36,7 @@
          */
         public function runForgot(Request $request)
         {
-            $i18n = Context::getI18n();
+            $i18n = $this->getI18n();
 
             try {
                 $username_or_email = str_replace('%2E', '.', $request['forgot_password_username']);
@@ -52,7 +61,7 @@
                     // Whether the user has an email address.
                     if ($user->getEmail()) {
                         // Send password reset email.
-                        Context::getModule('mailing')->sendForgottenPasswordEmail($user);
+                        $this->getModule()->sendForgottenPasswordEmail($user);
                     }
                 }
 
@@ -68,27 +77,21 @@
         /**
          * Send a test email
          *
-         * @Route(url="/mailing/test")
+         * @Route(url="/mailing/test", name="testemail")
          * @param Request $request
          */
         public function runTestEmail(Request $request)
         {
-            if ($email_to = $request['test_email_to']) {
-                try {
-                    if (Context::getModule('mailing')->sendTestEmail($email_to)) {
-                        Context::setMessage('module_message', Context::getI18n()->__('The email was successfully accepted for delivery'));
-                    } else {
-                        Context::setMessage('module_error', Context::getI18n()->__('The email was not sent'));
-                        Context::setMessage('module_error_details', framework\Logging::getMessagesForCategory('mailing', framework\Logging::LEVEL_NOTICE));
-                    }
-                } catch (Exception $e) {
-                    Context::setMessage('module_error', Context::getI18n()->__('The email was not sent'));
-                    Context::setMessage('module_error_details', $e->getMessage());
+            try {
+                $result = $this->getModule()->sendTestEmail($this->getUser()->getEmail());
+                if ($result) {
+                    return $this->renderJSON(['message' => $this->getI18n()->__('The email was successfully accepted for delivery')]);
                 }
-            } else {
-                Context::setMessage('module_error', Context::getI18n()->__('Please specify an email address'));
+            } catch (Exception $e) {
             }
-            $this->forward(Context::getRouting()->generate('configure_module', ['config_module' => 'mailing']));
+
+            $this->getResponse()->setHttpStatus(400);
+            return $this->renderJSON(['message' => $this->getI18n()->__('The email was not sent')]);
         }
 
         /**
@@ -165,14 +168,14 @@
                         if (!function_exists('imap_open')) {
                             throw new Exception($this->getI18n()->__('The php imap extension is not installed'));
                         }
-                        Context::getModule('mailing')->processIncomingEmailAccount($account);
+                        $this->getModule()->processIncomingEmailAccount($account);
                     } catch (Exception $e) {
                         $this->getResponse()->setHttpStatus(400);
 
                         return $this->renderJSON(['error' => $e->getMessage()]);
                     }
 
-                    return $this->renderJSON(['account_id' => $account->getID(), 'time' => Context::getI18n()->formatTime($account->getTimeLastFetched(), 6), 'count' => $account->getNumberOfEmailsLastFetched()]);
+                    return $this->renderJSON(['account_id' => $account->getID(), 'time' => $this->getI18n()->formatTime($account->getTimeLastFetched(), 6), 'count' => $account->getNumberOfEmailsLastFetched()]);
                 } catch (Exception $e) {
                     $this->getResponse()->setHttpStatus(400);
 
@@ -231,23 +234,23 @@
 
                 if (trim($request['mailing_from_address']) != '') {
                     if (filter_var(trim($request['mailing_from_address']), FILTER_VALIDATE_EMAIL) !== false) {
-                        Context::getModule('mailing')->saveSetting(Mailing::SETTING_PROJECT_FROM_ADDRESS . $project_id, trim(mb_strtolower($request->getParameter('mailing_from_address'))));
+                        $this->getModule()->saveSetting(Mailing::SETTING_PROJECT_FROM_ADDRESS . $project_id, trim(mb_strtolower($request->getParameter('mailing_from_address'))));
                         if (trim($request['mailing_from_name']) !== '') {
-                            Context::getModule('mailing')->saveSetting(Mailing::SETTING_PROJECT_FROM_NAME . $project_id, trim($request->getParameter('mailing_from_name')));
+                            $this->getModule()->saveSetting(Mailing::SETTING_PROJECT_FROM_NAME . $project_id, trim($request->getParameter('mailing_from_name')));
                         } else {
-                            Context::getModule('mailing')->deleteSetting(Mailing::SETTING_PROJECT_FROM_NAME . $project_id);
+                            $this->getModule()->deleteSetting(Mailing::SETTING_PROJECT_FROM_NAME . $project_id);
                         }
                     } else {
                         $this->getResponse()->setHttpStatus(400);
 
-                        return $this->renderJSON(['message' => Context::getI18n()->__('Please enter a valid email address')]);
+                        return $this->renderJSON(['message' => $this->getI18n()->__('Please enter a valid email address')]);
                     }
                 } elseif (trim($request['mailing_from_address']) == '') {
-                    Context::getModule('mailing')->deleteSetting(Mailing::SETTING_PROJECT_FROM_ADDRESS . $project_id);
-                    Context::getModule('mailing')->deleteSetting(Mailing::SETTING_PROJECT_FROM_NAME . $project_id);
+                    $this->getModule()->deleteSetting(Mailing::SETTING_PROJECT_FROM_ADDRESS . $project_id);
+                    $this->getModule()->deleteSetting(Mailing::SETTING_PROJECT_FROM_NAME . $project_id);
                 }
 
-                return $this->renderJSON(['failed' => false, 'message' => Context::getI18n()->__('Settings saved')]);
+                return $this->renderJSON(['failed' => false, 'message' => $this->getI18n()->__('Settings saved')]);
             } else {
                 $this->forward403();
             }

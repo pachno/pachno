@@ -417,6 +417,20 @@
                             $this->getUser()->setCommentSortOrder($new_direction);
                             $data['new_direction'] = $new_direction;
                             break;
+                        case 'invite-user':
+                            $inviteUser = new entities\User();
+                            $inviteUser->setUsername($request['email']);
+                            $inviteUser->setRealname($request['email']);
+                            $inviteUser->setEmail($request['email']);
+                            $inviteUser->setGroup(framework\Settings::get(framework\Settings::SETTING_USER_GROUP));
+                            $password = entities\User::createPassword();
+                            $inviteUser->setPassword($password);
+                            $inviteUser->save();
+                            $inviteUser->setActivated(false);
+                            $inviteUser->save();
+
+                            framework\Event::createNew('core', 'userdata::inviteUser', $inviteUser)->trigger();
+                            break;
                     }
                 } else {
                     switch ($request['say']) {
@@ -2742,26 +2756,7 @@
         /**
          * Find users and show selection box
          *
-         * @Route(name="invite_users_find", url="/invite/find", methods="POST")
-         *
-         * @param framework\Request $request The request object
-         */
-        public function runFindInviteUsers(framework\Request $request)
-        {
-            $this->message = false;
-
-            $find_by = trim($request['find_by']);
-            if ($find_by) {
-                $this->registered = !tables\Users::getTable()->isEmailAvailable($find_by);
-            } else {
-                $this->message = true;
-            }
-        }
-
-        /**
-         * Find users and show selection box
-         *
-         * @Route(name="invite_users", url="/invite/invite", methods="POST")
+         * @Route(name="find_invite_users", url="/invite/find", methods="POST")
          *
          * @param framework\Request $request The request object
          */
@@ -2770,11 +2765,25 @@
             $this->message = false;
 
             $find_by = trim($request['find_by']);
-            if ($find_by) {
-                $this->registered = !tables\Users::getTable()->isEmailAvailable($find_by);
-            } else {
-                $this->message = true;
+            if (!$find_by) {
+                return $this->renderJSON(['error' => $this->getI18n()->__('Please enter something to search for')]);
             }
+            if (filter_var($find_by, FILTER_VALIDATE_EMAIL) != $find_by) {
+                return $this->renderJSON(['error' => $this->getI18n()->__('Please enter a valid email address')]);
+            }
+
+            $options = [
+                'users' => tables\Users::getTable()->getByDetails($find_by, 1, true)
+            ];
+
+            if (!count($options['users'])) {
+                $email_user = new entities\User();
+                $email_user->setEmail($find_by);
+                $options['email_user'] = $email_user;
+            }
+
+
+            return $this->renderJSON(['content' => $this->getComponentHTML('main/invite_user', $options)]);
         }
 
         /**

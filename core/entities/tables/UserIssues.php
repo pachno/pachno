@@ -34,9 +34,9 @@
 
         const SCOPE = 'userissues.scope';
 
-        const ISSUE = 'userissues.issue';
+        const ISSUE_ID = 'userissues.issue';
 
-        const UID = 'userissues.uid';
+        const USER_ID = 'userissues.uid';
 
         public function copyStarrers($from_issue_id, $to_issue_id)
         {
@@ -45,11 +45,11 @@
 
             if (count($old_watchers)) {
                 $insertion = new Insertion();
-                $insertion->add(self::ISSUE, $to_issue_id);
+                $insertion->add(self::ISSUE_ID, $to_issue_id);
                 $insertion->add(self::SCOPE, framework\Context::getScope()->getID());
                 foreach ($old_watchers as $uid) {
                     if (!in_array($uid, $new_watchers)) {
-                        $insertion->add(self::UID, $uid);
+                        $insertion->add(self::USER_ID, $uid);
                         $this->rawInsert($insertion);
                     }
                 }
@@ -61,11 +61,11 @@
             $uids = [];
             $query = $this->getQuery();
 
-            $query->where(self::ISSUE, $issue_id);
+            $query->where(self::ISSUE_ID, $issue_id);
 
             if ($res = $this->rawSelect($query)) {
                 while ($row = $res->getNextRow()) {
-                    $uid = $row->get(UserIssues::UID);
+                    $uid = $row->get(UserIssues::USER_ID);
                     $uids[$uid] = $uid;
                 }
             }
@@ -76,9 +76,9 @@
         public function getUserStarredIssues($user_id)
         {
             $query = $this->getQuery();
-            $query->where(self::UID, $user_id);
+            $query->where(self::USER_ID, $user_id);
             $query->where(self::SCOPE, framework\Context::getScope()->getID());
-            $query->join(Issues::getTable(), Issues::ID, self::ISSUE);
+            $query->join(Issues::getTable(), Issues::ID, self::ISSUE_ID);
             $query->where(Issues::DELETED, 0);
             $query->addSelectionColumn(Issues::ID, 'issue_id');
 
@@ -97,8 +97,8 @@
         public function addStarredIssue($user_id, $issue_id)
         {
             $insertion = new Insertion();
-            $insertion->add(self::ISSUE, $issue_id);
-            $insertion->add(self::UID, $user_id);
+            $insertion->add(self::ISSUE_ID, $issue_id);
+            $insertion->add(self::USER_ID, $user_id);
             $insertion->add(self::SCOPE, framework\Context::getScope()->getID());
 
             $this->rawInsert($insertion);
@@ -107,8 +107,8 @@
         public function removeStarredIssue($user_id, $issue_id)
         {
             $query = $this->getQuery();
-            $query->where(self::ISSUE, $issue_id);
-            $query->where(self::UID, $user_id);
+            $query->where(self::ISSUE_ID, $issue_id);
+            $query->where(self::USER_ID, $user_id);
 
             $this->rawDelete($query);
 
@@ -118,12 +118,12 @@
         protected function initialize()
         {
             parent::setup(self::B2DBNAME, self::ID);
-            parent::addForeignKeyColumn(self::ISSUE, Issues::getTable(), Issues::ID);
-            parent::addForeignKeyColumn(self::UID, Users::getTable(), Users::ID);
+            parent::addForeignKeyColumn(self::ISSUE_ID, Issues::getTable(), Issues::ID);
+            parent::addForeignKeyColumn(self::USER_ID, Users::getTable(), Users::ID);
         }
 
         protected function setupIndexes()
         {
-            $this->addIndex('uid_scope', [self::UID, self::SCOPE]);
+            $this->addIndex('uid_scope', [self::USER_ID, self::SCOPE]);
         }
     }

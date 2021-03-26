@@ -39,7 +39,7 @@
 
         const IS_PUBLIC = 'savedsearches.is_public';
 
-        const UID = 'savedsearches.uid';
+        const USER_ID = 'savedsearches.uid';
 
         /**
          * @param $user_id
@@ -53,8 +53,8 @@
             $query->where(self::SCOPE, framework\Context::getScope()->getID());
 
             $criteria = new Criteria();
-            $criteria->where(self::UID, $user_id);
-            $criteria->or(self::UID, 0);
+            $criteria->where(self::USER_ID, $user_id);
+            $criteria->or(self::USER_ID, 0);
             $query->and($criteria);
 
             if ($project_id !== 0) {

@@ -11,6 +11,10 @@
   border-radius: 5px;
   font-weight: $theme-font-weight-bold;
 
+  &.hidden {
+    display: none;
+  }
+
   &.type-error {
     background-color: $theme-color-error;
     color: #FFF;

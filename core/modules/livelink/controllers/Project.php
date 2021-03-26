@@ -81,6 +81,7 @@
 
             $this->branches = Branches::getTable()->getByProject($this->selected_project);
             $this->is_importing = $this->getModule()->isProjectImportInProgress($this->selected_project);
+            $this->connector = $this->getModule()->getProjectConnector($this->selected_project);
         }
 
         /**

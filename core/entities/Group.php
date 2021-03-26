@@ -90,7 +90,7 @@
                 tables\UserScopes::getTable()->addUserToScope(1, $scope->getID(), $admin_group->getID());
                 Settings::saveSetting(Settings::SETTING_DEFAULT_USER_ID, $default_user_id, 'core', $scope->getID());
             }
-            tables\Permissions::getTable()->loadFixtures($scope, $admin_group->getID(), $guest_group->getID());
+            tables\Permissions::getTable()->loadFixtures($scope, $user_group, $admin_group, $guest_group);
         }
 
         /**

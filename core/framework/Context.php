@@ -768,87 +768,87 @@
                 self::$_available_permissions['configuration']['cansaveconfig']['details'][] = ['cansaveconfig' => ['description' => $i18n->__('Read + write access: "Modules" configuration page and any modules'), 'target_id' => 15]];
                 self::$_available_permissions['configuration']['cansaveconfig']['details'][] = ['canviewconfig' => ['description' => $i18n->__('Read-only access: "Themes" configuration page and any themes'), 'target_id' => 19]];
                 self::$_available_permissions['configuration']['cansaveconfig']['details'][] = ['cansaveconfig' => ['description' => $i18n->__('Read + write access: "Themes" configuration page and any themes'), 'target_id' => 19]];
-                self::$_available_permissions['general']['canfindissuesandsavesearches'] = ['description' => $i18n->__('Can search for issues and create saved searches'), 'details' => []];
-                self::$_available_permissions['general']['canfindissuesandsavesearches']['details']['canfindissues'] = ['description' => $i18n->__('Can search for issues')];
-                self::$_available_permissions['general']['canfindissuesandsavesearches']['details']['cancreatepublicsearches'] = ['description' => $i18n->__('Can create saved searches that are public')];
-                self::$_available_permissions['pages']['page_home_access'] = ['description' => $i18n->__('Can access the frontpage')];
-                self::$_available_permissions['pages']['page_dashboard_access'] = ['description' => $i18n->__('Can access the user dashboard')];
-                self::$_available_permissions['pages']['page_search_access'] = ['description' => $i18n->__('Can access the search page')];
-                self::$_available_permissions['pages']['page_about_access'] = ['description' => $i18n->__('Can access the "About" page')];
-                self::$_available_permissions['pages']['page_account_access'] = ['description' => $i18n->__('Can access the "My account" page'), 'details' => []];
-                self::$_available_permissions['pages']['page_account_access']['details']['canchangepassword'] = ['description' => $i18n->__('Can change own password'), 'mode' => 'permissive'];
-                self::$_available_permissions['pages']['page_teamlist_access'] = ['description' => $i18n->__('Can see list of teams in header menu')];
-                self::$_available_permissions['pages']['page_clientlist_access'] = ['description' => $i18n->__('Can access all clients')];
-                self::$_available_permissions['project']['canseeallissues'] = ['description' => $i18n->__('Can see issues reported by other users'), 'mode' => 'permissive'];
-                self::$_available_permissions['project']['canseeproject'] = ['description' => $i18n->__('Has access to the project'), 'details' => []];
-                self::$_available_permissions['project']['canseeproject']['details']['canseeprojecthierarchy'] = ['description' => $i18n->__('Can see complete project hierarchy')];
-                self::$_available_permissions['project']['canseeproject']['details']['canseeprojecthierarchy']['details']['canseeallprojecteditions'] = ['description' => $i18n->__('Can see all editions')];
-                self::$_available_permissions['project']['canseeproject']['details']['canseeprojecthierarchy']['details']['canseeallprojectcomponents'] = ['description' => $i18n->__('Can see all components')];
-                self::$_available_permissions['project']['canseeproject']['details']['canseeprojecthierarchy']['details']['canseeallprojectbuilds'] = ['description' => $i18n->__('Can see all releases')];
-                self::$_available_permissions['project']['canseeproject']['details']['canseeprojecthierarchy']['details']['canseeallprojectmilestones'] = ['description' => $i18n->__('Can see all milestones')];
-                self::$_available_permissions['project']['canseeproject']['details']['page_project_allpages_access'] = ['description' => $i18n->__('Can access all project pages'), 'details' => []];
-                self::$_available_permissions['project']['canseeproject']['details']['page_project_allpages_access']['details']['page_project_dashboard_access'] = ['description' => $i18n->__('Can access the project dashboard')];
-                self::$_available_permissions['project']['canseeproject']['details']['page_project_allpages_access']['details']['page_project_planning_access'] = ['description' => $i18n->__('Can access the project agile pages without planning page')];
-                self::$_available_permissions['project']['canseeproject']['details']['page_project_allpages_access']['details']['page_project_only_planning_access'] = ['description' => $i18n->__('Can access the project planning pages')];
-                self::$_available_permissions['project']['canseeproject']['details']['page_project_allpages_access']['details']['page_project_scrum_access'] = ['description' => $i18n->__('Can access the project scrum page')];
-                self::$_available_permissions['project']['canseeproject']['details']['page_project_allpages_access']['details']['page_project_issues_access'] = ['description' => $i18n->__('Can access the project issues search page')];
-                self::$_available_permissions['project']['canseeproject']['details']['page_project_allpages_access']['details']['page_project_roadmap_access'] = ['description' => $i18n->__('Can access the project roadmap page')];
-                self::$_available_permissions['project']['canseeproject']['details']['page_project_allpages_access']['details']['page_project_team_access'] = ['description' => $i18n->__('Can access the project team page')];
-                self::$_available_permissions['project']['canseeproject']['details']['page_project_allpages_access']['details']['page_project_statistics_access'] = ['description' => $i18n->__('Can access the project statistics page')];
-                self::$_available_permissions['project']['canseeproject']['details']['page_project_allpages_access']['details']['page_project_timeline_access'] = ['description' => $i18n->__('Can access the project timeline page')];
-                self::$_available_permissions['project']['canseeproject']['details']['page_project_allpages_access']['details']['page_project_commits_access'] = ['description' => $i18n->__('Can access the project commits page')];
+                self::$_available_permissions['pages'][Permissions::PERMISSION_PAGE_ACCESS_DASHBOARD] = ['description' => $i18n->__('Can access the personal dashboard')];
+                self::$_available_permissions['pages'][Permissions::PERMISSION_PAGE_ACCESS_PROJECT_LIST] = ['description' => $i18n->__('Can access the project list')];
+                self::$_available_permissions['pages'][Permissions::PERMISSION_PAGE_ACCESS_ACCOUNT] = ['description' => $i18n->__('Can access the "Account details" page')];
+                self::$_available_permissions['project']['canseeproject'] = ['description' => $i18n->__('Has normal read access to the project'), 'details' => []];
+                self::$_available_permissions['project']['canseeproject']['details']['project_dashboard_access'] = ['description' => $i18n->__('Can access the project dashboard and team overview')];
+                self::$_available_permissions['project']['canseeproject']['details']['project_board_access'] = ['description' => $i18n->__('Can access project boards')];
+                self::$_available_permissions['project']['canseeproject']['details']['project_releases_access'] = ['description' => $i18n->__('Can access project releases and roadmap')];
+                self::$_available_permissions['project']['canseeproject']['details']['project_issues_access'] = ['description' => $i18n->__('Can see existing issues')];
+                self::$_available_permissions['project']['canseeproject']['details']['project_documentation_access'] = ['description' => $i18n->__('Can access the project documentation')];
+                self::$_available_permissions['project']['canseeproject']['details']['project_code_access'] = ['description' => $i18n->__('Can access project code and discussions')];
                 self::$_available_permissions['project']['canseeproject']['details']['canseetimespent'] = ['description' => $i18n->__('Can see time spent on issues')];
-                self::$_available_permissions['project']['canmanageproject'] = ['description' => $i18n->__('Can manage the project')];
+                self::$_available_permissions['project']['canseeproject']['details']['canseeallissues'] = ['description' => $i18n->__('Can see issues reported by other users')];
+                self::$_available_permissions['project']['caneditdocumentation'] = ['description' => $i18n->__('Can create new documentation pages, edit existing documentation and add comments'), 'details' => []];
+                self::$_available_permissions['project']['caneditdocumentation']['details']['caneditdocumentationown'] = ['description' => $i18n->__('Can create new documentation pages but not edit documentation created by others')];
+                self::$_available_permissions['project']['caneditdocumentation']['details']['canpostandeditarticlecomments'] = ['description' => $i18n->__('Can see existing comments, post new, edit own and delete own comments')];
+                self::$_available_permissions['project']['canpostandeditallarticlecomments'] = ['description' => $i18n->__('Can moderate documentation comments')];
+
+                self::$_available_permissions['project']['canseeprojectinernalresources'] = ['description' => $i18n->__('Has access to internal project resources'), 'details' => []];
+                self::$_available_permissions['project']['canseeprojectinernalresources']['details']['canseeallprojecteditions'] = ['description' => $i18n->__('Has access to internal editions')];
+                self::$_available_permissions['project']['canseeprojectinernalresources']['details']['canseeallprojectcomponents'] = ['description' => $i18n->__('Has access to internal components')];
+                self::$_available_permissions['project']['canseeprojectinernalresources']['details']['canseeallprojectbuilds'] = ['description' => $i18n->__('Has access to internal releases')];
+                self::$_available_permissions['project']['canseeprojectinernalresources']['details']['canseeallprojectmilestones'] = ['description' => $i18n->__('Has access to internal milestones')];
+                self::$_available_permissions['project']['canseeprojectinernalresources']['details']['canseeallcomments'] = ['description' => $i18n->__('Has access to internal comments')];
+                self::$_available_permissions['project']['canmanageproject'] = ['description' => $i18n->__('Has access to manage the project')];
                 self::$_available_permissions['project']['canmanageproject']['details']['caneditprojectdetails'] = ['description' => $i18n->__('Can edit project details and settings')];
-                self::$_available_permissions['project']['canmanageproject']['details']['canaddscrumsprints'] = ['description' => $i18n->__('Can manage milestones and/or sprints')];
-                self::$_available_permissions['project']['canmanageproject']['details']['canmanageprojectreleases'] = ['description' => $i18n->__('Can manage project releases, editions and components')];
+                self::$_available_permissions['project']['canmanageproject']['details']['cancreatepublicboards'] = ['description' => $i18n->__('Can create public boards')];
+                self::$_available_permissions['project']['canmanageproject']['details']['cancreatepublicsavedsearches'] = ['description' => $i18n->__('Can create public saved searches')];
+                self::$_available_permissions['project']['canmanageproject']['details']['canmanageprojectreleases'] = ['description' => $i18n->__('Can manage project releases')];
+                self::$_available_permissions['project']['canmanageproject']['details']['canlockandeditlockedissues'] = ['description' => $i18n->__('Can restrict access to specific issues')];
+
                 self::$_available_permissions['project']['cancreateissues'] = ['description' => $i18n->__('Can create new issues')];
-                self::$_available_permissions['project']['canlockandeditlockedissues'] = ['description' => $i18n->__('Can change issue access policy')];
-                self::$_available_permissions['edition']['canseeedition'] = ['description' => $i18n->__('Can see this edition')];
-                self::$_available_permissions['component']['canseecomponent'] = ['description' => $i18n->__('Can see this component')];
-                self::$_available_permissions['build']['canseebuild'] = ['description' => $i18n->__('Can see this release')];
-                self::$_available_permissions['milestone']['canseemilestone'] = ['description' => $i18n->__('Can see this milestone')];
+
+                self::$_available_permissions['issues']['canvoteforissues'] = ['description' => $i18n->__('Can vote for issues')];
 
                 $arr = [
-                    '' => $i18n->__('For issues reported by anyone: edit any issue details, close and delete issues'),
-                    'own' => $i18n->__('For own issues only: edit any issue details, close and delete issues')
+                    'own' => $i18n->__('For own issues only: edit issue details, triage, close and delete issues'),
+                    '' => $i18n->__('For issues reported by anyone: edit issue details, triage, close and delete issues'),
                 ];
                 foreach ($arr as $suffix => $description) {
                     self::$_available_permissions['issues']['caneditissue' . $suffix] = ['description' => $description, 'details' => []];
-                    self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['caneditissuebasic' . $suffix] = ['description' => $i18n->__('Can edit title, description and reproduction steps'), 'details' => []];
-                    self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['caneditissuebasic' . $suffix]['details']['caneditissuetitle' . $suffix] = ['description' => $i18n->__('Can edit title')];
-                    self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['caneditissuebasic' . $suffix]['details']['caneditissuedescription' . $suffix] = ['description' => $i18n->__('Can edit description')];
-                    self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['caneditissuebasic' . $suffix]['details']['caneditissuereproduction_steps' . $suffix] = ['description' => $i18n->__('Can edit steps to reproduce')];
-                    self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['canvoteforissues' . $suffix] = ['description' => $i18n->__('Can vote for issues')];
-                    self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['caneditissueposted_by' . $suffix] = ['description' => $i18n->__('Can edit issue poster')];
-                    self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['caneditissueowned_by' . $suffix] = ['description' => $i18n->__('Can edit owner')];
-                    self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['caneditissueassigned_to' . $suffix] = ['description' => $i18n->__('Can edit assignee')];
-                    self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['caneditissuestatus' . $suffix] = ['description' => $i18n->__('Can edit status')];
-                    self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['caneditissuecategory' . $suffix] = ['description' => $i18n->__('Can edit category')];
-                    self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['caneditissuepriority' . $suffix] = ['description' => $i18n->__('Can edit priority')];
-                    self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['caneditissueseverity' . $suffix] = ['description' => $i18n->__('Can edit severity')];
-                    self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['caneditissuereproducability' . $suffix] = ['description' => $i18n->__('Can edit reproducability')];
-                    self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['caneditissueresolution' . $suffix] = ['description' => $i18n->__('Can edit resolution')];
-                    self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['caneditissueestimated_time' . $suffix] = ['description' => $i18n->__('Can set estimate')];
-                    self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['caneditissuespent_time' . $suffix] = ['description' => $i18n->__('Can spend time working on issues')];
-                    self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['caneditissuepercent_complete' . $suffix] = ['description' => $i18n->__('Can edit percent complete')];
-                    self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['caneditissuemilestone' . $suffix] = ['description' => $i18n->__('Can set milestone')];
-                    self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['caneditissuecolor' . $suffix] = ['description' => $i18n->__('Can edit planning color')];
-                    self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['caneditissueuserpain' . $suffix] = ['description' => $i18n->__('Can edit user pain')];
-                    self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['canaddextrainformationtoissues' . $suffix] = ['description' => $i18n->__('Can add/remove extra information (edition, component, release, links and files) and link issues'), 'details' => []];
-                    self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['canaddextrainformationtoissues' . $suffix]['details']['canaddbuilds' . $suffix] = ['description' => $i18n->__('Can add and remove affected releases / versions')];
-                    self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['canaddextrainformationtoissues' . $suffix]['details']['canaddcomponents' . $suffix] = ['description' => $i18n->__('Can add and remove affected components')];
-                    self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['canaddextrainformationtoissues' . $suffix]['details']['canaddeditions' . $suffix] = ['description' => $i18n->__('Can add and remove affected editions')];
+                    self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['caneditissuebasic' . $suffix] = ['description' => $i18n->__('Can edit title, description and reproduction steps')];
+
+                    if (!$suffix) {
+                        self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['caneditissuepeople' . $suffix] = ['description' => $i18n->__('Can edit people involved in the issue (poster, assignee, owner)'), 'details' => []];
+                        self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['caneditissuepeople' . $suffix]['details']['caneditissueposted_by' . $suffix] = ['description' => $i18n->__('Can edit issue poster')];
+                        self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['caneditissuepeople' . $suffix]['details']['caneditissueowned_by' . $suffix] = ['description' => $i18n->__('Can edit owner')];
+                        self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['caneditissuepeople' . $suffix]['details']['caneditissueassigned_to' . $suffix] = ['description' => $i18n->__('Can edit assignee')];
+                    }
+
+                    self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['caneditissuetriage' . $suffix] = ['description' => $i18n->__('Can triage issues (edit category, priority, severity, reproducability, estimates)'), 'details' => []];
+                    self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['caneditissuetriage' . $suffix]['details']['caneditissuecategory' . $suffix] = ['description' => $i18n->__('Can edit category')];
+                    self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['caneditissuetriage' . $suffix]['details']['caneditissuepriority' . $suffix] = ['description' => $i18n->__('Can edit priority')];
+                    self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['caneditissuetriage' . $suffix]['details']['caneditissueseverity' . $suffix] = ['description' => $i18n->__('Can edit severity')];
+                    self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['caneditissuetriage' . $suffix]['details']['caneditissuereproducability' . $suffix] = ['description' => $i18n->__('Can edit reproducability')];
+                    self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['caneditissuetriage' . $suffix]['details']['caneditissueuserpain' . $suffix] = ['description' => $i18n->__('Can edit user pain')];
+                    self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['caneditissuetriage' . $suffix]['details']['caneditissueestimated_time' . $suffix] = ['description' => $i18n->__('Can estimate issues')];
+                    self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['caneditissuetriage' . $suffix]['details']['canaddbuilds' . $suffix] = ['description' => $i18n->__('Can add and remove affected releases / versions')];
+                    self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['caneditissuetriage' . $suffix]['details']['canaddcomponents' . $suffix] = ['description' => $i18n->__('Can add and remove affected components')];
+                    self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['caneditissuetriage' . $suffix]['details']['canaddeditions' . $suffix] = ['description' => $i18n->__('Can add and remove affected editions')];
+                    self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['caneditissuetriage' . $suffix]['details']['canaddrelatedissues' . $suffix] = ['description' => $i18n->__('Can add and remove related issues')];
+                    self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['cantransitionissue' . $suffix] = ['description' => $i18n->__('Can apply workflow actions (edit status, resolution, milestone, percent completed)'), 'details' => []];
+                    self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['cantransitionissue' . $suffix]['details']['caneditissuestatus' . $suffix] = ['description' => $i18n->__('Can edit status separately')];
+                    self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['cantransitionissue' . $suffix]['details']['caneditissuemilestone' . $suffix] = ['description' => $i18n->__('Can set milestone separately')];
+                    self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['cantransitionissue' . $suffix]['details']['caneditissueresolution' . $suffix] = ['description' => $i18n->__('Can edit resolution separately')];
+                    self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['cantransitionissue' . $suffix]['details']['caneditissuepercent_complete' . $suffix] = ['description' => $i18n->__('Can edit percent complete separately')];
+                    self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['caneditissuespent_time' . $suffix] = ['description' => $i18n->__('Can log time spent working on issues')];
+                    self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['canaddextrainformationtoissues' . $suffix] = ['description' => $i18n->__('Can add/remove extra information (links and attachments)'), 'details' => []];
                     self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['canaddextrainformationtoissues' . $suffix]['details']['canaddlinkstoissues' . $suffix] = ['description' => $i18n->__('Can add and remove links')];
                     self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['canaddextrainformationtoissues' . $suffix]['details']['canaddfilestoissues' . $suffix] = ['description' => $i18n->__('Can add and remove attachments')];
-                    self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['canaddextrainformationtoissues' . $suffix]['details']['canaddrelatedissues' . $suffix] = ['description' => $i18n->__('Can add and remove related issues')];
-                    self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['cantransitionissue' . $suffix] = ['description' => $i18n->__('Can transition issue')];
+                    self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['canpostandeditissuecomments' . $suffix] = ['description' => $i18n->__('Can see existing comments, post new, edit own and delete own comments')];
+
+                    if (!$suffix) {
+                        self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['canpostseeandeditallissuecomments' . $suffix] = ['description' => $i18n->__('Can moderate comments')];
+                    }
+
                     self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['candeleteissues' . $suffix] = ['description' => $i18n->__('Can delete issue')];
                 }
 
                 foreach ($arr as $suffix => $description) {
                     self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['caneditissuecustomfields' . $suffix] = [
-                        'description' => $i18n->__('Can edit custom fields for issues'),
+                        'description' => $i18n->__('Can edit any custom fields'),
                         'details' => []
                     ];
                 }
@@ -868,22 +868,6 @@
                         }
                     }
                 }
-
-                foreach (Datatype::getTypes() as $type => $class) {
-                    foreach ($arr as $suffix => $description) {
-                        self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['set_datatype_' . $type . $suffix] = ['description' => $i18n->__('Can change field "%type_name"', ['%type_name' => $i18n->__($type)])];
-                    }
-                }
-
-                self::$_available_permissions['issues']['canpostseeandeditallcomments'] = ['description' => $i18n->__('Can see all comments (including non-public), post new, edit and delete all comments'), 'details' => []];
-                self::$_available_permissions['issues']['canpostseeandeditallcomments']['details']['canseenonpubliccomments'] = ['description' => $i18n->__('Can see all comments including hidden')];
-                self::$_available_permissions['issues']['canpostseeandeditallcomments']['details']['caneditcomments'] = ['description' => $i18n->__('Can edit all comments')];
-                self::$_available_permissions['issues']['canpostseeandeditallcomments']['details']['candeletecomments'] = ['description' => $i18n->__('Can delete any comments')];
-                self::$_available_permissions['issues']['canpostandeditcomments'] = ['description' => $i18n->__('Can see public comments, post new, edit own and delete own comments'), 'details' => []];
-                self::$_available_permissions['issues']['canpostandeditcomments']['details']['canviewcomments'] = ['description' => $i18n->__('Can see public comments')];
-                self::$_available_permissions['issues']['canpostandeditcomments']['details']['canpostcomments'] = ['description' => $i18n->__('Can post comments')];
-                self::$_available_permissions['issues']['canpostandeditcomments']['details']['caneditcommentsown'] = ['description' => $i18n->__('Can edit own comments')];
-                self::$_available_permissions['issues']['canpostandeditcomments']['details']['candeletecommentsown'] = ['description' => $i18n->__('Can delete own comments')];
 
                 foreach (self::$_available_permissions as $category => $permissions) {
                     self::addPermissionsPath($permissions, $category);
@@ -950,7 +934,7 @@
                             if (!array_key_exists($row->get(Permissions::TARGET_ID), self::$_permissions[$row->get(Permissions::MODULE)][$row->get(Permissions::PERMISSION_TYPE)])) {
                                 self::$_permissions[$row->get(Permissions::MODULE)][$row->get(Permissions::PERMISSION_TYPE)][$row->get(Permissions::TARGET_ID)] = [];
                             }
-                            self::$_permissions[$row->get(Permissions::MODULE)][$row->get(Permissions::PERMISSION_TYPE)][$row->get(Permissions::TARGET_ID)][] = ['uid' => $row->get(Permissions::UID), 'gid' => $row->get(Permissions::GID), 'tid' => $row->get(Permissions::TID), 'allowed' => (bool)$row->get(Permissions::ALLOWED), 'role_id' => $row->get(Permissions::ROLE_ID)];
+                            self::$_permissions[$row->get(Permissions::MODULE)][$row->get(Permissions::PERMISSION_TYPE)][$row->get(Permissions::TARGET_ID)][] = ['uid' => $row->get(Permissions::USER_ID), 'gid' => $row->get(Permissions::GROUP_ID), 'tid' => $row->get(Permissions::TEAM_ID), 'allowed' => (bool)$row->get(Permissions::ALLOWED), 'role_id' => $row->get(Permissions::ROLE_ID)];
                         }
                     }
                     Logging::log('done (starting to cache access permissions)');
@@ -1104,17 +1088,17 @@
             $query->where(Permissions::PERMISSION_TYPE, $type);
 
             if (($uid + $tid + $gid) == 0 && !$all) {
-                $query->where(Permissions::UID, $uid);
-                $query->where(Permissions::TID, $tid);
-                $query->where(Permissions::GID, $gid);
+                $query->where(Permissions::USER_ID, $uid);
+                $query->where(Permissions::TEAM_ID, $tid);
+                $query->where(Permissions::GROUP_ID, $gid);
             } else {
                 switch (true) {
                     case ($uid != 0):
-                        $query->where(Permissions::UID, $uid);
+                        $query->where(Permissions::USER_ID, $uid);
                     case ($tid != 0):
-                        $query->where(Permissions::TID, $tid);
+                        $query->where(Permissions::TEAM_ID, $tid);
                     case ($gid != 0):
-                        $query->where(Permissions::GID, $gid);
+                        $query->where(Permissions::GROUP_ID, $gid);
                 }
             }
             if ($target_id !== null) {
@@ -1125,7 +1109,7 @@
 
             if ($res = Permissions::getTable()->rawSelect($query)) {
                 while ($row = $res->getNextRow()) {
-                    $permissions[] = ['p_type' => $row->get(Permissions::PERMISSION_TYPE), 'target_id' => $row->get(Permissions::TARGET_ID), 'allowed' => $row->get(Permissions::ALLOWED), 'uid' => $row->get(Permissions::UID), 'gid' => $row->get(Permissions::GID), 'tid' => $row->get(Permissions::TID), 'id' => $row->get(Permissions::ID)];
+                    $permissions[] = ['p_type' => $row->get(Permissions::PERMISSION_TYPE), 'target_id' => $row->get(Permissions::TARGET_ID), 'allowed' => $row->get(Permissions::ALLOWED), 'uid' => $row->get(Permissions::USER_ID), 'gid' => $row->get(Permissions::GROUP_ID), 'tid' => $row->get(Permissions::TEAM_ID), 'id' => $row->get(Permissions::ID)];
                 }
             }
 

@@ -30,7 +30,7 @@
 
         const SCOPE = 'issuefiles.scope';
 
-        const UID = 'issuefiles.uid';
+        const USER_ID = 'issuefiles.uid';
 
         const ATTACHED_AT = 'issuefiles.attached_at';
 
@@ -156,7 +156,7 @@
         protected function initialize()
         {
             parent::setup(self::B2DBNAME, self::ID);
-            parent::addForeignKeyColumn(self::UID, Users::getTable(), Users::ID);
+            parent::addForeignKeyColumn(self::USER_ID, Users::getTable(), Users::ID);
             parent::addForeignKeyColumn(self::ISSUE_ID, Issues::getTable(), Issues::ID);
             parent::addForeignKeyColumn(self::FILE_ID, Files::getTable(), Files::ID);
             parent::addInteger(self::ATTACHED_AT, 10);

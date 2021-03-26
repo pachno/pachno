@@ -2635,7 +2635,7 @@
          */
         public function getAvatarURL($small = true)
         {
-            $event = Event::createNew('core', 'self::getAvatarURL', $this)->trigger();
+            $event = Event::createNew('core', 'User::getAvatarURL', $this)->trigger();
             $url = $event->getReturnValue();
 
             if ($url === null) {
@@ -2643,7 +2643,7 @@
                     $url = (framework\Context::getScope()->isSecure()) ? 'https://secure.gravatar.com/avatar/' : 'http://www.gravatar.com/avatar/';
                     $url .= md5(trim($this->getEmail())) . '.png?d=wavatar&amp;s=';
 
-                    $size_event = Event::createNew('core', 'self::getGravatarSize', $this)->trigger(compact('small'));
+                    $size_event = Event::createNew('core', 'User::getGravatarSize', $this)->trigger(compact('small'));
                     $size = $size_event->getReturnValue();
 
                     if ($size === null) {
@@ -2920,7 +2920,7 @@
                     $this->confirmScope($scope->getID());
                 }
 
-                $event = Event::createNew('core', 'self::_postSave', $this);
+                $event = Event::createNew('core', 'User::_postSave', $this);
                 $event->trigger();
             }
 
@@ -2935,7 +2935,7 @@
             if (!$this->isMemberOfScope($scope)) {
                 tables\UserScopes::getTable()->addUserToScope($this->getID(), $scope->getID());
                 if ($notify) {
-                    Event::createNew('core', 'self::addScope', $this, ['scope' => $scope])->trigger();
+                    Event::createNew('core', 'User::addScope', $this, ['scope' => $scope])->trigger();
                 }
                 $this->_scopes = null;
                 $this->_unconfirmed_scopes = null;

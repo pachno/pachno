@@ -29,12 +29,12 @@
         <div class="form-row">
             <label for="project_name_input"><?= __('Project name'); ?></label>
             <?php if ($access_level == Settings::ACCESS_FULL): ?>
-                <input type="text" class="name-input-enhance" name="project_name" id="project_name_input" onblur="Pachno.Project.updatePrefix('<?= make_url('configure_project_get_updated_key', ['project_id' => $project->getID()]); ?>', <?= $project->getID(); ?>);" value="<?php print $project->getName(); ?>" placeholder="<?= __('A great project name'); ?>">
+                <input type="text" class="name-input-enhance" name="project_name" id="project_name_input" data-verify-on-blur data-url="<?= make_url('configure_project_get_updated_key', ['project_id' => $project->getID()]); ?>" value="<?php print $project->getName(); ?>" placeholder="<?= __('A great project name'); ?>">
             <?php else: ?>
                 <span class="value"><?= $project->getName(); ?></span>
             <?php endif; ?>
         </div>
-        <div class="form-row">
+        <div class="form-row" data-field="project_key">
             <label for="project_key_input"><?= __('Project key'); ?></label>
             <?php if ($access_level == Settings::ACCESS_FULL): ?>
                 <div id="project_key_indicator" style="display: none;"><?= image_tag('spinning_16.gif'); ?></div>

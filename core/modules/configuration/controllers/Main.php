@@ -766,14 +766,6 @@
         }
 
         /**
-         * Get edit form for user
-         */
-        public function runGetUserEditForm(framework\Request $request)
-        {
-            return $this->renderJSON(["content" => $this->getComponentHTML('finduser_row_editable', ['user' => entities\User::getB2DBTable()->selectByID($request['user_id'])])]);
-        }
-
-        /**
          * Delete a project
          *
          * @param framework\Request $request The request object
@@ -1140,26 +1132,24 @@
                     if (framework\Context::getScope()->isDefault()) {
                         $settings = ['upload_restriction_mode', 'upload_extensions_list', 'upload_storage', 'upload_localpath'];
 
-                        if ($request['upload_storage'] == 'files' && (bool)$request['enable_uploads']) {
-                            if (!is_dir($request['upload_localpath'])) {
+                        if ($request['upload_storage'] == 'files' && (bool) $request['enable_uploads']) {
+                            if ($request['upload_localpath'] && !is_dir($request['upload_localpath'])) {
                                 mkdir($request['upload_localpath'], 0744, true);
                             }
-                            if (!is_writable($request['upload_localpath'])) {
+                            if ($request['upload_localpath'] && !is_writable($request['upload_localpath'])) {
                                 $this->getResponse()->setHttpStatus(400);
 
                                 return $this->renderJSON(['error' => framework\Context::getI18n()->__("The upload path isn't writable")]);
                             }
                         }
+
+                        framework\Settings::saveSetting('upload_allow_image_caching', framework\Context::getRequest()->getParameter('upload_allow_image_caching'));
+                        framework\Settings::saveSetting('upload_delivery_use_xsend', framework\Context::getRequest()->getParameter('upload_delivery_use_xsend'));
+                        framework\Settings::saveSetting('enable_uploads', framework\Context::getRequest()->getParameter('enable_uploads'));
                     } else {
                         $settings = ['upload_restriction_mode', 'upload_extensions_list'];
                         framework\Settings::copyDefaultScopeSetting('upload_localpath');
                     }
-
-//                    if (!is_numeric($request['upload_max_file_size'])) {
-//                        $this->getResponse()->setHttpStatus(400);
-//
-//                        return $this->renderJSON(['error' => framework\Context::getI18n()->__("The maximum file size must be a number")]);
-//                    }
 
                     foreach ($settings as $setting) {
                         if (framework\Context::getRequest()->hasParameter($setting)) {
@@ -1168,11 +1158,7 @@
                     }
                 }
 
-                framework\Settings::saveSetting('upload_allow_image_caching', framework\Context::getRequest()->getParameter('upload_allow_image_caching'));
-                framework\Settings::saveSetting('upload_delivery_use_xsend', framework\Context::getRequest()->getParameter('upload_delivery_use_xsend'));
-                framework\Settings::saveSetting('enable_uploads', framework\Context::getRequest()->getParameter('enable_uploads'));
-
-                return $this->renderJSON(['title' => framework\Context::getI18n()->__('All settings saved')]);
+                return $this->renderJSON(['message' => framework\Context::getI18n()->__('All settings saved')]);
             }
         }
 
@@ -1203,9 +1189,40 @@
             }
         }
 
+        /**
+         * @Route(name="users", url="/users", methods="GET|POST")
+         * @Parameters(config_module="core", section=2)
+         *
+         * @param framework\Request $request
+         */
         public function runConfigureUsers(framework\Request $request)
         {
-            $this->finduser = $request['finduser'];
+            if ($request->hasParameter('findstring')) {
+                $options = ['findstring' => $request['findstring']];
+
+                if (mb_strlen($options['findstring']) >= 1) {
+                    $options['users'] = tables\Users::getTable()->findInConfig($options['findstring']);
+                    $options['total_results'] = count($options['users']);
+                } else {
+                    $options['too_short'] = true;
+                }
+                switch ($options['findstring']) {
+                    case 'unactivated':
+                        $options['findstring'] = framework\Context::getI18n()->__('Unactivated users');
+                        break;
+                    case 'newusers':
+                        $options['findstring'] = framework\Context::getI18n()->__('New users');
+                        break;
+                    case 'all':
+                        $options['findstring'] = framework\Context::getI18n()->__('All users');
+                        break;
+                }
+
+                return $this->renderJSON([
+                    'content' => $this->getComponentHTML('configuration/userlist', $options)
+                ]);
+            }
+
             $this->teams = entities\Team::getAll();
             $this->groups = entities\Group::getAll();
             $this->number_of_users = tables\UserScopes::getTable()->countUsers();
@@ -1289,7 +1306,7 @@
                         $message = framework\Context::getI18n()->__('The group was added');
                     }
 
-                    return $this->renderJSON(['message' => $message, 'content' => $this->getComponentHTML('configuration/groupbox', ['group' => $group])]);
+                    return $this->renderJSON(['message' => $message, 'content' => $this->getComponentHTML('configuration/group', ['group' => $group])]);
                 } else {
                     throw new Exception(framework\Context::getI18n()->__('Please enter a group name'));
                 }
@@ -1474,98 +1491,6 @@
             }
         }
 
-        public function runFindUsers(framework\Request $request)
-        {
-            $options = [
-                'findstring' => $request['findstring']
-            ];
-
-            if (mb_strlen($options['findstring']) >= 1) {
-                $options['users'] = tables\Users::getTable()->findInConfig($options['findstring']);
-                $options['total_results'] = count($options['users']);
-            } else {
-                $options['too_short'] = true;
-            }
-            switch ($options['findstring']) {
-                case 'unactivated':
-                    $options['findstring'] = framework\Context::getI18n()->__('Unactivated users');
-                    break;
-                case 'newusers':
-                    $options['findstring'] = framework\Context::getI18n()->__('New users');
-                    break;
-                case 'all':
-                    $options['findstring'] = framework\Context::getI18n()->__('All users');
-                    break;
-            }
-
-            return $this->renderJSON([
-                'content' => $this->getComponentHTML('configuration/usersresult', $options)
-            ]);
-        }
-
-        public function runAddUser(framework\Request $request)
-        {
-            try {
-                if (!framework\Context::getScope()->hasUsersAvailable()) {
-                    throw new Exception($this->getI18n()->__('This instance of Pachno cannot add more users'));
-                }
-
-                if ($username = trim($request['username'])) {
-                    if (!entities\User::isUsernameAvailable($username)) {
-                        if ($request->getParameter('mode') == 'import') {
-                            $user = entities\User::getByUsername($username);
-                            $user->addScope(framework\Context::getScope());
-
-                            return $this->renderJSON(['imported' => true, 'message' => $this->getI18n()->__('The user was successfully added to this scope (pending user confirmation)')]);
-                        } elseif (framework\Context::getScope()->isDefault()) {
-                            throw new Exception($this->getI18n()->__('This username already exists'));
-                        } else {
-                            $this->getResponse()->setHttpStatus(400);
-
-                            return $this->renderJSON(['allow_import' => true]);
-                        }
-                    }
-
-                    $user = new entities\User();
-                    $user->setUsername($username);
-                    $user->setRealname($request->getParameter('realname', $username));
-                    $user->setBuddyname($request->getParameter('buddyname', $username));
-                    $user->setEmail($request->getParameter('email'));
-                    $group_id = ($request->getParameter('group_id')) ? $request->getParameter('group_id') : framework\Settings::get(framework\Settings::SETTING_USER_GROUP);
-                    $user->setGroup($group_id);
-                    if ($request->hasParameter('password') && !(empty($request['password']) && empty($request['password_repeat']))) {
-                        if (empty($request['password']) || $request['password'] != $request['password_repeat']) {
-                            throw new Exception($this->getI18n()->__('Please enter the same password twice'));
-                        }
-                        $password = $request['password'];
-                        $user->setPassword($password);
-                    } else {
-                        $password = entities\User::createPassword();
-                        $user->setPassword($password);
-                    }
-                    $user->save();
-                    foreach ((array)$request['teams'] as $team_id) {
-                        $user->addToTeam(entities\Team::getB2DBTable()->selectById((int)$team_id));
-                    }
-                    framework\Event::createNew('core', 'config.createuser.save', $user, ['password' => $password])->trigger();
-                } else {
-                    throw new Exception($this->getI18n()->__('Please enter a username'));
-                }
-                $this->getResponse()->setTemplate('configuration/findusers');
-                $this->too_short = false;
-                $this->created_user = true;
-                $this->users = [$user];
-                $this->total_results = 1;
-                $this->title = $this->getI18n()->__('User %username created', ['%username' => $username]);
-                $this->total_count = entities\User::getUsersCount();
-                $this->more_available = framework\Context::getScope()->hasUsersAvailable();
-            } catch (Exception $e) {
-                $this->getResponse()->setHttpStatus(400);
-
-                return $this->renderJSON(['error' => $e->getMessage()]);
-            }
-        }
-
         /**
          * @Route(name="update_user_password", url="/users/:user_id/password/:csrf_token")
          * @CsrfProtected
@@ -1598,114 +1523,132 @@
             ]);
         }
 
-        public function runUpdateUser(framework\Request $request)
+        /**
+         * @Route(name="user", url="/users/:user_id", methods="POST|GET")
+         * @Parameters(config_module="core", section=2)
+         *
+         * @param framework\Request $request
+         */
+        public function runEditUser(framework\Request $request)
         {
-            try {
-                $user = entities\User::getB2DBTable()->selectByID($request['user_id']);
-                if ($user instanceof entities\User) {
-                    if (!$user->isConfirmedMemberOfScope(framework\Context::getScope())) {
-                        $this->getResponse()->setHttpStatus(400);
+            $user_id = $request['user_id'];
+            if ($user_id) {
+                $user = tables\Users::getTable()->selectById($user_id);
 
-                        return $this->renderJSON(['error' => $this->getI18n()->__('This user is not a confirmed member of this scope')]);
-                    }
-                    if (!empty($request['username'])) {
-                        $testuser = entities\User::getByUsername($request['username']);
-                        if (!$testuser instanceof entities\User || $testuser->getID() == $user->getID()) {
-                            $user->setUsername($request['username']);
-                        } else {
-                            $this->getResponse()->setHttpStatus(400);
-
-                            return $this->renderJSON(['error' => $this->getI18n()->__('This username is already taken')]);
-                        }
-                    }
-                    if (isset($request['realname'])) {
-                        $user->setRealname($request['realname']);
-                    }
-                    $return_options = [];
-                    try {
-                        if ($group = tables\Groups::getTable()->selectById($request['group'])) {
-                            if ($user->getGroupID() != $group->getID()) {
-                                $groups = [$user->getGroupID(), $group->getID()];
-                                $return_options['update_groups'] = ['ids' => [], 'membercounts' => []];
-                            }
-                            $user->setGroup($group);
-                        }
-                    } catch (Exception $e) {
-                        throw new Exception($this->getI18n()->__('Invalid user group'));
-                    }
-
-                    $existing_teams = array_keys($user->getTeams());
-                    $new_teams = [];
-                    $new_clients = [];
-                    $user->clearTeams();
-                    try {
-                        foreach ($request->getParameter('teams', []) as $team_id => $team) {
-                            if ($team = entities\Team::getB2DBTable()->selectById($team_id)) {
-                                $new_teams[] = $team_id;
-                                $user->addToTeam($team);
-                            }
-                        }
-                    } catch (Exception $e) {
-                        throw new Exception($this->getI18n()->__('One or more teams were invalid'));
-                    }
-
-                    try {
-                        $user->clearClients();
-                        foreach ($request->getParameter('clients', []) as $client_id => $client) {
-                            if ($client = entities\Client::getB2DBTable()->selectById($client_id)) {
-                                $new_clients[] = $client_id;
-                                $user->addToClient($client);
-                            }
-                        }
-                    } catch (Exception $e) {
-                        throw new Exception($this->getI18n()->__('One or more clients were invalid'));
-                    }
-                    if (isset($request['nickname'])) {
-                        $user->setBuddyname($request['nickname']);
-                    }
-                    if (isset($request['email'])) {
-                        $user->setEmail($request['email']);
-                    }
-                    if (isset($request['homepage'])) {
-                        $user->setHomepage($request['homepage']);
-                    }
-                    if (framework\Context::getScope()->isDefault()) {
-                        $user->setActivated((bool)$request['activated']);
-                        $user->setEnabled((bool)$request['enabled']);
-                    }
-                    $user->save();
-                    if (isset($groups)) {
-                        foreach ($groups as $group_id) {
-                            if (!$group_id)
-                                continue;
-                            $return_options['update_groups']['ids'][] = $group_id;
-                            $return_options['update_groups']['membercounts'][$group_id] = entities\Group::getB2DBTable()->selectById($group_id)->getNumberOfMembers();
-                        }
-                    }
-                    if ($new_teams != $existing_teams) {
-                        $new_team_ids = array_diff($new_teams, $existing_teams);
-                        $existing_team_ids = array_diff($existing_teams, $new_teams);
-                        $teams_to_update = array_merge($new_team_ids, $existing_team_ids);
-                        $return_options['update_teams'] = ['ids' => [], 'membercounts' => []];
-                        foreach ($teams_to_update as $team_id) {
-                            $return_options['update_teams']['ids'][] = $team_id;
-                            $return_options['update_teams']['membercounts'][$team_id] = entities\Team::getB2DBTable()->selectById($team_id)->getNumberOfMembers();
-                        }
-                    }
-                    $template_options = ['user' => $user];
-                    $return_options['content'] = $this->getComponentHTML('configuration/finduser_row', $template_options);
-                    $return_options['title'] = $this->getI18n()->__('User updated!');
-
-                    return $this->renderJSON($return_options);
+                if (!$user instanceof entities\User) {
+                    $this->getResponse()->setHttpStatus(400);
+                    return $this->renderJSON(['error' => $this->getI18n()->__('This user does not exist')]);
                 }
+
+                if (!$user->isConfirmedMemberOfScope(framework\Context::getScope())) {
+                    $this->getResponse()->setHttpStatus(400);
+                    return $this->renderJSON(['error' => $this->getI18n()->__('This user is not a confirmed member of this scope')]);
+                }
+            } else {
+                if (!framework\Context::getScope()->isDefault() && $request->hasParameter('username')) {
+                    if (!framework\Context::getScope()->hasUsersAvailable()) {
+                        $this->getResponse()->setHttpStatus(400);
+                        return $this->renderJSON(['error' => $this->getI18n()->__('This instance of Pachno cannot add more users')]);
+                    }
+
+                    $user = entities\User::getByUsername($request['username']);
+                    if ($user instanceof entities\User) {
+                        if ($user->isMemberOfScope(framework\Context::getScope())) {
+                            $this->getResponse()->setHttpStatus(400);
+                            return $this->renderJSON(['error' => $this->getI18n()->__('This user has already been invited to this scope')]);
+                        } else {
+                            $user->addScope(framework\Context::getScope());
+                        }
+                    }
+
+                    return $this->renderJSON(['imported' => true, 'message' => $this->getI18n()->__('The user was successfully added to this scope (pending user confirmation)')]);
+                } else {
+                    $user = new entities\User();
+                }
+            }
+
+            if ($request->isGet()) {
+                return $this->renderJSON([
+                    'content' => $this->getComponentHTML('edituser', ['user' => $user])
+                ]);
+            }
+
+            try {
+                if (!empty($request['username'])) {
+                    $testuser = entities\User::getByUsername($request['username']);
+                    if ($testuser instanceof entities\User && $testuser->getID() != $user->getID()) {
+                        $this->getResponse()->setHttpStatus(400);
+                        return $this->renderJSON(['error' => $this->getI18n()->__('This username is already taken')]);
+                    }
+
+                    $user->setUsername($request['username']);
+                }
+
+                if (isset($request['group_id'])) {
+                    $group = tables\Groups::getTable()->selectById($request['group_id']);
+                    if (!$group instanceof entities\Group) {
+                        $this->getResponse()->setHttpStatus(400);
+                        return $this->renderJSON(['error' => $this->getI18n()->__('This user group does not exist')]);
+                    }
+                    $user->setGroup($group);
+                }
+
+                if (isset($request['realname'])) {
+                    $user->setRealname($request['realname']);
+                }
+                if (isset($request['nickname'])) {
+                    $user->setBuddyname($request['nickname']);
+                }
+                if (isset($request['email'])) {
+                    $user->setEmail($request['email']);
+                }
+                if (isset($request['homepage'])) {
+                    $user->setHomepage($request['homepage']);
+                }
+
+                if (framework\Context::getScope()->isDefault()) {
+                    $user->setActivated((bool) $request['activated']);
+                    $user->setEnabled((bool) $request['enabled']);
+                }
+
+                $user->save();
+
+                $new_teams = $request->getParameter('teams', []);
+                $remove_teams = array_diff(array_keys($user->getTeams()), array_keys($new_teams));
+                tables\TeamMembers::getTable()->removeUserFromTeam($user->getID(), $remove_teams);
+
+                foreach ($new_teams as $team_id => $team) {
+                    if ($team = tables\Teams::getTable()->selectById($team_id)) {
+                        $user->addToTeam($team);
+                    }
+                }
+
+                $new_clients = $request->getParameter('clients', []);
+                $remove_clients = array_diff(array_keys($user->getClients()), array_keys($new_clients));
+                tables\ClientMembers::getTable()->removeUserFromClient($user->getID(), $remove_clients);
+
+                foreach ($new_clients as $client_id => $client) {
+                    if ($client = tables\Clients::getTable()->selectById($client_id)) {
+                        $user->addToClient($client);
+                    }
+                }
+
+                if (!$user_id) {
+                    $password = entities\User::createPassword();
+                    $user->setPassword($password);
+                    $user->save();
+                    framework\Event::createNew('core', 'config.createuser.save', $user, ['password' => $password])->trigger();
+                }
+
+                return $this->renderJSON([
+                    'message' => $this->getI18n()->__('User updated'),
+                    'user' => $user->toJSON(),
+                    'content' => $this->getComponentHTML('configuration/user', ['user' => $user])
+                ]);
             } catch (Exception $e) {
                 $this->getResponse()->setHttpStatus(400);
-
                 return $this->renderJSON(['error' => $this->getI18n()->__('This user could not be updated: %message', ['%message' => $e->getMessage()])]);
             }
-            $this->getResponse()->setHttpStatus(400);
-
-            return $this->renderJSON(['error' => $this->getI18n()->__('This user could not be updated')]);
         }
 
         public function runUpdateUserScopes(framework\Request $request)
@@ -2262,7 +2205,7 @@
 
                     $message = $this->getI18n()->__('The client was added');
 
-                    return $this->renderJSON(['message' => $message, 'content' => $this->getComponentHTML('configuration/clientbox', ['client' => $client])]);
+                    return $this->renderJSON(['message' => $message, 'content' => $this->getComponentHTML('configuration/client', ['client' => $client])]);
                 } else {
                     throw new Exception($this->getI18n()->__('Please enter a client name'));
                 }
@@ -2372,7 +2315,7 @@
                 $client->setFax($request['client_fax']);
                 $client->save();
 
-                return $this->renderJSON(['success' => true, 'content' => $this->getComponentHTML('configuration/clientbox', ['client' => $client]), 'message' => $this->getI18n()->__('The client was saved')]);
+                return $this->renderJSON(['success' => true, 'content' => $this->getComponentHTML('configuration/client', ['client' => $client]), 'message' => $this->getI18n()->__('The client was saved')]);
             } catch (Exception $e) {
                 $this->getResponse()->setHttpStatus(400);
 
@@ -2382,6 +2325,10 @@
 
         public function runConfigureScopes(framework\Request $request)
         {
+            if (!framework\Context::getScope()->isDefault()) {
+                return $this->forward403($this->getI18n()->__('Scopes can only be managed from the default scope'));
+            }
+
             if ($request->isPost()) {
                 $hostname = $request['hostname'];
                 $hostname = str_replace(['http://', 'https://'], ['', ''], $hostname);

@@ -22,7 +22,8 @@ header {
     align-items: stretch;
     justify-content: stretch;
 
-    > a:not(.button):not(.closer):not(.list-item) {
+    > a:not(.button):not(.closer):not(.list-item),
+    .notifications-container > a {
       display: flex;
       flex-direction: row;
       align-items: center;
@@ -67,6 +68,17 @@ header {
 
         &.only-icon {
           padding: .5em .5em;
+        }
+      }
+
+      &.disabled {
+        .icon {
+          opacity: .4;
+        }
+
+        .count-badge {
+          color: #FFF;
+          font-style: normal;
         }
       }
     }

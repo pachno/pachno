@@ -36,11 +36,11 @@
 
         const COMMIT = 'usercommits.commit';
 
-        const UID = 'usercommits.uid';
+        const USER_ID = 'usercommits.uid';
 
         public function _setupIndexes()
         {
-            $this->_addIndex('uid_scope', [self::UID, self::SCOPE]);
+            $this->_addIndex('uid_scope', [self::USER_ID, self::SCOPE]);
         }
 
         public function getUserIDsByCommitID($commit_id)
@@ -52,7 +52,7 @@
 
             if ($res = $this->rawSelect($query)) {
                 while ($row = $res->getNextRow()) {
-                    $uid = $row->get(self::UID);
+                    $uid = $row->get(self::USER_ID);
                     $uids[$uid] = $uid;
                 }
             }
@@ -71,7 +71,7 @@
                 $insertion->add(self::SCOPE, framework\Context::getScope()->getID());
                 foreach ($old_watchers as $uid) {
                     if (!in_array($uid, $new_watchers)) {
-                        $insertion->add(self::UID, $uid);
+                        $insertion->add(self::USER_ID, $uid);
                         $this->rawInsert($insertion);
                     }
                 }
@@ -81,7 +81,7 @@
         public function getUserStarredCommits($user_id)
         {
             $query = $this->getQuery();
-            $query->where(self::UID, $user_id);
+            $query->where(self::USER_ID, $user_id);
             $query->where(self::SCOPE, framework\Context::getScope()->getID());
             $query->join(Commits::getTable(), Commits::ID, self::COMMIT);
             $query->where(Commits::DELETED, 0);
@@ -95,7 +95,7 @@
         {
             $insertion = new Insertion();
             $insertion->add(self::COMMIT, $commit_id);
-            $insertion->add(self::UID, $user_id);
+            $insertion->add(self::USER_ID, $user_id);
             $insertion->add(self::SCOPE, framework\Context::getScope()->getID());
 
             $this->rawInsert($insertion);
@@ -105,7 +105,7 @@
         {
             $query = $this->getQuery();
             $query->where(self::COMMIT, $commit_id);
-            $query->where(self::UID, $user_id);
+            $query->where(self::USER_ID, $user_id);
 
             $this->rawDelete($query);
 
@@ -116,7 +116,7 @@
         {
             $query = $this->getQuery();
             $query->where(self::COMMIT, $commit_id);
-            $query->where(self::UID, $user_id);
+            $query->where(self::USER_ID, $user_id);
 
             return $this->count($query);
         }
@@ -125,7 +125,7 @@
         {
             $this->setup(self::B2DBNAME, self::ID);
             $this->addForeignKeyColumn(self::COMMIT, Commits::getTable(), Commits::ID);
-            $this->addForeignKeyColumn(self::UID, Users::getTable(), Users::ID);
+            $this->addForeignKeyColumn(self::USER_ID, Users::getTable(), Users::ID);
         }
 
     }

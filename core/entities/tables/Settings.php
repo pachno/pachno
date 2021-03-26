@@ -52,7 +52,7 @@
 
         const UPDATED_AT = 'settings.updated_at';
 
-        const UID = 'settings.uid';
+        const USER_ID = 'settings.uid';
 
         /**
          * @param $scope
@@ -63,7 +63,7 @@
         public function getSettingsForScope($scope, $uid = 0)
         {
             $query = $this->getQuery();
-            $query->where(self::UID, $uid);
+            $query->where(self::USER_ID, $uid);
 
             $criteria = new Criteria();
             $criteria->where(self::SCOPE, $scope);
@@ -86,7 +86,7 @@
             $query = $this->getQuery();
             $query->where(self::NAME, $name);
             $query->where(self::MODULE, $module);
-            $query->where(self::UID, $uid);
+            $query->where(self::USER_ID, $uid);
             $query->where(self::SCOPE, $scope);
 
             return $this->selectOne($query, 'none');
@@ -105,7 +105,7 @@
             $query->where(self::NAME, $name);
             $query->where(self::MODULE, $module);
             $query->where(self::SCOPE, $scope);
-            $query->indexBy(self::UID);
+            $query->indexBy(self::USER_ID);
 
             return $this->select($query, 'none');
         }
@@ -115,7 +115,7 @@
             $query = $this->getQuery();
             $query->where(self::NAME, $setting->getName());
             $query->where(self::MODULE, $setting->getModuleKey());
-            $query->where(self::UID, $setting->getUserId());
+            $query->where(self::USER_ID, $setting->getUserId());
             $query->where(self::SCOPE, $setting->getScopeId());
 
             if ($setting->getID()) {
@@ -140,7 +140,7 @@
         {
             $query = $this->getQuery();
             $query->where(self::MODULE, $module_name);
-            $query->where(self::UID, 0, Criterion::GREATER_THAN);
+            $query->where(self::USER_ID, 0, Criterion::GREATER_THAN);
             if ($scope !== null) {
                 $query->where(self::SCOPE, $scope);
             }
@@ -183,7 +183,7 @@
             $query = $this->getQuery();
             $query->where(self::NAME, $name);
             $query->where(self::MODULE, $module);
-            $query->where(self::UID, $uid);
+            $query->where(self::USER_ID, $uid);
             $query->where(self::SCOPE, $scope);
             $res = $this->rawSelectOne($query);
 
@@ -192,7 +192,7 @@
                 $query = $this->getQuery();
                 $query->where(self::NAME, $name);
                 $query->where(self::MODULE, $module);
-                $query->where(self::UID, $uid);
+                $query->where(self::USER_ID, $uid);
                 $query->where(self::SCOPE, $scope);
                 $query->where(self::ID, $theID, Criterion::NOT_EQUALS);
                 $res2 = $this->rawDelete($query);
@@ -200,7 +200,7 @@
                 $update = new Update();
                 $update->add(self::NAME, $name);
                 $update->add(self::MODULE, $module);
-                $update->add(self::UID, $uid);
+                $update->add(self::USER_ID, $uid);
                 $update->add(self::VALUE, $value);
                 $update->add(self::UPDATED_AT, time());
                 $this->rawUpdateById($update, $theID);
@@ -210,7 +210,7 @@
                 $insertion->add(self::MODULE, $module);
                 $insertion->add(self::VALUE, $value);
                 $insertion->add(self::SCOPE, $scope);
-                $insertion->add(self::UID, $uid);
+                $insertion->add(self::USER_ID, $uid);
                 $insertion->add(self::UPDATED_AT, time());
                 $this->rawInsert($insertion);
             }
@@ -249,7 +249,7 @@
 
         protected function setupIndexes()
         {
-            $this->addIndex('scope_uid', [self::SCOPE, self::UID]);
+            $this->addIndex('scope_uid', [self::SCOPE, self::USER_ID]);
         }
 
         public function setMaintenanceMode($value)

@@ -477,6 +477,11 @@
             return $this->isMethod(self::POST);
         }
 
+        public function isGet()
+        {
+            return $this->isMethod(self::GET);
+        }
+
         public function isDelete()
         {
             return ($this->isMethod(self::DELETE) || ($this->isPost() && mb_strtolower($this['_method'] == 'delete')));

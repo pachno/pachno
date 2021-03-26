@@ -647,33 +647,6 @@ configure_issuefields_delete_customtype:
       mode: delete
     csrf_enabled: false
 
-configure_users_find_user:
-    route: '/configure/users/find/users/*'
-    module: configuration
-    action: findUsers
-    parameters:
-      config_module: core
-      section: 2
-    csrf_enabled: false
-
-configure_users_add_user:
-    route: /configure/users/add/user
-    module: configuration
-    action: addUser
-    parameters:
-      config_module: core
-      section: 2
-    csrf_enabled: false
-
-configure_users_edit_user_form:
-    route: /configure/users/edit/user/:user_id/form
-    module: configuration
-    action: getUserEditForm
-    parameters:
-      config_module: core
-      section: 2
-    csrf_enabled: false
-
 configure_users_add_group:
     route: /configure/groups
     module: configuration
@@ -827,15 +800,6 @@ configure_users_add_client_member:
       section: 2
     csrf_enabled: true
 
-configure_users_update_user:
-    route: /configure/users/update/user/:user_id
-    module: configuration
-    action: updateUser
-    parameters:
-      config_module: core
-      section: 2
-    csrf_enabled: false
-
 configure_users_update_user_scopes:
     route: /configure/users/update/userscopes/:user_id
     module: configuration
@@ -849,15 +813,6 @@ configure_users_delete_user:
     route: /configure/users/delete/user/:user_id
     module: configuration
     action: deleteUser
-    parameters:
-      config_module: core
-      section: 2
-    csrf_enabled: false
-
-configure_users:
-    route: '/configure/users'
-    module: configuration
-    action: configureUsers
     parameters:
       config_module: core
       section: 2

@@ -34,15 +34,15 @@
 
         const SCOPE = 'buddies.scope';
 
-        const UID = 'buddies.uid';
+        const USER_ID = 'buddies.uid';
 
-        const BID = 'buddies.bid';
+        const BUDDY_USER_ID = 'buddies.bid';
 
         public function addFriend($user_id, $friend_id)
         {
             $insertion = new Insertion();
-            $insertion->add(self::UID, $user_id);
-            $insertion->add(self::BID, $friend_id);
+            $insertion->add(self::USER_ID, $user_id);
+            $insertion->add(self::BUDDY_USER_ID, $friend_id);
             $insertion->add(self::SCOPE, framework\Context::getScope()->getID());
             $this->rawInsert($insertion);
         }
@@ -50,13 +50,13 @@
         public function getFriendsByUserID($user_id)
         {
             $query = $this->getQuery();
-            $query->where(self::UID, $user_id);
+            $query->where(self::USER_ID, $user_id);
             $query->where(self::SCOPE, framework\Context::getScope()->getID());
 
             $friends = [];
             if ($res = $this->rawSelect($query, false)) {
                 while ($row = $res->getNextRow()) {
-                    $friends[] = $row->get(self::BID);
+                    $friends[] = $row->get(self::BUDDY_USER_ID);
                 }
             }
 
@@ -66,8 +66,8 @@
         public function removeFriendByUserID($user_id, $friend_id)
         {
             $query = $this->getQuery();
-            $query->where(self::UID, $user_id);
-            $query->where(self::BID, $friend_id);
+            $query->where(self::USER_ID, $user_id);
+            $query->where(self::BUDDY_USER_ID, $friend_id);
             $query->where(self::SCOPE, framework\Context::getScope()->getID());
             $this->rawDelete($query);
         }
@@ -75,8 +75,8 @@
         protected function initialize()
         {
             parent::setup(self::B2DBNAME, self::ID);
-            parent::addForeignKeyColumn(self::UID, Users::getTable(), Users::ID);
-            parent::addForeignKeyColumn(self::BID, Users::getTable(), Users::ID);
+            parent::addForeignKeyColumn(self::USER_ID, Users::getTable(), Users::ID);
+            parent::addForeignKeyColumn(self::BUDDY_USER_ID, Users::getTable(), Users::ID);
         }
 
     }

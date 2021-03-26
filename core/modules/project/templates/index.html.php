@@ -34,15 +34,6 @@
                     <span class="name"><?= __('Archived projects'); ?></span>
                     <?= fa_image_tag('spinner', ['style' => 'display: none;', 'id' => 'project_list_tab_archived_indicator', 'class' => 'icon fa-spin']); ?>
                 </a>
-                <?php /* if ($pachno_user->isAuthenticated()): ?>
-                    <div class="list-item separator"></div>
-                    <div class="button-container">
-                        <?= link_tag(make_url('configure_projects'), fa_image_tag('cog'), ['class' => 'button icon secondary']); ?>
-                        <?php if ($list_mode !== 'client' && $pachno_user->canAccessConfigurationPage(framework\Settings::CONFIGURATION_SECTION_PROJECTS) && framework\Context::getScope()->hasProjectsAvailable()): ?>
-                            <button class="button primary project-quick-edit" onclick="Pachno.UI.Backdrop.show('<?= make_url('get_partial_for_backdrop', $partial_options); ?>');"><?= fa_image_tag('plus-square'); ?><span><?= __('Create a project'); ?></span></button>
-                        <?php endif; ?>
-                    </div>
-                <?php endif; */ ?>
             <?php endif; ?>
         </div>
         <?php \pachno\core\framework\Event::createNew('core', 'index_left')->trigger(); ?>

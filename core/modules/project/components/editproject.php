@@ -43,7 +43,7 @@
                         <?php Event::createNew('core', 'project/editproject::additional_form_elements')->trigger(compact('project')); ?>
                         <div class="form-row">
                             <?php if ($access_level == Settings::ACCESS_FULL): ?>
-                                <input type="text" class="name-input-enhance" name="project_name" id="project_name_input" <?php if ($project->getId()): ?> onblur="Pachno.Project.updatePrefix('<?= make_url('configure_project_get_updated_key', ['project_id' => $project->getID()]); ?>', <?= $project->getID(); ?>);" <?php endif; ?> value="<?php print $project->getName(); ?>" placeholder="<?= __('A great project name'); ?>">
+                                <input type="text" class="name-input-enhance" name="project_name" id="project_name_input" value="<?php print $project->getName(); ?>" placeholder="<?= __('A great project name'); ?>">
                             <?php else: ?>
                                 <span class="value"><?= $project->getName(); ?></span>
                             <?php endif; ?>

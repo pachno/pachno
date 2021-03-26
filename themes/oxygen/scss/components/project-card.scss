@@ -33,6 +33,7 @@
   &:hover {
     transform: translateY(-2px);
     box-shadow: 0 3px 5px 0 rgba(27, 27, 36, .2);
+    z-index: 1;
 
     & + .subprojects-list {
       background-color: theme-secondary-color-alpha(.2);

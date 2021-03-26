@@ -36,7 +36,7 @@
 
         const SCOPE = 'files.scope';
 
-        const UID = 'files.uid';
+        const USER_ID = 'files.uid';
 
         const UPLOADED_AT = 'files.uploaded_at';
 
@@ -53,7 +53,7 @@
         public function saveFile($real_filename, $original_filename, $content_type, $description = null, $content = null)
         {
             $insertion = new Insertion();
-            $insertion->add(self::UID, framework\Context::getUser()->getID());
+            $insertion->add(self::USER_ID, framework\Context::getUser()->getID());
             $insertion->add(self::REAL_FILENAME, $real_filename);
             $insertion->add(self::UPLOADED_AT, NOW);
             $insertion->add(self::ORIGINAL_FILENAME, $original_filename);

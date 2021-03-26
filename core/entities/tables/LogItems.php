@@ -48,7 +48,7 @@
 
         const TIME = 'log.time';
 
-        const UID = 'log.uid';
+        const USER_ID = 'log.uid';
 
         const COMMENT_ID = 'log.comment_id';
 
@@ -96,7 +96,7 @@
                 $criteria->where('log.project_id', $project_id);
             }
             if ($user_id !== null) {
-                $criteria->where(self::UID, $user_id);
+                $criteria->where(self::USER_ID, $user_id);
             }
 
             $criteria->where(self::TIME, NOW, Criterion::LESS_THAN_EQUAL);
@@ -195,7 +195,7 @@
             $this->addIndex('commentid', [self::COMMENT_ID]);
             $this->addIndex('targettype_time', [self::TARGET_TYPE, self::TIME]);
             $this->addIndex('targettype_changetype', [self::TARGET_TYPE, self::CHANGE_TYPE]);
-            $this->addIndex('target_uid_commentid_scope', [self::TARGET, self::UID, self::COMMENT_ID, self::SCOPE]);
+            $this->addIndex('target_uid_commentid_scope', [self::TARGET, self::USER_ID, self::COMMENT_ID, self::SCOPE]);
         }
 
         protected function migrateData(Table $old_table)

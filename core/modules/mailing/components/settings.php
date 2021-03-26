@@ -5,6 +5,7 @@
     /**
      * @var int $access_level
      * @var Mailing $module
+     * @var \pachno\core\entities\User $pachno_user
      */
 
 ?>
@@ -220,24 +221,21 @@
         <?php endif; ?>
         </form>
         <?php if ($module->isEnabled()): ?>
-            <form accept-charset="<?php echo \pachno\core\framework\Context::getI18n()->getCharset(); ?>" action="<?php echo make_url('mailing_testemail'); ?>" method="post">
-                <div class="greybox" style="margin: 5px 0 30px 0;">
-                    <table style="width: 680px;" class="padded_table" cellpadding=0 cellspacing=0>
-                        <tr>
-                            <td style="width: 125px; padding: 5px;"><label for="test_email_to"><?php echo __('Send test email'); ?></label></td>
-                            <td style="width: auto;"><input type="text" name="test_email_to" id="test_email_to" value="" style="width: 300px;"<?php echo ($access_level != \pachno\core\framework\Settings::ACCESS_FULL || !$module->isOutgoingNotificationsEnabled()) ? ' disabled' : ''; ?>></td>
-                        </tr>
-                        <tr>
-                            <td class="config-explanation" style="font-size: 13px;">
-                                <span class="faded_out">
-                                    <?php echo __('Enter an email address, and click "%send_test_email" to check if the email module is configured correctly', array('%send_test_email' => __('Send test email'))); ?>
-                                </span>
-                            </td>
-                        </tr>
-                    </table>
-                    <div style="text-align: right;">
-                        <input type="submit" id="submit_settings_button" style="padding: 0 10px 0 10px; font-size: 13px; font-weight: bold;" value="<?php echo __('Send test email'); ?>">
+            <form accept-charset="<?php echo \pachno\core\framework\Context::getI18n()->getCharset(); ?>" action="<?php echo make_url('mailing_testemail'); ?>" method="post" data-simple-submit id="mailing_send_test_email_form">
+                <div class="form-row header">
+                    <h3><?= __('Send test email'); ?></h3>
+                </div>
+                <div class="form-row">
+                    <div class="helper-text">
+                        <?= __('Click the "%send_test_email"-button to send a test email to your current email-address (%email)', ['%send_test_email' => __('Send test email'), '%email' => $pachno_user->getEmail()]); ?>
                     </div>
+                </div>
+                <div class="form-row submit-container">
+                    <button type="submit" class="button primary">
+                        <?= fa_image_tag('paper-plane', ['class' => 'icon'], 'far'); ?>
+                        <span><?= __('Send test email'); ?></span>
+                        <?= fa_image_tag('spinner', ['class' => 'fa-spin icon indicator']); ?>
+                    </button>
                 </div>
             </form>
         <?php endif; ?>

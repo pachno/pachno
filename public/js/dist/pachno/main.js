@@ -5269,6 +5269,21 @@ var fetchHelper = function fetchHelper(url, options) {
             _ui__WEBPACK_IMPORTED_MODULE_2__["default"].Message.success(json.message);
           }
 
+          if ($form !== undefined && json.new_values !== undefined) {
+            for (var field in json.new_values) {
+              if (!json.new_values.hasOwnProperty(field)) continue;
+              var $field = $form.find(".form-row[data-field=\"".concat(field, "\"]"));
+
+              if ($field.length) {
+                var $input = $field.find('input');
+
+                if ($input.prop('type') === 'text') {
+                  $input.val(json.new_values[field]);
+                }
+              }
+            }
+          }
+
           if (options.success) {
             processCommonAjaxPostEvents(options.success);
 
@@ -6098,9 +6113,35 @@ var doLogin = function doLogin() {//     var $form = $('#login_form'),
   //
 };
 
+var inviteUser = function inviteUser(event) {
+  event.preventDefault();
+  event.stopPropagation();
+  var $button = jquery__WEBPACK_IMPORTED_MODULE_0___default()(this);
+  var $row = $button.parents('.row');
+  var $table = $row.parents('.flexible-table');
+  var email = $row.data('email');
+  $row.addClass('submitting');
+  $button.attr('disabled', true);
+  _classes_pachno__WEBPACK_IMPORTED_MODULE_1__["default"].fetch(_classes_pachno__WEBPACK_IMPORTED_MODULE_1__["default"].data_url, {
+    method: 'POST',
+    data: {
+      say: 'invite-user',
+      email: email
+    }
+  }).then(function (json) {
+    $button.html(_classes_pachno__WEBPACK_IMPORTED_MODULE_1__["default"].UI.fa_image_tag('check', {
+      classes: 'icon'
+    }));
+  })["catch"](function () {
+    $button.removeAttr('disabled');
+    $row.removeClass('submitting');
+  });
+};
+
 var setupListeners = function setupListeners() {
   var $body = jquery__WEBPACK_IMPORTED_MODULE_0___default()('body');
   $body.on('click', _classes_pachno__WEBPACK_IMPORTED_MODULE_1__["default"].TRIGGERS.showLogin, showLogin);
+  $body.on('click', ".trigger-invite-user", inviteUser);
 };
 
 /* harmony default export */ __webpack_exports__["default"] = (setupListeners);
@@ -6203,6 +6244,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(jquery__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var _classes_pachno__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../classes/pachno */ "./js/classes/pachno.js");
 /* harmony import */ var _fetch__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./fetch */ "./js/helpers/fetch.js");
+/* harmony import */ var _widgets__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../widgets */ "./js/widgets/index.js");
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
@@ -6216,6 +6258,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
 function _iterableToArrayLimit(arr, i) { if (typeof Symbol === "undefined" || !(Symbol.iterator in Object(arr))) return; var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
 
 function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
+
 
 
 
@@ -6477,6 +6520,7 @@ var autoBackdropLink = function autoBackdropLink(event) {
     event.stopPropagation();
   }
 
+  Object(_widgets__WEBPACK_IMPORTED_MODULE_3__["clearPopupsAndButtons"])(event);
   var $button = jquery__WEBPACK_IMPORTED_MODULE_0___default()(this);
   $button.prop('disabled', true);
   $button.addClass('disabled');

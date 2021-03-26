@@ -162,10 +162,14 @@
         protected function _getPermissionslist()
         {
             $permissions = [];
-            $permissions['editwikimenu'] = ['description' => framework\Context::getI18n()->__('Can edit the wiki lefthand menu'), 'permission' => 'editwikimenu'];
-            $permissions[self::PERMISSION_READ_ARTICLE] = ['description' => framework\Context::getI18n()->__('Can access the project wiki'), 'permission' => self::PERMISSION_READ_ARTICLE];
-            $permissions[self::PERMISSION_EDIT_ARTICLE] = ['description' => framework\Context::getI18n()->__('Can write articles in project wiki'), 'permission' => self::PERMISSION_EDIT_ARTICLE];
-            $permissions[self::PERMISSION_DELETE_ARTICLE] = ['description' => framework\Context::getI18n()->__('Can delete articles from project wiki'), 'permission' => self::PERMISSION_DELETE_ARTICLE];
+//            $_available_permissions['project']['caneditdocumentation'] = ['description' => $i18n->__('Can create new documentation pages, edit existing documentation and add comments'), 'details' => []];
+//            $_available_permissions['project']['caneditdocumentation']['details']['caneditdocumentationown'] = ['description' => $i18n->__('Can create new documentation pages but not edit documentation created by others')];
+//            $_available_permissions['project']['caneditdocumentation']['details']['canpostandeditarticlecomments'] = ['description' => $i18n->__('Can see existing comments, post new, edit own and delete own comments')];
+//            $_available_permissions['project']['canpostandeditallarticlecomments'] = ['description' => $i18n->__('Can moderate documentation comments')];
+//            $permissions['editwikimenu'] = ['description' => framework\Context::getI18n()->__('Can edit the wiki lefthand menu'), 'permission' => 'editwikimenu'];
+//            $permissions[self::PERMISSION_READ_ARTICLE] = ['description' => framework\Context::getI18n()->__('Can access the project wiki'), 'permission' => self::PERMISSION_READ_ARTICLE];
+//            $permissions[self::PERMISSION_EDIT_ARTICLE] = ['description' => framework\Context::getI18n()->__('Can write articles in project wiki'), 'permission' => self::PERMISSION_EDIT_ARTICLE];
+//            $permissions[self::PERMISSION_DELETE_ARTICLE] = ['description' => framework\Context::getI18n()->__('Can delete articles from project wiki'), 'permission' => self::PERMISSION_DELETE_ARTICLE];
 
             return $permissions;
         }

@@ -1,6 +1,7 @@
 import $ from "jquery";
 import Pachno from "../classes/pachno";
 import {fetchHelper, formSubmitHelper} from "./fetch";
+import { clearPopupsAndButtons } from "../widgets";
 
 const tabSwitcher = function ($tab, target, $tabSwitcher, change_hash) {
     if (!change_hash) {
@@ -248,6 +249,8 @@ const autoBackdropLink = function (event) {
         event.preventDefault();
         event.stopPropagation();
     }
+
+    clearPopupsAndButtons(event);
     const $button = $(this);
     $button.prop('disabled', true);
     $button.addClass('disabled');

@@ -18,26 +18,26 @@
             </div>
             <div id="usersteamsgroups_menu_panes">
                 <div id="tab_users_pane" data-tab-id="users">
-                    <form action="<?= make_url('configure_users_find_user'); ?>" class="top-search-filters-container" method="post" data-simple-submit data-update-container="#users-results" id="find_users_form">
+                    <form action="<?= make_url('configure_users'); ?>" class="top-search-filters-container" method="post" data-simple-submit data-update-container="#users-results" id="find_users_form">
                         <div class="search-and-filters-strip">
                             <div class="search-strip">
                                 <div class="dropper-container">
                                     <button type="button" class="button secondary icon dropper"><?= fa_image_tag('ellipsis-v'); ?></button>
                                     <div class="dropdown-container from-left">
                                         <div class="list-mode">
-                                            <a href="javascript:void(0);" class="list-item trigger-find-users" data-url="<?= make_url('configure_users_find_user'); ?>?findstring=all">
+                                            <a href="javascript:void(0);" class="list-item trigger-find-users" data-url="<?= make_url('configure_users'); ?>?findstring=all">
                                                 <span class="name"><?= __('Show all users'); ?></span>
                                             </a>
-                                            <a href="javascript:void(0);" class="list-item trigger-find-users" data-url="<?= make_url('configure_users_find_user'); ?>?findstring=unactivated">
+                                            <a href="javascript:void(0);" class="list-item trigger-find-users" data-url="<?= make_url('configure_users'); ?>?findstring=unactivated">
                                                 <span class="name"><?= __('Show unactivated users'); ?></span>
                                             </a>
-                                            <a href="javascript:void(0);" class="list-item trigger-find-users" data-url="<?= make_url('configure_users_find_user'); ?>?findstring=newusers">
+                                            <a href="javascript:void(0);" class="list-item trigger-find-users" data-url="<?= make_url('configure_users'); ?>?findstring=newusers">
                                                 <span class="name"><?= __('Show newly created users'); ?></span>
                                             </a>
                                         </div>
                                     </div>
                                 </div>
-                                <input type="search" name="findstring" id="findusers" value="<?= $finduser; ?>" placeholder="<?= __('Enter user details here to find users'); ?>" class="filter_searchfield">
+                                <input type="search" name="findstring" id="findusers" value="" placeholder="<?= __('Enter user details here to find users'); ?>" class="filter_searchfield">
                                 <button type="submit" class="button secondary">
                                     <?= fa_image_tag('search', ['class' => 'icon']); ?>
                                     <span class="name"><?= __('Find'); ?></span>
@@ -59,7 +59,7 @@
                 '<?= __('The username you tried to create already exists. You can give this user access to the current scope by pressing "%yes" below. If you want to create a different user, press "%no" and enter a different username.', array('%yes' => __('yes'), '%no' => __('no'))); ?>',
                 {
                     yes: {
-                        click: function() {Pachno.Config.User.addToScope('<?= make_url('configure_users_import_user'); ?>');}
+                        click: function() {Pachno.Config.User.addToScope('<?= make_url('configure_users'); ?>?import=true');}
                     },
                     no: {click: Pachno.UI.Dialog.dismiss}
                 });
@@ -73,7 +73,7 @@
             </div>
             <div class="backdrop_detail_content">
                 <div class="form-container">
-                    <form action="<?= make_url('configure_users_add_user'); ?>" method="post" onsubmit="Pachno.Config.User.add('<?= make_url('configure_users_add_user'); ?>', import_cb);return false;" id="createuser_form">
+                    <form action="<?= make_url('configure_user', ['user_id' => 0]); ?>" method="post" data-simple-submit data-auto-close-container id="createuser_form">
                         <div class="form-row">
                             <input type="text" name="username" id="adduser_username" class="name-input-enhance" placeholder="<?= __('Enter the username here'); ?>">
                             <label for="adduser_username" class="required"><?= __('Username'); ?></label>

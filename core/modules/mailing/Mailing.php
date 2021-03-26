@@ -246,6 +246,33 @@
             $event->setProcessed();
         }
 
+        /**
+         * @Listener(module='core', identifier='userdata::inviteUser')
+         * @param Event $event
+         */
+        public function listen_inviteUser(Event $event)
+        {
+            if (!$this->isOutgoingNotificationsEnabled()) {
+                return;
+            }
+
+            $user = $event->getSubject();
+
+            if ($user->getEmail()) {
+                //                The following line is included for the i18n parser to pick up the translatable string:
+                //                __('You have been invited to collaborate');
+                $subject = 'You have been invited to collaborate';
+                $link_to_activate = $this->generateURL('activate', ['user' => str_replace('.', '%2E', $user->getUsername()), 'key' => $user->getActivationKey()]);
+                $parameters = compact('user', 'link_to_activate');
+                $messages = $this->getTranslatedMessages('user_invited', $parameters, [$user], $subject);
+
+                foreach ($messages as $message) {
+                    $this->sendMail($message);
+                }
+            }
+            $event->setProcessed();
+        }
+
         public function listen_registerUser(Event $event)
         {
             if (!$this->isOutgoingNotificationsEnabled()) {

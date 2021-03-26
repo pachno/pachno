@@ -8827,7 +8827,8 @@ header {
     flex-direction: row;
     align-items: stretch;
     justify-content: stretch; }
-    header .header-strip > a:not(.button):not(.closer):not(.list-item) {
+    header .header-strip > a:not(.button):not(.closer):not(.list-item),
+    header .header-strip .notifications-container > a {
       display: flex;
       flex-direction: row;
       align-items: center;
@@ -8837,13 +8838,17 @@ header {
       border: 5px solid transparent;
       text-decoration: none; }
       header .header-strip > a:not(.button):not(.closer):not(.list-item) .icon.fas,
-      header .header-strip > a:not(.button):not(.closer):not(.list-item) .icon.far {
+      header .header-strip > a:not(.button):not(.closer):not(.list-item) .icon.far,
+      header .header-strip .notifications-container > a .icon.fas,
+      header .header-strip .notifications-container > a .icon.far {
         flex: 0 0 auto;
         margin-right: .5em; }
-      header .header-strip > a:not(.button):not(.closer):not(.list-item) span {
+      header .header-strip > a:not(.button):not(.closer):not(.list-item) span,
+      header .header-strip .notifications-container > a span {
         white-space: nowrap;
         flex: 1 1 auto; }
-      header .header-strip > a:not(.button):not(.closer):not(.list-item).logo {
+      header .header-strip > a:not(.button):not(.closer):not(.list-item).logo,
+      header .header-strip .notifications-container > a.logo {
         font-size: 1.3em;
         color: #FFF;
         font-weight: 700;
@@ -8851,17 +8856,27 @@ header {
         letter-spacing: -1px;
         padding: .25em .75em;
         border: none; }
-        header .header-strip > a:not(.button):not(.closer):not(.list-item).logo img {
+        header .header-strip > a:not(.button):not(.closer):not(.list-item).logo img,
+        header .header-strip .notifications-container > a.logo img {
           height: 24px;
           padding-right: .3em; }
-      header .header-strip > a:not(.button):not(.closer):not(.list-item).selected {
+      header .header-strip > a:not(.button):not(.closer):not(.list-item).selected,
+      header .header-strip .notifications-container > a.selected {
         background-color: #FFF;
         color: #2B2D42;
         font-weight: 600;
         border-radius: 8px;
         border-color: #2B2D42; }
-        header .header-strip > a:not(.button):not(.closer):not(.list-item).selected.only-icon {
+        header .header-strip > a:not(.button):not(.closer):not(.list-item).selected.only-icon,
+        header .header-strip .notifications-container > a.selected.only-icon {
           padding: .5em .5em; }
+      header .header-strip > a:not(.button):not(.closer):not(.list-item).disabled .icon,
+      header .header-strip .notifications-container > a.disabled .icon {
+        opacity: .4; }
+      header .header-strip > a:not(.button):not(.closer):not(.list-item).disabled .count-badge,
+      header .header-strip .notifications-container > a.disabled .count-badge {
+        color: #FFF;
+        font-style: normal; }
     header .header-strip code {
       background-color: rgba(200, 200, 200, 0.3);
       border: none;
@@ -9207,6 +9222,8 @@ textarea.markItUpEditor:focus {
   align-items: center;
   border-radius: 5px;
   font-weight: 500; }
+  .message-box.hidden {
+    display: none; }
   .message-box.type-error {
     background-color: #AF3E4D;
     color: #FFF; }
@@ -9366,7 +9383,8 @@ textarea.markItUpEditor:focus {
   transition: box-shadow .25s ease-in-out, transform .25s ease-in-out; }
   .project-strip:hover {
     transform: translateY(-2px);
-    box-shadow: 0 3px 5px 0 rgba(27, 27, 36, 0.2); }
+    box-shadow: 0 3px 5px 0 rgba(27, 27, 36, 0.2);
+    z-index: 1; }
     .project-strip:hover + .subprojects-list {
       background-color: rgba(12, 216, 182, 0.2); }
   .project-strip .details {

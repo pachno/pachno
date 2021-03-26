@@ -258,6 +258,20 @@ export const fetchHelper = function (url, options) {
                         } else if (json && (json.message)) {
                             UI.Message.success(json.message);
                         }
+                        if ($form !== undefined && json.new_values !== undefined) {
+                            for (const field in json.new_values) {
+                                if (!json.new_values.hasOwnProperty(field))
+                                    continue;
+
+                                const $field = $form.find(`.form-row[data-field="${field}"]`);
+                                if ($field.length) {
+                                    const $input = $field.find('input');
+                                    if ($input.prop('type') === 'text') {
+                                        $input.val(json.new_values[field]);
+                                    }
+                                }
+                            }
+                        }
                         if (options.success) {
                             processCommonAjaxPostEvents(options.success);
                             if (options.success.callback) {

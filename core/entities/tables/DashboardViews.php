@@ -37,9 +37,9 @@
 
         const VIEW = 'dashboard_views.view';
 
-        const TID = 'dashboard_views.tid';
+        const TEAM_ID = 'dashboard_views.tid';
 
-        const PID = 'dashboard_views.pid';
+        const PROJECT_ID = 'dashboard_views.pid';
 
         const TARGET_TYPE = 'dashboard_views.target_type';
 
@@ -58,7 +58,7 @@
             if ($view['type']) {
                 $view_id = (array_key_exists('id', $view)) ? $view['id'] : 0;
                 $insertion = new Insertion();
-                $insertion->add(self::TID, $target_id);
+                $insertion->add(self::TEAM_ID, $target_id);
                 $insertion->add(self::TARGET_TYPE, $target_type);
                 $insertion->add(self::NAME, $view['type']);
                 $insertion->add(self::VIEW, $view_id);
@@ -70,7 +70,7 @@
         public function clearViews($target_id, $target_type)
         {
             $query = $this->getQuery();
-            $query->where(self::TID, $target_id);
+            $query->where(self::TEAM_ID, $target_id);
             $query->where(self::TARGET_TYPE, $target_type);
             $query->where(self::SCOPE, framework\Context::getScope()->getID());
             $this->rawDelete($query);
@@ -79,7 +79,7 @@
         public function getViews($target_id, $target_type)
         {
             $query = $this->getQuery();
-            $query->where(self::TID, $target_id);
+            $query->where(self::TEAM_ID, $target_id);
             $query->where(self::TARGET_TYPE, $target_type);
             $query->where(self::SCOPE, framework\Context::getScope()->getID());
             $query->addOrderBy(self::ID);

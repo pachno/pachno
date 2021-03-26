@@ -533,7 +533,7 @@
             $query->where(tables\Settings::NAME, $name);
             $query->where(tables\Settings::MODULE, $module);
             $query->where(tables\Settings::SCOPE, $scope);
-            $query->where(tables\Settings::UID, $uid);
+            $query->where(tables\Settings::USER_ID, $uid);
 
             tables\Settings::getTable()->rawDelete($query);
             unset(self::$_settings[$module][$name][$uid]);
@@ -1117,8 +1117,8 @@
                 //self::CONFIGURATION_SECTION_MODULES => []
             ];
 
-            if (Context::getScope()->getID() == 1) {
-                $config_sections['general'][self::CONFIGURATION_SECTION_SCOPES] = ['route' => 'configure_scopes', 'description' => $i18n->__('Scopes'), 'fa_style' => 'fas', 'fa_icon' => 'clone', 'details' => $i18n->__('Scopes are self-contained Pachno environments. Configure them here.')];
+            if (Context::getScope()->isDefault()) {
+                $config_sections['general'][self::CONFIGURATION_SECTION_SCOPES] = ['route' => 'configure_scopes', 'disabled' => true, 'description' => $i18n->__('Scopes'), 'fa_style' => 'fas', 'fa_icon' => 'clone', 'details' => $i18n->__('Scopes are self-contained Pachno environments. Configure them here.')];
             }
 
             $config_sections['general'][self::CONFIGURATION_SECTION_SETTINGS] = ['route' => 'configure_settings', 'description' => $i18n->__('Settings'), 'fa_style' => 'fas', 'fa_icon' => 'cog', 'details' => $i18n->__('Every setting in Pachno can be adjusted in this section.')];

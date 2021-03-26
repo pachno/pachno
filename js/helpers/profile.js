@@ -62,9 +62,36 @@ const doLogin = function () {
 //
 };
 
+const inviteUser = function (event) {
+    event.preventDefault();
+    event.stopPropagation();
+
+    const $button = $(this);
+    const $row = $button.parents('.row');
+    const $table = $row.parents('.flexible-table');
+    const email = $row.data('email');
+
+    $row.addClass('submitting');
+    $button.attr('disabled', true);
+
+    Pachno.fetch(Pachno.data_url, {
+        method: 'POST',
+        data: {
+            say: 'invite-user',
+            email
+        }
+    }).then((json) => {
+        $button.html(Pachno.UI.fa_image_tag('check', { classes: 'icon' }));
+    }).catch(() => {
+        $button.removeAttr('disabled');
+        $row.removeClass('submitting')
+    });
+};
+
 const setupListeners = function () {
     const $body = $('body');
     $body.on('click', Pachno.TRIGGERS.showLogin, showLogin)
+    $body.on('click', ".trigger-invite-user", inviteUser);
 }
 
 export default setupListeners;
