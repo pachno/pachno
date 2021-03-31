@@ -787,51 +787,28 @@
                 self::$_available_permissions['issues']['canvoteforissues'] = ['description' => $i18n->__('Can vote for issues')];
 
                 $arr = [
-                    'own' => $i18n->__('For own issues only: edit issue details, triage, close and delete issues'),
+                    Permissions::PERMISSION_OWN_SUFFIX => $i18n->__('For own issues only: edit issue details, triage, close and delete issues'),
                     '' => $i18n->__('For issues reported by anyone: edit issue details, triage, close and delete issues'),
                 ];
                 foreach ($arr as $suffix => $description) {
-                    self::$_available_permissions['issues']['caneditissue' . $suffix] = ['description' => $description, 'details' => []];
-                    self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['caneditissuebasic' . $suffix] = ['description' => $i18n->__('Can edit title, description and reproduction steps')];
+                    self::$_available_permissions['issues'][Permissions::PERMISSION_EDIT_ISSUES . $suffix] = ['description' => $description, 'details' => []];
+                    self::$_available_permissions['issues'][Permissions::PERMISSION_EDIT_ISSUES . $suffix]['details'][Permissions::PERMISSION_EDIT_ISSUES_BASIC . $suffix] = ['description' => $i18n->__('Can edit title, description and reproduction steps')];
+
+                    self::$_available_permissions['issues'][Permissions::PERMISSION_EDIT_ISSUES . $suffix]['details'][Permissions::PERMISSION_EDIT_ISSUES_TRIAGE . $suffix] = ['description' => $i18n->__('Can triage issues (edit category, priority, severity, reproducability, estimates)')];
+                    self::$_available_permissions['issues'][Permissions::PERMISSION_EDIT_ISSUES . $suffix]['details'][Permissions::PERMISSION_EDIT_ISSUES_TRANSITION . $suffix] = ['description' => $i18n->__('Can apply workflow actions (edit status, resolution, milestone, percent completed)')];
+                    self::$_available_permissions['issues'][Permissions::PERMISSION_EDIT_ISSUES . $suffix]['details'][Permissions::PERMISSION_EDIT_ISSUES_TIME_TRACKING . $suffix] = ['description' => $i18n->__('Can log time spent working on issues')];
+                    self::$_available_permissions['issues'][Permissions::PERMISSION_EDIT_ISSUES . $suffix]['details'][Permissions::PERMISSION_EDIT_ISSUES_ADDITIONAL . $suffix] = ['description' => $i18n->__('Can add/remove extra information (links and attachments)')];
+                    self::$_available_permissions['issues'][Permissions::PERMISSION_EDIT_ISSUES . $suffix]['details'][Permissions::PERMISSION_EDIT_ISSUES_COMMENTS . $suffix] = ['description' => $i18n->__('Can see existing comments, post new, edit own and delete own comments')];
 
                     if (!$suffix) {
-                        self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['caneditissuepeople' . $suffix] = ['description' => $i18n->__('Can edit people involved in the issue (poster, assignee, owner)'), 'details' => []];
-                        self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['caneditissuepeople' . $suffix]['details']['caneditissueposted_by' . $suffix] = ['description' => $i18n->__('Can edit issue poster')];
-                        self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['caneditissuepeople' . $suffix]['details']['caneditissueowned_by' . $suffix] = ['description' => $i18n->__('Can edit owner')];
-                        self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['caneditissuepeople' . $suffix]['details']['caneditissueassigned_to' . $suffix] = ['description' => $i18n->__('Can edit assignee')];
+                        self::$_available_permissions['issues'][Permissions::PERMISSION_EDIT_ISSUES]['details'][Permissions::PERMISSION_EDIT_ISSUES_PEOPLE] = ['description' => $i18n->__('Can edit people involved in the issue (poster, assignee, owner)')];
+                        self::$_available_permissions['issues'][Permissions::PERMISSION_EDIT_ISSUES]['details'][Permissions::PERMISSION_EDIT_ISSUES_MODERATE_COMMENTS] = ['description' => $i18n->__('Can moderate comments')];
+                        self::$_available_permissions['issues'][Permissions::PERMISSION_EDIT_ISSUES]['details'][Permissions::PERMISSION_EDIT_ISSUES_DELETE] = ['description' => $i18n->__('Can delete issue')];
                     }
-
-                    self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['caneditissuetriage' . $suffix] = ['description' => $i18n->__('Can triage issues (edit category, priority, severity, reproducability, estimates)'), 'details' => []];
-                    self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['caneditissuetriage' . $suffix]['details']['caneditissuecategory' . $suffix] = ['description' => $i18n->__('Can edit category')];
-                    self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['caneditissuetriage' . $suffix]['details']['caneditissuepriority' . $suffix] = ['description' => $i18n->__('Can edit priority')];
-                    self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['caneditissuetriage' . $suffix]['details']['caneditissueseverity' . $suffix] = ['description' => $i18n->__('Can edit severity')];
-                    self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['caneditissuetriage' . $suffix]['details']['caneditissuereproducability' . $suffix] = ['description' => $i18n->__('Can edit reproducability')];
-                    self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['caneditissuetriage' . $suffix]['details']['caneditissueuserpain' . $suffix] = ['description' => $i18n->__('Can edit user pain')];
-                    self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['caneditissuetriage' . $suffix]['details']['caneditissueestimated_time' . $suffix] = ['description' => $i18n->__('Can estimate issues')];
-                    self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['caneditissuetriage' . $suffix]['details']['canaddbuilds' . $suffix] = ['description' => $i18n->__('Can add and remove affected releases / versions')];
-                    self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['caneditissuetriage' . $suffix]['details']['canaddcomponents' . $suffix] = ['description' => $i18n->__('Can add and remove affected components')];
-                    self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['caneditissuetriage' . $suffix]['details']['canaddeditions' . $suffix] = ['description' => $i18n->__('Can add and remove affected editions')];
-                    self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['caneditissuetriage' . $suffix]['details']['canaddrelatedissues' . $suffix] = ['description' => $i18n->__('Can add and remove related issues')];
-                    self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['cantransitionissue' . $suffix] = ['description' => $i18n->__('Can apply workflow actions (edit status, resolution, milestone, percent completed)'), 'details' => []];
-                    self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['cantransitionissue' . $suffix]['details']['caneditissuestatus' . $suffix] = ['description' => $i18n->__('Can edit status separately')];
-                    self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['cantransitionissue' . $suffix]['details']['caneditissuemilestone' . $suffix] = ['description' => $i18n->__('Can set milestone separately')];
-                    self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['cantransitionissue' . $suffix]['details']['caneditissueresolution' . $suffix] = ['description' => $i18n->__('Can edit resolution separately')];
-                    self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['cantransitionissue' . $suffix]['details']['caneditissuepercent_complete' . $suffix] = ['description' => $i18n->__('Can edit percent complete separately')];
-                    self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['caneditissuespent_time' . $suffix] = ['description' => $i18n->__('Can log time spent working on issues')];
-                    self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['canaddextrainformationtoissues' . $suffix] = ['description' => $i18n->__('Can add/remove extra information (links and attachments)'), 'details' => []];
-                    self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['canaddextrainformationtoissues' . $suffix]['details']['canaddlinkstoissues' . $suffix] = ['description' => $i18n->__('Can add and remove links')];
-                    self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['canaddextrainformationtoissues' . $suffix]['details']['canaddfilestoissues' . $suffix] = ['description' => $i18n->__('Can add and remove attachments')];
-                    self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['canpostandeditissuecomments' . $suffix] = ['description' => $i18n->__('Can see existing comments, post new, edit own and delete own comments')];
-
-                    if (!$suffix) {
-                        self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['canpostseeandeditallissuecomments' . $suffix] = ['description' => $i18n->__('Can moderate comments')];
-                    }
-
-                    self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['candeleteissues' . $suffix] = ['description' => $i18n->__('Can delete issue')];
                 }
 
                 foreach ($arr as $suffix => $description) {
-                    self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['caneditissuecustomfields' . $suffix] = [
+                    self::$_available_permissions['issues'][Permissions::PERMISSION_EDIT_ISSUES . $suffix]['details'][Permissions::PERMISSION_EDIT_ISSUES_CUSTOM_FIELDS . $suffix] = [
                         'description' => $i18n->__('Can edit any custom fields'),
                         'details' => []
                     ];
@@ -839,17 +816,7 @@
 
                 foreach (CustomDatatype::getAll() as $cdf) {
                     foreach ($arr as $suffix => $description) {
-                        self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['caneditissuecustomfields' . $suffix]['details']['caneditissuecustomfields' . $cdf->getKey() . $suffix] = ['description' => $i18n->__('Can change custom field "%field_name"', ['%field_name' => $i18n->__($cdf->getDescription())])];
-                    }
-
-                    // Set permissions for custom option types
-                    if ($cdf->hasCustomOptions()) {
-                        $options = $cdf->getOptions();
-                        foreach ($options as $option) {
-                            foreach ($arr as $suffix => $description) {
-                                self::$_available_permissions['issues']['caneditissue' . $suffix]['details']['set_datatype_' . $option->getID() . $suffix] = ['description' => $i18n->__('Can change issue field to "%option_name"', ['%option_name' => $i18n->__($option->getValue())])];
-                            }
-                        }
+                        self::$_available_permissions['issues'][Permissions::PERMISSION_EDIT_ISSUES . $suffix]['details']['caneditissuecustomfields' . $suffix]['details']['caneditissuecustomfields' . $cdf->getKey() . $suffix] = ['description' => $i18n->__('Can change custom field "%field_name"', ['%field_name' => $i18n->__($cdf->getDescription())])];
                     }
                 }
 
@@ -1239,8 +1206,8 @@
             $key = 'config';
 
             foreach (self::$_available_permission_paths as $permission_key => $permissions) {
-                if ($permission_key == 'config')
-                    continue;
+//                if ($permission_key == 'config')
+//                    continue;
 
                 if (array_key_exists($permission, $permissions)) {
                     $key = $permission_key;
@@ -1248,14 +1215,14 @@
                 }
             }
 
-            if ($key != 'config') {
-                foreach (self::$_available_permission_paths[$key][$permission] as $parent_permission) {
-                    $value = self::checkPermission($module, $parent_permission, $target_id, $uid, $gid, $team_ids);
-                    if ($value !== null) {
-                        return $value;
-                    }
+//            if ($key != 'config') {
+            foreach (self::$_available_permission_paths[$key][$permission] as $parent_permission) {
+                $value = self::checkPermission($module, $parent_permission, $target_id, $uid, $gid, $team_ids);
+                if ($value !== null) {
+                    return $value;
                 }
             }
+//            }
 
             return self::checkPermission($module, $permission, $target_id, $uid, $gid, $team_ids);
         }

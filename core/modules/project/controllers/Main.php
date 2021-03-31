@@ -281,7 +281,6 @@
                 if ($issue instanceof entities\Issue) {
                     switch ($request['detail']) {
                         case 'color':
-                            $this->forward403unless($issue->canEditColor());
                             $issue->setCoverColor($request['color']);
                             $issue->save();
 

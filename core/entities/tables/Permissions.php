@@ -111,6 +111,30 @@
 
         const PERMISSION_MANAGE_PROJECT_RELEASES = 'canmanageprojectreleases';
 
+        const PERMISSION_EDIT_ISSUES = 'caneditissue';
+
+        const PERMISSION_OWN_SUFFIX = 'own';
+
+        const PERMISSION_EDIT_ISSUES_BASIC = 'caneditissuebasic';
+
+        const PERMISSION_EDIT_ISSUES_PEOPLE = 'caneditissuepeople';
+
+        const PERMISSION_EDIT_ISSUES_TRIAGE = 'caneditissuetriage';
+
+        const PERMISSION_EDIT_ISSUES_TRANSITION = 'cantransitionissue';
+
+        const PERMISSION_EDIT_ISSUES_TIME_TRACKING = 'caneditissuespent_time';
+
+        const PERMISSION_EDIT_ISSUES_ADDITIONAL = 'canaddextrainformationtoissues';
+
+        const PERMISSION_EDIT_ISSUES_COMMENTS = 'canpostandeditissuecomments';
+
+        const PERMISSION_EDIT_ISSUES_MODERATE_COMMENTS = 'canpostseeandeditallissuecomments';
+
+        const PERMISSION_EDIT_ISSUES_DELETE = 'candeleteissues';
+
+        const PERMISSION_EDIT_ISSUES_CUSTOM_FIELDS = 'caneditissuecustomfields';
+
         public function getAll($scope_id = null)
         {
             $scope_id = ($scope_id === null) ? framework\Context::getScope()->getID() : $scope_id;
@@ -256,7 +280,9 @@
             foreach (Project::getDefaultPermissions() as $permission) {
                 $admin_group->addPermission($permission, 'core', $scope_id);
             }
-            $admin_group->addPermission('caneditissue', 'core', $scope_id);
+
+            $admin_group->addPermission(Permissions::PERMISSION_EDIT_ISSUES, 'core', $scope_id);
+            $admin_group->addPermission(Permissions::PERMISSION_SAVE_CONFIGURATION, 'core', $scope_id);
         }
 
         public function setPermission($user_id, $group_id, $team_id, $module, $permission_type, $target_id, $scope = null, $role_id = null)

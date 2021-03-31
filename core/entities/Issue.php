@@ -1430,7 +1430,7 @@
 
         public function isWorkflowTransitionsAvailable()
         {
-            return $this->getProject()->isArchived() ? false : $this->_permissionCheck('cantransitionissue');
+            return $this->getProject()->isArchived() ? false : $this->_permissionCheck(Permissions::PERMISSION_EDIT_ISSUES_TRANSITION);
         }
 
         /**
@@ -1438,23 +1438,24 @@
          * check for the equivalent "*own" permission if the issue is posted
          * by the same user
          *
-         * @param string $key The permission key to check for
-         * @param boolean $exclusive Whether to perform a similar check for "own"
+         * @param string $permission_key The permission key to check for
+         * @param string $check_own_permissions Whether to also do a check for if the user can perform the action on own issues
          *
          * @return boolean
          */
-        protected function _permissionCheck($key, $exclusive = false, $defaultPermissiveSetting = true)
+        protected function _permissionCheck($permission_key, $check_own_permissions = true)
         {
             if (Context::getUser()->isGuest()) return false;
-            if (isset($this->_can_permission_cache[$key])) return $this->_can_permission_cache[$key];
-            $permitted = ($this->isInvolved() && !$exclusive) ? $this->getProject()->permissionCheck($key . 'own') : null;
-            $permitted = ($permitted !== null) ? $permitted : $this->getProject()->permissionCheck($key, !$this->isInvolved());
 
-            if ($defaultPermissiveSetting) {
-                $permitted = ($permitted !== null) ? $permitted : false;
+            if (isset($this->_can_permission_cache[$permission_key])) return $this->_can_permission_cache[$permission_key];
+
+            $permitted = $this->getProject()->permissionCheck($permission_key);
+            if ($permitted === null && $check_own_permissions && $this->isInvolved()) {
+                $permitted = $this->getProject()->permissionCheck($permission_key . Permissions::PERMISSION_OWN_SUFFIX);
             }
+            $permitted = $permitted ?? false;
 
-            $this->_can_permission_cache[$key] = $permitted;
+            $this->_can_permission_cache[$permission_key] = $permitted;
 
             return $permitted;
         }
@@ -1758,7 +1759,7 @@
          */
         public function canEditAccessPolicy()
         {
-            return $this->_permissionCheck('canlockandeditlockedissues', true);
+            return $this->_permissionCheck(Permissions::PERMISSION_EDIT_ISSUES_BASIC, false);
         }
 
         /**
@@ -1768,7 +1769,7 @@
          */
         public function canEditIssueDetails()
         {
-            return $this->_permissionCheck('caneditissuebasic');
+            return $this->_permissionCheck(Permissions::PERMISSION_EDIT_ISSUES_BASIC);
         }
 
         /**
@@ -1778,7 +1779,7 @@
          */
         public function canEditTitle()
         {
-            return $this->_permissionCheck('caneditissuetitle');
+            return $this->_permissionCheck(Permissions::PERMISSION_EDIT_ISSUES_BASIC);
         }
 
         /**
@@ -1788,7 +1789,7 @@
          */
         public function canEditIssuetype()
         {
-            return $this->_permissionCheck('caneditissuebasic');
+            return $this->_permissionCheck(Permissions::PERMISSION_EDIT_ISSUES_BASIC);
         }
 
         /**
@@ -1798,7 +1799,7 @@
          */
         public function canEditUserPain()
         {
-            return $this->_permissionCheck('caneditissueuserpain');
+            return $this->_permissionCheck(Permissions::PERMISSION_EDIT_ISSUES_TRIAGE);
         }
 
         /**
@@ -1808,7 +1809,7 @@
          */
         public function canEditDescription()
         {
-            return $this->_permissionCheck('caneditissuedescription');
+            return $this->_permissionCheck(Permissions::PERMISSION_EDIT_ISSUES_BASIC);
         }
 
         /**
@@ -1818,7 +1819,7 @@
          */
         public function canEditShortname()
         {
-            return $this->_permissionCheck('caneditissueshortname');
+            return $this->_permissionCheck(Permissions::PERMISSION_EDIT_ISSUES_BASIC);
         }
 
         /**
@@ -1828,7 +1829,7 @@
          */
         public function canEditReproductionSteps()
         {
-            return $this->_permissionCheck('caneditissuereproduction_steps');
+            return $this->_permissionCheck(Permissions::PERMISSION_EDIT_ISSUES_BASIC);
         }
 
         /**
@@ -1838,7 +1839,7 @@
          */
         public function canEditIssue()
         {
-            return $this->_permissionCheck('caneditissue', true);
+            return $this->_permissionCheck(Permissions::PERMISSION_EDIT_ISSUES);
         }
 
         /**
@@ -1848,7 +1849,7 @@
          */
         public function canEditPostedBy()
         {
-            return $this->_permissionCheck('caneditissueposted_by');
+            return $this->_permissionCheck(Permissions::PERMISSION_EDIT_ISSUES_PEOPLE, false);
         }
 
         /**
@@ -1858,7 +1859,7 @@
          */
         public function canEditAssignee()
         {
-            return $this->_permissionCheck('caneditissueassigned_to');
+            return $this->_permissionCheck(Permissions::PERMISSION_EDIT_ISSUES_PEOPLE, false);
         }
 
         /**
@@ -1868,7 +1869,7 @@
          */
         public function canEditOwner()
         {
-            return $this->_permissionCheck('caneditissueowned_by');
+            return $this->_permissionCheck(Permissions::PERMISSION_EDIT_ISSUES_PEOPLE, false);
         }
 
         /**
@@ -1878,12 +1879,7 @@
          */
         public function canEditStatus()
         {
-            return $this->_canEditIssueField("status");
-        }
-
-        protected function _canEditIssueField($type)
-        {
-            return $this->_permissionCheck('caneditissue' . $type) || ($this->isInvolved() && $this->_permissionCheck("set_datatype_" . $type));
+            return $this->_permissionCheck(Permissions::PERMISSION_EDIT_ISSUES_TRANSITION);
         }
 
         /**
@@ -1893,7 +1889,7 @@
          */
         public function canEditCategory()
         {
-            return $this->_canEditIssueField("category");
+            return $this->_permissionCheck(Permissions::PERMISSION_EDIT_ISSUES_TRIAGE);
         }
 
         /**
@@ -1903,7 +1899,7 @@
          */
         public function canEditResolution()
         {
-            return $this->_canEditIssueField("resolution");
+            return $this->_permissionCheck(Permissions::PERMISSION_EDIT_ISSUES_TRIAGE);
         }
 
         /**
@@ -1913,7 +1909,7 @@
          */
         public function canEditReproducability()
         {
-            return $this->_canEditIssueField("reproducability");
+            return $this->_permissionCheck(Permissions::PERMISSION_EDIT_ISSUES_TRIAGE);
         }
 
         /**
@@ -1923,7 +1919,7 @@
          */
         public function canEditSeverity()
         {
-            return $this->_canEditIssueField("severity");
+            return $this->_permissionCheck(Permissions::PERMISSION_EDIT_ISSUES_TRIAGE);
         }
 
         /**
@@ -1933,7 +1929,7 @@
          */
         public function canEditPriority()
         {
-            return $this->_canEditIssueField("priority");
+            return $this->_permissionCheck(Permissions::PERMISSION_EDIT_ISSUES_TRIAGE);
         }
 
         /**
@@ -1943,7 +1939,7 @@
          */
         public function canEditEstimatedTime()
         {
-            return $this->_permissionCheck('caneditissueestimated_time');
+            return $this->_permissionCheck(Permissions::PERMISSION_EDIT_ISSUES_TRIAGE);
         }
 
         /**
@@ -1953,7 +1949,7 @@
          */
         public function canEditPercentage()
         {
-            return $this->_permissionCheck('caneditissuepercent_complete');
+            return $this->_permissionCheck(Permissions::PERMISSION_EDIT_ISSUES_TRANSITION);
         }
 
         /**
@@ -1963,7 +1959,7 @@
          */
         public function canEditMilestone()
         {
-            return $this->_permissionCheck('caneditissuemilestone');
+            return $this->_permissionCheck(Permissions::PERMISSION_EDIT_ISSUES_TRANSITION);
         }
 
         /**
@@ -1973,7 +1969,7 @@
          */
         public function canDeleteIssue()
         {
-            return $this->_permissionCheck('candeleteissues', false);
+            return $this->_permissionCheck(Permissions::PERMISSION_EDIT_ISSUES_DELETE, false);
         }
 
         /**
@@ -1983,7 +1979,7 @@
          */
         public function canEditCustomFields($key = '')
         {
-            $permission_key = 'caneditissuecustomfields' . $key;
+            $permission_key = Permissions::PERMISSION_EDIT_ISSUES_CUSTOM_FIELDS . $key;
 
             return $this->_permissionCheck($permission_key);
         }
@@ -1995,7 +1991,7 @@
          */
         public function canCloseIssue()
         {
-            return $this->_permissionCheck('cancloseissues');
+            return $this->_permissionCheck(Permissions::PERMISSION_EDIT_ISSUES_TRANSITION);
         }
 
         /**
@@ -2005,7 +2001,7 @@
          */
         public function canReopenIssue()
         {
-            return $this->_permissionCheck('canreopenissues');
+            return $this->_permissionCheck(Permissions::PERMISSION_EDIT_ISSUES_TRANSITION);
         }
 
         /**
@@ -2015,7 +2011,7 @@
          */
         public function canPostComments()
         {
-            return $this->_permissionCheck('canpostcomments');
+            return $this->_permissionCheck(Permissions::PERMISSION_EDIT_ISSUES_COMMENTS) || $this->_permissionCheck(Permissions::PERMISSION_EDIT_ISSUES_MODERATE_COMMENTS);
         }
 
         /**
@@ -2025,7 +2021,7 @@
          */
         public function canAttachFiles()
         {
-            return $this->_permissionCheck('canaddfilestoissues');
+            return $this->_permissionCheck(Permissions::PERMISSION_EDIT_ISSUES_ADDITIONAL);
         }
 
         /**
@@ -2035,7 +2031,7 @@
          */
         public function canAddRelatedIssues()
         {
-            return $this->_permissionCheck('canaddrelatedissues');
+            return $this->_permissionCheck(Permissions::PERMISSION_EDIT_ISSUES_TRIAGE);
         }
 
         /**
@@ -2045,7 +2041,7 @@
          */
         public function canEditAffectedComponents()
         {
-            return $this->_permissionCheck('canaddcomponents');
+            return $this->_permissionCheck(Permissions::PERMISSION_EDIT_ISSUES_TRIAGE);
         }
 
         /**
@@ -2055,7 +2051,7 @@
          */
         public function canEditAffectedEditions()
         {
-            return $this->_permissionCheck('canaddeditions');
+            return $this->_permissionCheck(Permissions::PERMISSION_EDIT_ISSUES_TRIAGE);
         }
 
         /**
@@ -2065,7 +2061,7 @@
          */
         public function canEditAffectedBuilds()
         {
-            return $this->_permissionCheck('canaddbuilds');
+            return $this->_permissionCheck(Permissions::PERMISSION_EDIT_ISSUES_TRIAGE);
         }
 
         /**
@@ -2075,7 +2071,7 @@
          */
         public function canRemoveAttachments()
         {
-            return $this->_permissionCheck('canremovefilesfromissues');
+            return $this->_permissionCheck(Permissions::PERMISSION_EDIT_ISSUES_ADDITIONAL, false);
         }
 
         public function canRemoveAttachment(User $user, File $file)
@@ -2099,29 +2095,7 @@
          */
         public function canAttachLinks()
         {
-            return $this->_permissionCheck('canaddlinkstoissues');
-        }
-
-        /**
-         * Return if the user can start working on the issue
-         *
-         * @return boolean
-         */
-        public function canStartWorkingOnIssue()
-        {
-            if ($this->isBeingWorkedOn()) return false;
-
-            return $this->canEditSpentTime();
-        }
-
-        /**
-         * Return whether or not this issue is being worked on by a user
-         *
-         * @return boolean
-         */
-        public function isBeingWorkedOn()
-        {
-            return ($this->getUserWorkingOnIssue() instanceof User) ? true : false;
+            return $this->_permissionCheck(Permissions::PERMISSION_EDIT_ISSUES_ADDITIONAL);
         }
 
         /**
@@ -2141,7 +2115,7 @@
          */
         public function canEditSpentTime()
         {
-            return $this->_permissionCheck('caneditissuespent_time');
+            return $this->_permissionCheck(Permissions::PERMISSION_EDIT_ISSUES_TIME_TRACKING);
         }
 
         /**
@@ -4838,16 +4812,6 @@
         public function getMilestoneOrder()
         {
             return $this->_milestone_order;
-        }
-
-        /**
-         * Return if the user can edit scrum color
-         *
-         * @return boolean
-         */
-        public function canEditColor()
-        {
-            return $this->_permissionCheck('caneditissuecolor');
         }
 
         /**
