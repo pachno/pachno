@@ -197,7 +197,7 @@
          */
         public function preExecute(framework\Request $request, $action)
         {
-            $this->forward403unless(Context::getUser()->hasPageAccess('search') && Context::getUser()->canSearchForIssues());
+            $this->forward403unless(Context::getUser()->hasPermission(tables\Permissions::PERMISSION_PAGE_ACCESS_SEARCH));
 
             if ($project_key = $request['project_key']) {
                 $project = entities\Project::getByKey($project_key);
@@ -208,7 +208,7 @@
             }
 
             if ($project instanceof entities\Project) {
-                $this->forward403unless(Context::getUser()->hasProjectPageAccess('project_issues', $project));
+                $this->forward403unless(Context::getUser()->hasProjectPermission(tables\Permissions::PERMISSION_PROJECT_ACCESS_ISSUES, $project));
                 Context::getResponse()->setPage('project_issues');
                 Context::setCurrentProject($project);
             }
@@ -233,7 +233,7 @@
          */
         public function runQuickSearch(framework\Request $request)
         {
-            if ($this->getUser()->canAccessConfigurationPage(framework\Settings::CONFIGURATION_SECTION_USERS)) {
+            if ($this->getUser()->canAccessConfigurationPage()) {
                 $this->found_users = tables\Users::getTable()->findInConfig($this->searchterm, 10, false);
                 $this->found_teams = tables\Teams::getTable()->quickfind($this->searchterm);
                 $this->found_clients = tables\Clients::getTable()->quickfind($this->searchterm);

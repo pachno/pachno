@@ -136,10 +136,10 @@
         public function getSchemeVisibleFieldsArrayByIssuetypeID($scheme_id, $issuetype_id)
         {
             $res = $this->getBySchemeIDandIssuetypeID($scheme_id, $issuetype_id);
-            $retval = [];
+            $fields = [];
             if ($res) {
                 while ($row = $res->getNextRow()) {
-                    $retval[$row->get(IssueFields::FIELD_KEY)] = [
+                    $fields[$row->get(IssueFields::FIELD_KEY)] = [
                         'label' => $row->get(CustomFields::FIELD_DESCRIPTION),
                         'required' => (bool)$row->get(IssueFields::REQUIRED),
                         'reportable' => (bool)$row->get(IssueFields::REPORTABLE),
@@ -149,7 +149,7 @@
                 }
             }
 
-            return $retval;
+            return $fields;
         }
 
         public function getBySchemeIDandIssuetypeID($scheme_id, $issuetype_id)

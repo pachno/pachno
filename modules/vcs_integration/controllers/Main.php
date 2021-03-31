@@ -2,6 +2,7 @@
 
     namespace pachno\modules\vcs_integration\controllers;
 
+    use pachno\core\entities\tables\Permissions;
     use pachno\core\framework,
         pachno\core\entities\Project,
         pachno\modules\vcs_integration\Vcs_integration,
@@ -46,7 +47,7 @@
 
         public function runProjectCommits(framework\Request $request)
         {
-            $this->forward403unless($this->_checkProjectPageAccess('project_commits'));
+            $this->forward403unless($this->_checkProjectAccess(Permissions::PERMISSION_PROJECT_ACCESS_CODE));
             $this->selected_project = Project::getByKey($request['project_key']);
             framework\Context::setCurrentProject($this->selected_project);
 
@@ -102,7 +103,7 @@
 
         public function runProjectCommitsMore(framework\Request $request)
         {
-            $this->forward403unless($this->_checkProjectPageAccess('project_commits') || $request->isPost());
+            $this->forward403unless($this->_checkProjectAccess(Permissions::PERMISSION_PROJECT_ACCESS_CODE));
 
             $this->selected_project = Project::getByKey($request['project_key']);
             framework\Context::setCurrentProject($this->selected_project);

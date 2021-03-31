@@ -1,9 +1,9 @@
-# Pachno open source project management and ticket handling 
+# Pachno open collaboration platform 
 
 [![Build Status](https://travis-ci.org/pachno/pachno.png?branch=master)](https://travis-ci.org/pachno/pachno) 
 [![Join the chat at https://gitter.im/pachno/general](https://badges.gitter.im/pachno/general.svg)](https://gitter.im/pachno/general?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-Pachno is an open source system for issue tracking, project management and documentation, as well as a platform for open collaboration. 
+Pachno is an open source platform for collaboration: issue tracking, project management, documentation, code and more. 
 
 With Pachno you get:
 * A powerful documentation editor for all your teams documentation needs

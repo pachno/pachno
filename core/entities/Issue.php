@@ -6,6 +6,7 @@
     use Exception;
     use pachno\core\entities\common\Identifiable;
     use pachno\core\entities\common\Ownable;
+    use pachno\core\entities\tables\Permissions;
     use pachno\core\entities\traits\Commentable;
     use pachno\core\framework;
     use pachno\core\framework\Context;
@@ -803,22 +804,19 @@
 
                 return true;
             }
-            if ($user->hasPermission('canseegroupissues', 0, 'core') &&
+            if ($user->hasPermission(Permissions::PERMISSION_ACCESS_GROUP_ISSUES) &&
                 $this->getPostedBy() instanceof User &&
                 $this->getPostedBy()->getGroupID() == $user->getGroupID()) {
                 Logging::log('done checking, allowed since this user is in same group as user that posted it');
 
                 return true;
             }
-            if ($user->hasPermission('canseeallissues', $this->getProjectID(), 'core') === true) {
+            if ($user->hasPermission(Permissions::PERMISSION_PROJECT_ACCESS_ALL_ISSUES, $this->getProjectID()) === true) {
+                Logging::log('done checking, allowed since this user may see all issues in this project');
 
-                if ($this->getProject()->hasAccess($user)) {
-                    Logging::log('done checking, allowed since this user may see all issues in this project');
-
-                    return true;
-                }
+                return true;
             }
-            if ($user->hasPermission('canseeallissues', 0, 'core') === false) {
+            if ($user->hasPermission(Permissions::PERMISSION_PROJECT_ACCESS_ALL_ISSUES) === false) {
                 Logging::log('done checking, not allowed to access issues not posted by themselves');
 
                 return false;
@@ -1449,7 +1447,7 @@
         {
             if (Context::getUser()->isGuest()) return false;
             if (isset($this->_can_permission_cache[$key])) return $this->_can_permission_cache[$key];
-            $permitted = ($this->isInvolved() && !$exclusive) ? $this->getProject()->permissionCheck($key . 'own', true) : null;
+            $permitted = ($this->isInvolved() && !$exclusive) ? $this->getProject()->permissionCheck($key . 'own') : null;
             $permitted = ($permitted !== null) ? $permitted : $this->getProject()->permissionCheck($key, !$this->isInvolved());
 
             if ($defaultPermissiveSetting) {
@@ -3538,12 +3536,12 @@
         public function addAffectedBuild($build)
         {
             if ($this->getProject() && $this->getProject()->isBuildsEnabled()) {
-                $retval = tables\IssueAffectsBuild::getTable()->setIssueAffected($this->getID(), $build->getID());
-                if ($retval !== false) {
+                $affectedBuildId = tables\IssueAffectsBuild::getTable()->setIssueAffected($this->getID(), $build->getID());
+                if ($affectedBuildId !== false) {
                     $this->touch();
                     $this->addLogEntry(LogItem::ACTION_ISSUE_ADD_AFFECTED_ITEM, Context::getI18n()->__("'%release_name' added", ['%release_name' => $build->getName()]));
 
-                    return ['a_id' => $retval, 'build' => $build, 'confirmed' => 0, 'status' => null];
+                    return ['a_id' => $affectedBuildId, 'build' => $build, 'confirmed' => 0, 'status' => null];
                 }
                 foreach ($this->getChildIssues() as $issue) {
                     $issue->addAffectedBuild($build);
@@ -3563,12 +3561,12 @@
         public function addAffectedEdition($edition)
         {
             if ($this->getProject() && $this->getProject()->isEditionsEnabled()) {
-                $retval = tables\IssueAffectsEdition::getTable()->setIssueAffected($this->getID(), $edition->getID());
-                if ($retval !== false) {
+                $affectedEditionId = tables\IssueAffectsEdition::getTable()->setIssueAffected($this->getID(), $edition->getID());
+                if ($affectedEditionId !== false) {
                     $this->touch();
                     $this->addLogEntry(LogItem::ACTION_ISSUE_ADD_AFFECTED_ITEM, Context::getI18n()->__("'%edition_name' added", ['%edition_name' => $edition->getName()]));
 
-                    return ['a_id' => $retval, 'edition' => $edition, 'confirmed' => 0, 'status' => null];
+                    return ['a_id' => $affectedEditionId, 'edition' => $edition, 'confirmed' => 0, 'status' => null];
                 }
             }
 
@@ -3585,12 +3583,12 @@
         public function addAffectedComponent($component)
         {
             if ($this->getProject() && $this->getProject()->isComponentsEnabled()) {
-                $retval = tables\IssueAffectsComponent::getTable()->setIssueAffected($this->getID(), $component->getID());
-                if ($retval !== false) {
+                $affectedComponentId = tables\IssueAffectsComponent::getTable()->setIssueAffected($this->getID(), $component->getID());
+                if ($affectedComponentId !== false) {
                     $this->touch();
                     $this->addLogEntry(LogItem::ACTION_ISSUE_ADD_AFFECTED_ITEM, Context::getI18n()->__("'%component_name' added", ['%component_name' => $component->getName()]));
 
-                    return ['a_id' => $retval, 'component' => $component, 'confirmed' => 0, 'status' => null];
+                    return ['a_id' => $affectedComponentId, 'component' => $component, 'confirmed' => 0, 'status' => null];
                 }
             }
 
@@ -4291,7 +4289,7 @@
          */
         public function isSpentTimeVisible()
         {
-            return (bool)($this->getProject()->canSeeTimeSpent() && ($this->isFieldVisible('spent_time') || $this->hasSpentTime()));
+            return (bool)($this->getProject()->canSeeTimeLogging() && ($this->isFieldVisible('spent_time') || $this->hasSpentTime()));
         }
 
         /**
@@ -5626,16 +5624,16 @@
             if (array_key_exists('minutes', $time) && ($time['minutes'] > 0 || !$strict)) {
                 $values[] = ($time['minutes'] == 1) ? $i18n->__('1 minute') : $i18n->__('%number_of minutes', ['%number_of' => $time['minutes']]);
             }
-            $retval = join(', ', $values);
+            $text = join(', ', $values);
 
             if (array_key_exists('points', $time) && ($time['points'] > 0 || !$strict)) {
                 if (!empty($values)) {
-                    $retval .= ' / ';
+                    $text .= ' / ';
                 }
-                $retval .= ($time['points'] == 1) ? $i18n->__('1 point') : $i18n->__('%number_of points', ['%number_of' => $time['points']]);
+                $text .= ($time['points'] == 1) ? $i18n->__('1 point') : $i18n->__('%number_of points', ['%number_of' => $time['points']]);
             }
 
-            return ($retval != '') ? $retval : $i18n->__('No time');
+            return ($text != '') ? $text : $i18n->__('No time');
         }
 
         public function checkTaskStates()

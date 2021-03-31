@@ -133,7 +133,7 @@
             $this->showitems = false;
             $this->iscustom = false;
             $types = entities\Datatype::getTypes();
-            $this->access_level = framework\Settings::getAccessLevel(framework\Settings::CONFIGURATION_SECTION_ISSUEFIELDS);
+            $this->access_level = framework\Settings::getConfigurationAccessLevel(framework\Settings::CONFIGURATION_SECTION_ISSUEFIELDS);
 
             if (array_key_exists($this->type, $types)) {
                 $this->items = call_user_func([$types[$this->type], 'getAll']);

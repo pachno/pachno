@@ -138,12 +138,6 @@
 
         const SETTING_HEADER_LINK = 'header_link';
 
-        const SETTING_IS_SINGLE_PROJECT_TRACKER = 'singleprojecttracker';
-
-        const SETTING_KEEP_COMMENT_TRAIL_CLEAN = 'cleancomments';
-
-        const SETTING_LICENSE_ID = 'license_identifier';
-
         const SETTING_NOTIFICATION_POLL_INTERVAL = 'notificationpollinterval';
 
         const SETTING_OFFLINESTATE = 'offlinestate';
@@ -646,11 +640,6 @@
         public static function isHeaderHtmlFormattingAllowed()
         {
             return (bool)self::get(self::SETTING_SITE_NAME_HTML);
-        }
-
-        public static function isSingleProjectTracker()
-        {
-            return (bool)self::get(self::SETTING_IS_SINGLE_PROJECT_TRACKER);
         }
 
         public static function getThemeName()
@@ -1164,9 +1153,9 @@
             return $config_sections;
         }
 
-        public static function getAccessLevel($section, $module = 'core')
+        public static function getConfigurationAccessLevel()
         {
-            return (Context::getUser()->canSaveConfiguration($section, $module)) ? self::ACCESS_FULL : self::ACCESS_READ;
+            return (Context::getUser()->canSaveConfiguration()) ? self::ACCESS_FULL : self::ACCESS_READ;
         }
 
         public static function isStable(): bool

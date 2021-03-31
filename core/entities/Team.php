@@ -212,7 +212,7 @@
 
         public function hasAccess()
         {
-            return (bool)(framework\Context::getUser()->hasPageAccess('teamlist') || framework\Context::getUser()->isMemberOfTeam($this));
+            return (bool) framework\Context::getUser()->isMemberOfTeam($this);
         }
 
         /**

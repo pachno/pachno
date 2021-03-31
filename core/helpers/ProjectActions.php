@@ -36,11 +36,10 @@
             } else {
                 try {
                     if ($project_id)
-                        $this->selected_project = entities\Project::getB2DBTable()->selectById($project_id);
+                        $this->selected_project = tables\Projects::getTable()->selectById($project_id);
                     elseif ($project_key)
                         $this->selected_project = entities\Project::getByKey($project_key);
-                } catch (Exception $e) {
-                }
+                } catch (Exception $e) { }
             }
 
             if (!$this->selected_project instanceof entities\Project)
@@ -183,9 +182,13 @@
             }
         }
 
-        protected function _checkProjectPageAccess($page)
+        /**
+         * @param $permission
+         * @return bool
+         */
+        protected function _checkProjectAccess($permission): bool
         {
-            return framework\Context::getUser()->hasProjectPageAccess($page, $this->selected_project);
+            return $this->getUser()->hasProjectPermission($permission, $this->selected_project);
         }
 
 

@@ -255,7 +255,7 @@
                 if (!$this->article instanceof Article) {
                     throw new Exception($this->getI18n()->__('This page does not exist'));
                 }
-                if (!framework\Context::getModule('publish')->canUserDeleteArticle($this->article)) {
+                if (!framework\Context::getModule('publish')->canUserEditArticle($this->article)) {
                     throw new Exception($this->getI18n()->__('You do not have permission to delete this article'));
                 }
                 $parent_article = $this->article->getParentArticle();

@@ -19,6 +19,8 @@
     /**
      * Main controller for settings
      *
+     * @property string $access_level
+     *
      * @Routes(name_prefix="configure_", url_prefix="/configure")
      * @package pachno\core\modules\configuration\controllers
      */
@@ -43,26 +45,16 @@
          */
         public function preExecute(framework\Request $request, $action)
         {
-            if (!$request->hasParameter('section'))
-                return;
-
-            // forward 403 if you're not allowed here
-            if ($request->isAjaxCall() == false) // for avoiding empty error when an user disables himself its own permissions
-            {
-                $this->forward403unless(framework\Context::getUser()->canAccessConfigurationPage($request['section']));
+            if ($request->isAjaxCall() == false) {
+                $this->forward403unless(framework\Context::getUser()->canAccessConfigurationPage());
             }
 
-            $this->access_level = $this->getAccessLevel($request['section'], 'core');
+            $this->access_level = framework\Settings::getConfigurationAccessLevel();
 
             if (!$request->isAjaxCall()) {
                 $this->getResponse()->setPage('config');
                 framework\Context::loadLibrary('ui');
             }
-        }
-
-        public function getAccessLevel($section, $module)
-        {
-            return framework\Settings::getAccessLevel($section, $module);
         }
 
         /**
@@ -115,7 +107,6 @@
          * Configure general and server settings
          *
          * @Route(name="settings", url="/settings")
-         * @Parameters(config_module="core", section=12)
          *
          * @param framework\Request $request The request object
          */
@@ -124,10 +115,10 @@
             if (framework\Context::getRequest()->isPost()) {
                 $this->forward403unless($this->access_level == framework\Settings::ACCESS_FULL);
 
-                $settings = [framework\Settings::SETTING_USER_DISPLAYNAME_FORMAT, framework\Settings::SETTING_ENABLE_GRAVATARS, framework\Settings::SETTING_IS_SINGLE_PROJECT_TRACKER,
+                $settings = [framework\Settings::SETTING_USER_DISPLAYNAME_FORMAT, framework\Settings::SETTING_ENABLE_GRAVATARS,
                     framework\Settings::SETTING_REQUIRE_LOGIN, framework\Settings::SETTING_ALLOW_REGISTRATION, framework\Settings::SETTING_USER_GROUP,
                     framework\Settings::SETTING_RETURN_FROM_LOGIN, framework\Settings::SETTING_RETURN_FROM_LOGOUT,
-                    framework\Settings::SETTING_REGISTRATION_DOMAIN_WHITELIST, framework\Settings::SETTING_KEEP_COMMENT_TRAIL_CLEAN,
+                    framework\Settings::SETTING_REGISTRATION_DOMAIN_WHITELIST,
                     framework\Settings::SETTING_SITE_NAME, framework\Settings::SETTING_SITE_NAME_HTML, framework\Settings::SETTING_DEFAULT_CHARSET, framework\Settings::SETTING_DEFAULT_LANGUAGE,
                     framework\Settings::SETTING_SERVER_TIMEZONE, framework\Settings::SETTING_HEADER_LINK,
                     framework\Settings::SETTING_MAINTENANCE_MESSAGE, framework\Settings::SETTING_MAINTENANCE_MODE, framework\Settings::SETTING_ELEVATED_LOGIN_DISABLED,
@@ -907,7 +898,6 @@
          *
          * @param framework\Request $request
          * @Route(name="themes", url="/configure/themes")
-         * @Parameters(config_module="core", section=19)
          */
         public function runConfigureThemes(framework\Request $request)
         {
@@ -1042,45 +1032,6 @@
             return $this->renderJSON(["error" => $i18n->__("You don't have access to modify permissions")]);
         }
 
-        public function runSetPermission(framework\Request $request)
-        {
-            $i18n = framework\Context::getI18n();
-
-            if ($this->access_level == framework\Settings::ACCESS_FULL) {
-                $uid = 0;
-                $gid = 0;
-                $tid = 0;
-                switch ($request['target_type']) {
-                    case 'user':
-                        $uid = $request['item_id'];
-                        break;
-                    case 'group':
-                        $gid = $request['item_id'];
-                        break;
-                    case 'team':
-                        $tid = $request['item_id'];
-                        break;
-                }
-
-                switch ($request['mode']) {
-                    case 'allowed':
-                        framework\Context::setPermission($request['key'], $request['target_id'], $request['target_module'], $uid, $gid, $tid, true);
-                        break;
-                    case 'denied':
-                        framework\Context::setPermission($request['key'], $request['target_id'], $request['target_module'], $uid, $gid, $tid, false);
-                        break;
-                    case 'unset':
-                        framework\Context::removePermission($request['key'], $request['target_id'], $request['target_module'], $uid, $gid, $tid, true, null, 0);
-                        break;
-                }
-
-                return $this->renderJSON(['content' => $this->getComponentHTML('configuration/permissionsinfoitem', ['key' => $request['key'], 'target_id' => $request['target_id'], 'type' => $request['target_type'], 'mode' => $request['template_mode'], 'item_id' => $request['item_id'], 'module' => $request['target_module'], 'access_level' => $this->access_level, 'in_json' => 1])]);
-            }
-            $this->getResponse()->setHttpStatus(400);
-
-            return $this->renderJSON(["error" => $i18n->__("You don't have access to modify permissions")]);
-        }
-
         /**
          * Configure a module
          *
@@ -1191,7 +1142,6 @@
 
         /**
          * @Route(name="users", url="/users", methods="GET|POST")
-         * @Parameters(config_module="core", section=2)
          *
          * @param framework\Request $request
          */
@@ -1498,12 +1448,12 @@
          */
         public function runUpdateUserPassword(framework\Request $request)
         {
-            if (!framework\Context::getUser()->canAccessConfigurationPage(framework\Settings::CONFIGURATION_SECTION_USERS)) {
+            if (!$this->access_level === framework\Settings::ACCESS_FULL) {
                 $this->getResponse()->setHttpStatus(400);
                 return $this->renderJSON(['error' => $this->getI18n()->__("You don't have access to perform this action")]);
             }
 
-            $user = entities\User::getB2DBTable()->selectByID($request['user_id']);
+            $user = tables\Users::getTable()->selectByID($request['user_id']);
             if (!$user instanceof entities\User) {
                 $this->getResponse()->setHttpStatus(400);
                 return $this->renderJSON(['error' => $this->getI18n()->__('Cannot find this user')]);
@@ -1525,7 +1475,6 @@
 
         /**
          * @Route(name="user", url="/users/:user_id", methods="POST|GET")
-         * @Parameters(config_module="core", section=2)
          *
          * @param framework\Request $request
          */
@@ -2418,8 +2367,7 @@
          */
         public function runEditGroup(framework\Request $request)
         {
-            $access_level = $this->getAccessLevel(framework\Settings::CONFIGURATION_SECTION_USERS, 'core');
-            if (!$access_level == framework\Settings::ACCESS_FULL) {
+            if (!$this->access_level == framework\Settings::ACCESS_FULL) {
                 $this->getResponse()->setHttpStatus(400);
 
                 return $this->renderJSON(['error' => $this->getI18n()->__('You do not have access to edit these permissions')]);
@@ -2475,7 +2423,7 @@
                 return $this->renderJSON(['error' => $this->getI18n()->__('This is not a valid role')]);
             }
             if ($role->isSystemRole()) {
-                $access_level = $this->getAccessLevel($request['section'], 'core');
+                $access_level = framework\Settings::getConfigurationAccessLevel();
             } else {
                 $access_level = ($this->getUser()->canManageProject($role->getProject())) ? framework\Settings::ACCESS_FULL : framework\Settings::ACCESS_READ;
             }
@@ -2561,7 +2509,7 @@
 
         public function runSiteIcons(framework\Request $request)
         {
-            if ($this->getAccessLevel($request['section'], 'core') == framework\Settings::ACCESS_FULL) {
+            if ($this->access_level == framework\Settings::ACCESS_FULL) {
                 if ($request->isPost()) {
                     switch ($request['small_icon_action']) {
                         case 'upload_file':

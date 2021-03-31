@@ -137,22 +137,16 @@
         public function preExecute(framework\Request $request, $action)
         {
             // forward 403 if you're not allowed here
-            if ($request->isAjaxCall() == false) // for avoiding empty error when an user disables himself its own permissions
-            {
+            if ($request->isAjaxCall() == false) {
                 $this->forward403unless(framework\Context::getUser()->canAccessConfigurationPage());
             }
 
-            $this->access_level = $this->getAccessLevel(framework\Settings::CONFIGURATION_SECTION_IMPORT, 'core');
+            $this->access_level = framework\Settings::getConfigurationAccessLevel();
 
             if (!$request->isAjaxCall()) {
                 $this->getResponse()->setPage('config');
                 framework\Context::loadLibrary('ui');
             }
-        }
-
-        public function getAccessLevel($section, $module)
-        {
-            return (framework\Context::getUser()->canSaveConfiguration($section, $module)) ? framework\Settings::ACCESS_FULL : framework\Settings::ACCESS_READ;
         }
 
         /**

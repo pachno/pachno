@@ -152,13 +152,13 @@
             $res = $this->rawSelect($query);
 
             if ($res) {
-                $retval = [];
+                $revisions = [];
                 while ($row = $res->getNextRow()) {
                     $author = ($row->get(self::AUTHOR)) ? new User($row->get(self::AUTHOR)) : null;
-                    $retval[$row->get(self::REVISION)] = ['old_content' => $row->get(self::OLD_CONTENT), 'new_content' => $row->get(self::NEW_CONTENT), 'date' => $row->get(self::DATE), 'author' => $author];
+                    $revisions[$row->get(self::REVISION)] = ['old_content' => $row->get(self::OLD_CONTENT), 'new_content' => $row->get(self::NEW_CONTENT), 'date' => $row->get(self::DATE), 'author' => $author];
                 }
 
-                return ($to_revision !== null) ? $retval : $retval[$from_revision];
+                return ($to_revision !== null) ? $revisions : $revisions[$from_revision];
             } else {
                 return null;
             }

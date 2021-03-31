@@ -167,9 +167,9 @@
             tables\UserScopes::getTable()->clearUserGroups($this->getID());
         }
 
-        public function addPermission($permission_name, $module = 'core')
+        public function addPermission($permission_name, $module = 'core', $scope = null, $target_id = 0)
         {
-            tables\Permissions::getTable()->setPermission(0, $this->getID(), 0, true, $module, $permission_name, 0, Context::getScope()->getID());
+            tables\Permissions::getTable()->setPermission(0, $this->getID(), 0, $module, $permission_name, $target_id, $scope);
         }
 
         /**

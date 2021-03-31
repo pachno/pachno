@@ -36,7 +36,7 @@
             <?php echo __('No issues found matching your query'); ?>
         </li>
     <?php endif; ?>
-    <?php if ($pachno_user->canAccessConfigurationPage(\pachno\core\framework\Settings::CONFIGURATION_SECTION_USERS)): ?>
+    <?php if ($pachno_user->canAccessConfigurationPage()): ?>
         <?php if ($num_users > 0): ?>
             <li class="header disabled"><?php echo __('%num user(s) found', array('%num' => $num_users)); ?></li>
             <?php $cc = 0; ?>

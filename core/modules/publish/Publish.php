@@ -7,6 +7,7 @@
     use pachno\core\entities\tables\ArticleFiles;
     use pachno\core\entities\tables\Articles;
     use pachno\core\entities\tables\Links;
+    use pachno\core\entities\tables\Permissions;
     use pachno\core\entities\tables\UserArticles;
     use pachno\core\entities\User;
     use pachno\core\framework;
@@ -28,12 +29,6 @@
     {
 
         const VERSION = '2.0';
-
-        const PERMISSION_READ_ARTICLE = 'readarticle';
-
-        const PERMISSION_EDIT_ARTICLE = 'editarticle';
-
-        const PERMISSION_DELETE_ARTICLE = 'deletearticle';
 
         protected $_longname = 'Wiki';
 
@@ -151,32 +146,9 @@
             framework\ActionComponent::includeComponent('publish/projectlinks', ['project' => $event->getSubject()]);
         }
 
-        public function getPermissionDetails($permission)
-        {
-            $permissions = $this->_getPermissionslist();
-            if (array_key_exists($permission, $permissions)) {
-                return $permissions[$permission];
-            }
-        }
-
         protected function _getPermissionslist()
         {
-            $permissions = [];
-//            $_available_permissions['project']['caneditdocumentation'] = ['description' => $i18n->__('Can create new documentation pages, edit existing documentation and add comments'), 'details' => []];
-//            $_available_permissions['project']['caneditdocumentation']['details']['caneditdocumentationown'] = ['description' => $i18n->__('Can create new documentation pages but not edit documentation created by others')];
-//            $_available_permissions['project']['caneditdocumentation']['details']['canpostandeditarticlecomments'] = ['description' => $i18n->__('Can see existing comments, post new, edit own and delete own comments')];
-//            $_available_permissions['project']['canpostandeditallarticlecomments'] = ['description' => $i18n->__('Can moderate documentation comments')];
-//            $permissions['editwikimenu'] = ['description' => framework\Context::getI18n()->__('Can edit the wiki lefthand menu'), 'permission' => 'editwikimenu'];
-//            $permissions[self::PERMISSION_READ_ARTICLE] = ['description' => framework\Context::getI18n()->__('Can access the project wiki'), 'permission' => self::PERMISSION_READ_ARTICLE];
-//            $permissions[self::PERMISSION_EDIT_ARTICLE] = ['description' => framework\Context::getI18n()->__('Can write articles in project wiki'), 'permission' => self::PERMISSION_EDIT_ARTICLE];
-//            $permissions[self::PERMISSION_DELETE_ARTICLE] = ['description' => framework\Context::getI18n()->__('Can delete articles from project wiki'), 'permission' => self::PERMISSION_DELETE_ARTICLE];
-
-            return $permissions;
-        }
-
-        public function listen_rolePermissionsEdit(Event $event)
-        {
-            framework\ActionComponent::includeComponent('configuration/rolepermissionseditlist', ['role' => $event->getSubject(), 'permissions_list' => $this->_getPermissionslist(), 'module' => 'publish', 'target_id' => '%project_id%']);
+            return [];
         }
 
         public function getMenuTitle($project_context = null)
@@ -341,9 +313,8 @@
         {
             $this->createMainPageArticle($event->getSubject());
 
-            framework\Context::setPermission(self::PERMISSION_READ_ARTICLE, 'project_' . $event->getSubject()->getID(), "publish", framework\Context::getUser()->getID(), 0, 0, true);
-            framework\Context::setPermission(self::PERMISSION_EDIT_ARTICLE, 'project_' . $event->getSubject()->getID(), "publish", framework\Context::getUser()->getID(), 0, 0, true);
-            framework\Context::setPermission(self::PERMISSION_DELETE_ARTICLE, 'project_' . $event->getSubject()->getID(), "publish", framework\Context::getUser()->getID(), 0, 0, true);
+            framework\Context::setPermission(Permissions::PERMISSION_EDIT_DOCUMENTATION, 'project_' . $event->getSubject()->getID(), "publish", framework\Context::getUser()->getID(), 0, 0);
+            framework\Context::setPermission(Permissions::PERMISSION_MANAGE_PROJECT_MODERATE_DOCUMENTATION, 'project_' . $event->getSubject()->getID(), "publish", framework\Context::getUser()->getID(), 0, 0);
         }
 
         public function getTabKey()
@@ -353,49 +324,29 @@
 
         public function canUserReadArticle(Article $article)
         {
-            return $this->_checkArticlePermissions($article, self::PERMISSION_READ_ARTICLE);
+            return $this->_checkArticlePermissions($article, Permissions::PERMISSION_PROJECT_ACCESS_DOCUMENTATION);
         }
 
         protected function _checkArticlePermissions(Article $article, $permission_name)
         {
             $user = framework\Context::getUser();
-            switch ($this->getSetting('free_edit')) {
-                case 1:
-                    $permissive = !$user->isGuest();
-                    break;
-                case 2:
-                    $permissive = true;
-                    break;
-                case 0:
-                default:
-                    $permissive = false;
-                    break;
-            }
-            $retval = $user->hasPermission($permission_name, $article->getID(), 'publish');
-            if ($retval !== null) {
-                return $retval;
-            }
-            if ($article->getProject() instanceof Project) {
-                $retval = $user->hasPermission($permission_name, 'project_' . $article->getProject()->getID(), 'publish');
-                if ($retval !== null) {
-                    return $retval;
-                }
+            $target_id = ($article->getProject() instanceof Project) ? $article->getProject()->getID() : 0;
+
+            $allowed = $user->hasPermission($permission_name, $target_id);
+            if ($target_id) {
+                $allowed = $allowed ?? $user->hasPermission($permission_name, 0);
             }
 
-            $permissive = ($permission_name == self::PERMISSION_READ_ARTICLE) ? false : $permissive;
-            $retval = $user->hasPermission($permission_name, 0, 'publish');
-
-            return ($retval !== null) ? $retval : $permissive;
+            return $allowed ?? false;
         }
 
         public function canUserEditArticle(Article $article)
         {
-            return $this->_checkArticlePermissions($article, self::PERMISSION_EDIT_ARTICLE);
-        }
+            if ($article->getAuthorID() == framework\Context::getUser()->getID()) {
+                return true;
+            }
 
-        public function canUserDeleteArticle(Article $article)
-        {
-            return $this->_checkArticlePermissions($article, self::PERMISSION_DELETE_ARTICLE);
+            return $this->_checkArticlePermissions($article, Permissions::PERMISSION_EDIT_DOCUMENTATION);
         }
 
         public function listen_quicksearchDropdownFirstItems(Event $event)
@@ -554,9 +505,6 @@
 
         protected function _addAvailablePermissions()
         {
-            $this->addAvailablePermission(self::PERMISSION_READ_ARTICLE, 'Read all articles');
-            $this->addAvailablePermission(self::PERMISSION_EDIT_ARTICLE, 'Edit all articles');
-            $this->addAvailablePermission(self::PERMISSION_DELETE_ARTICLE, 'Delete any articles');
         }
 
         protected function _addListeners()
@@ -574,7 +522,6 @@
             Event::listen('core', 'upload', [$this, 'listen_upload']);
             Event::listen('core', 'quicksearch_dropdown_firstitems', [$this, 'listen_quicksearchDropdownFirstItems']);
             Event::listen('core', 'quicksearch_dropdown_founditems', [$this, 'listen_quicksearchDropdownFoundItems']);
-            Event::listen('core', 'rolepermissionsedit', [$this, 'listen_rolePermissionsEdit']);
         }
 
         public function isWikiTabsEnabled()
@@ -584,22 +531,18 @@
 
         protected function _install($scope)
         {
-            framework\Context::setPermission('article_management', 0, 'publish', 0, 1, 0, true, $scope);
-            $this->saveSetting('allow_camelcase_links', 1, 0, $scope);
-            $this->saveSetting('require_change_reason', 0, 0, $scope);
-
-//            framework\Context::getRouting()->addRoute('publish_article', '/wiki/:article_name', 'publish', 'showArticle');
-//            TextParser::addRegex('/(?<![\!|\"|\[|\>|\/\:])\b[A-Z]+[a-z]+[A-Z][A-Za-z]*\b/', array($this, 'getArticleLinkTag'));
-//            TextParser::addRegex('/(?<!")\![A-Z]+[a-z]+[A-Z][A-Za-z]*\b/', array($this, 'stripExclamationMark'));
+            $admin_group_id = framework\Settings::getAdminGroup()->getID();
+            framework\Context::setPermission(Permissions::PERMISSION_EDIT_DOCUMENTATION, 0, 'core', 0, $admin_group_id, 0, $scope);
+            framework\Context::setPermission(Permissions::PERMISSION_MANAGE_PROJECT_MODERATE_DOCUMENTATION, 0, 'core', 0, $admin_group_id, 0, $scope);
         }
 
         protected function _loadFixtures($scope)
         {
+            $admin_group_id = framework\Settings::getAdminGroup()->getID();
             $this->loadFixturesArticles($scope);
 
-            framework\Context::setPermission(self::PERMISSION_READ_ARTICLE, 0, 'publish', 0, 1, 0, true, $scope);
-            framework\Context::setPermission(self::PERMISSION_EDIT_ARTICLE, 0, 'publish', 0, 1, 0, true, $scope);
-            framework\Context::setPermission(self::PERMISSION_DELETE_ARTICLE, 0, 'publish', 0, 1, 0, true, $scope);
+            framework\Context::setPermission(Permissions::PERMISSION_EDIT_DOCUMENTATION, 0, 'core', 0, $admin_group_id, 0, $scope);
+            framework\Context::setPermission(Permissions::PERMISSION_MANAGE_PROJECT_MODERATE_DOCUMENTATION, 0, 'core', 0, $admin_group_id, 0, $scope);
         }
 
         public function loadFixturesArticles($scope, $overwrite = true)

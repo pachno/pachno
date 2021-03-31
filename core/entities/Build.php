@@ -258,7 +258,7 @@
          */
         public function hasAccess()
         {
-            return (($this->getProject() instanceof Project && $this->getProject()->canSeeAllBuilds()) || framework\Context::getUser()->hasPermission('canseebuild', $this->getID()));
+            return ($this->isReleased || $this->getProject()->canSeeInternalBuilds());
         }
 
         /**
@@ -497,7 +497,6 @@
         protected function _postSave($is_new)
         {
             if ($is_new) {
-                framework\Context::setPermission("canseebuild", $this->getID(), "core", 0, framework\Context::getUser()->getGroup()->getID(), 0, true);
                 framework\Event::createNew('core', 'pachno\core\entities\Build::_postSave', $this)->trigger();
             }
 

@@ -158,21 +158,21 @@
             $this->stop = true;
 
             // avoid accidental run-on openblocks
-            $retval = $this->_emphasize_off() . "\n";
+            $text = $this->_emphasize_off() . "\n";
 
-            $retval .= "<h{$level}";
+            $text .= "<h{$level}";
             $id = $this->toc_base_id . '_toc_' . (count($this->toc) + 1);
             if ($this->use_toc) {
                 $this->toc[] = ['level' => $level, 'content' => $content, 'id' => $id];
             }
-            $retval .= " id=\"{$id}\"";
-            $retval .= ">" . $content;
+            $text .= " id=\"{$id}\"";
+            $text .= ">" . $content;
             if (!isset($this->options['embedded']) || $this->options['embedded'] == false) {
-                $retval .= "&nbsp;<a href=\"#{$id}\">" . fa_image_tag('link', ['class' => 'icon']) . '</a>';
+                $text .= "&nbsp;<a href=\"#{$id}\">" . fa_image_tag('link', ['class' => 'icon']) . '</a>';
             }
-            $retval .= "</h{$level}>\n";
+            $text .= "</h{$level}>\n";
 
-            return $retval;
+            return $text;
         }
 
         protected function _emphasize_off()
@@ -1086,7 +1086,7 @@
 
             if (in_array(mb_strtolower($namespace), ['image', 'file'])) {
                 Context::loadLibrary('ui');
-                $retval = $namespace . ':' . $href;
+                $text = $namespace . ':' . $href;
                 if (!Context::isCLI()) {
                     $options = explode('|', $title);
                     $filename = $href;
@@ -1138,26 +1138,26 @@
                         if (in_array('right', $options)) {
                             $divclasses[] = 'icright';
                         }
-                        $retval = '<div class="' . join(' ', $divclasses) . '"';
-                        $retval .= '>';
-                        $retval .= image_tag($file_link, ['alt' => $caption, 'title' => $caption, 'style' => $style_dimensions, 'class' => 'image'], true);
+                        $text = '<div class="' . join(' ', $divclasses) . '"';
+                        $text .= '>';
+                        $text .= image_tag($file_link, ['alt' => $caption, 'title' => $caption, 'style' => $style_dimensions, 'class' => 'image'], true);
                         if ($caption != '') {
-                            $retval .= '<br>' . $caption;
+                            $text .= '<br>' . $caption;
                         }
-                        $retval .= link_tag($file_link, fa_image_tag('external-link-alt'), ['target' => 'new_window_' . rand(0, 10000), 'title' => Context::getI18n()->__('Open image in new window')]);
-                        $retval .= '</div>';
+                        $text .= link_tag($file_link, fa_image_tag('external-link-alt'), ['target' => 'new_window_' . rand(0, 10000), 'title' => Context::getI18n()->__('Open image in new window')]);
+                        $text .= '</div>';
                     } else {
                         if (strpos($file_link, 'http') === 0) {
-                            $retval = $this->_parse_image($file_link, $caption, $options);
+                            $text = $this->_parse_image($file_link, $caption, $options);
                         } elseif ($file_link == $filename) {
-                            $retval = $caption . fa_image_tag('calendar-times', ['title' => Context::getI18n()->__('File no longer exists.')], 'far');
+                            $text = $caption . fa_image_tag('calendar-times', ['title' => Context::getI18n()->__('File no longer exists.')], 'far');
                         } else {
-                            $retval = link_tag($file_link, $caption . fa_image_tag('external-link-alt'), ['target' => 'new_window_' . rand(0, 10000), 'title' => Context::getI18n()->__('Open file in new window')]);
+                            $text = link_tag($file_link, $caption . fa_image_tag('external-link-alt'), ['target' => 'new_window_' . rand(0, 10000), 'title' => Context::getI18n()->__('Open file in new window')]);
                         }
                     }
                 }
 
-                return $retval;
+                return $text;
                 //$file_id = \pachno\core\entities\tables\Files::get
             }
 

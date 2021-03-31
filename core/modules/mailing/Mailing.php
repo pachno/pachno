@@ -439,10 +439,10 @@ EOT;
 
                 return true;
             } else {
-                $retval = $this->mail($email);
+                $result = $this->mail($email);
             }
 
-            return $retval;
+            return $result;
         }
 
         public function usesEmailQueue()

@@ -84,7 +84,7 @@
 
             $options = [
                 'selected_tab' => 'livelink',
-                'access_level' => framework\Settings::getAccessLevel(framework\Settings::CONFIGURATION_SECTION_PROJECTS),
+                'access_level' => framework\Settings::getConfigurationAccessLevel(framework\Settings::CONFIGURATION_SECTION_PROJECTS),
                 'project' => $project,
                 'connector' => $this->getModule()->getProjectConnector($project)
             ];

@@ -51,7 +51,7 @@
          */
         public function hasAccess()
         {
-            return ($this->getProject()->canSeeAllComponents() || framework\Context::getUser()->hasPermission('canseecomponent', $this->getID()));
+            return ($this->isReleased() || $this->getProject()->canSeeInternalComponents());
         }
 
         /**
@@ -92,7 +92,6 @@
         protected function _postSave($is_new)
         {
             if ($is_new) {
-                framework\Context::setPermission("canseecomponent", $this->getID(), "core", 0, framework\Context::getUser()->getGroup()->getID(), 0, true);
                 Event::createNew('core', 'Component::createNew', $this)->trigger();
             }
         }

@@ -333,7 +333,7 @@
                     'project_count' => count($projects),
                     'list_mode' => $list_mode,
                     'project_state' => $project_state,
-                    'show_project_config_link' => $this->getUser()->canAccessConfigurationPage(Settings::CONFIGURATION_SECTION_PROJECTS) && framework\Context::getScope()->hasProjectsAvailable(),
+                    'show_project_config_link' => $this->getUser()->canSaveConfiguration() && framework\Context::getScope()->hasProjectsAvailable(),
                 ])
             ]);
         }
@@ -654,13 +654,9 @@
          */
         public function runProjectsList(Request $request)
         {
-            if (Settings::isSingleProjectTracker()) {
-                if (($projects = Project::getAllRootProjects(false)) && $project = array_shift($projects)) {
-                    $this->forward($this->getRouting()->generate('project_dashboard', ['project_key' => $project->getKey()]));
-                }
-            }
-            $this->forward403unless($this->getUser()->hasPageAccess('home'));
+            $this->forward403unless($this->getUser()->hasPermission(tables\Permissions::PERMISSION_PAGE_ACCESS_PROJECT_LIST));
         }
+
         /**
          * User homepage
          *
@@ -668,12 +664,8 @@
          */
         public function runIndex(Request $request)
         {
-            $this->forward403unless(!$this->getUser()->isGuest() && $this->getUser()->hasPageAccess('dashboard'));
-            if (Settings::isSingleProjectTracker()) {
-                if (($projects = Project::getAll()) && $project = array_shift($projects)) {
-                    framework\Context::setCurrentProject($project);
-                }
-            }
+            $this->forward403unless($this->getUser()->hasPermission(tables\Permissions::PERMISSION_PAGE_ACCESS_DASHBOARD));
+
             if ($request['dashboard_id']) {
                 $dashboard = tables\Dashboards::getTable()->selectById((int)$request['dashboard_id']);
                 if ($dashboard->getType() == entities\Dashboard::TYPE_PROJECT && !$dashboard->getProject()->hasAccess()) {
@@ -1057,7 +1049,7 @@
         {
             $this->forward403unless($this->getUser()->hasPageAccess('account'));
             if ($request->isPost()) {
-                if ($this->getUser()->canChangePassword() == false) {
+                if ($this->getUser()->isGuest()) {
                     $this->getResponse()->setHttpStatus(400);
 
                     return $this->renderJSON(['error' => framework\Context::getI18n()->__("You're not allowed to change your password.")]);
@@ -1111,22 +1103,22 @@
             $i_al = $issue->getAccessList();
             foreach ($i_al as $k => $item) {
                 if ($item['target'] instanceof entities\Team) {
-                    $tid = $item['target']->getID();
-                    if (array_key_exists($tid, $al_teams)) {
+                    $team_id = $item['target']->getID();
+                    if (array_key_exists($team_id, $al_teams)) {
                         unset($i_al[$k]);
                     }
                 } elseif ($item['target'] instanceof entities\User) {
-                    $uid = $item['target']->getID();
-                    if (array_key_exists($uid, $al_users)) {
+                    $user_id = $item['target']->getID();
+                    if (array_key_exists($user_id, $al_users)) {
                         unset($i_al[$k]);
                     }
                 }
             }
-            foreach ($al_users as $uid) {
-                framework\Context::setPermission('canviewissue', $issue->getID(), 'core', $uid, 0, 0, true);
+            foreach ($al_users as $user_id) {
+                framework\Context::setPermission('canaccessrestrictedissues', $issue->getID(), 'core', $user_id, 0, 0);
             }
-            foreach ($al_teams as $tid) {
-                framework\Context::setPermission('canviewissue', $issue->getID(), 'core', 0, 0, $tid, true);
+            foreach ($al_teams as $team_id) {
+                framework\Context::setPermission('canaccessrestrictedissues', $issue->getID(), 'core', 0, 0, $team_id);
             }
         }
 
@@ -1136,37 +1128,33 @@
          */
         protected function _lockIssueAfter(Request $request, $issue)
         {
-            framework\Context::setPermission('canviewissue', $issue->getID(), 'core', 0, 0, 0, false);
-            framework\Context::setPermission('canviewissue', $issue->getID(), 'core', $this->getUser()
-                ->getID(), 0, 0, true);
+            framework\Context::setPermission('canaccessrestrictedissues', $issue->getID(), 'core', $this->getUser()->getID(), 0, 0);
 
             $al_users = $request->getParameter('access_list_users', []);
             $al_teams = $request->getParameter('access_list_teams', []);
             $i_al = $issue->getAccessList();
             foreach ($i_al as $k => $item) {
                 if ($item['target'] instanceof entities\Team) {
-                    $tid = $item['target']->getID();
-                    if (array_key_exists($tid, $al_teams)) {
+                    $team_id = $item['target']->getID();
+                    if (array_key_exists($team_id, $al_teams)) {
                         unset($i_al[$k]);
                     } else {
-                        framework\Context::removePermission('canviewissue', $issue->getID(), 'core', 0, 0, $tid);
+                        framework\Context::removePermission('canaccessrestrictedissues', $issue->getID(), 'core', 0, 0, $team_id);
                     }
                 } elseif ($item['target'] instanceof entities\User) {
-                    $uid = $item['target']->getID();
-                    if (array_key_exists($uid, $al_users)) {
+                    $user_id = $item['target']->getID();
+                    if (array_key_exists($user_id, $al_users)) {
                         unset($i_al[$k]);
-                    } elseif ($uid != $this->getUser()
-                            ->getID()
-                    ) {
-                        framework\Context::removePermission('canviewissue', $issue->getID(), 'core', $uid, 0, 0);
+                    } elseif ($user_id != $this->getUser()->getID()) {
+                        framework\Context::removePermission('canaccessrestrictedissues', $issue->getID(), 'core', $user_id, 0, 0);
                     }
                 }
             }
-            foreach ($al_users as $uid) {
-                framework\Context::setPermission('canviewissue', $issue->getID(), 'core', $uid, 0, 0, true);
+            foreach ($al_users as $user_id) {
+                framework\Context::setPermission('canaccessrestrictedissues', $issue->getID(), 'core', $user_id, 0, 0);
             }
-            foreach ($al_teams as $tid) {
-                framework\Context::setPermission('canviewissue', $issue->getID(), 'core', 0, 0, $tid, true);
+            foreach ($al_teams as $team_id) {
+                framework\Context::setPermission('canaccessrestrictedissues', $issue->getID(), 'core', 0, 0, $team_id);
             }
         }
 
@@ -3987,7 +3975,7 @@
             $action_option = str_replace($this->selected_project->getKey() . '/milestone/' . $request['milestone_id'] . '/', '', $request['url']);
 
             try {
-                if (!($this->getUser()->canEditMilestones($this->selected_project) || ($this->getUser()->canManageProjectReleases($this->selected_project) && $this->getUser()->canManageProject($this->selected_project))))
+                if (!$this->getUser()->canManageProjectReleases($this->selected_project))
                     throw new Exception($this->getI18n()->__("You don't have access to modify milestones"));
 
                 switch (true) {

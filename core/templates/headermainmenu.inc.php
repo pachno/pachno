@@ -14,17 +14,17 @@
 ?>
 <nav class="header_menu" id="main_menu">
     <ul>
-        <?php if (!framework\Settings::isSingleProjectTracker()): ?>
+        <?php if (!$pachno_user->hasPermission(\pachno\core\entities\tables\Permissions::PERMISSION_PAGE_ACCESS_PROJECT_LIST)): ?>
             <li<?php if ($pachno_response->getPage() == 'home'): ?> class="selected"<?php endif; ?>>
                 <?= link_tag(make_url('home'), fa_image_tag('home') . '<span>'.__('Projects').'</span>'); ?>
             </li>
         <?php endif; ?>
-        <?php if (!$pachno_user->isGuest() && !framework\Settings::isSingleProjectTracker()): ?>
+        <?php if (!$pachno_user->hasPermission(\pachno\core\entities\tables\Permissions::PERMISSION_PAGE_ACCESS_DASHBOARD)): ?>
             <li class="<?php if ($pachno_response->getPage() == 'dashboard'): ?>selected<?php endif; ?>">
                 <?= link_tag(make_url('dashboard'), fa_image_tag('columns') . '<span>'.__('Dashboard').'</span>'); ?>
             </li>
         <?php endif; ?>
-        <?php if (!$pachno_user->isGuest() && $pachno_user->canSearchForIssues()): ?>
+        <?php if ($pachno_user->hasPermission(\pachno\core\entities\tables\Permissions::PERMISSION_PAGE_ACCESS_SEARCH)): ?>
             <li class="with-dropdown <?php if (in_array($pachno_response->getPage(), array('project_issues', 'viewissue'))): ?>selected<?php endif; ?>">
                 <?= link_tag(make_url('search'), fa_image_tag('file-alt') . __('Issues') . fa_image_tag('angle-down', ['class' => 'dropdown-indicator']), ['class' => 'dropper']); ?>
                 <div id="issues_menu" class="tab_menu_dropdown popup_box two-columns">
@@ -69,7 +69,7 @@
                 </div>
             </li>
         <?php endif; ?>
-        <?php if (($pachno_user->hasPageAccess('teamlist') || count($pachno_user->getTeams())) && !is_null(\pachno\core\entities\Team::getAll())): ?>
+        <?php if (count($pachno_user->getTeams()) && !is_null(\pachno\core\entities\Team::getAll())): ?>
             <li class="with-dropdown <?php if ($pachno_response->getPage() == 'team'): ?>selected<?php endif; ?>">
                 <?= link_tag('javascript:void(0)', fa_image_tag('users') . '<span>'.__('Teams').'</span>' . fa_image_tag('angle-down', ['class' => 'dropdown-indicator']), ['class' => 'dropper']); ?>
                 <ul id="team_menu" class="tab_menu_dropdown popup_box">
@@ -80,7 +80,7 @@
                 </ul>
             </li>
         <?php endif; ?>
-        <?php if ($pachno_user->hasPageAccess('clientlist') && count($pachno_user->getClients()) && !is_null(\pachno\core\entities\Client::getAll())): ?>
+        <?php if (count($pachno_user->getClients()) && !is_null(\pachno\core\entities\Client::getAll())): ?>
             <li class="with-dropdown <?php if ($pachno_response->getPage() == 'client'): ?>selected<?php endif; ?>">
                 <?= link_tag('javascript:void(0)', fa_image_tag('users') . '<span>'.__('Clients').'</span>' . fa_image_tag('angle-down', ['class' => 'dropdown-indicator']), ['class' => 'dropper']); ?>
                 <ul id="client_menu" class="tab_menu_dropdown popup_box">

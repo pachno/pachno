@@ -40,12 +40,10 @@
             <?= fa_image_tag('window-restore', ['class' => 'icon']); ?>
             <span class="name"><?= __('Home'); ?></span>
         </a>
-        <?php if (!Settings::isSingleProjectTracker()): ?>
-            <a class="<?php if ($selected_tab == 'projects') echo ' selected'; ?>" href="<?= make_url('projects_list'); ?>">
-                <?= fa_image_tag('boxes', ['class' => 'icon']); ?>
-                <span class="name"><?= __('Projects'); ?></span>
-            </a>
-        <?php endif; ?>
+        <a class="<?php if ($selected_tab == 'projects') echo ' selected'; ?>" href="<?= make_url('projects_list'); ?>">
+            <?= fa_image_tag('boxes', ['class' => 'icon']); ?>
+            <span class="name"><?= __('Projects'); ?></span>
+        </a>
         <?php Event::createNew('core', 'header_menu_entries')->trigger(); ?>
         <a class="<?php if ($selected_tab == 'teams') echo 'selected'; ?> disabled" href="<?= make_url('home'); ?>">
             <?= fa_image_tag('users', ['class' => 'icon']); ?>

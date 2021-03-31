@@ -32,7 +32,7 @@
                     <?= fa_image_tag('at', ['class' => 'icon']); ?>
                     <span class="name"><?php echo $user->getUsername(); ?></span>
                 </div>
-                <?php if ($user->isEmailPublic() || $pachno_user->canAccessConfigurationPage(\pachno\core\framework\Settings::CONFIGURATION_SECTION_USERS)): ?>
+                <?php if ($user->isEmailPublic() || $pachno_user->canAccessConfigurationPage()): ?>
                     <a class="list-item" href="mailto:<?= $user->getEmail(); ?>">
                         <?= fa_image_tag('envelope', ['class' => 'icon']); ?>
                         <span class="name"><?= $user->getEmail(); ?></span>
@@ -103,7 +103,7 @@
         <?php endif; ?>
     </div>
     <div class="backdrop_buttons">
-        <?php if ($pachno_user->canAccessConfigurationPage(\pachno\core\framework\Settings::CONFIGURATION_SECTION_USERS)): ?>
+        <?php if ($pachno_user->canSaveConfiguration()): ?>
             <button class="button secondary trigger-backdrop" data-url="<?= make_url('configure_users_edit_user_form', ['user_id' => $user->getID()]); ?>">
                 <?= fa_image_tag('edit', ['class' => 'icon']); ?>
                 <span><?php echo __('Edit this user'); ?></span>

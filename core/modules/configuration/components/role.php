@@ -3,6 +3,8 @@
     use pachno\core\framework;
 
     /**
+     * @var \pachno\core\entities\User $pachno_user
+     * @var \pachno\core\framework\Response $pachno_response
      * @var \pachno\core\entities\Role $role
      */
 
@@ -35,7 +37,7 @@
                         <?= fa_image_tag('info-circle', ['class' => 'icon']); ?>
                         <span class="name"><?= __('Details'); ?></span>
                     </a>
-                    <?php if ($pachno_user->canAccessConfigurationPage(framework\Settings::CONFIGURATION_SECTION_USERS)): ?>
+                    <?php if ($pachno_user->canAccessConfigurationPage()): ?>
                         <a href="javascript:void(0);" class="list-item" onclick="Pachno.UI.Backdrop.show('<?= make_url('get_partial_for_backdrop', ['key' => 'edit_role', 'role_id' => $role->getId()]); ?>');">
                             <?= fa_image_tag('edit', ['class' => 'icon']); ?>
                             <span class="name"><?php echo __('Edit'); ?></span>

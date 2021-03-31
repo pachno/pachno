@@ -15,11 +15,9 @@ use pachno\core\framework;
 <?php if ($pachno_user->isAuthenticated()): ?>
     <div class="spacer"></div>
     <div class="action-container">
-        <?php if ($pachno_user->canAccessConfigurationPage(framework\Settings::CONFIGURATION_SECTION_PROJECTS)): ?>
+        <?php if ($pachno_user->canAccessConfigurationPage()): ?>
             <?= link_tag(make_url('configure_projects'), fa_image_tag('cog'), ['class' => 'button icon secondary']); ?>
         <?php endif; ?>
-        <?php if (framework\Context::getScope()->hasProjectsAvailable()): ?>
-            <button class="button secondary highlight project-quick-edit" onclick="Pachno.UI.Backdrop.show('<?= make_url('get_partial_for_backdrop', ['key' => 'project_config']); ?>');"><?= fa_image_tag('plus-square'); ?><span><?= __('Create a project'); ?></span></button>
-        <?php endif; ?>
+        <button class="button secondary highlight project-quick-edit" onclick="Pachno.UI.Backdrop.show('<?= make_url('get_partial_for_backdrop', ['key' => 'project_config']); ?>');"><?= fa_image_tag('plus-square'); ?><span><?= __('Create a project'); ?></span></button>
     </div>
 <?php endif; ?>

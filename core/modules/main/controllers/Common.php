@@ -18,7 +18,6 @@
          */
         public function runAbout(Request $request)
         {
-            $this->forward403unless($this->getUser()->hasPageAccess('about'));
         }
 
         /**

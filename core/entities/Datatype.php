@@ -95,9 +95,6 @@
             Status::loadFixtures($scope);
             Role::loadFixtures($scope);
             ActivityType::loadFixtures($scope);
-            foreach (self::getTypes() as $type => $class) {
-                framework\Context::setPermission('set_datatype_' . $type, 0, 'core', 0, 0, 0, true, $scope->getID());
-            }
         }
 
         public static function getTypes()

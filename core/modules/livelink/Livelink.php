@@ -20,6 +20,7 @@
     use pachno\core\entities\tables\Commits;
     use pachno\core\entities\tables\IssueCommits;
     use pachno\core\entities\tables\LivelinkImports;
+    use pachno\core\entities\tables\Permissions;
     use pachno\core\entities\tables\Projects;
     use pachno\core\entities\tables\Users;
     use pachno\core\entities\User;
@@ -359,7 +360,7 @@
          */
         public function listen_MenustripLinks(Event $event)
         {
-            if (framework\Context::getUser()->hasProjectPageAccess('project_commits', framework\Context::getCurrentProject())) {
+            if (framework\Context::getUser()->hasProjectPermission(Permissions::PERMISSION_PROJECT_ACCESS_CODE, framework\Context::getCurrentProject())) {
                 framework\ActionComponent::includeComponent('livelink/menustriplinks', ['project' => $event->getSubject()]);
             }
         }

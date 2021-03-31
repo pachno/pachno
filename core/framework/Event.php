@@ -192,7 +192,7 @@
                         } else {
                             Logging::log('Running callback function ' . $cb_string);
                         }
-                        $retval = call_user_func($trigger, $event);
+                        $result = call_user_func($trigger, $event);
                         if ($return_when_processed && $event->isProcessed()) {
                             return true;
                         }

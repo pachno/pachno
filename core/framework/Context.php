@@ -744,61 +744,45 @@
                 $i18n = self::getI18n();
                 self::$_available_permissions = ['user' => [], 'general' => [], 'project' => []];
 
-                self::$_available_permissions['user']['canseegroupissues'] = ['description' => $i18n->__('Can see issues reported by users in the same group'), 'mode' => 'permissive'];
-                self::$_available_permissions['configuration']['cansaveconfig'] = ['description' => $i18n->__('Can access the configuration page and edit all configuration'), 'details' => []];
-                self::$_available_permissions['configuration']['cansaveconfig']['details'][] = ['canviewconfig' => ['description' => $i18n->__('Read-only access: "Settings" configuration page'), 'target_id' => 12]];
-                self::$_available_permissions['configuration']['cansaveconfig']['details'][] = ['cansaveconfig' => ['description' => $i18n->__('Read + write access: "Settings" configuration page'), 'target_id' => 12]];
-                self::$_available_permissions['configuration']['cansaveconfig']['details'][] = ['canviewconfig' => ['description' => $i18n->__('Read-only access: "Permissions" configuration page'), 'target_id' => 5]];
-                self::$_available_permissions['configuration']['cansaveconfig']['details'][] = ['cansaveconfig' => ['description' => $i18n->__('Read + write access: "Permissions" configuration page'), 'target_id' => 5]];
-                self::$_available_permissions['configuration']['cansaveconfig']['details'][] = ['canviewconfig' => ['description' => $i18n->__('Read-only access: "Uploads" configuration page'), 'target_id' => 3]];
-                self::$_available_permissions['configuration']['cansaveconfig']['details'][] = ['cansaveconfig' => ['description' => $i18n->__('Read + write access: "Uploads" configuration page'), 'target_id' => 3]];
-                self::$_available_permissions['configuration']['cansaveconfig']['details'][] = ['canviewconfig' => ['description' => $i18n->__('Read-only access: "Scopes" configuration page'), 'target_id' => 14]];
-                self::$_available_permissions['configuration']['cansaveconfig']['details'][] = ['cansaveconfig' => ['description' => $i18n->__('Read + write access: "Scopes" configuration page'), 'target_id' => 14]];
-                self::$_available_permissions['configuration']['cansaveconfig']['details'][] = ['canviewconfig' => ['description' => $i18n->__('Read-only access: "Import" configuration page'), 'target_id' => 16]];
-                self::$_available_permissions['configuration']['cansaveconfig']['details'][] = ['cansaveconfig' => ['description' => $i18n->__('Read + write access: "Import" configuration page'), 'target_id' => 16]];
-                self::$_available_permissions['configuration']['cansaveconfig']['details'][] = ['canviewconfig' => ['description' => $i18n->__('Read-only access: "Projects" configuration page'), 'target_id' => 10]];
-                self::$_available_permissions['configuration']['cansaveconfig']['details'][] = ['cansaveconfig' => ['description' => $i18n->__('Read + write access: "Projects" configuration page'), 'target_id' => 10]];
-                self::$_available_permissions['configuration']['cansaveconfig']['details'][] = ['canviewconfig' => ['description' => $i18n->__('Read-only access: "Issue types" configuration page'), 'target_id' => 6]];
-                self::$_available_permissions['configuration']['cansaveconfig']['details'][] = ['cansaveconfig' => ['description' => $i18n->__('Read + write access: "Issue types" configuration page'), 'target_id' => 6]];
-                self::$_available_permissions['configuration']['cansaveconfig']['details'][] = ['canviewconfig' => ['description' => $i18n->__('Read-only access: "Issue fields" configuration page'), 'target_id' => 4]];
-                self::$_available_permissions['configuration']['cansaveconfig']['details'][] = ['cansaveconfig' => ['description' => $i18n->__('Read + write access: "Issue fields" configuration page'), 'target_id' => 4]];
-                self::$_available_permissions['configuration']['cansaveconfig']['details'][] = ['canviewconfig' => ['description' => $i18n->__('Read-only access: "Users, teams and groups" configuration page'), 'target_id' => 2]];
-                self::$_available_permissions['configuration']['cansaveconfig']['details'][] = ['cansaveconfig' => ['description' => $i18n->__('Read + write access: "Users, teams and groups" configuration page'), 'target_id' => 2]];
-                self::$_available_permissions['configuration']['cansaveconfig']['details'][] = ['canviewconfig' => ['description' => $i18n->__('Read-only access: "Modules" and any module configuration page'), 'target_id' => 15]];
-                self::$_available_permissions['configuration']['cansaveconfig']['details'][] = ['cansaveconfig' => ['description' => $i18n->__('Read + write access: "Modules" configuration page and any modules'), 'target_id' => 15]];
-                self::$_available_permissions['configuration']['cansaveconfig']['details'][] = ['canviewconfig' => ['description' => $i18n->__('Read-only access: "Themes" configuration page and any themes'), 'target_id' => 19]];
-                self::$_available_permissions['configuration']['cansaveconfig']['details'][] = ['cansaveconfig' => ['description' => $i18n->__('Read + write access: "Themes" configuration page and any themes'), 'target_id' => 19]];
+                self::$_available_permissions['user'][Permissions::PERMISSION_ACCESS_GROUP_ISSUES] = ['description' => $i18n->__('Can see issues reported by users in the same group'), 'mode' => 'permissive'];
+                self::$_available_permissions['configuration'][Permissions::PERMISSION_SAVE_CONFIGURATION] = ['description' => $i18n->__('Can access the configuration page and edit all configuration'), 'details' => []];
+                self::$_available_permissions['configuration'][Permissions::PERMISSION_SAVE_CONFIGURATION]['details'][Permissions::PERMISSION_ACCESS_CONFIGURATION] = ['description' => $i18n->__('Can access the configuration page and view all configuration'), 'details' => []];
                 self::$_available_permissions['pages'][Permissions::PERMISSION_PAGE_ACCESS_DASHBOARD] = ['description' => $i18n->__('Can access the personal dashboard')];
                 self::$_available_permissions['pages'][Permissions::PERMISSION_PAGE_ACCESS_PROJECT_LIST] = ['description' => $i18n->__('Can access the project list')];
                 self::$_available_permissions['pages'][Permissions::PERMISSION_PAGE_ACCESS_ACCOUNT] = ['description' => $i18n->__('Can access the "Account details" page')];
-                self::$_available_permissions['project']['canseeproject'] = ['description' => $i18n->__('Has normal read access to the project'), 'details' => []];
-                self::$_available_permissions['project']['canseeproject']['details']['project_dashboard_access'] = ['description' => $i18n->__('Can access the project dashboard and team overview')];
-                self::$_available_permissions['project']['canseeproject']['details']['project_board_access'] = ['description' => $i18n->__('Can access project boards')];
-                self::$_available_permissions['project']['canseeproject']['details']['project_releases_access'] = ['description' => $i18n->__('Can access project releases and roadmap')];
-                self::$_available_permissions['project']['canseeproject']['details']['project_issues_access'] = ['description' => $i18n->__('Can see existing issues')];
-                self::$_available_permissions['project']['canseeproject']['details']['project_documentation_access'] = ['description' => $i18n->__('Can access the project documentation')];
-                self::$_available_permissions['project']['canseeproject']['details']['project_code_access'] = ['description' => $i18n->__('Can access project code and discussions')];
-                self::$_available_permissions['project']['canseeproject']['details']['canseetimespent'] = ['description' => $i18n->__('Can see time spent on issues')];
-                self::$_available_permissions['project']['canseeproject']['details']['canseeallissues'] = ['description' => $i18n->__('Can see issues reported by other users')];
-                self::$_available_permissions['project']['caneditdocumentation'] = ['description' => $i18n->__('Can create new documentation pages, edit existing documentation and add comments'), 'details' => []];
-                self::$_available_permissions['project']['caneditdocumentation']['details']['caneditdocumentationown'] = ['description' => $i18n->__('Can create new documentation pages but not edit documentation created by others')];
-                self::$_available_permissions['project']['caneditdocumentation']['details']['canpostandeditarticlecomments'] = ['description' => $i18n->__('Can see existing comments, post new, edit own and delete own comments')];
-                self::$_available_permissions['project']['canpostandeditallarticlecomments'] = ['description' => $i18n->__('Can moderate documentation comments')];
+                self::$_available_permissions['pages'][Permissions::PERMISSION_PAGE_ACCESS_SEARCH] = ['description' => $i18n->__('Can access the global issue search page')];
 
-                self::$_available_permissions['project']['canseeprojectinernalresources'] = ['description' => $i18n->__('Has access to internal project resources'), 'details' => []];
-                self::$_available_permissions['project']['canseeprojectinernalresources']['details']['canseeallprojecteditions'] = ['description' => $i18n->__('Has access to internal editions')];
-                self::$_available_permissions['project']['canseeprojectinernalresources']['details']['canseeallprojectcomponents'] = ['description' => $i18n->__('Has access to internal components')];
-                self::$_available_permissions['project']['canseeprojectinernalresources']['details']['canseeallprojectbuilds'] = ['description' => $i18n->__('Has access to internal releases')];
-                self::$_available_permissions['project']['canseeprojectinernalresources']['details']['canseeallprojectmilestones'] = ['description' => $i18n->__('Has access to internal milestones')];
-                self::$_available_permissions['project']['canseeprojectinernalresources']['details']['canseeallcomments'] = ['description' => $i18n->__('Has access to internal comments')];
-                self::$_available_permissions['project']['canmanageproject'] = ['description' => $i18n->__('Has access to manage the project')];
-                self::$_available_permissions['project']['canmanageproject']['details']['caneditprojectdetails'] = ['description' => $i18n->__('Can edit project details and settings')];
-                self::$_available_permissions['project']['canmanageproject']['details']['cancreatepublicboards'] = ['description' => $i18n->__('Can create public boards')];
-                self::$_available_permissions['project']['canmanageproject']['details']['cancreatepublicsavedsearches'] = ['description' => $i18n->__('Can create public saved searches')];
-                self::$_available_permissions['project']['canmanageproject']['details']['canmanageprojectreleases'] = ['description' => $i18n->__('Can manage project releases')];
-                self::$_available_permissions['project']['canmanageproject']['details']['canlockandeditlockedissues'] = ['description' => $i18n->__('Can restrict access to specific issues')];
+                self::$_available_permissions['project'][Permissions::PERMISSION_PROJECT_ACCESS] = ['description' => $i18n->__('Has normal read access to the project'), 'details' => []];
+                self::$_available_permissions['project'][Permissions::PERMISSION_PROJECT_ACCESS]['details'][Permissions::PERMISSION_PROJECT_ACCESS_DASHBOARD] = ['description' => $i18n->__('Can access the project dashboard and team overview')];
+                self::$_available_permissions['project'][Permissions::PERMISSION_PROJECT_ACCESS]['details'][Permissions::PERMISSION_PROJECT_ACCESS_BOARDS] = ['description' => $i18n->__('Can access project boards')];
+                self::$_available_permissions['project'][Permissions::PERMISSION_PROJECT_ACCESS]['details'][Permissions::PERMISSION_PROJECT_ACCESS_RELEASES] = ['description' => $i18n->__('Can access project releases and roadmap')];
+                self::$_available_permissions['project'][Permissions::PERMISSION_PROJECT_ACCESS]['details'][Permissions::PERMISSION_PROJECT_ACCESS_ISSUES] = ['description' => $i18n->__('Can access issue search and issue pages')];
+                self::$_available_permissions['project'][Permissions::PERMISSION_PROJECT_ACCESS]['details'][Permissions::PERMISSION_PROJECT_ACCESS_DOCUMENTATION] = ['description' => $i18n->__('Can access the project documentation')];
+                self::$_available_permissions['project'][Permissions::PERMISSION_PROJECT_ACCESS]['details'][Permissions::PERMISSION_PROJECT_ACCESS_CODE] = ['description' => $i18n->__('Can access project code and discussions')];
+                self::$_available_permissions['project'][Permissions::PERMISSION_PROJECT_ACCESS]['details'][Permissions::PERMISSION_PROJECT_ACCESS_TIME_LOGGING] = ['description' => $i18n->__('Can see time spent on issues')];
+                self::$_available_permissions['project'][Permissions::PERMISSION_PROJECT_ACCESS]['details'][Permissions::PERMISSION_PROJECT_ACCESS_ALL_ISSUES] = ['description' => $i18n->__('Can see issues reported by other users')];
 
-                self::$_available_permissions['project']['cancreateissues'] = ['description' => $i18n->__('Can create new issues')];
+                self::$_available_permissions['project'][Permissions::PERMISSION_EDIT_DOCUMENTATION] = ['description' => $i18n->__('Can create new documentation pages, edit existing documentation and add comments'), 'details' => []];
+                self::$_available_permissions['project'][Permissions::PERMISSION_EDIT_DOCUMENTATION]['details'][Permissions::PERMISSION_EDIT_DOCUMENTATION_OWN] = ['description' => $i18n->__('Can create new documentation pages but not edit documentation created by others')];
+                self::$_available_permissions['project'][Permissions::PERMISSION_EDIT_DOCUMENTATION]['details'][Permissions::PERMISSION_EDIT_DOCUMENTATION_POST_COMMENTS] = ['description' => $i18n->__('Can see existing comments, post new, edit own and delete own comments')];
+
+                self::$_available_permissions['project'][Permissions::PERMISSION_PROJECT_INTERNAL_ACCESS] = ['description' => $i18n->__('Has access to internal project resources'), 'details' => []];
+                self::$_available_permissions['project'][Permissions::PERMISSION_PROJECT_INTERNAL_ACCESS]['details'][Permissions::PERMISSION_PROJECT_INTERNAL_ACCESS_EDITIONS] = ['description' => $i18n->__('Has access to internal editions')];
+                self::$_available_permissions['project'][Permissions::PERMISSION_PROJECT_INTERNAL_ACCESS]['details'][Permissions::PERMISSION_PROJECT_INTERNAL_ACCESS_COMPONENTS] = ['description' => $i18n->__('Has access to internal components')];
+                self::$_available_permissions['project'][Permissions::PERMISSION_PROJECT_INTERNAL_ACCESS]['details'][Permissions::PERMISSION_PROJECT_INTERNAL_ACCESS_BUILDS] = ['description' => $i18n->__('Has access to internal releases')];
+                self::$_available_permissions['project'][Permissions::PERMISSION_PROJECT_INTERNAL_ACCESS]['details'][Permissions::PERMISSION_PROJECT_INTERNAL_ACCESS_MILESTONES] = ['description' => $i18n->__('Has access to internal milestones')];
+                self::$_available_permissions['project'][Permissions::PERMISSION_PROJECT_INTERNAL_ACCESS]['details'][Permissions::PERMISSION_PROJECT_INTERNAL_ACCESS_COMMENTS] = ['description' => $i18n->__('Has access to internal comments')];
+
+                self::$_available_permissions['project'][Permissions::PERMISSION_MANAGE_PROJECT] = ['description' => $i18n->__('Has access to manage the project')];
+                self::$_available_permissions['project'][Permissions::PERMISSION_MANAGE_PROJECT]['details'][Permissions::PERMISSION_MANAGE_PROJECT_DETAILS] = ['description' => $i18n->__('Can edit project details and settings')];
+                self::$_available_permissions['project'][Permissions::PERMISSION_MANAGE_PROJECT]['details']['cancreatepublicboards'] = ['description' => $i18n->__('Can create public boards')];
+                self::$_available_permissions['project'][Permissions::PERMISSION_MANAGE_PROJECT]['details']['cancreatepublicsavedsearches'] = ['description' => $i18n->__('Can create public saved searches')];
+                self::$_available_permissions['project'][Permissions::PERMISSION_MANAGE_PROJECT]['details'][Permissions::PERMISSION_MANAGE_PROJECT_RELEASES] = ['description' => $i18n->__('Can manage project releases')];
+                self::$_available_permissions['project'][Permissions::PERMISSION_MANAGE_PROJECT]['details']['canlockandeditlockedissues'] = ['description' => $i18n->__('Can restrict access to specific issues')];
+                self::$_available_permissions['project'][Permissions::PERMISSION_MANAGE_PROJECT]['details'][Permissions::PERMISSION_MANAGE_PROJECT_MODERATE_DOCUMENTATION] = ['description' => $i18n->__('Can moderate documentation and comments')];
+
+                self::$_available_permissions['project'][Permissions::PERMISSION_PROJECT_CREATE_ISSUES] = ['description' => $i18n->__('Can create new issues')];
+                self::$_available_permissions['project']['canaccessrestrictedissues'] = ['description' => $i18n->__('Can access restricted issues')];
 
                 self::$_available_permissions['issues']['canvoteforissues'] = ['description' => $i18n->__('Can vote for issues')];
 
@@ -1144,21 +1128,20 @@
          * @param string $permission_type The permission type
          * @param mixed $target_id The target id
          * @param string $module The name of the module for which the permission is valid
-         * @param integer $uid The user id for which the permission is valid, 0 for none
-         * @param integer $gid The group id for which the permission is valid, 0 for none
-         * @param integer $tid The team id for which the permission is valid, 0 for none
-         * @param boolean $allowed Allowed or not
+         * @param integer $user_id The user id for which the permission is valid, 0 for none
+         * @param integer $group_id The group id for which the permission is valid, 0 for none
+         * @param integer $team_id The team id for which the permission is valid, 0 for none
          * @param integer $scope [optional] A specified scope if not the default
          */
-        public static function setPermission($permission_type, $target_id, $module, $uid, $gid, $tid, $allowed, $scope = null, $role_id = null)
+        public static function setPermission($permission_type, $target_id, $module, $user_id, $group_id, $team_id, $scope = null, $role_id = null)
         {
             if ($scope === null)
                 $scope = self::getScope()->getID();
 
             if ($role_id === null) {
-                self::removePermission($permission_type, $target_id, $module, $uid, $gid, $tid, false, $scope, 0);
+                self::removePermission($permission_type, $target_id, $module, $user_id, $group_id, $team_id, false, $scope, 0);
             }
-            Permissions::getTable()->setPermission($uid, $gid, $tid, $allowed, $module, $permission_type, $target_id, $scope, $role_id);
+            Permissions::getTable()->setPermission($user_id, $group_id, $team_id, $module, $permission_type, $target_id, $scope, $role_id);
             self::clearPermissionsCache();
 
             self::cacheAllPermissions();
@@ -1170,18 +1153,18 @@
          * @param string $permission_type The permission type
          * @param mixed $target_id The target id
          * @param string $module The name of the module for which the permission is valid
-         * @param integer $uid The user id for which the permission is valid, 0 for none
-         * @param integer $gid The group id for which the permission is valid, 0 for none
-         * @param integer $tid The team id for which the permission is valid, 0 for none
+         * @param integer $user_id The user id for which the permission is valid, 0 for none
+         * @param integer $group_id The group id for which the permission is valid, 0 for none
+         * @param integer $team_id The team id for which the permission is valid, 0 for none
          * @param boolean $recache Whether to recache after clearing this permission
          * @param integer $scope A specified scope if not the default
          */
-        public static function removePermission($permission_type, $target_id, $module, $uid, $gid, $tid, $recache = true, $scope = null, $role_id = null)
+        public static function removePermission($permission_type, $target_id, $module, $user_id, $group_id, $team_id, $recache = true, $scope = null, $role_id = null)
         {
             if ($scope === null)
                 $scope = self::getScope()->getID();
 
-            Permissions::getTable()->removeSavedPermission($uid, $gid, $tid, $module, $permission_type, $target_id, $scope, $role_id);
+            Permissions::getTable()->removeSavedPermission($user_id, $group_id, $team_id, $module, $permission_type, $target_id, $scope, $role_id);
             self::clearPermissionsCache();
 
             if ($recache)
@@ -1244,9 +1227,9 @@
 
                 if (in_array($permission_key, array_keys(self::$_available_permissions)) || (array_key_exists('details', $permission_info) && is_array($permission_info['details']) && count($permission_info['details']))) {
                     $p_info = (in_array($permission_key, array_keys(self::$_available_permissions))) ? $permission_info : $permission_info['details'];
-                    $retval = self::getPermissionDetails($permission, $p_info, $module_name);
-                    if ($retval)
-                        return $retval;
+                    $permissionDetails = self::getPermissionDetails($permission, $p_info, $module_name);
+                    if ($permissionDetails)
+                        return $permissionDetails;
                 }
             }
         }
@@ -2148,7 +2131,7 @@
                     Logging::log('Running main pre-execute action');
                     // Running any overridden preExecute() method defined for that module
                     // or the default empty one provided by \pachno\core\framework\Action
-                    if ($pre_action_retval = self::$_current_controller_object->preExecute(self::getRequest(), self::$_current_controller_method)) {
+                    if ($pre_action_result = self::$_current_controller_object->preExecute(self::getRequest(), self::$_current_controller_method)) {
                         $content = ob_get_clean();
                         Logging::log('preexecute method returned something, skipping further action');
                         if (self::$_debug_mode)

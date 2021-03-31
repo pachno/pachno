@@ -412,9 +412,9 @@
 
         public function getInputConfirmation()
         {
-            $retval = self::_getCliInput();
+            $input = self::_getCliInput();
 
-            return (bool)(mb_strtolower(trim($retval)) == 'yes');
+            return (bool)(mb_strtolower(trim($input)) == 'yes');
         }
 
         protected static function _getCliInput()
@@ -424,9 +424,9 @@
 
         public function askToDecline()
         {
-            $retval = self::_getCliInput();
+            $input = self::_getCliInput();
 
-            return !(bool)(mb_strtolower(trim($retval)) == 'no');
+            return !(bool)(mb_strtolower(trim($input)) == 'no');
         }
 
         public function getInput($default = '')
@@ -436,9 +436,9 @@
 
         public static function getUserInput($default = '')
         {
-            $retval = self::_getCliInput();
+            $input = self::_getCliInput();
 
-            return ($retval == '') ? $default : $retval;
+            return ($input == '') ? $default : $input;
         }
 
         public function pressEnterToContinue()

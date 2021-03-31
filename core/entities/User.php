@@ -8,6 +8,7 @@
     use pachno\core\entities\common\IdentifiableEventContainer;
     use pachno\core\entities\tables\ClientMembers;
     use pachno\core\entities\tables\Notifications;
+    use pachno\core\entities\tables\Permissions;
     use pachno\core\entities\tables\TeamMembers;
     use pachno\core\entities\tables\UserIssues;
     use pachno\core\framework;
@@ -1625,42 +1626,20 @@
         /**
          * Check whether the user can access the specified project page
          *
-         * @param string $page The page key
+         * @param string $permission The page key
          * @param Project $project
          *
          * @return boolean
          */
-        public function hasProjectPageAccess($page, Project $project)
+        public function hasProjectPermission($permission, Project $project)
         {
-            $retval = $this->hasPageAccess($page, $project->getID());
-            $retval = ($retval === null) ? $this->hasPageAccess('project_allpages', $project->getID()) : $retval;
+            if ($project->isArchived()) return false;
+            if ($this->canSaveConfiguration()) return true;
+            if ($project->getOwner() instanceof User && $project->getOwner()->getID() == $this->getID()) return true;
 
-            if ($retval === null) {
-                if ($project->getOwner() instanceof User && $project->getOwner()->getID() == $this->getID()) return true;
-                if ($project->getLeader() instanceof User && $project->getLeader()->getID() == $this->getID()) return true;
-            }
+            $allowed = $this->hasPermission($permission, $project->getID());
 
-            return ($retval !== null) ? $retval : false;
-        }
-
-        /**
-         * Whether this user can access the specified page
-         *
-         * @param string $page The page key
-         *
-         * @return boolean
-         */
-        public function hasPageAccess($page, $target_id = null)
-        {
-            if ($target_id === null) {
-                $retval = $this->hasPermission("page_{$page}_access", 0, "core");
-
-                return $retval;
-            } else {
-                $retval = $this->hasPermission("page_{$page}_access", $target_id, "core");
-
-                return ($retval === null) ? $this->hasPermission("page_{$page}_access", 0, "core") : $retval;
-            }
+            return $allowed ?? false;
         }
 
         /**
@@ -1722,17 +1701,17 @@
 
             framework\Logging::log('Checking permission for user ID: ' . $user_id . ', group ID ' . $group_id . ',team IDs ' . implode(',', $team_ids));
 
-            $retval = framework\Context::permissionCheck($module_name, $permission_type, $target_id, $user_id, $group_id, $team_ids);
-            if ($retval === null) {
+            $allowed = framework\Context::permissionCheck($module_name, $permission_type, $target_id, $user_id, $group_id, $team_ids);
+            if ($allowed === null) {
                 framework\Logging::log('... Done checking permission ' . $permission_type . ', target id' . $target_id . ', module ' . $module_name . ', no matching rules found.');
             } else {
-                framework\Logging::log('... Done checking permission ' . $permission_type . ', target id' . $target_id . ', module ' . $module_name . ', permission granted: ' . (($retval) ? 'true' : 'false'));
+                framework\Logging::log('... Done checking permission ' . $permission_type . ', target id' . $target_id . ', module ' . $module_name . ', permission granted: ' . (($allowed) ? 'true' : 'false'));
             }
 
             // Cache the check for specified module/permission type/target ID combo in User object.
-            $this->_permissions_cache[$module_name . '_' . $permission_type . '_' . $target_id] = $retval;
+            $this->_permissions_cache[$module_name . '_' . $permission_type . '_' . $target_id] = $allowed;
 
-            return $retval;
+            return $allowed;
         }
 
         /**
@@ -1848,41 +1827,23 @@
         /**
          * Return if the user can report new issues
          *
-         * @param integer|Project $project_id [optional] A project id
+         * @param Project $project The project to check against
          *
          * @return boolean
          */
-        public function canReportIssues($project_id = null)
+        public function canReportIssues(Project $project)
         {
-            $retval = null;
-            if ($project_id !== null) {
-                if (is_numeric($project_id)) $project_id = tables\Projects::getTable()->selectById($project_id);
-                if ($project_id->isArchived()) return false;
+            if ($project->isArchived()) return false;
 
-                $project_id = ($project_id instanceof Project) ? $project_id->getID() : $project_id;
-                $retval = $this->hasPermission('cancreateissues', $project_id);
-                $retval = ($retval !== null) ? $retval : $this->hasPermission('cancreateandeditissues', $project_id);
-            }
-
-            return ($retval !== null) ? $retval : false;
-        }
-
-        /**
-         * Return if the user can search for issues
-         *
-         * @return boolean
-         */
-        public function canSearchForIssues()
-        {
-            return (bool)$this->_dualPermissionsCheck('canfindissues', 0, 'canfindissuesandsavesearches', 0, false);
+            return $this->hasPermission(Permissions::PERMISSION_PROJECT_CREATE_ISSUES, $project);
         }
 
         protected function _dualPermissionsCheck($permission_1, $permission_1_target, $permission_2, $permission_2_target, $fallback)
         {
-            $retval = $this->hasPermission($permission_1, $permission_1_target);
-            $retval = ($retval !== null) ? $retval : $this->hasPermission($permission_2, $permission_2_target);
+            $allowed = $this->hasPermission($permission_1, $permission_1_target);
+            $allowed = ($allowed !== null) ? $allowed : $this->hasPermission($permission_2, $permission_2_target);
 
-            return (bool)($retval !== null) ? $retval : $fallback;
+            return (bool)($allowed !== null) ? $allowed : $fallback;
         }
 
         /**
@@ -1940,23 +1901,11 @@
         /**
          * Return if the user can access configuration pages
          *
-         * @param integer $section [optional] a section, or the configuration frontpage
-         *
          * @return boolean
          */
-        public function canAccessConfigurationPage($section = null)
+        public function canAccessConfigurationPage()
         {
-            $retval = $this->hasPermission('canviewconfig', $section);
-            $retval = ($retval !== null) ? $retval : $this->hasPermission('cansaveconfig', $section);
-
-            foreach (range(0, 19) as $target_id) {
-                if ($retval !== null) break;
-
-                $retval = ($retval !== null) ? $retval : $this->hasPermission('canviewconfig', $target_id);
-                $retval = ($retval !== null) ? $retval : $this->hasPermission('cansaveconfig', $target_id);
-            }
-
-            return (bool)($retval !== null) ? $retval : false;
+            return $this->hasPermission(Permissions::PERMISSION_ACCESS_CONFIGURATION);
         }
 
         /**
@@ -1968,9 +1917,7 @@
          */
         public function canManageProject(Project $project)
         {
-            if ($project->getOwner() instanceof User && $project->getOwner()->getID() == $this->getID()) return true;
-
-            return (bool)$this->hasPermission('canmanageproject', $project->getID()) || $this->canSaveConfiguration(framework\Settings::CONFIGURATION_SECTION_PROJECTS);
+            return $this->hasProjectPermission(Permissions::PERMISSION_MANAGE_PROJECT, $project) || $this->canSaveConfiguration();
         }
 
         /**
@@ -1978,12 +1925,9 @@
          *
          * @return boolean
          */
-        public function canSaveConfiguration($section, $module = 'core')
+        public function canSaveConfiguration()
         {
-            $retval = $this->hasPermission('cansaveconfig', $section, $module);
-            $retval = ($retval !== null) ? $retval : $this->hasPermission('cansaveconfig', 0, $module);
-
-            return (bool)($retval !== null) ? $retval : false;
+            return $this->hasPermission(Permissions::PERMISSION_SAVE_CONFIGURATION);
         }
 
         /**
@@ -1995,19 +1939,7 @@
          */
         public function canManageProjectReleases(Project $project)
         {
-            if ($project->isArchived()) return false;
-            if ($this->canSaveConfiguration(framework\Settings::CONFIGURATION_SECTION_PROJECTS)) return true;
-            if ($project->getOwner() instanceof User && $project->getOwner()->getID() == $this->getID()) return true;
-
-            return $this->_dualPermissionsCheck('canmanageprojectreleases', $project->getID(), 'canmanageproject', $project->getID(), false);
-        }
-
-        public function canEditMilestones(Project $project)
-        {
-            if ($project->isArchived()) return false;
-            if ($project->getOwner() instanceof User && $project->getOwner()->getID() == $this->getID()) return true;
-
-            return $this->_dualPermissionsCheck('canaddscrumsprints', $project->getID(), 'canmanageproject', $project->getID(), false);
+            return $this->hasProjectPermission(Permissions::PERMISSION_MANAGE_PROJECT_RELEASES, $project);
         }
 
         /**
@@ -2019,42 +1951,7 @@
          */
         public function canEditProjectDetails(Project $project)
         {
-            if ($project->isArchived()) return false;
-            if ($this->canSaveConfiguration(framework\Settings::CONFIGURATION_SECTION_PROJECTS)) return true;
-            if ($project->getOwner() instanceof User && $project->getOwner()->getID() == $this->getID()) return true;
-
-            return $this->_dualPermissionsCheck('caneditprojectdetails', $project->getID(), 'canmanageproject', $project->getID(), false);
-        }
-
-        /**
-         * Return if the user can assign scrum user stories
-         *
-         * @param Project $project
-         *
-         * @return boolean
-         */
-        public function canAssignScrumUserStories(Project $project)
-        {
-            if ($project->isArchived()) return false;
-            if ($this->canSaveConfiguration(framework\Settings::CONFIGURATION_SECTION_PROJECTS)) return true;
-            if ($project->getOwner() instanceof User && $project->getOwner()->getID() == $this->getID()) return true;
-
-            $retval = $this->hasPermission('caneditissueassigned_to', $project->getID());
-            $retval = ($retval !== null) ? $retval : $this->hasPermission('caneditissue', $project->getID());
-            $retval = ($retval !== null) ? $retval : $this->hasPermission('caneditissueassigned_to', 0);
-            $retval = ($retval !== null) ? $retval : $this->hasPermission('caneditissue', 0);
-
-            return (bool)($retval !== null) ? $retval : false;
-        }
-
-        /**
-         * Return if the user can change its own password
-         *
-         * @return boolean
-         */
-        public function canChangePassword()
-        {
-            return $this->_dualPermissionsCheck('canchangepassword', 0, 'page_account_access', 0, true);
+            return $this->hasProjectPermission(Permissions::PERMISSION_MANAGE_PROJECT_DETAILS, $project);
         }
 
         /**

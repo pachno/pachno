@@ -131,10 +131,10 @@
 
         public function canUserSet(User $user)
         {
-            $retval = $user->hasPermission($this->getPermissionsKey(), $this->getID(), 'core');
-            $retval = ($retval === null) ? $user->hasPermission($this->getPermissionsKey(), 0, 'core') : $retval;
+            $allowed = $user->hasPermission($this->getPermissionsKey(), $this->getID(), 'core');
+            $allowed = ($allowed === null) ? $user->hasPermission($this->getPermissionsKey(), 0, 'core') : $allowed;
 
-            return ($retval !== null) ? $retval : false;
+            return ($allowed !== null) ? $allowed : false;
         }
 
         public function getPermissionsKey()

@@ -154,14 +154,14 @@
          */
         public static function getEntriesForCategory($category, $min_level = 1)
         {
-            $retval = [];
+            $entries = [];
             foreach (self::$_entries as $entry) {
                 if ($entry['category'] == $category && $entry['level'] >= $min_level) {
-                    $retval[] = $entry;
+                    $entries[] = $entry;
                 }
             }
 
-            return $retval;
+            return $entries;
         }
 
         /**
@@ -174,14 +174,14 @@
          */
         public static function getMessagesForCategory($category, $min_level = 1)
         {
-            $retval = [];
+            $messages = [];
             foreach (self::$_entries as $entry) {
                 if ($entry['category'] == $category && $entry['level'] >= $min_level) {
-                    $retval[] = $entry['message'];
+                    $messages[] = $entry['message'];
                 }
             }
 
-            return $retval;
+            return $messages;
         }
 
         /**

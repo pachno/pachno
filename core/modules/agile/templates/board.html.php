@@ -154,10 +154,3 @@
 <?php if ($pachno_user->isPlanningTutorialEnabled()): ?>
     <?php include_component('main/tutorial_planning', compact('board')); ?>
 <?php endif; ?>
-<script type="text/javascript">
-    require(['domReady', 'pachno/index'], function (domReady, Pachno) {
-        domReady(function () {
-            Pachno.Project.Planning.initialize({dragdrop: <?php echo ($pachno_user->canAssignScrumUserStories($selected_project)) ? 'true' : 'false'; ?>});
-        });
-    });
-</script>

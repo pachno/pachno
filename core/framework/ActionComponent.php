@@ -65,11 +65,11 @@
                     return false;
                 throw new exceptions\ComponentNotFoundException("The component action {$actionToRunName} was not found in the {$actionClassName} class");
             }
-            $retval = self::_doesTemplateExist($template, $throw_exceptions, $module_file);
+            $templateName = self::_doesTemplateExist($template, $throw_exceptions, $module_file);
             if (!$throw_exceptions)
-                return $retval;
+                return $templateName;
 
-            return [$retval, $actionClass, $actionToRunName];
+            return [$templateName, $actionClass, $actionToRunName];
         }
 
         protected static function _getComponentDetails($template)

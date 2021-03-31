@@ -150,7 +150,7 @@
          */
         public function runSwitchUser(framework\Request $request)
         {
-            if (!$this->getUser()->canAccessConfigurationPage(framework\Settings::CONFIGURATION_SECTION_USERS) && !$request->hasCookie('original_username'))
+            if (!$this->getUser()->canSaveConfiguration() && !$request->hasCookie('original_username'))
                 return $this->forward403();
 
             $response = $this->getResponse();

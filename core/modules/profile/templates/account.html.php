@@ -10,7 +10,7 @@
     $pachno_response->setTitle(__('Your account details'));
 
 ?>
-<?php if ($pachno_user->canChangePassword()): ?>
+<?php if (!$pachno_user->isGuest()): ?>
     <div class="fullpage_backdrop" id="change_password_div" style="<?php if (!$has_autopassword) echo 'display: none;'; ?>">
         <div class="fullpage_backdrop_content">
             <div class="backdrop_box medium">
@@ -375,7 +375,7 @@
                             <?= fa_image_tag('key', ['class' => 'icon']); ?>
                             <span><?= __('Passwords and keys'); ?></span>
                             <span class="actions">
-                                <?php if ($pachno_user->canChangePassword() && !$pachno_user->isOpenIdLocked()): ?>
+                                <?php if (!$pachno_user->isGuest() && !$pachno_user->isOpenIdLocked()): ?>
                                     <button class="button secondary" onclick="$('#change_password_div').toggle();"><?= fa_image_tag('key', ['class' => 'icon']); ?><span><?= __('Change my password'); ?></span></button>
                                 <?php elseif ($pachno_user->isOpenIdLocked()): ?>
                                     <button class="button secondary" onclick="$('#pick_username_div').toggle();" id="pick_username_button"><?= fa_image_tag('user-tag', ['class' => 'icon']); ?><span><?= __('Pick a username'); ?></span></button>

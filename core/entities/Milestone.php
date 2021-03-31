@@ -619,7 +619,7 @@
          */
         public function hasAccess()
         {
-            return ($this->getProject()->canSeeAllMilestones() || Context::getUser()->hasPermission('canseemilestone', $this->getID()));
+            return ($this->isVisibleRoadmap() || $this->getProject()->canSeeInternalMilestones());
         }
 
         /**
@@ -1160,7 +1160,6 @@
         protected function _postSave($is_new)
         {
             if ($is_new) {
-                Context::setPermission("canseemilestone", $this->getID(), "core", 0, Context::getUser()->getGroup()->getID(), 0, true);
                 Event::createNew('core', 'Milestone::_postSave', $this)->trigger();
             }
 

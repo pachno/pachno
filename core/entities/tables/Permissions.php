@@ -51,11 +51,65 @@
 
         const ROLE_ID = 'permissions.role_id';
 
+        const PERMISSION_ACCESS_GROUP_ISSUES = 'canseegroupissues';
+
+        const PERMISSION_ACCESS_CONFIGURATION = 'canviewconfig';
+
+        const PERMISSION_SAVE_CONFIGURATION = 'cansaveconfig';
+
         const PERMISSION_PAGE_ACCESS_PROJECT_LIST = 'page_project_list_access';
 
         const PERMISSION_PAGE_ACCESS_DASHBOARD = 'page_dashboard_access';
 
         const PERMISSION_PAGE_ACCESS_ACCOUNT = 'page_account_access';
+
+        const PERMISSION_PAGE_ACCESS_SEARCH = 'page_account_search';
+
+        const PERMISSION_PROJECT_ACCESS = 'canseeproject';
+
+        const PERMISSION_PROJECT_INTERNAL_ACCESS = 'canseeprojectinernalresources';
+
+        const PERMISSION_PROJECT_INTERNAL_ACCESS_EDITIONS = 'canseeallprojecteditions';
+
+        const PERMISSION_PROJECT_INTERNAL_ACCESS_COMPONENTS = 'canseeallprojectcomponents';
+
+        const PERMISSION_PROJECT_INTERNAL_ACCESS_BUILDS = 'canseeallprojectbuilds';
+
+        const PERMISSION_PROJECT_INTERNAL_ACCESS_MILESTONES = 'canseeallprojectmilestones';
+
+        const PERMISSION_PROJECT_INTERNAL_ACCESS_COMMENTS = 'canseeallprojectcomments';
+
+        const PERMISSION_PROJECT_ACCESS_TIME_LOGGING = 'canseetimespent';
+
+        const PERMISSION_PROJECT_ACCESS_ALL_ISSUES = 'canseeallissues';
+
+        const PERMISSION_PROJECT_ACCESS_BOARDS = 'project_board_access';
+
+        const PERMISSION_PROJECT_ACCESS_CODE = 'project_code_access';
+
+        const PERMISSION_PROJECT_ACCESS_DASHBOARD = 'project_dashboard_access';
+
+        const PERMISSION_PROJECT_ACCESS_DOCUMENTATION = 'project_documentation_access';
+
+        const PERMISSION_PROJECT_ACCESS_ISSUES = 'project_issues_access';
+
+        const PERMISSION_PROJECT_ACCESS_RELEASES = 'project_releases_access';
+
+        const PERMISSION_PROJECT_CREATE_ISSUES = 'cancreateissues';
+
+        const PERMISSION_EDIT_DOCUMENTATION = 'caneditdocumentation';
+
+        const PERMISSION_EDIT_DOCUMENTATION_OWN = 'caneditdocumentationown';
+
+        const PERMISSION_EDIT_DOCUMENTATION_POST_COMMENTS = 'canpostandeditarticlecomments';
+
+        const PERMISSION_MANAGE_PROJECT = 'canmanageproject';
+
+        const PERMISSION_MANAGE_PROJECT_DETAILS = 'caneditprojectdetails';
+
+        const PERMISSION_MANAGE_PROJECT_MODERATE_DOCUMENTATION = 'canmoderatearticlesandcomments';
+
+        const PERMISSION_MANAGE_PROJECT_RELEASES = 'canmanageprojectreleases';
 
         public function getAll($scope_id = null)
         {
@@ -67,12 +121,12 @@
             return $res;
         }
 
-        public function removeSavedPermission($uid, $gid, $tid, $module, $permission_type, $target_id, $scope, $role_id = null)
+        public function removeSavedPermission($user_id, $group_id, $team_id, $module, $permission_type, $target_id, $scope, $role_id = null)
         {
             $query = $this->getQuery();
-            $query->where(self::USER_ID, $uid);
-            $query->where(self::GROUP_ID, $gid);
-            $query->where(self::TEAM_ID, $tid);
+            $query->where(self::USER_ID, $user_id);
+            $query->where(self::GROUP_ID, $group_id);
+            $query->where(self::TEAM_ID, $team_id);
             $query->where(self::MODULE, $module);
             $query->where(self::PERMISSION_TYPE, $permission_type);
             $query->where(self::TARGET_ID, $target_id);
@@ -98,12 +152,12 @@
             $this->rawDelete($query);
         }
 
-        public function deleteAllPermissionsForCombination($uid, $gid, $tid, $target_id = 0, $role_id = null)
+        public function deleteAllPermissionsForCombination($user_id, $group_id, $team_id, $target_id = 0, $role_id = null)
         {
             $query = $this->getQuery();
-            $query->where(self::USER_ID, $uid);
-            $query->where(self::GROUP_ID, $gid);
-            $query->where(self::TEAM_ID, $tid);
+            $query->where(self::USER_ID, $user_id);
+            $query->where(self::GROUP_ID, $group_id);
+            $query->where(self::TEAM_ID, $team_id);
             if ($target_id == 0) {
                 $query->where(self::TARGET_ID, $target_id);
             } else {
@@ -151,10 +205,10 @@
         /**
          * Removes the specified permission associated with the role.
          *
-         * @param role_id Role ID.
-         * @param module Module.
-         * @param permission_type Permission type.
-         * @param scope Scope. If null, current scope will be used.
+         * @param integer $role_id Role ID.
+         * @param string $module Module.
+         * @param mixed $permission_type Permission type.
+         * @param integer|Scope $scope Scope. If null, current scope will be used.
          */
         public function deleteRolePermission($role_id, $module, $permission_type, $scope = null)
         {
@@ -191,63 +245,31 @@
 
             // Common pages, everyone.
             foreach ([$user_group, $admin_group, $guest_group] as $group) {
-//                $group->addPermission()
-                $this->setPermission(0, 0, 0, true, 'core', 'page_home_access', 0, $scope_id);
-                $this->setPermission(0, 0, 0, true, 'core', 'page_about_access', 0, $scope_id);
-                $this->setPermission(0, 0, 0, true, 'core', 'page_search_access', 0, $scope_id);
-                $this->setPermission(0, 0, 0, true, 'core', 'page_confirm_scope_access', 0, $scope_id);
-
-                // Search for issues, everyone.
-                $this->setPermission(0, 0, 0, true, 'core', 'canfindissues', 0, $scope_id);
+                $group->addPermission(self::PERMISSION_PAGE_ACCESS_PROJECT_LIST, 'core', $scope_id);
             }
 
-            // Search for issues and save private searches, everyone except guests.
-            $this->setPermission(0, 0, 0, true, 'core', 'canfindissuesandsavesearches', 0, $scope_id);
-            $this->setPermission(0, $guest_group_id, 0, false, 'core', 'canfindissuesandsavesearches', 0, $scope_id);
+            foreach ([$user_group, $admin_group] as $group) {
+                $group->addPermission(self::PERMISSION_PAGE_ACCESS_ACCOUNT, 'core', $scope_id);
+                $group->addPermission(self::PERMISSION_PAGE_ACCESS_DASHBOARD, 'core', $scope_id);
+            }
 
-            // Account page, everyone except guests.
-            $this->setPermission(0, 0, 0, true, 'core', 'page_account_access', 0, $scope_id);
-            $this->setPermission(0, $guest_group_id, 0, false, 'core', 'page_account_access', 0, $scope_id);
-
-            // Global dashboard, everyone except guests.
-            $this->setPermission(0, 0, 0, true, 'core', 'page_dashboard_access', 0, $scope_id);
-            $this->setPermission(0, $guest_group_id, 0, false, 'core', 'page_dashboard_access', 0, $scope_id);
-
-            // Explicit full access for administrator group.
-            $this->setPermission(0, $admin_group_id, 0, true, 'core', 'canaddextrainformationtoissues', 0, $scope_id);
-            $this->setPermission(0, $admin_group_id, 0, true, 'core', 'cancreateandeditissues', 0, $scope_id);
-            $this->setPermission(0, $admin_group_id, 0, true, 'core', 'cancreatepublicsearches', 0, $scope_id);
-            $this->setPermission(0, $admin_group_id, 0, true, 'core', 'candeleteissues', 0, $scope_id);
-            $this->setPermission(0, $admin_group_id, 0, true, 'core', 'candoscrumplanning', 0, $scope_id);
-            $this->setPermission(0, $admin_group_id, 0, true, 'core', 'caneditissue', 0, $scope_id);
-            $this->setPermission(0, $admin_group_id, 0, true, 'core', 'caneditissuecustomfields', 0, $scope_id);
-            $this->setPermission(0, $admin_group_id, 0, true, 'core', 'canfindissues', 0, $scope_id);
-            $this->setPermission(0, $admin_group_id, 0, true, 'core', 'canfindissuesandsavesearches', 0, $scope_id);
-            $this->setPermission(0, $admin_group_id, 0, true, 'core', 'canlockandeditlockedissues', 0, $scope_id);
-            $this->setPermission(0, $admin_group_id, 0, true, 'core', 'canpostseeandeditallcomments', 0, $scope_id);
-            $this->setPermission(0, $admin_group_id, 0, true, 'core', 'canpostseeandeditallcomments', 0, $scope_id);
-            $this->setPermission(0, $admin_group_id, 0, true, 'core', 'cansaveconfig', 0, $scope_id);
-            $this->setPermission(0, $admin_group_id, 0, true, 'core', 'canseeproject', 0, $scope_id);
-            $this->setPermission(0, $admin_group_id, 0, true, 'core', 'canseetimespent', 0, $scope_id);
-            $this->setPermission(0, $admin_group_id, 0, true, 'core', 'canvoteforissues', 0, $scope_id);
-            $this->setPermission(0, $admin_group_id, 0, true, 'core', 'page_about_access', 0, $scope_id);
-            $this->setPermission(0, $admin_group_id, 0, true, 'core', 'page_account_access', 0, $scope_id);
-            $this->setPermission(0, $admin_group_id, 0, true, 'core', 'page_clientlist_access', 0, $scope_id);
-            $this->setPermission(0, $admin_group_id, 0, true, 'core', 'page_confirm_scope_access', 0, $scope_id);
-            $this->setPermission(0, $admin_group_id, 0, true, 'core', 'page_dashboard_access', 0, $scope_id);
-            $this->setPermission(0, $admin_group_id, 0, true, 'core', 'page_home_access', 0, $scope_id);
-            $this->setPermission(0, $admin_group_id, 0, true, 'core', 'page_project_allpages_access', 0, $scope_id);
-            $this->setPermission(0, $admin_group_id, 0, true, 'core', 'page_search_access', 0, $scope_id);
-            $this->setPermission(0, $admin_group_id, 0, true, 'core', 'page_teamlist_access', 0, $scope_id);
+            foreach (Project::getDefaultPermissions() as $permission) {
+                $admin_group->addPermission($permission, 'core', $scope_id);
+            }
+            $admin_group->addPermission('caneditissue', 'core', $scope_id);
         }
 
-        public function setPermission($uid, $gid, $tid, $allowed, $module, $permission_type, $target_id, $scope, $role_id = null)
+        public function setPermission($user_id, $group_id, $team_id, $module, $permission_type, $target_id, $scope = null, $role_id = null)
         {
+            if ($scope === null) {
+                $scope = framework\Context::getScope()->getID();
+            }
+
             $insertion = new Insertion();
-            $insertion->add(self::USER_ID, (int)$uid);
-            $insertion->add(self::GROUP_ID, (int)$gid);
-            $insertion->add(self::TEAM_ID, (int)$tid);
-            $insertion->add(self::ALLOWED, $allowed);
+            $insertion->add(self::USER_ID, (int)$user_id);
+            $insertion->add(self::GROUP_ID, (int)$group_id);
+            $insertion->add(self::TEAM_ID, (int)$team_id);
+            $insertion->add(self::ALLOWED, true);
             $insertion->add(self::MODULE, $module);
             $insertion->add(self::PERMISSION_TYPE, $permission_type);
             $insertion->add(self::TARGET_ID, $target_id);

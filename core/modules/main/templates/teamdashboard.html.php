@@ -1,11 +1,13 @@
 <?php
 
-    if ($team instanceof \pachno\core\entities\Team)
-    {
+    /**
+     * @var \pachno\core\entities\User $pachno_user
+     * @var \pachno\core\framework\Response $pachno_response
+     */
+
+    if ($team instanceof \pachno\core\entities\Team) {
         $pachno_response->setTitle(__('Team dashboard for %team_name', array('%team_name' => $team->getName())));
-    }
-    else
-    {
+    } else {
         $pachno_response->setTitle(__('Team dashboard'));
     }
 
@@ -15,7 +17,7 @@
     <div class="main_area">
         <div class="dashboard_team_info">
             <span class="dashboard_team_header"><?php echo $team->getName(); ?></span>
-            <?php if ($pachno_user->canAccessConfigurationPage(\pachno\core\framework\Settings::CONFIGURATION_SECTION_USERS)): ?>
+            <?php if ($pachno_user->canSaveConfiguration()): ?>
                 <div class="project_header_right button-group">
                     <button class="button dropper first last" id="team_<?php echo $team->getID(); ?>_more_actions"><?= image_tag('spinning_16.gif', ['id' => 'team_members_' . $team->getID() . '_indicator', 'style' => 'display: none']); ?>&nbsp;<?php echo __('Actions'); ?></button>
                     <ul style="margin-top: 28px; font-size: 1.1em;" class="simple-list rounded_box white shadowed popup_box more_actions_dropdown" onclick="$(this).toggle();">

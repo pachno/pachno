@@ -374,17 +374,17 @@
          */
         public function canUserDeleteOwnComment()
         {
-            $retval = $this->_canPermissionOrSeeAndEditComments('candeletecommentsown');
+            $allowed = $this->_canPermissionOrSeeAndEditComments('candeletecommentsown');
 
-            return ($retval !== null) ? $retval : false;
+            return ($allowed !== null) ? $allowed : false;
         }
 
         protected function _canPermissionOrSeeAndEditComments($permission)
         {
-            $retval = $this->_permissionCheck($permission);
-            $retval = ($retval === null) ? $this->_permissionCheck('canpostandeditcomments', true) : $retval;
+            $allowed = $this->_permissionCheck($permission);
+            $allowed = ($allowed === null) ? $this->_permissionCheck('canpostandeditcomments', true) : $allowed;
 
-            return $retval;
+            return $allowed;
         }
 
         /**
@@ -399,10 +399,10 @@
          */
         protected function _permissionCheck($key, $exclusive = false)
         {
-            $retval = ($this->getPostedByID() == framework\Context::getUser()->getID() && !$exclusive) ? $this->_permissionCheckWithID($key . 'own') : null;
-            $retval = ($retval !== null) ? $retval : $this->_permissionCheckWithID($key);
+            $allowed = ($this->getPostedByID() == framework\Context::getUser()->getID() && !$exclusive) ? $this->_permissionCheckWithID($key . 'own') : null;
+            $allowed = ($allowed !== null) ? $allowed : $this->_permissionCheckWithID($key);
 
-            return ($retval !== null) ? $retval : null;
+            return ($allowed !== null) ? $allowed : null;
         }
 
         /**
@@ -415,10 +415,10 @@
          */
         protected function _permissionCheckWithID($key)
         {
-            $retval = framework\Context::getUser()->hasPermission($key, $this->getID(), 'core');
-            $retval = ($retval !== null) ? $retval : framework\Context::getUser()->hasPermission($key, 0, 'core');
+            $allowed = framework\Context::getUser()->hasPermission($key, $this->getID(), 'core');
+            $allowed = ($allowed !== null) ? $allowed : framework\Context::getUser()->hasPermission($key, 0, 'core');
 
-            return $retval;
+            return $allowed;
         }
 
         /**
@@ -429,17 +429,17 @@
         public function canUserDeleteComment()
         {
             if ($this->isSystemComment()) return false;
-            $retval = $this->_canPermissionOrSeeAndEditAllComments('candeletecomments');
+            $allowed = $this->_canPermissionOrSeeAndEditAllComments('candeletecomments');
 
-            return ($retval !== null) ? $retval : false;
+            return ($allowed !== null) ? $allowed : false;
         }
 
         protected function _canPermissionOrSeeAndEditAllComments($permission)
         {
-            $retval = $this->_permissionCheck($permission);
-            $retval = ($retval === null) ? $this->_permissionCheck('canpostseeandeditallcomments', true) : $retval;
+            $allowed = $this->_permissionCheck($permission);
+            $allowed = ($allowed === null) ? $this->_permissionCheck('canpostseeandeditallcomments', true) : $allowed;
 
-            return $retval;
+            return $allowed;
         }
 
         /**
@@ -476,9 +476,9 @@
          */
         public function canUserEditOwnComment()
         {
-            $retval = $this->_canPermissionOrSeeAndEditComments('caneditcommentsown');
+            $allowed = $this->_canPermissionOrSeeAndEditComments('caneditcommentsown');
 
-            return ($retval !== null) ? $retval : false;
+            return ($allowed !== null) ? $allowed : false;
         }
 
         /**
@@ -489,9 +489,9 @@
         public function canUserEditComment()
         {
             if ($this->isSystemComment()) return false;
-            $retval = $this->_canPermissionOrSeeAndEditAllComments('caneditcomments');
+            $allowed = $this->_canPermissionOrSeeAndEditAllComments('caneditcomments');
 
-            return ($retval !== null) ? $retval : false;
+            return ($allowed !== null) ? $allowed : false;
         }
 
         /**

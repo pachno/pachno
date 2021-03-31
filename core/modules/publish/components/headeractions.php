@@ -177,8 +177,6 @@ use pachno\core\framework\Context;
                             <?= fa_image_tag('lock', ['class' => 'icon']); ?>
                             <span class="name"><?= __('Permissions'); ?></span>
                         </a>
-                    <?php endif; ?>
-                    <?php if ($article->canDelete()): ?>
                         <div class="list-item separator"></div>
                         <?php if ($article->isMainPage()): ?>
                             <div class="list-item disabled">

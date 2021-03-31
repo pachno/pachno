@@ -1,8 +1,14 @@
 <?php
 
+    use pachno\core\entities\Project;
+    use pachno\core\entities\tables\Permissions;
+    use pachno\core\entities\User;
     use pachno\core\framework\Event;
 
-    /** @var \pachno\core\entities\Project $project */
+    /**
+     * @var User $pachno_user
+     * @var Project $project
+     */
 
 ?>
 <div class="project-strip">
@@ -36,7 +42,7 @@
             <a href="<?= $project->getDocumentationURL(); ?>" target="_blank" class="button secondary"><?= fa_image_tag('book') . '<span>'.__('Documentation').'</span>'; ?></a>
         <?php endif; ?>
         <?php Event::createNew('core', 'project_overview_item_links', $project)->trigger(); ?>
-        <?php if ($pachno_user->canSearchForIssues() && $pachno_user->hasPageAccess('project_issues', $project->getID())): ?>
+        <?php if ($pachno_user->hasProjectPermission(Permissions::PERMISSION_PROJECT_ACCESS_ISSUES, $project)): ?>
             <?= link_tag(make_url('project_open_issues', array('project_key' => $project->getKey())), fa_image_tag('file-alt') . '<span>'.__('Issues').'</span>', ['class' => 'button secondary']); ?>
         <?php endif; ?>
         <?php if ($pachno_user->canManageProject($project)): ?>

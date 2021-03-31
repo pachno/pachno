@@ -751,35 +751,8 @@
             $file->delete();
         }
 
-        public function canDelete()
-        {
-            $namespaces = $this->getNamespaces();
-
-            if (count($namespaces) > 0) {
-                $key = $namespaces[0];
-                $project = Project::getByKey($key);
-                if ($project instanceof Project) {
-                    if ($project->isArchived())
-                        return false;
-                }
-            }
-
-            return framework\Context::getModule('publish')->canUserDeleteArticle($this);
-        }
-
         public function canEdit()
         {
-            $namespaces = $this->getNamespaces();
-
-            if (count($namespaces) > 0) {
-                $key = $namespaces[0];
-                $project = Project::getByKey($key);
-                if ($project instanceof Project) {
-                    if ($project->isArchived())
-                        return false;
-                }
-            }
-
             return framework\Context::getModule('publish')->canUserEditArticle($this);
         }
 

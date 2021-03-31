@@ -239,7 +239,7 @@
 
         public function hasAccess()
         {
-            return (bool)(framework\Context::getUser()->hasPageAccess('clientlist') || framework\Context::getUser()->isMemberOfClient($this));
+            return (bool) framework\Context::getUser()->isMemberOfClient($this);
         }
 
         /**

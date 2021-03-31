@@ -1,11 +1,13 @@
 <?php
 
-    if ($client instanceof \pachno\core\entities\Client)
-    {
+    /**
+     * @var \pachno\core\entities\User $pachno_user
+     * @var \pachno\core\framework\Response $pachno_response
+     */
+
+    if ($client instanceof \pachno\core\entities\Client) {
         $pachno_response->setTitle(__('Client dashboard for %client_name', array('%client_name' => $client->getName())));
-    }
-    else
-    {
+    } else {
         $pachno_response->setTitle(__('Client dashboard'));
     }
 
@@ -14,7 +16,7 @@
     <div class="main_area">
         <div class="dashboard_client_info">
             <span class="dashboard_client_header"><?php echo $client->getName(); ?></span>
-            <?php if ($pachno_user->canAccessConfigurationPage(\pachno\core\framework\Settings::CONFIGURATION_SECTION_USERS)): ?>
+            <?php if ($pachno_user->canSaveConfiguration()): ?>
                 <div class="project_header_right button-group">
                     <button class="button dropper first last" id="team_<?php echo $client->getID(); ?>_more_actions"><?= image_tag('spinning_16.gif', ['id' => 'client_members_' . $client->getID() . '_indicator', 'style' => 'display: none']); ?>&nbsp;<?php echo __('Actions'); ?></button>
                     <ul style="margin-top: 28px; font-size: 1.1em;" class="simple-list rounded_box white shadowed popup_box more_actions_dropdown" onclick="$(this).toggle();">

@@ -62,16 +62,14 @@
                                     <?= fa_image_tag('file-export', ['class' => 'icon']); ?>
                                     <span class="name"><?= __('Move page'); ?></span>
                                 </a>
-                                <?php if ($article->canDelete()): ?>
-                                    <div class="list-item separator"></div>
-                                    <?php if ($article->isMainPage()): ?>
-                                        <div class="list-item disabled">
-                                            <?= fa_image_tag('info-circle', ['class' => 'icon']); ?>
-                                            <span class="name"><?= __('This page cannot be deleted'); ?></span>
-                                        </div>
-                                    <?php else: ?>
-                                        <?= javascript_link_tag(fa_image_tag('times', ['class' => 'icon']) . '<span class="name">'.__('Delete this page').'</span>', ['onclick' => "Pachno.UI.Dialog.show('".__('Please confirm')."', '".__('Do you really want to delete this article?')."', {yes: {click: function () { Pachno.Main.deleteArticle('".make_url('publish_article_delete', ['article_id' => $article->getID()])."') }}, no: {click: Pachno.UI.Dialog.dismiss}})", 'class' => 'list-item danger disabled']); ?>
-                                    <?php endif; ?>
+                                <div class="list-item separator"></div>
+                                <?php if ($article->isMainPage()): ?>
+                                    <div class="list-item disabled">
+                                        <?= fa_image_tag('info-circle', ['class' => 'icon']); ?>
+                                        <span class="name"><?= __('This page cannot be deleted'); ?></span>
+                                    </div>
+                                <?php else: ?>
+                                    <?= javascript_link_tag(fa_image_tag('times', ['class' => 'icon']) . '<span class="name">'.__('Delete this page').'</span>', ['onclick' => "Pachno.UI.Dialog.show('".__('Please confirm')."', '".__('Do you really want to delete this article?')."', {yes: {click: function () { Pachno.Main.deleteArticle('".make_url('publish_article_delete', ['article_id' => $article->getID()])."') }}, no: {click: Pachno.UI.Dialog.dismiss}})", 'class' => 'list-item danger disabled']); ?>
                                 <?php endif; ?>
                             </div>
                         </div>
