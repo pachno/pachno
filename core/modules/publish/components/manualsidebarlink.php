@@ -29,7 +29,7 @@
             <?= ($main_article->isMainPage()) ? fa_image_tag('file-invoice', ['class' => 'icon']) : fa_image_tag('file-alt', ['class' => 'icon'], 'far'); ?>
         <?php endif; ?>
         <a class="name" href="<?= $main_article->getLink(); ?>"><?= ($main_article->isMainPage()) ? __('Overview') : $main_article->getName(); ?></a>
-        <?php if (!$main_article->isMainPage()): ?>
+        <?php if (!$main_article->isMainPage() && $pachno_user->canCreateArticlesInProject($article->getProject())): ?>
             <a href="<?= $new_article_url; ?>" class="button secondary icon new-page-button">
                 <?= fa_image_tag('plus'); ?>
             </a>

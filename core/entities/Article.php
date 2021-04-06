@@ -770,19 +770,14 @@
             return null;
         }
 
-        public function hasAccess()
+        public function hasAccess(): bool
         {
             $project = $this->getProject();
 
             if ($project instanceof Project && $project->isArchived())
                 return false;
 
-            return $this->canRead();
-        }
-
-        public function canRead()
-        {
-            return framework\Context::getModule('publish')->canUserReadArticle($this);
+            return framework\Context::getUser()->canReadArticlesInProject($this->getProject());
         }
 
         /**

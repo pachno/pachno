@@ -3,6 +3,7 @@
     namespace pachno\core\modules\publish;
 
     use pachno\core\entities\Article;
+    use pachno\core\entities\Permission;
     use pachno\core\entities\Project;
     use pachno\core\entities\tables\ArticleFiles;
     use pachno\core\entities\tables\Articles;
@@ -177,7 +178,7 @@
 
             foreach ($article_ids as $article_id) {
                 $article = new Article($article_id);
-                if ($article->canRead()) {
+                if ($article->hasAccess()) {
                     $event->setProcessed();
                     $event->setReturnValue(true);
                     break;
@@ -313,8 +314,8 @@
         {
             $this->createMainPageArticle($event->getSubject());
 
-            framework\Context::setPermission(Permissions::PERMISSION_EDIT_DOCUMENTATION, 'project_' . $event->getSubject()->getID(), "publish", framework\Context::getUser()->getID(), 0, 0);
-            framework\Context::setPermission(Permissions::PERMISSION_MANAGE_PROJECT_MODERATE_DOCUMENTATION, 'project_' . $event->getSubject()->getID(), "publish", framework\Context::getUser()->getID(), 0, 0);
+            framework\Context::setPermission(Permission::PERMISSION_EDIT_DOCUMENTATION, 'project_' . $event->getSubject()->getID(), "publish", framework\Context::getUser()->getID(), 0, 0);
+            framework\Context::setPermission(Permission::PERMISSION_MANAGE_PROJECT_MODERATE_DOCUMENTATION, 'project_' . $event->getSubject()->getID(), "publish", framework\Context::getUser()->getID(), 0, 0);
         }
 
         public function getTabKey()
@@ -324,7 +325,7 @@
 
         public function canUserReadArticle(Article $article)
         {
-            return $this->_checkArticlePermissions($article, Permissions::PERMISSION_PROJECT_ACCESS_DOCUMENTATION);
+            return $this->_checkArticlePermissions($article, Permission::PERMISSION_PROJECT_ACCESS_DOCUMENTATION);
         }
 
         protected function _checkArticlePermissions(Article $article, $permission_name)
@@ -346,7 +347,7 @@
                 return true;
             }
 
-            return $this->_checkArticlePermissions($article, Permissions::PERMISSION_EDIT_DOCUMENTATION);
+            return $this->_checkArticlePermissions($article, Permission::PERMISSION_EDIT_DOCUMENTATION);
         }
 
         public function listen_quicksearchDropdownFirstItems(Event $event)
@@ -532,8 +533,8 @@
         protected function _install($scope)
         {
             $admin_group_id = framework\Settings::getAdminGroup()->getID();
-            framework\Context::setPermission(Permissions::PERMISSION_EDIT_DOCUMENTATION, 0, 'core', 0, $admin_group_id, 0, $scope);
-            framework\Context::setPermission(Permissions::PERMISSION_MANAGE_PROJECT_MODERATE_DOCUMENTATION, 0, 'core', 0, $admin_group_id, 0, $scope);
+            framework\Context::setPermission(Permission::PERMISSION_EDIT_DOCUMENTATION, 0, 'core', 0, $admin_group_id, 0, $scope);
+            framework\Context::setPermission(Permission::PERMISSION_MANAGE_PROJECT_MODERATE_DOCUMENTATION, 0, 'core', 0, $admin_group_id, 0, $scope);
         }
 
         protected function _loadFixtures($scope)
@@ -541,8 +542,8 @@
             $admin_group_id = framework\Settings::getAdminGroup()->getID();
             $this->loadFixturesArticles($scope);
 
-            framework\Context::setPermission(Permissions::PERMISSION_EDIT_DOCUMENTATION, 0, 'core', 0, $admin_group_id, 0, $scope);
-            framework\Context::setPermission(Permissions::PERMISSION_MANAGE_PROJECT_MODERATE_DOCUMENTATION, 0, 'core', 0, $admin_group_id, 0, $scope);
+            framework\Context::setPermission(Permission::PERMISSION_EDIT_DOCUMENTATION, 0, 'core', 0, $admin_group_id, 0, $scope);
+            framework\Context::setPermission(Permission::PERMISSION_MANAGE_PROJECT_MODERATE_DOCUMENTATION, 0, 'core', 0, $admin_group_id, 0, $scope);
         }
 
         public function loadFixturesArticles($scope, $overwrite = true)

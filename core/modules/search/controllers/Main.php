@@ -197,7 +197,7 @@
          */
         public function preExecute(framework\Request $request, $action)
         {
-            $this->forward403unless(Context::getUser()->hasPermission(tables\Permissions::PERMISSION_PAGE_ACCESS_SEARCH));
+            $this->forward403unless(Context::getUser()->hasPermission(entities\Permission::PERMISSION_PAGE_ACCESS_SEARCH));
 
             if ($project_key = $request['project_key']) {
                 $project = entities\Project::getByKey($project_key);
@@ -208,7 +208,7 @@
             }
 
             if ($project instanceof entities\Project) {
-                $this->forward403unless(Context::getUser()->hasProjectPermission(tables\Permissions::PERMISSION_PROJECT_ACCESS_ISSUES, $project));
+                $this->forward403unless(Context::getUser()->hasProjectPermission(entities\Permission::PERMISSION_PROJECT_ACCESS_ISSUES, $project));
                 Context::getResponse()->setPage('project_issues');
                 Context::setCurrentProject($project);
             }

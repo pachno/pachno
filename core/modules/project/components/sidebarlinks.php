@@ -1,5 +1,6 @@
 <?php
 
+    use pachno\core\entities\Permission;
     use pachno\core\entities\tables\Permissions;
     use pachno\core\entities\User;
     use pachno\core\framework\Context;
@@ -19,14 +20,14 @@
     <span class="name"><?= __('Dashboard'); ?></span>
 </a>
 <?php Event::createNew('core', 'project_sidebar_links_dashboard')->trigger(array('submenu' => false)); ?>
-<?php if ($pachno_user->hasProjectPermission(Permissions::PERMISSION_PROJECT_ACCESS_RELEASES, $selected_project) && $selected_project->isBuildsEnabled()): ?>
+<?php if ($pachno_user->hasProjectPermission(Permission::PERMISSION_PROJECT_ACCESS_RELEASES, $selected_project) && $selected_project->isBuildsEnabled()): ?>
     <a href="<?= 'javascript:void(0)'; // make_url('project_releases', array('project_key' => \pachno\core\framework\Context::getCurrentProject()->getKey())); ?>" class="list-item <?php if ($pachno_response->getPage() == 'project_releases') echo 'selected'; ?> disabled">
         <?= fa_image_tag('box', ['class' => 'icon']); ?>
         <span class="name"><?= __('Releases'); ?></span>
     </a>
     <?php Event::createNew('core', 'project_sidebar_links_releases')->trigger(array('submenu' => false)); ?>
 <?php endif; ?>
-<?php if ($pachno_user->hasProjectPermission(Permissions::PERMISSION_PROJECT_ACCESS_ISSUES, $selected_project)): ?>
+<?php if ($pachno_user->hasProjectPermission(Permission::PERMISSION_PROJECT_ACCESS_ISSUES, $selected_project)): ?>
     <div class="list-item <?php if (in_array($pachno_response->getPage(), ['project_issues', 'viewissue'])) echo 'selected'; ?>">
         <a href="<?= make_url('project_issues', ['project_key' => Context::getCurrentProject()->getKey()]); ?>">
             <?= fa_image_tag('file-alt', ['class' => 'icon']); ?>
@@ -48,14 +49,14 @@
 <div class="header">
     <span class="name"><?= __('More information'); ?></span>
 </div>
-<?php if ($pachno_user->hasProjectPermission(Permissions::PERMISSION_PROJECT_ACCESS_RELEASES, $selected_project)): ?>
+<?php if ($pachno_user->hasProjectPermission(Permission::PERMISSION_PROJECT_ACCESS_RELEASES, $selected_project)): ?>
     <a href="<?= make_url('project_roadmap', array('project_key' => Context::getCurrentProject()->getKey())); ?>" class="list-item <?php if ($pachno_response->getPage() == 'project_roadmap') echo 'selected'; ?>">
         <?= fa_image_tag('road', ['class' => 'icon']); ?>
         <span class="name"><?=  __('Roadmap'); ?></span>
     </a>
     <?php Event::createNew('core', 'project_sidebar_links_roadmap')->trigger(array('submenu' => false)); ?>
 <?php endif; ?>
-<?php if ($pachno_user->hasProjectPermission(Permissions::PERMISSION_PROJECT_ACCESS_DASHBOARD, $selected_project)): ?>
+<?php if ($pachno_user->hasProjectPermission(Permission::PERMISSION_PROJECT_ACCESS_DASHBOARD, $selected_project)): ?>
     <a href="javascript:void(0);<?php // echo make_url('project_team', array('project_key' => \pachno\core\framework\Context::getCurrentProject()->getKey())); ?>" class="list-item disabled tooltip-container <?php if ($pachno_response->getPage() == 'project_team') echo 'selected'; ?>">
         <?= fa_image_tag('users', ['class' => 'icon']); ?>
         <span class="name"><?= __('Team overview'); ?></span>
@@ -65,7 +66,7 @@
     </a>
     <?php Event::createNew('core', 'project_sidebar_links_team')->trigger(array('submenu' => false)); ?>
 <?php endif; ?>
-<?php if ($pachno_user->hasProjectPermission(Permissions::PERMISSION_PROJECT_ACCESS_DASHBOARD, $selected_project)): ?>
+<?php if ($pachno_user->hasProjectPermission(Permission::PERMISSION_PROJECT_ACCESS_DASHBOARD, $selected_project)): ?>
     <a href="<?= make_url('project_timeline_important', array('project_key' => Context::getCurrentProject()->getKey())); ?>" class="list-item <?php if ($pachno_response->getPage() == 'project_timeline') echo 'selected'; ?>">
         <?= fa_image_tag('stream', ['class' => 'icon']); ?>
         <span class="name"><?= __('Timeline'); ?></span>

@@ -29,9 +29,10 @@
         public function componentMainMenustrip()
         {
             $this->publish = framework\Context::getModule('publish');
+            $this->projects = $this->getUser()->getAssociatedProjects();
             $articles = [];
 
-            foreach ($this->getUser()->getAssociatedProjects() as $project) {
+            foreach ($this->projects as $project) {
                 $articles[$project->getID()] = Articles::getTable()->getOrCreateMainPage($project);
             }
             $this->articles = $articles;

@@ -1687,7 +1687,7 @@
                 $cached_value = $this->_permissions_cache[$module_name . '_' . $permission_type . '_' . $target_id];
                 framework\Logging::log('Permission check has already been done and cached, using the cached value: ' . ($cached_value === null ? 'null' : $cached_value));
 
-                return $cached_value;
+                return (bool) $cached_value;
             }
 
             // Obtain group, team, and role memberships for the user.
@@ -1711,7 +1711,7 @@
             // Cache the check for specified module/permission type/target ID combo in User object.
             $this->_permissions_cache[$module_name . '_' . $permission_type . '_' . $target_id] = $allowed;
 
-            return $allowed;
+            return (bool) $allowed;
         }
 
         /**
@@ -1835,7 +1835,7 @@
         {
             if ($project->isArchived()) return false;
 
-            return $this->hasPermission(Permissions::PERMISSION_PROJECT_CREATE_ISSUES, $project);
+            return $this->hasPermission(Permission::PERMISSION_PROJECT_CREATE_ISSUES, $project->getID());
         }
 
         protected function _dualPermissionsCheck($permission_1, $permission_1_target, $permission_2, $permission_2_target, $fallback)
@@ -1864,6 +1864,52 @@
         public function canPostComments()
         {
             return $this->_dualPermissionsCheck('canpostcomments', 0, 'canpostseeandeditallcomments', 0, false);
+        }
+
+        public function canPostArticleComments(Project $project = null)
+        {
+            $project_id = ($project instanceof Project) ? $project->getID() : 0;
+
+            return $this->hasPermission(Permission::PERMISSION_EDIT_DOCUMENTATION_POST_COMMENTS, $project_id);
+        }
+
+        /**
+         * @param Project|null $project
+         * @return bool
+         */
+        public function canReadArticlesInProject(Project $project = null): bool
+        {
+            if ($project instanceof Project) {
+                return $this->hasPermission(Permission::PERMISSION_PROJECT_ACCESS_DOCUMENTATION, $project->getID());
+            } else {
+                return $this->hasPermission(Permission::PERMISSION_PAGE_ACCESS_DOCUMENTATION) || $this->hasPermission(Permission::PERMISSION_MANAGE_SITE_DOCUMENTATION);
+            }
+        }
+
+        /**
+         * @param Project|null $project
+         * @return bool
+         */
+        public function canCreateArticlesInProject(Project $project = null): bool
+        {
+            if ($project instanceof Project) {
+                return $this->hasPermission(Permission::PERMISSION_EDIT_DOCUMENTATION, $project->getID()) || $this->hasPermission(Permission::PERMISSION_EDIT_DOCUMENTATION_OWN, $project->getID());
+            } else {
+                return $this->hasPermission(Permission::PERMISSION_MANAGE_SITE_DOCUMENTATION);
+            }
+        }
+
+        /**
+         * @param Project|null $project
+         * @return bool
+         */
+        public function canCreateCategoriesInProject(Project $project = null): bool
+        {
+            if ($project instanceof Project) {
+                return $this->hasPermission(Permission::PERMISSION_EDIT_DOCUMENTATION, $project->getID());
+            } else {
+                return $this->hasPermission(Permission::PERMISSION_MANAGE_SITE_DOCUMENTATION);
+            }
         }
 
         /**
@@ -1905,7 +1951,7 @@
          */
         public function canAccessConfigurationPage()
         {
-            return $this->hasPermission(Permissions::PERMISSION_ACCESS_CONFIGURATION);
+            return $this->hasPermission(Permission::PERMISSION_ACCESS_CONFIGURATION);
         }
 
         /**
@@ -1917,7 +1963,7 @@
          */
         public function canManageProject(Project $project)
         {
-            return $this->hasProjectPermission(Permissions::PERMISSION_MANAGE_PROJECT, $project) || $this->canSaveConfiguration();
+            return $this->hasProjectPermission(Permission::PERMISSION_MANAGE_PROJECT, $project) || $this->canSaveConfiguration();
         }
 
         /**
@@ -1927,7 +1973,7 @@
          */
         public function canSaveConfiguration()
         {
-            return $this->hasPermission(Permissions::PERMISSION_SAVE_CONFIGURATION);
+            return $this->hasPermission(Permission::PERMISSION_SAVE_CONFIGURATION);
         }
 
         /**
@@ -1939,7 +1985,7 @@
          */
         public function canManageProjectReleases(Project $project)
         {
-            return $this->hasProjectPermission(Permissions::PERMISSION_MANAGE_PROJECT_RELEASES, $project);
+            return $this->hasProjectPermission(Permission::PERMISSION_MANAGE_PROJECT_RELEASES, $project);
         }
 
         /**
@@ -1951,7 +1997,7 @@
          */
         public function canEditProjectDetails(Project $project)
         {
-            return $this->hasProjectPermission(Permissions::PERMISSION_MANAGE_PROJECT_DETAILS, $project);
+            return $this->hasProjectPermission(Permission::PERMISSION_MANAGE_PROJECT_DETAILS, $project);
         }
 
         /**

@@ -510,10 +510,10 @@
         public static function getDefaultPermissions()
         {
             return [
-                Permissions::PERMISSION_PROJECT_ACCESS,
-                Permissions::PERMISSION_EDIT_DOCUMENTATION,
-                Permissions::PERMISSION_PROJECT_INTERNAL_ACCESS,
-                Permissions::PERMISSION_MANAGE_PROJECT,
+                Permission::PERMISSION_PROJECT_ACCESS,
+                Permission::PERMISSION_EDIT_DOCUMENTATION,
+                Permission::PERMISSION_PROJECT_INTERNAL_ACCESS,
+                Permission::PERMISSION_MANAGE_PROJECT,
                 'caneditissue',
                 'canvoteforissue'
             ];
@@ -536,7 +536,7 @@
             if ($this->getLeaderID() == $user->getID()) return true;
             if ($this->getQaResponsibleID() == $user->getID()) return true;
 
-            return $user->hasPermission(Permissions::PERMISSION_PROJECT_ACCESS, $this->getID());
+            return $user->hasPermission(Permission::PERMISSION_PROJECT_ACCESS, $this->getID());
         }
 
         /**
@@ -2150,27 +2150,27 @@
 
         public function canSeeInternalEditions()
         {
-            return $this->permissionCheck(Permissions::PERMISSION_PROJECT_INTERNAL_ACCESS_EDITIONS);
+            return $this->permissionCheck(Permission::PERMISSION_PROJECT_INTERNAL_ACCESS_EDITIONS);
         }
 
         public function canSeeInternalComponents()
         {
-            return $this->permissionCheck(Permissions::PERMISSION_PROJECT_INTERNAL_ACCESS_COMPONENTS);
+            return $this->permissionCheck(Permission::PERMISSION_PROJECT_INTERNAL_ACCESS_COMPONENTS);
         }
 
         public function canSeeInternalBuilds()
         {
-            return $this->permissionCheck(Permissions::PERMISSION_PROJECT_INTERNAL_ACCESS_BUILDS);
+            return $this->permissionCheck(Permission::PERMISSION_PROJECT_INTERNAL_ACCESS_BUILDS);
         }
 
         public function canSeeInternalMilestones()
         {
-            return $this->permissionCheck(Permissions::PERMISSION_PROJECT_INTERNAL_ACCESS_MILESTONES);
+            return $this->permissionCheck(Permission::PERMISSION_PROJECT_INTERNAL_ACCESS_MILESTONES);
         }
 
         public function canSeeTimeLogging()
         {
-            return $this->permissionCheck(Permissions::PERMISSION_PROJECT_ACCESS_TIME_LOGGING);
+            return $this->permissionCheck(Permission::PERMISSION_PROJECT_ACCESS_TIME_LOGGING);
         }
 
         public function canVoteOnIssues()

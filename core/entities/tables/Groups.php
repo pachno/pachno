@@ -2,6 +2,8 @@
 
     namespace pachno\core\entities\tables;
 
+    use b2db\Query;
+    use pachno\core\entities\Group;
     use pachno\core\framework;
 
     /**
@@ -17,8 +19,8 @@
     /**
      * Groups table
      *
-     * @package pachno
-     * @subpackage tables
+     * @method Group selectById($id, Query $query = null, $join = 'all')
+     * @method Group selectOne(Query $query = null, $join = 'all')
      *
      * @Table(name="groups")
      * @Entity(class="\pachno\core\entities\Group")
@@ -38,13 +40,28 @@
 
         public function getAll($scope = null)
         {
-            $scope = ($scope === null) ? framework\Context::getScope()->getID() : $scope;
+            $scope = $scope ?? framework\Context::getScope()->getID();
+
             $query = $this->getQuery();
             $query->where(self::SCOPE, $scope);
 
-            $res = $this->select($query);
+            return $this->select($query);
+        }
 
-            return $res;
+        /**
+         * @param $group_name
+         * @param null $scope
+         * @return Group
+         */
+        public function getByName($group_name, $scope = null): ?Group
+        {
+            $scope = $scope ?? framework\Context::getScope()->getID();
+
+            $query = $this->getQuery();
+            $query->where(self::NAME, $group_name);
+            $query->where(self::SCOPE, $scope);
+
+            return $this->selectOne($query);
         }
 
         public function doesGroupNameExist($group_name)

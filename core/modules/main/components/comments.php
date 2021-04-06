@@ -8,7 +8,7 @@
      * @var int $target_id
      * @var int $target_type
      * @var int $mentionable_target_type
-     * @var bool $save_changes_checked
+     * @var bool $can_post_comments
      */
 
     use pachno\core\framework\Context,
@@ -21,7 +21,7 @@
 
 ?>
 <?php $module = (isset($module)) ? $module : 'core'; ?>
-<?php if ($pachno_user->canPostComments() && ((Context::isProjectContext() && !Context::getCurrentProject()->isArchived()) || !Context::isProjectContext())): ?>
+<?php if ($can_post_comments): ?>
     <div id="comment_add" class="comment_add comment-editor" style="<?php if (!(isset($comment_error) && $comment_error)): ?>display: none; <?php endif; ?>margin-top: 5px;">
         <div class="backdrop_detail_header">
             <span><?= __('Create a comment'); ?></span>

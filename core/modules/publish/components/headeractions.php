@@ -158,16 +158,20 @@ use pachno\core\framework\Context;
                         <?= fa_image_tag('file-word', ['class' => 'icon'], 'far'); ?>
                         <span class="name"><?= __('Download as .docx'); ?></span>
                     </a>
-                    <div class="list-item separator"></div>
-                    <a href="javascript:void(0);" class="list-item disabled">
-                        <?= fa_image_tag('file', ['class' => 'icon'], 'far'); ?>
-                        <span class="name"><?= __('Convert to template'); ?></span>
-                    </a>
-                    <div class="list-item separator"></div>
-                    <div class="list-item trigger-copy-popup">
-                        <?= fa_image_tag('copy', ['class' => 'icon'], 'far'); ?>
-                        <span class="name"><?= __('Copy page'); ?></span>
-                    </div>
+                    <?php if ($article->canEdit()): ?>
+                        <div class="list-item separator"></div>
+                        <a href="javascript:void(0);" class="list-item disabled">
+                            <?= fa_image_tag('file', ['class' => 'icon'], 'far'); ?>
+                            <span class="name"><?= __('Convert to template'); ?></span>
+                        </a>
+                    <?php endif; ?>
+                    <?php if ($pachno_user->canCreateArticlesInProject($article->getProject())): ?>
+                        <div class="list-item separator"></div>
+                        <div class="list-item trigger-copy-popup">
+                            <?= fa_image_tag('copy', ['class' => 'icon'], 'far'); ?>
+                            <span class="name"><?= __('Copy page'); ?></span>
+                        </div>
+                    <?php endif; ?>
                     <a href="javascript:void(0);" class="list-item disabled">
                         <?= fa_image_tag('history', ['class' => 'icon']); ?>
                         <span class="name"><?= __('History'); ?></span>

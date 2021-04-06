@@ -4,8 +4,10 @@
 
     use b2db\Criteria;
     use b2db\Insertion;
+    use b2db\Query;
     use pachno\core\entities\common\Identifiable;
     use pachno\core\entities\Group;
+    use pachno\core\entities\Permission;
     use pachno\core\entities\Project;
     use pachno\core\entities\Role;
     use pachno\core\entities\RolePermission;
@@ -18,11 +20,11 @@
      * Permissions table
      *
      * @method static Permissions getTable()
-     *
-     * @package pachno
-     * @subpackage tables
+     * @method Permission selectById($id, Query $query = null, $join = 'all')
+     * @method Permission[] select(Query $query, $join = 'all')
      *
      * @Table(name="permissions")
+     * @Entity(class="\pachno\core\entities\Permission")
      */
     class Permissions extends ScopedTable
     {
@@ -51,90 +53,6 @@
 
         const ROLE_ID = 'permissions.role_id';
 
-        const PERMISSION_ACCESS_GROUP_ISSUES = 'canseegroupissues';
-
-        const PERMISSION_ACCESS_CONFIGURATION = 'canviewconfig';
-
-        const PERMISSION_SAVE_CONFIGURATION = 'cansaveconfig';
-
-        const PERMISSION_PAGE_ACCESS_PROJECT_LIST = 'page_project_list_access';
-
-        const PERMISSION_PAGE_ACCESS_DASHBOARD = 'page_dashboard_access';
-
-        const PERMISSION_PAGE_ACCESS_ACCOUNT = 'page_account_access';
-
-        const PERMISSION_PAGE_ACCESS_SEARCH = 'page_account_search';
-
-        const PERMISSION_PROJECT_ACCESS = 'canseeproject';
-
-        const PERMISSION_PROJECT_INTERNAL_ACCESS = 'canseeprojectinernalresources';
-
-        const PERMISSION_PROJECT_INTERNAL_ACCESS_EDITIONS = 'canseeallprojecteditions';
-
-        const PERMISSION_PROJECT_INTERNAL_ACCESS_COMPONENTS = 'canseeallprojectcomponents';
-
-        const PERMISSION_PROJECT_INTERNAL_ACCESS_BUILDS = 'canseeallprojectbuilds';
-
-        const PERMISSION_PROJECT_INTERNAL_ACCESS_MILESTONES = 'canseeallprojectmilestones';
-
-        const PERMISSION_PROJECT_INTERNAL_ACCESS_COMMENTS = 'canseeallprojectcomments';
-
-        const PERMISSION_PROJECT_ACCESS_TIME_LOGGING = 'canseetimespent';
-
-        const PERMISSION_PROJECT_ACCESS_ALL_ISSUES = 'canseeallissues';
-
-        const PERMISSION_PROJECT_ACCESS_BOARDS = 'project_board_access';
-
-        const PERMISSION_PROJECT_ACCESS_CODE = 'project_code_access';
-
-        const PERMISSION_PROJECT_ACCESS_DASHBOARD = 'project_dashboard_access';
-
-        const PERMISSION_PROJECT_ACCESS_DOCUMENTATION = 'project_documentation_access';
-
-        const PERMISSION_PROJECT_ACCESS_ISSUES = 'project_issues_access';
-
-        const PERMISSION_PROJECT_ACCESS_RELEASES = 'project_releases_access';
-
-        const PERMISSION_PROJECT_CREATE_ISSUES = 'cancreateissues';
-
-        const PERMISSION_EDIT_DOCUMENTATION = 'caneditdocumentation';
-
-        const PERMISSION_EDIT_DOCUMENTATION_OWN = 'caneditdocumentationown';
-
-        const PERMISSION_EDIT_DOCUMENTATION_POST_COMMENTS = 'canpostandeditarticlecomments';
-
-        const PERMISSION_MANAGE_PROJECT = 'canmanageproject';
-
-        const PERMISSION_MANAGE_PROJECT_DETAILS = 'caneditprojectdetails';
-
-        const PERMISSION_MANAGE_PROJECT_MODERATE_DOCUMENTATION = 'canmoderatearticlesandcomments';
-
-        const PERMISSION_MANAGE_PROJECT_RELEASES = 'canmanageprojectreleases';
-
-        const PERMISSION_EDIT_ISSUES = 'caneditissue';
-
-        const PERMISSION_OWN_SUFFIX = 'own';
-
-        const PERMISSION_EDIT_ISSUES_BASIC = 'caneditissuebasic';
-
-        const PERMISSION_EDIT_ISSUES_PEOPLE = 'caneditissuepeople';
-
-        const PERMISSION_EDIT_ISSUES_TRIAGE = 'caneditissuetriage';
-
-        const PERMISSION_EDIT_ISSUES_TRANSITION = 'cantransitionissue';
-
-        const PERMISSION_EDIT_ISSUES_TIME_TRACKING = 'caneditissuespent_time';
-
-        const PERMISSION_EDIT_ISSUES_ADDITIONAL = 'canaddextrainformationtoissues';
-
-        const PERMISSION_EDIT_ISSUES_COMMENTS = 'canpostandeditissuecomments';
-
-        const PERMISSION_EDIT_ISSUES_MODERATE_COMMENTS = 'canpostseeandeditallissuecomments';
-
-        const PERMISSION_EDIT_ISSUES_DELETE = 'candeleteissues';
-
-        const PERMISSION_EDIT_ISSUES_CUSTOM_FIELDS = 'caneditissuecustomfields';
-
         public function getAll($scope_id = null)
         {
             $scope_id = ($scope_id === null) ? framework\Context::getScope()->getID() : $scope_id;
@@ -162,14 +80,16 @@
             $res = $this->rawDelete($query);
         }
 
-        public function removeGroupPermission($group_id, $permission_type, $module)
+        public function removeGroupPermission($group_id, $permission_type = null, $module = 'core')
         {
             $query = $this->getQuery();
             $query->where(self::USER_ID, 0);
             $query->where(self::TEAM_ID, 0);
             $query->where(self::GROUP_ID, $group_id);
             $query->where(self::MODULE, $module);
-            $query->where(self::PERMISSION_TYPE, $permission_type);
+            if ($permission_type !== null) {
+                $query->where(self::PERMISSION_TYPE, $permission_type);
+            }
             $query->where(self::TARGET_ID, 0);
             $query->where(self::SCOPE, framework\Context::getScope()->getID());
 
@@ -212,6 +132,13 @@
             $query = $this->getQuery();
             $query->where(self::ROLE_ID, $role_id);
             $query->where(self::SCOPE, $scope);
+            $this->rawDelete($query);
+        }
+
+        public function deleteAllRolePermissions($scope_id)
+        {
+            $query = $this->getQuery();
+            $query->where(self::SCOPE, $scope_id);
             $this->rawDelete($query);
         }
 
@@ -263,66 +190,17 @@
             $this->rawDelete($query);
         }
 
-        public function loadFixtures(Scope $scope, Group $user_group, Group $admin_group, Group $guest_group)
-        {
-            $scope_id = $scope->getID();
-
-            // Common pages, everyone.
-            foreach ([$user_group, $admin_group, $guest_group] as $group) {
-                $group->addPermission(self::PERMISSION_PAGE_ACCESS_PROJECT_LIST, 'core', $scope_id);
-            }
-
-            foreach ([$user_group, $admin_group] as $group) {
-                $group->addPermission(self::PERMISSION_PAGE_ACCESS_ACCOUNT, 'core', $scope_id);
-                $group->addPermission(self::PERMISSION_PAGE_ACCESS_DASHBOARD, 'core', $scope_id);
-                $group->addPermission(self::PERMISSION_PAGE_ACCESS_SEARCH, 'core', $scope_id);
-            }
-
-            foreach (Project::getDefaultPermissions() as $permission) {
-                $admin_group->addPermission($permission, 'core', $scope_id);
-            }
-
-            $admin_group->addPermission(Permissions::PERMISSION_SAVE_CONFIGURATION, 'core', $scope_id);
-            $admin_group->addPermission(Permissions::PERMISSION_EDIT_DOCUMENTATION, 'core', $scope_id);
-        }
-
-        public function setPermission($user_id, $group_id, $team_id, $module, $permission_type, $target_id, $scope = null, $role_id = null)
-        {
-            if ($scope === null) {
-                $scope = framework\Context::getScope()->getID();
-            }
-
-            $insertion = new Insertion();
-            $insertion->add(self::USER_ID, (int)$user_id);
-            $insertion->add(self::GROUP_ID, (int)$group_id);
-            $insertion->add(self::TEAM_ID, (int)$team_id);
-            $insertion->add(self::ALLOWED, true);
-            $insertion->add(self::MODULE, $module);
-            $insertion->add(self::PERMISSION_TYPE, $permission_type);
-            $insertion->add(self::TARGET_ID, $target_id);
-            $insertion->add(self::SCOPE, $scope);
-            if ($role_id !== null) {
-                $insertion->add(self::ROLE_ID, $role_id);
-            }
-
-            $res = $this->rawInsert($insertion);
-
-            return $res->getInsertID();
-        }
-
+        /**
+         * @param $group_id
+         * @return Permission[]
+         */
         public function getPermissionsByGroupId($group_id)
         {
             $query = $this->getQuery();
             $query->where(self::GROUP_ID, $group_id);
             $query->where(self::ALLOWED, 1);
-            $permissions = [];
-            if ($res = $this->rawSelect($query)) {
-                while ($row = $res->getNextRow()) {
-                    $permissions[] = ['permission' => $row->get(self::PERMISSION_TYPE), 'allowed' => $row->get(self::ALLOWED), 'module' => $row->get(self::MODULE)];
-                }
-            }
 
-            return $permissions;
+            return $this->select($query);
         }
 
         public function cloneGroupPermissions($cloned_group_id, $new_group_id)
@@ -506,18 +384,18 @@
             $this->rawDelete($query);
         }
 
-        protected function initialize()
-        {
-            parent::setup(self::B2DBNAME, self::ID);
-            parent::addVarchar(self::PERMISSION_TYPE, 100);
-            parent::addVarchar(self::TARGET_ID, 200, 0);
-            parent::addBoolean(self::ALLOWED);
-            parent::addVarchar(self::MODULE, 50);
-            parent::addForeignKeyColumn(self::USER_ID, Users::getTable());
-            parent::addForeignKeyColumn(self::GROUP_ID, Groups::getTable());
-            parent::addForeignKeyColumn(self::TEAM_ID, Teams::getTable());
-            parent::addForeignKeyColumn(self::ROLE_ID, ListTypes::getTable());
-        }
+//        protected function initialize()
+//        {
+//            parent::setup(self::B2DBNAME, self::ID);
+//            parent::addVarchar(self::PERMISSION_TYPE, 100);
+//            parent::addVarchar(self::TARGET_ID, 200, 0);
+//            parent::addBoolean(self::ALLOWED);
+//            parent::addVarchar(self::MODULE, 50);
+//            parent::addForeignKeyColumn(self::USER_ID, Users::getTable());
+//            parent::addForeignKeyColumn(self::GROUP_ID, Groups::getTable());
+//            parent::addForeignKeyColumn(self::TEAM_ID, Teams::getTable());
+//            parent::addForeignKeyColumn(self::ROLE_ID, ListTypes::getTable());
+//        }
 
         protected function setupIndexes()
         {

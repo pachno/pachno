@@ -804,19 +804,19 @@
 
                 return true;
             }
-            if ($user->hasPermission(Permissions::PERMISSION_ACCESS_GROUP_ISSUES) &&
+            if ($user->hasPermission(Permission::PERMISSION_ACCESS_GROUP_ISSUES) &&
                 $this->getPostedBy() instanceof User &&
                 $this->getPostedBy()->getGroupID() == $user->getGroupID()) {
                 Logging::log('done checking, allowed since this user is in same group as user that posted it');
 
                 return true;
             }
-            if ($user->hasPermission(Permissions::PERMISSION_PROJECT_ACCESS_ALL_ISSUES, $this->getProjectID()) === true) {
+            if ($user->hasPermission(Permission::PERMISSION_PROJECT_ACCESS_ALL_ISSUES, $this->getProjectID()) === true) {
                 Logging::log('done checking, allowed since this user may see all issues in this project');
 
                 return true;
             }
-            if ($user->hasPermission(Permissions::PERMISSION_PROJECT_ACCESS_ALL_ISSUES) === false) {
+            if ($user->hasPermission(Permission::PERMISSION_PROJECT_ACCESS_ALL_ISSUES) === false) {
                 Logging::log('done checking, not allowed to access issues not posted by themselves');
 
                 return false;
@@ -1430,7 +1430,7 @@
 
         public function isWorkflowTransitionsAvailable()
         {
-            return $this->getProject()->isArchived() ? false : $this->_permissionCheck(Permissions::PERMISSION_EDIT_ISSUES_TRANSITION);
+            return $this->getProject()->isArchived() ? false : $this->_permissionCheck(Permission::PERMISSION_EDIT_ISSUES_TRANSITION);
         }
 
         /**
@@ -1451,7 +1451,7 @@
 
             $permitted = $this->getProject()->permissionCheck($permission_key);
             if ($permitted === null && $check_own_permissions && $this->isInvolved()) {
-                $permitted = $this->getProject()->permissionCheck($permission_key . Permissions::PERMISSION_OWN_SUFFIX);
+                $permitted = $this->getProject()->permissionCheck($permission_key . Permission::PERMISSION_OWN_SUFFIX);
             }
             $permitted = $permitted ?? false;
 
@@ -1759,7 +1759,7 @@
          */
         public function canEditAccessPolicy()
         {
-            return $this->_permissionCheck(Permissions::PERMISSION_EDIT_ISSUES_BASIC, false);
+            return $this->_permissionCheck(Permission::PERMISSION_EDIT_ISSUES_BASIC, false);
         }
 
         /**
@@ -1769,7 +1769,7 @@
          */
         public function canEditIssueDetails()
         {
-            return $this->_permissionCheck(Permissions::PERMISSION_EDIT_ISSUES_BASIC);
+            return $this->_permissionCheck(Permission::PERMISSION_EDIT_ISSUES_BASIC);
         }
 
         /**
@@ -1779,7 +1779,7 @@
          */
         public function canEditTitle()
         {
-            return $this->_permissionCheck(Permissions::PERMISSION_EDIT_ISSUES_BASIC);
+            return $this->_permissionCheck(Permission::PERMISSION_EDIT_ISSUES_BASIC);
         }
 
         /**
@@ -1789,7 +1789,7 @@
          */
         public function canEditIssuetype()
         {
-            return $this->_permissionCheck(Permissions::PERMISSION_EDIT_ISSUES_BASIC);
+            return $this->_permissionCheck(Permission::PERMISSION_EDIT_ISSUES_BASIC);
         }
 
         /**
@@ -1799,7 +1799,7 @@
          */
         public function canEditUserPain()
         {
-            return $this->_permissionCheck(Permissions::PERMISSION_EDIT_ISSUES_TRIAGE);
+            return $this->_permissionCheck(Permission::PERMISSION_EDIT_ISSUES_TRIAGE);
         }
 
         /**
@@ -1809,7 +1809,7 @@
          */
         public function canEditDescription()
         {
-            return $this->_permissionCheck(Permissions::PERMISSION_EDIT_ISSUES_BASIC);
+            return $this->_permissionCheck(Permission::PERMISSION_EDIT_ISSUES_BASIC);
         }
 
         /**
@@ -1819,7 +1819,7 @@
          */
         public function canEditShortname()
         {
-            return $this->_permissionCheck(Permissions::PERMISSION_EDIT_ISSUES_BASIC);
+            return $this->_permissionCheck(Permission::PERMISSION_EDIT_ISSUES_BASIC);
         }
 
         /**
@@ -1829,7 +1829,7 @@
          */
         public function canEditReproductionSteps()
         {
-            return $this->_permissionCheck(Permissions::PERMISSION_EDIT_ISSUES_BASIC);
+            return $this->_permissionCheck(Permission::PERMISSION_EDIT_ISSUES_BASIC);
         }
 
         /**
@@ -1839,7 +1839,7 @@
          */
         public function canEditIssue()
         {
-            return $this->_permissionCheck(Permissions::PERMISSION_EDIT_ISSUES);
+            return $this->_permissionCheck(Permission::PERMISSION_EDIT_ISSUES);
         }
 
         /**
@@ -1849,7 +1849,7 @@
          */
         public function canEditPostedBy()
         {
-            return $this->_permissionCheck(Permissions::PERMISSION_EDIT_ISSUES_PEOPLE, false);
+            return $this->_permissionCheck(Permission::PERMISSION_EDIT_ISSUES_PEOPLE, false);
         }
 
         /**
@@ -1859,7 +1859,7 @@
          */
         public function canEditAssignee()
         {
-            return $this->_permissionCheck(Permissions::PERMISSION_EDIT_ISSUES_PEOPLE, false);
+            return $this->_permissionCheck(Permission::PERMISSION_EDIT_ISSUES_PEOPLE, false);
         }
 
         /**
@@ -1869,7 +1869,7 @@
          */
         public function canEditOwner()
         {
-            return $this->_permissionCheck(Permissions::PERMISSION_EDIT_ISSUES_PEOPLE, false);
+            return $this->_permissionCheck(Permission::PERMISSION_EDIT_ISSUES_PEOPLE, false);
         }
 
         /**
@@ -1879,7 +1879,7 @@
          */
         public function canEditStatus()
         {
-            return $this->_permissionCheck(Permissions::PERMISSION_EDIT_ISSUES_TRANSITION);
+            return $this->_permissionCheck(Permission::PERMISSION_EDIT_ISSUES_TRANSITION);
         }
 
         /**
@@ -1889,7 +1889,7 @@
          */
         public function canEditCategory()
         {
-            return $this->_permissionCheck(Permissions::PERMISSION_EDIT_ISSUES_TRIAGE);
+            return $this->_permissionCheck(Permission::PERMISSION_EDIT_ISSUES_TRIAGE);
         }
 
         /**
@@ -1899,7 +1899,7 @@
          */
         public function canEditResolution()
         {
-            return $this->_permissionCheck(Permissions::PERMISSION_EDIT_ISSUES_TRIAGE);
+            return $this->_permissionCheck(Permission::PERMISSION_EDIT_ISSUES_TRIAGE);
         }
 
         /**
@@ -1909,7 +1909,7 @@
          */
         public function canEditBlockerStatus()
         {
-            return $this->_permissionCheck(Permissions::PERMISSION_EDIT_ISSUES_TRIAGE);
+            return $this->_permissionCheck(Permission::PERMISSION_EDIT_ISSUES_TRIAGE);
         }
 
         /**
@@ -1919,7 +1919,7 @@
          */
         public function canEditReproducability()
         {
-            return $this->_permissionCheck(Permissions::PERMISSION_EDIT_ISSUES_TRIAGE);
+            return $this->_permissionCheck(Permission::PERMISSION_EDIT_ISSUES_TRIAGE);
         }
 
         /**
@@ -1929,7 +1929,7 @@
          */
         public function canEditSeverity()
         {
-            return $this->_permissionCheck(Permissions::PERMISSION_EDIT_ISSUES_TRIAGE);
+            return $this->_permissionCheck(Permission::PERMISSION_EDIT_ISSUES_TRIAGE);
         }
 
         /**
@@ -1939,7 +1939,7 @@
          */
         public function canEditPriority()
         {
-            return $this->_permissionCheck(Permissions::PERMISSION_EDIT_ISSUES_TRIAGE);
+            return $this->_permissionCheck(Permission::PERMISSION_EDIT_ISSUES_TRIAGE);
         }
 
         /**
@@ -1949,7 +1949,7 @@
          */
         public function canEditEstimatedTime()
         {
-            return $this->_permissionCheck(Permissions::PERMISSION_EDIT_ISSUES_TRIAGE);
+            return $this->_permissionCheck(Permission::PERMISSION_EDIT_ISSUES_TRIAGE);
         }
 
         /**
@@ -1959,7 +1959,7 @@
          */
         public function canEditPercentage()
         {
-            return $this->_permissionCheck(Permissions::PERMISSION_EDIT_ISSUES_TRANSITION);
+            return $this->_permissionCheck(Permission::PERMISSION_EDIT_ISSUES_TRANSITION);
         }
 
         /**
@@ -1969,7 +1969,7 @@
          */
         public function canEditMilestone()
         {
-            return $this->_permissionCheck(Permissions::PERMISSION_EDIT_ISSUES_TRANSITION);
+            return $this->_permissionCheck(Permission::PERMISSION_EDIT_ISSUES_TRANSITION);
         }
 
         /**
@@ -1979,7 +1979,7 @@
          */
         public function canDeleteIssue()
         {
-            return $this->_permissionCheck(Permissions::PERMISSION_EDIT_ISSUES_DELETE, false);
+            return $this->_permissionCheck(Permission::PERMISSION_EDIT_ISSUES_DELETE, false);
         }
 
         /**
@@ -1989,7 +1989,7 @@
          */
         public function canEditCustomFields($key = '')
         {
-            $permission_key = Permissions::PERMISSION_EDIT_ISSUES_CUSTOM_FIELDS . $key;
+            $permission_key = Permission::PERMISSION_EDIT_ISSUES_CUSTOM_FIELDS . $key;
 
             return $this->_permissionCheck($permission_key);
         }
@@ -2001,7 +2001,7 @@
          */
         public function canCloseIssue()
         {
-            return $this->_permissionCheck(Permissions::PERMISSION_EDIT_ISSUES_TRANSITION);
+            return $this->_permissionCheck(Permission::PERMISSION_EDIT_ISSUES_TRANSITION);
         }
 
         /**
@@ -2011,7 +2011,7 @@
          */
         public function canReopenIssue()
         {
-            return $this->_permissionCheck(Permissions::PERMISSION_EDIT_ISSUES_TRANSITION);
+            return $this->_permissionCheck(Permission::PERMISSION_EDIT_ISSUES_TRANSITION);
         }
 
         /**
@@ -2021,7 +2021,7 @@
          */
         public function canPostComments()
         {
-            return $this->_permissionCheck(Permissions::PERMISSION_EDIT_ISSUES_COMMENTS) || $this->_permissionCheck(Permissions::PERMISSION_EDIT_ISSUES_MODERATE_COMMENTS);
+            return $this->_permissionCheck(Permission::PERMISSION_EDIT_ISSUES_COMMENTS) || $this->_permissionCheck(Permission::PERMISSION_EDIT_ISSUES_MODERATE_COMMENTS);
         }
 
         /**
@@ -2031,7 +2031,7 @@
          */
         public function canAttachFiles()
         {
-            return $this->_permissionCheck(Permissions::PERMISSION_EDIT_ISSUES_ADDITIONAL);
+            return $this->_permissionCheck(Permission::PERMISSION_EDIT_ISSUES_ADDITIONAL);
         }
 
         /**
@@ -2041,7 +2041,7 @@
          */
         public function canAddRelatedIssues()
         {
-            return $this->_permissionCheck(Permissions::PERMISSION_EDIT_ISSUES_TRIAGE);
+            return $this->_permissionCheck(Permission::PERMISSION_EDIT_ISSUES_TRIAGE);
         }
 
         /**
@@ -2051,7 +2051,7 @@
          */
         public function canEditAffectedComponents()
         {
-            return $this->_permissionCheck(Permissions::PERMISSION_EDIT_ISSUES_TRIAGE);
+            return $this->_permissionCheck(Permission::PERMISSION_EDIT_ISSUES_TRIAGE);
         }
 
         /**
@@ -2061,7 +2061,7 @@
          */
         public function canEditAffectedEditions()
         {
-            return $this->_permissionCheck(Permissions::PERMISSION_EDIT_ISSUES_TRIAGE);
+            return $this->_permissionCheck(Permission::PERMISSION_EDIT_ISSUES_TRIAGE);
         }
 
         /**
@@ -2071,7 +2071,7 @@
          */
         public function canEditAffectedBuilds()
         {
-            return $this->_permissionCheck(Permissions::PERMISSION_EDIT_ISSUES_TRIAGE);
+            return $this->_permissionCheck(Permission::PERMISSION_EDIT_ISSUES_TRIAGE);
         }
 
         /**
@@ -2081,7 +2081,7 @@
          */
         public function canRemoveAttachments()
         {
-            return $this->_permissionCheck(Permissions::PERMISSION_EDIT_ISSUES_ADDITIONAL, false);
+            return $this->_permissionCheck(Permission::PERMISSION_EDIT_ISSUES_ADDITIONAL, false);
         }
 
         public function canRemoveAttachment(User $user, File $file)
@@ -2105,7 +2105,7 @@
          */
         public function canAttachLinks()
         {
-            return $this->_permissionCheck(Permissions::PERMISSION_EDIT_ISSUES_ADDITIONAL);
+            return $this->_permissionCheck(Permission::PERMISSION_EDIT_ISSUES_ADDITIONAL);
         }
 
         /**
@@ -2125,7 +2125,7 @@
          */
         public function canEditSpentTime()
         {
-            return $this->_permissionCheck(Permissions::PERMISSION_EDIT_ISSUES_TIME_TRACKING);
+            return $this->_permissionCheck(Permission::PERMISSION_EDIT_ISSUES_TIME_TRACKING);
         }
 
         /**

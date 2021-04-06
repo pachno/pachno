@@ -8,6 +8,7 @@
     use pachno\core\entities\BoardColumn;
     use pachno\core\entities\Issue;
     use pachno\core\entities\Milestone;
+    use pachno\core\entities\Permission;
     use pachno\core\entities\SavedSearch;
     use pachno\core\entities\SearchFilter;
     use pachno\core\entities\tables\AgileBoards;
@@ -159,7 +160,7 @@
          */
         public function runBoard(Request $request)
         {
-            $this->forward403unless($this->_checkProjectAccess(Permissions::PERMISSION_PROJECT_ACCESS_BOARDS));
+            $this->forward403unless($this->_checkProjectAccess(Permission::PERMISSION_PROJECT_ACCESS_BOARDS));
             $this->board = ($request['board_id']) ? AgileBoards::getTable()->selectById($request['board_id']) : new AgileBoard();
 
             if (!$this->board instanceof AgileBoard) {
@@ -290,7 +291,7 @@
          */
         public function runWhiteboardIssues(Request $request)
         {
-            $this->forward403unless($this->_checkProjectAccess(Permissions::PERMISSION_PROJECT_ACCESS_BOARDS));
+            $this->forward403unless($this->_checkProjectAccess(Permission::PERMISSION_PROJECT_ACCESS_BOARDS));
             $this->board = AgileBoards::getTable()->selectById($request['board_id']);
 
             $this->forward403unless($this->board instanceof AgileBoard);
@@ -336,7 +337,7 @@
          */
         public function runWhiteboard(Request $request)
         {
-            $this->forward403unless($this->_checkProjectAccess(Permissions::PERMISSION_PROJECT_ACCESS_BOARDS));
+            $this->forward403unless($this->_checkProjectAccess(Permission::PERMISSION_PROJECT_ACCESS_BOARDS));
             $this->board = AgileBoards::getTable()->selectById($request['board_id']);
 
             $this->forward403unless($this->board instanceof AgileBoard);
@@ -397,7 +398,7 @@
          */
         public function runGetReleases(Request $request)
         {
-            $this->forward403unless($this->_checkProjectAccess(Permissions::PERMISSION_PROJECT_ACCESS_BOARDS));
+            $this->forward403unless($this->_checkProjectAccess(Permission::PERMISSION_PROJECT_ACCESS_BOARDS));
             $board = AgileBoards::getTable()->selectById($request['board_id']);
 
             return $this->renderComponent('agile/releasestrip', compact('board'));
@@ -412,7 +413,7 @@
          */
         public function runGetEpics(Request $request)
         {
-            $this->forward403unless($this->_checkProjectAccess(Permissions::PERMISSION_PROJECT_ACCESS_BOARDS));
+            $this->forward403unless($this->_checkProjectAccess(Permission::PERMISSION_PROJECT_ACCESS_BOARDS));
             $board = AgileBoards::getTable()->selectById($request['board_id']);
 
             return $this->renderComponent('agile/epicstrip', compact('board'));
@@ -427,7 +428,7 @@
          */
         public function runAddEpic(Request $request)
         {
-            $this->forward403unless($this->_checkProjectAccess(Permissions::PERMISSION_PROJECT_ACCESS_BOARDS));
+            $this->forward403unless($this->_checkProjectAccess(Permission::PERMISSION_PROJECT_ACCESS_BOARDS));
             $board = AgileBoards::getTable()->selectById($request['board_id']);
 
             try {
@@ -498,7 +499,7 @@
         public function runAssignMilestone(Request $request)
         {
             $this->forward403if(Context::getCurrentProject()->isArchived());
-            $this->forward403unless($this->_checkProjectAccess(Permissions::PERMISSION_PROJECT_ACCESS_BOARDS));
+            $this->forward403unless($this->_checkProjectAccess(Permission::PERMISSION_PROJECT_ACCESS_BOARDS));
 
             try {
                 $issue = Issue::getB2DBTable()->selectById((int)$request['issue_id']);
@@ -624,7 +625,7 @@
          */
         public function runPoll(Request $request)
         {
-            $this->forward403unless($this->_checkProjectAccess(Permissions::PERMISSION_PROJECT_ACCESS_BOARDS));
+            $this->forward403unless($this->_checkProjectAccess(Permission::PERMISSION_PROJECT_ACCESS_BOARDS));
             $last_refreshed = $request['last_refreshed'];
             $board = AgileBoards::getTable()->selectById($request['board_id']);
             $search_object = $board->getBacklogSearchObject();

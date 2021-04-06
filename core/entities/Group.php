@@ -3,6 +3,7 @@
     namespace pachno\core\entities;
 
     use pachno\core\entities\common\IdentifiableScoped;
+    use pachno\core\entities\traits\PermissionContainer;
     use pachno\core\framework\Context;
     use pachno\core\framework\Settings;
 
@@ -33,7 +34,13 @@
 
         protected $_num_members = null;
 
+        /**
+         * @var Permission[]
+         * @Relates(class="\pachno\core\entities\Permission", collection=true, foreign_column="gid")
+         */
         protected $_permissions = null;
+
+        protected $_permission_keys;
 
         /**
          * The name of the object
@@ -90,7 +97,8 @@
                 tables\UserScopes::getTable()->addUserToScope(1, $scope->getID(), $admin_group->getID());
                 Settings::saveSetting(Settings::SETTING_DEFAULT_USER_ID, $default_user_id, 'core', $scope->getID());
             }
-            tables\Permissions::getTable()->loadFixtures($scope, $user_group, $admin_group, $guest_group);
+
+            Permission::loadFixtures($scope, $user_group, $admin_group, $guest_group);
         }
 
         /**
@@ -169,7 +177,48 @@
 
         public function addPermission($permission_name, $module = 'core', $scope = null, $target_id = 0)
         {
-            tables\Permissions::getTable()->setPermission(0, $this->getID(), 0, $module, $permission_name, $target_id, $scope);
+            if ($scope === null) {
+                $scope = Context::getScope();
+            }
+
+            $permission = new Permission();
+            $permission->setGroup($this);
+            $permission->setModuleName($module);
+            $permission->setTargetId($target_id);
+            $permission->setScope($scope);
+            $permission->setPermissionName($permission_name);
+            $permission->save();
+        }
+
+        protected function _populatePermissions()
+        {
+            if ($this->_permissions === null) {
+                $this->_permissions = $this->_b2dbLazyload('_permissions');
+                $this->_permission_keys = [];
+
+                foreach ($this->_permissions as $permission) {
+                    $this->_permission_keys[$permission->getModuleName() . '_' . $permission->getPermissionName()] = true;
+                }
+            }
+        }
+
+        public function hasPermission($permission_name, $module = 'core')
+        {
+            $permissions = $this->getPermissions();
+
+            return array_key_exists($module . '_' . $permission_name, $permissions);
+        }
+
+        /**
+         * Returns all permissions assigned to this role
+         *
+         * @return Permission[]
+         */
+        public function getPermissions()
+        {
+            $this->_populatePermissions();
+
+            return $this->_permission_keys;
         }
 
         /**
@@ -181,42 +230,6 @@
         public function removePermission($permission_name, $module = 'core')
         {
             tables\Permissions::getTable()->removeGroupPermission($this->getID(), $permission_name, $module);
-            if ($this->_permissions !== null) {
-                foreach ($this->_permissions as $index => $permission) {
-                    if ($permission['permission'] == $permission_name && $permission['module'] == $module) {
-                        unset($this->_permissions[$index]);
-                        break;
-                    }
-                }
-            }
-        }
-
-        protected function _populatePermissions()
-        {
-            if ($this->_permissions === null) {
-                $this->_permissions = tables\Permissions::getTable()->getPermissionsByGroupId($this->getID());
-            }
-        }
-
-        public function hasPermission($permission_name, $module = 'core')
-        {
-            foreach ($this->getPermissions() as $permission) {
-                if ($permission['permission'] == $permission_name && $permission['module'] == $module) return true;
-            }
-
-            return false;
-        }
-
-        /**
-         * Returns all permissions assigned to this role
-         *
-         * @return mixed[]
-         */
-        public function getPermissions()
-        {
-            $this->_populatePermissions();
-
-            return $this->_permissions;
         }
 
     }

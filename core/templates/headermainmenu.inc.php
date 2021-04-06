@@ -1,5 +1,6 @@
 <?php
 
+    use pachno\core\entities\Permission;
     use pachno\core\entities\Project;
     use pachno\core\framework;
 
@@ -14,17 +15,17 @@
 ?>
 <nav class="header_menu" id="main_menu">
     <ul>
-        <?php if (!$pachno_user->hasPermission(\pachno\core\entities\tables\Permissions::PERMISSION_PAGE_ACCESS_PROJECT_LIST)): ?>
+        <?php if (!$pachno_user->hasPermission(Permission::PERMISSION_PAGE_ACCESS_PROJECT_LIST)): ?>
             <li<?php if ($pachno_response->getPage() == 'home'): ?> class="selected"<?php endif; ?>>
                 <?= link_tag(make_url('home'), fa_image_tag('home') . '<span>'.__('Projects').'</span>'); ?>
             </li>
         <?php endif; ?>
-        <?php if (!$pachno_user->hasPermission(\pachno\core\entities\tables\Permissions::PERMISSION_PAGE_ACCESS_DASHBOARD)): ?>
+        <?php if (!$pachno_user->hasPermission(Permission::PERMISSION_PAGE_ACCESS_DASHBOARD)): ?>
             <li class="<?php if ($pachno_response->getPage() == 'dashboard'): ?>selected<?php endif; ?>">
                 <?= link_tag(make_url('dashboard'), fa_image_tag('columns') . '<span>'.__('Dashboard').'</span>'); ?>
             </li>
         <?php endif; ?>
-        <?php if ($pachno_user->hasPermission(\pachno\core\entities\tables\Permissions::PERMISSION_PAGE_ACCESS_SEARCH)): ?>
+        <?php if ($pachno_user->hasPermission(Permission::PERMISSION_PAGE_ACCESS_SEARCH)): ?>
             <li class="with-dropdown <?php if (in_array($pachno_response->getPage(), array('project_issues', 'viewissue'))): ?>selected<?php endif; ?>">
                 <?= link_tag(make_url('search'), fa_image_tag('file-alt') . __('Issues') . fa_image_tag('angle-down', ['class' => 'dropdown-indicator']), ['class' => 'dropper']); ?>
                 <div id="issues_menu" class="tab_menu_dropdown popup_box two-columns">

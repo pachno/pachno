@@ -1,5 +1,6 @@
 <?php
 
+    use pachno\core\entities\Permission;
     use pachno\core\entities\tables\Permissions;
 
     /**
@@ -9,7 +10,7 @@
      */
 
 ?>
-<?php if ($pachno_user->hasProjectPermission(Permissions::PERMISSION_PROJECT_ACCESS_BOARDS, $project)): ?>
+<?php if ($pachno_user->hasProjectPermission(Permission::PERMISSION_PROJECT_ACCESS_BOARDS, $project)): ?>
     <div class="list-item <?php if (in_array($pachno_response->getPage(), ['project_planning', 'agile_index', 'agile_board', 'agile_whiteboard'])): ?> selected<?php endif; ?>">
         <a href="<?= make_url('agile_index', ['project_key' => $project->getKey()]); ?>">
             <?= fa_image_tag('chalkboard', ['class' => 'icon']); ?>

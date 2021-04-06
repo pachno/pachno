@@ -18,6 +18,7 @@
         protected $_itemtype = Datatype::ROLE;
 
         /**
+         * @var Permission[]
          * @Relates(class="\pachno\core\entities\RolePermission", collection=true, foreign_column="role_id")
          */
         protected $_permissions = null;
@@ -28,8 +29,8 @@
         {
             $roles = [];
             $roles['Developer'] = [
-                ['permission' => Permissions::PERMISSION_PROJECT_ACCESS],
-                ['permission' => Permissions::PERMISSION_PROJECT_INTERNAL_ACCESS],
+                ['permission' => Permission::PERMISSION_PROJECT_ACCESS],
+                ['permission' => Permission::PERMISSION_PROJECT_INTERNAL_ACCESS],
                 ['permission' => 'canvoteforissues'],
                 ['permission' => 'canlockandeditlockedissues'],
                 ['permission' => 'cancreateandeditissues'],
@@ -37,11 +38,11 @@
                 ['permission' => 'caneditissuecustomfields'],
                 ['permission' => 'canaddextrainformationtoissues'],
                 ['permission' => 'canpostseeandeditallcomments'],
-                ['permission' => Permissions::PERMISSION_EDIT_DOCUMENTATION],
+                ['permission' => Permission::PERMISSION_EDIT_DOCUMENTATION],
             ];
             $roles['Project manager'] = [
-                ['permission' => Permissions::PERMISSION_PROJECT_ACCESS],
-                ['permission' => Permissions::PERMISSION_PROJECT_INTERNAL_ACCESS],
+                ['permission' => Permission::PERMISSION_PROJECT_ACCESS],
+                ['permission' => Permission::PERMISSION_PROJECT_INTERNAL_ACCESS],
                 ['permission' => 'canvoteforissues'],
                 ['permission' => 'canlockandeditlockedissues'],
                 ['permission' => 'cancreateandeditissues'],
@@ -49,27 +50,27 @@
                 ['permission' => 'caneditissuecustomfields'],
                 ['permission' => 'canaddextrainformationtoissues'],
                 ['permission' => 'canpostseeandeditallcomments'],
-                ['permission' => Permissions::PERMISSION_EDIT_DOCUMENTATION],
+                ['permission' => Permission::PERMISSION_EDIT_DOCUMENTATION],
             ];
             $roles['Tester'] = [
-                ['permission' => Permissions::PERMISSION_PROJECT_ACCESS],
-                ['permission' => Permissions::PERMISSION_PROJECT_INTERNAL_ACCESS],
+                ['permission' => Permission::PERMISSION_PROJECT_ACCESS],
+                ['permission' => Permission::PERMISSION_PROJECT_INTERNAL_ACCESS],
                 ['permission' => 'canvoteforissues'],
                 ['permission' => 'cancreateandeditissues'],
                 ['permission' => 'caneditissuecustomfields'],
                 ['permission' => 'canaddextrainformationtoissues'],
                 ['permission' => 'canpostandeditcomments'],
-                ['permission' => Permissions::PERMISSION_EDIT_DOCUMENTATION_OWN],
+                ['permission' => Permission::PERMISSION_EDIT_DOCUMENTATION_OWN],
             ];
             $roles['Documentation editor'] = [
-                ['permission' => Permissions::PERMISSION_PROJECT_ACCESS],
-                ['permission' => Permissions::PERMISSION_PROJECT_INTERNAL_ACCESS],
+                ['permission' => Permission::PERMISSION_PROJECT_ACCESS],
+                ['permission' => Permission::PERMISSION_PROJECT_INTERNAL_ACCESS],
                 ['permission' => 'canvoteforissues'],
                 ['permission' => 'cancreateandeditissues'],
                 ['permission' => 'canaddextrainformationtoissues'],
                 ['permission' => 'canpostandeditcomments'],
-                ['permission' => Permissions::PERMISSION_EDIT_DOCUMENTATION],
-                ['permission' => Permissions::PERMISSION_MANAGE_PROJECT_MODERATE_DOCUMENTATION],
+                ['permission' => Permission::PERMISSION_EDIT_DOCUMENTATION],
+                ['permission' => Permission::PERMISSION_MANAGE_PROJECT_MODERATE_DOCUMENTATION],
             ];
 
             foreach ($roles as $name => $permissions) {
@@ -176,9 +177,11 @@
          */
         public function removePermission(RolePermission $permission)
         {
-            $this->_populatePermissions();
             $permission_id = $permission->getID();
-            unset($this->_permissions[$permission_id]);
+            if (is_array($this->_permissions)) {
+                unset($this->_permissions[$permission_id]);
+            }
+
             tables\Permissions::getTable()->deleteRolePermission($this->getID(), $permission->getModule(), $permission->getPermission());
             $permission->delete();
         }
@@ -187,13 +190,6 @@
         {
             if ($this->_permissions === null) {
                 $this->_b2dbLazyLoad('_permissions');
-            }
-        }
-
-        public function addPermissions($permissions)
-        {
-            foreach ($permissions as $permission) {
-                $this->addPermission($permission);
             }
         }
 

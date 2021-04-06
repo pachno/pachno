@@ -22,7 +22,7 @@
         <?php foreach ($children as $child_article): ?>
             <?php include_component('publish/manualsidebarlink', array('parents' => $parents, 'article' => $article, 'main_article' => $child_article)); ?>
         <?php endforeach; ?>
-        <?php if ($main_article->isCategory()): ?>
+        <?php if ($main_article->isCategory() && $pachno_user->canCreateCategoriesInProject(\pachno\core\framework\Context::getCurrentProject())): ?>
             <?php include_component('publish/sidebaraddcategory', ['article' => $main_article, 'project' => $main_article->getProject()]); ?>
         <?php endif; ?>
     <?php endif; ?>

@@ -49,7 +49,7 @@
         /**
          * Set the scope this item is in
          *
-         * @param Scope $scope
+         * @param Scope|int $scope
          */
         public function setScope($scope)
         {

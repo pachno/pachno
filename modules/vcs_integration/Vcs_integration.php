@@ -4,6 +4,7 @@
 
     use b2db\Criteria;
     use b2db\Update;
+    use pachno\core\entities\Permission;
     use pachno\core\entities\tables\Permissions;
     use pachno\core\entities\tables\Settings;
     use pachno\core\framework,
@@ -175,7 +176,7 @@
 
         public function listen_project_links(framework\Event $event)
         {
-            if (framework\Context::getUser()->hasProjectPermission(Permissions::PERMISSION_PROJECT_ACCESS_CODE, framework\Context::getCurrentProject()))
+            if (framework\Context::getUser()->hasProjectPermission(Permission::PERMISSION_PROJECT_ACCESS_CODE, framework\Context::getCurrentProject()))
                 $event->addToReturnList(array('url' => framework\Context::getRouting()->generate('vcs_commitspage', array('project_key' => framework\Context::getCurrentProject()->getKey())), 'title' => framework\Context::getI18n()->__('Commits')));
         }
 

@@ -6,18 +6,22 @@
     use pachno\core\entities\ArticleCategoryLink;
     use pachno\core\entities\Datatype;
     use pachno\core\entities\DatatypeBase;
+    use pachno\core\entities\Group;
     use pachno\core\entities\LogItem;
+    use pachno\core\entities\Permission;
     use pachno\core\entities\Project;
     use pachno\core\entities\Scope;
     use pachno\core\entities\tables\AgileBoards;
     use pachno\core\entities\tables\ArticleCategoryLinks;
     use pachno\core\entities\tables\Articles;
     use pachno\core\entities\tables\Files;
+    use pachno\core\entities\tables\Groups;
     use pachno\core\entities\tables\Issues;
     use pachno\core\entities\tables\IssueSpentTimes;
     use pachno\core\entities\tables\ListTypes;
     use pachno\core\entities\tables\LogItems;
     use pachno\core\entities\tables\Modules;
+    use pachno\core\entities\tables\Permissions;
     use pachno\core\entities\tables\Projects;
     use pachno\core\entities\tables\RolePermissions;
     use pachno\core\entities\tables\Scopes;
@@ -51,9 +55,6 @@
 
                 return;
             }
-            $this->cliEcho('IssueSpentTimes', self::COLOR_WHITE, self::STYLE_DEFAULT);
-            IssueSpentTimes::getTable()->upgrade(tbg\tables\IssueSpentTimes::getTable());
-            return;
 
             Settings::getTable()->setMaintenanceMode(true);
 
@@ -137,6 +138,7 @@
 
                 $articles = Articles::getTable()->getLegacyArticles(null, $scope, false);
                 $this->migrateArticles($articles, null, $scope->getID());
+                $this->migratePermissions($scope);
                 $lines = 2;
                 $cc++;
             }
@@ -406,6 +408,34 @@
             }
 
             $this->cliClearLine();
+        }
+
+        protected function migratePermissions(Scope $scope)
+        {
+            $this->cliClearLine();
+            $this->cliMoveLeft();
+
+            $this->cliEcho('Migrating permissions ...');
+
+            $admin_group_setting = Settings::getTable()->getSetting(\pachno\core\framework\Settings::SETTING_ADMIN_GROUP, 'core', 0, $scope->getID());
+            $user_group_setting = Settings::getTable()->getSetting(\pachno\core\framework\Settings::SETTING_USER_GROUP, 'core', 0, $scope->getID());
+
+            $admin_group = Groups::getTable()->selectById($admin_group_setting->getValue());
+            $user_group = Groups::getTable()->selectById($user_group_setting->getValue());
+            $guest_group = Groups::getTable()->getByName('Guests', $scope->getID());
+
+            if ($guest_group instanceof Group) {
+                Permissions::getTable()->removeGroupPermission($guest_group->getID());
+            }
+            Permissions::getTable()->removeGroupPermission($admin_group->getID());
+            Permissions::getTable()->removeGroupPermission($user_group->getID());
+            Permissions::getTable()->deleteAllRolePermissions($scope->getID());
+
+            Permission::loadFixtures($scope, $user_group, $admin_group, $guest_group);
+
+            $this->cliClearLine();
+            $this->cliMoveLeft();
+            $this->cliEcho("Migrating permissions: 100%");
         }
 
         protected function migrateDataTypes(Scope $scope)

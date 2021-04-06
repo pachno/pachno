@@ -14,5 +14,7 @@
     <?php foreach ($children as $child_article): ?>
         <?php include_component('publish/editcategorysidebarlink', array('parents' => $parents, 'article' => $article, 'category' => $child_article)); ?>
     <?php endforeach; ?>
-    <?php include_component('publish/editcategorysidebaraddcategory', ['article' => $category, 'project' => $category->getProject()]); ?>
+    <?php if ($pachno_user->canCreateCategoriesInProject($category->getProject())): ?>
+        <?php include_component('publish/editcategorysidebaraddcategory', ['article' => $category, 'project' => $category->getProject()]); ?>
+    <?php endif; ?>
 </div>

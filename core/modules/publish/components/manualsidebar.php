@@ -9,6 +9,7 @@
      * @var Article[] $top_level_articles
      * @var Article[] $top_level_categories
      * @var int[] $parents
+     * @var \pachno\core\entities\User $pachno_user
      */
 
 ?>
@@ -71,15 +72,17 @@
                         'article' => $article,
                         'main_article' => $top_level_category]); ?>
                 <?php endforeach; ?>
-                <?php include_component('publish/sidebaraddcategory', ['project' => \pachno\core\framework\Context::getCurrentProject()]); ?>
+                <?php if ($pachno_user->canCreateCategoriesInProject(\pachno\core\framework\Context::getCurrentProject())): ?>
+                    <?php include_component('publish/sidebaraddcategory', ['project' => \pachno\core\framework\Context::getCurrentProject()]); ?>
+                <?php endif; ?>
             </div>
             <div class="header expandable expanded">
                 <span class="name"><?= __('Pages'); ?></span>
-                <?php if ($article->getProject() instanceof Project): ?>
+                <?php if ($article->getProject() instanceof Project && $pachno_user->canCreateArticlesInProject($article->getProject())): ?>
                     <a href="<?= make_url('publish_project_article_edit', ['article_id' => 0, 'parent_article_id' => $article->getID(), 'project_key' => $article->getProject()->getKey()]); ?>" class="button secondary icon">
                         <?= fa_image_tag('plus'); ?>
                     </a>
-                <?php else: ?>
+                <?php elseif ($pachno_user->canCreateArticlesInProject($article->getProject())): ?>
                     <a href="<?= make_url('publish_article_edit', ['article_id' => 0, 'parent_article_id' => $article->getID()]); ?>" class="button secondary icon">
                         <?= fa_image_tag('plus'); ?>
                     </a>

@@ -1,6 +1,6 @@
 <?php
 
-    use pachno\core\entities\Project;
+    use pachno\core\entities\Permission;
     use pachno\core\entities\User;
     use pachno\core\framework;
     use pachno\core\framework\Event;
@@ -36,14 +36,18 @@
             <?php echo image_tag(Settings::getHeaderIconUrl(), ['class' => 'logo-icon'], true); ?>
             <span id="logo_name" class="logo_name"><?php echo Settings::getSiteHeaderName() ?? 'Pachno'; ?></span>
         </a>
-        <a class="<?php if ($selected_tab == 'home') echo ' selected'; ?>" href="<?= make_url('home'); ?>">
-            <?= fa_image_tag('window-restore', ['class' => 'icon']); ?>
-            <span class="name"><?= __('Home'); ?></span>
-        </a>
-        <a class="<?php if ($selected_tab == 'projects') echo ' selected'; ?>" href="<?= make_url('projects_list'); ?>">
-            <?= fa_image_tag('boxes', ['class' => 'icon']); ?>
-            <span class="name"><?= __('Projects'); ?></span>
-        </a>
+        <?php if ($pachno_user->hasPermission(Permission::PERMISSION_PAGE_ACCESS_DASHBOARD)): ?>
+            <a class="<?php if ($selected_tab == 'home') echo ' selected'; ?>" href="<?= make_url('home'); ?>">
+                <?= fa_image_tag('window-restore', ['class' => 'icon']); ?>
+                <span class="name"><?= __('Home'); ?></span>
+            </a>
+        <?php endif; ?>
+        <?php if ($pachno_user->hasPermission(Permission::PERMISSION_PAGE_ACCESS_PROJECT_LIST)): ?>
+            <a class="<?php if ($selected_tab == 'projects') echo ' selected'; ?>" href="<?= make_url('projects_list'); ?>">
+                <?= fa_image_tag('boxes', ['class' => 'icon']); ?>
+                <span class="name"><?= __('Projects'); ?></span>
+            </a>
+        <?php endif; ?>
         <?php Event::createNew('core', 'header_menu_entries')->trigger(); ?>
         <a class="<?php if ($selected_tab == 'teams') echo 'selected'; ?> disabled" href="<?= make_url('home'); ?>">
             <?= fa_image_tag('users', ['class' => 'icon']); ?>
@@ -53,11 +57,13 @@
             <?= fa_image_tag('search', ['class' => 'icon']); ?>
             <span class="name"><?= __('Press %slash or click here to open the quicksearch', ['%slash' => '<code>/</code>']); ?></span>
         </a>
-        <a id="header_config_link" class="only-icon <?php if (in_array(\pachno\core\framework\Context::getRouting()->getCurrentRoute()->getModuleName(), ['configuration', 'import'])) echo ' selected'; ?>" href="<?= make_url('configure'); ?>">
-            <?= fa_image_tag('cog', ['class' => 'icon']); ?>
-            <span class="name"><?= __('Configure Pachno'); ?></span>
-        </a>
         <?php if (!$pachno_user->isGuest()): ?>
+            <?php if ($pachno_user->canAccessConfigurationPage()): ?>
+                <a id="header_config_link" class="only-icon <?php if (in_array(\pachno\core\framework\Context::getRouting()->getCurrentRoute()->getModuleName(), ['configuration', 'import'])) echo ' selected'; ?>" href="<?= make_url('configure'); ?>">
+                    <?= fa_image_tag('cog', ['class' => 'icon']); ?>
+                    <span class="name"><?= __('Configure Pachno'); ?></span>
+                </a>
+            <?php endif; ?>
             <div class="notifications-container dropper-container" id="user_notifications_container">
                 <a href="javascript:void(0);" class="dropper disabled">
                     <?= fa_image_tag('bell', ['class' => 'icon']); ?>
@@ -73,10 +79,13 @@
                 </div>
             </div>
         <?php endif; ?>
-        <div class="dropper-container">
-            <?php if ($pachno_user->isGuest()): ?>
-                <a href="javascript:void(0);" <?php if (\pachno\core\framework\Context::getRouting()->getCurrentRoute()->getName() != 'auth_login_page'): ?>data-login-section="#regular_login_container" class="trigger-show-login"<?php endif; ?>><?= fa_image_tag('user'); ?><span><?= __('Log in'); ?></span></a>
-            <?php else: ?>
+        <?php if ($pachno_user->isGuest()): ?>
+            <a class="only-icon" href="<?= make_url('auth_login'); ?>">
+                <?= fa_image_tag('user', ['class' => 'icon']); ?>
+                <span class="name"><?= __('Log in'); ?></span>
+            </a>
+        <?php else: ?>
+            <div class="dropper-container">
                 <button href="javascript:void(0);" class="button secondary dropper header-user-info avatar-container">
                     <span class="avatar medium">
                         <?= image_tag($pachno_user->getAvatarURL(true), array('alt' => '[avatar]', 'id' => 'header_avatar'), true); ?>
@@ -129,7 +138,7 @@
                         <span class="name"><?= __('Logout'); ?></span>
                     </a>
                 </div>
-            <?php endif; ?>
-        </div>
+            </div>
+        <?php endif; ?>
     </div>
 </header>

@@ -37,7 +37,7 @@
          */
         public function runDashboard(framework\Request $request)
         {
-            $this->forward403unless($this->_checkProjectAccess(tables\Permissions::PERMISSION_PROJECT_ACCESS_DASHBOARD));
+            $this->forward403unless($this->_checkProjectAccess(entities\Permission::PERMISSION_PROJECT_ACCESS_DASHBOARD));
 
             if ($request->isPost() && $request['setup_default_dashboard'] && $this->getUser()->canEditProjectDetails($this->selected_project)) {
                 entities\DashboardView::getB2DBTable()->setDefaultViews($this->selected_project->getID(), entities\DashboardView::TYPE_PROJECT);
@@ -77,7 +77,7 @@
          */
         public function runRoadmap(framework\Request $request)
         {
-            $this->forward403unless($this->_checkProjectAccess(tables\Permissions::PERMISSION_PROJECT_ACCESS_RELEASES));
+            $this->forward403unless($this->_checkProjectAccess(entities\Permission::PERMISSION_PROJECT_ACCESS_RELEASES));
         }
 
         /**
@@ -169,7 +169,7 @@
          */
         public function runTimeline(framework\Request $request)
         {
-            $this->forward403unless($this->_checkProjectAccess(tables\Permissions::PERMISSION_PROJECT_ACCESS_DASHBOARD));
+            $this->forward403unless($this->_checkProjectAccess(entities\Permission::PERMISSION_PROJECT_ACCESS_DASHBOARD));
             $offset = $request->getParameter('offset', 0);
             if ($request['show'] == 'important') {
                 $this->recent_activities = $this->selected_project->getRecentActivities(40, true, $offset);
@@ -225,7 +225,7 @@
          */
         public function runScrumShowBurndownImage(framework\Request $request)
         {
-            $this->forward403unless($this->_checkProjectAccess(tables\Permissions::PERMISSION_PROJECT_ACCESS_BOARDS));
+            $this->forward403unless($this->_checkProjectAccess(entities\Permission::PERMISSION_PROJECT_ACCESS_BOARDS));
 
             $milestone = null;
             $maxEstimation = 0;
@@ -275,7 +275,7 @@
         public function runScrumSetStoryDetail(framework\Request $request)
         {
             $this->forward403if(Context::getCurrentProject()->isArchived());
-            $this->forward403unless($this->_checkProjectAccess(tables\Permissions::PERMISSION_PROJECT_ACCESS_BOARDS));
+            $this->forward403unless($this->_checkProjectAccess(entities\Permission::PERMISSION_PROJECT_ACCESS_BOARDS));
             $issue = entities\Issue::getB2DBTable()->selectById((int)$request['story_id']);
             try {
                 if ($issue instanceof entities\Issue) {
@@ -306,7 +306,7 @@
         public function runScrumAddSprint(framework\Request $request)
         {
             $this->forward403if(Context::getCurrentProject()->isArchived());
-            $this->forward403unless($this->_checkProjectAccess(tables\Permissions::PERMISSION_PROJECT_ACCESS_BOARDS));
+            $this->forward403unless($this->_checkProjectAccess(entities\Permission::PERMISSION_PROJECT_ACCESS_BOARDS));
             if (($sprint_name = $request['sprint_name']) && trim($sprint_name) != '') {
                 $sprint = new entities\Milestone();
                 $sprint->setName($sprint_name);
@@ -329,7 +329,7 @@
          */
         public function runIssues(framework\Request $request)
         {
-            $this->forward403unless($this->_checkProjectAccess(tables\Permissions::PERMISSION_PROJECT_ACCESS_ISSUES));
+            $this->forward403unless($this->_checkProjectAccess(entities\Permission::PERMISSION_PROJECT_ACCESS_ISSUES));
         }
 
         /**
@@ -339,7 +339,7 @@
          */
         public function runTeam(framework\Request $request)
         {
-            $this->forward403unless($this->_checkProjectAccess(tables\Permissions::PERMISSION_PROJECT_ACCESS_DASHBOARD));
+            $this->forward403unless($this->_checkProjectAccess(entities\Permission::PERMISSION_PROJECT_ACCESS_DASHBOARD));
             $this->assigned_users = $this->selected_project->getAssignedUsers();
             $this->assigned_teams = $this->selected_project->getAssignedTeams();
         }
@@ -351,12 +351,12 @@
          */
         public function runStatistics(framework\Request $request)
         {
-            $this->forward403unless($this->_checkProjectAccess(tables\Permissions::PERMISSION_PROJECT_ACCESS_DASHBOARD));
+            $this->forward403unless($this->_checkProjectAccess(entities\Permission::PERMISSION_PROJECT_ACCESS_DASHBOARD));
         }
 
         public function runStatisticsLast15(framework\Request $request)
         {
-            $this->forward403unless($this->_checkProjectAccess(tables\Permissions::PERMISSION_PROJECT_ACCESS_DASHBOARD));
+            $this->forward403unless($this->_checkProjectAccess(entities\Permission::PERMISSION_PROJECT_ACCESS_DASHBOARD));
 
             if (!function_exists('imagecreatetruecolor')) {
                 return $this->return404(Context::getI18n()->__('The libraries to generate images are not installed. Please see https://pachno.com for more information'));
@@ -374,7 +374,7 @@
 
         public function runStatisticsImagesets(framework\Request $request)
         {
-            $this->forward403unless($this->_checkProjectAccess(tables\Permissions::PERMISSION_PROJECT_ACCESS_DASHBOARD));
+            $this->forward403unless($this->_checkProjectAccess(entities\Permission::PERMISSION_PROJECT_ACCESS_DASHBOARD));
             try {
                 if (!in_array($request['set'], ['issues_per_status', 'issues_per_state', 'issues_per_priority', 'issues_per_category', 'issues_per_resolution', 'issues_per_reproducability'])) {
                     throw new InvalidArgumentException(Context::getI18n()->__('Invalid image set'));
@@ -408,7 +408,7 @@
 
         public function runStatisticsGetImage(framework\Request $request)
         {
-            $this->forward403unless($this->_checkProjectAccess(tables\Permissions::PERMISSION_PROJECT_ACCESS_DASHBOARD));
+            $this->forward403unless($this->_checkProjectAccess(entities\Permission::PERMISSION_PROJECT_ACCESS_DASHBOARD));
 
             if (!function_exists('imagecreatetruecolor')) {
                 return $this->return404(Context::getI18n()->__('The libraries to generate images are not installed. Please see https://pachno.com for more information'));

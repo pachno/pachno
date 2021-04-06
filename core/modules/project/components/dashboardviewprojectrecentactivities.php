@@ -1,6 +1,7 @@
 <?php
 
     use pachno\core\entities\LogItem;
+    use pachno\core\entities\Permission;
     use pachno\core\entities\tables\Permissions;
     use pachno\core\entities\User;
     use pachno\core\framework\Context;
@@ -24,7 +25,7 @@
     <?php endif; ?>
 </div>
 <div class="button-container">
-    <?php if ($pachno_user->hasProjectPermission(Permissions::PERMISSION_PROJECT_ACCESS_DASHBOARD, Context::getCurrentProject())): ?>
+    <?php if ($pachno_user->hasProjectPermission(Permission::PERMISSION_PROJECT_ACCESS_DASHBOARD, Context::getCurrentProject())): ?>
         <?php echo link_tag(make_url('project_timeline_important', array('project_key' => Context::getCurrentProject()->getKey())), __('Show timeline for important events'), array('class' => 'button secondary', 'title' => __('Show more'))); ?>
         <?php echo link_tag(make_url('project_timeline', array('project_key' => Context::getCurrentProject()->getKey())), fa_image_tag('stream', ['class' => 'icon']).'<span>'.__('Show complete timeline').'</span>', array('class' => 'button secondary highlight', 'title' => __('Show more'))); ?>
     <?php endif; ?>

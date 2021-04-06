@@ -6,13 +6,12 @@ use pachno\core\framework;
  * @var \pachno\core\entities\User $pachno_user
  */
 ?>
-<div class="name-container">
-    <span class="header">
-        <span class="name"><?= __('Browse projects'); ?></span>
-    </span>
-</div>
-<div class="spacer"></div>
-<?php if ($pachno_user->isAuthenticated()): ?>
+<?php if (!$pachno_user->isGuest()): ?>
+    <div class="name-container">
+        <span class="header">
+            <span class="name"><?= __('Browse projects'); ?></span>
+        </span>
+    </div>
     <div class="spacer"></div>
     <div class="action-container">
         <?php if ($pachno_user->canAccessConfigurationPage()): ?>

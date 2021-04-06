@@ -5,6 +5,7 @@
     use pachno\core\entities\Branch;
     use pachno\core\entities\Comment;
     use pachno\core\entities\Commit;
+    use pachno\core\entities\Permission;
     use pachno\core\entities\tables\BranchCommits;
     use pachno\core\entities\tables\Branches;
     use pachno\core\entities\tables\Comments;
@@ -78,7 +79,7 @@
          */
         public function runProjectCommits(framework\Request $request)
         {
-            $this->forward403unless($this->_checkProjectAccess(Permissions::PERMISSION_PROJECT_ACCESS_CODE));
+            $this->forward403unless($this->_checkProjectAccess(Permission::PERMISSION_PROJECT_ACCESS_CODE));
 
             $this->branches = Branches::getTable()->getByProject($this->selected_project);
             $this->is_importing = $this->getModule()->isProjectImportInProgress($this->selected_project);
@@ -102,7 +103,7 @@
          */
         public function runProjectImportCommit(framework\Request $request)
         {
-            $this->forward403unless($this->_checkProjectAccess(Permissions::PERMISSION_PROJECT_ACCESS_CODE));
+            $this->forward403unless($this->_checkProjectAccess(Permission::PERMISSION_PROJECT_ACCESS_CODE));
 
             $this->commit = Commits::getTable()->getCommitByHash($request['commit_hash'], $this->selected_project);
             if (!$this->commit instanceof Commit || $this->commit->isImported()) {
@@ -136,7 +137,7 @@
          */
         public function runProjectCommit(framework\Request $request)
         {
-            $this->forward403unless($this->_checkProjectAccess(Permissions::PERMISSION_PROJECT_ACCESS_CODE));
+            $this->forward403unless($this->_checkProjectAccess(Permission::PERMISSION_PROJECT_ACCESS_CODE));
             $options = [
                 'project' => $this->selected_project
             ];
@@ -177,7 +178,7 @@
          */
         public function runProjectCommitsMore(framework\Request $request)
         {
-            $this->forward403unless($this->_checkProjectAccess(Permissions::PERMISSION_PROJECT_ACCESS_CODE));
+            $this->forward403unless($this->_checkProjectAccess(Permission::PERMISSION_PROJECT_ACCESS_CODE));
 
             $branch = Branches::getTable()->getByBranchNameAndProject($request['branch'], $this->selected_project);
             if (!$branch instanceof Branch) {

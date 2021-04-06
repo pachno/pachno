@@ -94,7 +94,9 @@
                                             'article' => $article,
                                             'category' => $top_level_category]); ?>
                                     <?php endforeach; ?>
-                                    <?php include_component('publish/editcategorysidebaraddcategory', ['project' => $article->getProject()]); ?>
+                                    <?php if ($pachno_user->canCreateCategoriesInProject(\pachno\core\framework\Context::getCurrentProject())): ?>
+                                        <?php include_component('publish/editcategorysidebaraddcategory', ['project' => $article->getProject()]); ?>
+                                    <?php endif; ?>
                                 </div>
                             </div>
                         </div>

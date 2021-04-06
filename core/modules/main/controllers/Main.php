@@ -654,7 +654,7 @@
          */
         public function runProjectsList(Request $request)
         {
-            $this->forward403unless($this->getUser()->hasPermission(tables\Permissions::PERMISSION_PAGE_ACCESS_PROJECT_LIST));
+            $this->forward403unless($this->getUser()->hasPermission(entities\Permission::PERMISSION_PAGE_ACCESS_PROJECT_LIST));
         }
 
         /**
@@ -664,7 +664,13 @@
          */
         public function runIndex(Request $request)
         {
-            $this->forward403unless($this->getUser()->hasPermission(tables\Permissions::PERMISSION_PAGE_ACCESS_DASHBOARD));
+            if (!$this->getUser()->hasPermission(entities\Permission::PERMISSION_PAGE_ACCESS_DASHBOARD)) {
+                if ($this->getUser()->isGuest()) {
+                    return $this->forward($this->getRouting()->generate('projects_list'));
+                } else {
+                    $this->forward403();
+                }
+            }
 
             if ($request['dashboard_id']) {
                 $dashboard = tables\Dashboards::getTable()->selectById((int)$request['dashboard_id']);
