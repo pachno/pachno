@@ -1907,6 +1907,16 @@
          *
          * @return boolean
          */
+        public function canEditBlockerStatus()
+        {
+            return $this->_permissionCheck(Permissions::PERMISSION_EDIT_ISSUES_TRIAGE);
+        }
+
+        /**
+         * Return if the user can edit reproducability
+         *
+         * @return boolean
+         */
         public function canEditReproducability()
         {
             return $this->_permissionCheck(Permissions::PERMISSION_EDIT_ISSUES_TRIAGE);

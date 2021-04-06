@@ -380,20 +380,6 @@ unlock_issue:
     parameters: [ ]
     csrf_enabled: false
 
-block:
-    route: /:project_key/issues/:issue_id/block
-    module: main
-    action: markAsBlocker
-    parameters: [ ]
-    csrf_enabled: false
-
-unblock:
-    route: /:project_key/issues/:issue_id/unblock
-    module: main
-    action: markAsNotBlocker
-    parameters: [ ]
-    csrf_enabled: false
-
 issue_gettempfieldvalue:
     route: '/get/temp/value/for/:field/*'
     module: main

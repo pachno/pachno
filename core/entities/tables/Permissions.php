@@ -275,14 +275,15 @@
             foreach ([$user_group, $admin_group] as $group) {
                 $group->addPermission(self::PERMISSION_PAGE_ACCESS_ACCOUNT, 'core', $scope_id);
                 $group->addPermission(self::PERMISSION_PAGE_ACCESS_DASHBOARD, 'core', $scope_id);
+                $group->addPermission(self::PERMISSION_PAGE_ACCESS_SEARCH, 'core', $scope_id);
             }
 
             foreach (Project::getDefaultPermissions() as $permission) {
                 $admin_group->addPermission($permission, 'core', $scope_id);
             }
 
-            $admin_group->addPermission(Permissions::PERMISSION_EDIT_ISSUES, 'core', $scope_id);
             $admin_group->addPermission(Permissions::PERMISSION_SAVE_CONFIGURATION, 'core', $scope_id);
+            $admin_group->addPermission(Permissions::PERMISSION_EDIT_DOCUMENTATION, 'core', $scope_id);
         }
 
         public function setPermission($user_id, $group_id, $team_id, $module, $permission_type, $target_id, $scope = null, $role_id = null)

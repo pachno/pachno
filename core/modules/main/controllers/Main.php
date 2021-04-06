@@ -2151,100 +2151,27 @@
         }
 
         /**
-         * Mark the issue as not blocking the next release
-         *
-         * @param Request $request
-         */
-        public function runMarkAsNotBlocker(Request $request)
-        {
-            $this->forward403unless($this->getUser()->hasPermission('caneditissue') || $this->getUser()->hasPermission('caneditissuebasic'));
-
-            if ($issue_id = $request['issue_id']) {
-                try {
-                    $issue = Issues::getTable()->selectById($issue_id);
-                } catch (Exception $e) {
-                    $this->getResponse()->setHttpStatus(400);
-
-                    return $this->renderJSON(['message' => framework\Context::getI18n()->__('This issue does not exist')]);
-                }
-            } else {
-                $this->getResponse()->setHttpStatus(400);
-
-                return $this->renderJSON(['message' => framework\Context::getI18n()->__('This issue does not exist')]);
-            }
-
-            $issue->setBlocking(false);
-            $issue->save();
-
-            return $this->renderJSON('not blocking');
-        }
-
-        /**
-         * Mark the issue as blocking the next release
-         *
-         * @param Request $request
-         */
-        public function runMarkAsBlocker(Request $request)
-        {
-            $this->forward403unless($this->getUser()->hasPermission('caneditissue') || $this->getUser()->hasPermission('caneditissuebasic'));
-
-            if ($issue_id = $request['issue_id']) {
-                try {
-                    $issue = Issues::getTable()->selectById($issue_id);
-                } catch (Exception $e) {
-                    $this->getResponse()->setHttpStatus(400);
-
-                    return $this->renderJSON(['message' => framework\Context::getI18n()->__('This issue does not exist')]);
-                }
-            } else {
-                $this->getResponse()->setHttpStatus(400);
-
-                return $this->renderJSON(['message' => framework\Context::getI18n()->__('This issue does not exist')]);
-            }
-
-            $issue->setBlocking();
-            $issue->save();
-
-            return $this->renderJSON('blocking');
-        }
-
-        /**
          * Delete an issue
          *
          * @param Request $request
          */
         public function runDeleteIssue(Request $request)
         {
-            $request_referer = ($request['referer'] ?: (isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : null));
+            $issue = Issues::getTable()->selectById($request['issue_id']);
 
-            if ($issue_id = $request['issue_id']) {
-                try {
-                    $issue = Issues::getTable()->selectById($issue_id);
-                } catch (Exception $e) {
-                    if ($request_referer) {
-                        return $this->forward($request_referer);
-                    }
-
-                    return $this->return404(framework\Context::getI18n()->__('This issue does not exist'));
-                }
-            } else {
-                if ($request_referer) {
-                    return $this->forward($request_referer);
-                }
-
+            if (!$issue instanceof Issue || $issue->isDeleted()) {
                 return $this->return404(framework\Context::getI18n()->__('This issue does not exist'));
             }
 
-            if ($issue->isDeleted()) {
-                return $this->forward($request_referer);
+            if (!$issue->canDeleteIssue()) {
+                $this->getResponse()->setHttpStatus(400);
+                return $this->renderJSON(['error' => $this->getI18n()->__('You are not allowed to delete this issue')]);
             }
 
-            $this->forward403unless($issue->canDeleteIssue());
             $issue->deleteIssue();
             $issue->save();
 
-            framework\Context::setMessage('issue_deleted', true);
-            $this->forward($issue->getUrl() . '?referer=' . $request_referer);
+            return $this->renderJSON(['message' => $this->getI18n()->__('The issue has been deleted')]);
         }
 
         /**

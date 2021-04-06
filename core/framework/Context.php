@@ -1203,26 +1203,23 @@
 
         public static function permissionCheck($module, $permission, $target_id, $uid, $gid, $team_ids)
         {
-            $key = 'config';
-
             foreach (self::$_available_permission_paths as $permission_key => $permissions) {
-//                if ($permission_key == 'config')
-//                    continue;
-
                 if (array_key_exists($permission, $permissions)) {
                     $key = $permission_key;
                     break;
                 }
             }
 
-//            if ($key != 'config') {
+            if (!isset($key)) {
+                throw new \Exception('Invalid permission key when trying to check permission for "' . $permission . '"');
+            }
+
             foreach (self::$_available_permission_paths[$key][$permission] as $parent_permission) {
                 $value = self::checkPermission($module, $parent_permission, $target_id, $uid, $gid, $team_ids);
                 if ($value !== null) {
                     return $value;
                 }
             }
-//            }
 
             return self::checkPermission($module, $permission, $target_id, $uid, $gid, $team_ids);
         }
@@ -1243,7 +1240,7 @@
          * @see User::hasPermission() For description of module name, permission type, target ID.
          *
          */
-        public static function checkPermission($module_name, $permission_type, $target_id, $uid, $gid, $team_ids)
+        protected static function checkPermission($module_name, $permission_type, $target_id, $uid, $gid, $team_ids)
         {
             // Default is that no permission was found/matched against user
             // specifier.

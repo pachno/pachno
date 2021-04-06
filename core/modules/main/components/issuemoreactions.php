@@ -39,11 +39,11 @@
                 <?php endif; ?>
                 <?php if ($issue->canEditMilestone()): ?>
                     <?php if ($issue->isOpen()): ?>
-                        <a class="list-item disabled" onclick="Pachno.Issues.toggleBlocking('<?= make_url('unblock', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getId())); ?>', '<?= $issue->getID(); ?>');" id="more_actions_mark_notblocking_link_<?php echo $issue->getID(); ?>"<?php if (!$issue->isBlocking()): ?> style="display: none;"<?php endif; ?>>
+                        <a class="list-item disabled <?php if (!$issue->isBlocking()) echo 'hidden'; ?>">
                             <?= fa_image_tag('certificate', ['class' => ['mark_not_blocking icon']]); ?>
                             <span class="name"><?php echo __("Mark as not blocking the next release"); ?></span>
                         </a>
-                        <a class="list-item disabled" onclick="Pachno.Issues.toggleBlocking('<?= make_url('unblock', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getId())); ?>', '<?= $issue->getID(); ?>');" id="more_actions_mark_blocking_link_<?php echo $issue->getID(); ?>"<?php if ($issue->isBlocking()): ?> style="display: none;"<?php endif; ?>>
+                        <a class="list-item disabled <?php if ($issue->isBlocking()) echo 'hidden'; ?>">
                             <?= fa_image_tag('certificate', ['class' => ['mark_blocking icon']]); ?>
                             <span class="name"><?php echo __("Mark as blocking the next release"); ?></span>
                         </a>
