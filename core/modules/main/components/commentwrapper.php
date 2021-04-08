@@ -11,7 +11,7 @@
 
 ?>
 <?php $options = (isset($issue)) ? ['issue' => $issue] : []; ?>
-<?php if ($comment->isViewableByUser($pachno_user)): ?>
+<?php if ($comment->hasAccess($pachno_user)): ?>
     <div class="comment-container <?php if ($comment->isSystemComment()) echo 'system-comment '; if (!$comment->isPublic()) echo 'private-comment '; ?> syntax_<?= \pachno\core\framework\Settings::getSyntaxClass($comment->getSyntax()); ?>" id="comment_<?= $comment->getID(); ?>">
         <div id="comment_view_<?= $comment->getID(); ?>" class="comment">
             <?php include_component('main/comment', ['comment' => $comment, 'options' => $options, 'comment_count_div' => $comment_count_div]); ?>
@@ -20,7 +20,7 @@
                     <?php include_component('main/comment', ['comment' => $reply, 'options' => $options, 'comment_count_div' => $comment_count_div]); ?>
                 <?php endforeach; ?>
             </div>
-            <?php if (!$comment->isSystemComment() && $pachno_user->canPostComments() && ((\pachno\core\framework\Context::isProjectContext() && !\pachno\core\framework\Context::getCurrentProject()->isArchived()) || !\pachno\core\framework\Context::isProjectContext())): ?>
+            <?php if (!$comment->isSystemComment() && $pachno_user->canPostComments($comment->getTargetType(), $comment->getTarget()->getProject())): ?>
                 <div class="reply-container">
                     <?php include_component('main/replycomment', ['comment' => $comment, 'mentionable_target_type' => isset($mentionable_target_type) ? $mentionable_target_type : $comment->getTargetType()]); ?>
                     <div class="fake-reply">

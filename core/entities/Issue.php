@@ -783,12 +783,6 @@
             Logging::log('checking access to issue ' . $this->getFormattedIssueNo());
             $i_id = $this->getID();
             $user = ($target_user === null) ? Context::getUser() : $target_user;
-            $specific_access = $user->hasPermission("canviewissue", $i_id, 'core');
-            if ($specific_access !== null) {
-                Logging::log('done checking, returning specific access ' . (($specific_access) ? 'allowed' : 'denied'));
-
-                return $specific_access;
-            }
             if ($this->getPostedByID() == $user->getID()) {
                 Logging::log('done checking, allowed since this user posted it');
 

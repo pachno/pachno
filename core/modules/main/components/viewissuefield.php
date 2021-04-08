@@ -26,7 +26,6 @@
                         <?php if (count($info['choices'])): ?>
                             <div class="list-item separator"></div>
                             <?php foreach ($info['choices'] as $choice): ?>
-                                <?php if ($choice instanceof \pachno\core\entities\DatatypeBase && !$choice->canUserSet($pachno_user)) continue; ?>
                                 <input type="radio" class="fancy-checkbox" id="issue_<?= $issue->getId(); ?>_fields_<?= $field; ?>_<?= $choice->getId(); ?>" name="issues[<?= $issue->getId(); ?>]fields[<?= $field; ?>]" value="<?= $choice->getId(); ?>" <?php if ($info['value'] == $choice->getId()) echo ' checked'; ?> data-trigger-issue-update data-field="<?= $field; ?>" data-issue-id="<?= $issue->getId(); ?>">
                                 <label for="issue_<?= $issue->getId(); ?>_fields_<?= $field; ?>_<?= $choice->getId(); ?>" class="list-item <?php if ($choice instanceof \pachno\core\entities\Priority): ?>priority priority_<?= $choice->getValue(); ?><?php endif; ?>">
                                     <span class="icon">

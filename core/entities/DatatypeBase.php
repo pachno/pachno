@@ -129,14 +129,6 @@
             $this->_itemtype = $itemtype;
         }
 
-        public function canUserSet(User $user)
-        {
-            $allowed = $user->hasPermission($this->getPermissionsKey(), $this->getID(), 'core');
-            $allowed = ($allowed === null) ? $user->hasPermission($this->getPermissionsKey(), 0, 'core') : $allowed;
-
-            return ($allowed !== null) ? $allowed : false;
-        }
-
         public function getPermissionsKey()
         {
             return 'set_datatype_' . $this->_itemtype;

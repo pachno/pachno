@@ -27,6 +27,10 @@
          */
         public function runLogin(framework\Request $request)
         {
+            if ($this->getUser()->isAuthenticated()) {
+                return $this->forward($this->getRouting()->generate('profile_account'));
+            }
+
             $this->section = $request->getParameter('section', 'login');
             $captcha = new CaptchaBuilder();
             $captcha->build();

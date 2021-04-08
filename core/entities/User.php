@@ -1831,46 +1831,40 @@
          *
          * @return boolean
          */
-        public function canReportIssues(Project $project)
+        public function canReportIssues(Project $project): bool
         {
             if ($project->isArchived()) return false;
 
             return $this->hasPermission(Permission::PERMISSION_PROJECT_CREATE_ISSUES, $project->getID());
         }
 
-        protected function _dualPermissionsCheck($permission_1, $permission_1_target, $permission_2, $permission_2_target, $fallback)
-        {
-            $allowed = $this->hasPermission($permission_1, $permission_1_target);
-            $allowed = ($allowed !== null) ? $allowed : $this->hasPermission($permission_2, $permission_2_target);
-
-            return (bool)($allowed !== null) ? $allowed : $fallback;
-        }
-
-        /**
-         * Return if the user can see comments
-         *
-         * @return boolean
-         */
-        public function canViewComments()
-        {
-            return $this->_dualPermissionsCheck('canviewcomments', 0, 'canpostseeandeditallcomments', 0, false);
-        }
-
         /**
          * Return if the user can post comments
          *
+         * @param $comment_type
+         * @param Project|null $project
          * @return boolean
          */
-        public function canPostComments()
+        public function canPostComments($comment_type, Project $project = null): bool
         {
-            return $this->_dualPermissionsCheck('canpostcomments', 0, 'canpostseeandeditallcomments', 0, false);
-        }
+            if ($project instanceof Project && $project->isArchived()) {
+                return false;
+            }
 
-        public function canPostArticleComments(Project $project = null)
-        {
-            $project_id = ($project instanceof Project) ? $project->getID() : 0;
+            switch ($comment_type) {
+                case Comment::TYPE_ARTICLE:
+                    if ($project instanceof Project) {
+                        return $this->hasPermission(Permission::PERMISSION_PROJECT_EDIT_DOCUMENTATION_POST_COMMENTS, $project->getID()) || $this->hasPermission(Permission::PERMISSION_MANAGE_PROJECT_MODERATE_DOCUMENTATION, $project->getID());
+                    }
 
-            return $this->hasPermission(Permission::PERMISSION_EDIT_DOCUMENTATION_POST_COMMENTS, $project_id);
+                    return $this->hasPermission(Permission::PERMISSION_MANAGE_SITE_DOCUMENTATION);
+                case Comment::TYPE_ISSUE:
+                    return $this->hasPermission(Permission::PERMISSION_EDIT_ISSUES_COMMENTS, $project->getID()) || $this->hasPermission(Permission::PERMISSION_EDIT_ISSUES_COMMENTS . Permission::PERMISSION_OWN_SUFFIX, $project->getID()) || $this->hasPermission(Permission::PERMISSION_EDIT_ISSUES_MODERATE_COMMENTS, $project->getID());
+                case Comment::TYPE_COMMIT:
+                    return $this->hasPermission(Permission::PERMISSION_PROJECT_DEVELOPER, $project->getID()) || $this->hasPermission(Permission::PERMISSION_PROJECT_DEVELOPER_DISCUSS_CODE, $project->getID());
+            }
+
+            return false;
         }
 
         /**
@@ -1893,7 +1887,7 @@
         public function canCreateArticlesInProject(Project $project = null): bool
         {
             if ($project instanceof Project) {
-                return $this->hasPermission(Permission::PERMISSION_EDIT_DOCUMENTATION, $project->getID()) || $this->hasPermission(Permission::PERMISSION_EDIT_DOCUMENTATION_OWN, $project->getID());
+                return $this->hasPermission(Permission::PERMISSION_PROJECT_EDIT_DOCUMENTATION, $project->getID()) || $this->hasPermission(Permission::PERMISSION_PROJECT_EDIT_DOCUMENTATION_OWN, $project->getID());
             } else {
                 return $this->hasPermission(Permission::PERMISSION_MANAGE_SITE_DOCUMENTATION);
             }
@@ -1906,7 +1900,7 @@
         public function canCreateCategoriesInProject(Project $project = null): bool
         {
             if ($project instanceof Project) {
-                return $this->hasPermission(Permission::PERMISSION_EDIT_DOCUMENTATION, $project->getID());
+                return $this->hasPermission(Permission::PERMISSION_PROJECT_EDIT_DOCUMENTATION, $project->getID());
             } else {
                 return $this->hasPermission(Permission::PERMISSION_MANAGE_SITE_DOCUMENTATION);
             }
@@ -1915,21 +1909,31 @@
         /**
          * Return if the user can see non public comments
          *
+         * @param Project|null $project
          * @return boolean
          */
-        public function canSeeNonPublicComments()
+        public function canSeeInternalComments(Project $project = null)
         {
-            return $this->_dualPermissionsCheck('canseenonpubliccomments', 0, 'canpostseeandeditallcomments', 0, false);
+            if ($project instanceof Project) {
+                return $this->hasPermission(Permission::PERMISSION_PROJECT_INTERNAL_ACCESS_COMMENTS, $project->getID());
+            }
+
+            return $this->hasPermission(Permission::PERMISSION_MANAGE_SITE_DOCUMENTATION);
         }
 
         /**
          * Return if the user can create public saved searches
          *
+         * @param Project|null $project
          * @return boolean
          */
-        public function canCreatePublicSearches()
+        public function canCreatePublicSearches(Project $project = null)
         {
-            return $this->_dualPermissionsCheck('cancreatepublicsearches', 0, 'canfindissuesandsavesearches', 0, false);
+            if (!$project instanceof Project) {
+                return false;
+            }
+
+            return $this->hasPermission(Permission::PERMISSION_MANAGE_PROJECT_SAVED_SEARCHES, $project->getID());
         }
 
         /**
@@ -1952,6 +1956,16 @@
         public function canAccessConfigurationPage()
         {
             return $this->hasPermission(Permission::PERMISSION_ACCESS_CONFIGURATION);
+        }
+
+        /**
+         * Return if the user can create projects
+         *
+         * @return boolean
+         */
+        public function canCreateProjects()
+        {
+            return $this->hasPermission(Permission::PERMISSION_CREATE_PROJECTS);
         }
 
         /**

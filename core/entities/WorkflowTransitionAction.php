@@ -537,7 +537,7 @@
                     return (bool)$request->hasParameter('category_id');
                     break;
                 case self::ACTION_SET_STATUS:
-                    return (bool)$request->hasParameter('status_id') && ($status = Status::getB2DBTable()->selectById((int)$request->getParameter('status_id'))) instanceof Status && $status->canUserSet(framework\Context::getUser());
+                    return (bool)$request->hasParameter('status_id');
                     break;
                 case self::ACTION_SET_REPRODUCABILITY:
                     return (bool)$request->hasParameter('reproducability_id');

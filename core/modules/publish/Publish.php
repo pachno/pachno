@@ -314,7 +314,7 @@
         {
             $this->createMainPageArticle($event->getSubject());
 
-            framework\Context::setPermission(Permission::PERMISSION_EDIT_DOCUMENTATION, 'project_' . $event->getSubject()->getID(), "publish", framework\Context::getUser()->getID(), 0, 0);
+            framework\Context::setPermission(Permission::PERMISSION_PROJECT_EDIT_DOCUMENTATION, 'project_' . $event->getSubject()->getID(), "publish", framework\Context::getUser()->getID(), 0, 0);
             framework\Context::setPermission(Permission::PERMISSION_MANAGE_PROJECT_MODERATE_DOCUMENTATION, 'project_' . $event->getSubject()->getID(), "publish", framework\Context::getUser()->getID(), 0, 0);
         }
 
@@ -347,7 +347,7 @@
                 return true;
             }
 
-            return $this->_checkArticlePermissions($article, Permission::PERMISSION_EDIT_DOCUMENTATION);
+            return $this->_checkArticlePermissions($article, Permission::PERMISSION_PROJECT_EDIT_DOCUMENTATION);
         }
 
         public function listen_quicksearchDropdownFirstItems(Event $event)
@@ -533,7 +533,7 @@
         protected function _install($scope)
         {
             $admin_group_id = framework\Settings::getAdminGroup()->getID();
-            framework\Context::setPermission(Permission::PERMISSION_EDIT_DOCUMENTATION, 0, 'core', 0, $admin_group_id, 0, $scope);
+            framework\Context::setPermission(Permission::PERMISSION_PROJECT_EDIT_DOCUMENTATION, 0, 'core', 0, $admin_group_id, 0, $scope);
             framework\Context::setPermission(Permission::PERMISSION_MANAGE_PROJECT_MODERATE_DOCUMENTATION, 0, 'core', 0, $admin_group_id, 0, $scope);
         }
 
@@ -542,7 +542,7 @@
             $admin_group_id = framework\Settings::getAdminGroup()->getID();
             $this->loadFixturesArticles($scope);
 
-            framework\Context::setPermission(Permission::PERMISSION_EDIT_DOCUMENTATION, 0, 'core', 0, $admin_group_id, 0, $scope);
+            framework\Context::setPermission(Permission::PERMISSION_PROJECT_EDIT_DOCUMENTATION, 0, 'core', 0, $admin_group_id, 0, $scope);
             framework\Context::setPermission(Permission::PERMISSION_MANAGE_PROJECT_MODERATE_DOCUMENTATION, 0, 'core', 0, $admin_group_id, 0, $scope);
         }
 

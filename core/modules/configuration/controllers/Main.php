@@ -161,6 +161,17 @@
          */
         public function runConfigureProjects(framework\Request $request)
         {
+            $this->user_group = framework\Settings::getDefaultGroup();
+
+            if ($this->access_level == framework\Settings::ACCESS_FULL && $request->isPost()) {
+                if ($request['value']) {
+                    $this->user_group->addPermission(entities\Permission::PERMISSION_CREATE_PROJECTS);
+                } else {
+                    $this->user_group->removePermission(entities\Permission::PERMISSION_CREATE_PROJECTS);
+                }
+
+                return $this->renderJSON(['message' => $this->getI18n()->__('Settings saved')]);
+            }
             $this->active_projects = entities\Project::getAllRootProjects(false);
             $this->archived_projects = entities\Project::getAllRootProjects(true);
         }

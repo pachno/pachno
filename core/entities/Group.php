@@ -123,7 +123,7 @@
 
         public function isDefaultUserGroup()
         {
-            return (bool)(Settings::getDefaultUser()->getGroupID() == $this->getID());
+            return (bool) (Settings::getDefaultGroup()->getID() == $this->getID());
         }
 
         /**

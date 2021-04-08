@@ -1,6 +1,13 @@
 <?php
 
     use pachno\core\framework;
+
+    /**
+     * @var framework\Response $pachno_response
+     * @var \pachno\core\entities\User $pachno_user
+     * @var \pachno\core\entities\Group $user_group
+     */
+
     $pachno_response->setTitle(__('Manage projects'));
 
 ?>
@@ -11,7 +18,7 @@
             <h1><?php echo __('Configure projects'); ?></h1>
             <div class="helper-text">
                 <div class="image-container"><?= image_tag('/unthemed/onboarding_configuration_projects_icon.png', [], true); ?></div>
-                <span class="description"><?php echo __('More information about projects, editions, builds and components is available from the %wiki_help_section.', array('%wiki_help_section' => link_tag(\pachno\core\modules\publish\Publish::getArticleLink('Category:Help'), '<b>' . __('Wiki help section') . '</b>'))); ?></span>
+                <span class="description"><?php echo __('More information about projects - including how to import projects from external sources such as %github or %gitlab, collaborate with your project team(s) or configuring your project is found in the %project_documentation.', array('%project_documentation' => link_tag(\pachno\core\modules\publish\Publish::getArticleLink('Projects'), '<b>' . __('project documentation') . '</b>'), '%github' => fa_image_tag('github', ['class' => 'icon'], 'fab') . '&nbsp;<span>Github</span>', '%gitlab' => fa_image_tag('gitlab', ['class' => 'icon'], 'fab') . '&nbsp;<span>Gitlab</span>')); ?></span>
             </div>
             <?php if (framework\Context::getScope()->getMaxProjects()): ?>
                 <div class="message-box type-info">
@@ -19,6 +26,14 @@
                     <span><?php echo __('This instance is using %num of max %max projects', array('%num' => '<b id="current_project_num_count">' . \pachno\core\entities\Project::getProjectsCount() . '</b>', '%max' => '<b>' . framework\Context::getScope()->getMaxProjects() . '</b>')); ?></span>
                 </div>
             <?php endif; ?>
+            <h2>
+                <span><?= __('Allow users to create projects'); ?></span>
+                <input type="checkbox" class="fancy-checkbox" data-interactive-toggle value="1" id="toggle_allow_user_projects" data-url="<?= make_url('configure_projects'); ?>" <?php if ($user_group->hasPermission(\pachno\core\entities\Permission::PERMISSION_CREATE_PROJECTS)) echo ' checked'; ?>>
+                <label class="button secondary" for="toggle_allow_user_projects"><?= fa_image_tag('spinner', ['class' => 'fa-spin icon indicator']) . fa_image_tag('toggle-on', ['class' => 'icon checked']) . fa_image_tag('toggle-off', ['class' => 'icon unchecked']); ?><span><?= __('Allowed'); ?></span></label>
+            </h2>
+            <div class="helper-text">
+                <span class="description"><?= __('Toggle on the setting above to allow users to create projects. This lets users create projects freely from the project list, and invite other users to collaborate'); ?></span>
+            </div>
             <h2>
                 <span><?php echo __('Active projects'); ?></span>
                 <?php if (framework\Context::getScope()->hasProjectsAvailable()): ?>

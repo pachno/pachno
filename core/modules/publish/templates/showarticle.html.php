@@ -1,6 +1,7 @@
 <?php
 
     use pachno\core\entities\Comment;
+    use pachno\core\entities\User;
     use pachno\core\framework\Context;
     use pachno\core\entities\Article;
     use pachno\core\framework\Response;
@@ -8,6 +9,7 @@
     /**
      * @var Article $article
      * @var Response $pachno_response
+     * @var User $pachno_user
      */
 
     $pachno_response->setTitle($article->getName());
@@ -74,7 +76,7 @@
         <?php endif; ?>
         <?php if (isset($revision) && !$error): ?>
             <div class="lightyellowbox" style="margin: 0 0 5px 5px; font-size: 14px;">
-                <?php echo __('You are now viewing a previous revision of this article - revision %revision_number %date, by %author', ['%revision_number' => '<b>'.$revision.'</b>', '%date' => '<span class="faded_out">[ '. Context::getI18n()->formatTime($article->getPostedDate(), 20).' ]</span>', '%author' => (($article->getAuthor() instanceof \pachno\core\entities\User) ? $article->getAuthor()->getName() : __('System'))]); ?><br>
+                <?php echo __('You are now viewing a previous revision of this article - revision %revision_number %date, by %author', ['%revision_number' => '<b>'.$revision.'</b>', '%date' => '<span class="faded_out">[ '. Context::getI18n()->formatTime($article->getPostedDate(), 20).' ]</span>', '%author' => (($article->getAuthor() instanceof User) ? $article->getAuthor()->getName() : __('System'))]); ?><br>
                 <b><?php echo link_tag(make_url('publish_article', ['article_name' => $article->getName()]), __('Show current version')); ?></b>
             </div>
         <?php endif; ?>
@@ -140,7 +142,7 @@
                     <div class="button-group">
                         <?php echo fa_image_tag('spinner', ['class' => 'fa-spin', 'style' => 'display: none;', 'id' => 'comments_loading_indicator']); ?>
                         <button class="secondary icon trigger-comment-sort" data-target-type="<?= Comment::TYPE_ARTICLE; ?>" data-target-id="<?= $article->getID(); ?>" id="sort-comments-button" style="<?php if (!$comment_count) echo 'display: none; '; ?>"><?= fa_image_tag('sort', ['class' => 'icon']); ?></button>
-                        <?php if ($pachno_user->canPostArticleComments(Context::getCurrentProject()) && ((Context::isProjectContext() && !Context::getCurrentProject()->isArchived()) || !Context::isProjectContext())): ?>
+                        <?php if ($pachno_user->canPostComments(Comment::TYPE_ARTICLE, Context::getCurrentProject())): ?>
                             <button id="comment_add_button" class="button secondary highlight trigger-show-comment-post">
                                 <?= fa_image_tag('comment', ['class' => 'icon']); ?>
                                 <span class="name"><?= __('Post a comment'); ?></span>
@@ -152,7 +154,7 @@
                     'target_id' => $article->getID(),
                     'mentionable_target_type' => 'article',
                     'target_type' => Comment::TYPE_ARTICLE,
-                    'can_post_comments' => $pachno_user->canPostArticleComments(Context::getCurrentProject()),
+                    'can_post_comments' => $pachno_user->canPostComments(Comment::TYPE_ARTICLE, Context::getCurrentProject()),
                     'comment_count_div' => 'article_comment_count'
                 ]); ?>
             </div>

@@ -511,7 +511,7 @@
         {
             return [
                 Permission::PERMISSION_PROJECT_ACCESS,
-                Permission::PERMISSION_EDIT_DOCUMENTATION,
+                Permission::PERMISSION_PROJECT_EDIT_DOCUMENTATION,
                 Permission::PERMISSION_PROJECT_INTERNAL_ACCESS,
                 Permission::PERMISSION_MANAGE_PROJECT,
                 'caneditissue',
@@ -692,6 +692,29 @@
         public function setArchived($archived)
         {
             $this->_archived = $archived;
+        }
+
+        public function isPrivate(User $user)
+        {
+            if ($this->getOwner() instanceof Team || ($this->getOwner() instanceof User && $this->getOwner()->getID() != $user->getID())) {
+                return false;
+            }
+
+            if ($this->getQaResponsible() instanceof Team || ($this->getQaResponsible() instanceof User && $this->getQaResponsible()->getID() != $user->getID())) {
+                return false;
+            }
+
+            if ($this->getLeader() instanceof Team || ($this->getLeader() instanceof User && $this->getLeader()->getID() != $user->getID())) {
+                return false;
+            }
+
+            foreach ($this->getAssignedUsers() as $assigned_user) {
+                if ($assigned_user->getID() != $user->getID()) {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         public static function getProjectsCount()
@@ -2175,7 +2198,8 @@
 
         public function canVoteOnIssues()
         {
-            return (bool)$this->permissionCheck('canvoteforissues');
+            return !framework\Context::getUser()->isGuest();
+//            return (bool)$this->permissionCheck('canvoteforissues');
         }
 
         public function getParentID()

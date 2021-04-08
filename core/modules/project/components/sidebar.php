@@ -30,11 +30,11 @@
                 </a>
                 <a href="javascript:void(0);" data-tab-target="developers" class="tab-switcher-trigger list-item <?php if ($selected_tab == 'developers') echo 'selected'; ?>">
                     <?= fa_image_tag('users', ['class' => 'icon']); ?>
-                    <span class="name"><?= __('People'); ?></span>
+                    <span class="name"><?= __('People and access'); ?></span>
                 </a>
                 <a href="javascript:void(0);" data-tab-target="permissions" class="tab-switcher-trigger list-item <?php if ($selected_tab == 'permissions') echo 'selected'; ?>">
                     <?= fa_image_tag('user-shield', ['class' => 'icon']); ?>
-                    <span class="name"><?= __('Roles and access'); ?></span>
+                    <span class="name"><?= __('Roles and permissions'); ?></span>
                 </a>
                 <div class="list-item separator"></div>
                 <a href="javascript:void(0);" data-tab-target="client" class="tab-switcher-trigger list-item <?php if ($selected_tab == 'client') echo 'selected'; ?>">

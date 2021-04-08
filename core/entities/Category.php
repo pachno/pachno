@@ -39,9 +39,7 @@
          */
         public function hasAccess($target_user = null)
         {
-            $user = ($target_user === null) ? framework\Context::getUser() : $target_user;
-
-            return $this->canUserSet($user);
+            return true;
         }
 
     }

@@ -118,6 +118,25 @@
         <?php include_component('project/settings_project_assignee', ['assignee' => $assignee, 'project' => $project]); ?>
     <?php endforeach; ?>
 </div>
+<div class="form-container">
+    <div class="form-row">
+        <h3>
+            <span><?= __('Access from '); ?></span>
+            <?php if ($access_level == \pachno\core\framework\Settings::ACCESS_FULL): ?>
+                <button class="button secondary trigger-backdrop" data-url="<?php echo make_url('get_partial_for_backdrop', ['key' => 'project_add_people', 'project_id' => $project->getID()]); ?>">
+                    <?= fa_image_tag('user-plus', ['class' => 'icon']); ?>
+                    <span class="name"><?= __('Add people'); ?></span>
+                </button>
+            <?php endif; ?>
+        </h3>
+        <div class="helper-text">
+            <div class="image-container"><?= image_tag('/unthemed/onboarding_project_team_icon.png', [], true); ?></div>
+            <span class="description">
+                <?= __('Invite team members to collaborate on the project. Assign roles to make sure everyone has access to the project, and to let everyone else know who is involved.'); ?>
+            </span>
+        </div>
+    </div>
+</div>
 <script>
     Pachno.on(Pachno.EVENTS.ready, () => {
         const $body = $('body');

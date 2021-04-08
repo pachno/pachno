@@ -20,7 +20,6 @@
                 <div class="dropdown-container" id="affected_<?php echo $itemtype; ?>_<?php echo $item['a_id']; ?>_status_change">
                     <div class="list-mode">
                         <?php foreach ($statuses as $status): ?>
-                            <?php if (!$status->canUserSet($pachno_user)) continue; ?>
                             <a href="javascript:void(0);" class="list-item" onclick="Pachno.Issues.Affected.setStatus('<?php echo make_url('status_affected', array('issue_id' => $issue->getID(), 'affected_type' => $itemtype, 'affected_id' => $item['a_id'], 'status_id' => $status->getID())); ?>', '<?php echo $itemtype.'_'.$item['a_id']; ?>');">
                                 <span class="status-badge" style="background-color: <?php echo $status->getColor(); ?>;color: <?php echo $status->getTextColor(); ?>;">
                                     <span><?php echo __($status->getName()); ?></span>

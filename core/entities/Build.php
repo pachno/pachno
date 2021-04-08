@@ -258,7 +258,7 @@
          */
         public function hasAccess()
         {
-            return ($this->isReleased || $this->getProject()->canSeeInternalBuilds());
+            return ($this->isReleased() || $this->getProject()->canSeeInternalBuilds());
         }
 
         /**

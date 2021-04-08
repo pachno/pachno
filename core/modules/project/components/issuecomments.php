@@ -1,3 +1,15 @@
+<?php
+
+    use pachno\core\entities\Comment;
+    use pachno\core\entities\Issue;
+    use pachno\core\entities\User;
+
+    /**
+     * @var Issue $issue
+     * @var User $pachno_user
+     */
+
+?>
 <div class="comments" id="viewissue_comments_container">
     <div class="comments-header-strip">
         <div class="dropper-container">
@@ -11,14 +23,14 @@
                         <span class="icon"><?= fa_image_tag('comment-slash'); ?></span>
                         <span class="name"><?php echo __('Toggle system-generated comments'); ?></span>
                     </a>
-                    <a href="javascript:void(0);" class="list-item trigger-comment-sort" data-target-type="<?= \pachno\core\entities\Comment::TYPE_ISSUE; ?>" data-target-id="<?= $issue->getID(); ?>">
+                    <a href="javascript:void(0);" class="list-item trigger-comment-sort" data-target-type="<?= Comment::TYPE_ISSUE; ?>" data-target-id="<?= $issue->getID(); ?>">
                         <span class="icon"><?= fa_image_tag('arrows-alt-v'); ?></span>
                         <span class="name"><?php echo __('Sort comments in opposite direction'); ?></span>
                     </a>
                 </div>
             </div>
         </div>
-        <?php if ($pachno_user->canPostComments() && ((\pachno\core\framework\Context::isProjectContext() && !\pachno\core\framework\Context::getCurrentProject()->isArchived()) || !\pachno\core\framework\Context::isProjectContext())): ?>
+        <?php if ($pachno_user->canPostComments(Comment::TYPE_ISSUE, $issue->getProject())): ?>
             <button class="button secondary highlight trigger-show-comment-post" id="comment_add_button">
                 <?= fa_image_tag('comment', ['class' => 'icon']); ?>
                 <span class="name"><?php echo __('Post comment'); ?></span>
@@ -26,6 +38,14 @@
         <?php endif; ?>
     </div>
     <div id="viewissue_comments">
-        <?php include_component('main/comments', ['target_id' => $issue->getID(), 'mentionable_target_type' => 'issue', 'target_type' => \pachno\core\entities\Comment::TYPE_ISSUE, 'show_button' => false, 'comment_count_div' => 'viewissue_comment_count', 'save_changes_checked' => false, 'issue' => $issue]); ?>
+        <?php include_component('main/comments', [
+            'target_id' => $issue->getID(),
+            'mentionable_target_type' => 'issue',
+            'target_type' => Comment::TYPE_ISSUE,
+            'show_button' => false,
+            'comment_count_div' => 'viewissue_comment_count',
+            'can_post_comments' => $pachno_user->canPostComments(Comment::TYPE_ISSUE, $issue->getProject()),
+            'issue' => $issue
+        ]); ?>
     </div>
 </div>

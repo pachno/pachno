@@ -55,7 +55,6 @@
                                 <span class="name"><?= __('Change status'); ?></span>
                             </div>
                             <?php foreach ($statuses as $status): ?>
-                                <?php if (!$status->canUserSet($pachno_user)) continue; ?>
                                     <input type="radio" class="fancy-checkbox" name="status_id" id="issue_status_<?= $status->getId(); ?>_radio" value="<?= $status->getId(); ?>" <?php if ($issue->getStatus() instanceof Status && $issue->getStatus()->getID() == $status->getId()) echo ' checked'; ?> data-trigger-issue-update data-field="status" data-issue-id="<?= $issue->getId(); ?>">
                                     <label for="issue_status_<?= $status->getId(); ?>_radio" class="list-item">
                                         <span class="status-badge" style="background-color: <?php echo $status->getColor(); ?>;color: <?php echo $status->getTextColor(); ?>;">

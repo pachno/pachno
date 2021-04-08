@@ -317,7 +317,7 @@
                         if (!$this->search_object instanceof entities\SavedSearch || !$this->search_object->getB2DBID())
                             throw new Exception('not a saved search');
 
-                        if ($this->search_object->getUserID() == Context::getUser()->getID() || $this->search_object->isPublic() && Context::getUser()->canCreatePublicSearches()) {
+                        if ($this->search_object->getUserID() == Context::getUser()->getID() || ($this->search_object->isPublic() && Context::getUser()->canCreatePublicSearches($this->search_object->getProject()))) {
                             $this->search_object->delete();
 
                             return $this->renderJSON(['failed' => false, 'message' => Context::getI18n()->__('The saved search was deleted successfully')]);

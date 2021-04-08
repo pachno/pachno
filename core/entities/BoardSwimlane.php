@@ -188,10 +188,13 @@
                 $this->_search_object = new SavedSearch();
                 $this->_search_object->setFilter('project_id', SearchFilter::createFilter('project_id', ['o' => '=', 'v' => $this->getBoard()->getProject()->getID()]));
                 $this->_search_object->setFilter('milestone', SearchFilter::createFilter('milestone', ['o' => '=', 'v' => ($this->getMilestone() instanceof Milestone) ? $this->getMilestone()->getID() : 0]));
-//                $this->_search_object->setFilter('state', SearchFilter::createFilter('state', ['o' => '=', 'v' => Issue::STATE_OPEN]));
+                if (!$this->getMilestone() instanceof Milestone) {
+                    $this->_search_object->setFilter('state', SearchFilter::createFilter('state', ['o' => '=', 'v' => Issue::STATE_OPEN]));
+                }
+
                 $this->_search_object->setFilter('state', SearchFilter::createFilter('state', ['o' => '=', 'v' => [Issue::STATE_CLOSED, Issue::STATE_OPEN]]));
                 $this->_search_object->setFilter('deleted', SearchFilter::createFilter('deleted', ['o' => '=', 'v' => false]));
-                $this->_search_object->setFilter('archived', SearchFilter::createFilter('archived', ['o' => '=', 'v' => false]));
+//                $this->_search_object->setFilter('archived', SearchFilter::createFilter('archived', ['o' => '=', 'v' => false]));
                 $this->_search_object->setFilter('issuetype', SearchFilter::createFilter('issuetype', ['o' => '!=', 'v' => $this->getBoard()->getEpicIssuetypeID()]));
                 if ($column_id === null) {
                     $this->_search_object->setFilter('status', SearchFilter::createFilter('status', ['o' => '=', 'v' => $this->getBoard()->getStatusIds()]));

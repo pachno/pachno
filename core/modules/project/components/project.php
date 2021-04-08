@@ -26,6 +26,9 @@
                     <?php if ($project->usePrefix()): ?>
                         <span class="count-badge"><?= mb_strtoupper($project->getPrefix()); ?></span>
                     <?php endif; ?>
+                    <?php if ($project->isPrivate($pachno_user)): ?>
+                        <span class="count-badge type-info"><?= __('Private'); ?></span>
+                    <?php endif; ?>
                 </a>
             </span>
             <?php if ($project->hasDescription()): ?>

@@ -284,9 +284,7 @@
             switch ($target_type) {
                 case self::TYPE_USER:
                     $searches['info'][self::VIEW_LOGGED_ACTIONS] = [0 => ['title' => $i18n->__("What you've done recently"), 'description' => $i18n->__('A widget that shows your most recent actions, such as issue edits, wiki edits and more')]];
-                    if (framework\Context::getUser()->canViewComments()) {
-                        $searches['info'][self::VIEW_RECENT_COMMENTS] = [0 => ['title' => $i18n->__('Recent comments'), 'description' => $i18n->__('Shows a list of your most recent comments')]];
-                    }
+                    $searches['info'][self::VIEW_RECENT_COMMENTS] = [0 => ['title' => $i18n->__('Recent comments'), 'description' => $i18n->__('Shows a list of your most recent comments')]];
                     $searches['searches'][self::VIEW_PREDEFINED_SEARCH] = [SavedSearch::PREDEFINED_SEARCH_MY_REPORTED_ISSUES => ['title' => $i18n->__('Issues reported by me'), 'description' => $i18n->__('Shows a list of all issues you have reported, across all projects')],
                         SavedSearch::PREDEFINED_SEARCH_MY_ASSIGNED_OPEN_ISSUES => ['title' => $i18n->__('Open issues assigned to me'), 'description' => $i18n->__('Shows a list of all issues assigned to you')],
                         SavedSearch::PREDEFINED_SEARCH_MY_OWNED_OPEN_ISSUES => ['title' => $i18n->__('Open issues owned by me'), 'description' => $i18n->__('Shows a list of all issues owned by you')],

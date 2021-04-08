@@ -1,10 +1,15 @@
 <?php
 
     use pachno\core\entities\DatatypeBase;
+    use pachno\core\entities\SavedSearch;
+    use pachno\core\entities\User;
+    use pachno\core\framework\Response;
 
-/**
- * @var \pachno\core\entities\SavedSearch $search_object
- */
+    /**
+     * @var SavedSearch $search_object
+     * @var User $pachno_user
+     * @var Response $pachno_response
+     */
 
     $pachno_response->addJavascript('calendarview');
 
@@ -73,7 +78,7 @@
                             <div class="header"><?= __('Search result presentation'); ?></div>
                             <?php foreach ($templates as $template_name => $template_details): ?>
                                 <input type="radio" name="template" id="filter_selected_template_<?= $template_name; ?>" value="<?= $template_name; ?>" class="fancy-checkbox search-trigger-reload" <?php if ($template_name == $search_object->getTemplateName()) echo 'checked'; ?>>
-                                <label for="filter_selected_template_<?= $template_name; ?>" class="list-item multiline" data-template-name="<?= $template_name; ?>" data-parameter="<?= (int) $template_details['parameter']; ?>" data-parameter-text="<?= ($template_details['parameter']) ? __e($template_details['parameter_text']) : ''; ?>">
+                                <label for="filter_selected_template_<?= $template_name; ?>" class="list-item multiline" data-template-name="<?= $template_name; ?>" data-parameter="<?= (int)$template_details['parameter']; ?>" data-parameter-text="<?= ($template_details['parameter']) ? __e($template_details['parameter_text']) : ''; ?>">
                                     <?= fa_image_tag($template_details['icon'], ['class' => 'icon']); ?>
                                     <span class="name">
                                         <span class="title"><?= $template_details['title']; ?></span>
@@ -196,46 +201,67 @@
                     <div class="dropdown-container list-mode columns <?= (count($nondatecustomfields)) ? 'three-columns' : 'two-columns'; ?>">
                         <div class="column">
                             <div class="header"><?= __('People filters'); ?></div>
-                            <div class="list-item trigger-add-filter" data-filter="posted_by" id="additional_filter_posted_by_link"><span class="name"><?= __('Posted by user'); ?></span></div>
-                            <div class="list-item trigger-add-filter" data-filter="assignee_user" id="additional_filter_assignee_user_link"><span class="name"><?= __('Assigned to user'); ?></span></div>
-                            <div class="list-item trigger-add-filter" data-filter="assignee_team" id="additional_filter_assignee_team_link"><span class="name"><?= __('Assigned to team'); ?></span></div>
-                            <div class="list-item trigger-add-filter" data-filter="owner_user" id="additional_filter_owner_user_link"><span class="name"><?= __('Owned by user'); ?></span></div>
-                            <div class="list-item trigger-add-filter" data-filter="owner_team" id="additional_filter_owner_team_link"><span class="name"><?= __('Owned by team'); ?></span></div>
+                            <div class="list-item trigger-add-filter" data-filter="posted_by" id="additional_filter_posted_by_link">
+                                <span class="name"><?= __('Posted by user'); ?></span></div>
+                            <div class="list-item trigger-add-filter" data-filter="assignee_user" id="additional_filter_assignee_user_link">
+                                <span class="name"><?= __('Assigned to user'); ?></span></div>
+                            <div class="list-item trigger-add-filter" data-filter="assignee_team" id="additional_filter_assignee_team_link">
+                                <span class="name"><?= __('Assigned to team'); ?></span></div>
+                            <div class="list-item trigger-add-filter" data-filter="owner_user" id="additional_filter_owner_user_link">
+                                <span class="name"><?= __('Owned by user'); ?></span></div>
+                            <div class="list-item trigger-add-filter" data-filter="owner_team" id="additional_filter_owner_team_link">
+                                <span class="name"><?= __('Owned by team'); ?></span></div>
                             <div class="header"><?= __('Time filters'); ?></div>
-                            <div class="list-item trigger-add-filter" data-filter="posted" id="additional_filter_posted_link"><span class="name"><?= __('Created before / after'); ?></span></div>
-                            <div class="list-item trigger-add-filter" data-filter="last_updated" id="additional_filter_last_updated_link"><span class="name"><?= __('Last updated before / after'); ?></span></div>
-                            <div class="list-item trigger-add-filter" data-filter="time_spent" id="additional_filter_time_spent_link"><span class="name"><?= __('Time spent before / after'); ?></span></div>
+                            <div class="list-item trigger-add-filter" data-filter="posted" id="additional_filter_posted_link">
+                                <span class="name"><?= __('Created before / after'); ?></span></div>
+                            <div class="list-item trigger-add-filter" data-filter="last_updated" id="additional_filter_last_updated_link">
+                                <span class="name"><?= __('Last updated before / after'); ?></span></div>
+                            <div class="list-item trigger-add-filter" data-filter="time_spent" id="additional_filter_time_spent_link">
+                                <span class="name"><?= __('Time spent before / after'); ?></span></div>
                             <?php foreach ($datecustomfields as $field): ?>
-                                <div class="list-item trigger-add-filter" data-filter="<?= $field->getKey(); ?>" id="additional_filter_<?= $field->getKey(); ?>_link"><span class="name"><?= __($field->getDescription()); ?></span></div>
+                                <div class="list-item trigger-add-filter" data-filter="<?= $field->getKey(); ?>" id="additional_filter_<?= $field->getKey(); ?>_link">
+                                    <span class="name"><?= __($field->getDescription()); ?></span></div>
                             <?php endforeach; ?>
                         </div>
                         <div class="column">
                             <div class="header"><?= __('Project detail filters'); ?></div>
                             <?php if (\pachno\core\framework\Context::isProjectContext()): ?>
-                                <div class="list-item trigger-add-filter" data-filter="subprojects" id="additional_filter_subprojects_link"><span class="name"><?= __('Including subproject(s)'); ?></span></div>
+                                <div class="list-item trigger-add-filter" data-filter="subprojects" id="additional_filter_subprojects_link">
+                                    <span class="name"><?= __('Including subproject(s)'); ?></span></div>
                             <?php else: ?>
                                 <div class="list-item disabled">
                                     <span class="name"><?= __('Including subproject(s)'); ?></span>
                                     <div class="tooltip from-above leftie"><?= __('This filter is only available in project context'); ?></div>
                                 </div>
                             <?php endif; ?>
-                            <div class="list-item trigger-add-filter" data-filter="build" id="additional_filter_build_link"><span class="name"><?= __('Reported against a specific release'); ?></span></div>
-                            <div class="list-item trigger-add-filter" data-filter="component" id="additional_filter_component_link"><span class="name"><?= __('Affecting a specific component'); ?></span></div>
-                            <div class="list-item trigger-add-filter" data-filter="edition" id="additional_filter_edition_link"><span class="name"><?= __('Affecting a specific edition'); ?></span></div>
-                            <div class="list-item trigger-add-filter" data-filter="milestone" id="additional_filter_milestone_link"><span class="name"><?= __('Targetting a specific milestone'); ?></span></div>
+                            <div class="list-item trigger-add-filter" data-filter="build" id="additional_filter_build_link">
+                                <span class="name"><?= __('Reported against a specific release'); ?></span></div>
+                            <div class="list-item trigger-add-filter" data-filter="component" id="additional_filter_component_link">
+                                <span class="name"><?= __('Affecting a specific component'); ?></span></div>
+                            <div class="list-item trigger-add-filter" data-filter="edition" id="additional_filter_edition_link">
+                                <span class="name"><?= __('Affecting a specific edition'); ?></span></div>
+                            <div class="list-item trigger-add-filter" data-filter="milestone" id="additional_filter_milestone_link">
+                                <span class="name"><?= __('Targetting a specific milestone'); ?></span></div>
                             <div class="header"><?= __('Issue detail filters'); ?></div>
-                            <div class="list-item trigger-add-filter" data-filter="priority" id="additional_filter_priority_link"><span class="name"><?= __('Priority'); ?></span></div>
-                            <div class="list-item trigger-add-filter" data-filter="severity" id="additional_filter_severity_link"><span class="name"><?= __('Severity'); ?></span></div>
-                            <div class="list-item trigger-add-filter" data-filter="resolution" id="additional_filter_resolution_link"><span class="name"><?= __('Resolution'); ?></span></div>
-                            <div class="list-item trigger-add-filter" data-filter="reproducability" id="additional_filter_reproducability_link"><span class="name"><?= __('Reproducability'); ?></span></div>
-                            <div class="list-item trigger-add-filter" data-filter="blocking" id="additional_filter_blocking_link"><span class="name"><?= __('Blocker status'); ?></span></div>
-                            <div class="list-item trigger-add-filter" data-filter="relation" id="additional_filter_relation_link"><span class="name"><?= __('Relation'); ?></span></div>
+                            <div class="list-item trigger-add-filter" data-filter="priority" id="additional_filter_priority_link">
+                                <span class="name"><?= __('Priority'); ?></span></div>
+                            <div class="list-item trigger-add-filter" data-filter="severity" id="additional_filter_severity_link">
+                                <span class="name"><?= __('Severity'); ?></span></div>
+                            <div class="list-item trigger-add-filter" data-filter="resolution" id="additional_filter_resolution_link">
+                                <span class="name"><?= __('Resolution'); ?></span></div>
+                            <div class="list-item trigger-add-filter" data-filter="reproducability" id="additional_filter_reproducability_link">
+                                <span class="name"><?= __('Reproducability'); ?></span></div>
+                            <div class="list-item trigger-add-filter" data-filter="blocking" id="additional_filter_blocking_link">
+                                <span class="name"><?= __('Blocker status'); ?></span></div>
+                            <div class="list-item trigger-add-filter" data-filter="relation" id="additional_filter_relation_link">
+                                <span class="name"><?= __('Relation'); ?></span></div>
                         </div>
                         <?php if (count($nondatecustomfields)): ?>
                             <div class="column list-mode">
                                 <div class="header"><?= __('Other filters'); ?></div>
                                 <?php foreach ($nondatecustomfields as $field): ?>
-                                    <div class="list-item trigger-add-filter" data-filter="<?= $field->getKey(); ?>" id="additional_filter_<?= $field->getKey(); ?>_link"><span class="name"><?= __($field->getDescription()); ?></span></div>
+                                    <div class="list-item trigger-add-filter" data-filter="<?= $field->getKey(); ?>" id="additional_filter_<?= $field->getKey(); ?>_link">
+                                        <span class="name"><?= __($field->getDescription()); ?></span></div>
                                 <?php endforeach; ?>
                             </div>
                         <?php endif; ?>
@@ -281,25 +307,30 @@
                     <?php endif; ?>
                     <table class="padded_table" style="width: 780px;">
                         <tr>
-                            <td style="vertical-align: top; width: 200px; font-size: 1.15em;"><label for="saved_search_name"><?= __('Saved search name'); ?></label></td>
+                            <td style="vertical-align: top; width: 200px; font-size: 1.15em;">
+                                <label for="saved_search_name"><?= __('Saved search name'); ?></label></td>
                             <td style="vertical-align: top;">
                                 <input type="text" name="name" id="saved_search_name"<?php if ($search_object->getID()): ?> value="<?= $search_object->getName(); ?>"<?php endif; ?> style="width: 576px; font-size: 1.2em; padding: 4px;">
                                 <?php if ($search_object->getID()): ?>
                                     <br>
-                                    <input type="checkbox" id="update_saved_search" name="update_saved_search" checked><label style="font-size: 1em; font-weight: normal;" for="update_saved_search"><?= __('Update this saved search'); ?></label>
+                                    <input type="checkbox" id="update_saved_search" name="update_saved_search" checked>
+                                    <label style="font-size: 1em; font-weight: normal;" for="update_saved_search"><?= __('Update this saved search'); ?></label>
                                 <?php endif; ?>
 
                             </td>
                         </tr>
                         <tr>
-                            <td><label for="saved_search_description" class="optional"><?= __('Description'); ?></label></td>
-                            <td><input type="text" name="description" id="saved_search_description"<?php if ($search_object->getID()): ?> value="<?= $search_object->getDescription(); ?>"<?php endif; ?> style="width: 350px;"><br></td>
+                            <td><label for="saved_search_description" class="optional"><?= __('Description'); ?></label>
+                            </td>
+                            <td>
+                                <input type="text" name="description" id="saved_search_description"<?php if ($search_object->getID()): ?> value="<?= $search_object->getDescription(); ?>"<?php endif; ?> style="width: 350px;"><br>
+                            </td>
                         </tr>
                     </table>
                 </div>
                 <div class="backdrop_details_submit">
                     <span class="explanation">
-                        <?php if ($pachno_user->canCreatePublicSearches()): ?>
+                        <?php if ($pachno_user->canCreatePublicSearches(\pachno\core\framework\Context::getCurrentProject())): ?>
                             <select name="is_public" id="saved_search_public">
                                 <option value="0"<?php if ($search_object->getID() && !$search_object->isPublic()): ?> selected<?php endif; ?>><?= __('Only visible for me'); ?></option>
                                 <option value="1"<?php if ($search_object->getID() && $search_object->isPublic()): ?> selected<?php endif; ?>><?= __('Shared with others'); ?></option>

@@ -20,6 +20,7 @@
 @import url("https://fonts.googleapis.com/css?family=DM+Sans:700|Fira+Sans:200,300,300i,400,400i,600,600i|Fira+Mono:400,500,700&subset=cyrillic,cyrillic-ext,latin-ext&display=swap");
 @import url("https://fonts.googleapis.com/css?family=DM+Sans:700|Fira+Sans:200,300,300i,400,400i,600,600i|Fira+Mono:400,500,700&subset=cyrillic,cyrillic-ext,latin-ext&display=swap");
 @import url("https://fonts.googleapis.com/css?family=DM+Sans:700|Fira+Sans:200,300,300i,400,400i,600,600i|Fira+Mono:400,500,700&subset=cyrillic,cyrillic-ext,latin-ext&display=swap");
+@import url("https://fonts.googleapis.com/css?family=DM+Sans:700|Fira+Sans:200,300,300i,400,400i,600,600i|Fira+Mono:400,500,700&subset=cyrillic,cyrillic-ext,latin-ext&display=swap");
 @import url(~air-datepicker/dist/css/datepicker.min.css);
 @import url("https://fonts.googleapis.com/css?family=DM+Sans:700|Fira+Sans:200,300,300i,400,400i,600,600i|Fira+Mono:400,500,700&subset=cyrillic,cyrillic-ext,latin-ext&display=swap");
 @import url("https://fonts.googleapis.com/css?family=DM+Sans:700|Fira+Sans:200,300,300i,400,400i,600,600i|Fira+Mono:400,500,700&subset=cyrillic,cyrillic-ext,latin-ext&display=swap");
@@ -5875,6 +5876,9 @@ h1 .button, h1 .button:hover, h2 .button, h2 .button:hover, h3 .button, h3 .butt
   vertical-align: middle;
   padding: 3px 6px;
   background-color: rgba(200, 200, 200, 0.3); }
+  .count-badge.type-info {
+    background-color: #0cd8b6;
+    color: #FFF; }
   .count-badge span:first-child {
     margin-right: 5px; }
   .count-badge + span {

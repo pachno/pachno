@@ -31,50 +31,37 @@
             $roles['Developer'] = [
                 ['permission' => Permission::PERMISSION_PROJECT_ACCESS],
                 ['permission' => Permission::PERMISSION_PROJECT_INTERNAL_ACCESS],
-                ['permission' => 'canvoteforissues'],
-                ['permission' => 'canlockandeditlockedissues'],
-                ['permission' => 'cancreateandeditissues'],
-                ['permission' => 'caneditissue'],
-                ['permission' => 'caneditissuecustomfields'],
-                ['permission' => 'canaddextrainformationtoissues'],
-                ['permission' => 'canpostseeandeditallcomments'],
-                ['permission' => Permission::PERMISSION_EDIT_DOCUMENTATION],
+                ['permission' => Permission::PERMISSION_PROJECT_DEVELOPER],
+                ['permission' => Permission::PERMISSION_MANAGE_PROJECT_LOCK_ISSUES],
+                ['permission' => Permission::PERMISSION_EDIT_ISSUES],
+                ['permission' => Permission::PERMISSION_PROJECT_EDIT_DOCUMENTATION],
+                ['permission' => Permission::PERMISSION_PROJECT_CREATE_ISSUES],
             ];
             $roles['Project manager'] = [
                 ['permission' => Permission::PERMISSION_PROJECT_ACCESS],
                 ['permission' => Permission::PERMISSION_PROJECT_INTERNAL_ACCESS],
-                ['permission' => 'canvoteforissues'],
-                ['permission' => 'canlockandeditlockedissues'],
-                ['permission' => 'cancreateandeditissues'],
-                ['permission' => 'caneditissue'],
-                ['permission' => 'caneditissuecustomfields'],
-                ['permission' => 'canaddextrainformationtoissues'],
-                ['permission' => 'canpostseeandeditallcomments'],
-                ['permission' => Permission::PERMISSION_EDIT_DOCUMENTATION],
+                ['permission' => Permission::PERMISSION_MANAGE_PROJECT],
+                ['permission' => Permission::PERMISSION_PROJECT_CREATE_ISSUES],
+                ['permission' => Permission::PERMISSION_PROJECT_EDIT_DOCUMENTATION],
             ];
             $roles['Tester'] = [
                 ['permission' => Permission::PERMISSION_PROJECT_ACCESS],
                 ['permission' => Permission::PERMISSION_PROJECT_INTERNAL_ACCESS],
-                ['permission' => 'canvoteforissues'],
-                ['permission' => 'cancreateandeditissues'],
-                ['permission' => 'caneditissuecustomfields'],
-                ['permission' => 'canaddextrainformationtoissues'],
-                ['permission' => 'canpostandeditcomments'],
-                ['permission' => Permission::PERMISSION_EDIT_DOCUMENTATION_OWN],
+                ['permission' => Permission::PERMISSION_EDIT_ISSUES],
+                ['permission' => Permission::PERMISSION_PROJECT_DEVELOPER_DISCUSS_CODE],
+                ['permission' => Permission::PERMISSION_PROJECT_EDIT_DOCUMENTATION_OWN],
             ];
             $roles['Documentation editor'] = [
                 ['permission' => Permission::PERMISSION_PROJECT_ACCESS],
                 ['permission' => Permission::PERMISSION_PROJECT_INTERNAL_ACCESS],
-                ['permission' => 'canvoteforissues'],
-                ['permission' => 'cancreateandeditissues'],
-                ['permission' => 'canaddextrainformationtoissues'],
-                ['permission' => 'canpostandeditcomments'],
-                ['permission' => Permission::PERMISSION_EDIT_DOCUMENTATION],
+                ['permission' => Permission::PERMISSION_EDIT_ISSUES_MODERATE_COMMENTS],
+                ['permission' => Permission::PERMISSION_EDIT_ISSUES_COMMENTS],
+                ['permission' => Permission::PERMISSION_PROJECT_EDIT_DOCUMENTATION],
                 ['permission' => Permission::PERMISSION_MANAGE_PROJECT_MODERATE_DOCUMENTATION],
             ];
 
             foreach ($roles as $name => $permissions) {
-                $role = new Role();
+                $role = new self();
                 $role->setName($name);
                 $role->setScope($scope);
                 $role->save();

@@ -695,9 +695,6 @@
                     $this->_validation_errors[$action->getActionType()] = true;
                 }
             }
-            if ($this->getOutgoingStep()->hasLinkedStatus() && $this->getOutgoingStep()->getLinkedStatus() instanceof Status && !$this->getOutgoingStep()->getLinkedStatus()->canUserSet(framework\Context::getUser())) {
-                $this->_validation_errors[WorkflowTransitionAction::ACTION_SET_STATUS] = true;
-            }
 
             return empty($this->_validation_errors) ? true : $this->_validation_errors;
         }

@@ -55,7 +55,6 @@
                                 <span class="name"><?= __('Change status'); ?></span>
                             </div>
                             <?php foreach ($statuses as $status): ?>
-                                <?php if (!$status->canUserSet($pachno_user)) continue; ?>
                                 <div class="list-item">
                                     <a href="javascript:void(0);" onclick="Pachno.Issues.Field.set('<?php echo make_url('issue_setfield', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => 'status', 'status_id' => $status->getID())); ?>', 'status');">
                                         <div class="status-badge" style="background-color: <?php echo $status->getColor(); ?>;color: <?php echo $status->getTextColor(); ?>;">

@@ -501,27 +501,19 @@
          *
          * @return boolean
          */
-        public function isViewableByUser(User $user)
+        public function hasAccess(User $user)
         {
-            $can_view = false;
-
-            try {
-                // Show comment if valid user and...
-                if ($user instanceof User) {
-
-                    if ((!$this->isPublic() && $user->canSeeNonPublicComments()) // the comment is hidden and the user can see hidden comments
-                        || ($this->isPublic() && $user->canViewComments()) // OR the comment is public and  user can see public comments
-                        || ($this->postedByUser($user->getID()))) // OR the user posted the comment
-                    {
-                        $can_view = true;
-                    }//endif
-
-                }//endif
-            }//endtry
-            catch (Exception $e) {
+            if ($this->getPostedByID() == $user->getID()) {
+                return true;
             }
 
-            return $can_view;
+            $project = $this->getTarget()->getProject();
+
+            if (!$this->isPublic()) {
+                return $user->canSeeInternalComments($project);
+            }
+
+            return true;
         }
 
         public function isPublic()
