@@ -145,6 +145,16 @@
       }
     }
 
+    &.help {
+      &:hover {
+        cursor: help;
+      }
+
+      .icon:not(.issuetype-icon) {
+        color: $theme-primary-color;
+      }
+    }
+
     &.danger {
       color: #cb1a00;
 
@@ -270,6 +280,16 @@
             border-bottom: none;
           }
         }
+
+        & .description {
+          display: inline-block;
+          text-align: left;
+
+          span,
+          .button {
+            display: inline-flex;
+          }
+        }
       }
       .information {
         flex: 0 0 auto;
@@ -332,17 +352,21 @@
         &.selected {
           background-color: transparent;
           border-color: $theme-secondary-color;
-        }
 
-        .name {
-          color: $theme-secondary-color;
-          font-weight: $theme-font-weight-bold;
-        }
+          .name {
+            color: $theme-secondary-color;
+            font-weight: $theme-font-weight-bold;
+          }
 
-        .icon {
-          color: $theme-secondary-color;
+          .icon {
+            color: $theme-secondary-color;
+          }
         }
       }
+    }
+
+    &.faq {
+      font-size: 1.05em;
     }
 
     .name {
@@ -410,7 +434,7 @@
       flex: 0 0 35px;
       align-self: center;
       text-align: center;
-      display: flex;
+      //display: flex;
       align-items: center;
       justify-content: center;
       flex-direction: row;
@@ -459,6 +483,12 @@
         &.icon {
           margin-right: 0;
         }
+      }
+    }
+
+    .button-group {
+      &, &:hover {
+        padding: .25em;
       }
     }
 
@@ -552,7 +582,7 @@
   &.expanded {
     &:not(button) .expander {
       transform: rotate(180deg);
-      color: $theme-secondary-color;
+      //color: $theme-secondary-color;
       padding: .3em .5em;
       border-radius: 4px;
     }

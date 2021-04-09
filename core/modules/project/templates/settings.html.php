@@ -19,24 +19,27 @@
             <?php include_component('project/projectsettings', array('access_level' => $access_level, 'project' => $selected_project)); ?>
         </div>
         <div data-tab-id="links" class="configuration-content centered" <?php if ($selected_tab != 'links'): ?> style="display: none;"<?php endif; ?>>
-            <?php include_component('project/projectlinks', array('access_level' => $access_level, 'project' => $selected_project)); ?>
+            <?php include_component('project/projectlinks', ['access_level' => $access_level, 'project' => $selected_project]); ?>
         </div>
         <div data-tab-id="issues_and_workflow" class="configuration-content centered" <?php if ($selected_tab != 'issues_and_workflow'): ?> style="display: none;"<?php endif; ?>>
-            <?php include_component('project/settings_project_issues_and_workflow', array('access_level' => $access_level, 'project' => $selected_project)); ?>
+            <?php include_component('project/settings_project_issues_and_workflow', ['access_level' => $access_level, 'project' => $selected_project]); ?>
         </div>
         <div data-tab-id="hierarchy" class="configuration-content centered" <?php if ($selected_tab != 'hierarchy'): ?> style="display: none;"<?php endif; ?>>
-            <?php include_component('project/projecthierarchy', array('access_level' => $access_level, 'project' => $selected_project)); ?>
+            <?php include_component('project/projecthierarchy', ['access_level' => $access_level, 'project' => $selected_project]); ?>
         </div>
         <div data-tab-id="developers" class="configuration-content centered" <?php if ($selected_tab != 'developers'): ?> style="display: none;"<?php endif; ?>>
-            <?php include_component('project/projectdevelopers', array('access_level' => $access_level, 'project' => $selected_project)); ?>
+            <?php include_component('project/projectdevelopers', ['access_level' => $access_level, 'project' => $selected_project]); ?>
         </div>
         <div data-tab-id="client" class="configuration-content centered" <?php if ($selected_tab != 'client'): ?> style="display: none;"<?php endif; ?>>
-            <?php include_component('project/settings_project_client', array('access_level' => $access_level, 'project' => $selected_project)); ?>
+            <?php include_component('project/settings_project_client', ['access_level' => $access_level, 'project' => $selected_project]); ?>
         </div>
         <div data-tab-id="permissions" class="configuration-content centered" <?php if ($selected_tab != 'permissions'): ?>style=" display: none;"<?php endif; ?>>
-            <?php include_component('project/projectpermissions', array('access_level' => $access_level, 'project' => $selected_project)); ?>
+            <?php include_component('project/projectpermissions', ['access_level' => $access_level, 'project' => $selected_project]); ?>
         </div>
         <?php \pachno\core\framework\Event::createNew('core', 'config_project_panes')->trigger(['selected_tab' => $selected_tab, 'access_level' => $access_level, 'project' => $selected_project]); ?>
+        <div data-tab-id="faq" class="configuration-content centered" <?php if ($selected_tab != 'faq'): ?> style="display: none;"<?php endif; ?>>
+            <?php include_component('project/projectfaq', ['project' => $selected_project]); ?>
+        </div>
     </div>
 </div>
 <script type="text/javascript">

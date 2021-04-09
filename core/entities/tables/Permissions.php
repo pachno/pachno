@@ -80,17 +80,17 @@
             $res = $this->rawDelete($query);
         }
 
-        public function removeGroupPermission($group_id, $permission_type = null, $module = 'core')
+        public function removeGroupPermission($group_id, $permission_type = null, $module = 'core', $target_id = 0)
         {
             $query = $this->getQuery();
             $query->where(self::USER_ID, 0);
             $query->where(self::TEAM_ID, 0);
             $query->where(self::GROUP_ID, $group_id);
+            $query->where(self::TARGET_ID, $target_id);
             $query->where(self::MODULE, $module);
             if ($permission_type !== null) {
                 $query->where(self::PERMISSION_TYPE, $permission_type);
             }
-            $query->where(self::TARGET_ID, 0);
             $query->where(self::SCOPE, framework\Context::getScope()->getID());
 
             $this->rawDelete($query);

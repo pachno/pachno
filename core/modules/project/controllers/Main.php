@@ -842,6 +842,17 @@
         public function runAssignToProject(framework\Request $request)
         {
             if ($this->getUser()->canEditProjectDetails($this->selected_project)) {
+                if ($request->hasParameter('permission')) {
+                    if ($request['value'] == 1) {
+                        Settings::getDefaultGroup()->addPermission($request['permission'], 'core', null, $this->selected_project->getID());
+                    } else {
+                        Settings::getDefaultGroup()->removePermission($request['permission'], $this->selected_project->getID());
+                    }
+                    framework\Context::clearPermissionsCache();
+
+                    return $this->renderJSON(['message' => $this->getI18n()->__('Permission saved')]);
+                }
+
                 $assignee_type = $request['assignee_type'];
                 $assignee_id = $request['assignee_id'];
 

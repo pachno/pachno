@@ -1835,7 +1835,7 @@
         {
             if ($project->isArchived()) return false;
 
-            return $this->hasPermission(Permission::PERMISSION_PROJECT_CREATE_ISSUES, $project->getID());
+            return $this->hasProjectPermission(Permission::PERMISSION_PROJECT_CREATE_ISSUES, $project);
         }
 
         /**

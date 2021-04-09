@@ -862,8 +862,8 @@
 
             try {
                 if ($request['mode'] == 'install' && file_exists(PACHNO_MODULES_PATH . $request['module_key'] . DS . ucfirst($request['module_key']) . '.php')) {
-                    if (entities\Module::installModule($request['module_key'])) {
-                        framework\Context::setMessage('module_message', framework\Context::getI18n()->__('The module "%module_name" was installed successfully', ['%module_name' => $request['module_key']]));
+                    if ($module = entities\Module::installModule($request['module_key'])) {
+                        framework\Context::setMessage('module_message', framework\Context::getI18n()->__('The module "%module_name" was installed successfully', ['%module_name' => $module->getLongName()]));
                     } else {
                         framework\Context::setMessage('module_error', framework\Context::getI18n()->__('There was an error during the installation of the module "%module_name"', ['%module_name' => $request['module_key']]));
                     }
@@ -883,20 +883,20 @@
                                 break;
                             case 'uninstall':
                                 $module->uninstall();
-                                framework\Context::setMessage('module_message', framework\Context::getI18n()->__('The module "%module_name" was uninstalled successfully', ['%module_name' => $module->getName()]));
+                                framework\Context::setMessage('module_message', framework\Context::getI18n()->__('The module "%module_name" was uninstalled successfully', ['%module_name' => $module->getLongName()]));
                                 break;
                             case 'update':
                                 try {
                                     $module->upgrade();
                                     framework\Context::setMessage('module_message', framework\Context::getI18n()->__('The module "%module_name" was successfully upgraded and can now be used again', ['%module_name' => $module->getName()]));
-                                } catch (Exception $e) {
+                                } catch (\Exception $e) {
                                     framework\Context::setMessage('module_error', framework\Context::getI18n()->__('The module "%module_name" was not successfully upgraded', ['%module_name' => $module->getName()]));
                                     throw $e;
                                 }
                                 break;
                         }
                 }
-            } catch (Exception $e) {
+            } catch (\Exception $e) {
                 framework\Logging::log('Trying to run action ' . $request['mode'] . ' on module ' . $request['module_key'] . ' made an exception: ' . $e->getMessage(), framework\Logging::LEVEL_FATAL);
                 framework\Context::setMessage('module_error', framework\Context::getI18n()->__('This module (%module_name) does not exist', ['%module_name' => $request['module_key']]));
                 throw $e;

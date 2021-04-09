@@ -60,8 +60,13 @@
         </button>
     </div>
 <?php else: ?>
-    <span class="version-container">v<?= \pachno\core\framework\Settings::getVersion(); ?></span>
+    <span class="version-container">
+        <span>v<?= \pachno\core\framework\Settings::getVersion(); ?></span>
+        <?php if (!framework\Settings::isStable()): ?>
+            <span class="count-badge type-info"><?= framework\Settings::getVersionName(); ?></span>
+        <?php endif; ?>
+    </span>
     <div class="action-container">
-        <a class="button secondary highlight" id="update_button" href="javascript:void(0);" onclick="Pachno.Config.updateCheck('<?php echo make_url('configure_update_check'); ?>');"><?php echo __('Check for updates'); ?></a>
+        <a class="button secondary highlight" disabled id="update_button" href="javascript:void(0);" onclick="Pachno.Config.updateCheck('<?php echo make_url('configure_update_check'); ?>');"><?php echo __('Check for updates'); ?></a>
     </div>
 <?php endif; ?>

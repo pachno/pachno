@@ -14,12 +14,14 @@
   + .list-item {
     align-items: center;
 
+    span.unchecked,
     .fas.unchecked,
     .far.unchecked {
       display: inline-flex;
       //margin-right: .3em;
     }
 
+    span.checked,
     .fas.checked,
     .far.checked {
       display: none;
@@ -34,7 +36,7 @@
     .far,
     .fab {
       &:not(.icon) {
-        + span {
+        ~ span {
           margin-left: .3em;
         }
       }
@@ -94,12 +96,14 @@
     + label,
     + .list-item {
 
+      span.checked,
       .fas.checked,
       .far.checked {
         display: inline-block;
         //margin-right: .3em;
       }
 
+      span.unchecked,
       .fas.unchecked,
       .far.unchecked {
         display: none;

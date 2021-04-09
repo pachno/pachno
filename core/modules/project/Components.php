@@ -30,6 +30,11 @@
             $this->pagename = $pagename_event->getReturnValue();
         }
 
+        public function componentProjectDevelopers()
+        {
+            $this->user_group = framework\Settings::getDefaultGroup();
+        }
+
         public function componentMilestoneVirtualStatusDetails()
         {
             $this->statuses = Status::getAll();

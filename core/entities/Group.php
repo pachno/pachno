@@ -197,16 +197,16 @@
                 $this->_permission_keys = [];
 
                 foreach ($this->_permissions as $permission) {
-                    $this->_permission_keys[$permission->getModuleName() . '_' . $permission->getPermissionName()] = true;
+                    $this->_permission_keys[$permission->getModuleName() . '_' . $permission->getPermissionName() . '_' . $permission->getTargetId()] = true;
                 }
             }
         }
 
-        public function hasPermission($permission_name, $module = 'core')
+        public function hasPermission($permission_name, $target_id = 0, $module = 'core')
         {
             $permissions = $this->getPermissions();
 
-            return array_key_exists($module . '_' . $permission_name, $permissions);
+            return array_key_exists($module . '_' . $permission_name . '_' . $target_id, $permissions);
         }
 
         /**
@@ -227,9 +227,9 @@
          * @param string $permission_name
          * @param string $module
          */
-        public function removePermission($permission_name, $module = 'core')
+        public function removePermission($permission_name, $target_id = 0, $module = 'core')
         {
-            tables\Permissions::getTable()->removeGroupPermission($this->getID(), $permission_name, $module);
+            tables\Permissions::getTable()->removeGroupPermission($this->getID(), $permission_name, $module, $target_id);
         }
 
     }

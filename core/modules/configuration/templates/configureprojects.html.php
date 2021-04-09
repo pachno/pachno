@@ -29,7 +29,7 @@
             <h2>
                 <span><?= __('Allow users to create projects'); ?></span>
                 <input type="checkbox" class="fancy-checkbox" data-interactive-toggle value="1" id="toggle_allow_user_projects" data-url="<?= make_url('configure_projects'); ?>" <?php if ($user_group->hasPermission(\pachno\core\entities\Permission::PERMISSION_CREATE_PROJECTS)) echo ' checked'; ?>>
-                <label class="button secondary" for="toggle_allow_user_projects"><?= fa_image_tag('spinner', ['class' => 'fa-spin icon indicator']) . fa_image_tag('toggle-on', ['class' => 'icon checked']) . fa_image_tag('toggle-off', ['class' => 'icon unchecked']); ?><span><?= __('Allowed'); ?></span></label>
+                <label class="button secondary" for="toggle_allow_user_projects"><?= fa_image_tag('spinner', ['class' => 'fa-spin icon indicator']) . fa_image_tag('toggle-on', ['class' => 'icon checked']) . fa_image_tag('toggle-off', ['class' => 'icon unchecked']); ?><span class="checked"><?= __('Allowed'); ?></span><span class="unchecked"><?= __('Not allowed'); ?></span></label>
             </h2>
             <div class="helper-text">
                 <span class="description"><?= __('Toggle on the setting above to allow users to create projects. This lets users create projects freely from the project list, and invite other users to collaborate'); ?></span>

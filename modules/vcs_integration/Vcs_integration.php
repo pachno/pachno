@@ -85,7 +85,7 @@
 
         protected function _install($scope)
         {
-
+            throw new \Exception('This module has been deprecated');
         }
 
         protected function _loadFixtures($scope)

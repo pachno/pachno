@@ -56,6 +56,11 @@
                 </a>
                 <div class="list-item separator"></div>
                 <?php \pachno\core\framework\Event::createNew('core', 'config_project_tabs_other')->trigger(array('selected_tab' => $selected_tab)); ?>
+                <div class="list-item separator"></div>
+                <a href="javascript:void(0);" data-tab-target="faq" class="tab-switcher-trigger list-item help <?php if ($selected_tab == 'faq') echo 'selected'; ?>">
+                    <?= fa_image_tag('question-circle', ['class' => 'icon']); ?>
+                    <span class="name"><?= __('Help / FAQ'); ?></span>
+                </a>
             </div>
         <?php else: ?>
             <?php include_component('project/sidebarlinks'); ?>

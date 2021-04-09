@@ -54,9 +54,9 @@ button, button:hover,
     }
   }
 
-  span + .fas,
-  span + .icon,
-  span + .far {
+  span ~ .fas,
+  span ~ .icon,
+  span ~ .far {
     margin-left: .35rem;
   }
 
@@ -64,8 +64,8 @@ button, button:hover,
   .fas,
   .far {
     &:not(.indicator) {
-      + span {
-        margin-left: .35rem;
+      ~ span {
+        margin-left: .3em;
       }
     }
   }
@@ -185,6 +185,15 @@ input.button.secondary.highlight,
 
     &:hover {
       border-color: $theme-primary-color;
+    }
+  }
+
+  &[disabled],
+  &.disabled {
+    background-color: rgba(225, 225, 225, .4);
+    color: rgba(50, 50, 50, .6);
+    &:hover {
+      cursor: default;
     }
   }
 }

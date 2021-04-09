@@ -5430,48 +5430,48 @@ button, button:hover,
   button.dropper.active .icon.toggler, button:hover.dropper.active .icon.toggler,
   .button.dropper.active .icon.toggler, .button:hover.dropper.active .icon.toggler {
     transform: rotate(180deg); }
-  input[type=submit] span + .fas,
-  input[type=submit] span + .icon,
-  input[type=submit] span + .far, input[type=submit]:hover span + .fas,
-  input[type=submit]:hover span + .icon,
-  input[type=submit]:hover span + .far,
-  input[type=button] span + .fas,
-  input[type=button] span + .icon,
-  input[type=button] span + .far, input[type=button]:hover span + .fas,
-  input[type=button]:hover span + .icon,
-  input[type=button]:hover span + .far,
-  button span + .fas,
-  button span + .icon,
-  button span + .far, button:hover span + .fas,
-  button:hover span + .icon,
-  button:hover span + .far,
-  .button span + .fas,
-  .button span + .icon,
-  .button span + .far, .button:hover span + .fas,
-  .button:hover span + .icon,
-  .button:hover span + .far {
+  input[type=submit] span ~ .fas,
+  input[type=submit] span ~ .icon,
+  input[type=submit] span ~ .far, input[type=submit]:hover span ~ .fas,
+  input[type=submit]:hover span ~ .icon,
+  input[type=submit]:hover span ~ .far,
+  input[type=button] span ~ .fas,
+  input[type=button] span ~ .icon,
+  input[type=button] span ~ .far, input[type=button]:hover span ~ .fas,
+  input[type=button]:hover span ~ .icon,
+  input[type=button]:hover span ~ .far,
+  button span ~ .fas,
+  button span ~ .icon,
+  button span ~ .far, button:hover span ~ .fas,
+  button:hover span ~ .icon,
+  button:hover span ~ .far,
+  .button span ~ .fas,
+  .button span ~ .icon,
+  .button span ~ .far, .button:hover span ~ .fas,
+  .button:hover span ~ .icon,
+  .button:hover span ~ .far {
     margin-left: .35rem; }
-  input[type=submit] .icon:not(.indicator) + span,
-  input[type=submit] .fas:not(.indicator) + span,
-  input[type=submit] .far:not(.indicator) + span, input[type=submit]:hover .icon:not(.indicator) + span,
-  input[type=submit]:hover .fas:not(.indicator) + span,
-  input[type=submit]:hover .far:not(.indicator) + span,
-  input[type=button] .icon:not(.indicator) + span,
-  input[type=button] .fas:not(.indicator) + span,
-  input[type=button] .far:not(.indicator) + span, input[type=button]:hover .icon:not(.indicator) + span,
-  input[type=button]:hover .fas:not(.indicator) + span,
-  input[type=button]:hover .far:not(.indicator) + span,
-  button .icon:not(.indicator) + span,
-  button .fas:not(.indicator) + span,
-  button .far:not(.indicator) + span, button:hover .icon:not(.indicator) + span,
-  button:hover .fas:not(.indicator) + span,
-  button:hover .far:not(.indicator) + span,
-  .button .icon:not(.indicator) + span,
-  .button .fas:not(.indicator) + span,
-  .button .far:not(.indicator) + span, .button:hover .icon:not(.indicator) + span,
-  .button:hover .fas:not(.indicator) + span,
-  .button:hover .far:not(.indicator) + span {
-    margin-left: .35rem; }
+  input[type=submit] .icon:not(.indicator) ~ span,
+  input[type=submit] .fas:not(.indicator) ~ span,
+  input[type=submit] .far:not(.indicator) ~ span, input[type=submit]:hover .icon:not(.indicator) ~ span,
+  input[type=submit]:hover .fas:not(.indicator) ~ span,
+  input[type=submit]:hover .far:not(.indicator) ~ span,
+  input[type=button] .icon:not(.indicator) ~ span,
+  input[type=button] .fas:not(.indicator) ~ span,
+  input[type=button] .far:not(.indicator) ~ span, input[type=button]:hover .icon:not(.indicator) ~ span,
+  input[type=button]:hover .fas:not(.indicator) ~ span,
+  input[type=button]:hover .far:not(.indicator) ~ span,
+  button .icon:not(.indicator) ~ span,
+  button .fas:not(.indicator) ~ span,
+  button .far:not(.indicator) ~ span, button:hover .icon:not(.indicator) ~ span,
+  button:hover .fas:not(.indicator) ~ span,
+  button:hover .far:not(.indicator) ~ span,
+  .button .icon:not(.indicator) ~ span,
+  .button .fas:not(.indicator) ~ span,
+  .button .far:not(.indicator) ~ span, .button:hover .icon:not(.indicator) ~ span,
+  .button:hover .fas:not(.indicator) ~ span,
+  .button:hover .far:not(.indicator) ~ span {
+    margin-left: .3em; }
   input[type=submit] span.icon, input[type=submit]:hover span.icon,
   input[type=button] span.icon, input[type=button]:hover span.icon,
   button span.icon, button:hover span.icon,
@@ -5602,6 +5602,19 @@ input.button.secondary.highlight,
     input.button.secondary.highlight:not(.disabled):not([disabled]):hover,
     .button.secondary.highlight:not(.disabled):not([disabled]):hover {
       border-color: #00adc7; }
+  button.secondary.highlight[disabled], button.secondary.highlight.disabled,
+  input.button.secondary.highlight[disabled],
+  input.button.secondary.highlight.disabled,
+  .button.secondary.highlight[disabled],
+  .button.secondary.highlight.disabled {
+    background-color: rgba(225, 225, 225, 0.4);
+    color: rgba(50, 50, 50, 0.6); }
+    button.secondary.highlight[disabled]:hover, button.secondary.highlight.disabled:hover,
+    input.button.secondary.highlight[disabled]:hover,
+    input.button.secondary.highlight.disabled:hover,
+    .button.secondary.highlight[disabled]:hover,
+    .button.secondary.highlight.disabled:hover {
+      cursor: default; }
 
 button.secondary.enabled,
 input.button.secondary.enabled,
@@ -6064,13 +6077,17 @@ h1 .button, h1 .button:hover, h2 .button, h2 .button:hover, h3 .button, h3 .butt
   .fancy-checkbox + label,
   .fancy-checkbox + .list-item {
     align-items: center; }
+    .fancy-checkbox + label span.unchecked,
     .fancy-checkbox + label .fas.unchecked,
     .fancy-checkbox + label .far.unchecked,
+    .fancy-checkbox + .list-item span.unchecked,
     .fancy-checkbox + .list-item .fas.unchecked,
     .fancy-checkbox + .list-item .far.unchecked {
       display: inline-flex; }
+    .fancy-checkbox + label span.checked,
     .fancy-checkbox + label .fas.checked,
     .fancy-checkbox + label .far.checked,
+    .fancy-checkbox + .list-item span.checked,
     .fancy-checkbox + .list-item .fas.checked,
     .fancy-checkbox + .list-item .far.checked {
       display: none; }
@@ -6079,12 +6096,12 @@ h1 .button, h1 .button:hover, h2 .button, h2 .button:hover, h3 .button, h3 .butt
     .fancy-checkbox + .list-item .fas.indicator,
     .fancy-checkbox + .list-item .far.indicator {
       display: none; }
-    .fancy-checkbox + label .fas:not(.icon) + span,
-    .fancy-checkbox + label .far:not(.icon) + span,
-    .fancy-checkbox + label .fab:not(.icon) + span,
-    .fancy-checkbox + .list-item .fas:not(.icon) + span,
-    .fancy-checkbox + .list-item .far:not(.icon) + span,
-    .fancy-checkbox + .list-item .fab:not(.icon) + span {
+    .fancy-checkbox + label .fas:not(.icon) ~ span,
+    .fancy-checkbox + label .far:not(.icon) ~ span,
+    .fancy-checkbox + label .fab:not(.icon) ~ span,
+    .fancy-checkbox + .list-item .fas:not(.icon) ~ span,
+    .fancy-checkbox + .list-item .far:not(.icon) ~ span,
+    .fancy-checkbox + .list-item .fab:not(.icon) ~ span {
       margin-left: .3em; }
   .fancy-checkbox.submitting + label .fas.unchecked,
   .fancy-checkbox.submitting + label .far.unchecked,
@@ -6121,13 +6138,17 @@ h1 .button, h1 .button:hover, h2 .button, h2 .button:hover, h3 .button, h3 .butt
     color: #141823; }
     .fancy-checkbox:checked:not(:disabled):not(.submitting) + .list-item.toggler .icon {
       color: #0cd8b6; }
+  .fancy-checkbox:checked:not(:disabled):not(.submitting) + label span.checked,
   .fancy-checkbox:checked:not(:disabled):not(.submitting) + label .fas.checked,
   .fancy-checkbox:checked:not(:disabled):not(.submitting) + label .far.checked,
+  .fancy-checkbox:checked:not(:disabled):not(.submitting) + .list-item span.checked,
   .fancy-checkbox:checked:not(:disabled):not(.submitting) + .list-item .fas.checked,
   .fancy-checkbox:checked:not(:disabled):not(.submitting) + .list-item .far.checked {
     display: inline-block; }
+  .fancy-checkbox:checked:not(:disabled):not(.submitting) + label span.unchecked,
   .fancy-checkbox:checked:not(:disabled):not(.submitting) + label .fas.unchecked,
   .fancy-checkbox:checked:not(:disabled):not(.submitting) + label .far.unchecked,
+  .fancy-checkbox:checked:not(:disabled):not(.submitting) + .list-item span.unchecked,
   .fancy-checkbox:checked:not(:disabled):not(.submitting) + .list-item .fas.unchecked,
   .fancy-checkbox:checked:not(:disabled):not(.submitting) + .list-item .far.unchecked {
     display: none; }
@@ -6618,6 +6639,12 @@ input[data-interactive-toggle].submitting + label .indicator {
       .list-mode .list-item.disabled .icon,
       .list-mode .list-item:hover.disabled .icon {
         color: rgba(100, 100, 100, 0.4); }
+    .list-mode .list-item.help:hover,
+    .list-mode .list-item:hover.help:hover {
+      cursor: help; }
+    .list-mode .list-item.help .icon:not(.issuetype-icon),
+    .list-mode .list-item:hover.help .icon:not(.issuetype-icon) {
+      color: #00adc7; }
     .list-mode .list-item.danger,
     .list-mode .list-item:hover.danger {
       color: #cb1a00; }
@@ -6718,6 +6745,15 @@ input[data-interactive-toggle].submitting + label .indicator {
           margin: 0;
           font-size: 0.8em;
           border-bottom: none; }
+      .list-mode .list-item.multiline span.name .description,
+      .list-mode .list-item:hover.multiline span.name .description {
+        display: inline-block;
+        text-align: left; }
+        .list-mode .list-item.multiline span.name .description span,
+        .list-mode .list-item.multiline span.name .description .button,
+        .list-mode .list-item:hover.multiline span.name .description span,
+        .list-mode .list-item:hover.multiline span.name .description .button {
+          display: inline-flex; }
     .list-mode .list-item.multiline .information,
     .list-mode .list-item:hover.multiline .information {
       flex: 0 0 auto;
@@ -6769,13 +6805,16 @@ input[data-interactive-toggle].submitting + label .indicator {
       .list-mode .list-item:hover.expandable.expanded.selected {
         background-color: transparent;
         border-color: #0cd8b6; }
-      .list-mode .list-item.expandable.expanded .name,
-      .list-mode .list-item:hover.expandable.expanded .name {
-        color: #0cd8b6;
-        font-weight: 500; }
-      .list-mode .list-item.expandable.expanded .icon,
-      .list-mode .list-item:hover.expandable.expanded .icon {
-        color: #0cd8b6; }
+        .list-mode .list-item.expandable.expanded.selected .name,
+        .list-mode .list-item:hover.expandable.expanded.selected .name {
+          color: #0cd8b6;
+          font-weight: 500; }
+        .list-mode .list-item.expandable.expanded.selected .icon,
+        .list-mode .list-item:hover.expandable.expanded.selected .icon {
+          color: #0cd8b6; }
+    .list-mode .list-item.faq,
+    .list-mode .list-item:hover.faq {
+      font-size: 1.05em; }
     .list-mode .list-item .name,
     .list-mode .list-item:hover .name {
       flex: 1 1 auto;
@@ -6843,7 +6882,6 @@ input[data-interactive-toggle].submitting + label .indicator {
       flex: 0 0 35px;
       align-self: center;
       text-align: center;
-      display: flex;
       align-items: center;
       justify-content: center;
       flex-direction: row;
@@ -6890,6 +6928,10 @@ input[data-interactive-toggle].submitting + label .indicator {
       .list-mode .list-item:hover > a:hover .fas.icon,
       .list-mode .list-item:hover > a:hover .far.icon {
         margin-right: 0; }
+    .list-mode .list-item .button-group, .list-mode .list-item .button-group:hover,
+    .list-mode .list-item:hover .button-group,
+    .list-mode .list-item:hover .button-group:hover {
+      padding: .25em; }
   .list-mode .fancy-checkbox:checked + .list-item:not(.disabled):not(.not-selectable):not(.separator):not(.header):not(.filter-container):hover {
     background-color: #0cd8b6;
     color: #FFF; }
@@ -6931,7 +6973,6 @@ input[data-interactive-toggle].submitting + label .indicator {
 
 .expandable.expanded:not(button) .expander {
   transform: rotate(180deg);
-  color: #0cd8b6;
   padding: .3em .5em;
   border-radius: 4px; }
 

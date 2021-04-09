@@ -262,11 +262,11 @@
 
         protected static $_ver_mj = 0;
 
-        protected static $_ver_mn = 6;
+        protected static $_ver_mn = 7;
 
         protected static $_ver_rev = 0;
 
-        protected static $_ver_name = "-dev";
+        protected static $_ver_name = "Alpha 2";
 
         /**
          * @var Scope
@@ -402,11 +402,16 @@
 
         public static function getVersion($with_codename = false, $with_revision = true)
         {
-            $retvar = self::$_ver_mj . '.' . self::$_ver_mn;
-            if ($with_revision) $retvar .= (is_numeric(self::$_ver_rev)) ? '.' . self::$_ver_rev : self::$_ver_rev;
-            if ($with_codename) $retvar .= ' ("' . self::$_ver_name . '")';
+            $version_string = self::$_ver_mj . '.' . self::$_ver_mn;
+            if ($with_revision) $version_string .= (is_numeric(self::$_ver_rev)) ? '.' . self::$_ver_rev : self::$_ver_rev;
+            if ($with_codename) $version_string .= ' ("' . self::$_ver_name . '")';
 
-            return $retvar;
+            return $version_string;
+        }
+
+        public static function getVersionName()
+        {
+            return self::$_ver_name;
         }
 
         public static function hasUserSetting($user_id, $name, $module = 'core', $scope = 0)
@@ -1160,7 +1165,7 @@
 
         public static function isStable(): bool
         {
-            return true;
+            return false;
         }
 
     }

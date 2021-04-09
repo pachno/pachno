@@ -714,6 +714,28 @@
                 }
             }
 
+            $user_group = Settings::getDefaultGroup();
+
+            if ($user_group->hasPermission(Permission::PERMISSION_PROJECT_ACCESS_DASHBOARD, $this->getID())) {
+                return false;
+            }
+
+            if ($user_group->hasPermission(Permission::PERMISSION_PROJECT_ACCESS_ISSUES, $this->getID())) {
+                return false;
+            }
+
+            if ($user_group->hasPermission(Permission::PERMISSION_PROJECT_ACCESS_BOARDS, $this->getID())) {
+                return false;
+            }
+
+            if ($user_group->hasPermission(Permission::PERMISSION_PROJECT_ACCESS_CODE, $this->getID())) {
+                return false;
+            }
+
+            if ($user_group->hasPermission(Permission::PERMISSION_PROJECT_ACCESS_DOCUMENTATION, $this->getID())) {
+                return false;
+            }
+
             return true;
         }
 
