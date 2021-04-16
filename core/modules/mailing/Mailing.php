@@ -1202,7 +1202,7 @@ EOT;
                                 foreach ($issues as $issue) {
                                     $text = preg_replace('#(^\w.+:\n)?(^>.*(\n|$))+#mi', "", $data);
                                     $text = trim($text);
-                                    if (!$this->processIncomingEmailCommand($text, $issue) && $user->canPostComments()) {
+                                    if (!$this->processIncomingEmailCommand($text, $issue) && $user->canPostComments(Comment::TYPE_ISSUE, $issue->getProject())) {
                                         $comment = new Comment();
                                         $comment->setSyntax(FrameworkSettings::SYNTAX_MD);
                                         $comment->setContent($text);

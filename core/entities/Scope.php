@@ -2,10 +2,13 @@
 
     namespace pachno\core\entities;
 
+    use b2db\AnnotationSet;
+    use b2db\Core;
     use b2db\Row;
     use Exception;
     use pachno\core\entities\common\Identifiable;
     use pachno\core\entities\tables\Files;
+    use pachno\core\entities\tables\ScopedTable;
     use pachno\core\framework;
     use pachno\core\framework\Settings;
 
@@ -116,6 +119,11 @@
          * @Relates(class="\pachno\core\entities\Issue", collection=true, foreign_column="scope")
          */
         protected $_issues = null;
+
+        /**
+         * @Relates(class="\pachno\core\entities\Article", collection=true, foreign_column="scope")
+         */
+        protected $_articles = null;
 
         /**
          * Return all available scopes
@@ -378,38 +386,26 @@
             return (int)$this->_b2dbLazyCount('_issues');
         }
 
+        public function getNumberOfArticles()
+        {
+            return (int)$this->_b2dbLazyCount('_articles');
+        }
+
         protected function _preDelete()
         {
-            $tables = [
-                '\pachno\core\entities\tables\IssueCustomFields',
-                '\pachno\core\entities\tables\IssueAffectsEdition',
-                '\pachno\core\entities\tables\IssueAffectsBuild',
-                '\pachno\core\entities\tables\IssueAffectsComponent',
-                '\pachno\core\entities\tables\IssueFiles',
-                '\pachno\core\entities\tables\IssueRelations',
-                '\pachno\core\entities\tables\IssuetypeSchemeLink',
-                '\pachno\core\entities\tables\IssuetypeSchemes',
-                '\pachno\core\entities\tables\IssueTypes',
-                '\pachno\core\entities\tables\ListTypes',
-                '\pachno\core\entities\tables\Issues',
-                '\pachno\core\entities\tables\Comments',
-                '\pachno\core\entities\tables\ProjectAssignedTeams',
-                '\pachno\core\entities\tables\ProjectAssignedUsers',
-                '\pachno\core\entities\tables\Components',
-                '\pachno\core\entities\tables\Editions',
-                '\pachno\core\entities\tables\Builds',
-                '\pachno\core\entities\tables\Files',
-                '\pachno\core\entities\tables\Milestones',
-                '\pachno\core\entities\tables\Issues',
-                '\pachno\core\entities\tables\Projects',
-                '\pachno\core\entities\tables\UserScopes',
-                '\pachno\core\entities\tables\Dashboards',
-                '\pachno\core\entities\tables\DashboardViews',
-                '\pachno\core\entities\tables\ScopeHostnames',
-                '\pachno\core\entities\tables\Settings'
-            ];
-            foreach ($tables as $table) {
-                $table::getTable()->deleteFromScope($this->getID());
+            $b2db_entities_path = PACHNO_CORE_PATH . 'entities' . DS . 'tables' . DS;
+            foreach (scandir($b2db_entities_path) as $filename) {
+                if (in_array($filename, ['.', '..']))
+                    continue;
+
+                $table_name = mb_substr($filename, 0, mb_strpos($filename, '.'));
+                if ($table_name != '' && $table_name !== 'ScopedTable') {
+                    $table_name = "\\pachno\\core\\entities\\tables\\{$table_name}";
+                    $table = Core::getTable($table_name);
+                    if ($table instanceof ScopedTable) {
+                        $table->deleteFromScope($this->getID());
+                    }
+                }
             }
         }
 

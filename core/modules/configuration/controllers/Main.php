@@ -2289,30 +2289,18 @@
                 return $this->forward403($this->getI18n()->__('Scopes can only be managed from the default scope'));
             }
 
-            if ($request->isPost()) {
-                $hostname = $request['hostname'];
-                $hostname = str_replace(['http://', 'https://'], ['', ''], $hostname);
-
-                $scopename = $request['name'];
-                if (!$hostname || tables\Scopes::getTable()->getByHostname($hostname) instanceof entities\Scope) {
-                    $this->scope_hostname_error = true;
-                } elseif (!$scopename) {
-                    $this->scope_name_error = true;
-                } else {
-                    $scope = new entities\Scope();
-                    $scope->addHostname($hostname);
-                    $scope->setName($scopename);
-                    $scope->setEnabled();
-                    $scope->save();
-                    $this->forward(framework\Context::getRouting()->generate('configure_scopes'));
-                }
-            }
-            $this->scope_deleted = framework\Context::getMessageAndClear('scope_deleted');
-            $this->scope_saved = framework\Context::getMessageAndClear('scope_saved');
-            $pagination_scopes = tables\Scopes::getTable()->getPaginationItems();
-            $pagination = new Pagination($pagination_scopes, $this->getRouting()->generate('configure_scopes'), $request);
+            $exclude_empty_issues = (bool) $request->getParameter('exclude_empty_issues', false);
+            $exclude_empty_projects = (bool) $request->getParameter('exclude_empty_projects', false);
+            $pagination_scopes = tables\Scopes::getTable()->getPaginationItems($exclude_empty_projects, $exclude_empty_issues);
+            $pagination = new Pagination($pagination_scopes, $this->getRouting()->generate('configure_scopes'), $request, compact('exclude_empty_projects', 'exclude_empty_issues'));
             $this->scopes = tables\Scopes::getTable()->getByIds($pagination->getPageItems());
             $this->pagination = $pagination;
+            $this->exclude_empty_issues = $exclude_empty_issues;
+            $this->exclude_empty_projects = $exclude_empty_projects;
+
+            if ($request->isPost()) {
+                return $this->renderJSON(['content' => $this->getComponentHTML('configuration/scopelist', ['scopes' => $this->scopes, 'pagination' => $this->pagination])]);
+            }
         }
 
         public function runScope(framework\Request $request)
@@ -2333,6 +2321,24 @@
                             $this->scope_save_error = $this->getI18n()->__('You cannot delete the default scope');
                         }
                     } else {
+                        if ($request->isPost()) {
+                            $hostname = $request['hostname'];
+                            $hostname = str_replace(['http://', 'https://'], ['', ''], $hostname);
+
+                            $scopename = $request['name'];
+                            if (!$hostname || tables\Scopes::getTable()->getByHostname($hostname) instanceof entities\Scope) {
+                                $this->scope_hostname_error = true;
+                            } elseif (!$scopename) {
+                                $this->scope_name_error = true;
+                            } else {
+                                $scope = new entities\Scope();
+                                $scope->addHostname($hostname);
+                                $scope->setName($scopename);
+                                $scope->setEnabled();
+                                $scope->save();
+                                $this->forward(framework\Context::getRouting()->generate('configure_scopes'));
+                            }
+                        }
                         if (!$request['name']) {
                             throw new Exception($this->getI18n()->__('Please specify a scope name'));
                         }

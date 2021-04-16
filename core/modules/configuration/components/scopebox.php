@@ -1,3 +1,10 @@
+<?php
+
+    /**
+     * @var \pachno\core\entities\Scope $scope
+     */
+
+?>
 <div class="row">
     <div class="column name-container">
         <?php echo $scope->getName(); ?>

@@ -443,8 +443,8 @@
 
         public function componentDashboardConfig()
         {
+            $this->dashboard = tables\Dashboards::getTable()->selectById($this->dashboard_id);
             $this->views = entities\DashboardView::getAvailableViews($this->target_type);
-            $this->dashboardViews = entities\DashboardView::getViews($this->tid, $this->target_type);
         }
 
         public function componentReportIssueContainer()

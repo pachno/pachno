@@ -183,7 +183,7 @@
                     <div class="button-group">
                         <?php echo fa_image_tag('spinner', ['class' => 'fa-spin', 'style' => 'display: none;', 'id' => 'comments_loading_indicator']); ?>
                         <button class="secondary icon trigger-comment-sort" data-target-type="<?= Comment::TYPE_COMMIT; ?>" data-target-id="<?= $commit->getID(); ?>" id="sort-comments-button" style="<?php if (!$comment_count) echo 'display: none; '; ?>"><?= fa_image_tag('sort', ['class' => 'icon']); ?></button>
-                        <?php if ($pachno_user->canPostComments() && ((Context::isProjectContext() && !Context::getCurrentProject()->isArchived()) || !Context::isProjectContext())): ?>
+                        <?php if ($pachno_user->canPostComments(Comment::TYPE_COMMIT, Context::getCurrentProject())): ?>
                             <button id="comment_add_button" class="button secondary highlight trigger-show-comment-post">
                                 <?= fa_image_tag('comment', ['class' => 'icon']); ?>
                                 <span class="name"><?= __('Post a comment'); ?></span>
@@ -191,7 +191,7 @@
                         <?php endif; ?>
                     </div>
                 </h4>
-                <?php include_component('main/comments', ['target_id' => $commit->getID(), 'mentionable_target_type' => 'commit', 'target_type' => Comment::TYPE_COMMIT, 'show_button' => false, 'comment_count_div' => 'commit_comment_count']); ?>
+                <?php include_component('main/comments', ['target_id' => $commit->getID(), 'mentionable_target_type' => 'commit', 'target_type' => Comment::TYPE_COMMIT, 'show_button' => false, 'comment_count_div' => 'commit_comment_count', 'can_post_comments' => $pachno_user->canPostComments(Comment::TYPE_COMMIT, Context::getCurrentProject())]); ?>
             </div>
         </div>
     </div>

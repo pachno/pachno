@@ -16,7 +16,7 @@
     ],
     "require" : {
         "php": "^7.4",
-        "thebuggenie/b2db" : "^3.0",
+        "pachno/b2db" : "^1.0",
         "swiftmailer/swiftmailer" : "4.2.*",
         "webit/eval-math" : "^1.0",
         "mustangostang/spyc": "0.5.*",

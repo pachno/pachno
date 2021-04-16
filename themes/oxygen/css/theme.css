@@ -12967,7 +12967,8 @@ dl.info {
     width: 2.5em;
     height: 2.5em;
     background: #FFF;
-    box-shadow: 0 -3px 6px -6px rgba(0, 0, 0, 0.36); }
+    box-shadow: 0 -3px 6px -6px rgba(0, 0, 0, 0.36);
+    display: flex; }
     .commits-container .list-mode .list-item.commit .avatar-container img, .commits-container .list-mode .list-item.commit:hover .avatar-container img {
       width: 100%; }
   .commits-container .list-mode .list-item.commit .name .title, .commits-container .list-mode .list-item.commit:hover .name .title {

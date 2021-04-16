@@ -2516,16 +2516,16 @@
                 if (!$is_new) {
                     $comment = tables\Comments::getTable()->selectById($request['comment_id']);
                 } else {
-                    if (!$this->getUser()->canPostComments()) {
-                        throw new Exception($i18n->__('You are not allowed to do this'));
-                    }
-
                     $comment = new entities\Comment();
                     $comment->setPostedBy($this->getUser()->getID());
                     $comment->setTargetID($request['comment_applies_id']);
                     $comment->setTargetType($request['comment_applies_type']);
                     $comment->setReplyToComment($request['reply_to_comment_id']);
                     $comment->setModuleName($request['comment_module']);
+
+                    if (!$this->getUser()->canPostComments($comment_applies_type, $comment->getTarget()->getProject())) {
+                        throw new Exception($i18n->__('You are not allowed to do this'));
+                    }
                 }
 
                 if (!trim($request['comment_body'])) {
@@ -2973,9 +2973,8 @@
                         break;
                     case 'dashboard_config':
                         $template_name = 'main/dashboardconfig';
-                        $options['tid'] = $request['tid'];
+                        $options['dashboard_id'] = $request['dashboard_id'];
                         $options['target_type'] = $request['target_type'];
-                        $options['previous_route'] = $request['previous_route'];
                         $options['mandatory'] = true;
                         break;
                     case 'bulk_workflow':

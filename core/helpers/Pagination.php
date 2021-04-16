@@ -154,8 +154,8 @@
             }
 
             // Extract the page number and page size from request.
-            $this->_page = intval($request->getParameter('page'));
-            $this->_page_size = intval($request->getParameter('page_size'));
+            $this->_page = (int) $request->getParameter('page');
+            $this->_page_size = (int) $request->getParameter('page_size');
 
             // Ensure page and page size are valid non-negative integer values.
             if ($this->_page < 1) {

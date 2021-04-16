@@ -1,3 +1,11 @@
+<?php
+
+    /**
+     * @var \pachno\core\entities\Comment $comment
+     * @var \pachno\core\entities\User $pachno_user
+     */
+
+?>
 <?php if ($comment->isReply()): ?>
     <div class="comment-container reply <?php if (!$comment->isPublic()): ?> private_comment<?php endif; ?> syntax_<?= \pachno\core\framework\Settings::getSyntaxClass($comment->getSyntax()); ?>" id="comment_<?= $comment->getID(); ?>">
         <div id="comment_view_<?= $comment->getID(); ?>" class="comment">

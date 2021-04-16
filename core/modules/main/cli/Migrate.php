@@ -122,8 +122,15 @@
             $scopes = Scopes::getTable()->selectAll();
             $cc = 1;
             $lines--;
+            $default_scope = Context::getScope();
 
             foreach ($scopes as $scope) {
+                if (!$scope->getNumberOfProjects() || ($scope->getNumberOfIssues() < 4 && $scope->getNumberOfArticles() < (29 + $scope->getNumberOfProjects()))) {
+                    $scope->delete();
+                    continue;
+                }
+
+                Context::setScope($scope);
                 $this->cliLineUp($lines);
                 $this->cliMoveLeft();
 
@@ -142,6 +149,8 @@
                 $lines = 2;
                 $cc++;
             }
+
+            Context::setScope($default_scope);
 
             $this->cliLineUp();
             $this->cliClearLine();

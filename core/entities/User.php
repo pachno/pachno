@@ -1854,14 +1854,14 @@
             switch ($comment_type) {
                 case Comment::TYPE_ARTICLE:
                     if ($project instanceof Project) {
-                        return $this->hasPermission(Permission::PERMISSION_PROJECT_EDIT_DOCUMENTATION_POST_COMMENTS, $project->getID()) || $this->hasPermission(Permission::PERMISSION_MANAGE_PROJECT_MODERATE_DOCUMENTATION, $project->getID());
+                        return $this->hasProjectPermission(Permission::PERMISSION_PROJECT_EDIT_DOCUMENTATION_POST_COMMENTS, $project) || $this->hasProjectPermission(Permission::PERMISSION_MANAGE_PROJECT_MODERATE_DOCUMENTATION, $project);
                     }
 
                     return $this->hasPermission(Permission::PERMISSION_MANAGE_SITE_DOCUMENTATION);
                 case Comment::TYPE_ISSUE:
-                    return $this->hasPermission(Permission::PERMISSION_EDIT_ISSUES_COMMENTS, $project->getID()) || $this->hasPermission(Permission::PERMISSION_EDIT_ISSUES_COMMENTS . Permission::PERMISSION_OWN_SUFFIX, $project->getID()) || $this->hasPermission(Permission::PERMISSION_EDIT_ISSUES_MODERATE_COMMENTS, $project->getID());
+                    return $this->hasProjectPermission(Permission::PERMISSION_EDIT_ISSUES_COMMENTS, $project) || $this->hasProjectPermission(Permission::PERMISSION_EDIT_ISSUES_COMMENTS . Permission::PERMISSION_OWN_SUFFIX, $project) || $this->hasProjectPermission(Permission::PERMISSION_EDIT_ISSUES_MODERATE_COMMENTS, $project);
                 case Comment::TYPE_COMMIT:
-                    return $this->hasPermission(Permission::PERMISSION_PROJECT_DEVELOPER, $project->getID()) || $this->hasPermission(Permission::PERMISSION_PROJECT_DEVELOPER_DISCUSS_CODE, $project->getID());
+                    return $this->hasProjectPermission(Permission::PERMISSION_PROJECT_DEVELOPER, $project) || $this->hasProjectPermission(Permission::PERMISSION_PROJECT_DEVELOPER_DISCUSS_CODE, $project);
             }
 
             return false;
