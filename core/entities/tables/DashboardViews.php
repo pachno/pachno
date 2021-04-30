@@ -3,23 +3,15 @@
     namespace pachno\core\entities\tables;
 
     use b2db\Insertion;
+    use b2db\Query;
+    use pachno\core\entities\DashboardView;
     use pachno\core\framework;
 
     /**
      * User dashboard views table
      *
-     * @author Daniel Andre Eikeland <zegenie@zegeniestudios.net>
-     * @version 3.1
-     * @license http://opensource.org/licenses/MPL-2.0 Mozilla Public License 2.0 (MPL 2.0)
-     * @package pachno
-     * @subpackage tables
-     */
-
-    /**
-     * User dashboard views table
-     *
-     * @package pachno
-     * @subpackage tables
+     * @method DashboardView[] select(Query $query, $join = 'all')
+     * @method static DashboardViews getTable()
      *
      * @Table(name="dashboard_views")
      * @Entity(class="\pachno\core\entities\DashboardView")
@@ -86,6 +78,19 @@
             $res = $this->select($query);
 
             return $res;
+        }
+
+        /**
+         * @param $dashboard_id
+         * @return DashboardView[]
+         */
+        public function getByDashboardIdScoped($dashboard_id)
+        {
+            $query = $this->getQuery();
+            $query->where('dashboard_views.dashboard_id', $dashboard_id);
+            $query->where(self::SCOPE, framework\Context::getScope()->getID());
+
+            return $this->select($query);
         }
 
     }

@@ -52,12 +52,7 @@
                         </div>
                         <div class="form-row">
                             <div class="helper-text">
-                                <p><?php echo __('Current php values: %max_upload_size=%ini_max_upload_size and %post_max_size=%ini_post_max_size', ['%max_upload_size' => '<span class="command_box">max_upload_size', '%ini_max_upload_size' => (int) ini_get('upload_max_filesize') . __('MB') . '</span>', '%post_max_size' => '<span class="command_box">post_max_size', '%ini_post_max_size' => (int) ini_get('post_max_size') . __('MB') . '</span>']); ?></p>
-                                <?php if (\pachno\core\framework\Context::getScope()->getMaxUploadLimit()): ?>
-                                    <div class="message-box type-warning">
-                                        <?php echo __('Also note that there is a total upload limit on this instance, which is %limit MB.', array('%limit' => '<u>' . \pachno\core\framework\Context::getScope()->getMaxUploadLimit() . '</u>')); ?><br></b>
-                                    </div>
-                                <?php endif; ?>
+                                <span><?php echo __('Current php values: %max_upload_size=%ini_max_upload_size and %post_max_size=%ini_post_max_size', ['%max_upload_size' => '<span class="command_box">max_upload_size', '%ini_max_upload_size' => (int) ini_get('upload_max_filesize') . __('MB') . '</span>', '%post_max_size' => '<span class="command_box">post_max_size', '%ini_post_max_size' => (int) ini_get('post_max_size') . __('MB') . '</span>']); ?></span>
                             </div>
                         </div>
                         <div class="form-row">

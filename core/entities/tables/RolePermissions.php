@@ -33,8 +33,6 @@
 
         const ID = 'rolepermissions.id';
 
-        const SCOPE = 'rolepermissions.scope';
-
         const ROLE_ID = 'rolepermissions.role_id';
 
         const PERMISSION = 'rolepermissions.permission';

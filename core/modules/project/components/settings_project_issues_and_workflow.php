@@ -11,12 +11,12 @@
      */
 
 ?>
-<div class="fancy-tabs" id="project-issues-and-workflow-menu">
-    <a id="tab_project_workflow" class="tab selected" onclick="Pachno.UI.tabSwitcher('tab_project_workflow', 'project-issues-and-workflow-menu');"><?= fa_image_tag('code-branch', ['class' => 'icon']); ?><span><?= __('Workflow'); ?></span></a>
-    <a id="tab_project_issues" class="tab" onclick="Pachno.UI.tabSwitcher('tab_project_issues', 'project-issues-and-workflow-menu');"><?= fa_image_tag('file-alt', ['class' => 'icon']); ?><span><?= __('Issues'); ?></span></a>
+<div class="fancy-tabs tab-switcher" id="project-issues-and-workflow-menu">
+    <a id="tab_project_workflow" class="tab selected tab-switcher-trigger" data-tab-target="workflow"><?= fa_image_tag('code-branch', ['class' => 'icon']); ?><span><?= __('Workflow'); ?></span></a>
+    <a id="tab_project_issues" class="tab tab-switcher-trigger" data-tab-target="issues"><?= fa_image_tag('file-alt', ['class' => 'icon']); ?><span><?= __('Issues'); ?></span></a>
 </div>
 <div id="project-issues-and-workflow-menu_panes" class="form-container">
-    <div id="tab_project_issues_pane" style="display: none;">
+    <div id="tab_project_issues_pane" style="display: none;" data-tab-id="issues">
         <?php if ($access_level == Settings::ACCESS_FULL): ?>
         <form
             accept-charset="<?= Context::getI18n()->getCharset(); ?>"
@@ -91,16 +91,16 @@
                 <label for="locked_no"><?php echo __('Allow issues to be reported'); ?></label>
                 <div class="fancy-label-select">
                     <?php if ($access_level == Settings::ACCESS_FULL): ?>
-                        <input type="radio" name="locked" value="1" class="fancy-checkbox" id="locked_yes"<?php if (!$project->isLocked()): ?> checked<?php endif; ?>>
+                        <input type="radio" name="locked" value="0" class="fancy-checkbox" id="locked_yes"<?php if (!$project->isLocked()): ?> checked<?php endif; ?>>
                         <label for="locked_yes"><?php echo fa_image_tag('check', ['class' => 'checked']) . __('Yes'); ?></label>
-                        <input type="radio" name="locked" value="0" class="fancy-checkbox" id="locked_no"<?php if ($project->isLocked()): ?> checked<?php endif; ?>>
+                        <input type="radio" name="locked" value="1" class="fancy-checkbox" id="locked_no"<?php if ($project->isLocked()): ?> checked<?php endif; ?>>
                         <label for="locked_no"><?php echo fa_image_tag('check', ['class' => 'checked']) . __('No'); ?></label>
                     <?php else: ?>
                         <?php echo (!$project->isLocked()) ? __('Yes') : __('No'); ?>
                     <?php endif; ?>
                 </div>
             </div>
-            <div class="form-row">
+            <div class="form-row" style="display: none;">
                 <label for="issues_lock_type"><?php echo __('Access policy for new issues'); ?></label>
                 <?php if ($access_level == Settings::ACCESS_FULL): ?>
                     <div class="fancy-dropdown-container">
@@ -154,7 +154,7 @@
         </form>
     <?php endif; ?>
     </div>
-    <div id="tab_project_workflow_pane">
+    <div id="tab_project_workflow_pane" data-tab-id="workflow">
         <div class="form-row">
             <h3>
                 <span><?= __('Workflow scheme'); ?></span>

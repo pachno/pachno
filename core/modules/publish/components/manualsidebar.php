@@ -27,7 +27,7 @@
                         <span class="name"><?= __('Back'); ?></span>
                     </a>
                     <div class="dropdown-container list-mode from-left slide-out">
-                        <?php include_component('project/sidebarlinks'); ?>
+                        <?php include_component('project/sidebarlinks', ['project' => $article->getProject()]); ?>
                     </div>
                 </div>
             <?php endif; ?>

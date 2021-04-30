@@ -21,6 +21,8 @@
      * @Routes(name_prefix="project_", url_prefix="/:project_key")
      *
      * @property entities\Client $selected_client
+     * @property entities\Build[][] $active_builds
+     * @property entities\Build[][] $upcoming_builds
      */
     class Main extends helpers\ProjectActions
     {
@@ -790,30 +792,26 @@
          */
         public function runReleases(framework\Request $request)
         {
-            $this->_setupBuilds();
-        }
-
-        protected function _setupBuilds()
-        {
             $builds = $this->selected_project->getBuilds();
 
             $active_builds = [0 => []];
-            $archived_builds = [0 => []];
+            $upcoming_builds = [0 => []];
 
             foreach ($this->selected_project->getEditions() as $edition_id => $edition) {
                 $active_builds[$edition_id] = [];
-                $archived_builds[$edition_id] = [];
+                $upcoming_builds[$edition_id] = [];
             }
 
             foreach ($builds as $build) {
-                if ($build->isLocked())
-                    $archived_builds[$build->getEditionID()][$build->getID()] = $build;
-                else
+                if (!$build->hasReleaseDate() || $build->getReleaseDate() > NOW) {
+                    $upcoming_builds[$build->getEditionID()][$build->getID()] = $build;
+                } else {
                     $active_builds[$build->getEditionID()][$build->getID()] = $build;
+                }
             }
 
             $this->active_builds = $active_builds;
-            $this->archived_builds = $archived_builds;
+            $this->upcoming_builds = $upcoming_builds;
         }
 
         /**

@@ -361,7 +361,7 @@
          */
         public function listen_MenustripLinks(Event $event)
         {
-            if (framework\Context::getUser()->hasProjectPermission(Permission::PERMISSION_PROJECT_ACCESS_CODE, framework\Context::getCurrentProject())) {
+            if (framework\Context::getUser()->hasProjectPermission(Permission::PERMISSION_PROJECT_ACCESS_CODE, $event->getSubject())) {
                 framework\ActionComponent::includeComponent('livelink/menustriplinks', ['project' => $event->getSubject()]);
             }
         }

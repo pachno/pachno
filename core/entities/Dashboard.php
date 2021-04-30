@@ -3,6 +3,7 @@
     namespace pachno\core\entities;
 
     use pachno\core\entities\common\IdentifiableScoped;
+    use pachno\core\entities\tables\DashboardViews;
     use pachno\core\framework;
 
     /**
@@ -82,7 +83,6 @@
          * Dashboard views
          *
          * @var DashboardView[]
-         * @Relates(class="\pachno\core\entities\DashboardView", collection=true, foreign_column="dashboard_id", orderby="sort_order")
          */
         protected $_dashboard_views = null;
 
@@ -116,11 +116,15 @@
 
         public function countViews()
         {
-            if (is_array($this->_dashboard_views)) {
-                return count($this->_dashboard_views);
-            }
+            $this->_populateViews();
+            return count($this->_dashboard_views);
+        }
 
-            return $this->_b2dbLazyCount('_dashboard_views');
+        protected function _populateViews()
+        {
+            if (!is_array($this->_dashboard_views)) {
+                $this->_dashboard_views = DashboardViews::getTable()->getByDashboardIdScoped($this->getID());
+            }
         }
 
         /**
@@ -128,7 +132,9 @@
          */
         public function getViews()
         {
-            return $this->_b2dbLazyLoad('_dashboard_views');
+            $this->_populateViews();
+
+            return $this->_dashboard_views;
         }
 
         public function getName()

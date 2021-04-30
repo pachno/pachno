@@ -130,13 +130,35 @@
          *
          * @return Scope[]
          */
-        static function getAll()
+        public static function getAll()
         {
             if (self::$_scopes === null) {
                 self::$_scopes = tables\Scopes::getTable()->selectAll();
             }
 
             return self::$_scopes;
+        }
+
+        /**
+         * @param int|int[] $scope_ids
+         * @throws \b2db\Exception
+         */
+        public static function deleteByScopeId($scope_ids)
+        {
+            $b2db_entities_path = PACHNO_CORE_PATH . 'entities' . DS . 'tables' . DS;
+            foreach (scandir($b2db_entities_path) as $filename) {
+                if (in_array($filename, ['.', '..']))
+                    continue;
+
+                $table_name = mb_substr($filename, 0, mb_strpos($filename, '.'));
+                if ($table_name != '' && $table_name !== 'ScopedTable') {
+                    $table_name = "\\pachno\\core\\entities\\tables\\{$table_name}";
+                    $table = Core::getTable($table_name);
+                    if ($table instanceof ScopedTable) {
+                        $table->deleteFromScope($scope_ids);
+                    }
+                }
+            }
         }
 
         /**
@@ -393,20 +415,6 @@
 
         protected function _preDelete()
         {
-            $b2db_entities_path = PACHNO_CORE_PATH . 'entities' . DS . 'tables' . DS;
-            foreach (scandir($b2db_entities_path) as $filename) {
-                if (in_array($filename, ['.', '..']))
-                    continue;
-
-                $table_name = mb_substr($filename, 0, mb_strpos($filename, '.'));
-                if ($table_name != '' && $table_name !== 'ScopedTable') {
-                    $table_name = "\\pachno\\core\\entities\\tables\\{$table_name}";
-                    $table = Core::getTable($table_name);
-                    if ($table instanceof ScopedTable) {
-                        $table->deleteFromScope($this->getID());
-                    }
-                }
-            }
         }
 
         protected function _postSave($is_new)

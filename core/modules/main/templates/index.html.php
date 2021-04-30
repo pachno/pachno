@@ -1,8 +1,13 @@
 <?php
 
-/**
- * @var \pachno\core\entities\Dashboard $dashboard
- */
+    use pachno\core\entities\Dashboard;
+    use pachno\core\entities\User;
+    use pachno\core\framework\Response;
+    /**
+     * @var Response $pachno_response
+     * @var User $pachno_user
+     * @var Dashboard $dashboard
+     */
 
     $pachno_response->setTitle(__('Dashboard'));
     $pachno_response->addFeed(make_url('my_reported_issues', ['format' => 'rss']), __('Issues reported by me'));

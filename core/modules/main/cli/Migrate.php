@@ -63,29 +63,53 @@
             Users::getTable()->upgrade(tbg\tables\Users::getTable());
             UserSessions::getTable()->upgrade(tbg\tables\UserSessions::getTable());
 
-            $this->cliMoveLeft(5);
-            $this->cliEcho('UserCommits', self::COLOR_WHITE, self::STYLE_DEFAULT);
+            $this->cliMoveLeft();
+            $this->cliEcho(str_pad('UserCommits', 25), self::COLOR_WHITE, self::STYLE_DEFAULT);
             UserCommits::getTable()->create();
-            $this->cliMoveLeft(11);
-            $this->cliEcho('Files', self::COLOR_WHITE, self::STYLE_DEFAULT);
+            $this->cliMoveLeft();
+            $this->cliEcho(str_pad('Files', 25), self::COLOR_WHITE, self::STYLE_DEFAULT);
             Files::getTable()->upgrade(tbg\tables\Files::getTable());
-            $this->cliMoveLeft(5);
-            $this->cliEcho('Projects', self::COLOR_WHITE, self::STYLE_DEFAULT);
+            $this->cliMoveLeft();
+            $this->cliEcho(str_pad('Projects', 25), self::COLOR_WHITE, self::STYLE_DEFAULT);
             Projects::getTable()->upgrade(tbg\tables\Projects::getTable());
-            $this->cliMoveLeft(8);
-            $this->cliEcho('Articles', self::COLOR_WHITE, self::STYLE_DEFAULT);
+            $this->cliMoveLeft();
+            $this->cliEcho(str_pad('Articles', 25), self::COLOR_WHITE, self::STYLE_DEFAULT);
             Articles::getTable()->upgrade(tbg\tables\Articles::getTable());
-            $this->cliMoveLeft(8);
-            $this->cliEcho('Issues', self::COLOR_WHITE, self::STYLE_DEFAULT);
+            $this->cliMoveLeft();
+            $this->cliEcho(str_pad('Issues', 25), self::COLOR_WHITE, self::STYLE_DEFAULT);
             Issues::getTable()->upgrade(tbg\tables\Issues::getTable());
-            $this->cliMoveLeft(6);
-            $this->cliEcho('IssueSpentTimes', self::COLOR_WHITE, self::STYLE_DEFAULT);
+            $this->cliMoveLeft();
+            $this->cliEcho(str_pad('IssueSpentTimes', 25), self::COLOR_WHITE, self::STYLE_DEFAULT);
             IssueSpentTimes::getTable()->upgrade(tbg\tables\IssueSpentTimes::getTable());
-            $this->cliMoveLeft(15);
-            $this->cliEcho('AgileBoards', self::COLOR_WHITE, self::STYLE_DEFAULT);
+            $this->cliMoveLeft();
+            $this->cliEcho(str_pad('AgileBoards', 25), self::COLOR_WHITE, self::STYLE_DEFAULT);
             AgileBoards::getTable()->upgrade(tbg\tables\AgileBoards::getTable());
             AgileBoards::getTable()->fixGuestBoards();
-            $this->cliMoveLeft(11);
+
+            $scopes = Scopes::getTable()->selectAll();
+            $cc = 1;
+            $delete_scopes = [];
+            foreach ($scopes as $scope) {
+                $this->cliMoveLeft();
+
+                $this->cliEcho("Verifying scopes: ", self::COLOR_WHITE, self::STYLE_BOLD);
+                $this->cliEcho("({$cc}/" . count($scopes) . ') ');
+                $this->cliEcho('[' . $scope->getID() . '] ', Command::COLOR_MAGENTA, Command::STYLE_BOLD);
+                $this->cliEcho(str_pad($scope->getName(), 60), Command::COLOR_WHITE, Command::STYLE_BOLD);
+                if (!$scope->getNumberOfProjects() || ($scope->getNumberOfIssues() < 4 && $scope->getNumberOfArticles() < (29 + $scope->getNumberOfProjects()))) {
+                    $delete_scopes[] = $scope->getID();
+                    $scope->delete();
+                }
+
+                $cc++;
+            }
+            $this->cliMoveLeft();
+            $this->cliEcho("Cleaning up: ", self::COLOR_WHITE, self::STYLE_BOLD);
+            Scope::deleteByScopeId($delete_scopes);
+            $this->cliEcho("100%", self::COLOR_GREEN);
+
+            $this->cliMoveLeft();
+            $this->cliEcho("Migrating tables: ", self::COLOR_WHITE, self::STYLE_BOLD);
             $this->cliEcho('ArticleCategoryLinks', self::COLOR_WHITE, self::STYLE_DEFAULT);
             ArticleCategoryLinks::getTable()->upgrade(tbg\tables\ArticleCategoryLinks::getTable());
             $this->cliMoveLeft(20);
@@ -125,11 +149,6 @@
             $default_scope = Context::getScope();
 
             foreach ($scopes as $scope) {
-                if (!$scope->getNumberOfProjects() || ($scope->getNumberOfIssues() < 4 && $scope->getNumberOfArticles() < (29 + $scope->getNumberOfProjects()))) {
-                    $scope->delete();
-                    continue;
-                }
-
                 Context::setScope($scope);
                 $this->cliLineUp($lines);
                 $this->cliMoveLeft();
@@ -250,6 +269,7 @@
                             $parent_article->setName($path);
                             $parent_article->setAuthor(0);
                             $parent_article->setIsCategory($set_category);
+                            $parent_article->setScope($scope_id);
                             $parent_article->save();
                             $parent_id = $parent_article->getID();
                         } else {
@@ -323,10 +343,6 @@
 //                if (stripos($articleCategoryLink->getCategoryName(), 'category:') === false) {
 //                    $articleCategoryLink->setCategoryName('Category:' . $articleCategoryLink->getCategoryName());
 //                }
-//                if ($project->getID() == 4) {
-//                    var_dump($articleCategoryLink);
-//                    die();
-//                }
 //                $categoryArticle = Articles::getTable()->getArticleByName($articleCategoryLink->getCategoryName(), $project_id, true, $scope_id);
 //                if (!$categoryArticle instanceof Article) {
 //                    $categoryArticle = new Article();
@@ -385,6 +401,7 @@
                         if ($article->getParentArticle() instanceof Article) {
                             if ($article->getParentArticle()->isCategory()) {
                                 $articleCategoryLink = new ArticleCategoryLink();
+                                $articleCategoryLink->setScope($scope_id);
                                 $articleCategoryLink->setArticle($article);
                                 $articleCategoryLink->setCategory($article->getParentArticle());
                                 $articleCategoryLink->save();

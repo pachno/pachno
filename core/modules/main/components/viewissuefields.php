@@ -29,7 +29,7 @@ use pachno\core\framework\Context;
         <span class="name"><?= __('Important details'); ?></span>
     </div>
     <ul class="fields-list" id="issue_details_fieldslist_basics">
-        <li id="shortname_field"<?php if (!$issue->isShortnameVisible()): ?> style="display: none;"<?php endif; ?> >
+        <?php /*<li id="shortname_field"<?php if (!$issue->isShortnameVisible()): ?> style="display: none;"<?php endif; ?> >
             <div class="label" id="shortname_header">
                 <?= __('Issue label'); ?>
             </div>
@@ -50,7 +50,7 @@ use pachno\core\framework\Context;
                 <span id="shortname_name"><?php if ($issue->hasShortname()) echo $issue->getShortname(); ?></span>
                 <span class="no-value" id="no_shortname"<?php if ($issue->hasShortname()): ?> style="display: none;"<?php endif; ?>><?= __('No label set'); ?></span>
             </div>
-        </li>
+        </li> */ ?>
         <?php $field = $fields_list['priority']; unset($fields_list['priority']); ?>
         <?php include_component('main/viewissuefield', array('field' => 'priority', 'info' => $field, 'issue' => $issue)); ?>
         <?php $field = $fields_list['resolution']; unset($fields_list['resolution']); ?>

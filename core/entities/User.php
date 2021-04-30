@@ -7,6 +7,7 @@
     use Exception;
     use pachno\core\entities\common\IdentifiableEventContainer;
     use pachno\core\entities\tables\ClientMembers;
+    use pachno\core\entities\tables\Dashboards;
     use pachno\core\entities\tables\Notifications;
     use pachno\core\entities\tables\Permissions;
     use pachno\core\entities\tables\TeamMembers;
@@ -356,7 +357,6 @@
          * List of user's dashboards
          *
          * @var Dashboard[]
-         * @Relates(class="\pachno\core\entities\Dashboard", collection=true, foreign_column="user_id", orderby="name")
          */
         protected $_dashboards = null;
 
@@ -2306,6 +2306,13 @@
             return $dashboard;
         }
 
+        protected function _populateDashboards()
+        {
+            if (!is_array($this->_dashboards)) {
+                $this->_dashboards = Dashboards::getTable()->getByUserIdScoped($this->getID());
+            }
+        }
+
         /**
          * Returns an array of user dashboards
          *
@@ -2313,7 +2320,7 @@
          */
         public function getDashboards()
         {
-            $this->_b2dbLazyLoad('_dashboards');
+            $this->_populateDashboards();
 
             return $this->_dashboards;
         }

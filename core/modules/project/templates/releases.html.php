@@ -1,5 +1,16 @@
 <?php
 
+    use pachno\core\entities\Build;
+    use pachno\core\entities\Project;
+    use pachno\core\framework\Response;
+
+    /**
+     * @var Response $pachno_response
+     * @var Project $selected_project
+     * @var Build[][] $active_builds
+     * @var Build[][] $upcoming_builds
+     */
+
     $pachno_response->setTitle(__('"%project_name" releases', array('%project_name' => $selected_project->getName())));
 
 ?>
@@ -13,57 +24,52 @@
             </ul>
         </div> */ ?>
     <div id="project_releases_container">
-        <div class="active_releases releases_list">
-            <h3><?= __('Active project releases'); ?></h3>
-            <?php if (count($active_builds[0])): ?>
-                <ul class="simple-list">
-                <?php foreach ($active_builds[0] as $build): ?>
-                    <?php include_component('project/release', array('build' => $build)); ?>
-                <?php endforeach; ?>
-                </ul>
-            <?php else: ?>
-                <div class="faded_out"><?= __('There are no active releases for this project'); ?></div>
-            <?php endif; ?>
-            <?php if ($selected_project->isEditionsEnabled()): ?>
-                <?php foreach ($selected_project->getEditions() as $edition_id => $edition): ?>
-                    <h4><?= __('Active %edition_name releases', array('%edition_name' => $edition->getName())); ?></h4>
-                    <?php if (count($active_builds[$edition_id])): ?>
-                        <ul class="simple-list">
-                        <?php foreach ($active_builds[$edition_id] as $build): ?>
-                            <?php include_component('project/release', array('build' => $build)); ?>
-                        <?php endforeach; ?>
-                        </ul>
-                    <?php else: ?>
-                        <div class="faded_out"><?= __('There are no active releases for this edition'); ?></div>
-                    <?php endif; ?>
-                <?php endforeach; ?>
-            <?php endif; ?>
+        <div class="fancy-tabs tab-switcher" id="project-releases-menu">
+            <a id="tab_project_releases_active" class="tab selected tab-switcher-trigger" data-tab-target="active"><?= fa_image_tag('box', ['class' => 'icon']); ?><span><?= __('Available releases'); ?></span></a>
+            <a id="tab_project_releases_inactive" class="tab tab-switcher-trigger" data-tab-target="inactive"><?= fa_image_tag('calendar', ['class' => 'icon'], 'far'); ?><span><?= __('Upcoming releases'); ?></span></a>
         </div>
-        <div class="archived_releases releases_list" style="display: none;">
-            <h3><?= __('Archived project releases'); ?></h3>
-            <?php if (count($archived_builds[0])): ?>
-                <ul class="simple-list">
-                <?php foreach ($archived_builds[0] as $build): ?>
-                    <?php include_component('project/release', array('build' => $build)); ?>
-                <?php endforeach; ?>
-                </ul>
-            <?php else: ?>
-                <div class="faded_out"><?= __('There are no archived releases for this project'); ?></div>
-            <?php endif; ?>
-            <?php if ($selected_project->isEditionsEnabled()): ?>
-                <?php foreach ($selected_project->getEditions() as $edition_id => $edition): ?>
-                    <h4><?= __('Archived %edition_name releases', array('%edition_name' => $edition->getName())); ?></h4>
-                    <?php if (count($archived_builds[$edition_id])): ?>
-                        <ul class="simple-list">
-                        <?php foreach ($archived_builds[$edition_id] as $build): ?>
-                            <?php include_component('project/release', array('build' => $build)); ?>
+        <div id="project-releases-menu_panes" class="fancy-panes">
+            <div id="tab_project_releases_active_pane" data-tab-id="active" class="pane">
+                <div class="flexible-table">
+                    <div class="row header">
+                        <div class="column header info-icons">&nbsp;</div>
+                        <div class="column header name-container"><?= __('Release name'); ?></div>
+                        <div class="column header"><?= __('Version'); ?></div>
+                        <div class="column header"><?= __('Release date'); ?></div>
+                        <div class="column header actions"></div>
+                    </div>
+                    <div class="body" id="active_releases_list">
+                    <?php foreach ($active_builds[0] as $build): ?>
+                        <?php include_component('project/release', array('build' => $build)); ?>
+                    <?php endforeach; ?>
+                    </div>
+                    <?php if ($selected_project->isEditionsEnabled()): ?>
+                        <?php foreach ($selected_project->getEditions() as $edition_id => $edition): ?>
+                            <div class="body" id="active_releases_list_<?= $edition_id; ?>">
+                                <?php foreach ($active_builds[$edition_id] as $build): ?>
+                                    <?php include_component('project/release', array('build' => $build)); ?>
+                                <?php endforeach; ?>
+                            </div>
                         <?php endforeach; ?>
-                        </ul>
-                    <?php else: ?>
-                        <div class="faded_out"><?= __('There are no archived releases for this edition'); ?></div>
                     <?php endif; ?>
-                <?php endforeach; ?>
-            <?php endif; ?>
+                </div>
+            </div>
+            <div id="tab_project_releases_inactive_pane" style="display: none;" data-tab-id="inactive">
+                <ul id="inactive_releases_list">
+                    <?php foreach ($upcoming_builds[0] as $build): ?>
+                        <?php include_component('project/release', array('build' => $build)); ?>
+                    <?php endforeach; ?>
+                </ul>
+                <?php if ($selected_project->isEditionsEnabled()): ?>
+                    <?php foreach ($selected_project->getEditions() as $edition_id => $edition): ?>
+                        <ul id="archived_releases_list_<?= $edition_id; ?>">
+                            <?php foreach ($upcoming_builds[$edition_id] as $build): ?>
+                                <?php include_component('project/release', array('build' => $build)); ?>
+                            <?php endforeach; ?>
+                        </ul>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+            </div>
         </div>
     </div>
 </div>

@@ -350,6 +350,8 @@
 
             if ($scope_id !== null) {
                 $query->where('articles.scope', $scope_id);
+            } else {
+                $query->where('articles.scope', framework\Context::getScope()->getID());
             }
 
             if ($project_id !== null) {

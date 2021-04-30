@@ -21,7 +21,7 @@
                 <?= image_tag('/unthemed/no-projects.png', [], true); ?>
             <?php endif; ?>
         </div>
-        <div class="helper-text">
+        <div class="helper-text no-items">
             <?php if ($list_mode == 'all'): ?>
                 <?php if ($show_project_config_link): ?>
                     <?php if ($project_state == 'archived'): ?>
@@ -36,7 +36,8 @@
                 <?php elseif (!$pachno_user->isGuest()): ?>
                     <?= __("You don't have access to any projects yet."); ?>
                 <?php else: ?>
-                    <?= __("Log in to see projects in this space"); ?>
+                    <span><?= __("Log in to see projects in this space"); ?></span>
+                    <a class="button primary" href="<?= make_url('auth_login'); ?>"><?= __('Log in'); ?></a>
                 <?php endif; ?>
             <?php elseif ($list_mode == 'team'): ?>
                 <?php if ($show_project_config_link): ?>

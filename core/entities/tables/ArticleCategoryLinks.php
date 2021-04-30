@@ -182,9 +182,6 @@
                 $criteria->where(self::CATEGORY_NAME, ucfirst($project->getKey()) . ":%", Criterion::LIKE);
                 $criteria->or(self::CATEGORY_NAME, $project_key_normalized . ":%", Criterion::LIKE);
                 $query->where($criteria);
-                if ($project->getID() == 4) {
-                    var_dump($criteria);
-                }
             } else {
                 $query->where(self::CATEGORY_ID, 0);
             }

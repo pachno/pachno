@@ -27,7 +27,7 @@
          */
         public function runLogin(framework\Request $request)
         {
-            if ($this->getUser()->isAuthenticated()) {
+            if (!$this->getUser()->isGuest()) {
                 return $this->forward($this->getRouting()->generate('profile_account'));
             }
 

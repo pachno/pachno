@@ -63,7 +63,7 @@
                 </a>
             </div>
         <?php else: ?>
-            <?php include_component('project/sidebarlinks'); ?>
+            <?php include_component('project/sidebarlinks', ['project' => framework\Context::getCurrentProject()]); ?>
         <?php endif; ?>
     </div>
     <?php if (!$pachno_user->isGuest()): ?>

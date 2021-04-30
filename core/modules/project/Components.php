@@ -22,6 +22,11 @@
             $this->issuetypes = $this->project->getIssuetypeScheme()->getReportableIssuetypes();
         }
 
+        public function componentSidebarLinks()
+        {
+
+        }
+
         public function componentProjectHeader()
         {
             $pagename_event = \pachno\core\framework\Event::createNew('core', 'project/templates/projectheader::pagename', $this->project);

@@ -6,6 +6,7 @@
 
     /**
      * @var Publish $publish
+     * @var entities\User $pachno_user
      * @var entities\Article $overview_article
      * @var entities\Article[] $top_level_categories
      * @var entities\Article[] $top_level_categories
