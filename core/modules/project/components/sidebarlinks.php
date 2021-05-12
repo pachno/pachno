@@ -55,7 +55,7 @@
     </a>
     <?php Event::createNew('core', 'project_sidebar_links_roadmap')->trigger(['submenu' => false]); ?>
 <?php endif; ?>
-<?php if ($pachno_user->hasProjectPermission(Permission::PERMISSION_PROJECT_ACCESS_DASHBOARD, $project)): ?>
+<?php /* if ($pachno_user->hasProjectPermission(Permission::PERMISSION_PROJECT_ACCESS_DASHBOARD, $project)): ?>
     <a href="javascript:void(0);<?php // echo make_url('project_team', array('project_key' => $project->getKey())); ?>" class="list-item disabled tooltip-container <?php if ($pachno_response->getPage() == 'project_team') echo 'selected'; ?>">
         <?= fa_image_tag('users', ['class' => 'icon']); ?>
         <span class="name"><?= __('Team overview'); ?></span>
@@ -64,7 +64,7 @@
         </span>
     </a>
     <?php Event::createNew('core', 'project_sidebar_links_team')->trigger(array('submenu' => false)); ?>
-<?php endif; ?>
+<?php endif; */ ?>
 <?php if ($pachno_user->hasProjectPermission(Permission::PERMISSION_PROJECT_ACCESS_DASHBOARD, $project)): ?>
     <a href="<?= make_url('project_timeline_important', array('project_key' => $project->getKey())); ?>" class="list-item <?php if ($pachno_response->getPage() == 'project_timeline') echo 'selected'; ?>">
         <?= fa_image_tag('stream', ['class' => 'icon']); ?>

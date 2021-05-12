@@ -69,7 +69,9 @@
         <button class="button primary trigger-backdrop" data-url="<?php echo make_url('get_partial_for_backdrop', ['key' => 'milestone', 'project_id' => $project->getID()]); ?>');"><?= fa_image_tag('plus-square'); ?><span><?= __('Create milestone'); ?></span></button>
     <?php endif; ?>
     <?php if ($pachno_response->getPage() == 'project_releases' && $pachno_user->canEditProjectDetails($project)): ?>
-        <?= link_tag(make_url('project_release_center', array('project_key' => $project->getKey())), '<span class="name">'.__('Manage project releases').'</span>', ['class' => 'button']); ?>
+        <a href="javascript:void(0);" class="button primary trigger-backdrop" data-url="<?= make_url('get_partial_for_backdrop', ['key' => 'project_build', 'project_id' => $project->getId()]); ?>">
+            <span><?php echo __('Create new release'); ?></span>
+        </a>
     <?php endif; ?>
     <?php \pachno\core\framework\Event::createNew('core', 'project_header_buttons', $project)->trigger(); ?>
 </div>

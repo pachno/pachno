@@ -3,6 +3,7 @@
     namespace pachno\core\entities;
 
     use pachno\core\entities\common\Releaseable;
+    use pachno\core\entities\tables\BuildFiles;
     use pachno\core\entities\tables\LogItems;
     use pachno\core\framework;
 
@@ -68,9 +69,9 @@
          * Whether this build is active or not
          *
          * @var boolean
-         * @Column(type="boolean", name="locked")
+         * @Column(type="boolean")
          */
-        protected $_isactive = null;
+        protected $_active = null;
 
         /**
          * An attached file, if exists
@@ -80,6 +81,13 @@
          * @Relates(class="\pachno\core\entities\File")
          */
         protected $_file_id = null;
+
+        /**
+         * Array of files attached to this article
+         *
+         * @var File[]
+         */
+        protected $_files = null;
 
         /**
          * An url to download this releases file, if any
@@ -121,7 +129,7 @@
          *
          * @var boolean
          * @access protected
-         * @Column(type="boolean")
+         * @Column(type="boolean", default=false)
          */
         protected $_locked;
 
@@ -169,9 +177,10 @@
          */
         public function getVersion()
         {
-            $versions = [$this->_version_major, $this->_version_minor];
+            $versions = [$this->_version_major];
+            if ($this->_version_minor != 0) $versions[] = $this->_version_minor;
 
-            if ($this->_version_revision != 0) $versions[] = $this->_version_revision;
+            if ($this->_version_revision != '') $versions[] = $this->_version_revision;
 
             return join('.', $versions);
         }
@@ -262,38 +271,72 @@
         }
 
         /**
-         * Set the file associated with this build
+         * Return an array with all files attached to this issue
          *
-         * @param File $file
+         * @return int
          */
-        public function setFile(File $file)
+        public function getNumberOfFiles()
         {
-            $this->_file_id = $file;
+            return count($this->getFiles());
         }
 
-        public function clearFile()
+        public function hasFiles()
         {
-            $this->_file_id = null;
+            return (bool) $this->getNumberOfFiles();
         }
 
         /**
-         * Return whether this build has a file associated to it
+         * Return an array with all files attached to this issue
+         *
+         * @return File[]
+         */
+        public function getFiles()
+        {
+            $this->_populateFiles();
+
+            return $this->_files;
+        }
+
+        /**
+         * Populate the files array
+         */
+        protected function _populateFiles()
+        {
+            if ($this->_files === null) {
+                $this->_files = BuildFiles::getTable()->getByBuildID($this->getID());
+            }
+        }
+
+        /**
+         * Attach a file to the build
+         *
+         * @param File $file The file to attach
+         * @param null $timestamp
+         */
+        public function attachFile(File $file, $timestamp = null)
+        {
+            BuildFiles::getTable()->addByBuildIDandFileID($this->getID(), $file->getID(), $timestamp);
+            if ($this->_files !== null) {
+                $this->_files[$file->getID()] = $file;
+            }
+        }
+
+        /**
+         * Remove a file
+         *
+         * @param File $file The file to be removed
          *
          * @return boolean
          */
-        public function hasFile()
+        public function detachFile(File $file)
         {
-            return (bool)($this->getFile() instanceof File);
-        }
+            BuildFiles::getTable()->removeByBuildIDandFileID($this->getID(), $file->getID());
+            if (is_array($this->_files) && array_key_exists($file->getID(), $this->_files)) {
+                unset($this->_files[$file->getID()]);
+            }
+            $file->delete();
 
-        /**
-         * Return the file associated with this build, if any
-         *
-         * @return File
-         */
-        public function getFile()
-        {
-            return $this->_b2dbLazyLoad('_file_id');
+            return true;
         }
 
         /**
@@ -304,6 +347,12 @@
         public function getFileURL()
         {
             return $this->_file_url;
+        }
+
+        public function getFileDownloadHost()
+        {
+            $url_info = parse_url($this->_file_url);
+            return $url_info['hostname'] ?? $this->_file_url;
         }
 
         /**
@@ -333,12 +382,18 @@
          */
         public function hasDownload()
         {
-            return (bool)($this->getFile() instanceof File || $this->_file_url != '');
+            return (bool) ($this->getNumberOfFiles() || $this->_file_url != '');
+        }
+
+        public function getNumberOfDownloads()
+        {
+            $initial = (int) $this->_file_url != '';
+            return $initial + $this->getNumberOfFiles();
         }
 
         public function isArchived()
         {
-            return $this->isLocked();
+            return !$this->isActive();
         }
 
         /**
@@ -347,7 +402,7 @@
          * @return boolean
          * @access public
          */
-        public function isLocked()
+        public function isInternal()
         {
             return $this->_locked;
         }
@@ -359,12 +414,17 @@
          */
         public function setLocked($locked = true)
         {
-            $this->_locked = (bool)$locked;
+            $this->_locked = (bool) $locked;
         }
 
         public function isActive()
         {
-            return !$this->isLocked();
+            return $this->_active;
+        }
+
+        public function setActive($active = true)
+        {
+            $this->_active = $active;
         }
 
         /**
@@ -499,8 +559,15 @@
             if ($is_new) {
                 framework\Event::createNew('core', 'pachno\core\entities\Build::_postSave', $this)->trigger();
             }
+            parent::_postSave($is_new);
 
             $this->generateLogItems();
+        }
+
+        protected function _postDelete()
+        {
+            BuildFiles::getTable()->deleteFilesByBuildID($this->getID());
+            parent::_postDelete();
         }
 
         public function generateLogItems()
@@ -544,6 +611,23 @@
         protected function _preDelete()
         {
             tables\IssueAffectsBuild::getTable()->deleteByBuildID($this->getID());
+        }
+
+        public function toJSON($detailed = true)
+        {
+            $json = parent::toJSON($detailed);
+            $json['released'] = $this->isReleased();
+            $json['release_date'] = $this->getReleaseDate();
+            $json['archived'] = $this->isArchived();
+            $json['active'] = $this->isActive();
+            $json['restricted'] = $this->isInternal();
+            $json['edition'] = null;
+
+            if ($this->getEdition() instanceof Edition) {
+                $json['edition'] = $this->getEdition()->toJSON();
+            }
+
+            return $json;
         }
 
     }

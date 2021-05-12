@@ -1836,7 +1836,7 @@
         {
             $builds = $this->getBuilds();
             foreach ($builds as $id => $build) {
-                if ($build->isLocked()) unset($builds[$id]);
+                if ($build->isInternal()) unset($builds[$id]);
             }
 
             return $builds;

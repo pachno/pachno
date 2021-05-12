@@ -1698,10 +1698,15 @@
             foreach ($teams as $team) {
                 $team_ids[] = $team->getID();
             }
+            $clients = $this->getClients();
+            $client_ids = [];
+            foreach ($clients as $client) {
+                $client_ids[] = $client->getID();
+            }
 
             framework\Logging::log('Checking permission for user ID: ' . $user_id . ', group ID ' . $group_id . ',team IDs ' . implode(',', $team_ids));
 
-            $allowed = framework\Context::permissionCheck($module_name, $permission_type, $target_id, $user_id, $group_id, $team_ids);
+            $allowed = framework\Context::permissionCheck($module_name, $permission_type, $target_id, $user_id, $group_id, $team_ids, $client_ids);
             if ($allowed === null) {
                 framework\Logging::log('... Done checking permission ' . $permission_type . ', target id' . $target_id . ', module ' . $module_name . ', no matching rules found.');
             } else {

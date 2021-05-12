@@ -7,6 +7,8 @@
     use pachno\core\entities;
     use pachno\core\entities\Project;
     use pachno\core\entities\tables;
+    use pachno\core\entities\tables\BuildFiles;
+    use pachno\core\entities\tables\Builds;
     use pachno\core\entities\tables\Milestones;
     use pachno\core\framework;
     use pachno\core\framework\Context;
@@ -22,6 +24,7 @@
      *
      * @property entities\Client $selected_client
      * @property entities\Build[][] $active_builds
+     * @property entities\Build[][] $archived_builds
      * @property entities\Build[][] $upcoming_builds
      */
     class Main extends helpers\ProjectActions
@@ -779,12 +782,6 @@
             $this->access_level = ($this->getUser()->canEditProjectDetails(Context::getCurrentProject())) ? framework\Settings::ACCESS_FULL : framework\Settings::ACCESS_READ;
         }
 
-        public function runReleaseCenter(framework\Request $request)
-        {
-            $this->forward403if(Context::getCurrentProject()->isArchived() || !$this->getUser()->canManageProjectReleases(Context::getCurrentProject()));
-            $this->build_error = Context::getMessageAndClear('build_error');
-        }
-
         /**
          * @Route(url="/releases")
          *
@@ -795,23 +792,41 @@
             $builds = $this->selected_project->getBuilds();
 
             $active_builds = [0 => []];
+            $active_builds_count = 0;
+            $archived_builds = [0 => []];
+            $archived_builds_count = 0;
             $upcoming_builds = [0 => []];
+            $upcoming_builds_count = 0;
 
             foreach ($this->selected_project->getEditions() as $edition_id => $edition) {
                 $active_builds[$edition_id] = [];
+                $archived_builds[$edition_id] = [];
                 $upcoming_builds[$edition_id] = [];
             }
 
             foreach ($builds as $build) {
-                if (!$build->hasReleaseDate() || $build->getReleaseDate() > NOW) {
+                if ($build->isInternal() && (!$this->getUser()->canManageProjectReleases($build->getProject()) || !$build->getProject()->canSeeInternalBuilds())) {
+                    continue;
+                }
+
+                if ((!$build->hasReleaseDate() || $build->getReleaseDate() > NOW) && !$build->isReleased()) {
                     $upcoming_builds[$build->getEditionID()][$build->getID()] = $build;
+                    $upcoming_builds_count++;
+                } elseif ($build->isArchived()) {
+                    $archived_builds[$build->getEditionID()][$build->getID()] = $build;
+                    $archived_builds_count++;
                 } else {
                     $active_builds[$build->getEditionID()][$build->getID()] = $build;
+                    $active_builds_count++;
                 }
             }
 
             $this->active_builds = $active_builds;
+            $this->active_builds_count = $active_builds_count;
+            $this->archived_builds = $archived_builds;
+            $this->archived_builds_count = $archived_builds_count;
             $this->upcoming_builds = $upcoming_builds;
+            $this->upcoming_builds_count = $upcoming_builds_count;
         }
 
         /**
@@ -1218,67 +1233,58 @@
         {
             $i18n = Context::getI18n();
 
-            if ($this->getUser()->canManageProjectReleases($this->selected_project)) {
-                try {
-                    if (Context::getUser()->canManageProjectReleases($this->selected_project)) {
-                        if (($b_name = $request['build_name']) && trim($b_name) != '') {
-                            $build = new entities\Build($request['build_id']);
-                            $build->setName($b_name);
-                            $build->setVersion($request->getParameter('ver_mj', 0), $request->getParameter('ver_mn', 0), $request->getParameter('ver_rev', 0));
-                            $build->setReleased((bool)$request['isreleased']);
-                            $build->setLocked((bool)$request['locked']);
-                            if ($request['milestone'] && $milestone = entities\Milestone::getB2DBTable()->selectById($request['milestone'])) {
-                                $build->setMilestone($milestone);
-                            } else {
-                                $build->clearMilestone();
-                            }
-                            if ($request['edition'] && $edition = entities\Edition::getB2DBTable()->selectById($request['edition'])) {
-                                $build->setEdition($edition);
-                            } else {
-                                $build->clearEdition();
-                            }
-                            $release_date = null;
-                            if ($request['has_release_date']) {
-                                $release_date = mktime($request['release_hour'], $request['release_minute'], 1, $request['release_month'], $request['release_day'], $request['release_year']);
-                            }
-                            $build->setReleaseDate($release_date);
-                            switch ($request->getParameter('download', 'leave_file')) {
-                                case '0':
-                                    $build->clearFile();
-                                    $build->setFileURL('');
-                                    break;
-                                case 'upload_file':
-                                    if ($build->hasFile()) {
-                                        $build->getFile()->delete();
-                                        $build->clearFile();
-                                    }
-                                    $file = Context::getRequest()->handleUpload('upload_file');
-                                    $build->setFile($file);
-                                    $build->setFileURL('');
-                                    break;
-                                case 'url':
-                                    $build->clearFile();
-                                    $build->setFileURL($request['file_url']);
-                                    break;
-                            }
-
-                            if (!$build->getID())
-                                $build->setProject($this->selected_project);
-
-                            $build->save();
-                        } else {
-                            throw new Exception($i18n->__('You need to specify a name for the release'));
-                        }
-                    } else {
-                        throw new Exception($i18n->__('You do not have access to this project'));
-                    }
-                } catch (Exception $e) {
-                    Context::setMessage('build_error', $e->getMessage());
+            try {
+                if (!$this->getUser()->canManageProjectReleases($this->selected_project)) {
+                    throw new Exception($i18n->__('You do not have access to manage project releases'));
                 }
-                $this->forward(Context::getRouting()->generate('project_release_center', ['project_key' => $this->selected_project->getKey()]));
-            }
+                if (trim($request['name']) == '') {
+                    throw new Exception($i18n->__('You need to specify a name for the release'));
+                }
 
-            return $this->forward403($i18n->__("You don't have access to add releases"));
+                if (!$request['build_id']) {
+                    $build = new entities\Build();
+                } else {
+                    $build = tables\Builds::getTable()->selectById($request['build_id']);
+                }
+
+                if (!$build instanceof entities\Build) {
+                    throw new Exception('This release does not exist');
+                }
+
+                $build->setName($request['name']);
+                $build->setVersion($request->getParameter('ver_mj', 0), $request->getParameter('ver_mn', 0), $request->getParameter('ver_rev', 0));
+                $build->setReleased((bool) $request['released']);
+                $build->setLocked((bool) $request['locked']);
+                $build->setActive((bool) $request['active']);
+                $build->setFileURL($request['file_url']);
+                $build->setReleaseDate($request['date']);
+                $build->setProject($this->selected_project);
+
+                if ($request['milestone'] && $milestone = Milestones::getTable()->selectById($request['milestone'])) {
+                    $build->setMilestone($milestone);
+                } else {
+                    $build->clearMilestone();
+                }
+                if ($request['edition'] && $edition = tables\Editions::getTable()->selectById($request['edition'])) {
+                    $build->setEdition($edition);
+                } else {
+                    $build->clearEdition();
+                }
+
+                $build->save();
+
+                if ($request->hasParameter('files')) {
+                    $file_ids = $request->getParameter('files');
+                    foreach ($file_ids as $file_id) {
+                        BuildFiles::getTable()->addByBuildIDandFileID($build->getID(), $file_id);
+                    }
+                }
+                return $this->renderJSON(['build' => $build->toJSON(), 'component' => $this->getComponentHTML('project/release', ['build' => $build])]);
+
+            } catch (Exception $e) {
+                $this->getResponse()->setHttpStatus(400);
+                return $this->renderJSON(['error' => $e->getMessage()]);
+            }
         }
 
         /**

@@ -207,13 +207,6 @@ project_create_role:
     parameters: [ ]
     csrf_enabled: false
 
-project_release_center:
-    route: /:project_key/release_center
-    module: project
-    action: releaseCenter
-    parameters: [ ]
-    csrf_enabled: false
-
 project_scrum_release_burndown:
     route: /:project_key/scrum/burndown/release
     module: project

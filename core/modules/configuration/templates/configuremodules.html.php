@@ -77,13 +77,15 @@
                 <?php endforeach; ?>
                 <?php if (!count($modules[Context::EXTERNAL_MODULES])): ?>
                     <?php if (\pachno\core\framework\Context::getScope()->isDefault()): ?>
-                        <div class="onboarding large">
-                            <div class="image-container"><?= image_tag('/unthemed/onboarding_configure_modules_none.png', [], true); ?></div>
-                            <div class="helper-text">
-                                <span><?= __('Modules enhance and extend the functionality in Pachno.'); ?></span>
-                                <span><a class="button primary" href="https://pachno.com/addons" target="_blank"><?= __('Find modules online'); ?></a></span>
+                        <?php if (!count($uninstalled_modules)): ?>
+                            <div class="onboarding large">
+                                <div class="image-container"><?= image_tag('/unthemed/onboarding_configure_modules_none.png', [], true); ?></div>
+                                <div class="helper-text">
+                                    <span><?= __('Modules enhance and extend the functionality in Pachno.'); ?></span>
+                                    <span><a class="button primary" href="https://pachno.com/addons" target="_blank"><?= __('Find modules online'); ?></a></span>
+                                </div>
                             </div>
-                        </div>
+                        <?php endif; ?>
                     <?php else: ?>
                         <div class="onboarding large">
                             <div class="image-container"><?= image_tag('/unthemed/onboarding_configure_modules_none.png', [], true); ?></div>

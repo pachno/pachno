@@ -209,7 +209,8 @@
     &.actions {
       flex: 0 0 100px;
       display: flex;
-      justify-content: center;
+      justify-content: flex-end;
+      padding-right: .5em;
 
       &.hidden {
         display: none;

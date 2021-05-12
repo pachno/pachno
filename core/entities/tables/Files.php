@@ -21,6 +21,7 @@
      * @method static Files getTable()
      *
      * @method File[] select(Query $query, $join = 'all')
+     * @method File selectById($id, Query $query = null, $join = 'all')
      *
      * @Table(name="files")
      * @Entity(class="\pachno\core\entities\File")

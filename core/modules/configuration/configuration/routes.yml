@@ -647,18 +647,6 @@ configure_issuefields_delete_customtype:
       mode: delete
     csrf_enabled: false
 
-configure_users_add_group:
-    route: /configure/groups
-    module: configuration
-    methods:
-      - POST
-    action: addGroup
-    parameters:
-      config_module: core
-      section: 2
-      mode: new
-    csrf_enabled: false
-
 configure_users_clone_group:
     route: /configure/groups/:group_id/clone
     module: configuration
@@ -816,24 +804,6 @@ configure_users_delete_user:
     parameters:
       config_module: core
       section: 2
-    csrf_enabled: false
-
-configure_teams:
-    route: '/configure/teams/*'
-    module: configuration
-    action: configureTeams
-    parameters:
-      config_module: core
-      section: 22
-    csrf_enabled: false
-
-configure_clients:
-    route: '/configure/clients/*'
-    module: configuration
-    action: configureClients
-    parameters:
-      config_module: core
-      section: 23
     csrf_enabled: false
 
 configure_modules:

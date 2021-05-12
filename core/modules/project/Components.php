@@ -76,7 +76,7 @@
             $this->statuses = ($this->issue->getProject()->useStrictWorkflowMode()) ? $this->issue->getProject()->getAvailableStatuses() : $this->issue->getAvailableStatuses();
         }
 
-        public function componentMilestone()
+        public function componentEditMilestone()
         {
             if (!isset($this->milestone)) {
                 $this->milestone = new Milestone();
@@ -84,7 +84,7 @@
             }
         }
 
-        public function componentMilestoneBox()
+        public function componentMilestone()
         {
             $this->board = $this->board ?? null;
             $this->include_counts = (isset($this->include_counts)) ? $this->include_counts : false;
@@ -207,7 +207,7 @@
             }
 
             foreach ($builds as $build) {
-                if ($build->isReleased() && $build->hasFile())
+                if ($build->isReleased() && $build->hasFiles())
                     $active_builds[$build->getEditionID()][] = $build;
             }
 
@@ -268,21 +268,8 @@
             $this->project_roles = entities\Role::getByProjectID($this->project->getID());
         }
 
-        public function componentBuildbox()
+        public function componentEditBuild()
         {
-            $this->access_level = ($this->getUser()->canManageProject(framework\Context::getCurrentProject())) ? framework\Settings::ACCESS_FULL : framework\Settings::ACCESS_READ;
-        }
-
-        public function componentBuild()
-        {
-            if (!isset($this->build)) {
-                $this->build = new entities\Build();
-                $this->build->setProject(framework\Context::getCurrentProject());
-                $this->build->setName(framework\Context::getI18n()->__('%project_name version 0.0.0', ['%project_name' => $this->project->getName()]));
-                if (framework\Context::getRequest()->getParameter('edition_id') && $edition = entities\Edition::getB2DBTable()->selectById(framework\Context::getRequest()->getParameter('edition_id'))) {
-                    $this->build->setEdition($edition);
-                }
-            }
         }
 
         public function componentFindAssignee()

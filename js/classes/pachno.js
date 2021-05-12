@@ -39,6 +39,22 @@ class PachnoApplication {
                 removeFile: 'article-remove-file',
                 delete: 'article-trigger-delete'
             },
+            build: {
+                removeFile: 'build-remove-file',
+                delete: 'build-trigger-delete'
+            },
+            client: {
+                removeUser: 'client-remove-user',
+                delete: 'client-trigger-delete'
+            },
+            group: {
+                removeUser: 'group-remove-user',
+                delete: 'group-trigger-delete'
+            },
+            team: {
+                removeUser: 'team-remove-user',
+                delete: 'team-trigger-delete'
+            },
             configuration: {
                 deleteComponent: 'configuration-delete-component',
                 generatePassword: 'configuration-generate-password'

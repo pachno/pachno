@@ -88,6 +88,9 @@ class Uploader {
 
                 $input_element.insertBefore($container.find('.file-upload-placeholder'));
                 $label_element.insertBefore($container.find('.file-upload-placeholder'));
+            } else if (uploader.mode === 'table') {
+                $label_element = $(`<div class="row"><div class="column info-icons">${UI.fa_image_tag('spinner', { classes: 'fa-spin icon'})}</div><div class="column name-container">${file.name}</div><div class="column numeric">${fileSize}</div></div>`)
+                $container.find('.file-list-container').append($label_element);
             } else if (uploader.mode === 'list') {
                 let link_element;
                 if (is_image) {
@@ -123,6 +126,9 @@ class Uploader {
                 }
                 if (uploader.form_data.article_id !== undefined) {
                     data.article_id = uploader.form_data.article_id;
+                }
+                if (uploader.form_data.build_id !== undefined) {
+                    data.build_id = uploader.form_data.build_id;
                 }
             }
 

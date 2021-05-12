@@ -98,6 +98,15 @@
         protected $_group_id;
 
         /**
+         * The applicable client
+         *
+         * @var Group
+         * @Column(type="integer", length=10, name="client_id")
+         * @Relates(class="\pachno\core\entities\Client")
+         */
+        protected $_client_id;
+
+        /**
          * The applicable role
          *
          * @var Role
@@ -185,6 +194,21 @@
         public function getGroup(): ?Group
         {
             return $this->_b2dbLazyload('_group_id');
+        }
+
+        public function setClient(Client $client = null)
+        {
+            $this->_client_id = $client;
+        }
+
+        public function setClientId(int $client_id = 0)
+        {
+            $this->_client_id = $client_id;
+        }
+
+        public function getClient(): ?Client
+        {
+            return $this->_b2dbLazyload('_client_id');
         }
 
         public function setRole(Role $role = null)

@@ -2,9 +2,11 @@
 
     namespace pachno\core\entities;
 
+    use b2db\Saveable;
     use Exception;
     use pachno\core\entities\common\IdentifiableScoped;
     use pachno\core\framework;
+    use pachno\core\framework\Context;
 
     /**
      * Client class
@@ -80,6 +82,14 @@
          * @Relates(class="\pachno\core\entities\Dashboard", collection=true, foreign_column="client_id", orderby="name")
          */
         protected $_dashboards = null;
+
+        /**
+         * @var Permission[]
+         * @Relates(class="\pachno\core\entities\Permission", collection=true, foreign_column="client_id")
+         */
+        protected $_permissions = null;
+
+        protected $_permission_keys;
 
         public static function doesClientNameExist($client_name)
         {
@@ -298,6 +308,63 @@
         protected function _preDelete()
         {
             tables\ClientMembers::getTable()->removeUsersFromClient($this->getID());
+        }
+
+        public function addPermission($permission_name, $module = 'core', $scope = null, $target_id = 0)
+        {
+            if ($scope === null) {
+                $scope = Context::getScope();
+            }
+
+            $permission = new Permission();
+            $permission->setClient($this);
+            $permission->setModuleName($module);
+            $permission->setTargetId($target_id);
+            $permission->setScope($scope);
+            $permission->setPermissionName($permission_name);
+            $permission->save();
+        }
+
+        protected function _populatePermissions()
+        {
+            if ($this->_permissions === null) {
+                $this->_permissions = $this->_b2dbLazyload('_permissions');
+                $this->_permission_keys = [];
+
+                foreach ($this->_permissions as $permission) {
+                    $this->_permission_keys[$permission->getModuleName() . '_' . $permission->getPermissionName() . '_' . $permission->getTargetId()] = true;
+                }
+            }
+        }
+
+        public function hasPermission($permission_name, $target_id = 0, $module = 'core'): bool
+        {
+            $permissions = $this->getPermissions();
+
+            return array_key_exists($module . '_' . $permission_name . '_' . $target_id, $permissions);
+        }
+
+        /**
+         * Returns all permissions assigned to this role
+         *
+         * @return Permission[]
+         */
+        public function getPermissions()
+        {
+            $this->_populatePermissions();
+
+            return $this->_permission_keys;
+        }
+
+        /**
+         * Removes permission from the role.
+         *
+         * @param string $permission_name
+         * @param string $module
+         */
+        public function removePermission($permission_name, $target_id = 0, $module = 'core')
+        {
+            tables\Permissions::getTable()->removeClientPermission($this->getID(), $permission_name, $module, $target_id);
         }
 
     }

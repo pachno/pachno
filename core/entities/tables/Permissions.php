@@ -47,6 +47,8 @@
 
         const TEAM_ID = 'permissions.tid';
 
+        const CLIENT_ID = 'permissions.client_id';
+
         const ALLOWED = 'permissions.allowed';
 
         const MODULE = 'permissions.module';
@@ -85,7 +87,42 @@
             $query = $this->getQuery();
             $query->where(self::USER_ID, 0);
             $query->where(self::TEAM_ID, 0);
+            $query->where(self::CLIENT_ID, 0);
             $query->where(self::GROUP_ID, $group_id);
+            $query->where(self::TARGET_ID, $target_id);
+            $query->where(self::MODULE, $module);
+            if ($permission_type !== null) {
+                $query->where(self::PERMISSION_TYPE, $permission_type);
+            }
+            $query->where(self::SCOPE, framework\Context::getScope()->getID());
+
+            $this->rawDelete($query);
+        }
+
+        public function removeTeamPermission($team_id, $permission_type = null, $module = 'core', $target_id = 0)
+        {
+            $query = $this->getQuery();
+            $query->where(self::USER_ID, 0);
+            $query->where(self::TEAM_ID, $team_id);
+            $query->where(self::CLIENT_ID, 0);
+            $query->where(self::GROUP_ID, 0);
+            $query->where(self::TARGET_ID, $target_id);
+            $query->where(self::MODULE, $module);
+            if ($permission_type !== null) {
+                $query->where(self::PERMISSION_TYPE, $permission_type);
+            }
+            $query->where(self::SCOPE, framework\Context::getScope()->getID());
+
+            $this->rawDelete($query);
+        }
+
+        public function removeClientPermission($client_id, $permission_type = null, $module = 'core', $target_id = 0)
+        {
+            $query = $this->getQuery();
+            $query->where(self::USER_ID, 0);
+            $query->where(self::CLIENT_ID, $client_id);
+            $query->where(self::CLIENT_ID, 0);
+            $query->where(self::GROUP_ID, 0);
             $query->where(self::TARGET_ID, $target_id);
             $query->where(self::MODULE, $module);
             if ($permission_type !== null) {
@@ -102,6 +139,7 @@
             $query->where(self::USER_ID, $user_id);
             $query->where(self::GROUP_ID, $group_id);
             $query->where(self::TEAM_ID, $team_id);
+            $query->where(self::CLIENT_ID, 0);
             if ($target_id == 0) {
                 $query->where(self::TARGET_ID, $target_id);
             } else {
@@ -203,11 +241,6 @@
             return $this->select($query);
         }
 
-        public function cloneGroupPermissions($cloned_group_id, $new_group_id)
-        {
-            return $this->_clonePermissions($cloned_group_id, $new_group_id, 'group');
-        }
-
         protected function _clonePermissions($cloned_id, $new_id, $mode)
         {
             $query = $this->getQuery();
@@ -217,6 +250,9 @@
                     break;
                 case 'team':
                     $mode = self::TEAM_ID;
+                    break;
+                case 'client':
+                    $mode = self::CLIENT_ID;
                     break;
             }
             $query->where($mode, $cloned_id);
@@ -239,9 +275,19 @@
             }
         }
 
-        public function cloneTeamPermissions($cloned_group_id, $new_group_id)
+        public function cloneGroupPermissions($cloned_group_id, $new_group_id)
         {
             return $this->_clonePermissions($cloned_group_id, $new_group_id, 'group');
+        }
+
+        public function cloneTeamPermissions($cloned_team_id, $new_team_id)
+        {
+            return $this->_clonePermissions($cloned_team_id, $new_team_id, 'team');
+        }
+
+        public function cloneClientPermissions($cloned_client_id, $new_client_id)
+        {
+            return $this->_clonePermissions($cloned_client_id, $new_client_id, 'client');
         }
 
         /**
@@ -383,19 +429,6 @@
             $query->where(self::MODULE, $module);
             $this->rawDelete($query);
         }
-
-//        protected function initialize()
-//        {
-//            parent::setup(self::B2DBNAME, self::ID);
-//            parent::addVarchar(self::PERMISSION_TYPE, 100);
-//            parent::addVarchar(self::TARGET_ID, 200, 0);
-//            parent::addBoolean(self::ALLOWED);
-//            parent::addVarchar(self::MODULE, 50);
-//            parent::addForeignKeyColumn(self::USER_ID, Users::getTable());
-//            parent::addForeignKeyColumn(self::GROUP_ID, Groups::getTable());
-//            parent::addForeignKeyColumn(self::TEAM_ID, Teams::getTable());
-//            parent::addForeignKeyColumn(self::ROLE_ID, ListTypes::getTable());
-//        }
 
         protected function setupIndexes()
         {

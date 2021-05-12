@@ -2,10 +2,12 @@
 
     namespace pachno\core\entities;
 
+    use b2db\Saveable;
     use Exception;
     use pachno\core\entities\common\IdentifiableScoped;
     use pachno\core\entities\tables\Teams;
     use pachno\core\framework;
+    use pachno\core\framework\Context;
 
     /**
      * Team class
@@ -60,6 +62,14 @@
         protected $_dashboards = null;
 
         protected $_associated_projects = null;
+
+        /**
+         * @var Permission[]
+         * @Relates(class="\pachno\core\entities\Permission", collection=true, foreign_column="tid")
+         */
+        protected $_permissions = null;
+
+        protected $_permission_keys;
 
         public static function doesTeamNameExist($team_name)
         {
@@ -304,4 +314,61 @@
             tables\TeamMembers::getTable()->removeUsersFromTeam($this->getID());
         }
 
+        public function addPermission($permission_name, $module = 'core', $scope = null, $target_id = 0)
+        {
+            if ($scope === null) {
+                $scope = Context::getScope();
+            }
+
+            $permission = new Permission();
+            $permission->setTeam($this);
+            $permission->setModuleName($module);
+            $permission->setTargetId($target_id);
+            $permission->setScope($scope);
+            $permission->setPermissionName($permission_name);
+            $permission->save();
+        }
+
+        protected function _populatePermissions()
+        {
+            if ($this->_permissions === null) {
+                $this->_permissions = $this->_b2dbLazyload('_permissions');
+                $this->_permission_keys = [];
+
+                foreach ($this->_permissions as $permission) {
+                    $this->_permission_keys[$permission->getModuleName() . '_' . $permission->getPermissionName() . '_' . $permission->getTargetId()] = true;
+                }
+            }
+        }
+
+        public function hasPermission($permission_name, $target_id = 0, $module = 'core'): bool
+        {
+            $permissions = $this->getPermissions();
+
+            return array_key_exists($module . '_' . $permission_name . '_' . $target_id, $permissions);
+        }
+
+        /**
+         * Returns all permissions assigned to this role
+         *
+         * @return Permission[]
+         */
+        public function getPermissions()
+        {
+            $this->_populatePermissions();
+
+            return $this->_permission_keys;
+        }
+
+        /**
+         * Removes permission from the role.
+         *
+         * @param string $permission_name
+         * @param string $module
+         */
+        public function removePermission($permission_name, $target_id = 0, $module = 'core')
+        {
+            tables\Permissions::getTable()->removeTeamPermission($this->getID(), $permission_name, $module, $target_id);
+        }
+        
     }

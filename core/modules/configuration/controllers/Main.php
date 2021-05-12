@@ -15,6 +15,7 @@
     use pachno\core\entities\tables\Milestones;
     use pachno\core\framework;
     use pachno\core\helpers\Pagination;
+    use pachno\core\modules\main\cli\entities\tbg\tables\Permissions;
 
     /**
      * Main controller for settings
@@ -1199,11 +1200,19 @@
             $this->groups = entities\Group::getAll();
         }
 
+        /**
+         * @Route(name="teams", url="/teams", methods="GET|POST")
+         * @param framework\Request $request
+         */
         public function runConfigureTeams(framework\Request $request)
         {
             $this->teams = entities\Team::getAll();
         }
 
+        /**
+         * @Route(name="clients", url="/clients", methods="GET|POST")
+         * @param framework\Request $request
+         */
         public function runConfigureClients(framework\Request $request)
         {
             $this->clients = entities\Client::getAll();
@@ -2405,29 +2414,77 @@
             }
 
             $group->setName($request['name']);
+            $is_new = (!$group->getID());
             $group->save();
 
-            $new_permissions = [];
-            foreach ($request['permissions'] ?: [] as $new_permission) {
-                $permission_details = explode(',', $new_permission);
-                $new_permissions[$permission_details[1]] = $permission_details[0];
-            }
-            $existing_permissions = [];
-            foreach ($group->getPermissions() as $existing_permission) {
-                if (!array_key_exists($existing_permission['permission'], $new_permissions)) {
-                    $group->removePermission($existing_permission['permission'], $existing_permission['module']);
-                } else {
-                    $existing_permissions[$existing_permission['permission']] = $new_permissions[$existing_permission['permission']];
-                    unset($new_permissions[$existing_permission['permission']]);
-                }
-            }
-            foreach ($new_permissions as $permission_key => $module) {
-                $group->addPermission($permission_key, $module);
-            }
-            framework\Context::clearPermissionsCache();
-            framework\Context::cacheAllPermissions();
+            $this->updatePermissions($request['permissions'] ?: [], $group);
 
-            return $this->renderJSON(['message' => $this->getI18n()->__('Group updated')]);
+            return $this->renderJSON([
+                'message' => ($is_new) ? $this->getI18n()->__('Group created') : $this->getI18n()->__('Group updated'),
+                'group' => $group->toJSON(),
+                'component' => $this->getComponentHTML('configuration/group', ['group' => $group])]
+            );
+        }
+
+        /**
+         * @Route(name="team", url="/teams/:team_id", methods="POST")
+         * @param framework\Request $request
+         * @return bool
+         */
+        public function runEditTeam(framework\Request $request)
+        {
+            if (!$this->access_level == framework\Settings::ACCESS_FULL) {
+                $this->getResponse()->setHttpStatus(400);
+
+                return $this->renderJSON(['error' => $this->getI18n()->__('You do not have access to edit these permissions')]);
+            }
+
+            try {
+                if ($request['team_id']) {
+                    $team = tables\Teams::getTable()->selectById($request['team_id']);
+                } else {
+                    $team = new entities\Team();
+                }
+            } catch (Exception $e) {}
+
+            if (!isset($team) || !$team instanceof entities\Team) {
+                $this->getResponse()->setHttpStatus(400);
+
+                return $this->renderJSON(['error' => $this->getI18n()->__('This is not a valid team')]);
+            }
+
+            if ($request->hasParameter('name')) {
+                $team->setName($request['name']);
+                $team->save();
+            }
+
+            $is_new = (!$team->getID());
+
+            if (!$is_new && $request->hasParameter('save_permissions')) {
+                $new_permissions = [];
+                foreach ($request['permissions'] ?: [] as $new_permission) {
+                    $permission_details = explode(',', $new_permission);
+                    $new_permissions[$permission_details[1]] = $permission_details[0];
+                }
+                foreach ($team->getPermissions() as $existing_permission) {
+                    if (!array_key_exists($existing_permission['permission'], $new_permissions)) {
+                        $team->removePermission($existing_permission['permission'], $existing_permission['module']);
+                    } else {
+                        unset($new_permissions[$existing_permission['permission']]);
+                    }
+                }
+                foreach ($new_permissions as $permission_key => $module) {
+                    $team->addPermission($permission_key, $module);
+                }
+                framework\Context::clearPermissionsCache();
+                framework\Context::cacheAllPermissions();
+            }
+
+            return $this->renderJSON([
+                'message' => ($is_new) ? $this->getI18n()->__('Team created') : $this->getI18n()->__('Team updated'),
+                'team' => $team->toJSON(),
+                'component' => $this->getComponentHTML('configuration/team', ['team' => $team])]
+            );
         }
 
         public function runConfigureRole(framework\Request $request)
@@ -2558,6 +2615,31 @@
             }
 
             return $this->forward403($this->getI18n()->__("You don't have access to perform this action"));
+        }
+
+        /**
+         * @param string[] $permissions
+         * @param entities\Group $group
+         */
+        protected function updatePermissions($permissions, entities\Group $group): void
+        {
+            $new_permissions = [];
+            foreach ($permissions as $new_permission) {
+                $permission_details = explode(',', $new_permission);
+                $new_permissions[$permission_details[1]] = $permission_details[0];
+            }
+            foreach ($group->getPermissions() as $existing_permission) {
+                if (!array_key_exists($existing_permission['permission'], $new_permissions)) {
+                    $group->removePermission($existing_permission['permission'], $existing_permission['module']);
+                } else {
+                    unset($new_permissions[$existing_permission['permission']]);
+                }
+            }
+            foreach ($new_permissions as $permission_key => $module) {
+                $group->addPermission($permission_key, $module);
+            }
+            framework\Context::clearPermissionsCache();
+            framework\Context::cacheAllPermissions();
         }
 
     }

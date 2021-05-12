@@ -2615,6 +2615,22 @@ var PachnoApplication = /*#__PURE__*/function () {
           removeFile: 'article-remove-file',
           "delete": 'article-trigger-delete'
         },
+        build: {
+          removeFile: 'build-remove-file',
+          "delete": 'build-trigger-delete'
+        },
+        client: {
+          removeUser: 'client-remove-user',
+          "delete": 'client-trigger-delete'
+        },
+        group: {
+          removeUser: 'group-remove-user',
+          "delete": 'group-trigger-delete'
+        },
+        team: {
+          removeUser: 'team-remove-user',
+          "delete": 'team-trigger-delete'
+        },
         configuration: {
           deleteComponent: 'configuration-delete-component',
           generatePassword: 'configuration-generate-password'
@@ -4315,6 +4331,11 @@ var Uploader = /*#__PURE__*/function () {
           $label_element = $("<label><img class=\"icon_preview\" src=\"\"><i class=\"fa-spin fas fa-circle-notch indicator\"></i></label>");
           $input_element.insertBefore($container.find('.file-upload-placeholder'));
           $label_element.insertBefore($container.find('.file-upload-placeholder'));
+        } else if (uploader.mode === 'table') {
+          $label_element = $("<div class=\"row\"><div class=\"column info-icons\">".concat(_helpers_ui__WEBPACK_IMPORTED_MODULE_0__["default"].fa_image_tag('spinner', {
+            classes: 'fa-spin icon'
+          }), "</div><div class=\"column name-container\">").concat(file.name, "</div><div class=\"column numeric\">").concat(fileSize, "</div></div>"));
+          $container.find('.file-list-container').append($label_element);
         } else if (uploader.mode === 'list') {
           var link_element;
 
@@ -4359,6 +4380,10 @@ var Uploader = /*#__PURE__*/function () {
 
           if (uploader.form_data.article_id !== undefined) {
             data.article_id = uploader.form_data.article_id;
+          }
+
+          if (uploader.form_data.build_id !== undefined) {
+            data.build_id = uploader.form_data.build_id;
           }
         }
 

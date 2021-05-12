@@ -699,7 +699,7 @@
         protected function _populateFiles()
         {
             if ($this->_files === null) {
-                $this->_files = File::getByArticleID($this->getID());
+                $this->_files = ArticleFiles::getTable()->getByArticleID($this->getID());
             }
         }
 
@@ -722,7 +722,7 @@
         }
 
         /**
-         * Attach a file to the issue
+         * Attach a file to the article
          *
          * @param File $file The file to attach
          * @param null $timestamp

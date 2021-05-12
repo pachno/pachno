@@ -1,0 +1,4 @@
+parameters:
+  autoload_files:
+    - core/lib/common.inc.php
+    - core/lib/ui.inc.php

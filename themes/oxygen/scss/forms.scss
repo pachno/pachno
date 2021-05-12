@@ -530,6 +530,12 @@
         }
       }
 
+      &.version {
+        width: 3em;
+        flex: 0 0 auto;
+        min-width: 3em;
+      }
+
       &.medium,
       &:not(.invisible).medium {
         width: 20rem;

@@ -64,7 +64,7 @@ button, button:hover,
   .fas,
   .far {
     &:not(.indicator) {
-      ~ span {
+      ~ span:not(.tooltip) {
         margin-left: .3em;
       }
     }

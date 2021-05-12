@@ -17,6 +17,7 @@
         const TYPE_PROJECT_ICON = 'project_icon';
         const TYPE_ATTACHMENT = 'attachment';
         const TYPE_COVER = 'cover';
+        const TYPE_DOWNLOAD = 'download';
 
         /**
          * @Column(type="string", length=200)
@@ -72,21 +73,6 @@
          * @Relates(class="\pachno\core\entities\Project")
          */
         protected $_project_id;
-
-        public static function getByIssueID($issue_id)
-        {
-            return tables\IssueFiles::getTable()->getByIssueID($issue_id);
-        }
-
-        public static function countByIssueID($issue_id)
-        {
-            return tables\IssueFiles::getTable()->countByIssueID($issue_id);
-        }
-
-        public static function getByArticleID($article_id)
-        {
-            return ArticleFiles::getTable()->getByArticleID($article_id);
-        }
 
         /**
          * Returns the parent project

@@ -14,6 +14,8 @@
     use pachno\core\entities\tables\AgileBoards;
     use pachno\core\entities\tables\ArticleCategoryLinks;
     use pachno\core\entities\tables\Articles;
+    use pachno\core\entities\tables\BuildFiles;
+    use pachno\core\entities\tables\Builds;
     use pachno\core\entities\tables\Files;
     use pachno\core\entities\tables\Groups;
     use pachno\core\entities\tables\Issues;
@@ -62,10 +64,17 @@
             $this->cliEcho('Users', self::COLOR_WHITE, self::STYLE_DEFAULT);
             Users::getTable()->upgrade(tbg\tables\Users::getTable());
             UserSessions::getTable()->upgrade(tbg\tables\UserSessions::getTable());
+            Permissions::getTable()->upgrade(tbg\tables\Permissions::getTable());
 
             $this->cliMoveLeft();
             $this->cliEcho(str_pad('UserCommits', 25), self::COLOR_WHITE, self::STYLE_DEFAULT);
             UserCommits::getTable()->create();
+            $this->cliMoveLeft();
+            $this->cliEcho(str_pad('BuildFiles', 25), self::COLOR_WHITE, self::STYLE_DEFAULT);
+            BuildFiles::getTable()->create();
+            $this->cliMoveLeft();
+            $this->cliEcho(str_pad('Builds', 25), self::COLOR_WHITE, self::STYLE_DEFAULT);
+            Builds::getTable()->upgrade(tbg\tables\Builds::getTable());
             $this->cliMoveLeft();
             $this->cliEcho(str_pad('Files', 25), self::COLOR_WHITE, self::STYLE_DEFAULT);
             Files::getTable()->upgrade(tbg\tables\Files::getTable());

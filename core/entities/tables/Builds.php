@@ -131,32 +131,15 @@
 
         protected function migrateData(Table $old_table)
         {
-            $sqls = [];
-            $tn = $this->_getTableNameSQL();
-            switch ($old_table->getVersion()) {
-                case 1:
-                    $query = $this->getQuery();
-                    $query->where(self::EDITION, 0, Criterion::NOT_EQUALS);
-                    $res = $this->rawSelect($query);
-                    $editions = [];
-                    if ($res) {
-                        while ($row = $res->getNextRow()) {
-                            $editions[$row->get(self::EDITION)] = 0;
-                        }
-                    }
+            $query = $this->getQuery();
+            $query->where(self::FILE_ID, null, Criterion::IS_NOT_NULL);
+            $query->where(self::FILE_ID, 0, Criterion::NOT_EQUALS);
 
-                    $edition_projects = Editions::getTable()->getProjectIDsByEditionIDs(array_keys($editions));
-
-                    foreach ($edition_projects as $edition => $project) {
-                        $query = $this->getQuery();
-                        $update = new Update();
-
-                        $update->add(self::PROJECT, $project);
-                        $query->where(self::EDITION, $edition);
-
-                        $res = $this->rawUpdate($update, $query);
-                    }
-                    break;
+            $results = $this->rawSelect($query);
+            if ($results) {
+                while($row = $results->getNextRow()) {
+                    BuildFiles::getTable()->addByBuildIDandFileID($row[self::ID], $row[self::FILE_ID], null, $row[self::SCOPE]);
+                }
             }
         }
 

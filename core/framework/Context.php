@@ -891,7 +891,7 @@
                             if (!array_key_exists($row->get(Permissions::TARGET_ID), self::$_permissions[$row->get(Permissions::MODULE)][$row->get(Permissions::PERMISSION_TYPE)])) {
                                 self::$_permissions[$row->get(Permissions::MODULE)][$row->get(Permissions::PERMISSION_TYPE)][$row->get(Permissions::TARGET_ID)] = [];
                             }
-                            self::$_permissions[$row->get(Permissions::MODULE)][$row->get(Permissions::PERMISSION_TYPE)][$row->get(Permissions::TARGET_ID)][] = ['uid' => $row->get(Permissions::USER_ID), 'gid' => $row->get(Permissions::GROUP_ID), 'tid' => $row->get(Permissions::TEAM_ID), 'allowed' => (bool)$row->get(Permissions::ALLOWED), 'role_id' => $row->get(Permissions::ROLE_ID)];
+                            self::$_permissions[$row->get(Permissions::MODULE)][$row->get(Permissions::PERMISSION_TYPE)][$row->get(Permissions::TARGET_ID)][] = ['uid' => $row->get(Permissions::USER_ID), 'gid' => $row->get(Permissions::GROUP_ID), 'tid' => $row->get(Permissions::TEAM_ID), 'client_id' => $row->get(Permissions::CLIENT_ID), 'allowed' => (bool)$row->get(Permissions::ALLOWED), 'role_id' => $row->get(Permissions::ROLE_ID)];
                         }
                     }
                     Logging::log('done (starting to cache access permissions)');
@@ -1176,9 +1176,15 @@
                             return $permission['allowed'];
                     }
                 }
+                if ($type == 'client') {
+                    foreach (self::$_permissions[$module_name][$permission_key][$target_id] as $permission) {
+                        if ($permission['client_id'] == $id && (($without_role == true && $permission['role_id'] == 0) || ($without_role == false && $permission['role_id'] != 0)))
+                            return $permission['allowed'];
+                    }
+                }
                 if ($type == 'everyone') {
                     foreach (self::$_permissions[$module_name][$permission_key][$target_id] as $permission) {
-                        if ($permission['uid'] + $permission['gid'] + $permission['tid'] == 0 && (($without_role == true && $permission['role_id'] == 0) || ($without_role == false && $permission['role_id'] != 0))) {
+                        if ($permission['uid'] + $permission['gid'] + $permission['tid'] + $permission['client_id'] == 0 && (($without_role == true && $permission['role_id'] == 0) || ($without_role == false && $permission['role_id'] != 0))) {
                             return $permission['allowed'];
                         }
                     }
@@ -1216,7 +1222,7 @@
             }
         }
 
-        public static function permissionCheck($module, $permission, $target_id, $uid, $gid, $team_ids)
+        public static function permissionCheck($module, $permission, $target_id, $uid, $gid, $team_ids, $client_ids)
         {
             foreach (self::$_available_permission_paths as $permission_key => $permissions) {
                 if (array_key_exists($permission, $permissions)) {
@@ -1230,13 +1236,13 @@
             }
 
             foreach (self::$_available_permission_paths[$key][$permission] as $parent_permission) {
-                $value = self::checkPermission($module, $parent_permission, $target_id, $uid, $gid, $team_ids);
+                $value = self::checkPermission($module, $parent_permission, $target_id, $uid, $gid, $team_ids, $client_ids);
                 if ($value !== null) {
                     return $value;
                 }
             }
 
-            return self::checkPermission($module, $permission, $target_id, $uid, $gid, $team_ids);
+            return self::checkPermission($module, $permission, $target_id, $uid, $gid, $team_ids, $client_ids);
         }
 
         /**
@@ -1255,7 +1261,7 @@
          * @see User::hasPermission() For description of module name, permission type, target ID.
          *
          */
-        protected static function checkPermission($module_name, $permission_type, $target_id, $uid, $gid, $team_ids)
+        protected static function checkPermission($module_name, $permission_type, $target_id, $uid, $gid, $team_ids, $client_ids)
         {
             // Default is that no permission was found/matched against user
             // specifier.
@@ -1290,9 +1296,10 @@
                         // user specifier (uid, gid, or one of team IDs), or if the
                         // permission should be applied to all users.
                         if (($uid != 0 && $uid == $permission['uid']) ||
-                            (count($team_ids) != 0 && in_array($permission['tid'], $team_ids)) ||
                             ($gid != 0 && $gid == $permission['gid']) ||
-                            ($permission['uid'] == 0 && $permission['gid'] == 0 && $permission['tid'] == 0)) {
+                            ($permission['uid'] == 0 && $permission['gid'] == 0 && $permission['tid'] == 0 && $permission['client_id'] == 0) ||
+                            (count($team_ids) != 0 && in_array($permission['tid'], $team_ids)) ||
+                            (count($client_ids) != 0 && in_array($permission['client_id'], $client_ids))) {
                             // Calculate the permissions weight, and apply its
                             // result (allow/deny) if it outweighs the previously
                             // matched permission.
@@ -1334,10 +1341,10 @@
          *
          * The weight of the above three items is also proportional to each other,
          * that is the specificity of target ID brings more weight than specific
-         * uid/gid/tid, which in turns weights more than specific rule result
+         * uid/gid/tid/client_id, which in turns weights more than specific rule result
          * (allowed/denied).
          *
-         * @param permission array An array defining permission. Must include the following keys: uid (user ID), gid (group ID), tid (team ID), and allowed (true/false).
+         * @param permission array An array defining permission. Must include the following keys: uid (user ID), gid (group ID), tid (team ID), client_id (client ID), and allowed (true/false).
          * @param target_id mixed Either a non-negative integer or string designating target to which the permission applies. 0 means global target.
          *
          * @return integer A non-negative integer denoting weight of permission.
@@ -1351,6 +1358,7 @@
                 'specific_target_id' => 1000,
                 'specific_uid' => 750,
                 'specific_tid' => 500,
+                'specific_client_id' => 500,
                 'specific_gid' => 250,
                 'allow_false' => 50,
                 'allow_true' => 0,
@@ -1369,6 +1377,8 @@
                 $weight += $weight_bases['specific_uid'];
             } elseif ($permission['tid'] != 0) {
                 $weight += $weight_bases['specific_tid'];
+            } elseif ($permission['client_id'] != 0) {
+                $weight += $weight_bases['specific_client_id'];
             } elseif ($permission['gid'] != 0) {
                 $weight += $weight_bases['specific_gid'];
             }

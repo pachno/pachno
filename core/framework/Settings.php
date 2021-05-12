@@ -1139,7 +1139,8 @@
             $config_sections['issues_workflow'][self::CONFIGURATION_SECTION_WORKFLOW] = ['route' => 'configure_workflows', 'fa_style' => 'fas', 'fa_icon' => 'share-alt', 'description' => $i18n->__('Workflow'), 'details' => $i18n->__('Set up and edit workflow configuration from this section')];
             $config_sections['issues_workflow'][self::CONFIGURATION_SECTION_WORKFLOW_SCHEMES] = ['route' => 'configure_workflow_schemes', 'fa_style' => 'fas', 'fa_icon' => 'share-alt', 'description' => $i18n->__('Workflow schemes'), 'details' => $i18n->__('Set up and edit workflow configuration from this section')];
             $config_sections['users'][self::CONFIGURATION_SECTION_USERS] = ['route' => 'configure_users', 'description' => $i18n->__('Users and groups'), 'fa_style' => 'fas', 'fa_icon' => 'users', 'details' => $i18n->__('Create, edit and manage users from this section')];
-            $config_sections['users'][self::CONFIGURATION_SECTION_TEAMS] = ['route' => 'configure_teams', 'disabled' => true, 'description' => $i18n->__('Teams and clients'), 'fa_style' => 'fas', 'fa_icon' => 'users', 'details' => $i18n->__('Create and manage clients from this section.')];
+            $config_sections['users'][self::CONFIGURATION_SECTION_TEAMS] = ['route' => 'configure_teams', 'description' => $i18n->__('User teams'), 'fa_style' => 'fas', 'fa_icon' => 'users', 'details' => $i18n->__('Create and manage teams from this section.')];
+            $config_sections['users'][self::CONFIGURATION_SECTION_CLIENTS] = ['route' => 'configure_clients', 'description' => $i18n->__('Clients'), 'fa_style' => 'fas', 'fa_icon' => 'users', 'details' => $i18n->__('Create and manage clients from this section.')];
 
             foreach (Context::getAllModules() as $modules) {
                 foreach ($modules as $module) {

@@ -42,6 +42,20 @@
             <span><?= __('Create user'); ?></span>
         </button>
     </div>
+<?php elseif ($current_route == 'configure_teams'): ?>
+    <div class="action-container">
+        <button type="button" class="button trigger-backdrop" data-url="<?= make_url('get_partial_for_backdrop', ['key' => 'edit_team']); ?>">
+            <?= fa_image_tag('plus', ['class' => 'icon']); ?>
+            <span><?= __('Create team'); ?></span>
+        </button>
+    </div>
+<?php elseif ($current_route == 'configure_clients'): ?>
+    <div class="action-container">
+        <button type="button" class="button trigger-backdrop" data-url="<?= make_url('get_partial_for_backdrop', ['key' => 'edit_client']); ?>">
+            <?= fa_image_tag('plus', ['class' => 'icon']); ?>
+            <span><?= __('Create client'); ?></span>
+        </button>
+    </div>
 <?php elseif ($current_route == 'configure_groups'): ?>
     <div class="action-container">
         <a class="button secondary" href="<?= make_url('configure_users'); ?>">
@@ -67,6 +81,6 @@
         <?php endif; ?>
     </span>
     <div class="action-container">
-        <a class="button secondary highlight" disabled id="update_button" href="javascript:void(0);" onclick="Pachno.Config.updateCheck('<?php echo make_url('configure_update_check'); ?>');"><?php echo __('Check for updates'); ?></a>
+        <a class="button secondary highlight" id="update_button" href="javascript:void(0);" onclick="Pachno.Config.updateCheck('<?php echo make_url('configure_update_check'); ?>');"><?php echo __('Check for updates'); ?></a>
     </div>
 <?php endif; ?>

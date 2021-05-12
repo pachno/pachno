@@ -1,6 +1,7 @@
 <?php
 
     use pachno\core\entities\Article;
+    use pachno\core\entities\Build;
     use pachno\core\entities\Issue;
     use pachno\core\entities\User;
     use pachno\core\entities\File;
@@ -8,14 +9,19 @@
     /**
      * @var Issue $issue
      * @var Article $article
+     * @var Build $build
      * @var File $file
+     * @var int $file_id
      * @var User $pachno_user
+     * @var string $mode
      */
 
     $can_remove = false;
     if ($mode == 'issue' && $issue->canRemoveAttachment($pachno_user, $file)) {
         $can_remove = true;
     } elseif ($mode == 'article' && ($article->canEdit() || ($article->getProject() instanceof \pachno\core\entities\Project && $pachno_user->canManageProject($article->getProject())) || ($file->getUploadedBy() instanceof User && $file->getUploadedBy()->getID() === $pachno_user->getID()))) {
+        $can_remove = true;
+    } elseif ($mode == 'build' && $pachno_user->canManageProjectReleases($build->getProject())) {
         $can_remove = true;
     }
 
@@ -47,7 +53,8 @@
                     <button class="button secondary icon <?= ($issue->getCoverImageFile() instanceof File && $issue->getCoverImageFile()->getId() == $file->getId()) ? 'trigger-clear-cover' : 'trigger-set-cover'; ?>" data-dynamic-field-value data-field="cover_image_file" data-file-id="<?= $file->getId(); ?>" data-issue-id="<?= $issue->getId(); ?>">
                         <?= fa_image_tag(($issue->getCoverImageFile() instanceof File && $issue->getCoverImageFile()->getId() == $file->getId()) ? 'minus-square' : 'images', ['class' => 'icon'], 'far'); ?>
                     </button>
-                <?php else: ?>
+                <?php endif; ?>
+                <?php if ($mode == 'article'): ?>
                     <button class="button secondary highlight icon trigger-embed" data-url="<?= $file->getURL(false); ?>">
                         <?= fa_image_tag('file-import'); ?>
                     </button>

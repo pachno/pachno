@@ -2344,14 +2344,24 @@
                         $issue = Issues::getTable()->selectById($request['issue_id']);
                         if ($issue instanceof Issue && $issue->hasAccess() && $issue->canAttachFiles()) {
                             $issue->attachFile($saved_file);
-                            $json['element'] = $this->getComponentHTML('main/attachedfile', array('mode' => 'issue', 'issue' => $issue, 'file' => $saved_file));
+                            $json['element'] = $this->getComponentHTML('main/attachedfile', ['mode' => 'issue', 'issue' => $issue, 'file' => $saved_file]);
                         }
                     } elseif ($request['article_id']) {
                         $article = tables\Articles::getTable()->selectById($request['article_id']);
                         if ($article instanceof entities\Article && $article->canEdit()) {
                             $article->attachFile($saved_file);
-                            $json['element'] = $this->getComponentHTML('main/attachedfile', array('mode' => 'article', 'article' => $article, 'file' => $saved_file));
+                            $json['element'] = $this->getComponentHTML('main/attachedfile', ['mode' => 'article', 'article' => $article, 'file' => $saved_file]);
                         }
+                    } elseif ($request->hasParameter('build_id')) {
+                        if ($request['build_id']) {
+                            $build = tables\Builds::getTable()->selectById($request['build_id']);
+                            if ($build instanceof entities\Build && $this->getUser()->canManageProjectReleases($build->getProject())) {
+                                $build->attachFile($saved_file);
+                            }
+                        } else {
+                            $build = null;
+                        }
+                        $json['element'] = $this->getComponentHTML('project/editbuildfile', ['build' => $build, 'file' => $saved_file]);
                     }
 
                     return $this->renderJSON($json);
@@ -2386,6 +2396,19 @@
                         $this->getResponse()->setHttpStatus(400);
 
                         return $this->renderJSON(['error' => framework\Context::getI18n()->__('You can not remove items from this article')]);
+                    case 'build':
+                        $build = tables\Builds::getTable()->selectById($request['build_id']);
+                        if ($build instanceof entities\Build && $file instanceof entities\File && $this->getUser()->canManageProjectReleases($build->getProject())) {
+                            $build->detachFile($file);
+
+                            return $this->renderJSON(['file_id' => $request['file_id'], 'attachments' => $build->getNumberOfDownloads(), 'message' => framework\Context::getI18n()->__('The attachment has been removed')]);
+                        } elseif ($file->getUploadedBy()->getID() == $this->getUser()->getID()) {
+                            $file->delete();
+                            return $this->renderJSON(['file_id' => $request['file_id'], 'message' => framework\Context::getI18n()->__('The attachment has been removed')]);
+                        }
+                        $this->getResponse()->setHttpStatus(400);
+
+                        return $this->renderJSON(['error' => framework\Context::getI18n()->__('You can not remove items from this release')]);
                 }
             } catch (Exception $e) {
                 $this->getResponse()->setHttpStatus(400);
@@ -2803,10 +2826,15 @@
                         $template_name = 'main/relateissue';
                         break;
                     case 'project_build':
-                        $template_name = 'project/build';
+                        $template_name = 'project/editbuild';
                         $options['project'] = Projects::getTable()->selectById($request['project_id']);
-                        if ($request->hasParameter('build_id'))
-                            $options['build'] = tables\Builds::getTable()->selectById($request['build_id']);
+                        if ($request->getParameter('build_id')) {
+                            $build = tables\Builds::getTable()->selectById($request['build_id']);
+                        } else {
+                            $build = new entities\Build();
+                            $build->setProject($options['project']);
+                        }
+                        $options['build'] = $build;
                         break;
                     case 'project_icons':
                         $template_name = 'project/projecticons';
@@ -2865,6 +2893,24 @@
                             $group = new entities\Group();
                         }
                         $options['group'] = $group;
+                        break;
+                    case 'edit_team':
+                        $template_name = 'configuration/editteam';
+                        if ($request['team_id']) {
+                            $team = tables\Teams::getTable()->selectById($request['team_id']);
+                        } else {
+                            $team = new entities\Team();
+                        }
+                        $options['team'] = $team;
+                        break;
+                    case 'edit_client':
+                        $template_name = 'configuration/editclient';
+                        if ($request['client_id']) {
+                            $client = tables\Clients::getTable()->selectById($request['client_id']);
+                        } else {
+                            $client = new entities\Client();
+                        }
+                        $options['client'] = $client;
                         break;
                     case 'edit_workflow_scheme':
                         $template_name = 'configuration/editworkflowscheme';
@@ -3000,10 +3046,11 @@
                         $options['user'] = new entities\User((int)$request['user_id']);
                         break;
                     case 'milestone':
-                        $template_name = 'project/milestone';
+                        $template_name = 'project/editmilestone';
                         $options['project'] = Projects::getTable()->selectById($request['project_id']);
-                        if ($request->hasParameter('milestone_id'))
+                        if ($request->hasParameter('milestone_id')) {
                             $options['milestone'] = Milestones::getTable()->selectById($request['milestone_id']);
+                        }
                         break;
                     default:
                         $event = new framework\Event('core', 'get_backdrop_partial', $request['key'], ['request' => $request]);
@@ -3930,7 +3977,7 @@
                         if ($event->isProcessed()) {
                             $component = $event->getReturnValue();
                         } else {
-                            $component = $this->getComponentHTML('project/milestonebox', ['milestone' => $milestone, 'include_counts' => true]);
+                            $component = $this->getComponentHTML('project/milestone', ['milestone' => $milestone, 'include_counts' => true]);
                         }
                         $message = framework\Context::getI18n()->__('Milestone saved');
 

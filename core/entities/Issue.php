@@ -3864,7 +3864,7 @@
                 if ($this->_files !== null) {
                     $this->_num_files = count($this->_files);
                 } else {
-                    $this->_num_files = File::countByIssueID($this->getID());
+                    $this->_num_files = tables\IssueFiles::getTable()->countByIssueID($this->getID());
                 }
             }
 
@@ -3907,7 +3907,7 @@
         protected function _populateFiles()
         {
             if ($this->_files === null) {
-                $this->_files = File::getByIssueID($this->getID());
+                $this->_files = tables\IssueFiles::getTable()->getByIssueID($this->getID());
             }
         }
 

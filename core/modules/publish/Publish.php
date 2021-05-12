@@ -313,9 +313,9 @@
         public function listen_createNewProject(Event $event)
         {
             $this->createMainPageArticle($event->getSubject());
-
-            framework\Context::setPermission(Permission::PERMISSION_PROJECT_EDIT_DOCUMENTATION, 'project_' . $event->getSubject()->getID(), "publish", framework\Context::getUser()->getID(), 0, 0);
-            framework\Context::setPermission(Permission::PERMISSION_MANAGE_PROJECT_MODERATE_DOCUMENTATION, 'project_' . $event->getSubject()->getID(), "publish", framework\Context::getUser()->getID(), 0, 0);
+//
+//            framework\Context::setPermission(Permission::PERMISSION_PROJECT_EDIT_DOCUMENTATION, 'project_' . $event->getSubject()->getID(), "publish", framework\Context::getUser()->getID(), 0, 0);
+//            framework\Context::setPermission(Permission::PERMISSION_MANAGE_PROJECT_MODERATE_DOCUMENTATION, 'project_' . $event->getSubject()->getID(), "publish", framework\Context::getUser()->getID(), 0, 0);
         }
 
         public function getTabKey()
@@ -533,8 +533,8 @@
         protected function _install($scope)
         {
             $admin_group_id = framework\Settings::getAdminGroup()->getID();
-            framework\Context::setPermission(Permission::PERMISSION_PROJECT_EDIT_DOCUMENTATION, 0, 'core', 0, $admin_group_id, 0, $scope);
-            framework\Context::setPermission(Permission::PERMISSION_MANAGE_PROJECT_MODERATE_DOCUMENTATION, 0, 'core', 0, $admin_group_id, 0, $scope);
+//            framework\Context::setPermission(Permission::PERMISSION_PROJECT_EDIT_DOCUMENTATION, 0, 'core', 0, $admin_group_id, 0, $scope);
+//            framework\Context::setPermission(Permission::PERMISSION_MANAGE_PROJECT_MODERATE_DOCUMENTATION, 0, 'core', 0, $admin_group_id, 0, $scope);
         }
 
         protected function _loadFixtures($scope)
@@ -542,8 +542,8 @@
             $admin_group_id = framework\Settings::getAdminGroup()->getID();
             $this->loadFixturesArticles($scope);
 
-            framework\Context::setPermission(Permission::PERMISSION_PROJECT_EDIT_DOCUMENTATION, 0, 'core', 0, $admin_group_id, 0, $scope);
-            framework\Context::setPermission(Permission::PERMISSION_MANAGE_PROJECT_MODERATE_DOCUMENTATION, 0, 'core', 0, $admin_group_id, 0, $scope);
+//            framework\Context::setPermission(Permission::PERMISSION_PROJECT_EDIT_DOCUMENTATION, 0, 'core', 0, $admin_group_id, 0, $scope);
+//            framework\Context::setPermission(Permission::PERMISSION_MANAGE_PROJECT_MODERATE_DOCUMENTATION, 0, 'core', 0, $admin_group_id, 0, $scope);
         }
 
         public function loadFixturesArticles($scope, $overwrite = true)

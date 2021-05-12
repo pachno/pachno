@@ -163,6 +163,14 @@ article_detach_file:
       mode: article
     csrf_enabled: false
 
+build_detach_file:
+    route: /upload/detach/file/:file_id/from/build/:build_id
+    module: main
+    action: detachFile
+    parameters:
+      mode: build
+    csrf_enabled: false
+
 issue_attach_link:
     route: '/update/attach/link/to/issue/:issue_id/*'
     module: main
