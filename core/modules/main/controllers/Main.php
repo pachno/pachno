@@ -2912,6 +2912,10 @@
                         }
                         $options['client'] = $client;
                         break;
+                    case 'client_add_member':
+                        $template_name = 'configuration/clientaddmembers';
+                        $options['client'] = tables\Clients::getTable()->selectById($request['client_id']);
+                        break;
                     case 'edit_workflow_scheme':
                         $template_name = 'configuration/editworkflowscheme';
                         if ($request['scheme_id']) {

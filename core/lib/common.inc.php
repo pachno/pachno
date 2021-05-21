@@ -12,7 +12,7 @@
      *
      * @return string
      */
-    function __($text, $replacements = array(), $html_decode = false)
+    function __($text, $replacements = array(), $html_decode = false): string
     {
         return \pachno\core\framework\Context::getI18n()->__($text, $replacements, $html_decode);
     }
@@ -25,7 +25,7 @@
      *
      * @return string
      */
-    function __e($text, $replacements = array())
+    function __e($text, $replacements = array()): string
     {
         return \pachno\core\framework\Context::getI18n()->__e($text, $replacements);
     }

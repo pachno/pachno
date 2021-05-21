@@ -2438,7 +2438,7 @@
         /**
          * Retrieves information about the latest available version from the official website.
          *
-         * @return array
+         * @return array|null
          *
          *   null, if latest available version information could not be
          *   retrieved due to errors, otherwise an array describing the
@@ -2472,13 +2472,8 @@
             // Verify status code.
             if ($response->getStatusCode() == 200) {
                 // Decode response.
-                $info = json_decode($response->getBody());
-
-                // Cache value if response was decoded and necessary
-                // information was read from it.
-                if (is_object($info) && isset($info->maj, $info->min, $info->rev, $info->nicever)) {
-                    self::$_latest_available_version = $info;
-                }
+                $info = json_decode($response->getBody(), true, 512, JSON_THROW_ON_ERROR);
+                self::$_latest_available_version = $info;
             }
 
             return self::$_latest_available_version;

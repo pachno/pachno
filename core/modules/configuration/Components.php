@@ -7,7 +7,19 @@
     use pachno\core\entities;
     use pachno\core\framework;
     use pachno\core\framework\I18n;
+    use pachno\core\entities\tables;
 
+    /**
+     * Class Components
+     *
+     * @property entities\User[] $users
+     * @property entities\User $email_user
+     * @property string $find_by
+     * @property entities\Client $client
+     * @property string $members_url
+     *
+     * @package pachno\core\modules\configuration
+     */
     class Components extends framework\ActionComponent
     {
 
@@ -41,31 +53,24 @@
             $this->modules = $modules;
         }
 
-        public function componentOnlineThemes()
+        public function componentEditClient()
         {
-            try {
-                $client = new Net_Http_Client();
-                $client->get('https://pachno.com/themes.json');
-                $json_themes = json_decode($client->getBody());
-            } catch (Exception $e) {
-            }
-
-            $themes = [];
-            $existing_themes = framework\Context::getThemes();
-            if (isset($json_themes) && isset($json_themes->featured)) {
-                foreach ($json_themes->featured as $key => $theme) {
-                    if (!array_key_exists($theme->key, $existing_themes))
-                        $themes[] = $theme;
-                }
-            }
-
-            $this->themes = $themes;
+            $this->members_url = $this->getRouting()->generate('configure_client_members', ['client_id' => $this->client->getID()]);
         }
 
-        public function componentTheme()
+        public function componentFindClientMembers()
         {
-            $this->enabled = (framework\Settings::getThemeName() == $this->theme['key']);
-            $this->is_default_scope = framework\Context::getScope()->isDefault();
+            $this->users = tables\Users::getTable()->getByDetails($this->find_by, 10, true);
+
+            if (filter_var($this->find_by, FILTER_VALIDATE_EMAIL) == $this->find_by) {
+                $email = $this->find_by;
+            }
+
+            if (isset($email) && !count($this->users)) {
+                $email_user = new entities\User();
+                $email_user->setEmail($email);
+                $this->email_user = $email_user;
+            }
         }
 
         public function componentLanguageSettings()

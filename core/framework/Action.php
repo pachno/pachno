@@ -312,7 +312,7 @@
          *
          * @return boolean
          */
-        public function renderJSON($text = [])
+        public function renderJSON($text = []): bool
         {
             $this->getResponse()->setContentType('application/json');
             $this->getResponse()->setDecoration(Response::DECORATE_NONE);

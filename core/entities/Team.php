@@ -5,6 +5,7 @@
     use b2db\Saveable;
     use Exception;
     use pachno\core\entities\common\IdentifiableScoped;
+    use pachno\core\entities\common\Permissible;
     use pachno\core\entities\tables\Teams;
     use pachno\core\framework;
     use pachno\core\framework\Context;
@@ -29,7 +30,7 @@
      *
      * @Table(name="\pachno\core\entities\tables\Teams")
      */
-    class Team extends IdentifiableScoped
+    class Team extends IdentifiableScoped implements Permissible
     {
 
         protected static $_teams = null;
@@ -353,7 +354,7 @@
          *
          * @return Permission[]
          */
-        public function getPermissions()
+        public function getPermissions(): array
         {
             $this->_populatePermissions();
 

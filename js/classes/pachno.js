@@ -14,6 +14,7 @@ import {setupListeners as workflowSetupListeners} from "../helpers/workflow";
 import {setupListeners as articleSetupListeners} from "../helpers/article";
 import {setupListeners as moduleSetupListeners} from "../helpers/modules";
 import {setupListeners as projectSetupListeners} from "../helpers/project";
+import {setupListeners as configurationSetupListeners} from "../helpers/configuration";
 import Board from "./board";
 import Search from "./search";
 import Issuereporter from "./issuereporter";
@@ -202,6 +203,7 @@ class PachnoApplication {
         uiSetupListeners();
         widgetSetupListeners();
         projectSetupListeners();
+        configurationSetupListeners();
         // $('#fullpage_backdrop_content').on('click', Core._resizeWatcher);
     }
 

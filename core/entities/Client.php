@@ -5,6 +5,7 @@
     use b2db\Saveable;
     use Exception;
     use pachno\core\entities\common\IdentifiableScoped;
+    use pachno\core\entities\common\Permissible;
     use pachno\core\framework;
     use pachno\core\framework\Context;
 
@@ -26,9 +27,12 @@
      *
      * @Table(name="\pachno\core\entities\tables\Clients")
      */
-    class Client extends IdentifiableScoped
+    class Client extends IdentifiableScoped implements Permissible
     {
 
+        /**
+         * @var Client[]
+         */
         protected static $_clients = null;
 
         protected $_members = null;
@@ -36,7 +40,7 @@
         protected $_num_members = null;
 
         /**
-         * The name of the object
+         * The name of the client
          *
          * @var string
          * @Column(type="string", length=200)
@@ -46,7 +50,7 @@
         /**
          * Email of client
          *
-         * @param string
+         * @var string
          * @Column(type="string", length=200)
          */
         protected $_email = null;
@@ -54,7 +58,7 @@
         /**
          * Telephone number of client
          *
-         * @param integer
+         * @var integer
          * @Column(type="string", length=200)
          */
         protected $_telephone = null;
@@ -62,7 +66,7 @@
         /**
          * URL for client website
          *
-         * @param string
+         * @var string
          * @Column(type="string", length=200)
          */
         protected $_website = null;
@@ -70,10 +74,28 @@
         /**
          * Fax number of client
          *
-         * @param integer
+         * @var integer
          * @Column(type="string", length=200)
          */
         protected $_fax = null;
+
+        /**
+         * Client external contact user
+         *
+         * @var User
+         * @Column(type="integer", length=10)
+         * @Relates(class="\pachno\core\entities\User")
+         */
+        protected $_external_contact_user_id = null;
+
+        /**
+         * Client internal contact user
+         *
+         * @var User
+         * @Column(type="integer", length=10)
+         * @Relates(class="\pachno\core\entities\User")
+         */
+        protected $_internal_contact_user_id = null;
 
         /**
          * List of client's dashboards
@@ -91,7 +113,7 @@
 
         protected $_permission_keys;
 
-        public static function doesClientNameExist($client_name)
+        public static function doesClientNameExist($client_name): bool
         {
             return tables\Clients::getTable()->doesClientNameExist($client_name);
         }
@@ -99,7 +121,7 @@
         /**
          * @return Client[]
          */
-        public static function getAll()
+        public static function getAll(): array
         {
             if (self::$_clients === null) {
                 self::$_clients = tables\Clients::getTable()->getAll();
@@ -310,6 +332,29 @@
             tables\ClientMembers::getTable()->removeUsersFromClient($this->getID());
         }
 
+        public function getExternalContact(): ?User
+        {
+            return $this->_b2dbLazyLoad('_external_contact_user_id');
+        }
+
+        /**
+         * @param User|null $user
+         */
+        public function setExternalContact(User $user = null)
+        {
+            $this->_external_contact_user_id = $user;
+        }
+
+        public function getInternalContact(): ?User
+        {
+            return $this->_b2dbLazyLoad('_internal_contact_user_id');
+        }
+
+        public function setInternalContact(User $user = null)
+        {
+            $this->_internal_contact_user_id = $user;
+        }
+
         public function addPermission($permission_name, $module = 'core', $scope = null, $target_id = 0)
         {
             if ($scope === null) {
@@ -349,7 +394,7 @@
          *
          * @return Permission[]
          */
-        public function getPermissions()
+        public function getPermissions(): array
         {
             $this->_populatePermissions();
 

@@ -17,8 +17,9 @@
      * @subpackage tables
      *
      * @method static Users getTable()
-     * @method User selectAll()
-     * @method User selectOne(Query $query, $join = 'all')
+     * @method User[] selectAll()
+     * @method User|null selectOne(Query $query, $join = 'all')
+     * @method User|null selectById($id, Query $query = null, $join = 'all')
      *
      * @Table(name="users")
      * @Entity(class="\pachno\core\entities\User")

@@ -729,60 +729,25 @@ configure_users_add_team_member:
       section: 2
     csrf_enabled: true
 
-configure_users_add_client:
-    route: /configure/users/add/client
-    module: configuration
-    action: addClient
-    parameters:
-      config_module: core
-      section: 2
-      mode: new
-    csrf_enabled: false
+configure_client_members:
+  route: '/configure/clients/:client_id/members/:csrf_token'
+  module: configuration
+  action: clientMembers
+  methods:
+    - POST
+    - GET
+  parameters:
+    config_module: core
+    section: 2
+  csrf_enabled: true
 
-configure_users_edit_client:
-    route: /configure/users/edit/client/:client_id
-    module: configuration
-    action: editClient
-    parameters:
-      config_module: core
-      section: 2
-      mode: edit
-    csrf_enabled: false
-
-configure_users_delete_client:
-    route: /configure/users/delete/client/:client_id/:csrf_token
-    module: configuration
-    action: deleteClient
-    authentication_method: AUTHENTICATION_METHOD_CORE
-    parameters:
-      config_module: core
-      section: 2
-    csrf_enabled: true
-
-configure_users_get_client_members:
-    route: /configure/users/get/members/in/client/:client_id
-    module: configuration
-    action: getClientMembers
-    parameters:
-      config_module: core
-      section: 2
-    csrf_enabled: false
-
-configure_users_remove_client_member:
-    route: /configure/users/remove/:user_id/from/client/:client_id/:csrf_token
+configure_client_remove_member:
+    route: /configure/clients/:client_id/members/:user_id/:csrf_token
     module: configuration
     action: removeClientMember
     authentication_method: AUTHENTICATION_METHOD_CORE
-    parameters:
-      config_module: core
-      section: 2
-    csrf_enabled: true
-
-configure_users_add_client_member:
-    route: /configure/users/add/user/:user_id/to/client/:client_id/:csrf_token
-    module: configuration
-    action: addClientMember
-    authentication_method: AUTHENTICATION_METHOD_CORE
+    methods:
+      - DELETE
     parameters:
       config_module: core
       section: 2

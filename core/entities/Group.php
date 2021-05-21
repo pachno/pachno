@@ -3,6 +3,7 @@
     namespace pachno\core\entities;
 
     use pachno\core\entities\common\IdentifiableScoped;
+    use pachno\core\entities\common\Permissible;
     use pachno\core\entities\traits\PermissionContainer;
     use pachno\core\framework\Context;
     use pachno\core\framework\Settings;
@@ -25,7 +26,7 @@
      *
      * @Table(name="\pachno\core\entities\tables\Groups")
      */
-    class Group extends IdentifiableScoped
+    class Group extends IdentifiableScoped implements Permissible
     {
 
         protected static $_groups = null;
@@ -202,7 +203,7 @@
             }
         }
 
-        public function hasPermission($permission_name, $target_id = 0, $module = 'core')
+        public function hasPermission($permission_name, $target_id = 0, $module = 'core'): bool
         {
             $permissions = $this->getPermissions();
 
@@ -214,7 +215,7 @@
          *
          * @return Permission[]
          */
-        public function getPermissions()
+        public function getPermissions(): array
         {
             $this->_populatePermissions();
 

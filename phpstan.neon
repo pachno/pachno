@@ -1,4 +1,8 @@
 parameters:
-  autoload_files:
+  level: 6
+  paths:
+    - core
+    - tests
+  scanFiles:
     - core/lib/common.inc.php
     - core/lib/ui.inc.php
