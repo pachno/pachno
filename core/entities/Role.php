@@ -2,13 +2,17 @@
 
     namespace pachno\core\entities;
 
+    use pachno\core\entities\common\FormObject;
     use pachno\core\entities\tables\Permissions;
+    use pachno\core\entities\tables\Projects;
+    use pachno\core\framework\Context;
+    use pachno\core\framework\Request;
     use pachno\core\modules\publish\Publish;
 
     /**
      * @Table(name="\pachno\core\entities\tables\ListTypes")
      */
-    class Role extends Datatype
+    class Role extends Datatype implements FormObject
     {
 
         const ITEMTYPE = Datatype::ROLE;
@@ -92,7 +96,7 @@
          *
          * @return Role[]
          */
-        public static function getAll()
+        public static function getAll(): array
         {
             return tables\ListTypes::getTable()->getAllByItemTypeAndItemdata(self::ROLE, null);
         }
@@ -102,9 +106,10 @@
          *
          * @return Role[]
          */
-        public static function getGlobalRoles()
+        public static function getGlobalRoles(): array
         {
             $roles = self::getAll();
+
             $global_roles = [];
             foreach ($roles as $id => $role) {
                 if ($role->isSystemRole()) {
@@ -120,7 +125,7 @@
          *
          * @return Role[]
          */
-        public static function getByProjectID($project_id)
+        public static function getByProjectID($project_id): array
         {
             return tables\ListTypes::getTable()->getAllByItemTypeAndItemdata(self::ROLE, $project_id);
         }
@@ -133,11 +138,18 @@
         /**
          * Return the associated project if any
          *
-         * @return Project
+         * @return ?Project
          */
-        public function getProject()
+        public function getProject(): ?Project
         {
-            return ($this->getItemdata()) ? Project::getB2DBTable()->selectById((int)$this->getItemdata()) : null;
+            return ($this->getItemdata()) ? Projects::getTable()->selectById((int)$this->getItemdata()) : null;
+        }
+
+        public function getProjectId(): int
+        {
+            $project = $this->getProject();
+
+            return ($project instanceof Project) ? $project->getID() : 0;
         }
 
         public function setProject($project)
@@ -216,6 +228,53 @@
             tables\RolePermissions::getTable()->clearPermissionsForRole($this->getID());
             tables\ProjectAssignedTeams::getTable()->deleteByRoleID($this->getID());
             tables\ProjectAssignedUsers::getTable()->deleteByRoleID($this->getID());
+        }
+
+        public function updateFromRequest(Request $request)
+        {
+            $this->setName($request['name']);
+        }
+
+        public function saveFromRequest(Request $request)
+        {
+            $this->save();
+            $new_permissions = [];
+            foreach ($request['permissions'] ?: [] as $new_permission) {
+                $permission_details = explode(',', $new_permission);
+                $new_permissions[$permission_details[2]] = ['module' => $permission_details[0], 'target_id' => $permission_details[1]];
+            }
+            $existing_permissions = [];
+            foreach ($this->getPermissions() as $existing_permission) {
+                if (!array_key_exists($existing_permission->getPermission(), $new_permissions)) {
+                    $this->removePermission($existing_permission);
+                } else {
+                    $existing_permissions[$existing_permission->getPermission()] = $new_permissions[$existing_permission->getPermission()];
+                    unset($new_permissions[$existing_permission->getPermission()]);
+                }
+            }
+            foreach ($new_permissions as $permission_key => $details) {
+                $p = new RolePermission();
+                $p->setModule($details['module']);
+                $p->setPermission($permission_key);
+                if ($details['target_id']) {
+                    $p->setTargetID($details['target_id']);
+                }
+
+                $this->addPermission($p);
+            }
+            foreach ($existing_permissions as $permission_key => $details) {
+                $p = new RolePermission();
+                $p->setModule($details['module']);
+                $p->setPermission($permission_key);
+                if ($details['target_id']) {
+                    $p->setTargetID($details['target_id']);
+                }
+
+                tables\Permissions::getTable()->addRolePermission($this, $p);
+            }
+
+            Context::clearPermissionsCache();
+            Context::cacheAllPermissions();
         }
 
     }

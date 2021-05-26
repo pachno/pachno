@@ -1,7 +1,12 @@
 <?php
 
+    use pachno\core\entities\Client;
+    use pachno\core\entities\User;
+    use pachno\core\framework\Context;
+    use pachno\core\framework\Event;
+
     /**
-     * @var \pachno\core\entities\Client $client
+     * @var Client $client
      * @var string $members_url
      */
 
@@ -80,7 +85,7 @@
                     </div>
                     <div class="row">
                         <div class="column name-container" id="client-external-contact-container" data-client-id="<?= $client->getID(); ?>" data-url="<?= $members_url; ?>">
-                            <?php if ($client->getExternalContact() instanceof \pachno\core\entities\User): ?>
+                            <?php if ($client->getExternalContact() instanceof User): ?>
                                 <?php include_component('main/userdropdown', ['user' => $client->getExternalContact(), 'size' => 'small']); ?>
                             <?php else: ?>
                                 <?= __('No external contact assigned'); ?>
@@ -105,7 +110,7 @@
                     </div>
                     <div class="row">
                         <div class="column name-container" id="client-internal-contact-container" data-client-id="<?= $client->getID(); ?>" data-url="<?= $members_url; ?>">
-                            <?php if ($client->getInternalContact() instanceof \pachno\core\entities\User): ?>
+                            <?php if ($client->getInternalContact() instanceof User): ?>
                                 <?php include_component('main/userdropdown', ['user' => $client->getInternalContact(), 'size' => 'small']); ?>
                             <?php else: ?>
                                 <?= __('No internal contact assigned'); ?>
@@ -133,9 +138,10 @@
                     <?php endforeach; ?>
                 </div>
                 <div class="form-container">
-                    <form accept-charset="<?= \pachno\core\framework\Context::getI18n()->getCharset(); ?>" action="<?= make_url('configure_client_members', ['client_id' => $client->getID()]); ?>" method="post" data-simple-submit data-update-container="#find_client_members_results" id="find_client_members_form">
+                    <form accept-charset="<?= Context::getI18n()->getCharset(); ?>" action="<?= make_url('configure_client_members', ['client_id' => $client->getID()]); ?>" method="post" data-simple-submit data-update-container="#find_client_members_results" id="find_client_members_form">
                         <div class="form-row search-container">
-                            <input type="search" name="find_by" id="find_by" value="" placeholder="<?= __('Enter user details or email address to find or invite users'); ?>">
+                            <label for="add_client_search_input"></label>
+                            <input type="search" name="find_by" id="add_client_search_input" value="" placeholder="<?= __('Enter user details or email address to find or invite users'); ?>">
                             <button type="submit" class="button primary">
                                 <?= fa_image_tag('search', ['class' => 'icon']); ?>
                                 <span class="name"><?= __('Find'); ?></span>
@@ -158,12 +164,26 @@
             <div data-tab-id="permissions" class="form-container" style="display: none;">
                 <form action="<?= make_url('configure_client', ['client_id' => $client->getID(), 'save_permissions' => '1']); ?>" id="edit_client_permissions_form" method="post" data-simple-submit>
                     <div class="form-row">
+                        <div class="helper-text">
+                            <div class="image-container"><?= image_tag('/unthemed/onboarding_configure_client_permissions.png', [], true); ?></div>
+                            <span class="description">
+                                <?php echo __("These permissions apply to all members of this client. In addition to these permissions, clients can be added to projects, allowing client members access to specific project resources.", array('%online_documentation' => link_tag('https://projects.pachno.com/pachno/docs/UserClients', '<b>'.__('online documentation').'</b>'))); ?>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="message-box type-info">
+                            <?= fa_image_tag('info-circle', ['class' => 'icon']); ?>
+                            <span class="message"><?= __('If you have more than one client and would like to share client permissions across all clients it is probably better to create a "Clients" user group, add client users to that user group and manage permissions via group permissions instead of manually setting permissions per client.'); ?></span>
+                        </div>
+                    </div>
+                    <div class="form-row">
                         <div class="list-mode">
                             <div class="interactive_menu_values filter_existing_values">
-                                <?php include_component('configuration/grouppermissionseditlist', ['target' => $client, 'permissions_list' => \pachno\core\framework\Context::getAvailablePermissions('user'), 'module' => 'core', 'target_id' => null]); ?>
-                                <?php include_component('configuration/grouppermissionseditlist', ['target' => $client, 'permissions_list' => \pachno\core\framework\Context::getAvailablePermissions('pages'), 'module' => 'core', 'target_id' => null]); ?>
-                                <?php include_component('configuration/grouppermissionseditlist', ['target' => $client, 'permissions_list' => \pachno\core\framework\Context::getAvailablePermissions('configuration'), 'module' => 'core', 'target_id' => null, 'is_configuration' => true]); ?>
-                                <?php \pachno\core\framework\Event::createNew('core', 'clientpermissionsedit', $client)->trigger(); ?>
+                                <?php include_component('configuration/grouppermissionseditlist', ['target' => $client, 'permissions_list' => Context::getAvailablePermissions('user'), 'module' => 'core', 'target_id' => null]); ?>
+                                <?php include_component('configuration/grouppermissionseditlist', ['target' => $client, 'permissions_list' => Context::getAvailablePermissions('pages'), 'module' => 'core', 'target_id' => null]); ?>
+                                <?php include_component('configuration/grouppermissionseditlist', ['target' => $client, 'permissions_list' => Context::getAvailablePermissions('configuration'), 'module' => 'core', 'target_id' => null, 'is_configuration' => true]); ?>
+                                <?php Event::createNew('core', 'clientpermissionsedit', $client)->trigger(); ?>
                             </div>
                         </div>
                     </div>

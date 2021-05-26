@@ -326,22 +326,6 @@ configure_files:
       section: 3
     csrf_enabled: false
 
-configure_roles:
-    route: '/configure/roles/*'
-    module: configuration
-    action: configureRoles
-    parameters:
-      config_module: core
-      section: 5
-    csrf_enabled: false
-
-configure_role:
-    route: /configure/role/:role_id/:mode
-    module: configuration
-    action: configureRole
-    parameters: [ ]
-    csrf_enabled: false
-
 configure_permissions:
     route: /configure/permissions
     module: configuration
@@ -669,89 +653,6 @@ configure_users_delete_group:
       config_module: core
       section: 2
     csrf_enabled: false
-
-configure_users_add_team:
-    route: /configure/users/add/team
-    module: configuration
-    action: addTeam
-    parameters:
-      config_module: core
-      section: 2
-      mode: new
-    csrf_enabled: false
-
-configure_users_clone_team:
-    route: /configure/users/clone/team/:team_id
-    module: configuration
-    action: addTeam
-    parameters:
-      config_module: core
-      section: 2
-      mode: clone
-    csrf_enabled: false
-
-configure_users_delete_team:
-    route: /configure/users/delete/team/:team_id/:csrf_token
-    module: configuration
-    action: deleteTeam
-    authentication_method: AUTHENTICATION_METHOD_CORE
-    parameters:
-      config_module: core
-      section: 2
-    csrf_enabled: true
-
-configure_users_get_team_members:
-    route: /configure/users/get/members/in/team/:team_id
-    module: configuration
-    action: getTeamMembers
-    parameters:
-      config_module: core
-      section: 2
-    csrf_enabled: false
-
-configure_users_remove_team_member:
-    route: /configure/users/remove/:user_id/from/team/:team_id/:csrf_token
-    module: configuration
-    action: removeTeamMember
-    authentication_method: AUTHENTICATION_METHOD_CORE
-    parameters:
-      config_module: core
-      section: 2
-    csrf_enabled: true
-
-configure_users_add_team_member:
-    route: /configure/users/add/user/:user_id/to/team/:team_id/:csrf_token
-    module: configuration
-    action: addTeamMember
-    authentication_method: AUTHENTICATION_METHOD_CORE
-    parameters:
-      config_module: core
-      section: 2
-    csrf_enabled: true
-
-configure_client_members:
-  route: '/configure/clients/:client_id/members/:csrf_token'
-  module: configuration
-  action: clientMembers
-  methods:
-    - POST
-    - GET
-  parameters:
-    config_module: core
-    section: 2
-  csrf_enabled: true
-
-configure_client_remove_member:
-    route: /configure/clients/:client_id/members/:user_id/:csrf_token
-    module: configuration
-    action: removeClientMember
-    authentication_method: AUTHENTICATION_METHOD_CORE
-    methods:
-      - DELETE
-    parameters:
-      config_module: core
-      section: 2
-    csrf_enabled: true
 
 configure_users_update_user_scopes:
     route: /configure/users/update/userscopes/:user_id

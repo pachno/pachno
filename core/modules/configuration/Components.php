@@ -12,11 +12,14 @@
     /**
      * Class Components
      *
-     * @property entities\User[] $users
-     * @property entities\User $email_user
-     * @property string $find_by
-     * @property entities\Client $client
-     * @property string $members_url
+     * @property ?entities\User[] $users
+     * @property ?entities\User $email_user
+     * @property ?string $find_by
+     * @property ?entities\Client $client
+     * @property ?entities\Team $team
+     * @property ?entities\Role $role
+     * @property ?string $members_url
+     * @property ?string $form_url
      *
      * @package pachno\core\modules\configuration
      */
@@ -56,9 +59,36 @@
         public function componentEditClient()
         {
             $this->members_url = $this->getRouting()->generate('configure_client_members', ['client_id' => $this->client->getID()]);
+            $this->form_url = ($this->client->getID()) ? $this->getRouting()->generate('configure_client', ['client_id' => $this->client->getID()]) : $this->getRouting()->generate('configure_clients');
+        }
+
+        public function componentEditTeam()
+        {
+            $this->members_url = $this->getRouting()->generate('configure_team_members', ['team_id' => $this->team->getID()]);
+            $this->form_url = ($this->team->getID()) ? $this->getRouting()->generate('configure_team', ['team_id' => $this->team->getID()]) : $this->getRouting()->generate('configure_teams');
+        }
+
+        public function componentEditRole()
+        {
+            $this->form_url = ($this->role->getID()) ? $this->getRouting()->generate('configure_role', ['role_id' => $this->role->getID()]) : $this->getRouting()->generate('configure_roles');
         }
 
         public function componentFindClientMembers()
+        {
+            $this->users = tables\Users::getTable()->getByDetails($this->find_by, 10, true);
+
+            if (filter_var($this->find_by, FILTER_VALIDATE_EMAIL) == $this->find_by) {
+                $email = $this->find_by;
+            }
+
+            if (isset($email) && !count($this->users)) {
+                $email_user = new entities\User();
+                $email_user->setEmail($email);
+                $this->email_user = $email_user;
+            }
+        }
+
+        public function componentFindTeamMembers()
         {
             $this->users = tables\Users::getTable()->getByDetails($this->find_by, 10, true);
 

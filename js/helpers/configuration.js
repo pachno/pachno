@@ -57,7 +57,7 @@ const removeMember = function (PachnoApplication, data) {
     const url = data.url;
     Pachno.UI.Dialog.setSubmitting();
 
-    Pachno.fetch(url, {
+    Pachno.fetch(url + '?user_id=' + data.user_id, {
             method: 'DELETE'
         })
         .then((json) => {
@@ -95,6 +95,28 @@ const setupListeners = function () {
         const url = $container.data('url');
 
         setClientContact(url, 'internal_contact', $link, $container);
+    });
+
+    $body.off('click', '.trigger-set-team-lead');
+    $body.on('click', '.trigger-set-team-lead', function (event) {
+        event.preventDefault();
+
+        const $link = $(this);
+        const $container = $('#team-lead-container');
+        const url = $container.data('url');
+        const user_id = $link.data('identifiable-value');
+
+        $container.html(Pachno.UI.fa_image_tag('spinner', { classes: 'fa-spin' }));
+
+        Pachno.fetch(url, {
+            method: 'POST',
+            data: {
+                field: 'team_lead',
+                user_id
+            }
+        }).then((json) => {
+            $container.html(json.content);
+        });
     });
 }
 

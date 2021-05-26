@@ -175,7 +175,7 @@
             $this->setContentType('application/json');
             $this->setHttpStatus($code);
             $this->renderHeaders();
-            echo json_encode(['error' => $error]);
+            echo json_encode(['error' => $error], JSON_THROW_ON_ERROR);
             die();
         }
 

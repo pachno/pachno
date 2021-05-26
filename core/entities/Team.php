@@ -62,6 +62,15 @@
          */
         protected $_dashboards = null;
 
+        /**
+         * Team lead user
+         *
+         * @var User
+         * @Column(type="integer", length=10)
+         * @Relates(class="\pachno\core\entities\User")
+         */
+        protected $_team_lead_user_id = null;
+
         protected $_associated_projects = null;
 
         /**
@@ -371,5 +380,18 @@
         {
             tables\Permissions::getTable()->removeTeamPermission($this->getID(), $permission_name, $module, $target_id);
         }
-        
+
+        public function getTeamLead(): ?User
+        {
+            return $this->_b2dbLazyLoad('_team_lead_user_id');
+        }
+
+        /**
+         * @param User|null $user
+         */
+        public function setTeamLead(User $user = null)
+        {
+            $this->_team_lead_user_id = $user;
+        }
+
     }

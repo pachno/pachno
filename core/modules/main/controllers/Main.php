@@ -2882,6 +2882,9 @@
                             $role = tables\ListTypes::getTable()->selectById($request['role_id']);
                         } else {
                             $role = new entities\Role();
+                            if ($request->hasParameter('project_id')) {
+                                $role->setProject($request['project_id']);
+                            }
                         }
                         $options['role'] = $role;
                         break;

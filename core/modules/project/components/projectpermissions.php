@@ -2,7 +2,7 @@
     <div class="form-row">
         <h3>
             <span><?php echo __('Project roles'); ?></span>
-            <button class="button secondary" onclick="Pachno.UI.Backdrop.show('<?= make_url('get_partial_for_backdrop', ['key' => 'edit_role']); ?>');">
+            <button class="button secondary" onclick="Pachno.UI.Backdrop.show('<?= make_url('get_partial_for_backdrop', ['key' => 'edit_role', 'project_id' => $project->getId()]); ?>');">
                 <?= fa_image_tag('user-shield', ['class' => 'icon']); ?>
                 <span><?= __('Create role'); ?></span>
             </button>

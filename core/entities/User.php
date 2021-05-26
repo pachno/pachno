@@ -1582,7 +1582,7 @@
 
         public function regenerateActivationKey()
         {
-            $value = md5(uniqid() . rand(100, 100000));
+            $value = md5(uniqid('', true) . random_int(100, 100000));
             framework\Settings::saveUserSetting($this->getID(), framework\Settings::SETTING_USER_ACTIVATION_KEY, $value);
 
             return $value;
@@ -2505,6 +2505,11 @@
             if ($this->isDeleted()) {
                 return framework\Context::getI18n()->__('No such user');
             }
+
+            if (!$this->isActivated()) {
+                return $this->getEmail();
+            }
+
             switch (framework\Settings::getUserDisplaynameFormat()) {
                 case framework\Settings::USER_DISPLAYNAME_FORMAT_REALNAME:
                     return ($this->_realname) ? $this->_realname : $this->_username;

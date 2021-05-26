@@ -13,20 +13,23 @@
     use pachno\core\entities\tables\Editions;
     use pachno\core\entities\tables\ListTypes;
     use pachno\core\entities\tables\Milestones;
+    use pachno\core\exceptions\FormException;
     use pachno\core\framework;
     use pachno\core\helpers\Pagination;
+    use pachno\core\modules\main\cli\entities\tbg\tables\Teams;
     use RuntimeException;
 
     /**
      * Main controller for settings
      *
-     * @property string $access_level
+     * @property int $access_level
      * @property array $config_sections
      * @property array $outdated_modules
      * @property entities\Scope[] $scopes
      * @property entities\Group[] $groups
      * @property entities\Team[] $teams
      * @property entities\Client[] $clients
+     * @property entities\Role[] $roles
      *
      * @Routes(name_prefix="configure_", url_prefix="/configure")
      * @package pachno\core\modules\configuration\controllers
@@ -1296,20 +1299,6 @@
             }
         }
 
-        public function runGetGroupMembers(framework\Request $request)
-        {
-            try {
-                $group = entities\Group::getB2DBTable()->selectById((int)$request['group_id']);
-                $users = $group->getMembers();
-
-                return $this->renderJSON(['content' => $this->getComponentHTML('configuration/groupuserlist', ['users' => $users])]);
-            } catch (Exception $e) {
-                $this->getResponse()->setHttpStatus(400);
-
-                return $this->renderJSON(['error' => $e->getMessage()]);
-            }
-        }
-
         public function runDeleteUser(framework\Request $request)
         {
             try {
@@ -1358,126 +1347,16 @@
             }
         }
 
-        public function runDeleteTeam(framework\Request $request)
-        {
-            try {
-                try {
-                    $team = entities\Team::getB2DBTable()->selectById($request['team_id']);
-                } catch (Exception $e) {
-
-                }
-                if (!$team instanceof entities\Team) {
-                    throw new Exception(framework\Context::getI18n()->__("You cannot delete this team"));
-                }
-                $team->delete();
-
-                return $this->renderJSON(['success' => true, 'message' => framework\Context::getI18n()->__('The team was deleted'), 'total_count' => entities\Team::countAll(), 'more_available' => framework\Context::getScope()->hasTeamsAvailable()]);
-            } catch (Exception $e) {
-                $this->getResponse()->setHttpStatus(400);
-
-                return $this->renderJSON(['error' => $e->getMessage()]);
-            }
-        }
-
-        public function runAddTeam(framework\Request $request)
-        {
-            try {
-                $mode = $request['mode'];
-                if ($team_name = $request['team_name']) {
-                    if ($mode == 'clone') {
-                        try {
-                            $old_team = entities\Team::getB2DBTable()->selectById($request['team_id']);
-                        } catch (Exception $e) {
-
-                        }
-                        if (!$old_team instanceof entities\Team) {
-                            throw new Exception(framework\Context::getI18n()->__("You cannot clone this team"));
-                        }
-                    }
-                    if (entities\Team::doesTeamNameExist(trim($team_name))) {
-                        throw new Exception(framework\Context::getI18n()->__("Please enter a team name that doesn't already exist"));
-                    }
-                    $team = new entities\Team();
-                    $team->setName($team_name);
-                    $team->save();
-                    if ($mode == 'clone') {
-                        if ($request['clone_permissions']) {
-                            tables\Permissions::getTable()->cloneTeamPermissions($old_team->getID(), $team->getID());
-                        }
-                        if ($request['clone_memberships']) {
-                            tables\TeamMembers::getTable()->cloneTeamMemberships($old_team->getID(), $team->getID());
-                        }
-                        $message = framework\Context::getI18n()->__('The team was cloned');
-                    } else {
-                        $message = framework\Context::getI18n()->__('The team was added');
-                    }
-
-                    return $this->renderJSON(['message' => $message, 'content' => $this->getComponentHTML('configuration/teambox', ['team' => $team]), 'total_count' => entities\Team::countAll(), 'more_available' => framework\Context::getScope()->hasTeamsAvailable()]);
-                } else {
-                    throw new Exception(framework\Context::getI18n()->__('Please enter a team name'));
-                }
-            } catch (Exception $e) {
-                $this->getResponse()->setHttpStatus(400);
-
-                return $this->renderJSON(['error' => $e->getMessage()]);
-            }
-        }
-
-        public function runGetTeamMembers(framework\Request $request)
-        {
-            try {
-                $team = entities\Team::getB2DBTable()->selectById((int)$request['team_id']);
-                $users = $team->getMembers();
-
-                return $this->renderJSON(['content' => $this->getComponentHTML('configuration/teamuserlist', compact('users', 'team'))]);
-            } catch (Exception $e) {
-                $this->getResponse()->setHttpStatus(400);
-
-                return $this->renderJSON(['error' => $e->getMessage()]);
-            }
-        }
-
-        public function runRemoveTeamMember(framework\Request $request)
-        {
-            try {
-                $team = entities\Team::getB2DBTable()->selectById((int)$request['team_id']);
-                $user = tables\Users::getTable()->selectByID((int)$request['user_id']);
-
-                $team->removeMember($user);
-
-                return $this->renderJSON(['update_teams' => ['ids' => [$team->getID()], 'membercounts' => [$team->getID() => $team->getNumberOfMembers()]]]);
-            } catch (Exception $e) {
-                $this->getResponse()->setHttpStatus(400);
-
-                return $this->renderJSON(['error' => $e->getMessage()]);
-            }
-        }
-
-        public function runAddTeamMember(framework\Request $request)
-        {
-            try {
-                $user_id = (int)$request['user_id'];
-                $team = entities\Team::getB2DBTable()->selectById((int)$request['team_id']);
-                $user = tables\Users::getTable()->selectByID($user_id);
-
-                $team->addMember($user);
-
-                return $this->renderJSON(['teamlistitem' => $this->getComponentHTML('configuration/teamuserlistitem', compact('team', 'user_id', 'user')), 'update_teams' => ['ids' => [$team->getID()], 'membercounts' => [$team->getID() => $team->getNumberOfMembers()]]]);
-            } catch (Exception $e) {
-                $this->getResponse()->setHttpStatus(400);
-
-                return $this->renderJSON(['error' => $e->getMessage()]);
-            }
-        }
-
         /**
          * @Route(name="update_user_password", url="/users/:user_id/password/:csrf_token")
          * @CsrfProtected
+         *
          * @param framework\Request $request
+         * @return framework\JsonOutput
          */
-        public function runUpdateUserPassword(framework\Request $request)
+        public function runUpdateUserPassword(framework\Request $request): framework\JsonOutput
         {
-            if (!$this->access_level === framework\Settings::ACCESS_FULL) {
+            if ($this->access_level !== framework\Settings::ACCESS_FULL) {
                 $this->getResponse()->setHttpStatus(400);
                 return $this->renderJSON(['error' => $this->getI18n()->__("You don't have access to perform this action")]);
             }
@@ -1506,8 +1385,9 @@
          * @Route(name="user", url="/users/:user_id", methods="POST|GET")
          *
          * @param framework\Request $request
+         * @return framework\JsonOutput
          */
-        public function runEditUser(framework\Request $request)
+        public function runEditUser(framework\Request $request): framework\JsonOutput
         {
             $user_id = $request['user_id'];
             if ($user_id) {
@@ -2345,9 +2225,9 @@
         /**
          * @Route(name="group", url="/groups/:group_id", methods="POST")
          * @param framework\Request $request
-         * @return bool
+         * @return framework\JsonOutput
          */
-        public function runEditGroup(framework\Request $request)
+        public function runEditGroup(framework\Request $request): framework\JsonOutput
         {
             if (!$this->access_level == framework\Settings::ACCESS_FULL) {
                 $this->getResponse()->setHttpStatus(400);
@@ -2383,11 +2263,13 @@
         }
 
         /**
-         * @Route(name="team", url="/teams/:team_id", methods="POST")
+         * @Route(name="team", url="/teams/:team_id/:csrf_token", methods="POST|DELETE")
+         * @CsrfProtected
+         *
          * @param framework\Request $request
-         * @return bool
+         * @return framework\JsonOutput
          */
-        public function runEditTeam(framework\Request $request)
+        public function runEditTeam(framework\Request $request): framework\JsonOutput
         {
             if (!$this->access_level == framework\Settings::ACCESS_FULL) {
                 $this->getResponse()->setHttpStatus(400);
@@ -2405,16 +2287,25 @@
 
             if (!isset($team) || !$team instanceof entities\Team) {
                 $this->getResponse()->setHttpStatus(400);
-
                 return $this->renderJSON(['error' => $this->getI18n()->__('This is not a valid team')]);
             }
+
+            if ($request->isDelete()) {
+                $team->delete();
+
+                return $this->renderJSON(['success' => true, 'message' => $this->getI18n()->__('The team was deleted')]);
+            }
+
+            if (strtolower($request['team_name']) != strtolower($team->getName()) && entities\Team::doesTeamNameExist(trim($request['team_name']))) {
+                throw new Exception($this->getI18n()->__("Please enter a team name that doesn't already exist"));
+            }
+
+            $is_new = (!$team->getID());
 
             if ($request->hasParameter('name')) {
                 $team->setName($request['name']);
                 $team->save();
             }
-
-            $is_new = (!$team->getID());
 
             if (!$is_new && $request->hasParameter('save_permissions')) {
                 $new_permissions = [];
@@ -2444,13 +2335,95 @@
         }
 
         /**
+         * @Route(name="team_members", url="/teams/:team_id/members/:csrf_token", methods="GET|POST|DELETE")
+         * @CsrfProtected
+         *
+         * @param framework\Request $request
+         * @return framework\JsonOutput
+         */
+        public function runTeamMembers(framework\Request $request): framework\JsonOutput
+        {
+            $team = tables\Teams::getTable()->selectById($request['team_id']);
+
+            if (!$team instanceof entities\Team) {
+                $this->getResponse()->setHttpStatus(400);
+                return $this->renderJSON(['error' => $this->getI18n()->__('This team does not exist')]);
+            }
+
+            if ($request->hasParameter('find_by')) {
+                $find_by = trim($request['find_by']);
+                if (!$find_by) {
+                    return $this->renderJSON(['error' => $this->getI18n()->__('Please enter something to search for')]);
+                }
+                return $this->renderJSON(['content' => $this->getComponentHTML('configuration/findteammembers', ['team' => $team, 'find_by' => $find_by])]);
+            }
+
+            $user_id = $request['user_id'];
+            if ($request->isDelete()) {
+                $user = tables\Users::getTable()->selectById($user_id);
+
+                if (!$user instanceof entities\User) {
+                    $this->getResponse()->setHttpStatus(400);
+                    return $this->renderJSON(['error' => $this->getI18n()->__('This user does not exist')]);
+                }
+
+                $team->removeMember($user);
+
+                return $this->renderJSON(['message' => $this->getI18n()->__('The user has been removed from the team'), 'user_id' => $user->getID()]);
+            }
+
+            if (is_numeric($user_id) || $request->hasParameter('field')) {
+                $user = tables\Users::getTable()->selectById($user_id);
+            } else {
+                $user = new entities\User();
+                $user->setUsername($user_id);
+                $user->setRealname($user_id);
+                $user->setEmail($user_id);
+                $user->setGroup(framework\Settings::get(framework\Settings::SETTING_USER_GROUP));
+                $password = entities\User::createPassword();
+                $user->setPassword($password);
+                $user->save();
+                $user->setActivated(false);
+                $user->save();
+            }
+
+            framework\Event::createNew('core', 'configurationActions::addTeamMember', $team)->trigger(['user' => $user]);
+
+            if ($request->hasParameter('field')) {
+                $text = '';
+                if ($request->getParameter('field') == 'team_lead') {
+                    $team->setTeamLead($user);
+                    $text = $this->getI18n()->__('No team lead assigned');
+                }
+
+                $team->save();
+                $content = ($user instanceof entities\User) ? $this->getComponentHTML('main/userdropdown', ['user' => $user, 'size' => 'small']) : $text;
+
+                return $this->renderJSON([
+                    'content' => $content
+                ]);
+            }
+
+            if (!$user instanceof entities\User) {
+                $this->getResponse()->setHttpStatus(400);
+                return $this->renderJSON(['error' => $this->getI18n()->__('This user does not exist')]);
+            }
+
+            $team->addMember($user);
+
+            return $this->renderJSON([
+                'content' => $this->getComponentHTML('configuration/team_member', compact('team', 'user'))
+            ]);
+        }
+
+        /**
          * @Route(name="client", url="/clients/:client_id/:csrf_token", methods="POST|DELETE")
          * @CsrfProtected
          *
          * @param framework\Request $request
-         * @return bool
+         * @return framework\JsonOutput
          */
-        public function runEditClient(framework\Request $request)
+        public function runEditClient(framework\Request $request): framework\JsonOutput
         {
             if (!$this->access_level == framework\Settings::ACCESS_FULL) {
                 $this->getResponse()->setHttpStatus(400);
@@ -2492,8 +2465,8 @@
                 $client->setName($request['name']);
                 $client->setEmail($request['email']);
                 $client->setWebsite($request['website']);
-                $client->setTelephone($request['telephone']);
-                $client->setFax($request['client_fax']);
+                $client->setTelephone($request['phone']);
+                $client->setFax($request['fax']);
                 $client->save();
             }
 
@@ -2527,11 +2500,13 @@
         }
 
         /**
-         * Find users and show selection box
+         * @Route(name="client_members", url="/clients/:client_id/members/:csrf_token", methods="GET|POST|DELETE")
+         * @CsrfProtected
          *
-         * @param framework\Request $request The request object
+         * @param framework\Request $request
+         * @return framework\JsonOutput
          */
-        public function runClientMembers(framework\Request $request)
+        public function runClientMembers(framework\Request $request): framework\JsonOutput
         {
             $client = tables\Clients::getTable()->selectById($request['client_id']);
 
@@ -2546,152 +2521,145 @@
                     return $this->renderJSON(['error' => $this->getI18n()->__('Please enter something to search for')]);
                 }
                 return $this->renderJSON(['content' => $this->getComponentHTML('configuration/findclientmembers', ['client' => $client, 'find_by' => $find_by])]);
-            } elseif ($request->isDelete()) {
+            }
 
-            } else {
-                $user_id = $request['user_id'];
-                if (is_numeric($user_id) || $request->hasParameter('field')) {
-                    $user = tables\Users::getTable()->selectById($user_id);
-                } else {
-                    $user = new entities\User();
-                    $user->setUsername($user_id);
-                    $user->setRealname($user_id);
-                    $user->setEmail($user_id);
-                    $user->setGroup(framework\Settings::get(framework\Settings::SETTING_USER_GROUP));
-                    $password = entities\User::createPassword();
-                    $user->setPassword($password);
-                    $user->save();
-                    $user->setActivated(false);
-                    $user->save();
-                }
-
-                framework\Event::createNew('core', 'configurationActions::addClientMember', $client)->trigger(['user' => $user]);
-
-                if ($request->hasParameter('field')) {
-                    switch ($request->getParameter('field')) {
-                        case 'external_contact':
-                            $client->setExternalContact($user);
-                            $text = $this->getI18n()->__('No external contact assigned');
-                            break;
-                        case 'internal_contact':
-                        default:
-                            $client->setInternalContact($user);
-                            $text = $this->getI18n()->__('No internal contact assigned');
-                            break;
-                    }
-                    $client->save();
-                    $content = ($user instanceof entities\User) ? $this->getComponentHTML('main/userdropdown', ['user' => $user, 'size' => 'small']) : $text;
-
-                    return $this->renderJSON([
-                        'content' => $content
-                    ]);
-                }
+            $user_id = $request['user_id'];
+            if ($request->isDelete()) {
+                $user = tables\Users::getTable()->selectById($user_id);
 
                 if (!$user instanceof entities\User) {
                     $this->getResponse()->setHttpStatus(400);
                     return $this->renderJSON(['error' => $this->getI18n()->__('This user does not exist')]);
                 }
 
-                $client->addMember($user);
+                $client->removeMember($user);
+
+                return $this->renderJSON(['message' => $this->getI18n()->__('The user has been removed from the client'), 'user_id' => $user->getID()]);
+            }
+
+            if (is_numeric($user_id) || $request->hasParameter('field')) {
+                $user = tables\Users::getTable()->selectById($user_id);
+            } else {
+                $user = new entities\User();
+                $user->setUsername($user_id);
+                $user->setRealname($user_id);
+                $user->setEmail($user_id);
+                $user->setGroup(framework\Settings::get(framework\Settings::SETTING_USER_GROUP));
+                $password = entities\User::createPassword();
+                $user->setPassword($password);
+                $user->save();
+                $user->setActivated(false);
+                $user->save();
+            }
+
+            framework\Event::createNew('core', 'configurationActions::addClientMember', $client)->trigger(['user' => $user]);
+
+            if ($request->hasParameter('field')) {
+                switch ($request->getParameter('field')) {
+                    case 'external_contact':
+                        $client->setExternalContact($user);
+                        $text = $this->getI18n()->__('No external contact assigned');
+                        break;
+                    case 'internal_contact':
+                    default:
+                        $client->setInternalContact($user);
+                        $text = $this->getI18n()->__('No internal contact assigned');
+                        break;
+                }
+                $client->save();
+                $content = ($user instanceof entities\User) ? $this->getComponentHTML('main/userdropdown', ['user' => $user, 'size' => 'small']) : $text;
 
                 return $this->renderJSON([
-                    'content' => $this->getComponentHTML('configuration/client_member', compact('client', 'user'))
+                    'content' => $content
                 ]);
             }
+
+            if (!$user instanceof entities\User) {
+                $this->getResponse()->setHttpStatus(400);
+                return $this->renderJSON(['error' => $this->getI18n()->__('This user does not exist')]);
+            }
+
+            $client->addMember($user);
+
+            return $this->renderJSON([
+                'content' => $this->getComponentHTML('configuration/client_member', compact('client', 'user'))
+            ]);
         }
 
-        public function runConfigureRole(framework\Request $request)
+        /**
+         * @Route(name="roles_post", url="/roles", methods="POST")
+         *
+         * @param framework\Request $request
+         *
+         * @return framework\JsonOutput
+         */
+        public function runConfigurePostRoles(framework\Request $request): framework\JsonOutput
         {
             try {
-                $role = new entities\Role($request['role_id']);
-            } catch (Exception $e) {
+                $role = new entities\Role();
+                $role->updateFromRequest($request);
+                $role->saveFromRequest($request);
+            } catch (FormException $e) {
                 $this->getResponse()->setHttpStatus(400);
 
+                return $this->renderJSON(['error' => $e->getMessage()]);
+            }
+
+            return $this->renderJSON([
+                'content' => $this->getComponentHTML('configuration/role', ['role' => $role]),
+                'message' => $this->getI18n()->__('Role created')
+            ]);
+        }
+
+        /**
+         * @Route(name="roles", url="/roles", methods="GET")
+         *
+         * @param framework\Request $request
+         * @return void
+         */
+        public function runConfigureRoles(framework\Request $request): void
+        {
+            $this->roles = entities\Role::getAll();
+        }
+
+        /**
+         * @Route(name="role", url="/configure/role/:role_id", methods="POST|DELETE")
+         *
+         * @param framework\Request $request
+         * @return framework\JsonOutput
+         */
+        public function runEditRole(framework\Request $request): framework\JsonOutput
+        {
+            $role = ListTypes::getTable()->selectById($request['id']);
+
+            if (!$role instanceof entities\Role) {
+                $this->getResponse()->setHttpStatus(400);
                 return $this->renderJSON(['error' => $this->getI18n()->__('This is not a valid role')]);
             }
+
             if ($role->isSystemRole()) {
                 $access_level = framework\Settings::getConfigurationAccessLevel();
             } else {
                 $access_level = ($this->getUser()->canManageProject($role->getProject())) ? framework\Settings::ACCESS_FULL : framework\Settings::ACCESS_READ;
             }
 
-            switch ($request['mode']) {
-                case 'edit':
-                    if (!$access_level == framework\Settings::ACCESS_FULL) {
-                        $this->getResponse()->setHttpStatus(400);
-
-                        return $this->renderJSON(['error' => $this->getI18n()->__('You do not have access to edit these permissions')]);
-                    }
-                    if ($request->isPost()) {
-                        $role->setName($request['name']);
-                        $role->save();
-                        $new_permissions = [];
-                        foreach ($request['permissions'] ?: [] as $new_permission) {
-                            $permission_details = explode(',', $new_permission);
-                            $new_permissions[$permission_details[2]] = ['module' => $permission_details[0], 'target_id' => $permission_details[1]];
-                        }
-                        $existing_permissions = [];
-                        foreach ($role->getPermissions() as $existing_permission) {
-                            if (!array_key_exists($existing_permission->getPermission(), $new_permissions)) {
-                                $role->removePermission($existing_permission);
-                            } else {
-                                $existing_permissions[$existing_permission->getPermission()] = $new_permissions[$existing_permission->getPermission()];
-                                unset($new_permissions[$existing_permission->getPermission()]);
-                            }
-                        }
-                        foreach ($new_permissions as $permission_key => $details) {
-                            $p = new entities\RolePermission();
-                            $p->setModule($details['module']);
-                            $p->setPermission($permission_key);
-                            if ($details['target_id'])
-                                $p->setTargetID($details['target_id']);
-
-                            $role->addPermission($p);
-                        }
-                        foreach ($existing_permissions as $permission_key => $details) {
-                            $p = new entities\RolePermission();
-                            $p->setModule($details['module']);
-                            $p->setPermission($permission_key);
-                            if ($details['target_id'])
-                                $p->setTargetID($details['target_id']);
-
-                            tables\Permissions::getTable()->addRolePermission($role, $p);
-                        }
-                        framework\Context::clearPermissionsCache();
-
-                        framework\Context::cacheAllPermissions();
-
-                        return $this->renderJSON(['message' => $this->getI18n()->__('Permissions updated'), 'permissions_count' => count($request['permissions']), 'role_name' => $role->getName()]);
-                    }
-
-                    return $this->renderComponent('configuration/rolepermissionsedit', ['role' => $role]);
-                case 'delete':
-                    if (!$access_level == framework\Settings::ACCESS_FULL || !$request->isPost()) {
-                        $this->getResponse()->setHttpStatus(400);
-
-                        return $this->renderJSON(['error' => $this->getI18n()->__('This role cannot be removed')]);
-                    }
-                    $role->delete();
-
-                    return $this->renderJSON(['message' => $this->getI18n()->__('Role deleted')]);
+            if (!$access_level == framework\Settings::ACCESS_FULL) {
+                $this->getResponse()->setHttpStatus(400);
+                return $this->renderJSON(['error' => $this->getI18n()->__('You do not have access to edit these permissions')]);
             }
-        }
 
-        public function runConfigureRoles(framework\Request $request)
-        {
             if ($request->isPost()) {
-                if (trim($request['role_name']) == '') {
-                    $this->getResponse()->setHttpStatus(400);
+                $role->updateFromRequest($request);
+                $role->saveFromRequest($request);
 
-                    return $this->renderJSON(['error' => $this->getI18n()->__('You have to specify a name for this role')]);
-                }
-                $role = new entities\Role();
-                $role->setName($request['role_name']);
-                $role->save();
-
-                return $this->renderJSON(['content' => $this->getComponentHTML('configuration/role', ['role' => $role])]);
+                return $this->renderJSON(['message' => $this->getI18n()->__('Role updated'), 'permissions_count' => count($request['permissions']), 'role_name' => $role->getName()]);
             }
-            $this->roles = entities\Role::getAll();
+
+            if ($request->isDelete()) {
+                $role->delete();
+            }
+
+            return $this->renderJSON(['message' => $this->getI18n()->__('Role deleted')]);
         }
 
         public function runSiteIcons(framework\Request $request)

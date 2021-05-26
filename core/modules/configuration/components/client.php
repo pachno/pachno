@@ -7,7 +7,7 @@
      */
 
 ?>
-<div class="row" id="configure-client-<?php echo $client->getID(); ?>">
+<div class="row" id="configure-client-<?php echo $client->getID(); ?>" data-client data-client-id="<?= $client->getID(); ?>">
     <div class="column info-icons"><?= fa_image_tag('users'); ?></div>
     <div class="column name-container">
         <span><?php echo $client->getName(); ?></span>

@@ -7336,7 +7336,7 @@ var addMember = function addMember(event) {
 var removeMember = function removeMember(PachnoApplication, data) {
   var url = data.url;
   _classes_pachno__WEBPACK_IMPORTED_MODULE_1__.default.UI.Dialog.setSubmitting();
-  _classes_pachno__WEBPACK_IMPORTED_MODULE_1__.default.fetch(url, {
+  _classes_pachno__WEBPACK_IMPORTED_MODULE_1__.default.fetch(url + '?user_id=' + data.user_id, {
     method: 'DELETE'
   }).then(function (json) {
     _classes_pachno__WEBPACK_IMPORTED_MODULE_1__.default.UI.Dialog.dismiss();
@@ -7366,6 +7366,26 @@ var setupListeners = function setupListeners() {
     var $container = jquery__WEBPACK_IMPORTED_MODULE_0___default()('#client-internal-contact-container');
     var url = $container.data('url');
     setClientContact(url, 'internal_contact', $link, $container);
+  });
+  $body.off('click', '.trigger-set-team-lead');
+  $body.on('click', '.trigger-set-team-lead', function (event) {
+    event.preventDefault();
+    var $link = jquery__WEBPACK_IMPORTED_MODULE_0___default()(this);
+    var $container = jquery__WEBPACK_IMPORTED_MODULE_0___default()('#team-lead-container');
+    var url = $container.data('url');
+    var user_id = $link.data('identifiable-value');
+    $container.html(_classes_pachno__WEBPACK_IMPORTED_MODULE_1__.default.UI.fa_image_tag('spinner', {
+      classes: 'fa-spin'
+    }));
+    _classes_pachno__WEBPACK_IMPORTED_MODULE_1__.default.fetch(url, {
+      method: 'POST',
+      data: {
+        field: 'team_lead',
+        user_id: user_id
+      }
+    }).then(function (json) {
+      $container.html(json.content);
+    });
   });
 };
 

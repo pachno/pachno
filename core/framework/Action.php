@@ -310,29 +310,11 @@
          *
          * @param mixed $text An array, or text, to serve as json
          *
-         * @return boolean
+         * @return JsonOutput
          */
-        public function renderJSON($text = []): bool
+        public function renderJSON($text = []): JsonOutput
         {
-            $this->getResponse()->setContentType('application/json');
-            $this->getResponse()->setDecoration(Response::DECORATE_NONE);
-
-            if (is_array($text) && array_key_exists('error', $text)) $this->getResponse()->setHttpStatus(Response::HTTP_STATUS_BAD_REQUEST);
-
-            if (is_array($text))
-                array_walk_recursive($text, function (&$item) {
-                    if (is_object($item)) {
-                        var_dump($item);
-                        exit();
-                    }
-                    $item = iconv('UTF-8', 'UTF-8//IGNORE', $item);
-                });
-            else
-                $text = iconv('UTF-8', 'UTF-8//IGNORE', $text);
-
-            echo json_encode($text);
-
-            return true;
+            return new JsonOutput($text);
         }
 
     }

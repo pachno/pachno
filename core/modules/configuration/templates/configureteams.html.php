@@ -29,6 +29,7 @@
                 <div class="row header">
                     <div class="column header info-icons"></div>
                     <div class="column header name-container"><?= __('Team name'); ?></div>
+                    <div class="column header"><?= __('Team lead'); ?></div>
                     <div class="column header numeric"><?= __('User(s)'); ?></div>
                     <div class="column header actions"></div>
                 </div>

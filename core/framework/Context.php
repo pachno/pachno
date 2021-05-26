@@ -2154,7 +2154,12 @@
                             //session_write_close();
                         }
                     }
-                    if ($action_output && self::getResponse()->getHttpStatus() == 200) {
+
+                    if ($action_output instanceof JsonOutput) {
+                        $content = $action_output;
+                        $other_content = ob_get_clean();
+                        Logging::log('...done');
+                    } elseif ($action_output && self::getResponse()->getHttpStatus() == 200) {
                         // If the action returns *any* output, we're done, and collect the
                         // output to a variable to be outputted in context later
                         $content = ob_get_clean();
@@ -2237,7 +2242,7 @@
                     ob_flush();
                 } else {
                     // Render header template if any, and store the output in a variable
-                    if (!self::getRequest()->isAjaxCall() && self::getResponse()->doDecorateHeader()) {
+                    if (!$content instanceof JsonOutput && !self::getRequest()->isAjaxCall() && self::getResponse()->doDecorateHeader()) {
                         Logging::log('decorating with header');
                         if (!file_exists(self::getResponse()->getHeaderDecoration())) {
                             throw new exceptions\TemplateNotFoundException('Can not find header decoration: ' . self::getResponse()->getHeaderDecoration());
@@ -2253,7 +2258,7 @@
                     Logging::log('...done (rendering content)');
 
                     // Render footer template if any
-                    if (!self::getRequest()->isAjaxCall() && self::getResponse()->doDecorateFooter()) {
+                    if (!$content instanceof JsonOutput && !self::getRequest()->isAjaxCall() && self::getResponse()->doDecorateFooter()) {
                         Logging::log('decorating with footer');
                         if (!file_exists(self::getResponse()->getFooterDecoration())) {
                             throw new exceptions\TemplateNotFoundException('Can not find footer decoration: ' . self::getResponse()->getFooterDecoration());

@@ -1,11 +1,18 @@
 <?php
 
+    use pachno\core\entities\Team;
+    use pachno\core\entities\User;
+    use pachno\core\framework\Context;
+    use pachno\core\framework\Event;
+
     /**
-     * @var \pachno\core\entities\Team $team
+     * @var Team $team
+     * @var string $members_url
+     * @var string $form_url
      */
 
 ?>
-<div class="backdrop_box large edit_agileboard">
+<div class="backdrop_box huge edit_agileboard">
     <div class="backdrop_detail_header">
         <span><?php echo ($team->getId()) ? __('Edit team') : __('Create new team'); ?></span>
         <a href="javascript:void(0);" class="closer" onclick="Pachno.UI.Backdrop.reset();"><?= fa_image_tag('times'); ?></a>
@@ -29,9 +36,9 @@
         </div>
         <div class="content" id="team_form_tabs_panes">
             <div data-tab-id="team-info" class="form-container">
-                <form action="<?php echo make_url('configure_team', ['team_id' => $team->getID()]); ?>" id="edit_team_form" method="post" data-simple-submit>
+                <form action="<?php echo $form_url; ?>" id="edit_team_form" method="post" data-simple-submit>
                     <div class="form-row">
-                        <input type="text" id="team_<?php echo $team->getID(); ?>_name" name="name" value="<?php echo htmlentities($team->getName(), ENT_COMPAT, \pachno\core\framework\Context::getI18n()->getCharset()); ?>" class="name-input-enhance">
+                        <input type="text" id="team_<?php echo $team->getID(); ?>_name" name="name" value="<?php echo __e($team->getName()); ?>" class="name-input-enhance">
                         <label style for="team_<?php echo $team->getID(); ?>_name"><?php echo __('Team name'); ?></label>
                         <?php if (!$team->getID()): ?>
                             <div class="message-box type-info">
@@ -52,15 +59,75 @@
                     </div>
                 </form>
             </div>
+            <div data-tab-id="members" class="form-container" style="display: none;">
+                <div id="team_members_list" class="flexible-table assignee-results-list">
+                    <div class="row header">
+                        <div class="column header name-container"><?= __('Name'); ?></div>
+                        <div class="column header role"><?= __('Role'); ?></div>
+                        <div class="column header actions"></div>
+                    </div>
+                    <div class="row">
+                        <div class="column name-container" id="team-lead-container" data-team-id="<?= $team->getID(); ?>" data-url="<?= $members_url; ?>">
+                            <?php if ($team->getTeamLead() instanceof User): ?>
+                                <?php include_component('main/userdropdown', ['user' => $team->getTeamLead(), 'size' => 'small']); ?>
+                            <?php else: ?>
+                                <?= __('No team lead assigned'); ?>
+                            <?php endif; ?>
+                        </div>
+                        <div class="column">
+                            <span class="count-badge"><?= __('Team lead'); ?></span>
+                        </div>
+                        <div class="column actions">
+                            <div class="dropper-container">
+                                <button class="button dropper secondary icon"><?= fa_image_tag('ellipsis-v'); ?></button>
+                                <?php include_component('main/identifiableselector', [
+                                    'base_id'         => 'internal_contact',
+                                    'header'          => __('Change / set team lead'),
+                                    'clear_link_text' => __('Clear team lead'),
+                                    'trigger_class'   => 'trigger-set-team-lead',
+                                    'allow_clear'     => true,
+                                    'include_teams'   => false
+                                ]); ?>
+                            </div>
+                        </div>
+                    </div>
+                    <?php foreach ($team->getMembers() as $member): ?>
+                        <?php include_component('configuration/team_member', ['user' => $member, 'team' => $team]); ?>
+                    <?php endforeach; ?>
+                </div>
+                <div class="form-container">
+                    <form accept-charset="<?= Context::getI18n()->getCharset(); ?>" action="<?= make_url('configure_team_members', ['team_id' => $team->getID()]); ?>" method="post" data-simple-submit data-update-container="#find_team_members_results" id="find_team_members_form">
+                        <div class="form-row search-container">
+                            <label for="add_team_search_input"></label>
+                            <input type="search" name="find_by" id="add_team_search_input" value="" placeholder="<?= __('Enter user details or email address to find or invite users'); ?>">
+                            <button type="submit" class="button primary">
+                                <?= fa_image_tag('search', ['class' => 'icon']); ?>
+                                <span class="name"><?= __('Find'); ?></span>
+                                <?= fa_image_tag('spinner', ['class' => 'fa-spin indicator']); ?>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                <div id="find_team_members_results">
+                    <div class="onboarding medium">
+                        <div class="image-container">
+                            <?= image_tag('/unthemed/onboarding_invite.png', [], true); ?>
+                        </div>
+                        <div class="helper-text">
+                            <?= __('Add existing users or invite new users by adding them to the team'); ?>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <div data-tab-id="permissions" class="form-container" style="display: none;">
                 <form action="<?php echo make_url('configure_team', ['team_id' => $team->getID(), 'save_permissions' => '1']); ?>" id="edit_team_permissions_form" method="post" data-simple-submit>
                     <div class="form-row">
                         <div class="list-mode">
                             <div class="interactive_menu_values filter_existing_values">
-                                <?php include_component('configuration/grouppermissionseditlist', ['target' => $team, 'permissions_list' => \pachno\core\framework\Context::getAvailablePermissions('user'), 'module' => 'core', 'target_id' => null]); ?>
-                                <?php include_component('configuration/grouppermissionseditlist', ['target' => $team, 'permissions_list' => \pachno\core\framework\Context::getAvailablePermissions('pages'), 'module' => 'core', 'target_id' => null]); ?>
-                                <?php include_component('configuration/grouppermissionseditlist', ['target' => $team, 'permissions_list' => \pachno\core\framework\Context::getAvailablePermissions('configuration'), 'module' => 'core', 'target_id' => null, 'is_configuration' => true]); ?>
-                                <?php \pachno\core\framework\Event::createNew('core', 'teampermissionsedit', $team)->trigger(); ?>
+                                <?php include_component('configuration/grouppermissionseditlist', ['target' => $team, 'permissions_list' => Context::getAvailablePermissions('user'), 'module' => 'core', 'target_id' => null]); ?>
+                                <?php include_component('configuration/grouppermissionseditlist', ['target' => $team, 'permissions_list' => Context::getAvailablePermissions('pages'), 'module' => 'core', 'target_id' => null]); ?>
+                                <?php include_component('configuration/grouppermissionseditlist', ['target' => $team, 'permissions_list' => Context::getAvailablePermissions('configuration'), 'module' => 'core', 'target_id' => null, 'is_configuration' => true]); ?>
+                                <?php Event::createNew('core', 'teampermissionsedit', $team)->trigger(); ?>
                             </div>
                         </div>
                     </div>

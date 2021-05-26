@@ -16,6 +16,7 @@
     use pachno\core\entities\tables\Articles;
     use pachno\core\entities\tables\BuildFiles;
     use pachno\core\entities\tables\Builds;
+    use pachno\core\entities\tables\Clients;
     use pachno\core\entities\tables\Files;
     use pachno\core\entities\tables\Groups;
     use pachno\core\entities\tables\Issues;
@@ -28,6 +29,7 @@
     use pachno\core\entities\tables\RolePermissions;
     use pachno\core\entities\tables\Scopes;
     use pachno\core\entities\tables\Settings;
+    use pachno\core\entities\tables\Teams;
     use pachno\core\entities\tables\UserCommits;
     use pachno\core\entities\tables\Users;
     use pachno\core\entities\tables\UserSessions;
@@ -66,6 +68,12 @@
             UserSessions::getTable()->upgrade(tbg\tables\UserSessions::getTable());
             Permissions::getTable()->upgrade(tbg\tables\Permissions::getTable());
 
+            $this->cliMoveLeft();
+            $this->cliEcho(str_pad('Teams', 25), self::COLOR_WHITE, self::STYLE_DEFAULT);
+            Teams::getTable()->upgrade(tbg\tables\Teams::getTable());
+            $this->cliMoveLeft();
+            $this->cliEcho(str_pad('Clients', 25), self::COLOR_WHITE, self::STYLE_DEFAULT);
+            Clients::getTable()->upgrade(tbg\tables\Clients::getTable());
             $this->cliMoveLeft();
             $this->cliEcho(str_pad('UserCommits', 25), self::COLOR_WHITE, self::STYLE_DEFAULT);
             UserCommits::getTable()->create();
