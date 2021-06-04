@@ -31,23 +31,23 @@
     class CustomFieldOptions extends ScopedTable
     {
 
-        const B2DB_TABLE_VERSION = 2;
+        public const B2DB_TABLE_VERSION = 2;
 
-        const B2DBNAME = 'customfieldoptions';
+        public const B2DBNAME = 'customfieldoptions';
 
-        const ID = 'customfieldoptions.id';
+        public const ID = 'customfieldoptions.id';
 
-        const NAME = 'customfieldoptions.name';
+        public const NAME = 'customfieldoptions.name';
 
-        const ITEMDATA = 'customfieldoptions.itemdata';
+        public const ITEMDATA = 'customfieldoptions.itemdata';
 
-        const OPTION_VALUE = 'customfieldoptions.value';
+        public const OPTION_VALUE = 'customfieldoptions.value';
 
-        const SORT_ORDER = 'customfieldoptions.sort_order';
+        public const SORT_ORDER = 'customfieldoptions.sort_order';
 
-        const CUSTOMFIELD_ID = 'customfieldoptions.customfield_id';
+        public const CUSTOMFIELD_ID = 'customfieldoptions.customfield_id';
 
-        const SCOPE = 'customfieldoptions.scope';
+        public const SCOPE = 'customfieldoptions.scope';
 
         public function getByValueAndCustomfieldID($value, $customfield_id)
         {
@@ -81,12 +81,12 @@
             }
         }
 
-        protected function migrateData(Table $old_table)
+        protected function migrateData(Table $old_table): void
         {
             switch ($old_table->getVersion()) {
                 case 1:
                     if ($res = $old_table->rawSelectAll()) {
-                        $customdatatypes_table = CustomDatatype::getB2DBTable();
+                        $customdatatypes_table = CustomFields::getTable();
                         $query = $customdatatypes_table->getQuery();
                         $query->indexBy(CustomFields::FIELD_KEY);
                         $customfields = $customdatatypes_table->select($query);

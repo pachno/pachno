@@ -43,7 +43,7 @@
 </div>
 <script>
     Pachno.on(Pachno.EVENTS.formSubmitResponse, function (PachnoApplication, data) {
-        const json = data.json;
+        public const json = data.json;
         switch (data.form) {
             case 'edit_client_form':
                 let $existing_row = $(`[data-client][data-client-id=${json.client.id}]`);

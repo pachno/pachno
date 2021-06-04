@@ -36,15 +36,15 @@
     class Vcs_integration extends \pachno\core\entities\Module
     {
 
-        const VERSION = '2.0.1';
+        public const VERSION = '2.0.1';
 
-        const MODE_DISABLED = 0;
-        const MODE_ISSUECOMMITS = 1;
-        const WORKFLOW_DISABLED = 0;
-        const WORKFLOW_ENABLED = 1;
-        const ACCESS_DIRECT = 0;
-        const ACCESS_HTTP = 1;
-        const NOTIFICATION_COMMIT_MENTIONED = 'commit_mentioned';
+        public const MODE_DISABLED = 0;
+        public const MODE_ISSUECOMMITS = 1;
+        public const WORKFLOW_DISABLED = 0;
+        public const WORKFLOW_ENABLED = 1;
+        public const ACCESS_DIRECT = 0;
+        public const ACCESS_HTTP = 1;
+        public const NOTIFICATION_COMMIT_MENTIONED = 'commit_mentioned';
 
         protected $_name = 'vcs_integration';
         protected $_longname = 'VCS Integration';

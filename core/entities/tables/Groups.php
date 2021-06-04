@@ -28,15 +28,15 @@
     class Groups extends ScopedTable
     {
 
-        const B2DB_TABLE_VERSION = 1;
+        public const B2DB_TABLE_VERSION = 1;
 
-        const B2DBNAME = 'groups';
+        public const B2DBNAME = 'groups';
 
-        const ID = 'groups.id';
+        public const ID = 'groups.id';
 
-        const NAME = 'groups.name';
+        public const NAME = 'groups.name';
 
-        const SCOPE = 'groups.scope';
+        public const SCOPE = 'groups.scope';
 
         public function getAll($scope = null)
         {

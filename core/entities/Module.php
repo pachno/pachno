@@ -207,7 +207,7 @@
         /**
          * Class constructor
          */
-        final public function _construct(Row $row, $foreign_key = null)
+        final public function _construct(Row $row, string $foreign_key = null): void
         {
             if ($this->_version != $row->get(tables\Modules::VERSION)) {
                 throw new Exception('This module must be upgraded to the latest version');
@@ -305,7 +305,7 @@
         {
         }
 
-        public function __toString()
+        public function __toString(): string
         {
             return $this->_name;
         }

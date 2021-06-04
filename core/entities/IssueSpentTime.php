@@ -361,13 +361,13 @@
             $this->_edited_by = $uid;
         }
 
-        protected function _preSave($is_new)
+        protected function _preSave(bool $is_new): void
         {
             parent::_preSave($is_new);
             if ($is_new && $this->_edited_at == 0) $this->_edited_at = time();
         }
 
-        protected function _postSave($is_new)
+        protected function _postSave(bool $is_new): void
         {
             $this->_recalculateIssueTimes();
         }
@@ -396,7 +396,7 @@
             return $this->_b2dbLazyLoad('_issue_id');
         }
 
-        protected function _postDelete()
+        protected function _postDelete(): void
         {
             $this->_recalculateIssueTimes();
         }

@@ -26,27 +26,27 @@
     class UserStates extends ScopedTable
     {
 
-        const B2DB_TABLE_VERSION = 1;
+        public const B2DB_TABLE_VERSION = 1;
 
-        const B2DBNAME = 'userstate';
+        public const B2DBNAME = 'userstate';
 
-        const ID = 'userstate.id';
+        public const ID = 'userstate.id';
 
-        const SCOPE = 'userstate.scope';
+        public const SCOPE = 'userstate.scope';
 
-        const NAME = 'userstate.name';
+        public const NAME = 'userstate.name';
 
-        const UNAVAILABLE = 'userstate.is_unavailable';
+        public const UNAVAILABLE = 'userstate.is_unavailable';
 
-        const BUSY = 'userstate.is_busy';
+        public const BUSY = 'userstate.is_busy';
 
-        const ONLINE = 'userstate.is_online';
+        public const ONLINE = 'userstate.is_online';
 
-        const MEETING = 'userstate.is_in_meeting';
+        public const MEETING = 'userstate.is_in_meeting';
 
-        const COLOR = 'userstate.itemdata';
+        public const COLOR = 'userstate.itemdata';
 
-        const ABSENT = 'userstate.is_absent';
+        public const ABSENT = 'userstate.is_absent';
 
         public function getAll()
         {

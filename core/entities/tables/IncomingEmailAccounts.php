@@ -11,39 +11,39 @@
     class IncomingEmailAccounts extends ScopedTable
     {
 
-        const B2DBNAME = 'mailing_incoming_email_account';
+        public const B2DBNAME = 'mailing_incoming_email_account';
 
-        const ID = 'mailing_incoming_email_account.id';
+        public const ID = 'mailing_incoming_email_account.id';
 
-        const NAME = 'mailing_incoming_email_account.name';
+        public const NAME = 'mailing_incoming_email_account.name';
 
-        const USERNAME = 'mailing_incoming_email_account.username';
+        public const USERNAME = 'mailing_incoming_email_account.username';
 
-        const PASSWORD = 'mailing_incoming_email_account.password';
+        public const PASSWORD = 'mailing_incoming_email_account.password';
 
-        const SERVER = 'mailing_incoming_email_account.server';
+        public const SERVER = 'mailing_incoming_email_account.server';
 
-        const PORT = 'mailing_incoming_email_account.port';
+        public const PORT = 'mailing_incoming_email_account.port';
 
-        const FOLDER = 'mailing_incoming_email_account.folder';
+        public const FOLDER = 'mailing_incoming_email_account.folder';
 
-        const SERVER_TYPE = 'mailing_incoming_email_account.server_type';
+        public const SERVER_TYPE = 'mailing_incoming_email_account.server_type';
 
-        const SSL = 'mailing_incoming_email_account.ssl';
+        public const SSL = 'mailing_incoming_email_account.ssl';
 
-        const PREFER_HTML = 'mailing_incoming_email_account.prefer_html';
+        public const PREFER_HTML = 'mailing_incoming_email_account.prefer_html';
 
-        const KEEP_EMAIL = 'mailing_incoming_email_account.keep_email';
+        public const KEEP_EMAIL = 'mailing_incoming_email_account.keep_email';
 
-        const PROJECT = 'mailing_incoming_email_account.project';
+        public const PROJECT = 'mailing_incoming_email_account.project';
 
-        const ISSUETYPE = 'mailing_incoming_email_account.issuetype';
+        public const ISSUETYPE = 'mailing_incoming_email_account.issuetype';
 
-        const NUM_LAST_FETCHED = 'mailing_incoming_email_account.num_last_fetched';
+        public const NUM_LAST_FETCHED = 'mailing_incoming_email_account.num_last_fetched';
 
-        const TIME_LAST_FETCHED = 'mailing_incoming_email_account.time_last_fetched';
+        public const TIME_LAST_FETCHED = 'mailing_incoming_email_account.time_last_fetched';
 
-        const SCOPE = 'mailing_incoming_email_account.scope';
+        public const SCOPE = 'mailing_incoming_email_account.scope';
 
         public function getAll()
         {

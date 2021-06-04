@@ -10,8 +10,8 @@
     class Article extends \pachno\core\entities\common\IdentifiableScoped
     {
 
-        const TYPE_WIKI = 1;
-        const TYPE_MANUAL = 2;
+        public const TYPE_WIKI = 1;
+        public const TYPE_MANUAL = 2;
 
         /**
          * The article author

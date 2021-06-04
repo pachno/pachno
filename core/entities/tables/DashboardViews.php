@@ -19,31 +19,31 @@
     class DashboardViews extends ScopedTable
     {
 
-        const B2DB_TABLE_VERSION = 2;
+        public const B2DB_TABLE_VERSION = 2;
 
-        const B2DBNAME = 'dashboard_views';
+        public const B2DBNAME = 'dashboard_views';
 
-        const ID = 'dashboard_views.id';
+        public const ID = 'dashboard_views.id';
 
-        const NAME = 'dashboard_views.name';
+        public const NAME = 'dashboard_views.name';
 
-        const VIEW = 'dashboard_views.view';
+        public const VIEW = 'dashboard_views.view';
 
-        const TEAM_ID = 'dashboard_views.tid';
+        public const TEAM_ID = 'dashboard_views.tid';
 
-        const PROJECT_ID = 'dashboard_views.pid';
+        public const PROJECT_ID = 'dashboard_views.pid';
 
-        const TARGET_TYPE = 'dashboard_views.target_type';
+        public const TARGET_TYPE = 'dashboard_views.target_type';
 
-        const SCOPE = 'dashboard_views.scope';
+        public const SCOPE = 'dashboard_views.scope';
 
-        const TYPE_USER = 1;
+        public const TYPE_USER = 1;
 
-        const TYPE_PROJECT = 2;
+        public const TYPE_PROJECT = 2;
 
-        const TYPE_TEAM = 3;
+        public const TYPE_TEAM = 3;
 
-        const TYPE_CLIENT = 4;
+        public const TYPE_CLIENT = 4;
 
         public function addView($target_id, $target_type, $view)
         {

@@ -13,33 +13,33 @@
     class SavedSearches extends ScopedTable
     {
 
-        const B2DB_TABLE_VERSION = 2;
+        public const B2DB_TABLE_VERSION = 2;
 
-        const B2DBNAME = 'savedsearches';
+        public const B2DBNAME = 'savedsearches';
 
-        const ID = 'savedsearches.id';
+        public const ID = 'savedsearches.id';
 
-        const SCOPE = 'savedsearches.scope';
+        public const SCOPE = 'savedsearches.scope';
 
-        const NAME = 'savedsearches.name';
+        public const NAME = 'savedsearches.name';
 
-        const DESCRIPTION = 'savedsearches.description';
+        public const DESCRIPTION = 'savedsearches.description';
 
-        const GROUPBY = 'savedsearches.groupby';
+        public const GROUPBY = 'savedsearches.groupby';
 
-        const GROUPORDER = 'savedsearches.grouporder';
+        public const GROUPORDER = 'savedsearches.grouporder';
 
-        const ISSUES_PER_PAGE = 'savedsearches.issues_per_page';
+        public const ISSUES_PER_PAGE = 'savedsearches.issues_per_page';
 
-        const TEMPLATE_NAME = 'savedsearches.templatename';
+        public const TEMPLATE_NAME = 'savedsearches.templatename';
 
-        const TEMPLATE_PARAMETER = 'savedsearches.templateparameter';
+        public const TEMPLATE_PARAMETER = 'savedsearches.templateparameter';
 
-        const APPLIES_TO_PROJECT = 'savedsearches.applies_to_project';
+        public const APPLIES_TO_PROJECT = 'savedsearches.applies_to_project';
 
-        const IS_PUBLIC = 'savedsearches.is_public';
+        public const IS_PUBLIC = 'savedsearches.is_public';
 
-        const USER_ID = 'savedsearches.uid';
+        public const USER_ID = 'savedsearches.uid';
 
         /**
          * @param $user_id

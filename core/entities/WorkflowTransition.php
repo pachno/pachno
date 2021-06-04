@@ -868,7 +868,7 @@
             $this->_description = $description;
         }
 
-        protected function _preDelete()
+        protected function _preDelete(): void
         {
             tables\WorkflowStepTransitions::getTable()->deleteByTransitionID($this->getID());
         }

@@ -15,9 +15,9 @@
     interface AuthenticationProvider
     {
 
-        const AUTHENTICATION_TYPE_PASSWORD = 'authenticate_password';
+        public const AUTHENTICATION_TYPE_PASSWORD = 'authenticate_password';
 
-        const AUTHENTICATION_TYPE_TOKEN = 'authenticate_token';
+        public const AUTHENTICATION_TYPE_TOKEN = 'authenticate_token';
 
         function getAuthenticationMethod();
 

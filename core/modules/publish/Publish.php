@@ -29,7 +29,7 @@
     class Publish extends CoreModule
     {
 
-        const VERSION = '2.0';
+        public const VERSION = '2.0';
 
         protected $_longname = 'Wiki';
 

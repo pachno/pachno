@@ -15,7 +15,7 @@ use pachno\core\framework;
 </div>
 <script type="text/javascript">
     Pachno.on(Pachno.EVENTS.ready, (PachnoApplication) => {
-        const loadList = function (key) {
+        public const loadList = function (key) {
             let urls = {
                 archived: '<?= $archived_url; ?>',
                 active: '<?= $active_url; ?>'

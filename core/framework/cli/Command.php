@@ -20,31 +20,31 @@
     abstract class Command
     {
 
-        const COLOR_BLACK = 30;
+        public const COLOR_BLACK = 30;
 
-        const COLOR_RED = 31;
+        public const COLOR_RED = 31;
 
-        const COLOR_GREEN = 32;
+        public const COLOR_GREEN = 32;
 
-        const COLOR_YELLOW = 33;
+        public const COLOR_YELLOW = 33;
 
-        const COLOR_BLUE = 34;
+        public const COLOR_BLUE = 34;
 
-        const COLOR_MAGENTA = 35;
+        public const COLOR_MAGENTA = 35;
 
-        const COLOR_CYAN = 36;
+        public const COLOR_CYAN = 36;
 
-        const COLOR_WHITE = 37;
+        public const COLOR_WHITE = 37;
 
-        const STYLE_DEFAULT = 0;
+        public const STYLE_DEFAULT = 0;
 
-        const STYLE_BOLD = 1;
+        public const STYLE_BOLD = 1;
 
-        const STYLE_UNDERLINE = 4;
+        public const STYLE_UNDERLINE = 4;
 
-        const STYLE_BLINK = 5;
+        public const STYLE_BLINK = 5;
 
-        const STYLE_CONCEAL = 8;
+        public const STYLE_CONCEAL = 8;
 
         protected static $_available_commands = null;
 

@@ -34,9 +34,9 @@
 
         use Commentable;
 
-        const TYPE_WIKI = 1;
+        public const TYPE_WIKI = 1;
 
-        const TYPE_MANUAL = 2;
+        public const TYPE_MANUAL = 2;
 
         /**
          * The article author
@@ -349,13 +349,13 @@
          *
          * @param Row $row
          */
-        public function _construct(Row $row, $foreign_key = null)
+        public function _construct(Row $row, string $foreign_key = null): void
         {
             $this->_content = str_replace("\r\n", "\n", $this->_content);
             $this->_old_content = $this->_content;
         }
 
-        public function __toString()
+        public function __toString(): string
         {
             return $this->_content;
         }
@@ -966,7 +966,7 @@
             return '';
         }
 
-        protected function _preSave($is_new)
+        protected function _preSave(bool $is_new): void
         {
             parent::_preSave($is_new);
             if (!framework\Context::isCLI()) {
@@ -980,7 +980,7 @@
 //            }
         }
 
-        protected function _postDelete()
+        protected function _postDelete(): void
         {
             ArticleFiles::getTable()->deleteFilesByArticleID($this->getID());
             ArticleCategoryLinks::getTable()->deleteByArticleId($this->getID());
@@ -1009,12 +1009,12 @@
             $this->_name = $name;
         }
 
-        protected function _clone()
+        protected function _clone(): void
         {
             $this->_is_clone = true;
         }
 
-        protected function _postSave($is_new)
+        protected function _postSave(bool $is_new): void
         {
             if ($this->_is_clone)
                 return;

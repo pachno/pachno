@@ -35,70 +35,70 @@
     class Mailing extends CoreModule
     {
 
-        const VERSION = '2.0.1';
+        public const VERSION = '2.0.1';
 
-        const MAIL_TYPE_PHP = 1;
+        public const MAIL_TYPE_PHP = 1;
 
-        const MAIL_TYPE_SMTP = 2;
+        public const MAIL_TYPE_SMTP = 2;
 
-        const MAIL_TYPE_SENDMAIL = 3;
+        public const MAIL_TYPE_SENDMAIL = 3;
 
         /**
          * Notify the user when a new issue is posted in his/her project(s)
          */
-        const NOTIFY_NEW_ISSUES_MY_PROJECTS = 'notify_new_issues_my_projects';
+        public const NOTIFY_NEW_ISSUES_MY_PROJECTS = 'notify_new_issues_my_projects';
 
-        const NOTIFY_NEW_ISSUES_MY_PROJECTS_CATEGORY = 'notify_new_issues_my_projects_category';
+        public const NOTIFY_NEW_ISSUES_MY_PROJECTS_CATEGORY = 'notify_new_issues_my_projects_category';
 
         /**
          * Notify the user when a new article is created in his/her project(s)
          */
-        const NOTIFY_NEW_ARTICLES_MY_PROJECTS = 'notify_new_articles_my_projects';
+        public const NOTIFY_NEW_ARTICLES_MY_PROJECTS = 'notify_new_articles_my_projects';
 
         /**
          * Only notify me once per issue
          */
-        const NOTIFY_ITEM_ONCE = 'notify_issue_once';
+        public const NOTIFY_ITEM_ONCE = 'notify_issue_once';
 
         /**
          * Notify the user when an issue he/she subscribes to is updated or commented
          */
-        const NOTIFY_SUBSCRIBED_ISSUES = 'notify_subscribed_issues';
+        public const NOTIFY_SUBSCRIBED_ISSUES = 'notify_subscribed_issues';
 
         /**
          * Notify the user when an article he/she subscribes to is updated or commented
          */
-        const NOTIFY_SUBSCRIBED_ARTICLES = 'notify_subscribed_articles';
+        public const NOTIFY_SUBSCRIBED_ARTICLES = 'notify_subscribed_articles';
 
         /**
          * Notify the user when a discussion he/she subscribes to is updated or commented
          */
-        const NOTIFY_SUBSCRIBED_DISCUSSIONS = 'notify_subscribed_discussions';
+        public const NOTIFY_SUBSCRIBED_DISCUSSIONS = 'notify_subscribed_discussions';
 
         /**
          * Notify the user when he updates an issue
          */
-        const NOTIFY_UPDATED_SELF = 'notify_updated_self';
+        public const NOTIFY_UPDATED_SELF = 'notify_updated_self';
 
         /**
          * Notify the user when he is mentioned
          */
-        const NOTIFY_MENTIONED = 'notify_mentioned';
+        public const NOTIFY_MENTIONED = 'notify_mentioned';
 
         /**
          * Don't send email notification if user is active
          */
-        const NOTIFY_NOT_WHEN_ACTIVE = 'notify_not_when_active';
+        public const NOTIFY_NOT_WHEN_ACTIVE = 'notify_not_when_active';
 
-        const MAIL_ENCODING_BASE64 = 3;
+        public const MAIL_ENCODING_BASE64 = 3;
 
-        const MAIL_ENCODING_QUOTED = 4;
+        public const MAIL_ENCODING_QUOTED = 4;
 
-        const MAIL_ENCODING_UTF7 = 0;
+        public const MAIL_ENCODING_UTF7 = 0;
 
-        const SETTING_PROJECT_FROM_ADDRESS = 'project_from_address_';
+        public const SETTING_PROJECT_FROM_ADDRESS = 'project_from_address_';
 
-        const SETTING_PROJECT_FROM_NAME = 'project_from_name_';
+        public const SETTING_PROJECT_FROM_NAME = 'project_from_name_';
 
         protected $_name = 'mailing';
 

@@ -27,15 +27,15 @@
     class Files extends ScopedTable
     {
 
-        const B2DB_TABLE_VERSION = 2;
-        const B2DBNAME = 'vcsintegration_files';
-        const ID = 'vcsintegration_files.id';
-        const SCOPE = 'vcsintegration_files.scope';
-        const COMMIT_ID = 'vcsintegration_files.commit_id';
-        const FILE_NAME = 'vcsintegration_files.file_name';
-        const ACTION = 'vcsintegration_files.action';
+        public const B2DB_TABLE_VERSION = 2;
+        public const B2DBNAME = 'vcsintegration_files';
+        public const ID = 'vcsintegration_files.id';
+        public const SCOPE = 'vcsintegration_files.scope';
+        public const COMMIT_ID = 'vcsintegration_files.commit_id';
+        public const FILE_NAME = 'vcsintegration_files.file_name';
+        public const ACTION = 'vcsintegration_files.action';
 
-        protected function _setupIndexes()
+        protected function _setupIndexes(): void
         {
             $this->_addIndex('commit', self::COMMIT_ID);
         }

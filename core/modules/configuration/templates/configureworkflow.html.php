@@ -55,14 +55,14 @@
 <script>
     Pachno.on(Pachno.EVENTS.ready, function () {
         // $('body').on('click', '.list-item[data-issue-field]:not(.disabled)', function(event) {
-        //     const key = $(this).data('id'),
+        //     public const key = $(this).data('id'),
         //         url = $(this).data('url');
         //
         //     .Config.IssuetypeScheme.addField(url, key);
         // });
 
         $('body').on('click', '.configurable-component[data-issue-field] .remove-item', function(event) {
-            const $item = $(this).parents('.configurable-component'),
+            public const $item = $(this).parents('.configurable-component'),
                 key = $item.data('id');
 
             $item.remove();

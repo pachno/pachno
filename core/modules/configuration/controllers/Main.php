@@ -273,7 +273,7 @@
             $this->number_of_schemes = tables\IssuetypeSchemes::getTable()->getNumberOfSchemesInCurrentScope();
             $this->issue_types = entities\Issuetype::getAll();
             $this->icons = entities\Issuetype::getIcons();
-            $this->scheme = entities\IssuetypeScheme::getB2DBTable()->selectById((int)$request['scheme_id']);
+            $this->scheme = tables\IssuetypeSchemes::getTable()->selectById((int)$request['scheme_id']);
 
 //                if ($this->mode == 'copy_scheme')
 //                {
@@ -385,7 +385,7 @@
             if ($is_new) {
                 $issuetype = new entities\Issuetype();
             } else {
-                $issuetype = entities\Issuetype::getB2DBTable()->selectById($request['issuetype_id']);
+                $issuetype = tables\IssueTypes::getTable()->selectById($request['issuetype_id']);
             }
 
             if ($request->hasParameter('icon') && !$request['icon']) {
@@ -2630,7 +2630,7 @@
          */
         public function runEditRole(framework\Request $request): framework\JsonOutput
         {
-            $role = ListTypes::getTable()->selectById($request['id']);
+            $role = ListTypes::getTable()->selectById($request['role_id']);
 
             if (!$role instanceof entities\Role) {
                 $this->getResponse()->setHttpStatus(400);
@@ -2652,7 +2652,10 @@
                 $role->updateFromRequest($request);
                 $role->saveFromRequest($request);
 
-                return $this->renderJSON(['message' => $this->getI18n()->__('Role updated'), 'permissions_count' => count($request['permissions']), 'role_name' => $role->getName()]);
+                return $this->renderJSON([
+                    'message' => $this->getI18n()->__('Role updated'),
+                    'content' => $this->getComponentHTML('configuration/role', ['role' => $role])
+                ]);
             }
 
             if ($request->isDelete()) {

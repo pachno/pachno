@@ -12,7 +12,7 @@ class BlockHandler
     /**
      * Default pseudo-key for numerical arrays
      */
-    const DEFAULT_ARRAY_KEY = "-";
+    public const DEFAULT_ARRAY_KEY = "-";
 
     /**
      * @var ConfigLoader|null

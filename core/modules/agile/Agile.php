@@ -33,7 +33,7 @@
     class Agile extends CoreModule
     {
 
-        const VERSION = '1.0';
+        public const VERSION = '1.0';
 
         protected $_name = 'agile';
 

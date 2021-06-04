@@ -321,12 +321,12 @@
             $this->_name = $name;
         }
 
-        protected function _postSave($is_new)
+        protected function _postSave(bool $is_new): void
         {
             framework\Context::getCache()->delete(framework\Cache::KEY_TEXTPARSER_ISSUE_REGEX);
         }
 
-        protected function _preDelete()
+        protected function _preDelete(): void
         {
             tables\IssueFields::getTable()->deleteByIssuetypeSchemeID($this->getID());
             tables\IssuetypeSchemeLink::getTable()->deleteByIssuetypeSchemeID($this->getID());

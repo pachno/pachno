@@ -38,17 +38,17 @@
         /**
          * Issue comment
          */
-        const TYPE_ISSUE = 1;
+        public const TYPE_ISSUE = 1;
 
         /**
          * Article comment
          */
-        const TYPE_ARTICLE = 2;
+        public const TYPE_ARTICLE = 2;
 
         /**
          * Commit comment
          */
-        const TYPE_COMMIT = 3;
+        public const TYPE_COMMIT = 3;
 
         protected static $_comment_count = [];
 
@@ -672,12 +672,12 @@
             return $this->_getParser()->getMentions();
         }
 
-        protected function _clone()
+        protected function _clone(): void
         {
             $this->_is_clone = true;
         }
 
-        protected function _preSave($is_new)
+        protected function _preSave(bool $is_new): void
         {
             parent::_preSave($is_new);
             if ($is_new) {
@@ -690,7 +690,7 @@
             }
         }
 
-        protected function _postSave($is_new)
+        protected function _postSave(bool $is_new): void
         {
             if (!$this->_is_clone && $is_new) {
                 $tty = $this->getTargetType();
@@ -883,7 +883,7 @@
             $this->_posted_by = $var;
         }
 
-        protected function _postDelete()
+        protected function _postDelete(): void
         {
             $this->touchTargetIfItsIssue();
         }

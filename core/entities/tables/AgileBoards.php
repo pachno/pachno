@@ -33,9 +33,9 @@
     class AgileBoards extends ScopedTable
     {
 
-        const B2DB_TABLE_VERSION = 1;
+        public const B2DB_TABLE_VERSION = 1;
 
-        const SCOPE = 'agileboards.scope';
+        public const SCOPE = 'agileboards.scope';
 
         public function getAvailableProjectBoards($user_id, $project_id)
         {
@@ -51,7 +51,7 @@
             return $this->select($query);
         }
 
-        protected function migrateData(Table $old_table)
+        protected function migrateData(Table $old_table): void
         {
             if ($old_table instanceof AgileBoardsTable) {
                 $update = new Update();

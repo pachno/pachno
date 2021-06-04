@@ -45,7 +45,7 @@
 </div>
 <script type="application/javascript">
     Pachno.on(Pachno.EVENTS.formSubmitResponse, function (PachnoApplication, data) {
-        const json = data.json;
+        public const json = data.json;
         switch (data.form) {
             case 'enable_2fa_form':
                 if (json.result === 'verified') {

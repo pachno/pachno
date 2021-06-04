@@ -8,19 +8,19 @@
     class ArticleViews extends ScopedTable
     {
 
-        const B2DB_TABLE_VERSION = 1;
+        public const B2DB_TABLE_VERSION = 1;
 
-        const B2DBNAME = 'articleviews';
+        public const B2DBNAME = 'articleviews';
 
-        const ID = 'articleviews.id';
+        public const ID = 'articleviews.id';
 
-        const ARTICLE_ID = 'articleviews.article_id';
+        public const ARTICLE_ID = 'articleviews.article_id';
 
-        const USER_ID = 'articleviews.user_id';
+        public const USER_ID = 'articleviews.user_id';
 
-        const SCOPE = 'articleviews.scope';
+        public const SCOPE = 'articleviews.scope';
 
-        protected function initialize()
+        protected function initialize(): void
         {
             parent::setup(self::B2DBNAME, self::ID);
             parent::addForeignKeyColumn(self::USER_ID, Users::getTable(), Users::ID);

@@ -12,21 +12,21 @@
     class SavedSearchFilters extends ScopedTable
     {
 
-        const B2DB_TABLE_VERSION = 1;
+        public const B2DB_TABLE_VERSION = 1;
 
-        const B2DBNAME = 'savedsearchfilters';
+        public const B2DBNAME = 'savedsearchfilters';
 
-        const ID = 'savedsearchfilters.id';
+        public const ID = 'savedsearchfilters.id';
 
-        const SCOPE = 'savedsearchfilters.scope';
+        public const SCOPE = 'savedsearchfilters.scope';
 
-        const VALUE = 'savedsearchfilters.value';
+        public const VALUE = 'savedsearchfilters.value';
 
-        const OPERATOR = 'savedsearchfilters.operator';
+        public const OPERATOR = 'savedsearchfilters.operator';
 
-        const SEARCH_ID = 'savedsearchfilters.search_id';
+        public const SEARCH_ID = 'savedsearchfilters.search_id';
 
-        const FILTER_KEY = 'savedsearchfilters.filter_key';
+        public const FILTER_KEY = 'savedsearchfilters.filter_key';
 
         public function getFiltersBySavedSearchID($savedsearch_id)
         {
@@ -79,7 +79,7 @@
             $this->rawInsert($insertion);
         }
 
-        protected function initialize()
+        protected function initialize(): void
         {
             parent::setup(self::B2DBNAME, self::ID);
             parent::addVarchar(self::VALUE, 200);

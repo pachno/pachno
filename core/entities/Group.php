@@ -162,7 +162,7 @@
             }
         }
 
-        protected function _postSave($is_new)
+        protected function _postSave(bool $is_new): void
         {
             if ($is_new) {
                 if (self::$_groups !== null) {
@@ -171,7 +171,7 @@
             }
         }
 
-        protected function _preDelete()
+        protected function _preDelete(): void
         {
             tables\UserScopes::getTable()->clearUserGroups($this->getID());
         }

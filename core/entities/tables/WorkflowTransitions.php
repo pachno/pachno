@@ -31,23 +31,23 @@
     class WorkflowTransitions extends ScopedTable
     {
 
-        const B2DB_TABLE_VERSION = 1;
+        public const B2DB_TABLE_VERSION = 1;
 
-        const B2DBNAME = 'workflow_transitions';
+        public const B2DBNAME = 'workflow_transitions';
 
-        const ID = 'workflow_transitions.id';
+        public const ID = 'workflow_transitions.id';
 
-        const SCOPE = 'workflow_transitions.scope';
+        public const SCOPE = 'workflow_transitions.scope';
 
-        const WORKFLOW_ID = 'workflow_transitions.workflow_id';
+        public const WORKFLOW_ID = 'workflow_transitions.workflow_id';
 
-        const NAME = 'workflow_transitions.name';
+        public const NAME = 'workflow_transitions.name';
 
-        const DESCRIPTION = 'workflow_transitions.description';
+        public const DESCRIPTION = 'workflow_transitions.description';
 
-        const OUTGOING_STEP_ID = 'workflow_transitions.outgoing_step_id';
+        public const OUTGOING_STEP_ID = 'workflow_transitions.outgoing_step_id';
 
-        const TEMPLATE = 'workflow_transitions.template';
+        public const TEMPLATE = 'workflow_transitions.template';
 
         public function countByStepID($step_id)
         {

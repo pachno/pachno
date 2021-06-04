@@ -45,7 +45,7 @@
             $this->forward403unless($this->_checkProjectAccess(entities\Permission::PERMISSION_PROJECT_ACCESS_DASHBOARD));
 
             if ($request->isPost() && $request['setup_default_dashboard'] && $this->getUser()->canEditProjectDetails($this->selected_project)) {
-                entities\DashboardView::getB2DBTable()->setDefaultViews($this->selected_project->getID(), entities\DashboardView::TYPE_PROJECT);
+                tables\DashboardViews::getTable()->setDefaultViews($this->selected_project->getID(), entities\DashboardView::TYPE_PROJECT);
                 $this->forward($this->getRouting()->generate('project_dashboard', ['project_key' => $this->selected_project->getKey()]));
             }
             if ($request['dashboard_id']) {
@@ -236,7 +236,7 @@
             $maxEstimation = 0;
 
             if ($m_id = $request['sprint_id']) {
-                $milestone = entities\Milestone::getB2DBTable()->selectById($m_id);
+                $milestone = entities\tables\Milestones::getTable()->selectById($m_id);
             } else {
                 $milestones = $this->selected_project->getUpcomingMilestones();
                 if (count($milestones)) {
@@ -281,7 +281,7 @@
         {
             $this->forward403if(Context::getCurrentProject()->isArchived());
             $this->forward403unless($this->_checkProjectAccess(entities\Permission::PERMISSION_PROJECT_ACCESS_BOARDS));
-            $issue = entities\Issue::getB2DBTable()->selectById((int)$request['story_id']);
+            $issue = tables\Issues::getTable()->selectById((int)$request['story_id']);
             try {
                 if ($issue instanceof entities\Issue) {
                     switch ($request['detail']) {
@@ -531,19 +531,11 @@
                     if ($item_id != 0 || $this->key == 'issues_per_state') {
                         switch ($this->key) {
                             case 'issues_per_status':
-                                $item = entities\Status::getB2DBTable()->selectById($item_id);
-                                break;
                             case 'issues_per_priority':
-                                $item = entities\Priority::getB2DBTable()->selectById($item_id);
-                                break;
                             case 'issues_per_category':
-                                $item = entities\Category::getB2DBTable()->selectById($item_id);
-                                break;
                             case 'issues_per_resolution':
-                                $item = entities\Resolution::getB2DBTable()->selectById($item_id);
-                                break;
                             case 'issues_per_reproducability':
-                                $item = entities\Reproducability::getB2DBTable()->selectById($item_id);
+                                $item = tables\ListTypes::getTable()->selectById($item_id);
                                 break;
                             case 'issues_per_state':
                                 $item = ($item_id == entities\Issue::STATE_OPEN) ? $i18n->__('Open', [], true) : $i18n->__('Closed', [], true);
@@ -591,8 +583,8 @@
         public function runTransitionIssue(framework\Request $request)
         {
             try {
-                $transition = entities\WorkflowTransition::getB2DBTable()->selectById($request['transition_id']);
-                $issue = entities\Issue::getB2DBTable()->selectById((int)$request['issue_id']);
+                $transition = tables\WorkflowTransitions::getTable()->selectById($request['transition_id']);
+                $issue = tables\Issues::getTable()->selectById((int)$request['issue_id']);
                 if (!$issue->isWorkflowTransitionsAvailable()) {
                     throw new Exception(Context::getI18n()->__('You are not allowed to perform any workflow transitions on this issue'));
                 }
@@ -692,7 +684,7 @@
                 $closed = false;
                 $issues = [];
                 foreach ($issue_ids as $issue_id) {
-                    $issue = entities\Issue::getB2DBTable()->selectById((int)$issue_id);
+                    $issue = tables\Issues::getTable()->selectById((int)$issue_id);
                     if (!$issue->isWorkflowTransitionsAvailable() || !$transition->validateFromRequest($request)) {
                         $this->getResponse()->setHttpStatus(400);
 
@@ -843,7 +835,7 @@
                 return $this->renderJSON(['error' => $this->getI18n()->__('Please enter something to search for')]);
             }
 
-            $selected_project = entities\Project::getB2DBTable()->selectById($request['project_id']);
+            $selected_project = tables\Projects::getTable()->selectById($request['project_id']);
             return $this->renderJSON(['content' => $this->getComponentHTML('project/findassignee', ['selected_project' => $selected_project, 'find_by' => $find_by])]);
         }
 
@@ -927,13 +919,13 @@
             try {
                 switch ($request['item_type']) {
                     case 'project':
-                        $item = entities\Project::getB2DBTable()->selectById($request['project_id']);
+                        $item = tables\Projects::getTable()->selectById($request['project_id']);
                         break;
                     case 'edition':
-                        $item = entities\Edition::getB2DBTable()->selectById($request['edition_id']);
+                        $item = tables\Editions::getTable()->selectById($request['edition_id']);
                         break;
                     case 'component':
-                        $item = entities\Component::getB2DBTable()->selectById($request['component_id']);
+                        $item = tables\Components::getTable()->selectById($request['component_id']);
                         break;
                 }
             } catch (Exception $e) {
@@ -948,10 +940,10 @@
                     if (in_array($request['identifiable_type'], ['team', 'user']) && $request['value']) {
                         switch ($request['identifiable_type']) {
                             case 'user':
-                                $identified = entities\User::getB2DBTable()->selectById($request['value']);
+                                $identified = tables\Users::getTable()->selectById($request['value']);
                                 break;
                             case 'team':
-                                $identified = entities\Team::getB2DBTable()->selectById($request['value']);
+                                $identified = tables\Teams::getTable()->selectById($request['value']);
                                 break;
                         }
                         if ($identified instanceof entities\common\Identifiable) {
@@ -1055,7 +1047,7 @@
                     if ($request['client'] == 0) {
                         $this->selected_project->setClient(null);
                     } else {
-                        $this->selected_project->setClient(entities\Client::getB2DBTable()->selectById($request['client']));
+                        $this->selected_project->setClient(tables\Clients::getTable()->selectById($request['client']));
                     }
                 }
 
@@ -1063,13 +1055,13 @@
                     if ($request['subproject_id'] == 0) {
                         $this->selected_project->clearParent();
                     } else {
-                        $this->selected_project->setParent(entities\Project::getB2DBTable()->selectById($request['subproject_id']));
+                        $this->selected_project->setParent(tables\Projects::getTable()->selectById($request['subproject_id']));
                     }
                 }
 
                 if ($request->hasParameter('workflow_scheme')) {
                     try {
-                        $workflow_scheme = entities\WorkflowScheme::getB2DBTable()->selectById($request['workflow_scheme']);
+                        $workflow_scheme = tables\WorkflowSchemes::getTable()->selectById($request['workflow_scheme']);
                         $this->selected_project->setWorkflowScheme($workflow_scheme);
                     } catch (Exception $e) {
 
@@ -1078,7 +1070,7 @@
 
                 if ($request->hasParameter('issuetype_scheme')) {
                     try {
-                        $issuetype_scheme = entities\IssuetypeScheme::getB2DBTable()->selectById($request['issuetype_scheme']);
+                        $issuetype_scheme = tables\IssuetypeSchemes::getTable()->selectById($request['issuetype_scheme']);
                         $this->selected_project->setIssuetypeScheme($issuetype_scheme);
                     } catch (Exception $e) {
 
@@ -1203,7 +1195,7 @@
             try {
                 if ($this->getUser()->canManageProjectReleases($this->selected_project)) {
                     if ($b_id = $request['build_id']) {
-                        $build = entities\Build::getB2DBTable()->selectById($b_id);
+                        $build = tables\Builds::getTable()->selectById($b_id);
                         if ($build->hasAccess()) {
                             $build->delete();
 
@@ -1298,7 +1290,7 @@
 
             if ($this->getUser()->canManageProject($this->selected_project) || $this->getUser()->canManageProjectReleases($this->selected_project)) {
                 try {
-                    $edition = entities\Edition::getB2DBTable()->selectById($request['edition_id']);
+                    $edition = tables\Editions::getTable()->selectById($request['edition_id']);
                     if ($request['mode'] == 'add') {
                         $edition->addComponent($request['component_id']);
                     } elseif ($request['mode'] == 'remove') {
@@ -1510,7 +1502,7 @@
         {
             try {
                 if ($request['project_id']) {
-                    $this->selected_project = entities\Project::getB2DBTable()->selectById($request['project_id']);
+                    $this->selected_project = tables\Projects::getTable()->selectById($request['project_id']);
                 } else {
                     $this->selected_project = new entities\Project();
                 }
@@ -1588,7 +1580,7 @@
                         $this->selected_project->convertIssueStepPerIssuetype($type, $data);
                     }
 
-                    $this->selected_project->setWorkflowScheme(entities\WorkflowScheme::getB2DBTable()->selectById($request['workflow_id']));
+                    $this->selected_project->setWorkflowScheme(tables\WorkflowSchemes::getTable()->selectById($request['workflow_id']));
                     $this->selected_project->save();
 
                     return $this->renderJSON(['message' => Context::geti18n()->__('Workflow scheme changed and issues updated')]);
@@ -1605,10 +1597,10 @@
 
         public function runProjectWorkflowTable(framework\Request $request)
         {
-            $this->selected_project = entities\Project::getB2DBTable()->selectById($request['project_id']);
+            $this->selected_project = tables\Projects::getTable()->selectById($request['project_id']);
             if ($request->isPost()) {
                 try {
-                    $workflow_scheme = entities\WorkflowScheme::getB2DBTable()->selectById($request['new_workflow']);
+                    $workflow_scheme = tables\WorkflowSchemes::getTable()->selectById($request['new_workflow']);
 
                     return $this->renderJSON(['content' => $this->getComponentHTML('projectworkflow_table', ['project' => $this->selected_project, 'new_workflow' => $workflow_scheme])]);
                 } catch (Exception $e) {

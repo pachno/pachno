@@ -40,15 +40,15 @@
     class Livelink extends framework\CoreModule
     {
 
-        const SETTINGS_WORKFLOW_ACTIONS = 'workflow_actions_';
+        public const SETTINGS_WORKFLOW_ACTIONS = 'workflow_actions_';
 
-        const SETTINGS_PROJECT_CONNECTOR = 'connector_project_';
+        public const SETTINGS_PROJECT_CONNECTOR = 'connector_project_';
 
-        const SETTINGS_PROJECT_LIVELINK_ENABLED = 'connector_livelink_enabled_project_';
+        public const SETTINGS_PROJECT_LIVELINK_ENABLED = 'connector_livelink_enabled_project_';
 
-        const SETTINGS_PROJECT_CONNECTOR_SECRET = 'connector_secret_project_';
+        public const SETTINGS_PROJECT_CONNECTOR_SECRET = 'connector_secret_project_';
 
-        const NOTIFICATION_COMMIT_MENTIONED = 'commit_mentioned';
+        public const NOTIFICATION_COMMIT_MENTIONED = 'commit_mentioned';
 
         /**
          * @var ConnectorProvider[]

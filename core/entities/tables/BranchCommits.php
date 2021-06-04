@@ -18,19 +18,19 @@
     class BranchCommits extends ScopedTable
     {
 
-        const B2DB_TABLE_VERSION = 2;
+        public const B2DB_TABLE_VERSION = 2;
 
-        const B2DBNAME = 'branchcommits';
+        public const B2DBNAME = 'branchcommits';
 
-        const ID = 'branchcommits.id';
+        public const ID = 'branchcommits.id';
 
-        const SCOPE = 'branchcommits.scope';
+        public const SCOPE = 'branchcommits.scope';
 
-        const BRANCH_ID = 'branchcommits.branch_id';
+        public const BRANCH_ID = 'branchcommits.branch_id';
 
-        const COMMIT_ID = 'branchcommits.commit_id';
+        public const COMMIT_ID = 'branchcommits.commit_id';
 
-        const COMMIT_SHA = 'branchcommits.commit_sha';
+        public const COMMIT_SHA = 'branchcommits.commit_sha';
 
         public function hasBranchCommitSha(Branch $branch, $commit_sha)
         {
@@ -50,7 +50,7 @@
             return (bool)$this->count($query);
         }
 
-        protected function setupIndexes()
+        protected function setupIndexes(): void
         {
             $this->addIndex('commit', self::COMMIT_ID);
             $this->addIndex('branch', self::BRANCH_ID);

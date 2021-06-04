@@ -27,19 +27,19 @@
     class Votes extends ScopedTable
     {
 
-        const B2DB_TABLE_VERSION = 1;
+        public const B2DB_TABLE_VERSION = 1;
 
-        const B2DBNAME = 'votes';
+        public const B2DBNAME = 'votes';
 
-        const ID = 'votes.id';
+        public const ID = 'votes.id';
 
-        const SCOPE = 'votes.scope';
+        public const SCOPE = 'votes.scope';
 
-        const TARGET = 'votes.target';
+        public const TARGET = 'votes.target';
 
-        const VOTE = 'votes.vote';
+        public const VOTE = 'votes.vote';
 
-        const USER_ID = 'votes.uid';
+        public const USER_ID = 'votes.uid';
 
         public function getVoteSumForIssue($issue_id)
         {
@@ -78,7 +78,7 @@
             return $res->getInsertID();
         }
 
-        protected function initialize()
+        protected function initialize(): void
         {
             parent::setup(self::B2DBNAME, self::ID);
             parent::addInteger(self::TARGET, 10);

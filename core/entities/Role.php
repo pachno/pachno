@@ -15,7 +15,7 @@
     class Role extends Datatype implements FormObject
     {
 
-        const ITEMTYPE = Datatype::ROLE;
+        public const ITEMTYPE = Datatype::ROLE;
 
         protected static $_items = null;
 
@@ -222,7 +222,7 @@
             return $this->_number_of_users;
         }
 
-        protected function _preDelete()
+        protected function _preDelete(): void
         {
             tables\Permissions::getTable()->deleteRolePermissions($this->getID());
             tables\RolePermissions::getTable()->clearPermissionsForRole($this->getID());
@@ -233,6 +233,7 @@
         public function updateFromRequest(Request $request)
         {
             $this->setName($request['name']);
+            $this->setProject($request['project_id']);
         }
 
         public function saveFromRequest(Request $request)

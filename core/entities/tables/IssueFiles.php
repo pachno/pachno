@@ -22,21 +22,21 @@
 
         use FileLink;
 
-        const B2DB_TABLE_VERSION = 1;
+        public const B2DB_TABLE_VERSION = 1;
 
-        const B2DBNAME = 'issuefiles';
+        public const B2DBNAME = 'issuefiles';
 
-        const ID = 'issuefiles.id';
+        public const ID = 'issuefiles.id';
 
-        const SCOPE = 'issuefiles.scope';
+        public const SCOPE = 'issuefiles.scope';
 
-        const USER_ID = 'issuefiles.uid';
+        public const USER_ID = 'issuefiles.uid';
 
-        const ATTACHED_AT = 'issuefiles.attached_at';
+        public const ATTACHED_AT = 'issuefiles.attached_at';
 
-        const FILE_ID = 'issuefiles.file_id';
+        public const FILE_ID = 'issuefiles.file_id';
 
-        const ISSUE_ID = 'issuefiles.issue_id';
+        public const ISSUE_ID = 'issuefiles.issue_id';
 
         protected $_preloaded_issue_counts;
 
@@ -153,7 +153,7 @@
             $this->rawDelete($query);
         }
 
-        protected function initialize()
+        protected function initialize(): void
         {
             parent::setup(self::B2DBNAME, self::ID);
             parent::addForeignKeyColumn(self::USER_ID, Users::getTable(), Users::ID);
@@ -162,7 +162,7 @@
             parent::addInteger(self::ATTACHED_AT, 10);
         }
 
-        protected function setupIndexes()
+        protected function setupIndexes(): void
         {
             $this->addIndex('issueid', self::ISSUE_ID);
         }

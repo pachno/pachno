@@ -9,7 +9,7 @@
     class Tag extends common\Colorizable
     {
 
-        const ITEMTYPE = Datatype::TAG;
+        public const ITEMTYPE = Datatype::TAG;
 
         protected static $_items = null;
 

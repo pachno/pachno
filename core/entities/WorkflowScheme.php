@@ -206,7 +206,7 @@
             $this->_name = $name;
         }
 
-        protected function _preDelete()
+        protected function _preDelete(): void
         {
             tables\WorkflowIssuetype::getTable()->deleteByWorkflowSchemeID($this->getID());
         }

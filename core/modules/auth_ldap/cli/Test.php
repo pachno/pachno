@@ -25,7 +25,7 @@
      */
     class Test extends Command
     {
-        const ERROR = 1;
+        public const ERROR = 1;
 
         /**
          * Executes the command.

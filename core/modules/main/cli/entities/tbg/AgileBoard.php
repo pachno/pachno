@@ -19,17 +19,17 @@
     class AgileBoard extends IdentifiableScoped
     {
 
-        const TYPE_GENERIC = 0;
+        public const TYPE_GENERIC = 0;
 
-        const TYPE_SCRUM = 1;
+        public const TYPE_SCRUM = 1;
 
-        const TYPE_KANBAN = 2;
+        public const TYPE_KANBAN = 2;
 
-        const SWIMLANES_ISSUES = 'issues';
+        public const SWIMLANES_ISSUES = 'issues';
 
-        const SWIMLANES_GROUPING = 'grouping';
+        public const SWIMLANES_GROUPING = 'grouping';
 
-        const SWIMLANES_EXPEDITE = 'expedite';
+        public const SWIMLANES_EXPEDITE = 'expedite';
 
         /**
          * The name of the board

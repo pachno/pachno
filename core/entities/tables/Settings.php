@@ -36,23 +36,23 @@
     class Settings extends ScopedTable
     {
 
-        const B2DB_TABLE_VERSION = 2;
+        public const B2DB_TABLE_VERSION = 2;
 
-        const B2DBNAME = 'settings';
+        public const B2DBNAME = 'settings';
 
-        const ID = 'settings.id';
+        public const ID = 'settings.id';
 
-        const SCOPE = 'settings.scope';
+        public const SCOPE = 'settings.scope';
 
-        const NAME = 'settings.name';
+        public const NAME = 'settings.name';
 
-        const MODULE = 'settings.module';
+        public const MODULE = 'settings.module';
 
-        const VALUE = 'settings.value';
+        public const VALUE = 'settings.value';
 
-        const UPDATED_AT = 'settings.updated_at';
+        public const UPDATED_AT = 'settings.updated_at';
 
-        const USER_ID = 'settings.uid';
+        public const USER_ID = 'settings.uid';
 
         /**
          * @param $scope
@@ -247,7 +247,7 @@
             $this->rawUpdate($update, $query);
         }
 
-        protected function setupIndexes()
+        protected function setupIndexes(): void
         {
             $this->addIndex('scope_uid', [self::SCOPE, self::USER_ID]);
         }

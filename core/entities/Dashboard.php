@@ -27,13 +27,13 @@
     class Dashboard extends IdentifiableScoped
     {
 
-        const TYPE_USER = 1;
+        public const TYPE_USER = 1;
 
-        const TYPE_PROJECT = 2;
+        public const TYPE_PROJECT = 2;
 
-        const TYPE_TEAM = 3;
+        public const TYPE_TEAM = 3;
 
-        const TYPE_CLIENT = 4;
+        public const TYPE_CLIENT = 4;
 
         /**
          * The name of the object
@@ -176,7 +176,7 @@
             }
         }
 
-        protected function _postSave($is_new)
+        protected function _postSave(bool $is_new): void
         {
             if ($is_new) {
                 switch ($this->getType()) {

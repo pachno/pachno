@@ -135,7 +135,7 @@
 
         }
 
-        public function __toString()
+        public function __toString(): string
         {
             return "" . $this->_name;
         }
@@ -327,7 +327,7 @@
             return [$active_projects, $archived_projects];
         }
 
-        protected function _preDelete()
+        protected function _preDelete(): void
         {
             tables\ClientMembers::getTable()->removeUsersFromClient($this->getID());
         }

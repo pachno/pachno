@@ -86,7 +86,7 @@
         <?php if (!$pachno_user->isGuest()) include_component('search/bulkactions', array('mode' => 'bottom')); ?>
         <script type="text/javascript">
             Pachno.on(Pachno.EVENTS.ready, function () {
-                const search = new Search({
+                public const search = new Search({
                     save_columns_url: "<?= make_url('search_save_column_settings'); ?>",
                     history_url: "<?= (Context::isProjectContext()) ? make_url('project_issues', array('project_key' => Context::getCurrentProject()->getKey())) : make_url('search'); ?>",
                     dynamic_callback_url: "<?= make_url('search_filter_getdynamicchoices'); ?>",

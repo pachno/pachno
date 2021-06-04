@@ -27,51 +27,51 @@
     class Users extends Table
     {
 
-        const B2DB_TABLE_VERSION = 3;
+        public const B2DB_TABLE_VERSION = 3;
 
-        const B2DBNAME = 'users';
+        public const B2DBNAME = 'users';
 
-        const ID = 'users.id';
+        public const ID = 'users.id';
 
-        const USERNAME = 'users.username';
+        public const USERNAME = 'users.username';
 
-        const PASSWORD = 'users.password';
+        public const PASSWORD = 'users.password';
 
-        const BUDDYNAME = 'users.buddyname';
+        public const BUDDYNAME = 'users.buddyname';
 
-        const REALNAME = 'users.realname';
+        public const REALNAME = 'users.realname';
 
-        const EMAIL = 'users.email';
+        public const EMAIL = 'users.email';
 
-        const USERSTATE = 'users.userstate';
+        public const USERSTATE = 'users.userstate';
 
-        const CUSTOMSTATE = 'users.customstate';
+        public const CUSTOMSTATE = 'users.customstate';
 
-        const HOMEPAGE = 'users.homepage';
+        public const HOMEPAGE = 'users.homepage';
 
-        const LANGUAGE = 'users.language';
+        public const LANGUAGE = 'users.language';
 
-        const LASTSEEN = 'users.lastseen';
+        public const LASTSEEN = 'users.lastseen';
 
-        const QUOTA = 'users.quota';
+        public const QUOTA = 'users.quota';
 
-        const ACTIVATED = 'users.activated';
+        public const ACTIVATED = 'users.activated';
 
-        const ENABLED = 'users.enabled';
+        public const ENABLED = 'users.enabled';
 
-        const DELETED = 'users.deleted';
+        public const DELETED = 'users.deleted';
 
-        const AVATAR = 'users.avatar';
+        public const AVATAR = 'users.avatar';
 
-        const USE_GRAVATAR = 'users.use_gravatar';
+        public const USE_GRAVATAR = 'users.use_gravatar';
 
-        const PRIVATE_EMAIL = 'users.private_email';
+        public const PRIVATE_EMAIL = 'users.private_email';
 
-        const JOINED = 'users.joined';
+        public const JOINED = 'users.joined';
 
-        const GROUP_ID = 'users.group_id';
+        public const GROUP_ID = 'users.group_id';
 
-        const OPENID_LOCKED = 'users.openid_locked';
+        public const OPENID_LOCKED = 'users.openid_locked';
 
         protected $_username_lookup_cache = [];
 
@@ -353,7 +353,7 @@
             return;
         }
 
-        protected function setupIndexes()
+        protected function setupIndexes(): void
         {
             $this->addIndex('userstate', self::USERSTATE);
             $this->addIndex('username_password', [self::USERNAME, self::PASSWORD]);

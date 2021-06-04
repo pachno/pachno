@@ -28,17 +28,17 @@
     class WorkflowSchemes extends ScopedTable
     {
 
-        const B2DB_TABLE_VERSION = 1;
+        public const B2DB_TABLE_VERSION = 1;
 
-        const B2DBNAME = 'workflow_schemes';
+        public const B2DBNAME = 'workflow_schemes';
 
-        const ID = 'workflow_schemes.id';
+        public const ID = 'workflow_schemes.id';
 
-        const SCOPE = 'workflow_schemes.scope';
+        public const SCOPE = 'workflow_schemes.scope';
 
-        const NAME = 'workflow_schemes.name';
+        public const NAME = 'workflow_schemes.name';
 
-        const DESCRIPTION = 'workflow_schemes.description';
+        public const DESCRIPTION = 'workflow_schemes.description';
 
         public function getAll($scope = null)
         {

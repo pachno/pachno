@@ -137,13 +137,13 @@
 </div>
 <script type="text/javascript">
     Pachno.on(Pachno.EVENTS.ready, () => {
-        const $body = $('body');
+        public const $body = $('body');
         $body.on('click', '.trigger-find-users', function (event) {
             event.preventDefault();
             event.stopPropagation();
-            const $link = $(this);
-            const url = $link.data('url');
-            const $form = $('#find_users_form');
+            public const $link = $(this);
+            public const url = $link.data('url');
+            public const $form = $('#find_users_form');
             $form.addClass('submitting');
 
             Pachno.fetch(url, {
@@ -156,13 +156,13 @@
         });
 
         $body.on('click', '.trigger-generate-password', function (event) {
-            const $link = $(this);
-            const url = $link.data('url');
+            public const $link = $(this);
+            public const url = $link.data('url');
             Pachno.UI.Dialog.show('<?php echo __('Generate new password for this user?'); ?>', '<?= __('Please confirm that you want to generate a new password for this user.'); ?>', {yes: {click: function() { Pachno.trigger(Pachno.EVENTS.configuration.generatePassword, { url });}}, no: {click: Pachno.UI.Dialog.dismiss}});
         });
 
         Pachno.on(Pachno.EVENTS.configuration.generatePassword, (PachnoApplication, data) => {
-            const url = data.url;
+            public const url = data.url;
             Pachno.UI.Dialog.setSubmitting();
 
             Pachno.fetch(url, {

@@ -15,19 +15,19 @@
     class Action extends Parameterholder
     {
 
-        const AUTHENTICATION_METHOD_CORE = 'core';
+        public const AUTHENTICATION_METHOD_CORE = 'core';
 
-        const AUTHENTICATION_METHOD_DUMMY = 'dummy';
+        public const AUTHENTICATION_METHOD_DUMMY = 'dummy';
 
-        const AUTHENTICATION_METHOD_CLI = 'cli';
+        public const AUTHENTICATION_METHOD_CLI = 'cli';
 
-        const AUTHENTICATION_METHOD_RSS_KEY = 'rss_key';
+        public const AUTHENTICATION_METHOD_RSS_KEY = 'rss_key';
 
-        const AUTHENTICATION_METHOD_APPLICATION_PASSWORD = 'application_password';
+        public const AUTHENTICATION_METHOD_APPLICATION_PASSWORD = 'application_password';
 
-        const AUTHENTICATION_METHOD_ELEVATED = 'elevated';
+        public const AUTHENTICATION_METHOD_ELEVATED = 'elevated';
 
-        const AUTHENTICATION_METHOD_BASIC = 'basic';
+        public const AUTHENTICATION_METHOD_BASIC = 'basic';
 
         /**
          * Retrieves authentication method for running an
@@ -70,7 +70,7 @@
          *
          * @param string $redirect_to The method to redirect to
          */
-        public function redirect($redirect_to)
+        public function redirect(string $redirect_to)
         {
             $actionName = 'run' . ucfirst($redirect_to);
             $this->getResponse()->setTemplate(mb_strtolower($redirect_to) . '.' . Context::getRequest()->getRequestedFormat() . '.php');
@@ -78,20 +78,6 @@
                 return $this->$actionName(Context::getRequest());
             }
             throw new exceptions\ActionNotFoundException("The action \"{$actionName}\" does not exist in " . get_class($this));
-        }
-
-        /**
-         * Render a string
-         *
-         * @param string $text The text to render
-         *
-         * @return boolean
-         */
-        public function renderText($text)
-        {
-            echo $text;
-
-            return true;
         }
 
         /**
@@ -315,6 +301,19 @@
         public function renderJSON($text = []): JsonOutput
         {
             return new JsonOutput($text);
+        }
+
+        /**
+         * Renders plaintext output, also takes care of setting the correct headers
+         *
+         * @param string $text An array, or text, to serve as json
+         * @param ?string $content_type A content type (default is text/plain unless specified)
+         *
+         * @return TextOutput
+         */
+        public function renderText(string $text = '', string $content_type = null): TextOutput
+        {
+            return new TextOutput($text, $content_type);
         }
 
     }

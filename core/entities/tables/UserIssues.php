@@ -26,17 +26,17 @@
     class UserIssues extends ScopedTable
     {
 
-        const B2DB_TABLE_VERSION = 1;
+        public const B2DB_TABLE_VERSION = 1;
 
-        const B2DBNAME = 'userissues';
+        public const B2DBNAME = 'userissues';
 
-        const ID = 'userissues.id';
+        public const ID = 'userissues.id';
 
-        const SCOPE = 'userissues.scope';
+        public const SCOPE = 'userissues.scope';
 
-        const ISSUE_ID = 'userissues.issue';
+        public const ISSUE_ID = 'userissues.issue';
 
-        const USER_ID = 'userissues.uid';
+        public const USER_ID = 'userissues.uid';
 
         public function copyStarrers($from_issue_id, $to_issue_id)
         {
@@ -115,14 +115,14 @@
             return true;
         }
 
-        protected function initialize()
+        protected function initialize(): void
         {
             parent::setup(self::B2DBNAME, self::ID);
             parent::addForeignKeyColumn(self::ISSUE_ID, Issues::getTable(), Issues::ID);
             parent::addForeignKeyColumn(self::USER_ID, Users::getTable(), Users::ID);
         }
 
-        protected function setupIndexes()
+        protected function setupIndexes(): void
         {
             $this->addIndex('uid_scope', [self::USER_ID, self::SCOPE]);
         }

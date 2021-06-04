@@ -7765,6 +7765,11 @@ var fetchHelper = function fetchHelper(url, options) {
 
               if (insertion) {
                 var $form_container = jquery__WEBPACK_IMPORTED_MODULE_0___default()(update_element).find('> .form-container');
+                var $no_items_element = jquery__WEBPACK_IMPORTED_MODULE_0___default()(update_element).find('.no-items');
+
+                if ($no_items_element.length) {
+                  $no_items_element.addClass('hidden');
+                }
 
                 if ($form_container.length) {
                   jquery__WEBPACK_IMPORTED_MODULE_0___default()(content).insertBefore($form_container);

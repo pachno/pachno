@@ -582,7 +582,7 @@
 </div>
 <script type="text/javascript">
     Pachno.on('template_trigger_disable_2fa', function (PachnoApplication, data) {
-        const url = data.url;
+        public const url = data.url;
         Pachno.fetch(url, {method: 'POST'})
             .then((json) => {
                 if (json.disabled === 'ok') {
@@ -598,7 +598,7 @@
     Pachno.on(Pachno.EVENTS.formSubmitResponse, function (PachnoApplication, data) {
         switch (data.form) {
             case 'check_username_form':
-                const json = data.json;
+                public const json = data.json;
                 if (json.available) {
                     Pachno.UI.Backdrop.show(json.url);
                 }

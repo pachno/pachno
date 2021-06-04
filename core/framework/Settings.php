@@ -20,245 +20,239 @@
     final class Settings
     {
 
-        const ACCESS_READ = 1;
+        public const ACCESS_READ = 1;
 
-        const ACCESS_FULL = 2;
+        public const ACCESS_FULL = 2;
 
-        const CONFIGURATION_SECTION_WORKFLOW = 1;
+        public const CONFIGURATION_SECTION_WORKFLOW = 1;
 
-        const CONFIGURATION_SECTION_WORKFLOW_SCHEMES = 9;
+        public const CONFIGURATION_SECTION_WORKFLOW_SCHEMES = 9;
 
-        const CONFIGURATION_SECTION_USERS = 2;
+        public const CONFIGURATION_SECTION_USERS = 2;
 
-        const CONFIGURATION_SECTION_TEAMS = 22;
+        public const CONFIGURATION_SECTION_TEAMS = 22;
 
-        const CONFIGURATION_SECTION_CLIENTS = 23;
+        public const CONFIGURATION_SECTION_CLIENTS = 23;
 
-        const CONFIGURATION_SECTION_UPLOADS = 3;
+        public const CONFIGURATION_SECTION_UPLOADS = 3;
 
-        const CONFIGURATION_SECTION_MAILING = 'mailing';
+        public const CONFIGURATION_SECTION_MAILING = 'mailing';
 
-        const CONFIGURATION_SECTION_ISSUEFIELDS = 4;
+        public const CONFIGURATION_SECTION_ISSUEFIELDS = 4;
 
-        const CONFIGURATION_SECTION_PERMISSIONS = 5;
+        public const CONFIGURATION_SECTION_PERMISSIONS = 5;
 
-        const CONFIGURATION_SECTION_ISSUETYPES = 6;
+        public const CONFIGURATION_SECTION_ISSUETYPES = 6;
 
-        const CONFIGURATION_SECTION_ISSUETYPE_SCHEMES = 8;
+        public const CONFIGURATION_SECTION_ISSUETYPE_SCHEMES = 8;
 
-        const CONFIGURATION_SECTION_ROLES = 7;
+        public const CONFIGURATION_SECTION_ROLES = 7;
 
-        const CONFIGURATION_SECTION_PROJECTS = 10;
+        public const CONFIGURATION_SECTION_PROJECTS = 10;
 
-        const CONFIGURATION_SECTION_SETTINGS = 12;
+        public const CONFIGURATION_SECTION_SETTINGS = 12;
 
-        const CONFIGURATION_SECTION_SCOPES = 14;
+        public const CONFIGURATION_SECTION_SCOPES = 14;
 
-        const CONFIGURATION_SECTION_MODULES = 15;
+        public const CONFIGURATION_SECTION_MODULES = 15;
 
-        const CONFIGURATION_SECTION_IMPORT = 16;
+        public const CONFIGURATION_SECTION_IMPORT = 16;
 
-        const CONFIGURATION_SECTION_AUTHENTICATION = 17;
+        public const CONFIGURATION_SECTION_AUTHENTICATION = 17;
 
-        const CONFIGURATION_SECTION_THEMES = 18;
+        public const CONFIGURATION_SECTION_THEMES = 18;
 
-        const APPEARANCE_HEADER_THEME = 0;
+        public const APPEARANCE_HEADER_THEME = 0;
 
-        const APPEARANCE_HEADER_CUSTOM = 1;
+        public const APPEARANCE_HEADER_CUSTOM = 1;
 
-        const APPEARANCE_FAVICON_THEME = 0;
+        public const APPEARANCE_FAVICON_THEME = 0;
 
-        const APPEARANCE_FAVICON_CUSTOM = 1;
+        public const APPEARANCE_FAVICON_CUSTOM = 1;
 
-        const SYNTAX_HIHGLIGHTING_FANCY_NUMBERS = 1;
+        public const INFOBOX_PREFIX = 'hide_infobox_';
 
-        const SYNTAX_HIHGLIGHTING_NORMAL_NUMBERS = 2;
+        public const TOGGLE_PREFIX = 'toggle_';
 
-        const SYNTAX_HIHGLIGHTING_NO_NUMBERS = 3;
+        public const SYNTAX_MW = 1;
 
-        const INFOBOX_PREFIX = 'hide_infobox_';
+        public const SYNTAX_MD = 2;
 
-        const TOGGLE_PREFIX = 'toggle_';
+        public const SYNTAX_PT = 3;
 
-        const SYNTAX_MW = 1;
+        public const SYNTAX_EDITOR_JS = 4;
 
-        const SYNTAX_MD = 2;
+        public const SETTING_ADMIN_GROUP = 'admingroup';
 
-        const SYNTAX_PT = 3;
+        public const SETTING_ALLOW_REGISTRATION = 'allowreg';
 
-        const SYNTAX_EDITOR_JS = 4;
+        public const SETTING_ALLOW_USER_THEMES = 'userthemes';
 
-        const SETTING_ADMIN_GROUP = 'admingroup';
+        public const SETTING_AWAYSTATE = 'awaystate';
 
-        const SETTING_ALLOW_REGISTRATION = 'allowreg';
+        public const SETTING_DEFAULT_CHARSET = 'charset';
 
-        const SETTING_ALLOW_USER_THEMES = 'userthemes';
+        public const SETTING_DEFAULT_COMMENT_SYNTAX = 'comment_syntax';
 
-        const SETTING_AWAYSTATE = 'awaystate';
+        public const SETTING_DEFAULT_ISSUE_SYNTAX = 'issue_syntax';
 
-        const SETTING_DEFAULT_CHARSET = 'charset';
+        public const SETTING_DEFAULT_LANGUAGE = 'language';
 
-        const SETTING_DEFAULT_COMMENT_SYNTAX = 'comment_syntax';
+        public const SETTING_DEFAULT_USER_IS_GUEST = 'defaultisguest';
 
-        const SETTING_DEFAULT_ISSUE_SYNTAX = 'issue_syntax';
+        public const SETTING_DEFAULT_USER_ID = 'defaultuserid';
 
-        const SETTING_DEFAULT_LANGUAGE = 'language';
+        public const SETTING_MULTI_TEAM_WORKFLOW_SCHEME = 'multi_team_workflow_scheme';
 
-        const SETTING_DEFAULT_USER_IS_GUEST = 'defaultisguest';
+        public const SETTING_BALANCED_WORKFLOW_SCHEME = 'balanced_workflow_scheme';
 
-        const SETTING_DEFAULT_USER_ID = 'defaultuserid';
+        public const SETTING_SIMPLE_WORKFLOW_SCHEME = 'simple_workflow_scheme';
 
-        const SETTING_MULTI_TEAM_WORKFLOW_SCHEME = 'multi_team_workflow_scheme';
+        public const SETTING_FULL_RANGE_ISSUETYPE_SCHEME = 'full_range_issuetype_scheme';
 
-        const SETTING_BALANCED_WORKFLOW_SCHEME = 'balanced_workflow_scheme';
+        public const SETTING_BALANCED_ISSUETYPE_SCHEME = 'balanced_issuetype_scheme';
 
-        const SETTING_SIMPLE_WORKFLOW_SCHEME = 'simple_workflow_scheme';
+        public const SETTING_BALANCED_AGILE_ISSUETYPE_SCHEME = 'balanced_agile_issuetype_scheme';
 
-        const SETTING_FULL_RANGE_ISSUETYPE_SCHEME = 'full_range_issuetype_scheme';
+        public const SETTING_SIMPLE_ISSUETYPE_SCHEME = 'simple_issuetype_scheme';
 
-        const SETTING_BALANCED_ISSUETYPE_SCHEME = 'balanced_issuetype_scheme';
+        public const SETTING_ENABLE_UPLOADS = 'enable_uploads';
 
-        const SETTING_BALANCED_AGILE_ISSUETYPE_SCHEME = 'balanced_agile_issuetype_scheme';
+        public const SETTING_ENABLE_GRAVATARS = 'enable_gravatars';
 
-        const SETTING_SIMPLE_ISSUETYPE_SCHEME = 'simple_issuetype_scheme';
+        public const SETTING_FAVICON_TYPE = 'icon_fav';
 
-        const SETTING_ENABLE_UPLOADS = 'enable_uploads';
+        public const SETTING_FAVICON_ID = 'icon_fav_id';
 
-        const SETTING_ENABLE_GRAVATARS = 'enable_gravatars';
+        public const SETTING_GUEST_GROUP = 'guestgroup';
 
-        const SETTING_FAVICON_TYPE = 'icon_fav';
+        public const SETTING_HEADER_ICON_TYPE = 'icon_header';
 
-        const SETTING_FAVICON_ID = 'icon_fav_id';
+        public const SETTING_HEADER_ICON_ID = 'icon_header_id';
 
-        const SETTING_GUEST_GROUP = 'guestgroup';
+        public const SETTING_HEADER_LINK = 'header_link';
 
-        const SETTING_HEADER_ICON_TYPE = 'icon_header';
+        public const SETTING_NOTIFICATION_POLL_INTERVAL = 'notificationpollinterval';
 
-        const SETTING_HEADER_ICON_ID = 'icon_header_id';
+        public const SETTING_OFFLINESTATE = 'offlinestate';
 
-        const SETTING_HEADER_LINK = 'header_link';
+        public const SETTING_ONLINESTATE = 'onlinestate';
 
-        const SETTING_NOTIFICATION_POLL_INTERVAL = 'notificationpollinterval';
+        public const SETTING_REGISTRATION_DOMAIN_WHITELIST = 'limit_registration';
 
-        const SETTING_OFFLINESTATE = 'offlinestate';
+        public const SETTING_REQUIRE_LOGIN = 'requirelogin';
 
-        const SETTING_ONLINESTATE = 'onlinestate';
+        public const SETTING_ELEVATED_LOGIN_DISABLED = 'elevatedlogindisabled';
 
-        const SETTING_REGISTRATION_DOMAIN_WHITELIST = 'limit_registration';
+        public const SETTING_RETURN_FROM_LOGIN = 'returnfromlogin';
 
-        const SETTING_REQUIRE_LOGIN = 'requirelogin';
+        public const SETTING_RETURN_FROM_LOGOUT = 'returnfromlogout';
 
-        const SETTING_ELEVATED_LOGIN_DISABLED = 'elevatedlogindisabled';
+        public const SETTING_SALT = 'salt';
 
-        const SETTING_RETURN_FROM_LOGIN = 'returnfromlogin';
+        public const SETTING_SERVER_TIMEZONE = 'server_timezone';
 
-        const SETTING_RETURN_FROM_LOGOUT = 'returnfromlogout';
+        public const SETTING_SITE_NAME = 'b2_name';
 
-        const SETTING_SALT = 'salt';
+        public const SETTING_SITE_NAME_HTML = 'pachno_header_name_html';
 
-        const SETTING_SERVER_TIMEZONE = 'server_timezone';
+        public const SETTING_THEME_NAME = 'theme_name';
 
-        const SETTING_SITE_NAME = 'b2_name';
+        public const SETTING_UPLOAD_EXTENSIONS_LIST = 'upload_extensions_list';
 
-        const SETTING_SITE_NAME_HTML = 'pachno_header_name_html';
+        public const SETTING_UPLOAD_LOCAL_PATH = 'upload_localpath';
 
-        const SETTING_THEME_NAME = 'theme_name';
+        public const SETTING_UPLOAD_MAX_FILE_SIZE = 'upload_max_file_size';
 
-        const SETTING_UPLOAD_EXTENSIONS_LIST = 'upload_extensions_list';
+        public const SETTING_UPLOAD_RESTRICTION_MODE = 'upload_restriction_mode';
 
-        const SETTING_UPLOAD_LOCAL_PATH = 'upload_localpath';
+        public const SETTING_UPLOAD_STORAGE = 'upload_storage';
 
-        const SETTING_UPLOAD_MAX_FILE_SIZE = 'upload_max_file_size';
+        public const SETTING_UPLOAD_ALLOW_IMAGE_CACHING = 'upload_allow_image_caching';
 
-        const SETTING_UPLOAD_RESTRICTION_MODE = 'upload_restriction_mode';
+        public const SETTING_UPLOAD_DELIVERY_USE_XSEND = 'upload_delivery_use_xsend';
 
-        const SETTING_UPLOAD_STORAGE = 'upload_storage';
+        public const SETTING_ISSUETYPE_BUG_REPORT = 'issuetype_bug_report';
 
-        const SETTING_UPLOAD_ALLOW_IMAGE_CACHING = 'upload_allow_image_caching';
+        public const SETTING_ISSUETYPE_FEATURE_REQUEST = 'issuetype_feature_request';
 
-        const SETTING_UPLOAD_DELIVERY_USE_XSEND = 'upload_delivery_use_xsend';
+        public const SETTING_ISSUETYPE_ENHANCEMENT = 'issuetype_enhancement';
 
-        const SETTING_ISSUETYPE_BUG_REPORT = 'issuetype_bug_report';
+        public const SETTING_ISSUETYPE_TASK = 'issuetype_task';
 
-        const SETTING_ISSUETYPE_FEATURE_REQUEST = 'issuetype_feature_request';
+        public const SETTING_ISSUETYPE_USER_STORY = 'issuetype_user_story';
 
-        const SETTING_ISSUETYPE_ENHANCEMENT = 'issuetype_enhancement';
+        public const SETTING_ISSUETYPE_EPIC = 'issuetype_epic';
 
-        const SETTING_ISSUETYPE_TASK = 'issuetype_task';
+        public const SETTING_ISSUETYPE_IDEA = 'issuetype_idea';
 
-        const SETTING_ISSUETYPE_USER_STORY = 'issuetype_user_story';
+        public const SETTING_USER_COMMENT_ORDER = 'comment_order';
 
-        const SETTING_ISSUETYPE_EPIC = 'issuetype_epic';
+        public const SETTING_USER_DISPLAYNAME_FORMAT = 'user_displayname_format';
 
-        const SETTING_ISSUETYPE_IDEA = 'issuetype_idea';
+        public const SETTING_USER_GROUP = 'defaultgroup';
 
-        const SETTING_USER_COMMENT_ORDER = 'comment_order';
+        public const SETTING_USER_TIMEZONE = 'timezone';
 
-        const SETTING_USER_DISPLAYNAME_FORMAT = 'user_displayname_format';
+        public const SETTING_USER_KEYBOARD_NAVIGATION = 'keyboard_navigation';
 
-        const SETTING_USER_GROUP = 'defaultgroup';
+        public const SETTING_USER_LANGUAGE = 'language';
 
-        const SETTING_USER_TIMEZONE = 'timezone';
+        public const SETTING_USER_ACTIVATION_KEY = 'activation_key';
 
-        const SETTING_USER_KEYBOARD_NAVIGATION = 'keyboard_navigation';
+        public const SETTING_USER_NOTIFICATION_TIMEOUT = 'notifications_timeout';
 
-        const SETTING_USER_LANGUAGE = 'language';
+        public const SETTING_USER_DESKTOP_NOTIFICATIONS_NEW_TAB = 'desktop_notifications_new_tab';
 
-        const SETTING_USER_ACTIVATION_KEY = 'activation_key';
+        public const SETTINGS_USER_SUBSCRIBE_CREATED_UPDATED_COMMENTED_ISSUES = 'subscribe_posted_updated_commented_issues';
 
-        const SETTING_USER_NOTIFICATION_TIMEOUT = 'notifications_timeout';
+        public const SETTINGS_USER_SUBSCRIBE_CREATED_UPDATED_COMMENTED_ARTICLES = 'subscribe_created_updated_commented_articles';
 
-        const SETTING_USER_DESKTOP_NOTIFICATIONS_NEW_TAB = 'desktop_notifications_new_tab';
+        public const SETTINGS_USER_SUBSCRIBE_NEW_ISSUES_MY_PROJECTS = 'subscribe_new_issues_project';
 
-        const SETTINGS_USER_SUBSCRIBE_CREATED_UPDATED_COMMENTED_ISSUES = 'subscribe_posted_updated_commented_issues';
+        public const SETTINGS_USER_SUBSCRIBE_NEW_ISSUES_MY_PROJECTS_CATEGORY = 'subscribe_new_issues_project_category';
 
-        const SETTINGS_USER_SUBSCRIBE_CREATED_UPDATED_COMMENTED_ARTICLES = 'subscribe_created_updated_commented_articles';
+        public const SETTINGS_USER_SUBSCRIBE_NEW_ARTICLES_MY_PROJECTS = 'subscribe_new_articles_project';
 
-        const SETTINGS_USER_SUBSCRIBE_NEW_ISSUES_MY_PROJECTS = 'subscribe_new_issues_project';
+        public const SETTINGS_USER_SUBSCRIBE_ASSIGNED_ISSUES = 'subscribe_assigned_issues';
 
-        const SETTINGS_USER_SUBSCRIBE_NEW_ISSUES_MY_PROJECTS_CATEGORY = 'subscribe_new_issues_project_category';
+        public const SETTINGS_USER_NOTIFY_NEW_ISSUES_MY_PROJECTS = 'notify_new_issues_my_projects';
 
-        const SETTINGS_USER_SUBSCRIBE_NEW_ARTICLES_MY_PROJECTS = 'subscribe_new_articles_project';
+        public const SETTINGS_USER_NOTIFY_NEW_ISSUES_MY_PROJECTS_CATEGORY = 'notify_new_issues_my_projects_category';
 
-        const SETTINGS_USER_SUBSCRIBE_ASSIGNED_ISSUES = 'subscribe_assigned_issues';
+        public const SETTINGS_USER_NOTIFY_NEW_ARTICLES_MY_PROJECTS = 'notify_new_articles_my_projects';
 
-        const SETTINGS_USER_NOTIFY_NEW_ISSUES_MY_PROJECTS = 'notify_new_issues_my_projects';
+        public const SETTINGS_USER_NOTIFY_ITEM_ONCE = 'notify_issue_once';
 
-        const SETTINGS_USER_NOTIFY_NEW_ISSUES_MY_PROJECTS_CATEGORY = 'notify_new_issues_my_projects_category';
+        public const SETTINGS_USER_NOTIFY_SUBSCRIBED_ISSUES = 'notify_subscribed_issues';
 
-        const SETTINGS_USER_NOTIFY_NEW_ARTICLES_MY_PROJECTS = 'notify_new_articles_my_projects';
+        public const SETTINGS_USER_NOTIFY_SUBSCRIBED_ARTICLES = 'notify_subscribed_articles';
 
-        const SETTINGS_USER_NOTIFY_ITEM_ONCE = 'notify_issue_once';
+        public const SETTINGS_USER_NOTIFY_SUBSCRIBED_DISCUSSIONS = 'notify_subscribed_discussion';
 
-        const SETTINGS_USER_NOTIFY_SUBSCRIBED_ISSUES = 'notify_subscribed_issues';
+        public const SETTINGS_USER_NOTIFY_UPDATED_SELF = 'notify_updated_self';
 
-        const SETTINGS_USER_NOTIFY_SUBSCRIBED_ARTICLES = 'notify_subscribed_articles';
+        public const SETTINGS_USER_NOTIFY_MENTIONED = 'notify_mentioned';
 
-        const SETTINGS_USER_NOTIFY_SUBSCRIBED_DISCUSSIONS = 'notify_subscribed_discussion';
+        public const SETTINGS_USER_NOTIFY_GROUPED_NOTIFICATIONS = 'notify_grouped_notifications';
 
-        const SETTINGS_USER_NOTIFY_UPDATED_SELF = 'notify_updated_self';
+        public const SETTINGS_USER_NOTIFY_ONLY_IN_BOX_WHEN_ACTIVE = 'notify_only_in_box_when_active';
 
-        const SETTINGS_USER_NOTIFY_MENTIONED = 'notify_mentioned';
+        public const SETTING_AUTH_BACKEND = 'auth_backend';
 
-        const SETTINGS_USER_NOTIFY_GROUPED_NOTIFICATIONS = 'notify_grouped_notifications';
+        public const SETTING_MAINTENANCE_MODE = 'offline';
 
-        const SETTINGS_USER_NOTIFY_ONLY_IN_BOX_WHEN_ACTIVE = 'notify_only_in_box_when_active';
+        public const SETTING_MAINTENANCE_MESSAGE = 'offline_msg';
 
-        const SETTING_AUTH_BACKEND = 'auth_backend';
+        public const SETTING_ICONSET = 'iconset';
 
-        const SETTING_MAINTENANCE_MODE = 'offline';
+        public const SETTING_ENABLE_SCOPES = 'enable_scopes';
 
-        const SETTING_MAINTENANCE_MESSAGE = 'offline_msg';
+        public const USER_RSS_KEY = 'rsskey';
 
-        const SETTING_ICONSET = 'iconset';
+        public const USER_DISPLAYNAME_FORMAT_REALNAME = 1;
 
-        const SETTING_ENABLE_SCOPES = 'enable_scopes';
-
-        const USER_RSS_KEY = 'rsskey';
-
-        const USER_DISPLAYNAME_FORMAT_REALNAME = 1;
-
-        const USER_DISPLAYNAME_FORMAT_BUDDY = 0;
+        public const USER_DISPLAYNAME_FORMAT_BUDDY = 0;
 
         protected static $_ver_mj = 0;
 

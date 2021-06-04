@@ -28,21 +28,21 @@
     class IssuetypeSchemeLink extends ScopedTable
     {
 
-        const B2DB_TABLE_VERSION = 1;
+        public const B2DB_TABLE_VERSION = 1;
 
-        const B2DBNAME = 'issuetype_scheme_link';
+        public const B2DBNAME = 'issuetype_scheme_link';
 
-        const ID = 'issuetype_scheme_link.id';
+        public const ID = 'issuetype_scheme_link.id';
 
-        const SCOPE = 'issuetype_scheme_link.scope';
+        public const SCOPE = 'issuetype_scheme_link.scope';
 
-        const ISSUETYPE_SCHEME_ID = 'issuetype_scheme_link.issuetype_scheme_id';
+        public const ISSUETYPE_SCHEME_ID = 'issuetype_scheme_link.issuetype_scheme_id';
 
-        const ISSUETYPE_ID = 'issuetype_scheme_link.issuetype_id';
+        public const ISSUETYPE_ID = 'issuetype_scheme_link.issuetype_id';
 
-        const REPORTABLE = 'issuetype_scheme_link.reportable';
+        public const REPORTABLE = 'issuetype_scheme_link.reportable';
 
-        const REDIRECT_AFTER_REPORTING = 'issuetype_scheme_link.redirect_after_reporting';
+        public const REDIRECT_AFTER_REPORTING = 'issuetype_scheme_link.redirect_after_reporting';
 
         public function getByIssuetypeSchemeID($issuetype_scheme_id)
         {
@@ -58,7 +58,7 @@
                 }
                 if (count($return_array)) {
                     $i_ids = array_keys($return_array);
-                    $issuetypes = Issuetype::getB2DBTable()->getByIds($i_ids);
+                    $issuetypes = IssueTypes::getTable()->getByIds($i_ids);
                     foreach ($i_ids as $i_id) {
                         if (array_key_exists($i_id, $issuetypes)) {
                             $return_array[$i_id]['issuetype'] = $issuetypes[$i_id];
@@ -142,7 +142,7 @@
             return $this->count($query);
         }
 
-        protected function initialize()
+        protected function initialize(): void
         {
             parent::setup(self::B2DBNAME, self::ID);
             parent::addForeignKeyColumn(self::ISSUETYPE_SCHEME_ID, IssuetypeSchemes::getTable(), IssuetypeSchemes::ID);
@@ -151,7 +151,7 @@
             parent::addBoolean(self::REDIRECT_AFTER_REPORTING, true);
         }
 
-        protected function setupIndexes()
+        protected function setupIndexes(): void
         {
             $this->addIndex('issuetypescheme_scope', [self::ISSUETYPE_SCHEME_ID, self::SCOPE]);
         }

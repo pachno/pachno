@@ -33,23 +33,23 @@
     class Modules extends ScopedTable
     {
 
-        const B2DB_TABLE_VERSION = 1;
+        public const B2DB_TABLE_VERSION = 1;
 
-        const B2DBNAME = 'modules';
+        public const B2DBNAME = 'modules';
 
-        const ID = 'modules.id';
+        public const ID = 'modules.id';
 
-        const MODULE_NAME = 'modules.name';
+        public const MODULE_NAME = 'modules.name';
 
-        const MODULE_LONGNAME = 'modules.module_longname';
+        public const MODULE_LONGNAME = 'modules.module_longname';
 
-        const ENABLED = 'modules.enabled';
+        public const ENABLED = 'modules.enabled';
 
-        const VERSION = 'modules.version';
+        public const VERSION = 'modules.version';
 
-        const CLASSNAME = 'modules.classname';
+        public const CLASSNAME = 'modules.classname';
 
-        const SCOPE = 'modules.scope';
+        public const SCOPE = 'modules.scope';
 
         public function getAll()
         {

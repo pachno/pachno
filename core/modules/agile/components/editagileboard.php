@@ -384,13 +384,13 @@
 <script>
     $('body').off('click', '.trigger-swimlane-toggle');
     $('body').on('click', '.trigger-swimlane-toggle', function () {
-        const $selected_item = $(this);
+        public const $selected_item = $(this);
         $('#agileboard-swimlane-details-container').children().hide();
         $('#agileboard_swimlane_' + $selected_item.val() + '_container').show();
     });
     $('body').off('click', '.trigger-toggle-swimlane-expedite-details');
     $('body').on('click', '.trigger-toggle-swimlane-expedite-details', function () {
-        const $selected_item = $(this);
+        public const $selected_item = $(this);
         $('#agileboard_swimlane_expedite_container_details').children().hide();
         $('#swimlane_expedite_identifier_' + $selected_item.val() + '_values').show();
     });

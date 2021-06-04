@@ -251,7 +251,7 @@
 <script type="text/javascript">
     Pachno.on(Pachno.EVENTS.ready, () => {
         <?php if ($article->getContentSyntax() != \pachno\core\framework\Settings::SYNTAX_EDITOR_JS): ?>
-            const $publishButton = $('#article-publish-button');
+            public const $publishButton = $('#article-publish-button');
             $publishButton.removeProp('disabled');
         <?php endif; ?>
 
@@ -271,11 +271,11 @@
             $('.enable-on-editor-ready').removeAttr('disabled');
         }
 
-        const $form = $('#edit_article_form');
-        const $nameInput = $('#article_name');
+        public const $form = $('#edit_article_form');
+        public const $nameInput = $('#article_name');
         $nameInput.focus();
         $form.on('submit', function(event) {
-            const $publishButton = $('#article-publish-button');
+            public const $publishButton = $('#article-publish-button');
             $publishButton.prop('disabled', true);
             $form.addClass('submitting');
 
@@ -291,9 +291,9 @@
                             return;
                         }
 
-                        const form_element = results.find(result => result.form_data !== undefined && result.form_data.input_name === 'article_content');
+                        public const form_element = results.find(result => result.form_data !== undefined && result.form_data.input_name === 'article_content');
                         if (form_element !== undefined) {
-                            const article_content = JSON.stringify(form_element.form_data.data);
+                            public const article_content = JSON.stringify(form_element.form_data.data);
                             options.data = { article_content };
                         }
                     <?php endif; ?>
@@ -303,9 +303,9 @@
             return false;
         });
 
-        const article = <?= json_encode($article->toJSON()); ?>;
+        public const article = <?= json_encode($article->toJSON()); ?>;
         <?php if (\pachno\core\framework\Settings::isUploadsEnabled() && $article->canEdit()): ?>
-        const uploader = new Uploader({
+        public const uploader = new Uploader({
             uploader_container: '#article-attachments-sidebar',
             mode: 'list',
             only_images: false,
@@ -319,7 +319,7 @@
             if (data.article_id != article.id)
                 return;
 
-            const count = parseInt($('.article-attachments-count').html());
+            public const count = parseInt($('.article-attachments-count').html());
             $('.article-attachments-count').html(count + 1);
         });
         <?php endif; ?>

@@ -28,9 +28,9 @@
     class Dashboards extends ScopedTable
     {
 
-        const B2DB_TABLE_VERSION = 1;
+        public const B2DB_TABLE_VERSION = 1;
 
-        const SCOPE = 'dashboards.scope';
+        public const SCOPE = 'dashboards.scope';
 
         /**
          * @param $user_id

@@ -24,8 +24,8 @@
     class ApplicationPasswords extends ScopedTable
     {
 
-        const B2DB_TABLE_VERSION = 1;
+        public const B2DB_TABLE_VERSION = 1;
 
-        const SCOPE = 'application_password.scope';
+        public const SCOPE = 'application_password.scope';
 
     }

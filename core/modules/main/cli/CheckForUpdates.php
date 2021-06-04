@@ -13,11 +13,11 @@
      */
     class CheckForUpdates extends Command
     {
-        const UPTODATE = 0;
+        public const UPTODATE = 0;
 
-        const OUTDATED = 1;
+        public const OUTDATED = 1;
 
-        const ERROR = 2;
+        public const ERROR = 2;
 
         public function do_execute()
         {

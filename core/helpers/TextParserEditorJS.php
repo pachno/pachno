@@ -14,7 +14,7 @@
      */
     class TextParserEditorJS implements ContentParser
     {
-        const BLOCK_PARAGRAPH = 'paragraph';
+        public const BLOCK_PARAGRAPH = 'paragraph';
 
         /**
          * An array of mentioned users

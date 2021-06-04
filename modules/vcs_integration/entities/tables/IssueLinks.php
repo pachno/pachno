@@ -28,14 +28,14 @@
     class IssueLinks extends ScopedTable
     {
 
-        const B2DB_TABLE_VERSION = 2;
-        const B2DBNAME = 'vcsintegration_issuelinks';
-        const ID = 'vcsintegration_issuelinks.id';
-        const SCOPE = 'vcsintegration_issuelinks.scope';
-        const ISSUE_NO = 'vcsintegration_issuelinks.issue_no';
-        const COMMIT_ID = 'vcsintegration_issuelinks.commit_id';
+        public const B2DB_TABLE_VERSION = 2;
+        public const B2DBNAME = 'vcsintegration_issuelinks';
+        public const ID = 'vcsintegration_issuelinks.id';
+        public const SCOPE = 'vcsintegration_issuelinks.scope';
+        public const ISSUE_NO = 'vcsintegration_issuelinks.issue_no';
+        public const COMMIT_ID = 'vcsintegration_issuelinks.commit_id';
 
-        protected function _setupIndexes()
+        protected function _setupIndexes(): void
         {
             $this->_addIndex('commit', self::COMMIT_ID);
             $this->_addIndex('issue', self::ISSUE_NO);

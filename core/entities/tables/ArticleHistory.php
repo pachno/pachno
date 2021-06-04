@@ -19,27 +19,27 @@
     class ArticleHistory extends ScopedTable
     {
 
-        const B2DB_TABLE_VERSION = 1;
+        public const B2DB_TABLE_VERSION = 1;
 
-        const B2DBNAME = 'articlehistory';
+        public const B2DBNAME = 'articlehistory';
 
-        const ID = 'articlehistory.id';
+        public const ID = 'articlehistory.id';
 
-        const ARTICLE_NAME = 'articlehistory.article_name';
+        public const ARTICLE_NAME = 'articlehistory.article_name';
 
-        const OLD_CONTENT = 'articlehistory.old_content';
+        public const OLD_CONTENT = 'articlehistory.old_content';
 
-        const NEW_CONTENT = 'articlehistory.new_content';
+        public const NEW_CONTENT = 'articlehistory.new_content';
 
-        const REASON = 'articlehistory.reason';
+        public const REASON = 'articlehistory.reason';
 
-        const REVISION = 'articlehistory.revision';
+        public const REVISION = 'articlehistory.revision';
 
-        const DATE = 'articlehistory.date';
+        public const DATE = 'articlehistory.date';
 
-        const AUTHOR = 'articlehistory.author';
+        public const AUTHOR = 'articlehistory.author';
 
-        const SCOPE = 'articlehistory.scope';
+        public const SCOPE = 'articlehistory.scope';
 
         public function deleteHistoryByArticle($article_name)
         {
@@ -338,7 +338,7 @@
             return $result;
         }
 
-        protected function initialize()
+        protected function initialize(): void
         {
             parent::setup(self::B2DBNAME, self::ID);
             parent::addVarchar(self::ARTICLE_NAME, 255);

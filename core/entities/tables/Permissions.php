@@ -29,31 +29,31 @@
     class Permissions extends ScopedTable
     {
 
-        const B2DB_TABLE_VERSION = 2;
+        public const B2DB_TABLE_VERSION = 2;
 
-        const B2DBNAME = 'permissions';
+        public const B2DBNAME = 'permissions';
 
-        const ID = 'permissions.id';
+        public const ID = 'permissions.id';
 
-        const SCOPE = 'permissions.scope';
+        public const SCOPE = 'permissions.scope';
 
-        const PERMISSION_TYPE = 'permissions.permission_type';
+        public const PERMISSION_TYPE = 'permissions.permission_type';
 
-        const TARGET_ID = 'permissions.target_id';
+        public const TARGET_ID = 'permissions.target_id';
 
-        const USER_ID = 'permissions.uid';
+        public const USER_ID = 'permissions.uid';
 
-        const GROUP_ID = 'permissions.gid';
+        public const GROUP_ID = 'permissions.gid';
 
-        const TEAM_ID = 'permissions.tid';
+        public const TEAM_ID = 'permissions.tid';
 
-        const CLIENT_ID = 'permissions.client_id';
+        public const CLIENT_ID = 'permissions.client_id';
 
-        const ALLOWED = 'permissions.allowed';
+        public const ALLOWED = 'permissions.allowed';
 
-        const MODULE = 'permissions.module';
+        public const MODULE = 'permissions.module';
 
-        const ROLE_ID = 'permissions.role_id';
+        public const ROLE_ID = 'permissions.role_id';
 
         public function getAll($scope_id = null)
         {
@@ -430,7 +430,7 @@
             $this->rawDelete($query);
         }
 
-        protected function setupIndexes()
+        protected function setupIndexes(): void
         {
             $this->addIndex('scope', [self::SCOPE]);
         }

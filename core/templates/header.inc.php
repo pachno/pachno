@@ -49,7 +49,7 @@
             </a>
         <?php endif; ?>
         <?php Event::createNew('core', 'header_menu_entries')->trigger(); ?>
-        <a class="<?php if ($selected_tab == 'teams') echo 'selected'; ?> disabled" href="<?= make_url('home'); ?>">
+        <a class="<?php if ($selected_tab == 'teams') echo 'selected'; ?> disabled" href="<?= make_url('home'); ?>" style="display: none;">
             <?= fa_image_tag('users', ['class' => 'icon']); ?>
             <span class="name"><?= __('Teams and clients'); ?><i class="count-badge"><?= __('Disabled in this alpha release'); ?></i></span>
         </a>

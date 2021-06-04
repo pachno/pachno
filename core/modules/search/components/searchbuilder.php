@@ -347,8 +347,8 @@
 <?php endif; ?>
 <script type="text/javascript">
     Pachno.on('template_trigger_download_search', function (PachnoApplication, data) {
-        const format = data.format;
-        const $find_issu = $('#find_issues_form');
+        public const format = data.format;
+        public const $find_issu = $('#find_issues_form');
         var parameters = fif.serialize();
         window.location = fif.dataset.historyUrl + '?' + parameters + '&format=' + format;
     });

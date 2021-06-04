@@ -39,9 +39,9 @@
     class Context
     {
 
-        const INTERNAL_MODULES = 'internal_modules';
+        public const INTERNAL_MODULES = 'internal_modules';
 
-        const EXTERNAL_MODULES = 'external_modules';
+        public const EXTERNAL_MODULES = 'external_modules';
 
         protected static $_debug_mode = true;
 
@@ -1465,9 +1465,9 @@
         /**
          * Return the currently selected project if any, or null
          *
-         * @return Project
+         * @return ?Project
          */
-        public static function getCurrentProject()
+        public static function getCurrentProject(): ?Project
         {
             return self::$_selected_project;
         }
@@ -1475,9 +1475,9 @@
         /**
          * Return whether current project is set
          *
-         * @return boolean
+         * @return bool
          */
-        public static function isProjectContext()
+        public static function isProjectContext(): bool
         {
             return (bool)(self::getCurrentProject() instanceof Project);
         }
@@ -1485,9 +1485,10 @@
         /**
          * Retrieve the message and clear it
          *
-         * @return string
+         * @param string $key The key of the message to retrieve
+         * @return ?string
          */
-        public static function getMessageAndClear($key)
+        public static function getMessageAndClear(string $key): ?string
         {
             if ($message = self::getMessage($key)) {
                 self::clearMessage($key);
@@ -1501,11 +1502,10 @@
         /**
          * Retrieve a message passed on from the previous request
          *
-         * @param string $key A message identifier
-         *
-         * @return string
+         * @param string $key The key of the message to retrieve
+         * @return ?string
          */
-        public static function getMessage($key)
+        public static function getMessage(string $key): ?string
         {
             return (self::hasMessage($key)) ? self::$_messages[$key] : null;
         }
@@ -1513,9 +1513,10 @@
         /**
          * Whether or not there is a message in the next request
          *
-         * @return boolean
+         * @param string $key The key of the message to retrieve
+         * @return bool
          */
-        public static function hasMessage($key)
+        public static function hasMessage(string $key): bool
         {
             self::_setupMessages();
 
@@ -1550,8 +1551,8 @@
             set_error_handler([self::class, 'errorHandler']);
             error_reporting(E_ALL | E_NOTICE | E_STRICT);
 
-            if (PHP_VERSION_ID < 70100)
-                die('This software requires PHP 7.1.0 or newer. Please upgrade to a newer version of php to use Pachno.');
+            if (PHP_VERSION_ID < 70400)
+                die('This software requires PHP 7.4.0 or newer. Please upgrade to a newer version of php to use Pachno.');
 
             gc_enable();
             date_default_timezone_set('UTC');
@@ -2155,7 +2156,7 @@
                         }
                     }
 
-                    if ($action_output instanceof JsonOutput) {
+                    if ($action_output instanceof RenderedOutput) {
                         $content = $action_output;
                         $other_content = ob_get_clean();
                         Logging::log('...done');
@@ -2242,7 +2243,7 @@
                     ob_flush();
                 } else {
                     // Render header template if any, and store the output in a variable
-                    if (!$content instanceof JsonOutput && !self::getRequest()->isAjaxCall() && self::getResponse()->doDecorateHeader()) {
+                    if (!$content instanceof RenderedOutput && !self::getRequest()->isAjaxCall() && self::getResponse()->doDecorateHeader()) {
                         Logging::log('decorating with header');
                         if (!file_exists(self::getResponse()->getHeaderDecoration())) {
                             throw new exceptions\TemplateNotFoundException('Can not find header decoration: ' . self::getResponse()->getHeaderDecoration());
@@ -2258,7 +2259,7 @@
                     Logging::log('...done (rendering content)');
 
                     // Render footer template if any
-                    if (!$content instanceof JsonOutput && !self::getRequest()->isAjaxCall() && self::getResponse()->doDecorateFooter()) {
+                    if (!$content instanceof RenderedOutput && !self::getRequest()->isAjaxCall() && self::getResponse()->doDecorateFooter()) {
                         Logging::log('decorating with footer');
                         if (!file_exists(self::getResponse()->getFooterDecoration())) {
                             throw new exceptions\TemplateNotFoundException('Can not find footer decoration: ' . self::getResponse()->getFooterDecoration());

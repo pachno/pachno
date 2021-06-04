@@ -9,7 +9,7 @@
     class Status extends common\Colorizable
     {
 
-        const ITEMTYPE = Datatype::STATUS;
+        public const ITEMTYPE = Datatype::STATUS;
 
         protected static $_items = null;
 

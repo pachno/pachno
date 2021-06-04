@@ -45,7 +45,7 @@
                 }
                 $return_options = ['finished' => 'ok'];
                 $board = AgileBoards::getTable()->selectById($request['board_id']);
-                $milestone = Milestone::getB2DBTable()->selectById($request['milestone_id']);
+                $milestone = Milestones::getTable()->selectById($request['milestone_id']);
                 $reached_date = mktime(23, 59, 59, Context::getRequest()->getParameter('milestone_finish_reached_month'), Context::getRequest()->getParameter('milestone_finish_reached_day'), Context::getRequest()->getParameter('milestone_finish_reached_year'));
                 $milestone->setReachedDate($reached_date);
                 $milestone->setReached();
@@ -57,7 +57,7 @@
                             Issues::getTable()->reAssignIssuesByMilestoneIds($milestone->getID(), null, 0);
                             break;
                         case 'reassign':
-                            $new_milestone = Milestone::getB2DBTable()->selectById($request['assign_issues_milestone_id']);
+                            $new_milestone = Milestones::getTable()->selectById($request['assign_issues_milestone_id']);
                             if ($request['assign_issues_milestone_id'] === '' || !$new_milestone instanceof Milestone || $new_milestone->isClosed()) {
                                 switch ($board->getType()) {
                                     case AgileBoard::TYPE_GENERIC:

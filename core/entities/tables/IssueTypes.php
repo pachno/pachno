@@ -27,21 +27,21 @@
     class IssueTypes extends ScopedTable
     {
 
-        const B2DB_TABLE_VERSION = 2;
+        public const B2DB_TABLE_VERSION = 2;
 
-        const B2DBNAME = 'issuetypes';
+        public const B2DBNAME = 'issuetypes';
 
-        const ID = 'issuetypes.id';
+        public const ID = 'issuetypes.id';
 
-        const SCOPE = 'issuetypes.scope';
+        public const SCOPE = 'issuetypes.scope';
 
-        const NAME = 'issuetypes.name';
+        public const NAME = 'issuetypes.name';
 
-        const DESCRIPTION = 'issuetypes.description';
+        public const DESCRIPTION = 'issuetypes.description';
 
-        const ICON = 'issuetypes.icon';
+        public const ICON = 'issuetypes.icon';
 
-        const TASK = 'issuetypes.task';
+        public const TASK = 'issuetypes.task';
 
         public function getAll()
         {

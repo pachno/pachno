@@ -24,10 +24,10 @@
     </ul>
     <script>
         Pachno.on(Pachno.EVENTS.ready, () => {
-            const $livelink_connector_accounts = $('#livelink-connector-accounts');
+            public const $livelink_connector_accounts = $('#livelink-connector-accounts');
 
-            const disconnectConnector = function(e) {
-                const url       = '<?= make_url('disconnect_livelink_connector'); ?>',
+            public const disconnectConnector = function(e) {
+                public const url       = '<?= make_url('disconnect_livelink_connector'); ?>',
                     $button   = $(this),
                     connector = $button.data('connector');
 
@@ -36,7 +36,7 @@
                 $button.addClass('submitting');
                 $button.prop('disabled', true);
 
-                const submitStep = function () {
+                public const submitStep = function () {
                     return new Promise(function (resolve, reject) {
                         $.ajax({
                             type: 'POST',

@@ -28,22 +28,20 @@
      * @package pachno
      * @subpackage main
      *
-     * @method static Milestones getB2DBTable Returns an instance of the associated table object
-     *
      * @Table(name="\pachno\core\entities\tables\Milestones")
      */
     class Milestone extends IdentifiableScoped
     {
 
-        const TYPE_REGULAR = 1;
+        public const TYPE_REGULAR = 1;
 
-        const TYPE_SCRUMSPRINT = 2;
+        public const TYPE_SCRUMSPRINT = 2;
 
-        const PERCENTAGE_TYPE_REGULAR = 1;
+        public const PERCENTAGE_TYPE_REGULAR = 1;
 
-        const PERCENTAGE_TYPE_SCRUMSPRINT = 2;
+        public const PERCENTAGE_TYPE_SCRUMSPRINT = 2;
 
-        const PERCENTAGE_TYPE_PERCENT_COMPLETED = 3;
+        public const PERCENTAGE_TYPE_PERCENT_COMPLETED = 3;
 
         /**
          * This milestone's project
@@ -200,7 +198,7 @@
 
         public static function doesIDExist($id)
         {
-            return (bool)static::getB2DBTable()->doesIDExist($id);
+            return (bool) Milestones::getTable()->doesIDExist($id);
         }
 
         public static function getPercentageTypes()
@@ -1139,12 +1137,12 @@
             return 'fas';
         }
 
-        protected function _construct(Row $row, $foreign_key = null)
+        protected function _construct(Row $row, string $foreign_key = null): void
         {
             $this->_reached = ($this->_reacheddate > 0);
         }
 
-        protected function _preSave($is_new)
+        protected function _preSave(bool $is_new): void
         {
             parent::_preSave($is_new);
             if ($is_new) {
@@ -1157,7 +1155,7 @@
             }
         }
 
-        protected function _postSave($is_new)
+        protected function _postSave(bool $is_new): void
         {
             if ($is_new) {
                 Event::createNew('core', 'Milestone::_postSave', $this)->trigger();
@@ -1209,7 +1207,7 @@
         /**
          * Delete this milestone
          */
-        protected function _preDelete()
+        protected function _preDelete(): void
         {
             tables\Issues::getTable()->clearMilestone($this->getID());
         }

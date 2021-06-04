@@ -17,7 +17,7 @@
     </div>
     <div id="backdrop_detail_content" class="backdrop_detail_content">
         <div class="form-container">
-            <form action="<?php echo $form_url; ?>" id="edit_role_form" method="post" data-simple-submit <?php if (!$role->getID()): ?> data-update-container="#<?= ($role->getProjectId()) ? 'project_roles_list' : 'global_roles_list'; ?>"<?php else: ?> data-update-container="role_<?= $role->getID(); ?>_container" data-update-replace<?php endif; ?>>
+            <form action="<?php echo $form_url; ?>" id="edit_role_form" method="post" data-simple-submit data-auto-close <?php if (!$role->getID()): ?> data-update-container="#<?= ($role->getProjectId()) ? 'project_roles_list' : 'global_roles_list'; ?>"<?php else: ?> data-update-container="#role_<?= $role->getID(); ?>_container" data-update-replace<?php endif; ?>>
                 <div class="form-row">
                     <input type="text" id="role_<?php echo $role->getID(); ?>_name" name="name" value="<?php echo __e($role->getName()); ?>" class="name-input-enhance">
                     <label style for="role_<?php echo $role->getID(); ?>_name"><?php echo __('Role name'); ?></label>

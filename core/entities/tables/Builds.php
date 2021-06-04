@@ -25,37 +25,37 @@
     class Builds extends ScopedTable
     {
 
-        const B2DB_TABLE_VERSION = 2;
+        public const B2DB_TABLE_VERSION = 2;
 
-        const B2DBNAME = 'builds';
+        public const B2DBNAME = 'builds';
 
-        const ID = 'builds.id';
+        public const ID = 'builds.id';
 
-        const SCOPE = 'builds.scope';
+        public const SCOPE = 'builds.scope';
 
-        const NAME = 'builds.name';
+        public const NAME = 'builds.name';
 
-        const VERSION_MAJOR = 'builds.version_major';
+        public const VERSION_MAJOR = 'builds.version_major';
 
-        const VERSION_MINOR = 'builds.version_minor';
+        public const VERSION_MINOR = 'builds.version_minor';
 
-        const VERSION_REVISION = 'builds.version_revision';
+        public const VERSION_REVISION = 'builds.version_revision';
 
-        const EDITION = 'builds.edition';
+        public const EDITION = 'builds.edition';
 
-        const RELEASE_DATE = 'builds.release_date';
+        public const RELEASE_DATE = 'builds.release_date';
 
-        const LOCKED = 'builds.locked';
+        public const LOCKED = 'builds.locked';
 
-        const PROJECT = 'builds.project';
+        public const PROJECT = 'builds.project';
 
-        const MILESTONE = 'builds.milestone';
+        public const MILESTONE = 'builds.milestone';
 
-        const RELEASED = 'builds.isreleased';
+        public const RELEASED = 'builds.isreleased';
 
-        const FILE_ID = 'builds.file_id';
+        public const FILE_ID = 'builds.file_id';
 
-        const FILE_URL = 'builds.file_url';
+        public const FILE_URL = 'builds.file_url';
 
         public function preloadBuilds($build_ids)
         {
@@ -117,7 +117,7 @@
         /**
          * @return Build[]
          */
-        public function selectAll()
+        public function selectAll(): array
         {
             $query = $this->getQuery();
 
@@ -129,7 +129,7 @@
             return $this->select($query);
         }
 
-        protected function migrateData(Table $old_table)
+        protected function migrateData(Table $old_table): void
         {
             $query = $this->getQuery();
             $query->where(self::FILE_ID, null, Criterion::IS_NOT_NULL);

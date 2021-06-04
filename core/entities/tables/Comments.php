@@ -25,39 +25,39 @@
     class Comments extends ScopedTable
     {
 
-        const B2DB_TABLE_VERSION = 4;
+        public const B2DB_TABLE_VERSION = 4;
 
-        const B2DBNAME = 'comments';
+        public const B2DBNAME = 'comments';
 
-        const ID = 'comments.id';
+        public const ID = 'comments.id';
 
-        const SCOPE = 'comments.scope';
+        public const SCOPE = 'comments.scope';
 
-        const TARGET_ID = 'comments.target_id';
+        public const TARGET_ID = 'comments.target_id';
 
-        const TARGET_TYPE = 'comments.target_type';
+        public const TARGET_TYPE = 'comments.target_type';
 
-        const CONTENT = 'comments.content';
+        public const CONTENT = 'comments.content';
 
-        const IS_PUBLIC = 'comments.is_public';
+        public const IS_PUBLIC = 'comments.is_public';
 
-        const POSTED_BY = 'comments.posted_by';
+        public const POSTED_BY = 'comments.posted_by';
 
-        const POSTED = 'comments.posted';
+        public const POSTED = 'comments.posted';
 
-        const UPDATED_BY = 'comments.updated_by';
+        public const UPDATED_BY = 'comments.updated_by';
 
-        const UPDATED = 'comments.updated';
+        public const UPDATED = 'comments.updated';
 
-        const DELETED = 'comments.deleted';
+        public const DELETED = 'comments.deleted';
 
-        const MODULE = 'comments.module';
+        public const MODULE = 'comments.module';
 
-        const COMMENT_NUMBER = 'comments.comment_number';
+        public const COMMENT_NUMBER = 'comments.comment_number';
 
-        const SYSTEM_COMMENT = 'comments.system_comment';
+        public const SYSTEM_COMMENT = 'comments.system_comment';
 
-        const HAS_ASSOCIATED_CHANGES = 'comments.has_associated_changes';
+        public const HAS_ASSOCIATED_CHANGES = 'comments.has_associated_changes';
 
         protected $_preloaded_counts = [];
 
@@ -185,7 +185,7 @@
             $this->rawUpdate($update, $query);
         }
 
-        protected function setupIndexes()
+        protected function setupIndexes(): void
         {
             $this->addIndex('type_target', [self::TARGET_TYPE, self::TARGET_ID]);
             $this->addIndex('type_target_deleted_system', [self::TARGET_TYPE, self::TARGET_ID, self::DELETED, self::SYSTEM_COMMENT]);

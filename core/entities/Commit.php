@@ -460,7 +460,7 @@
             return $this->_lines_added;
         }
 
-        protected function _preSave($is_new)
+        protected function _preSave(bool $is_new): void
         {
             parent::_preSave($is_new);
             if ($is_new) {
@@ -539,7 +539,7 @@
             $this->_author = $user;
         }
 
-        protected function _postSave($is_new)
+        protected function _postSave(bool $is_new): void
         {
             if ($is_new) {
                 $this->_addNotifications();
@@ -588,7 +588,7 @@
             }
         }
 
-        protected function _construct(Row $row, $foreign_key = null)
+        protected function _construct(Row $row, string $foreign_key = null): void
         {
             parent::_construct($row, $foreign_key);
             $this->_num_comments = tables\Comments::getTable()->getPreloadedCommentCount(Comment::TYPE_COMMIT, $this->_id);

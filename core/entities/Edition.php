@@ -310,14 +310,14 @@
             $this->_name = $name;
         }
 
-        protected function _postSave($is_new)
+        protected function _postSave(bool $is_new): void
         {
             if ($is_new) {
                 Event::createNew('core', 'Edition::createNew', $this)->trigger();
             }
         }
 
-        protected function _preDelete()
+        protected function _preDelete(): void
         {
             tables\EditionComponents::getTable()->deleteByEditionID($this->getID());
         }

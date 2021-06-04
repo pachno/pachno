@@ -29,27 +29,27 @@
     class Files extends ScopedTable
     {
 
-        const B2DB_TABLE_VERSION = 2;
+        public const B2DB_TABLE_VERSION = 2;
 
-        const B2DBNAME = 'files';
+        public const B2DBNAME = 'files';
 
-        const ID = 'files.id';
+        public const ID = 'files.id';
 
-        const SCOPE = 'files.scope';
+        public const SCOPE = 'files.scope';
 
-        const USER_ID = 'files.uid';
+        public const USER_ID = 'files.uid';
 
-        const UPLOADED_AT = 'files.uploaded_at';
+        public const UPLOADED_AT = 'files.uploaded_at';
 
-        const REAL_FILENAME = 'files.real_filename';
+        public const REAL_FILENAME = 'files.real_filename';
 
-        const ORIGINAL_FILENAME = 'files.original_filename';
+        public const ORIGINAL_FILENAME = 'files.original_filename';
 
-        const CONTENT_TYPE = 'files.content_type';
+        public const CONTENT_TYPE = 'files.content_type';
 
-        const CONTENT = 'files.content';
+        public const CONTENT = 'files.content';
 
-        const DESCRIPTION = 'files.description';
+        public const DESCRIPTION = 'files.description';
 
         public function saveFile($real_filename, $original_filename, $content_type, $description = null, $content = null)
         {

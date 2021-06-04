@@ -29,19 +29,19 @@
     class WorkflowStepTransitions extends ScopedTable
     {
 
-        const B2DB_TABLE_VERSION = 1;
+        public const B2DB_TABLE_VERSION = 1;
 
-        const B2DBNAME = 'workflow_step_transitions';
+        public const B2DBNAME = 'workflow_step_transitions';
 
-        const ID = 'workflow_step_transitions.id';
+        public const ID = 'workflow_step_transitions.id';
 
-        const SCOPE = 'workflow_step_transitions.scope';
+        public const SCOPE = 'workflow_step_transitions.scope';
 
-        const FROM_STEP_ID = 'workflow_step_transitions.from_step_id';
+        public const FROM_STEP_ID = 'workflow_step_transitions.from_step_id';
 
-        const TRANSITION_ID = 'workflow_step_transitions.transition_id';
+        public const TRANSITION_ID = 'workflow_step_transitions.transition_id';
 
-        const WORKFLOW_ID = 'workflow_step_transitions.workflow_id';
+        public const WORKFLOW_ID = 'workflow_step_transitions.workflow_id';
 
         public function countByStepID($step_id)
         {
@@ -180,7 +180,7 @@
             }
         }
 
-        protected function initialize()
+        protected function initialize(): void
         {
             parent::setup(self::B2DBNAME, self::ID);
             parent::addForeignKeyColumn(self::WORKFLOW_ID, Workflows::getTable(), Workflows::ID);
@@ -188,7 +188,7 @@
             parent::addForeignKeyColumn(self::TRANSITION_ID, WorkflowTransitions::getTable(), WorkflowTransitions::ID);
         }
 
-        protected function setupIndexes()
+        protected function setupIndexes(): void
         {
             $this->addIndex('scope_fromstepid', [self::SCOPE, self::FROM_STEP_ID]);
         }

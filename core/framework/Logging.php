@@ -12,15 +12,15 @@
      */
     class Logging
     {
-        const LEVEL_INFO = 1;
+        public const LEVEL_INFO = 1;
 
-        const LEVEL_NOTICE = 5;
+        public const LEVEL_NOTICE = 5;
 
-        const LEVEL_WARNING = 10;
+        public const LEVEL_WARNING = 10;
 
-        const LEVEL_WARNING_RISK = 15;
+        public const LEVEL_WARNING_RISK = 15;
 
-        const LEVEL_FATAL = 20;
+        public const LEVEL_FATAL = 20;
 
         protected static $_logging_enabled = true;
 

@@ -27,19 +27,19 @@
     class UserArticles extends ScopedTable
     {
 
-        const B2DB_TABLE_VERSION = 1;
+        public const B2DB_TABLE_VERSION = 1;
 
-        const B2DBNAME = 'userarticles';
+        public const B2DBNAME = 'userarticles';
 
-        const ID = 'userarticles.id';
+        public const ID = 'userarticles.id';
 
-        const SCOPE = 'userarticles.scope';
+        public const SCOPE = 'userarticles.scope';
 
-        const ARTICLE_ID = 'userarticles.article';
+        public const ARTICLE_ID = 'userarticles.article';
 
-        const USER_ID = 'userarticles.uid';
+        public const USER_ID = 'userarticles.uid';
 
-        public function _setupIndexes()
+        public function _setupIndexes(): void
         {
             $this->_addIndex('uid_scope', [self::USER_ID, self::SCOPE]);
         }
@@ -122,7 +122,7 @@
             return $this->count($query);
         }
 
-        protected function initialize()
+        protected function initialize(): void
         {
             parent::setup(self::B2DBNAME, self::ID);
             parent::addForeignKeyColumn(self::ARTICLE_ID, Articles::getTable(), Articles::ID);

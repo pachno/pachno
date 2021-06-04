@@ -33,23 +33,23 @@
     class SearchFilter extends IdentifiableScoped implements ArrayAccess
     {
 
-        const VALUE = 'savedsearchfilters.value';
+        public const VALUE = 'savedsearchfilters.value';
 
-        const OPERATOR = 'savedsearchfilters.operator';
+        public const OPERATOR = 'savedsearchfilters.operator';
 
-        const SEARCH_ID = 'savedsearchfilters.search_id';
+        public const SEARCH_ID = 'savedsearchfilters.search_id';
 
-        const FILTER_KEY = 'savedsearchfilters.filter_key';
+        public const FILTER_KEY = 'savedsearchfilters.filter_key';
 
-        const FILTER_RELATION_NEITHER_CHILD_NOR_PARENT = 0;
+        public const FILTER_RELATION_NEITHER_CHILD_NOR_PARENT = 0;
 
-        const FILTER_RELATION_WITHOUT_PARENT = 1;
+        public const FILTER_RELATION_WITHOUT_PARENT = 1;
 
-        const FILTER_RELATION_ONLY_PARENT = 2;
+        public const FILTER_RELATION_ONLY_PARENT = 2;
 
-        const FILTER_RELATION_WITHOUT_CHILD = 3;
+        public const FILTER_RELATION_WITHOUT_CHILD = 3;
 
-        const FILTER_RELATION_ONLY_CHILD = 4;
+        public const FILTER_RELATION_ONLY_CHILD = 4;
 
         /**
          * The value of the filter

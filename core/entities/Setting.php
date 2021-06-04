@@ -164,7 +164,7 @@
             return ($this->getScope() instanceof Scope) ? $this->getScope()->getID() : $this->_scope;
         }
 
-        protected function _preSave($is_new = false)
+        protected function _preSave(bool $is_new = false): void
         {
             $this->_updated_at = time();
 

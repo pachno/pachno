@@ -33,111 +33,111 @@
     class Issues extends ScopedTable
     {
 
-        const B2DB_TABLE_VERSION = 3;
+        public const B2DB_TABLE_VERSION = 3;
 
-        const B2DBNAME = 'issues';
+        public const B2DBNAME = 'issues';
 
-        const ID = 'issues.id';
+        public const ID = 'issues.id';
 
-        const SCOPE = 'issues.scope';
+        public const SCOPE = 'issues.scope';
 
-        const ISSUE_NO = 'issues.issue_no';
+        public const ISSUE_NO = 'issues.issue_no';
 
-        const TITLE = 'issues.name';
+        public const TITLE = 'issues.name';
 
-        const POSTED = 'issues.posted';
+        public const POSTED = 'issues.posted';
 
-        const LAST_UPDATED = 'issues.last_updated';
+        public const LAST_UPDATED = 'issues.last_updated';
 
-        const PROJECT_ID = 'issues.project_id';
+        public const PROJECT_ID = 'issues.project_id';
 
-        const DESCRIPTION = 'issues.description';
+        public const DESCRIPTION = 'issues.description';
 
-        const REPRODUCTION_STEPS = 'issues.reproduction_steps';
+        public const REPRODUCTION_STEPS = 'issues.reproduction_steps';
 
-        const ISSUE_TYPE = 'issues.issuetype';
+        public const ISSUE_TYPE = 'issues.issuetype';
 
-        const RESOLUTION = 'issues.resolution';
+        public const RESOLUTION = 'issues.resolution';
 
-        const STATE = 'issues.state';
+        public const STATE = 'issues.state';
 
-        const POSTED_BY = 'issues.posted_by';
+        public const POSTED_BY = 'issues.posted_by';
 
-        const OWNER_USER = 'issues.owner_user';
+        public const OWNER_USER = 'issues.owner_user';
 
-        const OWNER_TEAM = 'issues.owner_team';
+        public const OWNER_TEAM = 'issues.owner_team';
 
-        const STATUS = 'issues.status';
+        public const STATUS = 'issues.status';
 
-        const PRIORITY = 'issues.priority';
+        public const PRIORITY = 'issues.priority';
 
-        const SEVERITY = 'issues.severity';
+        public const SEVERITY = 'issues.severity';
 
-        const CATEGORY = 'issues.category';
+        public const CATEGORY = 'issues.category';
 
-        const REPRODUCABILITY = 'issues.reproducability';
+        public const REPRODUCABILITY = 'issues.reproducability';
 
-        const cover_color = 'issues.cover_color';
+        public const cover_color = 'issues.cover_color';
 
-        const ESTIMATED_MONTHS = 'issues.estimated_months';
+        public const ESTIMATED_MONTHS = 'issues.estimated_months';
 
-        const ESTIMATED_WEEKS = 'issues.estimated_weeks';
+        public const ESTIMATED_WEEKS = 'issues.estimated_weeks';
 
-        const ESTIMATED_DAYS = 'issues.estimated_days';
+        public const ESTIMATED_DAYS = 'issues.estimated_days';
 
-        const ESTIMATED_HOURS = 'issues.estimated_hours';
+        public const ESTIMATED_HOURS = 'issues.estimated_hours';
 
-        const ESTIMATED_MINUTES = 'issues.estimated_minutes';
+        public const ESTIMATED_MINUTES = 'issues.estimated_minutes';
 
-        const ESTIMATED_POINTS = 'issues.estimated_points';
+        public const ESTIMATED_POINTS = 'issues.estimated_points';
 
-        const SPENT_MONTHS = 'issues.spent_months';
+        public const SPENT_MONTHS = 'issues.spent_months';
 
-        const SPENT_WEEKS = 'issues.spent_weeks';
+        public const SPENT_WEEKS = 'issues.spent_weeks';
 
-        const SPENT_DAYS = 'issues.spent_days';
+        public const SPENT_DAYS = 'issues.spent_days';
 
-        const SPENT_HOURS = 'issues.spent_hours';
+        public const SPENT_HOURS = 'issues.spent_hours';
 
-        const SPENT_MINUTES = 'issues.spent_minutes';
+        public const SPENT_MINUTES = 'issues.spent_minutes';
 
-        const SPENT_POINTS = 'issues.spent_points';
+        public const SPENT_POINTS = 'issues.spent_points';
 
-        const PERCENT_COMPLETE = 'issues.percent_complete';
+        public const PERCENT_COMPLETE = 'issues.percent_complete';
 
-        const ASSIGNEE_USER = 'issues.assignee_user';
+        public const ASSIGNEE_USER = 'issues.assignee_user';
 
-        const ASSIGNEE_TEAM = 'issues.assignee_team';
+        public const ASSIGNEE_TEAM = 'issues.assignee_team';
 
-        const BEING_WORKED_ON_BY_USER = 'issues.being_worked_on_by_user';
+        public const BEING_WORKED_ON_BY_USER = 'issues.being_worked_on_by_user';
 
-        const BEING_WORKED_ON_BY_USER_SINCE = 'issues.being_worked_on_by_user_since';
+        public const BEING_WORKED_ON_BY_USER_SINCE = 'issues.being_worked_on_by_user_since';
 
-        const USER_PAIN = 'issues.user_pain';
+        public const USER_PAIN = 'issues.user_pain';
 
-        const PAIN_BUG_TYPE = 'issues.pain_bug_type';
+        public const PAIN_BUG_TYPE = 'issues.pain_bug_type';
 
-        const PAIN_EFFECT = 'issues.pain_effect';
+        public const PAIN_EFFECT = 'issues.pain_effect';
 
-        const PAIN_LIKELIHOOD = 'issues.pain_likelihood';
+        public const PAIN_LIKELIHOOD = 'issues.pain_likelihood';
 
-        const DUPLICATE_OF = 'issues.duplicate_of';
+        public const DUPLICATE_OF = 'issues.duplicate_of';
 
-        const DELETED = 'issues.deleted';
+        public const DELETED = 'issues.deleted';
 
-        const BLOCKING = 'issues.blocking';
+        public const BLOCKING = 'issues.blocking';
 
-        const LOCKED = 'issues.locked';
+        public const LOCKED = 'issues.locked';
 
-        const LOCKED_CATEGORY = 'issues.locked_category';
+        public const LOCKED_CATEGORY = 'issues.locked_category';
 
-        const WORKFLOW_STEP_ID = 'issues.workflow_step_id';
+        public const WORKFLOW_STEP_ID = 'issues.workflow_step_id';
 
-        const MILESTONE = 'issues.milestone';
+        public const MILESTONE = 'issues.milestone';
 
-        const VOTES_TOTAL = 'issues.votes_total';
+        public const VOTES_TOTAL = 'issues.votes_total';
 
-        const MILESTONE_ORDER = 'issues.milestone_order';
+        public const MILESTONE_ORDER = 'issues.milestone_order';
 
         /**
          * @return Issue[]
@@ -1150,7 +1150,7 @@
             return $this->select($query);
         }
 
-        protected function setupIndexes()
+        protected function setupIndexes(): void
         {
             $this->addIndex('project', self::PROJECT_ID);
             $this->addIndex('project', self::PROJECT_ID);
@@ -1162,7 +1162,7 @@
             $this->addIndex('duplicateof', [self::DUPLICATE_OF]);
         }
 
-        protected function migrateData(Table $old_table)
+        protected function migrateData(Table $old_table): void
         {
             $update = new Update();
             $update->add('issues.locked_category', true);

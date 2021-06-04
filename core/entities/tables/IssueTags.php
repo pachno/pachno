@@ -26,6 +26,6 @@
     class IssueTags extends ScopedTable
     {
 
-        const SCOPE = 'issue_tags.scope';
+        public const SCOPE = 'issue_tags.scope';
 
     }

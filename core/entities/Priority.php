@@ -11,17 +11,17 @@
     class Priority extends Datatype
     {
 
-        const ITEMTYPE = Datatype::PRIORITY;
+        public const ITEMTYPE = Datatype::PRIORITY;
 
-        const CRITICAL = 1;
+        public const CRITICAL = 1;
 
-        const HIGH = 2;
+        public const HIGH = 2;
 
-        const NORMAL = 3;
+        public const NORMAL = 3;
 
-        const LOW = 4;
+        public const LOW = 4;
 
-        const TRIVIAL = 5;
+        public const TRIVIAL = 5;
 
         protected static $_items = null;
 

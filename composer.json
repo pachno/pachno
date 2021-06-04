@@ -19,7 +19,7 @@
         "pachno/b2db" : "^1.0",
         "swiftmailer/swiftmailer" : "^6.0",
         "webit/eval-math" : "^1.0",
-        "mustangostang/spyc": "0.5.*",
+        "mustangostang/spyc": "^0.6",
         "realityking/pchart": "dev-master",
         "phpoffice/phpspreadsheet": "^1.17.0",
         "kriswallsmith/assetic": "~1.2",

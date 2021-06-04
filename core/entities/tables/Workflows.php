@@ -27,19 +27,19 @@
     class Workflows extends ScopedTable
     {
 
-        const B2DB_TABLE_VERSION = 2;
+        public const B2DB_TABLE_VERSION = 2;
 
-        const B2DBNAME = 'workflows';
+        public const B2DBNAME = 'workflows';
 
-        const ID = 'workflows.id';
+        public const ID = 'workflows.id';
 
-        const SCOPE = 'workflows.scope';
+        public const SCOPE = 'workflows.scope';
 
-        const NAME = 'workflows.name';
+        public const NAME = 'workflows.name';
 
-        const DESCRIPTION = 'workflows.description';
+        public const DESCRIPTION = 'workflows.description';
 
-        const IS_ACTIVE = 'workflows.is_active';
+        public const IS_ACTIVE = 'workflows.is_active';
 
         public function getAll($scope_id = null)
         {

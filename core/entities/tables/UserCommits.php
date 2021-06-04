@@ -26,19 +26,19 @@
     class UserCommits extends ScopedTable
     {
 
-        const B2DB_TABLE_VERSION = 1;
+        public const B2DB_TABLE_VERSION = 1;
 
-        const B2DBNAME = 'usercommits';
+        public const B2DBNAME = 'usercommits';
 
-        const ID = 'usercommits.id';
+        public const ID = 'usercommits.id';
 
-        const SCOPE = 'usercommits.scope';
+        public const SCOPE = 'usercommits.scope';
 
-        const COMMIT = 'usercommits.commit';
+        public const COMMIT = 'usercommits.commit';
 
-        const USER_ID = 'usercommits.uid';
+        public const USER_ID = 'usercommits.uid';
 
-        public function _setupIndexes()
+        public function _setupIndexes(): void
         {
             $this->_addIndex('uid_scope', [self::USER_ID, self::SCOPE]);
         }
@@ -121,7 +121,7 @@
             return $this->count($query);
         }
 
-        protected function initialize()
+        protected function initialize(): void
         {
             $this->setup(self::B2DBNAME, self::ID);
             $this->addForeignKeyColumn(self::COMMIT, Commits::getTable(), Commits::ID);

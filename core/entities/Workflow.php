@@ -350,7 +350,7 @@
             $this->_name = $name;
         }
 
-        protected function _postSave($is_new = false)
+        protected function _postSave(bool $is_new = false): void
         {
             if ($is_new && !$this->_is_copied) {
                 $step = new WorkflowStep();

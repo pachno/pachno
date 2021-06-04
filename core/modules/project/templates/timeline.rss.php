@@ -20,7 +20,7 @@ echo \pachno\core\framework\Context::getI18n()->getCharset(); ?>" ?>
         </image>
 <?php foreach ($recent_activities as $timestamp => $activities): ?>
 <?php foreach ($activities as $activity): ?>
-<?php if (array_key_exists('target_type', $activity) && $activity['target_type'] == 1 && ($issue = \pachno\core\entities\Issue::getB2DBTable()->selectById($activity['target'])) && $issue instanceof \pachno\core\entities\Issue): ?>
+<?php if (array_key_exists('target_type', $activity) && $activity['target_type'] == 1 && ($issue = \pachno\core\entities\tables\Issues::getTable()->selectById($activity['target'])) && $issue instanceof \pachno\core\entities\Issue): ?>
 <?php if ($issue->isDeleted()): continue; endif; ?>
         <item>
             <title><![CDATA[

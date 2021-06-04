@@ -61,7 +61,7 @@
             return framework\Context::getScope()->getID();
         }
 
-        protected function _preSave($is_new)
+        protected function _preSave(bool $is_new): void
         {
             if ($is_new && $this->_scope === null)
                 $this->_scope = $this->getCurrentScope();

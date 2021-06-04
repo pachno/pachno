@@ -16,6 +16,29 @@
     use Spyc;
     use const PACHNO_CONFIGURATION_PATH;
 
+    /**
+     *
+     * @property bool $all_well
+     * @property bool $base_folder_perm_ok
+     * @property bool $cache_folder_perm_ok
+     * @property bool $pachno_folder_perm_ok
+     * @property bool $b2db_param_file_ok
+     * @property bool $b2db_param_folder_ok
+     * @property bool $pdo_ok
+     * @property bool $mysql_ok
+     * @property bool $pgsql_ok
+     * @property bool $gd_ok
+     * @property bool $mb_ok
+     * @property bool $php_ok
+     * @property bool $pcre_ok
+     * @property bool $dom_ok
+     * @property bool $docblock_ok
+     * @property string $php_ver
+     * @property string $pcre_ver
+     * @property string $error
+     *
+     * @package pachno\core\modules\installation\controllers
+     */
     class Main extends framework\Action
     {
 
@@ -30,8 +53,8 @@
         public static function createCacheFolder()
         {
             $dir = __DIR__ . '/../../../cache';
-            if (!file_exists($dir)) {
-                mkdir($dir);
+            if (!file_exists($dir) && !mkdir($dir) && !is_dir($dir)) {
+                throw new \RuntimeException(sprintf('Directory "%s" was not created', $dir));
             }
         }
 
@@ -57,8 +80,6 @@
          * Runs the installation action
          *
          * @param framework\Request $request The request object
-         *
-         * @return null
          */
         public function runInstallIntro(framework\Request $request)
         {
@@ -405,33 +426,7 @@
 
         public function runUpgrade(framework\Request $request)
         {
-            list ($this->current_version, $this->upgrade_available) = framework\Settings::getUpgradeStatus();
-
-            $this->upgrade_complete = false;
-            $this->adminusername = UsersTable::getTable()->getAdminUsername();
-            $this->requires_password_reset = !in_array($this->current_version, ['4.2.0', '4.2.1']);
-            try {
-                if ($this->upgrade_available) {
-                    $this->permissions_ok = false;
-                    if (is_writable(PACHNO_PATH . 'installed') && is_writable(PACHNO_PATH . 'upgrade')) {
-                        $this->permissions_ok = true;
-                    }
-                }
-
-                if ($this->upgrade_available && $request->isPost()) {
-                    $upgrader = new Upgrade();
-                    $this->upgrade_complete = $upgrader->upgrade($request);
-
-                    if ($this->upgrade_complete) {
-                        $this->current_version = framework\Settings::getVersion(false, false);
-                        $this->upgrade_available = false;
-                    }
-                } elseif ($this->upgrade_complete) {
-                    $this->forward(framework\Context::getRouting()->generate('home'));
-                }
-            } catch (Exception $e) {
-                $this->error = $e->getMessage();
-            }
+            // [$current_version, $upgrade_available] = framework\Settings::getUpgradeStatus();
         }
 
     }

@@ -27,25 +27,25 @@
     class Notification extends IdentifiableScoped
     {
 
-        const TYPE_ISSUE_CREATED = 'issue_created';
+        public const TYPE_ISSUE_CREATED = 'issue_created';
 
-        const TYPE_ISSUE_UPDATED = 'issue_updated';
+        public const TYPE_ISSUE_UPDATED = 'issue_updated';
 
-        const TYPE_ISSUE_COMMENTED = 'issue_commented';
+        public const TYPE_ISSUE_COMMENTED = 'issue_commented';
 
-        const TYPE_ISSUE_MENTIONED = 'issue_mentioned';
+        public const TYPE_ISSUE_MENTIONED = 'issue_mentioned';
 
-        const TYPE_ARTICLE_CREATED = 'article_created';
+        public const TYPE_ARTICLE_CREATED = 'article_created';
 
-        const TYPE_ARTICLE_UPDATED = 'article_updated';
+        public const TYPE_ARTICLE_UPDATED = 'article_updated';
 
-        const TYPE_ARTICLE_COMMENTED = 'article_commented';
+        public const TYPE_ARTICLE_COMMENTED = 'article_commented';
 
-        const TYPE_ARTICLE_MENTIONED = 'article_mentioned';
+        public const TYPE_ARTICLE_MENTIONED = 'article_mentioned';
 
-        const TYPE_COMMENT_MENTIONED = 'comment_mentioned';
+        public const TYPE_COMMENT_MENTIONED = 'comment_mentioned';
 
-        const TYPE_COMMIT_COMMENTED = 'commit_commented';
+        public const TYPE_COMMIT_COMMENTED = 'commit_commented';
 
         /**
          * @Column(type="integer", length=10)
@@ -249,7 +249,7 @@
             $this->_target = $target;
         }
 
-        protected function _preSave($is_new)
+        protected function _preSave(bool $is_new): void
         {
             parent::_preSave($is_new);
             if ($is_new) {
@@ -257,7 +257,7 @@
             }
         }
 
-        protected function _postSave($is_new)
+        protected function _postSave(bool $is_new): void
         {
             if (!$is_new) {
                 if ($this->isRead() && $this->getCreatedAt() < NOW - (86400 * 30)) {

@@ -26,17 +26,17 @@
     class ScopeHostnames extends ScopedTable
     {
 
-        const B2DB_TABLE_VERSION = 1;
+        public const B2DB_TABLE_VERSION = 1;
 
-        const B2DBNAME = 'scopehostnames';
+        public const B2DBNAME = 'scopehostnames';
 
-        const ID = 'scopehostnames.id';
+        public const ID = 'scopehostnames.id';
 
-        const SCOPE_ID = 'scopehostnames.scope_id';
+        public const SCOPE_ID = 'scopehostnames.scope_id';
 
-        const SCOPE = 'scopehostnames.scope_id';
+        public const SCOPE = 'scopehostnames.scope_id';
 
-        const HOSTNAME = 'scopehostnames.hostname';
+        public const HOSTNAME = 'scopehostnames.hostname';
 
         public function removeHostnameFromScope($hostname, $scope_id)
         {
@@ -94,13 +94,13 @@
             $this->setupIndexes();
         }
 
-        protected function setupIndexes()
+        protected function setupIndexes(): void
         {
             $this->addIndex('id_hostname', [self::ID, self::HOSTNAME]);
             $this->addIndex('scopeid_hostname', [self::SCOPE_ID, self::HOSTNAME]);
         }
 
-        protected function initialize()
+        protected function initialize(): void
         {
             parent::setup(self::B2DBNAME, self::ID);
             parent::addVarchar(self::HOSTNAME, 200, '');

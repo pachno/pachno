@@ -28,31 +28,31 @@
     class IssueEstimates extends ScopedTable
     {
 
-        const B2DB_TABLE_VERSION = 1;
+        public const B2DB_TABLE_VERSION = 1;
 
-        const B2DBNAME = 'issue_estimates';
+        public const B2DBNAME = 'issue_estimates';
 
-        const ID = 'issue_estimates.id';
+        public const ID = 'issue_estimates.id';
 
-        const SCOPE = 'issue_estimates.scope';
+        public const SCOPE = 'issue_estimates.scope';
 
-        const ISSUE_ID = 'issue_estimates.issue_id';
+        public const ISSUE_ID = 'issue_estimates.issue_id';
 
-        const EDITED_BY = 'issue_estimates.edited_by';
+        public const EDITED_BY = 'issue_estimates.edited_by';
 
-        const EDITED_AT = 'issue_estimates.edited_at';
+        public const EDITED_AT = 'issue_estimates.edited_at';
 
-        const ESTIMATED_MONTHS = 'issue_estimates.estimated_months';
+        public const ESTIMATED_MONTHS = 'issue_estimates.estimated_months';
 
-        const ESTIMATED_WEEKS = 'issue_estimates.estimated_weeks';
+        public const ESTIMATED_WEEKS = 'issue_estimates.estimated_weeks';
 
-        const ESTIMATED_DAYS = 'issue_estimates.estimated_days';
+        public const ESTIMATED_DAYS = 'issue_estimates.estimated_days';
 
-        const ESTIMATED_HOURS = 'issue_estimates.estimated_hours';
+        public const ESTIMATED_HOURS = 'issue_estimates.estimated_hours';
 
-        const ESTIMATED_MINUTES = 'issue_estimates.estimated_minutes';
+        public const ESTIMATED_MINUTES = 'issue_estimates.estimated_minutes';
 
-        const ESTIMATED_POINTS = 'issue_estimates.estimated_points';
+        public const ESTIMATED_POINTS = 'issue_estimates.estimated_points';
 
         public function saveEstimate($issue_id, $months, $weeks, $days, $hours, $minutes, $points)
         {
@@ -132,7 +132,7 @@
             return ['points' => $points_retarr, 'hours' => $hours_retarr, 'minutes' => $minutes_retarr];
         }
 
-        protected function initialize()
+        protected function initialize(): void
         {
             parent::setup(self::B2DBNAME, self::ID);
             parent::addForeignKeyColumn(self::ISSUE_ID, Issues::getTable(), Issues::ID);

@@ -21,15 +21,15 @@
     class Branches extends ScopedTable
     {
 
-        const B2DB_TABLE_VERSION = 1;
+        public const B2DB_TABLE_VERSION = 1;
 
-        const B2DBNAME = 'branches';
+        public const B2DBNAME = 'branches';
 
-        const ID = 'branches.id';
+        public const ID = 'branches.id';
 
-        const SCOPE = 'branches.scope';
+        public const SCOPE = 'branches.scope';
 
-        const PROJECT_ID = 'branches.project_id';
+        public const PROJECT_ID = 'branches.project_id';
 
         /**
          * Get all branches inside a project
@@ -103,7 +103,7 @@
             return $branch;
         }
 
-        protected function setupIndexes()
+        protected function setupIndexes(): void
         {
             $this->addIndex('project', self::PROJECT_ID);
         }

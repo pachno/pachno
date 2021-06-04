@@ -14,25 +14,25 @@
     class MailQueueTable extends ScopedTable
     {
 
-        const B2DB_TABLE_VERSION = 1;
+        public const B2DB_TABLE_VERSION = 1;
 
-        const B2DBNAME = 'mailing_queue';
+        public const B2DBNAME = 'mailing_queue';
 
-        const ID = 'mailing_queue.id';
+        public const ID = 'mailing_queue.id';
 
-        const MESSAGE = 'mailing_queue.headers';
+        public const MESSAGE = 'mailing_queue.headers';
 
-        const DATE = 'mailing_queue.date';
+        public const DATE = 'mailing_queue.date';
 
-        const SCOPE = 'mailing_queue.scope';
+        public const SCOPE = 'mailing_queue.scope';
 
-        const SUBJECT = 'mailing_queue.subject';
+        public const SUBJECT = 'mailing_queue.subject';
 
-        const FROM = 'mailing_queue.from';
+        public const FROM = 'mailing_queue.from';
 
-        const TO = 'mailing_queue.to';
+        public const TO = 'mailing_queue.to';
 
-        const MESSAGE_HTML = 'mailing_queue.part';
+        public const MESSAGE_HTML = 'mailing_queue.part';
 
         public function addMailToQueue(Swift_Message $mail)
         {
@@ -88,7 +88,7 @@
             $res = $this->rawDelete($query);
         }
 
-        protected function initialize()
+        protected function initialize(): void
         {
             parent::setup(self::B2DBNAME, self::ID);
             parent::addVarchar(self::SUBJECT, 255);

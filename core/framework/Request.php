@@ -15,13 +15,13 @@
     class Request implements ArrayAccess
     {
 
-        const POST = 'POST';
+        public const POST = 'POST';
 
-        const GET = 'GET';
+        public const GET = 'GET';
 
-        const PUT = 'PUT';
+        public const PUT = 'PUT';
 
-        const DELETE = 'DELETE';
+        public const DELETE = 'DELETE';
 
         protected $_request_parameters = [];
 

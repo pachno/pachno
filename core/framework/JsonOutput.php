@@ -8,10 +8,8 @@
      * @package pachno
      * @subpackage mvc
      */
-    class JsonOutput
+    class JsonOutput extends RenderedOutput
     {
-
-        protected $content;
 
         public function __construct($response = [])
         {

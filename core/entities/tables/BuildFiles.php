@@ -21,21 +21,21 @@
 
         use FileLink;
 
-        const B2DB_TABLE_VERSION = 1;
+        public const B2DB_TABLE_VERSION = 1;
 
-        const B2DBNAME = 'buildfiles';
+        public const B2DBNAME = 'buildfiles';
 
-        const ID = 'buildfiles.id';
+        public const ID = 'buildfiles.id';
 
-        const SCOPE = 'buildfiles.scope';
+        public const SCOPE = 'buildfiles.scope';
 
-        const USER_ID = 'buildfiles.uid';
+        public const USER_ID = 'buildfiles.uid';
 
-        const ATTACHED_AT = 'buildfiles.attached_at';
+        public const ATTACHED_AT = 'buildfiles.attached_at';
 
-        const FILE_ID = 'buildfiles.file_id';
+        public const FILE_ID = 'buildfiles.file_id';
 
-        const BUILD_ID = 'buildfiles.build_id';
+        public const BUILD_ID = 'buildfiles.build_id';
 
         public function addByBuildIDandFileID($build_id, $file_id, $attached_at = null, $scope_id = null)
         {
@@ -116,7 +116,7 @@
             return $build_ids;
         }
 
-        protected function initialize()
+        protected function initialize(): void
         {
             parent::setup(self::B2DBNAME, self::ID);
             parent::addForeignKeyColumn(self::USER_ID, Users::getTable(), Users::ID);

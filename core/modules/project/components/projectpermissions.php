@@ -22,14 +22,16 @@
         <div class="column header"><?= __('Permission(s)'); ?></div>
         <div class="column header actions"></div>
     </div>
-    <?php foreach ($project_roles as $role): ?>
-        <?php include_component('configuration/role', ['role' => $role]); ?>
-    <?php endforeach; ?>
-    <?php if (!count($project_roles)): ?>
-        <div class="row disabled">
-            <div class="column name-container"><?= __('There are no project-specific roles'); ?></div>
-        </div>
-    <?php endif; ?>
+    <div class="body" id="project_roles_list">
+        <?php foreach ($project_roles as $role): ?>
+            <?php include_component('configuration/role', ['role' => $role]); ?>
+        <?php endforeach; ?>
+        <?php if (!count($project_roles)): ?>
+            <div class="row disabled no-items">
+                <div class="column name-container"><?= __('There are no project-specific roles'); ?></div>
+            </div>
+        <?php endif; ?>
+    </div>
     <div class="row header">
         <div class="column header name-container"><?= __('Global roles'); ?></div>
     </div>

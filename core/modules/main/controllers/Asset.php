@@ -19,7 +19,8 @@
             $theme = isset($request['theme_name']) ? $request['theme_name'] : framework\Settings::getThemeName();
             $module_path = (framework\Context::isInternalModule($request['module_name'])) ? PACHNO_INTERNAL_MODULES_PATH : PACHNO_MODULES_PATH;
             if ($request->hasParameter('css')) {
-                $this->getResponse()->setContentType('text/css');
+//                $this->getResponse()->setContentType('text/css');
+                $mimetype = 'text/css';
                 if ($request->hasParameter('module_name') && framework\Context::isModuleLoaded($request['module_name'])) {
                     $basepath = $module_path . $request['module_name'] . DS . 'public' . DS . 'css';
                     $asset = $module_path . $request['module_name'] . DS . 'public' . DS . 'css' . DS . $request->getParameter('css');
@@ -31,7 +32,8 @@
                     $asset = PACHNO_PATH . 'themes' . DS . $theme . DS . 'css' . DS . $request->getParameter('css');
                 }
             } elseif ($request->hasParameter('js')) {
-                $this->getResponse()->setContentType('text/javascript');
+//                $this->getResponse()->setContentType('text/javascript');
+                $mimetype = 'text/javascript';
                 if ($request->hasParameter('theme_name')) {
                     $basepath = PACHNO_PATH . 'themes';
                     $asset = PACHNO_PATH . 'themes' . DS . $theme . DS . 'js' . DS . $request->getParameter('js');
@@ -81,7 +83,7 @@
             $this->getResponse()->addHeader('Last-Modified: ' . gmdate('D, d M Y H:i:s ', $last_modified) . 'GMT');
             $this->getResponse()->addHeader('ETag: ' . md5($last_modified));
             if (!$this->getResponse()->isModified($last_modified)) {
-                return $this->return304();
+                $this->return304();
             }
 
             $fileAsset = new AssetCollection([
@@ -92,6 +94,6 @@
             // Do not decorate the asset with the theme's header/footer
             $this->getResponse()->setDecoration(framework\Response::DECORATE_NONE);
 
-            return $this->renderText($fileAsset->dump());
+            return $this->renderText($fileAsset->dump(), $mimetype);
         }
     }

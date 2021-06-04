@@ -164,9 +164,9 @@
         Pachno.on(Pachno.EVENTS.ready, function () {
             $('body').on('click', '.trigger-copy-popup', () => $('#copy_article_form_container').show() );
 
-            const article = <?= json_encode($article->toJSON()); ?>;
+            public const article = <?= json_encode($article->toJSON()); ?>;
             <?php if (\pachno\core\framework\Settings::isUploadsEnabled() && $article->canEdit()): ?>
-                const uploader = new Uploader({
+                public const uploader = new Uploader({
                     uploader_container: '#article_attachments',
                     mode: 'list',
                     only_images: false,
@@ -194,7 +194,7 @@
                 if (data.article_id != article.id)
                     return;
 
-                const count = parseInt($('#article-attachments-count').html());
+                public const count = parseInt($('#article-attachments-count').html());
                 $('#article-attachments-count').html(count + 1);
             });
 

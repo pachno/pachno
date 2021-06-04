@@ -14,10 +14,10 @@
     class File extends IdentifiableScoped
     {
 
-        const TYPE_PROJECT_ICON = 'project_icon';
-        const TYPE_ATTACHMENT = 'attachment';
-        const TYPE_COVER = 'cover';
-        const TYPE_DOWNLOAD = 'download';
+        public const TYPE_PROJECT_ICON = 'project_icon';
+        public const TYPE_ATTACHMENT = 'attachment';
+        public const TYPE_COVER = 'cover';
+        public const TYPE_DOWNLOAD = 'download';
 
         /**
          * @Column(type="string", length=200)
@@ -276,7 +276,7 @@
 //            return $event->getReturnValue();
         }
 
-        protected function _preDelete()
+        protected function _preDelete(): void
         {
             if ($this->doesFileExistOnDisk()) {
                 unlink($this->getFullpath());
@@ -319,7 +319,7 @@
             $this->_type = $type;
         }
 
-        protected function _preSave($is_new)
+        protected function _preSave(bool $is_new): void
         {
             parent::_preSave($is_new);
             if ($is_new) {

@@ -3,6 +3,7 @@
     namespace pachno\core\entities;
 
     use pachno\core\entities\common\IdentifiableScoped;
+    use pachno\core\entities\tables\DashboardViews;
     use pachno\core\framework as framework;
 
     /**
@@ -26,59 +27,59 @@
     class DashboardView extends IdentifiableScoped
     {
 
-        const VIEW_PREDEFINED_SEARCH = 1;
+        public const VIEW_PREDEFINED_SEARCH = 1;
 
-        const VIEW_SAVED_SEARCH = 2;
+        public const VIEW_SAVED_SEARCH = 2;
 
-        const VIEW_LOGGED_ACTIONS = 3;
+        public const VIEW_LOGGED_ACTIONS = 3;
 
-        const VIEW_RECENT_COMMENTS = 4;
+        public const VIEW_RECENT_COMMENTS = 4;
 
-        const VIEW_FRIENDS = 5;
+        public const VIEW_FRIENDS = 5;
 
-        const VIEW_PROJECTS = 6;
+        public const VIEW_PROJECTS = 6;
 
-        const VIEW_MILESTONES = 7;
+        public const VIEW_MILESTONES = 7;
 
-        const VIEW_PROJECT_INFO = 101;
+        public const VIEW_PROJECT_INFO = 101;
 
-        const VIEW_PROJECT_TEAM = 102;
+        public const VIEW_PROJECT_TEAM = 102;
 
-        const VIEW_PROJECT_CLIENT = 103;
+        public const VIEW_PROJECT_CLIENT = 103;
 
-        const VIEW_PROJECT_SUBPROJECTS = 104;
+        public const VIEW_PROJECT_SUBPROJECTS = 104;
 
-        const VIEW_PROJECT_STATISTICS_LAST15 = 105;
+        public const VIEW_PROJECT_STATISTICS_LAST15 = 105;
 
-        const VIEW_PROJECT_STATISTICS_PRIORITY = 106;
+        public const VIEW_PROJECT_STATISTICS_PRIORITY = 106;
 
-        const VIEW_PROJECT_STATISTICS_STATUS = 111;
+        public const VIEW_PROJECT_STATISTICS_STATUS = 111;
 
-        const VIEW_PROJECT_STATISTICS_WORKFLOW_STEP = 115;
+        public const VIEW_PROJECT_STATISTICS_WORKFLOW_STEP = 115;
 
-        const VIEW_PROJECT_STATISTICS_RESOLUTION = 112;
+        public const VIEW_PROJECT_STATISTICS_RESOLUTION = 112;
 
-        const VIEW_PROJECT_STATISTICS_STATE = 113;
+        public const VIEW_PROJECT_STATISTICS_STATE = 113;
 
-        const VIEW_PROJECT_STATISTICS_CATEGORY = 114;
+        public const VIEW_PROJECT_STATISTICS_CATEGORY = 114;
 
-        const VIEW_PROJECT_STATISTICS_SEVERITY = 116;
+        public const VIEW_PROJECT_STATISTICS_SEVERITY = 116;
 
-        const VIEW_PROJECT_RECENT_ISSUES = 107;
+        public const VIEW_PROJECT_RECENT_ISSUES = 107;
 
-        const VIEW_PROJECT_RECENT_ACTIVITIES = 108;
+        public const VIEW_PROJECT_RECENT_ACTIVITIES = 108;
 
-        const VIEW_PROJECT_UPCOMING = 109;
+        public const VIEW_PROJECT_UPCOMING = 109;
 
-        const VIEW_PROJECT_DOWNLOADS = 110;
+        public const VIEW_PROJECT_DOWNLOADS = 110;
 
-        const TYPE_USER = 1;
+        public const TYPE_USER = 1;
 
-        const TYPE_PROJECT = 2;
+        public const TYPE_PROJECT = 2;
 
-        const TYPE_TEAM = 3;
+        public const TYPE_TEAM = 3;
 
-        const TYPE_CLIENT = 4;
+        public const TYPE_CLIENT = 4;
 
         /**
          * The name of the object
@@ -114,19 +115,12 @@
 
         public static function getUserViews($user_id)
         {
-            return self::getViews($user_id, self::TYPE_USER);
-        }
-
-        public static function getViews($tid, $target_type)
-        {
-            $views = self::getB2DBTable()->getViews($tid, $target_type);
-
-            return $views;
+            return DashboardViews::getTable()->getViews($user_id, self::TYPE_USER);
         }
 
         public static function getProjectViews($project_id)
         {
-            return self::getViews($project_id, self::TYPE_PROJECT);
+            return DashboardViews::getTable()->getViews($project_id, self::TYPE_PROJECT);
         }
 
         /**

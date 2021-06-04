@@ -26,11 +26,11 @@
     class LivelinkImports extends ScopedTable
     {
 
-        const B2DB_TABLE_VERSION = 1;
+        public const B2DB_TABLE_VERSION = 1;
 
-        const B2DBNAME = 'livelink_imports';
+        public const B2DBNAME = 'livelink_imports';
 
-        const SCOPE = 'livelink_imports.scope';
+        public const SCOPE = 'livelink_imports.scope';
 
         /**
          * @return LivelinkImport[]

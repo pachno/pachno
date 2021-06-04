@@ -26,17 +26,17 @@
     class Buddies extends ScopedTable
     {
 
-        const B2DB_TABLE_VERSION = 1;
+        public const B2DB_TABLE_VERSION = 1;
 
-        const B2DBNAME = 'buddies';
+        public const B2DBNAME = 'buddies';
 
-        const ID = 'buddies.id';
+        public const ID = 'buddies.id';
 
-        const SCOPE = 'buddies.scope';
+        public const SCOPE = 'buddies.scope';
 
-        const USER_ID = 'buddies.uid';
+        public const USER_ID = 'buddies.uid';
 
-        const BUDDY_USER_ID = 'buddies.bid';
+        public const BUDDY_USER_ID = 'buddies.bid';
 
         public function addFriend($user_id, $friend_id)
         {
@@ -72,7 +72,7 @@
             $this->rawDelete($query);
         }
 
-        protected function initialize()
+        protected function initialize(): void
         {
             parent::setup(self::B2DBNAME, self::ID);
             parent::addForeignKeyColumn(self::USER_ID, Users::getTable(), Users::ID);

@@ -81,8 +81,8 @@
 </div>
 <script type="text/javascript">
     Pachno.on(Pachno.EVENTS.formSubmitResponse, function (PachnoApplication, data) {
-        const json = data.json;
-        const $form = $(`#${data.form}`);
+        public const json = data.json;
+        public const $form = $(`#${data.form}`);
         switch (data.form) {
             case 'project-add-component-form':
                 $form.trigger('reset');

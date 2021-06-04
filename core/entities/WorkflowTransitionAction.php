@@ -29,53 +29,53 @@
     class WorkflowTransitionAction extends IdentifiableScoped
     {
 
-        const ACTION_ASSIGN_ISSUE_SELF = 'assign_self';
+        public const ACTION_ASSIGN_ISSUE_SELF = 'assign_self';
 
-        const ACTION_ASSIGN_ISSUE = 'assign_user';
+        public const ACTION_ASSIGN_ISSUE = 'assign_user';
 
-        const ACTION_CLEAR_ASSIGNEE = 'clear_assignee';
+        public const ACTION_CLEAR_ASSIGNEE = 'clear_assignee';
 
-        const ACTION_SET_DUPLICATE = 'set_duplicate';
+        public const ACTION_SET_DUPLICATE = 'set_duplicate';
 
-        const ACTION_CLEAR_DUPLICATE = 'clear_duplicate';
+        public const ACTION_CLEAR_DUPLICATE = 'clear_duplicate';
 
-        const ACTION_SET_RESOLUTION = 'set_resolution';
+        public const ACTION_SET_RESOLUTION = 'set_resolution';
 
-        const ACTION_CLEAR_RESOLUTION = 'clear_resolution';
+        public const ACTION_CLEAR_RESOLUTION = 'clear_resolution';
 
-        const ACTION_SET_STATUS = 'set_status';
+        public const ACTION_SET_STATUS = 'set_status';
 
-        const ACTION_SET_MILESTONE = 'set_milestone';
+        public const ACTION_SET_MILESTONE = 'set_milestone';
 
-        const ACTION_CLEAR_MILESTONE = 'clear_milestone';
+        public const ACTION_CLEAR_MILESTONE = 'clear_milestone';
 
-        const ACTION_SET_PRIORITY = 'set_priority';
+        public const ACTION_SET_PRIORITY = 'set_priority';
 
-        const ACTION_CLEAR_PRIORITY = 'clear_priority';
+        public const ACTION_CLEAR_PRIORITY = 'clear_priority';
 
-        const ACTION_SET_CATEGORY = 'set_category';
+        public const ACTION_SET_CATEGORY = 'set_category';
 
-        const ACTION_CLEAR_CATEGORY = 'clear_category';
+        public const ACTION_CLEAR_CATEGORY = 'clear_category';
 
-        const ACTION_SET_SEVERITY = 'set_severity';
+        public const ACTION_SET_SEVERITY = 'set_severity';
 
-        const ACTION_CLEAR_SEVERITY = 'clear_severity';
+        public const ACTION_CLEAR_SEVERITY = 'clear_severity';
 
-        const ACTION_SET_PERCENT = 'set_percent';
+        public const ACTION_SET_PERCENT = 'set_percent';
 
-        const ACTION_CLEAR_PERCENT = 'clear_percent';
+        public const ACTION_CLEAR_PERCENT = 'clear_percent';
 
-        const ACTION_SET_REPRODUCABILITY = 'set_reproducability';
+        public const ACTION_SET_REPRODUCABILITY = 'set_reproducability';
 
-        const ACTION_CLEAR_REPRODUCABILITY = 'clear_reproducability';
+        public const ACTION_CLEAR_REPRODUCABILITY = 'clear_reproducability';
 
-        const ACTION_USER_START_WORKING = 'user_start_working';
+        public const ACTION_USER_START_WORKING = 'user_start_working';
 
-        const ACTION_USER_STOP_WORKING = 'user_stop_working';
+        public const ACTION_USER_STOP_WORKING = 'user_stop_working';
 
-        const CUSTOMFIELD_CLEAR_PREFIX = 'customfield_clear_';
+        public const CUSTOMFIELD_CLEAR_PREFIX = 'customfield_clear_';
 
-        const CUSTOMFIELD_SET_PREFIX = 'customfield_set_';
+        public const CUSTOMFIELD_SET_PREFIX = 'customfield_set_';
 
         protected static $_available_actions = null;
 

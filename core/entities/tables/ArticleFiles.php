@@ -31,21 +31,21 @@
 
         use FileLink;
 
-        const B2DB_TABLE_VERSION = 1;
+        public const B2DB_TABLE_VERSION = 1;
 
-        const B2DBNAME = 'articlefiles';
+        public const B2DBNAME = 'articlefiles';
 
-        const ID = 'articlefiles.id';
+        public const ID = 'articlefiles.id';
 
-        const SCOPE = 'articlefiles.scope';
+        public const SCOPE = 'articlefiles.scope';
 
-        const USER_ID = 'articlefiles.uid';
+        public const USER_ID = 'articlefiles.uid';
 
-        const ATTACHED_AT = 'articlefiles.attached_at';
+        public const ATTACHED_AT = 'articlefiles.attached_at';
 
-        const FILE_ID = 'articlefiles.file_id';
+        public const FILE_ID = 'articlefiles.file_id';
 
-        const ARTICLE_ID = 'articlefiles.article_id';
+        public const ARTICLE_ID = 'articlefiles.article_id';
 
         public function addByArticleIDandFileID($article_id, $file_id, $attached_at = null)
         {
@@ -125,7 +125,7 @@
             return $article_ids;
         }
 
-        protected function initialize()
+        protected function initialize(): void
         {
             parent::setup(self::B2DBNAME, self::ID);
             parent::addForeignKeyColumn(self::USER_ID, Users::getTable(), Users::ID);

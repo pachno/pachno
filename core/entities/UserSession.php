@@ -213,7 +213,7 @@
             $this->_expires_at = $expires_at;
         }
 
-        protected function _preSave($is_new = false)
+        protected function _preSave(bool $is_new = false): void
         {
             if ($is_new) {
                 $this->_token = Uuid::uuid4()->toString();

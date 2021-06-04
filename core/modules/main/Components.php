@@ -79,7 +79,7 @@
             try {
                 if (!$this->client instanceof entities\Client) {
                     framework\Logging::log('loading user object in dropdown');
-                    $this->client = entities\Client::getB2DBTable()->selectById($this->client);
+                    $this->client = tables\Clients::getTable()->selectById($this->client);
                     framework\Logging::log('done (loading user object in dropdown)');
                 }
                 $this->clientusers = $this->client->getMembers();
@@ -96,7 +96,7 @@
                 $this->team = (isset($this->team)) ? $this->team : null;
                 if (!$this->team instanceof entities\Team) {
                     framework\Logging::log('loading team object in dropdown');
-                    $this->team = entities\Team::getB2DBTable()->selectById($this->team);
+                    $this->team = tables\Teams::getTable()->selectById($this->team);
                     framework\Logging::log('done (loading team object in dropdown)');
                 }
             } catch (Exception $e) {
@@ -284,7 +284,7 @@
         public function componentAttachedfile()
         {
             if ($this->mode == 'issue' && !isset($this->issue)) {
-                $this->issue = entities\Issue::getB2DBTable()->selectById($this->issue_id);
+                $this->issue = tables\Issues::getTable()->selectById($this->issue_id);
             } elseif ($this->mode == 'article' && !isset($this->article)) {
                 $this->article = entities\Article::getByName($this->article_name);
             }
@@ -393,7 +393,7 @@
         {
             if ($this->comment->getTargetType() == Comment::TYPE_ISSUE) {
                 try {
-                    $this->issue = entities\Issue::getB2DBTable()->selectById($this->comment->getTargetID());
+                    $this->issue = tables\Issues::getTable()->selectById($this->comment->getTargetID());
                 } catch (Exception $e) {
                 }
             }
@@ -592,7 +592,7 @@
         public function componentAddDashboardView()
         {
             $request = framework\Context::getRequest();
-            $this->dashboard = entities\Dashboard::getB2DBTable()->selectById($request['dashboard_id']);
+            $this->dashboard = tables\Dashboards::getTable()->selectById($request['dashboard_id']);
             $this->column = $request['column'];
             $this->views = entities\DashboardView::getAvailableViews($this->dashboard->getType());
             $this->savedsearches = tables\SavedSearches::getTable()->getAllSavedSearchesByUserIDAndPossiblyProjectID(framework\Context::getUser()->getID(), ($this->dashboard->getProject() instanceof entities\Project) ? $this->dashboard->getProject()->getID() : 0);

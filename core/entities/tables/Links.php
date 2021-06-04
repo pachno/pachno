@@ -22,25 +22,25 @@
     class Links extends ScopedTable
     {
 
-        const B2DB_TABLE_VERSION = 1;
+        public const B2DB_TABLE_VERSION = 1;
 
-        const B2DBNAME = 'links';
+        public const B2DBNAME = 'links';
 
-        const ID = 'links.id';
+        public const ID = 'links.id';
 
-        const UID = 'links.uid';
+        public const UID = 'links.uid';
 
-        const URL = 'links.url';
+        public const URL = 'links.url';
 
-        const LINK_ORDER = 'links.link_order';
+        public const LINK_ORDER = 'links.link_order';
 
-        const DESCRIPTION = 'links.description';
+        public const DESCRIPTION = 'links.description';
 
-        const TARGET_TYPE = 'links.target_type';
+        public const TARGET_TYPE = 'links.target_type';
 
-        const TARGET_ID = 'links.target_id';
+        public const TARGET_ID = 'links.target_id';
 
-        const SCOPE = 'links.scope';
+        public const SCOPE = 'links.scope';
 
         public function getNextOrder($target_type, $target_id, $scope = null)
         {
@@ -162,7 +162,7 @@
             return $this->addLink('main_menu', 0, $url, $description, $link_order, $scope);
         }
 
-        protected function setupIndexes()
+        protected function setupIndexes(): void
         {
             $this->addIndex('targettype_targetid_scope', [self::TARGET_TYPE, self::TARGET_ID, self::SCOPE]);
         }

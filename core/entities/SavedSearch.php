@@ -28,31 +28,31 @@
     class SavedSearch extends IdentifiableScoped
     {
 
-        const PREDEFINED_SEARCH_PROJECT_OPEN_ISSUES = 1;
+        public const PREDEFINED_SEARCH_PROJECT_OPEN_ISSUES = 1;
 
-        const PREDEFINED_SEARCH_PROJECT_OPEN_ISSUES_INCLUDING_SUBPROJECTS = 12;
+        public const PREDEFINED_SEARCH_PROJECT_OPEN_ISSUES_INCLUDING_SUBPROJECTS = 12;
 
-        const PREDEFINED_SEARCH_PROJECT_CLOSED_ISSUES = 2;
+        public const PREDEFINED_SEARCH_PROJECT_CLOSED_ISSUES = 2;
 
-        const PREDEFINED_SEARCH_PROJECT_CLOSED_ISSUES_INCLUDING_SUBPROJECTS = 13;
+        public const PREDEFINED_SEARCH_PROJECT_CLOSED_ISSUES_INCLUDING_SUBPROJECTS = 13;
 
-        const PREDEFINED_SEARCH_PROJECT_WISHLIST = 10;
+        public const PREDEFINED_SEARCH_PROJECT_WISHLIST = 10;
 
-        const PREDEFINED_SEARCH_PROJECT_MILESTONE_TODO = 6;
+        public const PREDEFINED_SEARCH_PROJECT_MILESTONE_TODO = 6;
 
-        const PREDEFINED_SEARCH_PROJECT_MOST_VOTED = 7;
+        public const PREDEFINED_SEARCH_PROJECT_MOST_VOTED = 7;
 
-        const PREDEFINED_SEARCH_PROJECT_REPORTED_THIS_MONTH = 8;
+        public const PREDEFINED_SEARCH_PROJECT_REPORTED_THIS_MONTH = 8;
 
-        const PREDEFINED_SEARCH_PROJECT_REPORTED_LAST_NUMBEROF_TIMEUNITS = 9;
+        public const PREDEFINED_SEARCH_PROJECT_REPORTED_LAST_NUMBEROF_TIMEUNITS = 9;
 
-        const PREDEFINED_SEARCH_MY_ASSIGNED_OPEN_ISSUES = 3;
+        public const PREDEFINED_SEARCH_MY_ASSIGNED_OPEN_ISSUES = 3;
 
-        const PREDEFINED_SEARCH_TEAM_ASSIGNED_OPEN_ISSUES = 4;
+        public const PREDEFINED_SEARCH_TEAM_ASSIGNED_OPEN_ISSUES = 4;
 
-        const PREDEFINED_SEARCH_MY_REPORTED_ISSUES = 5;
+        public const PREDEFINED_SEARCH_MY_REPORTED_ISSUES = 5;
 
-        const PREDEFINED_SEARCH_MY_OWNED_OPEN_ISSUES = 11;
+        public const PREDEFINED_SEARCH_MY_OWNED_OPEN_ISSUES = 11;
 
         /**
          * The name of the saved search
@@ -712,7 +712,7 @@
             $this->_templateparameter = $template_parameter;
         }
 
-        protected function _preSave($is_new)
+        protected function _preSave(bool $is_new): void
         {
             parent::_preSave($is_new);
             $this->_sortfields = $this->getSortFieldsAsString();
@@ -829,7 +829,7 @@
             return ['title', 'assigned_to', 'status', 'resolution', 'last_updated', 'comments'];
         }
 
-        protected function _postSave($is_new)
+        protected function _postSave(bool $is_new): void
         {
             foreach ($this->getFilters() as $filter) {
                 $filter->setSearchId($this);

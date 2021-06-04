@@ -26,17 +26,17 @@
     class ClientMembers extends ScopedTable
     {
 
-        const B2DB_TABLE_VERSION = 1;
+        public const B2DB_TABLE_VERSION = 1;
 
-        const B2DBNAME = 'clientmembers';
+        public const B2DBNAME = 'clientmembers';
 
-        const ID = 'clientmembers.id';
+        public const ID = 'clientmembers.id';
 
-        const SCOPE = 'clientmembers.scope';
+        public const SCOPE = 'clientmembers.scope';
 
-        const USER_ID = 'clientmembers.uid';
+        public const USER_ID = 'clientmembers.uid';
 
-        const CLIENT_ID = 'clientmembers.cid';
+        public const CLIENT_ID = 'clientmembers.cid';
 
         public function getUIDsForClientID($client_id)
         {
@@ -123,7 +123,7 @@
             $this->rawDelete($query);
         }
 
-        protected function initialize()
+        protected function initialize(): void
         {
             parent::setup(self::B2DBNAME, self::ID);
             parent::addForeignKeyColumn(self::USER_ID, Users::getTable());

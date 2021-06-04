@@ -12,9 +12,9 @@
     class IncomingEmailAccount extends IdentifiableScoped
     {
 
-        const SERVER_IMAP = 0;
+        public const SERVER_IMAP = 0;
 
-        const SERVER_POP3 = 1;
+        public const SERVER_POP3 = 1;
 
         /**
          * @Column(type="string", length=200)

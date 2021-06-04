@@ -10,7 +10,7 @@
     class Category extends common\Colorizable
     {
 
-        const ITEMTYPE = Datatype::CATEGORY;
+        public const ITEMTYPE = Datatype::CATEGORY;
 
         protected $_itemtype = Datatype::CATEGORY;
 

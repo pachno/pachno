@@ -31,33 +31,33 @@
     class IssueSpentTimes extends ScopedTable
     {
 
-        const B2DB_TABLE_VERSION = 2;
+        public const B2DB_TABLE_VERSION = 2;
 
-        const B2DBNAME = 'issue_spenttimes';
+        public const B2DBNAME = 'issue_spenttimes';
 
-        const ID = 'issue_spenttimes.id';
+        public const ID = 'issue_spenttimes.id';
 
-        const SCOPE = 'issue_spenttimes.scope';
+        public const SCOPE = 'issue_spenttimes.scope';
 
-        const ISSUE_ID = 'issue_spenttimes.issue_id';
+        public const ISSUE_ID = 'issue_spenttimes.issue_id';
 
-        const EDITED_BY = 'issue_spenttimes.edited_by';
+        public const EDITED_BY = 'issue_spenttimes.edited_by';
 
-        const EDITED_AT = 'issue_spenttimes.edited_at';
+        public const EDITED_AT = 'issue_spenttimes.edited_at';
 
-        const SPENT_MONTHS = 'issue_spenttimes.spent_months';
+        public const SPENT_MONTHS = 'issue_spenttimes.spent_months';
 
-        const SPENT_WEEKS = 'issue_spenttimes.spent_weeks';
+        public const SPENT_WEEKS = 'issue_spenttimes.spent_weeks';
 
-        const SPENT_DAYS = 'issue_spenttimes.spent_days';
+        public const SPENT_DAYS = 'issue_spenttimes.spent_days';
 
-        const SPENT_HOURS = 'issue_spenttimes.spent_hours';
+        public const SPENT_HOURS = 'issue_spenttimes.spent_hours';
 
-        const SPENT_MINUTES = 'issue_spenttimes.spent_minutes';
+        public const SPENT_MINUTES = 'issue_spenttimes.spent_minutes';
 
-        const SPENT_POINTS = 'issue_spenttimes.spent_points';
+        public const SPENT_POINTS = 'issue_spenttimes.spent_points';
 
-        const ACTIVITY_TYPE = 'issue_spenttimes.activity_type';
+        public const ACTIVITY_TYPE = 'issue_spenttimes.activity_type';
 
         /**
          * @param $startdate
@@ -279,7 +279,7 @@
             $this->rawUpdate($update, $query);
         }
 
-        protected function migrateData(Table $old_table)
+        protected function migrateData(Table $old_table): void
         {
             $update = new Update();
             $update->add('issue_spenttimes.completed', true);

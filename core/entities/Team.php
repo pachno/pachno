@@ -135,7 +135,7 @@
             return self::$_num_teams;
         }
 
-        public function __toString()
+        public function __toString(): string
         {
             return "" . $this->_name;
         }
@@ -319,7 +319,7 @@
             return $this->_members;
         }
 
-        protected function _preDelete()
+        protected function _preDelete(): void
         {
             tables\TeamMembers::getTable()->removeUsersFromTeam($this->getID());
         }

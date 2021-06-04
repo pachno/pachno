@@ -28,8 +28,6 @@
      * @package pachno
      * @subpackage main
      *
-     * @method static tables\Projects getB2DBTable()
-     *
      * @Table(name="\pachno\core\entities\tables\Projects")
      */
     class Project extends QaLeadable implements MentionableProvider
@@ -585,7 +583,7 @@
         protected function _populateChildren()
         {
             if ($this->_children === null) {
-                $this->_children = self::getB2DBTable()->getByParentID($this->getID());
+                $this->_children = Projects::getTable()->getByParentID($this->getID());
             }
 
             return $this->_children;
@@ -745,7 +743,7 @@
                 if (self::$_projects !== null)
                     self::$_num_projects = count(self::$_projects);
                 else
-                    self::$_num_projects = self::getB2DBTable()->countProjects();
+                    self::$_num_projects = Projects::getTable()->countProjects();
             }
 
             return self::$_num_projects;
@@ -893,13 +891,13 @@
          */
         static function getByPrefix($prefix)
         {
-            return self::getB2DBTable()->getByPrefix($prefix);
+            return Projects::getTable()->getByPrefix($prefix);
         }
 
         public static function listen_pachno_core_entities_File_hasAccess(framework\Event $event)
         {
             $file = $event->getSubject();
-            $projects = self::getB2DBTable()->getByFileID($file->getID());
+            $projects = Projects::getTable()->getByFileID($file->getID());
             foreach ($projects as $project) {
                 if ($project->hasAccess()) {
                     $event->setReturnValue(true);
@@ -2868,7 +2866,7 @@
          *
          * @param boolean $is_new
          */
-        protected function _preSave($is_new)
+        protected function _preSave(bool $is_new): void
         {
             parent::_preSave($is_new);
             $key = $this->getKey();
@@ -2897,7 +2895,7 @@
             return null;
         }
 
-        protected function _postSave($is_new)
+        protected function _postSave(bool $is_new): void
         {
             if ($is_new) {
                 self::$_num_projects = null;

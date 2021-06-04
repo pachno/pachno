@@ -27,27 +27,27 @@
     class AgileBoard extends IdentifiableScoped
     {
 
-        const TYPE_GENERIC = 0;
+        public const TYPE_GENERIC = 0;
 
-        const TYPE_SCRUM = 1;
+        public const TYPE_SCRUM = 1;
 
-        const TYPE_KANBAN = 2;
+        public const TYPE_KANBAN = 2;
 
-        const SWIMLANES_NONE = '';
-        const SWIMLANES_ISSUES = 'issues';
-        const SWIMLANES_GROUPING = 'grouping';
-        const SWIMLANES_EXPEDITE = 'expedite';
+        public const SWIMLANES_NONE = '';
+        public const SWIMLANES_ISSUES = 'issues';
+        public const SWIMLANES_GROUPING = 'grouping';
+        public const SWIMLANES_EXPEDITE = 'expedite';
 
-        const SWIMLANE_IDENTIFIER_ISSUETYPE = 'issuetype';
+        public const SWIMLANE_IDENTIFIER_ISSUETYPE = 'issuetype';
 
-        const BACKGROUND_COLOR_DEFAULT = '#00ADC7';
-        const BACKGROUND_COLOR_ONE = '#7d7c84';
-        const BACKGROUND_COLOR_TWO = '#00aa7f';
-        const BACKGROUND_COLOR_THREE = '#d62246';
-        const BACKGROUND_COLOR_FOUR = '#4b1d3f';
-        const BACKGROUND_COLOR_FIVE = '#dbd56e';
-        const BACKGROUND_COLOR_SIX = '#88ab75';
-        const BACKGROUND_COLOR_SEVEN = '#de8f6e';
+        public const BACKGROUND_COLOR_DEFAULT = '#00ADC7';
+        public const BACKGROUND_COLOR_ONE = '#7d7c84';
+        public const BACKGROUND_COLOR_TWO = '#00aa7f';
+        public const BACKGROUND_COLOR_THREE = '#d62246';
+        public const BACKGROUND_COLOR_FOUR = '#4b1d3f';
+        public const BACKGROUND_COLOR_FIVE = '#dbd56e';
+        public const BACKGROUND_COLOR_SIX = '#88ab75';
+        public const BACKGROUND_COLOR_SEVEN = '#de8f6e';
 
         /**
          * The name of the board

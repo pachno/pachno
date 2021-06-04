@@ -7,6 +7,7 @@
     use pachno\core\entities\Comment;
     use pachno\core\entities\Project;
     use pachno\core\entities\tables\Articles;
+    use pachno\core\entities\tables\Users;
     use pachno\core\entities\User;
     use pachno\core\framework;
     use pachno\core\framework\Request;
@@ -524,7 +525,7 @@
 
             // Retrieve article and user from database, making sure they exist.
             $article = Articles::getTable()->selectById($article_id);
-            $user = User::getB2DBTable()->selectById($user_id);
+            $user = Users::getTable()->selectById($user_id);
 
             if (!$article instanceof Article || !$user instanceof User) {
                 // Try not to reveal any additional information to caller about existence of user/article.

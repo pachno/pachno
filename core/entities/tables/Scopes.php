@@ -25,33 +25,33 @@
     class Scopes extends Table
     {
 
-        const B2DB_TABLE_VERSION = 2;
+        public const B2DB_TABLE_VERSION = 2;
 
-        const B2DBNAME = 'scopes';
+        public const B2DBNAME = 'scopes';
 
-        const ID = 'scopes.id';
+        public const ID = 'scopes.id';
 
-        const ENABLED = 'scopes.enabled';
+        public const ENABLED = 'scopes.enabled';
 
-        const CUSTOM_WORKFLOWS_ENABLED = 'scopes.custom_workflows_enabled';
+        public const CUSTOM_WORKFLOWS_ENABLED = 'scopes.custom_workflows_enabled';
 
-        const MAX_WORKFLOWS = 'scopes.max_workflows';
+        public const MAX_WORKFLOWS = 'scopes.max_workflows';
 
-        const UPLOADS_ENABLED = 'scopes.uploads_enabled';
+        public const UPLOADS_ENABLED = 'scopes.uploads_enabled';
 
-        const MAX_UPLOAD_LIMIT = 'scopes.max_upload_limit';
+        public const MAX_UPLOAD_LIMIT = 'scopes.max_upload_limit';
 
-        const MAX_USERS = 'scopes.max_users';
+        public const MAX_USERS = 'scopes.max_users';
 
-        const MAX_TEAMS = 'scopes.max_teams';
+        public const MAX_TEAMS = 'scopes.max_teams';
 
-        const MAX_PROJECTS = 'scopes.max_projects';
+        public const MAX_PROJECTS = 'scopes.max_projects';
 
-        const DESCRIPTION = 'scopes.description';
+        public const DESCRIPTION = 'scopes.description';
 
-        const NAME = 'scopes.name';
+        public const NAME = 'scopes.name';
 
-        const ADMINISTRATOR = 'scopes.administrator';
+        public const ADMINISTRATOR = 'scopes.administrator';
 
         public function getByHostname($hostname)
         {

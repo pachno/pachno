@@ -86,10 +86,10 @@
 <script>
 
     Pachno.on(Pachno.EVENTS.ready, () => {
-        const $body = $('body');
-        const commits_url = $('#commit-list-with-filters-container').data('url');
+        public const $body = $('body');
+        public const commits_url = $('#commit-list-with-filters-container').data('url');
 
-        const showBranchCommits = (branch, from_commit, offset) => {
+        public const showBranchCommits = (branch, from_commit, offset) => {
             let data = { branch };
             if (offset) {
                 data.offset = offset;
@@ -98,8 +98,8 @@
                 data.from_commit = from_commit;
             }
 
-            const $project_commits = $('#project_commits');
-            const $paginator = $project_commits.find('.paginator');
+            public const $project_commits = $('#project_commits');
+            public const $paginator = $project_commits.find('.paginator');
 
             if ($paginator.length) {
                 $paginator.addClass('submitting');
@@ -126,14 +126,14 @@
         };
 
         $body.on('change', '.trigger-mark-seen', function () {
-            const $file = $(this).parents('.file-preview');
+            public const $file = $(this).parents('.file-preview');
             $file.toggleClass('seen');
         });
 
         $body.on('click', '.trigger-show-branch', function () {
-            const branch = $(this).data('branch');
-            const from_commit = $(this).data('from-commit');
-            const offset = $(this).data('offset');
+            public const branch = $(this).data('branch');
+            public const from_commit = $(this).data('from-commit');
+            public const offset = $(this).data('offset');
             showBranchCommits(branch, from_commit, offset);
         });
 
@@ -141,7 +141,7 @@
             event.preventDefault();
             event.stopPropagation();
 
-            const $commitDetailsContainer = $('#commit-details-container');
+            public const $commitDetailsContainer = $('#commit-details-container');
             $('#commit-list-with-filters-container').removeClass('hidden');
             $commitDetailsContainer.addClass('hidden');
             $commitDetailsContainer.html('');
@@ -152,13 +152,13 @@
             event.preventDefault();
             event.stopPropagation();
 
-            const $commit = $(this);
-            const url = $commit.data('url');
-            const commit_id = $commit.data('commit-id');
+            public const $commit = $(this);
+            public const url = $commit.data('url');
+            public const commit_id = $commit.data('commit-id');
 
             $('#commit-list-with-filters-container').addClass('hidden');
             $('nav.sidebar:not(#commit-sidebar-menu)').addClass('collapsed');
-            const $commitDetailsContainer = $('#commit-details-container');
+            public const $commitDetailsContainer = $('#commit-details-container');
             $commitDetailsContainer.removeClass('hidden');
             $commitDetailsContainer.html(`
 <div class="top-search-filters-container">
@@ -192,7 +192,7 @@
             return false;
         });
 
-        const $checked = $('#commit-list-with-filters-container').find('input[type=radio][name=branch]:checked');
+        public const $checked = $('#commit-list-with-filters-container').find('input[type=radio][name=branch]:checked');
         if ($checked.length) {
             showBranchCommits($checked.val());
         }

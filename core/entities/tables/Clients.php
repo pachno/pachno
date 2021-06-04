@@ -28,23 +28,23 @@
     class Clients extends ScopedTable
     {
 
-        const B2DB_TABLE_VERSION = 1;
+        public const B2DB_TABLE_VERSION = 1;
 
-        const B2DBNAME = 'clients';
+        public const B2DBNAME = 'clients';
 
-        const ID = 'clients.id';
+        public const ID = 'clients.id';
 
-        const SCOPE = 'clients.scope';
+        public const SCOPE = 'clients.scope';
 
-        const NAME = 'clients.name';
+        public const NAME = 'clients.name';
 
-        const WEBSITE = 'clients.website';
+        public const WEBSITE = 'clients.website';
 
-        const EMAIL = 'clients.email';
+        public const EMAIL = 'clients.email';
 
-        const TELEPHONE = 'clients.telephone';
+        public const TELEPHONE = 'clients.telephone';
 
-        const FAX = 'clients.fax';
+        public const FAX = 'clients.fax';
 
         public function getAll($limit = null)
         {

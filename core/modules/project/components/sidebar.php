@@ -1,17 +1,21 @@
 <?php
 
-    use pachno\core\framework;
+    use pachno\core\entities\Project;
+    use pachno\core\entities\User;
     use pachno\core\framework\Context;
+    use pachno\core\framework\Event;
+    use pachno\core\framework\Response;
 
     /**
-     * @var framework\Response $pachno_response
-     * @var \pachno\core\entities\User $pachno_user
+     * @var Response $pachno_response
+     * @var User $pachno_user
+     * @var string $selected_tab
      */
 
-    $selected_project = framework\Context::getCurrentProject();
+    $selected_project = Context::getCurrentProject();
 
 ?>
-<nav class="project-context sidebar <?= (isset($collapsed) && $collapsed) ? 'collapsed' : ''; ?> <?= (isset($fixed) && $fixed) ? 'fixed' : ''; ?>" id="project-menu" data-project-id="<?= (\pachno\core\framework\Context::isProjectContext()) ? \pachno\core\framework\Context::getCurrentProject()->getId() : ''; ?>">
+<nav class="project-context sidebar <?= (isset($collapsed) && $collapsed) ? 'collapsed' : ''; ?> <?= (isset($fixed) && $fixed) ? 'fixed' : ''; ?>" id="project-menu" data-project-id="<?= (Context::isProjectContext()) ? Context::getCurrentProject()->getId() : ''; ?>">
     <div class="list-mode">
         <?php if ($pachno_response->getPage() == 'project_settings'): ?>
             <div id="project_config_menu" class="tab-switcher">
@@ -55,7 +59,7 @@
                     <span class="name"><?= __('Links'); ?></span>
                 </a>
                 <div class="list-item separator"></div>
-                <?php \pachno\core\framework\Event::createNew('core', 'config_project_tabs_other')->trigger(array('selected_tab' => $selected_tab)); ?>
+                <?php Event::createNew('core', 'config_project_tabs_other')->trigger(array('selected_tab' => $selected_tab)); ?>
                 <div class="list-item separator"></div>
                 <a href="javascript:void(0);" data-tab-target="faq" class="tab-switcher-trigger list-item help <?php if ($selected_tab == 'faq') echo 'selected'; ?>">
                     <?= fa_image_tag('question-circle', ['class' => 'icon']); ?>
@@ -63,7 +67,7 @@
                 </a>
             </div>
         <?php else: ?>
-            <?php include_component('project/sidebarlinks', ['project' => framework\Context::getCurrentProject()]); ?>
+            <?php include_component('project/sidebarlinks', ['project' => Context::getCurrentProject()]); ?>
         <?php endif; ?>
     </div>
     <?php if (!$pachno_user->isGuest()): ?>

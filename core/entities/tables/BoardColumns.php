@@ -29,6 +29,6 @@
     class BoardColumns extends ScopedTable
     {
 
-        const SCOPE = 'agileboard_columns.scope';
+        public const SCOPE = 'agileboard_columns.scope';
 
     }

@@ -9,7 +9,7 @@
     class Resolution extends Datatype
     {
 
-        const ITEMTYPE = Datatype::RESOLUTION;
+        public const ITEMTYPE = Datatype::RESOLUTION;
 
         protected static $_items = null;
 

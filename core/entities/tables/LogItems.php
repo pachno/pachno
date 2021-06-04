@@ -26,31 +26,31 @@
     class LogItems extends ScopedTable
     {
 
-        const B2DB_TABLE_VERSION = 3;
+        public const B2DB_TABLE_VERSION = 3;
 
-        const B2DBNAME = 'log';
+        public const B2DBNAME = 'log';
 
-        const ID = 'log.id';
+        public const ID = 'log.id';
 
-        const SCOPE = 'log.scope';
+        public const SCOPE = 'log.scope';
 
-        const TARGET = 'log.target';
+        public const TARGET = 'log.target';
 
-        const TARGET_TYPE = 'log.target_type';
+        public const TARGET_TYPE = 'log.target_type';
 
-        const CHANGE_TYPE = 'log.change_type';
+        public const CHANGE_TYPE = 'log.change_type';
 
-        const PREVIOUS_VALUE = 'log.previous_value';
+        public const PREVIOUS_VALUE = 'log.previous_value';
 
-        const CURRENT_VALUE = 'log.current_value';
+        public const CURRENT_VALUE = 'log.current_value';
 
-        const TEXT = 'log.text';
+        public const TEXT = 'log.text';
 
-        const TIME = 'log.time';
+        public const TIME = 'log.time';
 
-        const USER_ID = 'log.uid';
+        public const USER_ID = 'log.uid';
 
-        const COMMENT_ID = 'log.comment_id';
+        public const COMMENT_ID = 'log.comment_id';
 
         /**
          * @param $issue_id
@@ -190,7 +190,7 @@
             return $this->selectOne($query);
         }
 
-        protected function setupIndexes()
+        protected function setupIndexes(): void
         {
             $this->addIndex('commentid', [self::COMMENT_ID]);
             $this->addIndex('targettype_time', [self::TARGET_TYPE, self::TIME]);
@@ -198,7 +198,7 @@
             $this->addIndex('target_uid_commentid_scope', [self::TARGET, self::USER_ID, self::COMMENT_ID, self::SCOPE]);
         }
 
-        protected function migrateData(Table $old_table)
+        protected function migrateData(Table $old_table): void
         {
             switch ($old_table::B2DB_TABLE_VERSION) {
                 case 2:

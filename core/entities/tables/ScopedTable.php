@@ -5,6 +5,7 @@
     use b2db\Criterion;
     use b2db\Query;
     use b2db\Row;
+    use b2db\Saveable;
     use b2db\Table;
     use pachno\core\framework;
 
@@ -54,7 +55,7 @@
             return framework\Context::getScope()->getID();
         }
 
-        public function selectById($id, Query $query = null, $join = 'all')
+        public function selectById($id, Query $query = null, $join = 'all'): ?Saveable
         {
             $query = ($query instanceof Query) ? $query : $this->getQuery();
             $query->where(static::SCOPE, $this->getCurrentScopeID());
@@ -62,7 +63,7 @@
             return parent::selectById($id, $query, $join);
         }
 
-        public function selectAll()
+        public function selectAll(): array
         {
             if (defined('static::SCOPE')) {
                 $query = $this->getQuery();
@@ -95,7 +96,7 @@
             }
         }
 
-        protected function setup($b2db_name, $id_column)
+        protected function setup(string $b2db_name, string $id_column): void
         {
             parent::setup($b2db_name, $id_column);
             parent::addForeignKeyColumn(static::SCOPE, Scopes::getTable(), Scopes::ID);

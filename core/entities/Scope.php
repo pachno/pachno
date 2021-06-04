@@ -235,7 +235,7 @@
             return $this->_administrator;
         }
 
-        public function _construct(Row $row, $foreign_key = null)
+        public function _construct(Row $row, string $foreign_key = null): void
         {
             if (framework\Context::isCLI()) {
                 $this->_hostname = php_uname('n');
@@ -413,11 +413,11 @@
             return (int)$this->_b2dbLazyCount('_articles');
         }
 
-        protected function _preDelete()
+        protected function _preDelete(): void
         {
         }
 
-        protected function _postSave($is_new)
+        protected function _postSave(bool $is_new): void
         {
             tables\ScopeHostnames::getTable()->saveScopeHostnames($this->getHostnames(), $this->getID());
             // Load fixtures for this scope if it's a new scope

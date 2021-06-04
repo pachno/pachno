@@ -26,25 +26,25 @@
     class Articles extends ScopedTable
     {
 
-        const B2DB_TABLE_VERSION = 2;
+        public const B2DB_TABLE_VERSION = 2;
 
-        const B2DBNAME = 'articles';
+        public const B2DBNAME = 'articles';
 
-        const ID = 'articles.id';
+        public const ID = 'articles.id';
 
-        const NAME = 'articles.name';
+        public const NAME = 'articles.name';
 
-        const CONTENT = 'articles.content';
+        public const CONTENT = 'articles.content';
 
-        const IS_PUBLISHED = 'articles.is_published';
+        public const IS_PUBLISHED = 'articles.is_published';
 
-        const DATE = 'articles.date';
+        public const DATE = 'articles.date';
 
-        const AUTHOR = 'articles.author';
+        public const AUTHOR = 'articles.author';
 
-        const SCOPE = 'articles.scope';
+        public const SCOPE = 'articles.scope';
 
-        public function _setupIndexes()
+        public function _setupIndexes(): void
         {
             $this->_addIndex('name_scope', [self::NAME, self::SCOPE]);
         }

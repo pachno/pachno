@@ -29,19 +29,19 @@
     class Commits extends ScopedTable
     {
 
-        const B2DB_TABLE_VERSION = 2;
-        const B2DBNAME = 'vcsintegration_commits';
-        const ID = 'vcsintegration_commits.id';
-        const SCOPE = 'vcsintegration_commits.scope';
-        const LOG = 'vcsintegration_commits.log';
-        const OLD_REV = 'vcsintegration_commits.old_rev';
-        const NEW_REV = 'vcsintegration_commits.new_rev';
-        const AUTHOR = 'vcsintegration_commits.author';
-        const DATE = 'vcsintegration_commits.date';
-        const DATA = 'vcsintegration_commits.data';
-        const PROJECT_ID = 'vcsintegration_commits.project_id';
+        public const B2DB_TABLE_VERSION = 2;
+        public const B2DBNAME = 'vcsintegration_commits';
+        public const ID = 'vcsintegration_commits.id';
+        public const SCOPE = 'vcsintegration_commits.scope';
+        public const LOG = 'vcsintegration_commits.log';
+        public const OLD_REV = 'vcsintegration_commits.old_rev';
+        public const NEW_REV = 'vcsintegration_commits.new_rev';
+        public const AUTHOR = 'vcsintegration_commits.author';
+        public const DATE = 'vcsintegration_commits.date';
+        public const DATA = 'vcsintegration_commits.data';
+        public const PROJECT_ID = 'vcsintegration_commits.project_id';
 
-        protected function _setupIndexes()
+        protected function _setupIndexes(): void
         {
             $this->_addIndex('project', self::PROJECT_ID);
         }

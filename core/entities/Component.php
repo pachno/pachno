@@ -89,14 +89,14 @@
             $this->_name = $name;
         }
 
-        protected function _postSave($is_new)
+        protected function _postSave(bool $is_new): void
         {
             if ($is_new) {
                 Event::createNew('core', 'Component::createNew', $this)->trigger();
             }
         }
 
-        protected function _preDelete()
+        protected function _preDelete(): void
         {
             tables\IssueAffectsComponent::getTable()->deleteByComponentID($this->getID());
             tables\EditionComponents::getTable()->deleteByComponentID($this->getID());

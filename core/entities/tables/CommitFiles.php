@@ -15,19 +15,19 @@
     class CommitFiles extends ScopedTable
     {
 
-        const B2DB_TABLE_VERSION = 2;
+        public const B2DB_TABLE_VERSION = 2;
 
-        const B2DBNAME = 'commitfiles';
+        public const B2DBNAME = 'commitfiles';
 
-        const ID = 'commitfiles.id';
+        public const ID = 'commitfiles.id';
 
-        const SCOPE = 'commitfiles.scope';
+        public const SCOPE = 'commitfiles.scope';
 
-        const COMMIT_ID = 'commitfiles.commit_id';
+        public const COMMIT_ID = 'commitfiles.commit_id';
 
-        const FILE_NAME = 'commitfiles.file_name';
+        public const FILE_NAME = 'commitfiles.file_name';
 
-        const ACTION = 'commitfiles.action';
+        public const ACTION = 'commitfiles.action';
 
         /**
          * Get all affected files by commit
@@ -44,7 +44,7 @@
             return $this->select($query);
         }
 
-        protected function setupIndexes()
+        protected function setupIndexes(): void
         {
             $this->addIndex('commit', self::COMMIT_ID);
         }

@@ -27,19 +27,19 @@
     class ProjectAssignedUsers extends ScopedTable
     {
 
-        const B2DB_TABLE_VERSION = 1;
+        public const B2DB_TABLE_VERSION = 1;
 
-        const B2DBNAME = 'projectassignedusers';
+        public const B2DBNAME = 'projectassignedusers';
 
-        const ID = 'projectassignedusers.id';
+        public const ID = 'projectassignedusers.id';
 
-        const SCOPE = 'projectassignedusers.scope';
+        public const SCOPE = 'projectassignedusers.scope';
 
-        const USER_ID = 'projectassignedusers.uid';
+        public const USER_ID = 'projectassignedusers.uid';
 
-        const PROJECT_ID = 'projectassignedusers.project_id';
+        public const PROJECT_ID = 'projectassignedusers.project_id';
 
-        const ROLE_ID = 'projectassignedusers.role_id';
+        public const ROLE_ID = 'projectassignedusers.role_id';
 
         public function deleteByProjectID($project_id)
         {
@@ -195,7 +195,7 @@
             return $assignments;
         }
 
-        protected function initialize()
+        protected function initialize(): void
         {
             parent::setup(self::B2DBNAME, self::ID);
             parent::addForeignKeyColumn(self::PROJECT_ID, Projects::getTable());

@@ -6,6 +6,7 @@
     use Exception;
     use pachno\core\entities\common\Identifiable;
     use pachno\core\entities\common\Ownable;
+    use pachno\core\entities\tables\IssueTypes;
     use pachno\core\entities\tables\Permissions;
     use pachno\core\entities\traits\Commentable;
     use pachno\core\framework;
@@ -34,8 +35,6 @@
      * @package pachno
      * @subpackage main
      *
-     * @method static tables\Issues getB2DBTable()
-     *
      * @Table(name="\pachno\core\entities\tables\Issues")
      */
     class Issue extends Ownable implements MentionableProvider, Attachable
@@ -48,18 +47,18 @@
          *
          * @static integer
          */
-        const STATE_OPEN = 0;
+        public const STATE_OPEN = 0;
 
         /**
          * Closed issue state
          *
          * @static integer
          */
-        const STATE_CLOSED = 1;
+        public const STATE_CLOSED = 1;
 
-        const COVER_STYLE_NONE = 'none';
-        const COVER_STYLE_SOLID = 'solid';
-        const COVER_STYLE_SHADED = 'shaded';
+        public const COVER_STYLE_NONE = 'none';
+        public const COVER_STYLE_SOLID = 'solid';
+        public const COVER_STYLE_SHADED = 'shaded';
 
         /**
          * @Column(type="string", name="name", length=1000)
@@ -865,7 +864,7 @@
         {
             $this->_addChangedProperty('_issuetype', $issuetype_id);
             $project = $this->getProject();
-            $issueType = Issuetype::getB2DBTable()->selectById($issuetype_id);
+            $issueType = IssueTypes::getTable()->selectById($issuetype_id);
             if (!$issueType instanceof Issuetype || !$project instanceof Project) {
                 return;
             }
@@ -1244,7 +1243,7 @@
          *
          * @param Row $row
          */
-        public function _construct(Row $row, $foreign_key = null)
+        public function _construct(Row $row, string $foreign_key = null): void
         {
             $this->_initializeCustomfields();
             $this->_num_user_comments = tables\Comments::getTable()->getPreloadedCommentCount(Comment::TYPE_ISSUE, $this->_id);
@@ -4940,7 +4939,7 @@
          *
          * @return boolean
          */
-        protected function _preSave($is_new)
+        protected function _preSave(bool $is_new): void
         {
             parent::_preSave($is_new);
             if ($is_new) {
@@ -4962,7 +4961,7 @@
             $this->_last_updated = NOW;
         }
 
-        protected function _postSave($is_new)
+        protected function _postSave(bool $is_new): void
         {
             $this->_saveCustomFieldValues();
 
@@ -5019,8 +5018,6 @@
                 $this->getMilestone()->updateStatus();
                 $this->getMilestone()->save();
             }
-
-            return true;
         }
 
         protected function _saveCustomFieldValues()
@@ -5262,7 +5259,7 @@
                                 break;
                             case '_issuetype':
                                 if ($original_value != 0) {
-                                    $old_name = ($old_item = Issuetype::getB2DBTable()->selectById($original_value)) ? $old_item->getName() : Context::getI18n()->__('Unknown');
+                                    $old_name = ($old_item = IssueTypes::getTable()->selectById($original_value)) ? $old_item->getName() : Context::getI18n()->__('Unknown');
                                 } else {
                                     $old_name = Context::getI18n()->__('Unknown');
                                 }

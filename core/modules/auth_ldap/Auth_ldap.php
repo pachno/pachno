@@ -30,7 +30,7 @@
     class Auth_ldap extends CoreModule
     {
         // Module information.
-        const VERSION = '2.0';
+        public const VERSION = '2.0';
 
         protected $_name = 'auth_ldap';
 

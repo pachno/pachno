@@ -554,7 +554,7 @@
             return $this->_num_issues_closed;
         }
 
-        protected function _postSave($is_new)
+        protected function _postSave(bool $is_new): void
         {
             if ($is_new) {
                 framework\Event::createNew('core', 'pachno\core\entities\Build::_postSave', $this)->trigger();
@@ -564,7 +564,7 @@
             $this->generateLogItems();
         }
 
-        protected function _postDelete()
+        protected function _postDelete(): void
         {
             BuildFiles::getTable()->deleteFilesByBuildID($this->getID());
             parent::_postDelete();
@@ -608,7 +608,7 @@
         /**
          * Delete this build
          */
-        protected function _preDelete()
+        protected function _preDelete(): void
         {
             tables\IssueAffectsBuild::getTable()->deleteByBuildID($this->getID());
         }

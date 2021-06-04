@@ -27,17 +27,17 @@
     class TeamMembers extends ScopedTable
     {
 
-        const B2DB_TABLE_VERSION = 1;
+        public const B2DB_TABLE_VERSION = 1;
 
-        const B2DBNAME = 'teammembers';
+        public const B2DBNAME = 'teammembers';
 
-        const ID = 'teammembers.id';
+        public const ID = 'teammembers.id';
 
-        const SCOPE = 'teammembers.scope';
+        public const SCOPE = 'teammembers.scope';
 
-        const USER_ID = 'teammembers.uid';
+        public const USER_ID = 'teammembers.uid';
 
-        const TEAM_ID = 'teammembers.tid';
+        public const TEAM_ID = 'teammembers.tid';
 
         public function getUIDsForTeamID($team_id)
         {
@@ -136,14 +136,14 @@
             $this->rawDelete($query);
         }
 
-        protected function initialize()
+        protected function initialize(): void
         {
             parent::setup(self::B2DBNAME, self::ID);
             parent::addForeignKeyColumn(self::USER_ID, Users::getTable());
             parent::addForeignKeyColumn(self::TEAM_ID, Teams::getTable());
         }
 
-        protected function setupIndexes()
+        protected function setupIndexes(): void
         {
             $this->addIndex('scope_uid', [self::USER_ID, self::SCOPE]);
         }

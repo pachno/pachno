@@ -8,10 +8,14 @@
     use pachno\core\entities\common\IdentifiableEventContainer;
     use pachno\core\entities\tables\ClientMembers;
     use pachno\core\entities\tables\Dashboards;
+    use pachno\core\entities\tables\Issues;
     use pachno\core\entities\tables\Notifications;
+    use pachno\core\entities\tables\NotificationSettings;
     use pachno\core\entities\tables\Permissions;
+    use pachno\core\entities\tables\Scopes;
     use pachno\core\entities\tables\TeamMembers;
     use pachno\core\entities\tables\UserIssues;
+    use pachno\core\entities\tables\Users;
     use pachno\core\framework;
     use pachno\core\framework\Action;
     use pachno\core\framework\Event;
@@ -407,7 +411,7 @@
          */
         public static function getByEmail($email, $createNew = true)
         {
-            $user = self::getB2DBTable()->getByEmail($email);
+            $user = Users::getTable()->getByEmail($email);
 
             if (!$user instanceof User && $createNew && !framework\Settings::isUsingExternalAuthenticationBackend()) {
                 $user = new User();
@@ -457,7 +461,7 @@
         public static function getAll()
         {
             if (self::$_users === null) {
-                self::$_users = self::getB2DBTable()->getAll();
+                self::$_users = Users::getTable()->getAll();
             }
 
             return self::$_users;
@@ -465,12 +469,12 @@
 
         public static function isUsernameAvailable($username)
         {
-            return static::getB2DBTable()->isUsernameAvailable($username);
+            return Users::getTable()->isUsernameAvailable($username);
         }
 
         public static function doesIDExist($id)
         {
-            return (bool)static::getB2DBTable()->doesIDExist($id);
+            return (bool)Users::getTable()->doesIDExist($id);
         }
 
         /**
@@ -583,13 +587,13 @@
 
                     break;
                 case Action::AUTHENTICATION_METHOD_DUMMY:
-                    $user = self::getB2DBTable()->getByUserID(framework\Settings::getDefaultUserID());
+                    $user = Users::getTable()->getByUserID(framework\Settings::getDefaultUserID());
                     break;
                 case Action::AUTHENTICATION_METHOD_CLI:
-                    $user = self::getB2DBTable()->getByUsername(framework\Context::getCurrentCLIusername());
+                    $user = Users::getTable()->getByUsername(framework\Context::getCurrentCLIusername());
                     break;
                 case Action::AUTHENTICATION_METHOD_RSS_KEY:
-                    $user = self::getB2DBTable()->getByRssKey($request['rsskey']);
+                    $user = Users::getTable()->getByRssKey($request['rsskey']);
                     break;
                 case Action::AUTHENTICATION_METHOD_APPLICATION_PASSWORD:
 
@@ -609,7 +613,7 @@
                     $token = $header_details[1];
 
                     framework\Logging::log('Fetching user by username', 'auth', framework\Logging::LEVEL_INFO);
-                    $user = self::getB2DBTable()->getByUsername($username);
+                    $user = Users::getTable()->getByUsername($username);
 
                     if ($user instanceof User) {
                         if (!$user->authenticateApplicationPassword($token)) $user = null;
@@ -620,7 +624,7 @@
 
                     $username = $_SERVER['PHP_AUTH_USER'];
                     framework\Logging::log("Fetching user by username", 'auth', framework\Logging::LEVEL_INFO);
-                    $user = self::getB2DBTable()->getByUsername($username);
+                    $user = Users::getTable()->getByUsername($username);
 
                     if ($user instanceof User) {
                         if (!$user->hasPassword($_SERVER['PHP_AUTH_PW'])) $user = null;
@@ -826,7 +830,7 @@
          */
         public static function findUser($details)
         {
-            $users = self::getB2DBTable()->getByDetails($details);
+            $users = Users::getTable()->getByDetails($details);
             if (is_array($users) && count($users) == 1)
                 return array_shift($users);
 
@@ -843,7 +847,7 @@
          */
         public static function findUsers($details, $limit = null)
         {
-            return self::getB2DBTable()->getByDetails($details, $limit);
+            return Users::getTable()->getByDetails($details, $limit);
         }
 
         /**
@@ -851,12 +855,12 @@
          *
          * @param Row $row
          */
-        public function _construct(Row $row, $foreign_key = null)
+        public function _construct(Row $row, string $foreign_key = null): void
         {
             framework\Logging::log("User with id {$this->getID()} set up successfully");
         }
 
-        public function __toString()
+        public function __toString(): string
         {
             return $this->getNameWithUsername();
         }
@@ -1197,7 +1201,7 @@
                 $friends = [];
                 foreach ($userids as $friend) {
                     try {
-                        $friend = User::getB2DBTable()->selectById((int)$friend);
+                        $friend = Users::getTable()->selectById((int)$friend);
                         $friends[$friend->getID()] = $friend;
                     } catch (Exception $e) {
                         $this->removeFriend($friend);
@@ -1746,7 +1750,7 @@
             if (framework\Context::isProjectContext()) {
                 $project = framework\Context::getCurrentProject();
             } elseif (!framework\Context::isCLI() && framework\Context::getRequest()->hasParameter('issue_id')) {
-                $issue = Issue::getB2DBTable()->selectById(framework\Context::getRequest()->getParameter('issue_id'));
+                $issue = Issues::getTable()->selectById(framework\Context::getRequest()->getParameter('issue_id'));
 
                 if ($issue instanceof Issue && $issue->getProject() instanceof Project) $project = $issue->getProject();
             }
@@ -2176,7 +2180,7 @@
             }
 
             if (!array_key_exists($setting, $this->_notification_settings[$module])) {
-                $notificationsetting = NotificationSetting::getB2DBTable()->getByModuleAndNameAndUserId($module, $setting, $this->getID());
+                $notificationsetting = NotificationSettings::getTable()->getByModuleAndNameAndUserId($module, $setting, $this->getID());
                 if (!$notificationsetting instanceof NotificationSetting) {
                     $notificationsetting = new NotificationSetting();
                     $notificationsetting->setUser($this);
@@ -2763,7 +2767,7 @@
          *
          * @param boolean $is_new Whether this is a new user object
          */
-        protected function _preSave($is_new)
+        protected function _preSave(bool $is_new): void
         {
             parent::_preSave($is_new);
             if (!framework\Context::isInstallmode() && !framework\Context::isUpgrademode()) {
@@ -2821,7 +2825,7 @@
          */
         public static function getByUsername($username)
         {
-            return self::getB2DBTable()->getByUsername($username);
+            return Users::getTable()->getByUsername($username);
         }
 
         /**
@@ -2877,7 +2881,7 @@
          *
          * @param boolean $is_new Whether this is a new object or not (automatically passed to the function from B2DB)
          */
-        protected function _postSave($is_new)
+        protected function _postSave(bool $is_new): void
         {
             if ($is_new) {
                 // Set up a default dashboard for the user
@@ -2885,7 +2889,7 @@
                 $dashboard->setUser($this);
                 $dashboard->save();
 
-                $scope = Scope::getB2DBTable()->selectById((int)framework\Settings::getDefaultScopeID());
+                $scope = Scopes::getTable()->selectById((int)framework\Settings::getDefaultScopeID());
                 $this->addScope($scope, false);
                 $this->confirmScope($scope->getID());
                 if (!framework\Context::getScope()->isDefault()) {

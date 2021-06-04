@@ -1686,32 +1686,43 @@
          * Toggle favourite issue (starring)
          *
          * @param Request $request
+         * @return framework\JsonOutput
          */
-        public function runToggleFavouriteIssue(Request $request)
+        public function runToggleFavouriteIssue(Request $request): framework\JsonOutput
         {
-            if ($issue_id = $request['issue_id']) {
-                try {
-                    $issue = Issues::getTable()->selectById($issue_id);
-                    $user = tables\Users::getTable()->selectById($request['user_id']);
-                } catch (Exception $e) {
-                    return $this->renderText('fail');
-                }
-            } else {
-                return $this->renderText('no issue');
-            }
+            try {
+                $issue = Issues::getTable()->selectById($request['issue_id']);
+                $user = tables\Users::getTable()->selectById($request['user_id']);
 
-            if ($user->isIssueStarred($issue_id)) {
-                $user->removeStarredIssue($issue_id);
-                $starred = false;
-            } else {
-                $user->addStarredIssue($issue_id);
-                $starred = true;
-                if ($user->getID() != $this->getUser()->getID()) {
-                    framework\Event::createNew('core', 'issue_subscribe_user', $issue, compact('user'))->trigger();
+                if (!$issue instanceof Issue) {
+                    $this->getResponse()->setHttpStatus(400);
+                    return $this->renderJSON(['error' => $this->getI18n()->__('This issue does not exist')]);
                 }
-            }
 
-            return $this->renderText(json_encode(['starred' => $starred, 'subscriber' => $this->getComponentHTML('main/issuesubscriber', ['user' => $user, 'issue' => $issue]), 'count' => count($issue->getSubscribers())]));
+                if (!$user instanceof entities\User) {
+                    $this->getResponse()->setHttpStatus(400);
+                    return $this->renderJSON(['error' => $this->getI18n()->__('This user does not exist')]);
+                }
+
+                if ($user->isIssueStarred($issue->getID())) {
+                    $user->removeStarredIssue($issue->getID());
+                    $starred = false;
+                } else {
+                    $user->addStarredIssue($issue->getID());
+                    $starred = true;
+                    if ($user->getID() != $this->getUser()->getID()) {
+                        framework\Event::createNew('core', 'issue_subscribe_user', $issue, compact('user'))->trigger();
+                    }
+                }
+
+                return $this->renderJSON([
+                    'starred' => $starred,
+                    'subscriber' => $this->getComponentHTML('main/issuesubscriber', ['user' => $user, 'issue' => $issue]),
+                    'count' => count($issue->getSubscribers())
+                ]);
+            } catch (Exception $e) {
+                return $this->renderJSON(['error' => $this->getI18n()->__('An error occurred trying to toggle issue star status')]);
+            }
         }
 
         public function runIssueDeleteTimeSpent(Request $request)

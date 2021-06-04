@@ -37,85 +37,85 @@
     class Projects extends ScopedTable
     {
 
-        const B2DB_TABLE_VERSION = 3;
+        public const B2DB_TABLE_VERSION = 3;
 
-        const B2DBNAME = 'projects';
+        public const B2DBNAME = 'projects';
 
-        const ID = 'projects.id';
+        public const ID = 'projects.id';
 
-        const SCOPE = 'projects.scope';
+        public const SCOPE = 'projects.scope';
 
-        const NAME = 'projects.name';
+        public const NAME = 'projects.name';
 
-        const KEY = 'projects.key';
+        public const KEY = 'projects.key';
 
-        const PREFIX = 'projects.prefix';
+        public const PREFIX = 'projects.prefix';
 
-        const USE_PREFIX = 'projects.use_prefix';
+        public const USE_PREFIX = 'projects.use_prefix';
 
-        const USE_SCRUM = 'projects.use_scrum';
+        public const USE_SCRUM = 'projects.use_scrum';
 
-        const HOMEPAGE = 'projects.homepage';
+        public const HOMEPAGE = 'projects.homepage';
 
-        const OWNER_USER = 'projects.owner_user';
+        public const OWNER_USER = 'projects.owner_user';
 
-        const OWNER_TEAM = 'projects.owner_team';
+        public const OWNER_TEAM = 'projects.owner_team';
 
-        const LEADER_TEAM = 'projects.leader_team';
+        public const LEADER_TEAM = 'projects.leader_team';
 
-        const LEADER_USER = 'projects.leader_user';
+        public const LEADER_USER = 'projects.leader_user';
 
-        const CLIENT = 'projects.client';
+        public const CLIENT = 'projects.client';
 
-        const DESCRIPTION = 'projects.description';
+        public const DESCRIPTION = 'projects.description';
 
-        const DOC_URL = 'projects.doc_url';
+        public const DOC_URL = 'projects.doc_url';
 
-        const WIKI_URL = 'projects.wiki_url';
+        public const WIKI_URL = 'projects.wiki_url';
 
-        const RELEASED = 'projects.isreleased';
+        public const RELEASED = 'projects.isreleased';
 
-        const PLANNED_RELEASED = 'projects.isplannedreleased';
+        public const PLANNED_RELEASED = 'projects.isplannedreleased';
 
-        const RELEASE_DATE = 'projects.release_date';
+        public const RELEASE_DATE = 'projects.release_date';
 
-        const ENABLE_BUILDS = 'projects.enable_builds';
+        public const ENABLE_BUILDS = 'projects.enable_builds';
 
-        const ENABLE_EDITIONS = 'projects.enable_editions';
+        public const ENABLE_EDITIONS = 'projects.enable_editions';
 
-        const ENABLE_COMPONENTS = 'projects.enable_components';
+        public const ENABLE_COMPONENTS = 'projects.enable_components';
 
-        const SHOW_IN_SUMMARY = 'projects.show_in_summary';
+        public const SHOW_IN_SUMMARY = 'projects.show_in_summary';
 
-        const SUMMARY_DISPLAY = 'projects.summary_display';
+        public const SUMMARY_DISPLAY = 'projects.summary_display';
 
-        const HAS_DOWNLOADS = 'projects.has_downloads';
+        public const HAS_DOWNLOADS = 'projects.has_downloads';
 
-        const QA = 'projects.qa_responsible';
+        public const QA = 'projects.qa_responsible';
 
-        const QA_TYPE = 'projects.qa_responsible_type';
+        public const QA_TYPE = 'projects.qa_responsible_type';
 
-        const LOCKED = 'projects.locked';
+        public const LOCKED = 'projects.locked';
 
-        const ISSUES_LOCK_TYPE = 'projects.issues_lock_type';
+        public const ISSUES_LOCK_TYPE = 'projects.issues_lock_type';
 
-        const DELETED = 'projects.deleted';
+        public const DELETED = 'projects.deleted';
 
-        const SMALL_ICON = 'projects.small_icon';
+        public const SMALL_ICON = 'projects.small_icon';
 
-        const LARGE_ICON = 'projects.large_icon';
+        public const LARGE_ICON = 'projects.large_icon';
 
-        const ALLOW_CHANGING_WITHOUT_WORKING = 'projects.allow_freelancing';
+        public const ALLOW_CHANGING_WITHOUT_WORKING = 'projects.allow_freelancing';
 
-        const WORKFLOW_SCHEME_ID = 'projects.workflow_scheme_id';
+        public const WORKFLOW_SCHEME_ID = 'projects.workflow_scheme_id';
 
-        const ISSUETYPE_SCHEME_ID = 'projects.issuetype_scheme_id';
+        public const ISSUETYPE_SCHEME_ID = 'projects.issuetype_scheme_id';
 
-        const AUTOASSIGN = 'projects.autoassign';
+        public const AUTOASSIGN = 'projects.autoassign';
 
-        const PARENT_PROJECT_ID = 'projects.parent';
+        public const PARENT_PROJECT_ID = 'projects.parent';
 
-        const ARCHIVED = 'projects.archived';
+        public const ARCHIVED = 'projects.archived';
 
         public function getByPrefix($prefix)
         {
@@ -312,7 +312,7 @@
             return $file_ids;
         }
 
-        protected function setupIndexes()
+        protected function setupIndexes(): void
         {
             $this->addIndex('scope', self::SCOPE);
             $this->addIndex('scope_name', [self::SCOPE, self::NAME]);

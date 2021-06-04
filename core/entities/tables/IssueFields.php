@@ -28,25 +28,25 @@
     class IssueFields extends ScopedTable
     {
 
-        const B2DB_TABLE_VERSION = 2;
+        public const B2DB_TABLE_VERSION = 2;
 
-        const B2DBNAME = 'issuefields';
+        public const B2DBNAME = 'issuefields';
 
-        const ID = 'issuefields.id';
+        public const ID = 'issuefields.id';
 
-        const SCOPE = 'issuefields.scope';
+        public const SCOPE = 'issuefields.scope';
 
-        const ADDITIONAL = 'issuefields.is_additional';
+        public const ADDITIONAL = 'issuefields.is_additional';
 
-        const ISSUETYPE_ID = 'issuefields.issuetype_id';
+        public const ISSUETYPE_ID = 'issuefields.issuetype_id';
 
-        const ISSUETYPE_SCHEME_ID = 'issuefields.issuetype_scheme_id';
+        public const ISSUETYPE_SCHEME_ID = 'issuefields.issuetype_scheme_id';
 
-        const FIELD_KEY = 'issuefields.field_key';
+        public const FIELD_KEY = 'issuefields.field_key';
 
-        const REPORTABLE = 'issuefields.is_reportable';
+        public const REPORTABLE = 'issuefields.is_reportable';
 
-        const REQUIRED = 'issuefields.required';
+        public const REQUIRED = 'issuefields.required';
 
         public static function getFieldDescription($key)
         {
@@ -438,7 +438,7 @@
 
         }
 
-        protected function initialize()
+        protected function initialize(): void
         {
             parent::setup(self::B2DBNAME, self::ID);
             parent::addVarchar(self::FIELD_KEY, 100);
@@ -449,7 +449,7 @@
             parent::addForeignKeyColumn(self::ISSUETYPE_SCHEME_ID, IssuetypeSchemes::getTable(), IssuetypeSchemes::ID);
         }
 
-        protected function setupIndexes()
+        protected function setupIndexes(): void
         {
             $this->addIndex('scope_issuetypescheme_issuetype', [self::SCOPE, self::ISSUETYPE_SCHEME_ID, self::ISSUETYPE_ID]);
         }
