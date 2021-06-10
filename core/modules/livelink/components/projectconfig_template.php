@@ -70,10 +70,10 @@
 <?php if ($project->getID()): ?>
     <script>
         $(document).ready(() => {
-            public const removeProjectLivelink = function () {
+            const removeProjectLivelink = function () {
                 Pachno.UI.Dialog.setSubmitting();
 
-                public const submitRemoveLivelink = function () {
+                const submitRemoveLivelink = function () {
                     return new Promise(function (resolve, reject) {
                         $.ajax({
                             type: 'POST',
@@ -86,7 +86,7 @@
                     });
                 };
 
-                public const loadLivelinkPartial = function () {
+                const loadLivelinkPartial = function () {
                     return new Promise(function (resolve, reject) {
                         $.ajax({
                             type: 'GET',

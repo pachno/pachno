@@ -229,10 +229,10 @@
 </div>
 <script>
     Pachno.on(Pachno.EVENTS.ready, () => {
-        public const $body = $('body');
-        public const setProjectAssignee = function (url, field, $link, $container) {
-            public const identifiable_type = $link.data('identifiable-type');
-            public const value = $link.data('identifiable-value');
+        const $body = $('body');
+        const setProjectAssignee = function (url, field, $link, $container) {
+            const identifiable_type = $link.data('identifiable-type');
+            const value = $link.data('identifiable-value');
             $container.html(Pachno.UI.fa_image_tag('spinner', { classes: 'fa-spin' }));
 
             Pachno.fetch(url, {
@@ -250,9 +250,9 @@
         $body.on('click', '.trigger-set-project-qa', function (event) {
             event.preventDefault();
 
-            public const url = '<?= make_url('configure_project_set_leadby', ['project_id' => $project->getID()]); ?>';
-            public const $link = $(this);
-            public const $container = $('#project-qa-container');
+            const url = '<?= make_url('configure_project_set_leadby', ['project_id' => $project->getID()]); ?>';
+            const $link = $(this);
+            const $container = $('#project-qa-container');
 
             setProjectAssignee(url, 'qa_by', $link, $container);
         });
@@ -260,9 +260,9 @@
         $body.on('click', '.trigger-set-project-owner', function (event) {
             event.preventDefault();
 
-            public const url = '<?= make_url('configure_project_set_leadby', ['project_id' => $project->getID()]); ?>';
-            public const $link = $(this);
-            public const $container = $('#project-owner-container');
+            const url = '<?= make_url('configure_project_set_leadby', ['project_id' => $project->getID()]); ?>';
+            const $link = $(this);
+            const $container = $('#project-owner-container');
 
             setProjectAssignee(url, 'owned_by', $link, $container);
         });
@@ -270,9 +270,9 @@
         $body.on('click', '.trigger-set-project-lead', function (event) {
             event.preventDefault();
 
-            public const url = '<?= make_url('configure_project_set_leadby', ['project_id' => $project->getID()]); ?>';
-            public const $link = $(this);
-            public const $container = $('#project-lead-container');
+            const url = '<?= make_url('configure_project_set_leadby', ['project_id' => $project->getID()]); ?>';
+            const $link = $(this);
+            const $container = $('#project-lead-container');
 
             setProjectAssignee(url, 'lead_by', $link, $container);
         });

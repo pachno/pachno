@@ -45,11 +45,11 @@
 <script type="text/javascript">
     Pachno.on(Pachno.EVENTS.ready, function () {
         Pachno.on(Pachno.EVENTS.formSubmitResponse, function (PachnoApplication, data) {
-            public const json = data.json;
-            public const project = json.project;
+            const json = data.json;
+            const project = json.project;
             switch (data.form) {
                 case 'project_config_icon_form':
-                    public const $project_icons = $(`.project-icon[data-project-id=${project.id}]`);
+                    const $project_icons = $(`.project-icon[data-project-id=${project.id}]`);
                     $project_icons.attr('src', project.icon);
                     $project_icons.prop('data-src', project.icon);
                     $project_icons.data('src', project.icon);
@@ -63,7 +63,7 @@
     //         event.preventDefault();
     //         event.stopPropagation();
     //
-    //         public const $item = $(this).parents('.project-edition');
+    //         const $item = $(this).parents('.project-edition');
     //         Pachno.Config.loadComponentOptions(
     //             {
     //                 container: '#project-editions-list-container',

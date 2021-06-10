@@ -437,17 +437,21 @@
                         case 'get_module_updates':
                             $addons_param = [];
                             $addons_json = [];
-                            foreach ($request['addons'] as $addon) {
+                            foreach ($request->getParameter('addons', []) as $addon) {
                                 $addons_param[] = 'addons[]=' . $addon;
                             }
-                            try {
-                                $client = new Net_Http_Client();
-                                $client->get('https://pachno.com/addons.json?' . implode('&', $addons_param));
-                                $addons_json = json_decode($client->getBody(), true);
-                            } catch (Exception $e) {
+                            if (count($addons_param)) {
+                                try {
+                                    $client = new Net_Http_Client();
+                                    $client->get('https://pachno.local/addons/index.json?' . implode('&', $addons_param));
+                                    $addons_json = json_decode($client->getBody(), true);
+                                } catch (Exception $e) {
+                                }
+
+                                return $this->renderJSON($addons_json);
                             }
 
-                            return $this->renderJSON($addons_json);
+                            return $this->renderJSON([]);
                             break;
                         case 'getsearchcounts':
                             $counts_json = [];

@@ -176,7 +176,7 @@
 </div>
 <script type="text/javascript">
     setTimeout(function () {
-        public const uploader = new Uploader({
+        const uploader = new Uploader({
             uploader_container: '#release-list-files',
             mode: 'table',
             only_images: false,
@@ -224,7 +224,7 @@
                 $form.removeClass('submitting');
                 Pachno.UI.Backdrop.reset();
                 Pachno.trigger(Pachno.EVENTS.formSubmitResponse, { form: $form.attr('id'), json });
-                public const $release_row = $('[data-release][data-release-id=' + json.build.id + ']');
+                const $release_row = $('[data-release][data-release-id=' + json.build.id + ']');
                 let $container;
                 if (json.build.archived == 1) {
                     $container = $('#archived_releases_list');
@@ -249,7 +249,7 @@
                     $container.append(json.component);
                 }
 
-                for (public const mode of ['archived', 'active', 'upcoming']) {
+                for (const mode of ['archived', 'active', 'upcoming']) {
                     $('.release-count[data-list=' + mode + ']').html($('#tab_project_releases_' + mode + '_pane .release-row').length);
                 }
             });

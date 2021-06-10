@@ -39,7 +39,7 @@
 </div>
 <script>
     setTimeout(function () {
-        public const uploader = new Uploader({
+        const uploader = new Uploader({
             uploader_container: '#project-icons-grid',
             mode: 'grid',
             input_name: 'file_id',

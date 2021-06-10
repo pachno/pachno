@@ -47,7 +47,7 @@
         Pachno.fetch(data.url, { method: 'DELETE' })
             .then(json => {
                 Pachno.UI.Dialog.dismiss();
-                for (public const mode of ['archived', 'active', 'upcoming']) {
+                for (const mode of ['archived', 'active', 'upcoming']) {
                     $('.release-count[data-list=' + mode + ']').html($('#tab_project_releases_' + mode + '_pane .release-row').length);
                 }
             });

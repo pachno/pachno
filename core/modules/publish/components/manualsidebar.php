@@ -102,10 +102,10 @@
 </nav>
 <script type="text/javascript">
     Pachno.on(Pachno.EVENTS.formSubmitResponse, function (PachnoApplication, data) {
-        public const json = data.json;
-        public const $form = $(`#${data.form}`);
+        const json = data.json;
+        const $form = $(`#${data.form}`);
         if ($form.data('add-category-form') !== undefined) {
-            public const parent_id = $form.data('article-id');
+            const parent_id = $form.data('article-id');
             $form.trigger('reset');
             $(json.component).insertBefore($(`#article-${parent_id}-children-container > .form-container`));
         }

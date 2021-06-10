@@ -190,16 +190,16 @@
                 <script>
                     Pachno.on(Pachno.EVENTS.ready, () => {
                         $('.trigger-backend-config-type').change(function () {
-                            public const value = $(this).val();
-                            public const mailertypes = ['<?php echo Mailing::MAIL_TYPE_PHP; ?>', '<?php echo Mailing::MAIL_TYPE_SMTP; ?>', '<?php echo Mailing::MAIL_TYPE_SENDMAIL; ?>'];
-                            for (public const mailertype of mailertypes) {
-                                public const $configContainer = $(`#mailer_config_${mailertype}`);
+                            const value = $(this).val();
+                            const mailertypes = ['<?php echo Mailing::MAIL_TYPE_PHP; ?>', '<?php echo Mailing::MAIL_TYPE_SMTP; ?>', '<?php echo Mailing::MAIL_TYPE_SENDMAIL; ?>'];
+                            for (const mailertype of mailertypes) {
+                                const $configContainer = $(`#mailer_config_${mailertype}`);
                                 (mailertype == value) ? $configContainer.removeClass('hidden') : $configContainer.addClass('hidden');
                             }
                         })
 
-                        public const onEnableChange = function () {
-                            public const $inputs = $('#mailnotification_settings_container').find('input:not(.toggle-enable-controls)');
+                        const onEnableChange = function () {
+                            const $inputs = $('#mailnotification_settings_container').find('input:not(.toggle-enable-controls)');
                             if ($('#enable_outgoing_notifications_yes').is(':checked')) {
                                 $inputs.prop('disabled', false);
                             } else {

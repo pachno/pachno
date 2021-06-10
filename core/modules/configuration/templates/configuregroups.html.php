@@ -43,7 +43,7 @@
 </div>
 <script>
     Pachno.on(Pachno.EVENTS.formSubmitResponse, function (PachnoApplication, data) {
-        public const json = data.json;
+        const json = data.json;
         switch (data.form) {
             case 'edit_group_form':
                 let $existing_row = $(`[data-group][data-group-id=${json.group.id}]`);

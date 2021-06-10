@@ -3,8 +3,8 @@
 </div>
 <script>
     $(document).ready(() => {
-        public const submitSetupStep = function(e) {
-            public const form_id        = 'livelink_form',
+        const submitSetupStep = function(e) {
+            const form_id        = 'livelink_form',
                 $form          = $('#' + form_id),
                 $indicator     = $('#' + form_id + '_indicator'),
                 $submit_button = $('#' + form_id + '_button'),
@@ -13,7 +13,7 @@
             $indicator.show();
             e.preventDefault();
 
-            public const submitStep = function () {
+            const submitStep = function () {
                 return new Promise(function (resolve, reject) {
                     $.ajax({
                         type: 'POST',

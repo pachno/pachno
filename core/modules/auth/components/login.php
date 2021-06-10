@@ -67,7 +67,7 @@
 <?php endif; ?>
 <script>
     Pachno.on(Pachno.EVENTS.ready, () => {
-        public const $body = $('body');
+        const $body = $('body');
 
         $body.on('click', '.trigger-show-register', () => {
             $('#login-popup').addClass('hidden');

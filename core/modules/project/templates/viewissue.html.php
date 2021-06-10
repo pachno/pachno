@@ -42,7 +42,7 @@
 <?php endif; ?>
 <script type="text/javascript">
     Pachno.on(Pachno.EVENTS.ready, function () {
-        public const issue = Pachno.addIssue(<?= json_encode($json); ?>, undefined, false);
+        const issue = Pachno.addIssue(<?= json_encode($json); ?>, undefined, false);
         issue.allowShortcuts(<?= json_encode($json['fields']); ?>);
         issue.updateVisibleValues();
     });

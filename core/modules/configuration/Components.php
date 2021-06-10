@@ -40,7 +40,8 @@
         {
             try {
                 $client = new Net_Http_Client();
-                $client->get('https://pachno.com/addons.json');
+                $client->setVerifyPeer(false);
+                $client->get('https://pachno.local/addons/index.json');
                 $json_modules = json_decode($client->getBody());
             } catch (Exception $e) {
             }
