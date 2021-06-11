@@ -4,7 +4,7 @@
             <div class="helper-text">
                 <div class="image-container"><?= image_tag('/unthemed/configuration_modules.png', [], true); ?></div>
                 <span class="description">
-                    <?= __('Featured modules and online module support has been disabled in this release, but will be available in beta 1. Local modules can be managed from the list below.'); ?>
+                    <?= __('There was an error retrieving featured modules from pachno.com. Local modules can be managed from the list below.'); ?>
                 </span>
             </div>
         </div>

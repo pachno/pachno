@@ -81,14 +81,14 @@
             $this->cliEcho(str_pad('BuildFiles', 25), self::COLOR_WHITE, self::STYLE_DEFAULT);
             BuildFiles::getTable()->create();
             $this->cliMoveLeft();
-            $this->cliEcho(str_pad('Builds', 25), self::COLOR_WHITE, self::STYLE_DEFAULT);
-            Builds::getTable()->upgrade(tbg\tables\Builds::getTable());
-            $this->cliMoveLeft();
             $this->cliEcho(str_pad('Files', 25), self::COLOR_WHITE, self::STYLE_DEFAULT);
             Files::getTable()->upgrade(tbg\tables\Files::getTable());
             $this->cliMoveLeft();
             $this->cliEcho(str_pad('Projects', 25), self::COLOR_WHITE, self::STYLE_DEFAULT);
             Projects::getTable()->upgrade(tbg\tables\Projects::getTable());
+            $this->cliMoveLeft();
+            $this->cliEcho(str_pad('Builds', 25), self::COLOR_WHITE, self::STYLE_DEFAULT);
+            Builds::getTable()->upgrade(tbg\tables\Builds::getTable());
             $this->cliMoveLeft();
             $this->cliEcho(str_pad('Articles', 25), self::COLOR_WHITE, self::STYLE_DEFAULT);
             Articles::getTable()->upgrade(tbg\tables\Articles::getTable());
