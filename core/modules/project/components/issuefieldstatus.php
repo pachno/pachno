@@ -13,13 +13,12 @@
                     <span class="name"><?= __('Change status'); ?></span>
                 </div>
                 <?php foreach ($statuses as $status): ?>
-                    <div class="list-item">
-                        <a href="javascript:void(0);" onclick="Pachno.Issues.Field.set('<?php echo make_url('issue_setfield', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => 'status', 'status_id' => $status->getID())); ?>', 'status');">
-                            <div class="status-badge" style="background-color: <?php echo $status->getColor(); ?>;color: <?php echo $status->getTextColor(); ?>;">
-                                <span><?php echo __($status->getName()); ?></span>
-                            </div>
-                        </a>
-                    </div>
+                    <input type="radio" class="fancy-checkbox" name="status_id" id="issue_status_<?= $status->getId(); ?>_radio" value="<?= $status->getId(); ?>" <?php if ($issue->getIssueType() instanceof \pachno\core\entities\Issuetype && $issue->getIssueType()->getID() == $status->getId()) echo ' checked'; ?> data-trigger-issue-update data-field="status" data-issue-id="<?= $issue->getId(); ?>">
+                    <label for="issue_status_<?= $status->getId(); ?>_radio" class="list-item">
+                        <span class="status-badge" style="background-color: <?php echo $status->getColor(); ?>;color: <?php echo $status->getTextColor(); ?>;">
+                            <span><?php echo __($status->getName()); ?></span>
+                        </span>
+                    </label>
                 <?php endforeach; ?>
             </div>
         </div>
