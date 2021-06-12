@@ -1755,15 +1755,15 @@
         public function fieldPermissionCheck($field, $custom = false)
         {
             if ($custom) {
-                return (bool)($this->permissionCheck('caneditissuecustomfields' . $field) || $this->permissionCheck('caneditissuecustomfields'));
+                return (bool)$this->permissionCheck('caneditissuecustomfields');
             } elseif (in_array($field, ['title', 'shortname', 'description', 'reproduction_steps'])) {
-                return (bool)($this->permissionCheck('caneditissue' . $field) || $this->permissionCheck('caneditissuebasic') || $this->permissionCheck('cancreateissues') || $this->permissionCheck('cancreateandeditissues'));
+                return (bool)($this->permissionCheck('caneditissuebasic') || $this->permissionCheck('cancreateissues') || $this->permissionCheck('cancreateandeditissues'));
             } elseif (in_array($field, ['builds', 'editions', 'components', 'links', 'files'])) {
-                return (bool)($this->permissionCheck('canadd' . $field) || $this->permissionCheck('canaddextrainformationtoissues'));
+                return (bool)($this->permissionCheck('canaddextrainformationtoissues'));
             } elseif (in_array($field, ['user_pain', 'pain_bug_type', 'pain_likelihood', 'pain_effect'])) {
                 return (bool)($this->permissionCheck('caneditissueuserpain') || $this->permissionCheck('caneditissue'));
             } else {
-                return (bool)($this->permissionCheck('caneditissue' . $field) || $this->permissionCheck('caneditissue'));
+                return (bool)($this->permissionCheck('caneditissue'));
             }
         }
 
