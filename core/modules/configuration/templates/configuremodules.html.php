@@ -56,7 +56,7 @@
                 <h3>
                     <span><?= __('Featured modules'); ?></span>
                     <span class="button-group">
-                        <a class="button secondary" href="https://pachno.com/addons" target="_blank">
+                        <a class="button secondary" href="https://pach.no/modules" target="_blank">
                             <?= fa_image_tag('globe', ['class' => 'icon']); ?>
                             <span><?= __('Find modules online'); ?></span>
                         </a>
@@ -82,7 +82,7 @@
                                 <div class="image-container"><?= image_tag('/unthemed/onboarding_configure_modules_none.png', [], true); ?></div>
                                 <div class="helper-text">
                                     <span><?= __('Modules enhance and extend the functionality in Pachno.'); ?></span>
-                                    <span><a class="button primary" href="https://pachno.com/addons" target="_blank"><?= __('Find modules online'); ?></a></span>
+                                    <span><a class="button primary" href="https://pach.no/modules" target="_blank"><?= __('Find modules online'); ?></a></span>
                                 </div>
                             </div>
                         <?php endif; ?>
@@ -91,7 +91,7 @@
                             <div class="image-container"><?= image_tag('/unthemed/onboarding_configure_modules_none.png', [], true); ?></div>
                             <div class="helper-text">
                                 <span><?= __('Available modules will be listed here.'); ?></span>
-                                <span><a class="button primary" href="https://pachno.com/addons" target="_blank"><?= __('Find modules online'); ?></a></span>
+                                <span><a class="button primary" href="https://pach.no/modules" target="_blank"><?= __('Find modules online'); ?></a></span>
                             </div>
                         </div>
                     <?php endif; ?>

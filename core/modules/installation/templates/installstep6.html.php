@@ -16,7 +16,7 @@
         <div class="feature">
             Online documentation is available from <a href="https://pachno.com/support" target="_new">pachno.com &raquo; support</a>, and our <a href="https://forum.pachno.com" target="_new">community forums</a> are full of helpful people.<br>
             We also provide <a target="_new" href="https://pachno.com/register/support">commercial support</a> and <a target="_new" href="https://pachno.com/training">online training</a> for individuals and groups. For other inquiries, send an email to <a href="mailto:support@pachno.com">support@pachno.com</a>.<br>
-            Find additional modules online, at <a href="https://pachno.com/addons">pachno.com &raquo; Addons</a><br>
+            Find additional modules online, at <a href="https://pach.no/modules">pachno.com &raquo; Addons</a><br>
         </div>
         <br>
         <h2>Getting involved</h2>
