@@ -98,10 +98,10 @@
                             Please reinstall Pachno or file a bug report if you think this is an error.
                         <?php elseif ($exception->getCode() == \pachno\core\framework\exceptions\ConfigurationException::UPGRADE_FILE_MISSING): ?>
                             To enable the upgrade mode, make sure the file <span class="command_box"><?= PACHNO_PATH; ?>upgrade</span> is present<br>
-                            Please see the upgrade instructions here: <a href='https://projects.pachno.com/pachno/docs/FAQ'>pachno.com &raquo; wiki &raquo; FAQ</a> for more information.
+                            Please see the upgrade instructions here: <a href='https://projects.pach.no/pachno/docs/FAQ'>pachno.com &raquo; wiki &raquo; FAQ</a> for more information.
                         <?php elseif ($exception->getCode() == \pachno\core\framework\exceptions\ConfigurationException::UPGRADE_REQUIRED): ?>
                             You need to upgrade to this version of Pachno before you can continue.<br>
-                            Please see the upgrade instructions here: <a href='https://projects.pachno.com/pachno/docs/FAQ'>pachno.com &raquo; wiki &raquo; FAQ</a> for more information.
+                            Please see the upgrade instructions here: <a href='https://projects.pach.no/pachno/docs/FAQ'>pachno.com &raquo; wiki &raquo; FAQ</a> for more information.
                         <?php elseif ($exception->getCode() == \pachno\core\framework\exceptions\ConfigurationException::NO_B2DB_CONFIGURATION): ?>
                             The database configuration file <span class="command_box"><?= PACHNO_CONFIGURATION_PATH; ?>b2db.yml</span> could not be read.<br>
                             This file is generated during installation, so this error should not occur.<br>

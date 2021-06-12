@@ -21,7 +21,7 @@
             <div class="helper-text">
                 <div class="image-container"><?= image_tag('/unthemed/onboarding_configure_groups_icon.png', [], true); ?></div>
                 <span class="description">
-                    <?php echo __("User groups define basic access permissions for all users, allowing you to restrict or grant access to certain parts of the system not linked to specific projects. Read about groups and permissions in the %online_documentation to learn more about how to create, apply and manage groups.", array('%online_documentation' => link_tag('https://projects.pachno.com/pachno/docs/UserGroups', '<b>'.__('online documentation').'</b>'))); ?>
+                    <?php echo __("User groups define basic access permissions for all users, allowing you to restrict or grant access to certain parts of the system not linked to specific projects. Read about groups and permissions in the %online_documentation to learn more about how to create, apply and manage groups.", array('%online_documentation' => link_tag('https://projects.pach.no/pachno/docs/UserGroups', '<b>'.__('online documentation').'</b>'))); ?>
                 </span>
             </div>
             <h3><span><?php echo __('User groups'); ?></span></h3>

@@ -21,7 +21,7 @@
             <div class="helper-text">
                 <div class="image-container"><?= image_tag('/unthemed/onboarding_configure_clients_icon.png', [], true); ?></div>
                 <span class="description">
-                    <?php echo __("Clients let you group external users separate from your internal teams. Clients also have extra information available to help you organize contact details. Read about clients and permissions in the %online_documentation to learn more about how to create, apply and manage clients.", array('%online_documentation' => link_tag('https://projects.pachno.com/pachno/docs/UserClients', '<b>'.__('online documentation').'</b>'))); ?>
+                    <?php echo __("Clients let you group external users separate from your internal teams. Clients also have extra information available to help you organize contact details. Read about clients and permissions in the %online_documentation to learn more about how to create, apply and manage clients.", array('%online_documentation' => link_tag('https://projects.pach.no/pachno/docs/UserClients', '<b>'.__('online documentation').'</b>'))); ?>
                 </span>
             </div>
             <h3><span><?php echo __('User clients'); ?></span></h3>

@@ -10,7 +10,7 @@
         <div class="helper-text">
             <div class="image-container"><?= image_tag('/unthemed/onboarding_configure_roles_icon.png', [], true); ?></div>
             <span class="description">
-                <?php echo __("Roles are great for defining permission groups that can be granted to specific projects, or give users access to update and edit information around Pachno. Read about roles and permissions in the %online_documentation to learn more about how to create, apply and manage roles.", array('%online_documentation' => link_tag('https://projects.pachno.com/pachno/docs/RolesAndPermissions', '<b>'.__('online documentation').'</b>'))); ?>
+                <?php echo __("Roles are great for defining permission groups that can be granted to specific projects, or give users access to update and edit information around Pachno. Read about roles and permissions in the %online_documentation to learn more about how to create, apply and manage roles.", array('%online_documentation' => link_tag('https://projects.pach.no/pachno/docs/RolesAndPermissions', '<b>'.__('online documentation').'</b>'))); ?>
             </span>
         </div>
     </div>

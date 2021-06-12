@@ -21,7 +21,7 @@
             <div class="helper-text">
                 <div class="image-container"><?= image_tag('/unthemed/onboarding_configure_teams_icon.png', [], true); ?></div>
                 <span class="description">
-                    <?php echo __("Teams let you grant access to groups of users, as well as provide central starting points for information. Read about teams and permissions in the %online_documentation to learn more about how to create, apply and manage teams.", array('%online_documentation' => link_tag('https://projects.pachno.com/pachno/docs/UserTeams', '<b>'.__('online documentation').'</b>'))); ?>
+                    <?php echo __("Teams let you grant access to groups of users, as well as provide central starting points for information. Read about teams and permissions in the %online_documentation to learn more about how to create, apply and manage teams.", array('%online_documentation' => link_tag('https://projects.pach.no/pachno/docs/UserTeams', '<b>'.__('online documentation').'</b>'))); ?>
                 </span>
             </div>
             <h3><span><?php echo __('User teams'); ?></span></h3>

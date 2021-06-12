@@ -9,6 +9,7 @@
     use pachno\core\entities\common\Identifiable;
     use pachno\core\entities\tables\Files;
     use pachno\core\entities\tables\ScopedTable;
+    use pachno\core\entities\tables\ScopeHostnames;
     use pachno\core\framework;
     use pachno\core\framework\Settings;
 
@@ -62,6 +63,9 @@
 
         protected $_administrator = null;
 
+        /**
+         * @var string[]
+         */
         protected $_hostnames = null;
 
         protected $_is_secure = false;
@@ -435,6 +439,9 @@
             }
         }
 
+        /**
+         * @return array<int, string>
+         */
         public function getHostnames()
         {
             $this->_populateHostnames();

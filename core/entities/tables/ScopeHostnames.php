@@ -4,6 +4,7 @@
 
     use b2db\Insertion;
     use b2db\Row;
+    use b2db\Update;
 
     /**
      * Scopes table
@@ -62,6 +63,13 @@
             $insertion->add(self::HOSTNAME, $hostname);
             $insertion->add(self::SCOPE_ID, $scope_id);
             $res = $this->rawInsert($insertion);
+        }
+
+        public function setHostnameById($id, $hostname)
+        {
+            $update = new Update();
+            $update->update(self::HOSTNAME, $hostname);
+            $this->rawUpdateById($update, $id);
         }
 
         public function getHostnamesForScope($scope_id)

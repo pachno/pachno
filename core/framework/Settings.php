@@ -254,13 +254,13 @@
 
         public const USER_DISPLAYNAME_FORMAT_BUDDY = 0;
 
-        protected static $_ver_mj = 0;
+        protected static $_ver_mj = 1;
 
-        protected static $_ver_mn = 7;
+        protected static $_ver_mn = 0;
 
         protected static $_ver_rev = 0;
 
-        protected static $_ver_name = "Alpha 2";
+        protected static $_ver_name = "Amethyst";
 
         /**
          * @var Scope
