@@ -51,7 +51,7 @@
         <?php Event::createNew('core', 'header_menu_entries')->trigger(); ?>
         <a class="<?php if ($selected_tab == 'teams') echo 'selected'; ?> disabled" href="<?= make_url('home'); ?>" style="display: none;">
             <?= fa_image_tag('users', ['class' => 'icon']); ?>
-            <span class="name"><?= __('Teams and clients'); ?><i class="count-badge"><?= __('Disabled in this alpha release'); ?></i></span>
+            <span class="name"><?= __('Teams and clients'); ?><i class="count-badge"><?= __('Disabled in this release'); ?></i></span>
         </a>
         <a href="javascript:void(0);" class="trigger-quicksearch">
             <?= fa_image_tag('search', ['class' => 'icon']); ?>

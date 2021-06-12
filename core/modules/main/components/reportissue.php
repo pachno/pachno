@@ -830,7 +830,7 @@
                 </div>
             </div>
             <div class="form-row submit-container">
-                <?php /* <span class="count-badge"><?= __('Disabled in this alpha release'); ?></span>
+                <?php /* <span class="count-badge"><?= __('Disabled in this release'); ?></span>
                 <input type="checkbox" name="custom_issue_access" id="report-issue-custom-access-checkbox"
                        class="fancy-checkbox" onchange="Pachno.Issues.ACL.toggle_custom_access(this);"
                        disabled
