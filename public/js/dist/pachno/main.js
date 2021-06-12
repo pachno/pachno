@@ -5183,7 +5183,6 @@ var PachnoApplication = /*#__PURE__*/function () {
         $container.addClass('active');
         $container.find(options.component).removeClass('active');
         $item.addClass('active');
-        (0,_helpers_fetch__WEBPACK_IMPORTED_MODULE_4__.fetchHelper)(url);
         fetch(url, {
           method: 'GET'
         }).then(function (response) {
@@ -7764,7 +7763,7 @@ var fetchHelper = function fetchHelper(url, options) {
               var replace = (0,_tools_tools__WEBPACK_IMPORTED_MODULE_1__.is_string)(options.success.update) ? false : options.success.update.replace ? options.success.update.replace : false;
 
               if (insertion) {
-                var $form_container = jquery__WEBPACK_IMPORTED_MODULE_0___default()(update_element).find('> .form-container');
+                var $form_container = options.success.update.list === true ? jquery__WEBPACK_IMPORTED_MODULE_0___default()(update_element) : jquery__WEBPACK_IMPORTED_MODULE_0___default()(update_element).find('> .form-container');
                 var $no_items_element = jquery__WEBPACK_IMPORTED_MODULE_0___default()(update_element).find('.no-items');
 
                 if ($no_items_element.length) {
@@ -9105,6 +9104,10 @@ var submitForm = function submitForm($form) {
           insertion: true
         }
       };
+
+      if ($form.data('update-insert-form-list') !== undefined) {
+        options.success.update.list = true;
+      }
     } else if ($form.data('update-replace') !== undefined) {
       options.success = {
         update: {

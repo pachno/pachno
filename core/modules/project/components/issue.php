@@ -14,8 +14,8 @@
             <div class="card-header">
                 <?php include_component('project/viewissueworkflowbuttons', ['issue' => $issue]); ?>
                 <div class="dropper-container">
-                    <button class="dropper button secondary icon" id="more_actions_<?php echo $issue->getID(); ?>_button"><?= fa_image_tag('ellipsis-v'); ?></button>
-                    <?php include_component('main/issuemoreactions', array('issue' => $issue, 'times' => false, 'show_workflow_transitions' => false)); ?>
+                    <a title="<?php echo __('Show more actions'); ?>" class="button icon secondary dropper dynamic_menu_link" data-id="<?php echo $issue->getID(); ?>" id="more_actions_<?php echo $issue->getID(); ?>_button" href="javascript:void(0);"><?= fa_image_tag('ellipsis-v'); ?></a>
+                    <?php include_component('main/issuemoreactions', array('issue' => $issue, 'multi' => false, 'dynamic' => true)); ?>
                 </div>
             </div>
             <?php \pachno\core\framework\Event::createNew('core', 'viewissue::afterWorkflowButtons', $issue)->trigger(); ?>

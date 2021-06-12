@@ -280,6 +280,9 @@ const submitForm = function ($form, options = {}) {
     if ($form.data('update-container')) {
         if ($form.data('update-insert') !== undefined) {
             options.success = { update: { element: $form.data('update-container'), insertion: true }};
+            if ($form.data('update-insert-form-list') !== undefined) {
+                options.success.update.list = true;
+            }
         } else if ($form.data('update-replace') !== undefined) {
             options.success = { update: { element: $form.data('update-container'), replace: true }};
         } else {

@@ -52,7 +52,7 @@ if (isset($customtype)): ?>
         <?php endforeach; ?>
     </div>
     <div class="form-container">
-        <form accept-charset="<?= \pachno\core\framework\Context::getI18n()->getCharset(); ?>" action="<?= make_url('configure_issuefields_add', ['type' => $type]); ?>" onsubmit="Pachno.Config.Issuefields.Options.save(this);return false;" data-interactive-form>
+        <form id="add-field-form" accept-charset="<?= \pachno\core\framework\Context::getI18n()->getCharset(); ?>" action="<?= make_url('configure_issuefields_add', ['type' => $type]); ?>" onsubmit="Pachno.Config.Issuefields.Options.save(this);return false;" data-interactive-form data-update-container="#field-options-list" data-update-insert data-update-insert-form-list>
             <div class="form-row add-placeholder">
                 <?= fa_image_tag('plus', ['class' => 'icon']); ?>
                 <input type="text" name="name" class="invisible" placeholder="<?= __('Add a choice'); ?>">

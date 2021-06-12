@@ -224,7 +224,7 @@ export const fetchHelper = function (url, options) {
                                 let insertion = (is_string(options.success.update)) ? false : (options.success.update.insertion) ? options.success.update.insertion : false;
                                 let replace = (is_string(options.success.update)) ? false : (options.success.update.replace) ? options.success.update.replace : false;
                                 if (insertion) {
-                                    let $form_container = $(update_element).find('> .form-container');
+                                    let $form_container = options.success.update.list === true ? $(update_element) : $(update_element).find('> .form-container');
                                     let $no_items_element = $(update_element).find('.no-items');
                                     if ($no_items_element.length) {
                                         $no_items_element.addClass('hidden');

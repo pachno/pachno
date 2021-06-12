@@ -233,7 +233,6 @@ class PachnoApplication {
             $container.find(options.component).removeClass('active');
             $item.addClass('active');
 
-            fetchHelper(url)
             fetch(url, {
                 method: 'GET'
             })
