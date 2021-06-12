@@ -98,7 +98,7 @@
          */
         public static function getAll(): array
         {
-            return tables\ListTypes::getTable()->getAllByItemTypeAndItemdata(self::ROLE, null);
+            return tables\ListTypes::getTable()->getAllByItemTypeAndItemdata(self::ROLE, 0);
         }
 
         /**
