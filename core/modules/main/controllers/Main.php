@@ -668,7 +668,7 @@
          */
         public function runIndex(Request $request)
         {
-            if (!$this->getUser()->hasPermission(entities\Permission::PERMISSION_PAGE_ACCESS_DASHBOARD)) {
+            if ($this->getUser()->isGuest() || !$this->getUser()->hasPermission(entities\Permission::PERMISSION_PAGE_ACCESS_DASHBOARD)) {
                 if ($this->getUser()->isGuest()) {
                     return $this->forward($this->getRouting()->generate('projects_list'));
                 } else {
