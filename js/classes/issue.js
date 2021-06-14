@@ -507,7 +507,6 @@ class Issue {
                 case 'number_of_files':
                 case 'number_of_comments':
                 case 'number_of_child_issues':
-                    debugger;
                     let $number_value_element = $element.find('.value');
                     if ($number_value_element.length) {
                         $number_value_element.html(this[field]);

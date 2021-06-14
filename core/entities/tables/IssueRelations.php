@@ -145,7 +145,7 @@
             $insertion->add(self::SCOPE, framework\Context::getScope()->getID());
             $res = $this->rawInsert($insertion);
 
-            unset($this->_relations_cache[$issue_id], $this->_relations_cache[$parent_id]);
+            unset($this->_relations_cache[$issue_id], $this->_relations_cache[$child_id]);
 
             return $res;
         }

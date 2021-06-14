@@ -203,7 +203,7 @@ use pachno\core\framework\Context;
             <div id="estimated_time_content" class="field-container <?php if ($issue->canEditEstimatedTime()) echo 'editable'; ?>">
                 <span class="label"><?= __('Time spent'); ?></span>
                 <span class="value" data-dynamic-field-value data-field="spent_time" data-issue-id="<?= $issue->getId(); ?>">
-                    <span><?= ($issue->hasEstimatedTime()) ? Issue::getFormattedTime($issue->getSpentTime(true, true)) : __('Not estimated'); ?></span>
+                    <span><?= ($issue->hasSpentTime()) ? Issue::getFormattedTime($issue->getSpentTime(true, true)) : __('Not estimated'); ?></span>
                 </span>
             </div>
         </li>

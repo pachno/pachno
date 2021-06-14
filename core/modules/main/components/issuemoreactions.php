@@ -98,7 +98,7 @@
                         <?php endif; ?>
                     <?php endif; ?>
                     <?php if ($issue->canAddRelatedIssues()): ?>
-                        <a href="javascript:void(0)" class="list-item disabled" id="relate_to_existing_issue_button" onclick="Pachno.Main.Profile.clearPopupsAndButtons();Pachno.UI.Backdrop.show('<?php echo make_url('get_partial_for_backdrop', array('key' => 'relate_issue', 'issue_id' => $issue->getID())); ?>');">
+                        <a href="javascript:void(0)" class="list-item trigger-backdrop" id="relate_to_existing_issue_button" data-url="<?php echo make_url('get_partial_for_backdrop', ['key' => 'relate_issue', 'issue_id' => $issue->getID()]); ?>">
                             <?php echo fa_image_tag('share-alt', ['class' => 'icon']); ?>
                             <span class="name"><?= __('Relate to an existing issue'); ?></span>
                         </a>

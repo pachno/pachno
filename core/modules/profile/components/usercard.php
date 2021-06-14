@@ -104,7 +104,7 @@
     </div>
     <div class="backdrop_buttons">
         <?php if ($pachno_user->canSaveConfiguration()): ?>
-            <button class="button secondary trigger-backdrop" data-url="<?= make_url('configure_users_edit_user_form', ['user_id' => $user->getID()]); ?>">
+            <button class="button secondary trigger-backdrop" data-url="<?= make_url('configure_user', ['user_id' => $user->getID()]); ?>">
                 <?= fa_image_tag('edit', ['class' => 'icon']); ?>
                 <span><?php echo __('Edit this user'); ?></span>
             </button>

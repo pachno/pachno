@@ -1612,46 +1612,6 @@ h5.change-list {
   font-size: 0.85em;
 }
 
-#viewissue_commits {
-  margin: 10px 0 0 0;
-}
-
-#viewissue_attached_information .header_div a {
-  float: right;
-  margin-left: 5px;
-}
-
-#viewissue_attached_information .header_div a:hover {
-  border: 0;
-}
-
-#viewissue_add_relation_div,
-#viewissue_add_item_div {
-  text-align: left;
-}
-
-#viewissue_find_issue_form div {
-  text-align: left;
-  font-size: 0.9em;
-  margin-top: 10px;
-}
-
-#viewissue_find_issue_form input[type="text"] {
-  width: 300px;
-}
-
-#viewissue_relation_results table {
-  margin-top: 5px;
-}
-
-#viewissue_relation_results .issue_title {
-  width: auto;
-}
-
-#viewissue_relation_results .faded_out {
-  font-weight: $theme-font-weight-regular;
-}
-
 .icon-link:hover,
 .icon-link {
   color: #555;

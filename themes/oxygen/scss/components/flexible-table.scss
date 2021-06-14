@@ -282,5 +282,10 @@
         margin-right: 0;
       }
     }
+
+    &label {
+      text-transform: none;
+      color: $theme-text-color;
+    }
   }
 }

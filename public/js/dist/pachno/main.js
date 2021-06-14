@@ -4195,7 +4195,6 @@ var Issue = /*#__PURE__*/function () {
             case 'number_of_files':
             case 'number_of_comments':
             case 'number_of_child_issues':
-              debugger;
               var $number_value_element = $element.find('.value');
 
               if ($number_value_element.length) {
