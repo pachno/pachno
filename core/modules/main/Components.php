@@ -612,7 +612,7 @@
             $this->base_id = $this->area_id ?? $this->area_name;
             $this->invisible = $this->invisible ?? false;
             $this->mentionable = isset($this->target_type) && isset($this->target_id);
-            $this->markuppable = ($this->syntaxClass == Settings::getSyntaxClass(Settings::SYNTAX_MD));
+            $this->markuppable = $this->markuppable ?? ($this->syntaxClass == Settings::getSyntaxClass(Settings::SYNTAX_MD));
         }
 
     }

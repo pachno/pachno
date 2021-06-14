@@ -21,7 +21,7 @@
             <?php endif; ?>
         </div>
         <?php if ($issue->isEditable() && $issue->canEditDescription()): ?>
-            <?php include_component('main/textarea', ['area_name' => 'value', 'target_type' => 'issue', 'target_id' => $issue->getID(), 'area_id' => 'description_form_value', 'field' => 'description', 'syntax' => Settings::getSyntaxClass($issue->getDescriptionSyntax()), 'height' => '250px', 'width' => '100%', 'value' => htmlentities($issue->getDescription(), ENT_COMPAT, Context::getI18n()->getCharset())]); ?>
+            <?php include_component('main/textarea', ['area_name' => 'value', 'markuppable' => true, 'target_type' => 'issue', 'target_id' => $issue->getID(), 'area_id' => 'description_form_value', 'field' => 'description', 'syntax' => Settings::getSyntaxClass(Settings::SYNTAX_MD), 'height' => '250px', 'width' => '100%', 'value' => htmlentities($issue->getDescription(), ENT_COMPAT, Context::getI18n()->getCharset())]); ?>
             <div class="textarea_save_container">
                 <button class="button secondary" data-trigger-cancel-editing data-field="description" data-issue-id="<?= $issue->getId(); ?>"><?= __('Cancel'); ?></button>
                 <button class="button primary" data-trigger-save data-field="description" data-issue-id="<?= $issue->getId(); ?>"><?= __('Save'); ?></button>
@@ -39,7 +39,7 @@
             <?php endif; ?>
         </div>
         <?php if ($issue->isEditable() && $issue->canEditReproductionSteps()): ?>
-            <?php include_component('main/textarea', ['area_name' => 'value', 'target_type' => 'issue', 'target_id' => $issue->getID(), 'area_id' => 'reproduction_steps_form_value', 'field' => 'reproduction_steps', 'syntax' => Settings::getSyntaxClass($issue->getReproductionStepsSyntax()), 'height' => '250px', 'width' => '100%', 'value' => htmlentities($issue->getReproductionSteps(), ENT_COMPAT, Context::getI18n()->getCharset())]); ?>
+            <?php include_component('main/textarea', ['area_name' => 'value', 'markuppable' => true, 'target_type' => 'issue', 'target_id' => $issue->getID(), 'area_id' => 'reproduction_steps_form_value', 'field' => 'reproduction_steps', 'syntax' => Settings::getSyntaxClass(Settings::SYNTAX_MD), 'height' => '250px', 'width' => '100%', 'value' => htmlentities($issue->getReproductionSteps(), ENT_COMPAT, Context::getI18n()->getCharset())]); ?>
             <div class="textarea_save_container">
                 <button class="button secondary" data-trigger-cancel-editing data-field="reproduction_steps" data-issue-id="<?= $issue->getId(); ?>"><?= __('Cancel'); ?></button>
                 <button class="button primary" data-trigger-save data-field="reproduction_steps" data-issue-id="<?= $issue->getId(); ?>"><?= __('Save'); ?></button>

@@ -163,7 +163,6 @@ class Mentionsearch {
      * @param {Event} event
      */
     static keyEnterListener(event) {
-        debugger;
         switch (event.key) {
             case 'Enter':
                 event.preventDefault();

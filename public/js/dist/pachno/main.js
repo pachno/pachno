@@ -8267,8 +8267,6 @@ var Mentionsearch = /*#__PURE__*/function () {
   }, {
     key: "keyEnterListener",
     value: function keyEnterListener(event) {
-      debugger;
-
       switch (event.key) {
         case 'Enter':
           event.preventDefault();
