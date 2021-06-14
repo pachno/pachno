@@ -160,11 +160,12 @@ class Issue {
             issue.postAndUpdate('owned_by', value, identifiable_type);
         });
 
-        $body.off('click', `input[data-trigger-issue-update][data-issue-id="${this.id}"]`);
-        $body.on('click', `input[data-trigger-issue-update][data-issue-id="${this.id}"]`, function () {
+        $body.off('click', `[data-trigger-issue-update][data-issue-id="${this.id}"]`);
+        $body.on('click', `[data-trigger-issue-update][data-issue-id="${this.id}"]`, function () {
             const $element = $(this);
+            const value = $element.data('field-value') !== undefined ? $element.data('field-value') : $element.val();
             $element.addClass('submitting');
-            issue.postAndUpdate($element.data('field'), $element.val())
+            issue.postAndUpdate($element.data('field'), value)
                 .then(() => {
                     $element.removeClass('submitting');
                 })
@@ -250,6 +251,21 @@ class Issue {
                 return;
 
             $(`[data-attachment][data-file-id="${data.file_id}"]`).remove();
+            Pachno.UI.Dialog.dismiss();
+
+            Pachno.fetch(data.url, {method: 'DELETE'})
+                .then((json) => {
+                    issue.updateFromJson(json.issue);
+                    issue.updateVisibleValues();
+                })
+        });
+
+        Pachno.on(Pachno.EVENTS.issue.removeAffectedItem, function (PachnoApplication, data) {
+            if (data.issue_id != issue.id)
+                return;
+
+            Pachno.UI.Dialog.setSubmitting();
+            $(`[data-affected-item][data-affected-item-id="${data.id}"]`).remove();
             Pachno.UI.Dialog.dismiss();
 
             Pachno.fetch(data.url, {method: 'DELETE'})
@@ -540,6 +556,17 @@ class Issue {
                         $element.removeClass('hidden');
                     } else {
                         $element.addClass('hidden');
+                    }
+                    break;
+                case 'blocking':
+                    if (this[field]) {
+                        $element.removeClass('hidden');
+                        $(`.trigger-blocking[data-issue-id="${this.id}"]`).addClass('hidden');
+                        $(`.trigger-not-blocking[data-issue-id="${this.id}"]`).removeClass('hidden');
+                    } else {
+                        $element.addClass('hidden');
+                        $(`.trigger-blocking[data-issue-id="${this.id}"]`).removeClass('hidden');
+                        $(`.trigger-not-blocking[data-issue-id="${this.id}"]`).addClass('hidden');
                     }
                     break;
                 case 'editable':

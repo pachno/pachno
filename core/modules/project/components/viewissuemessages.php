@@ -10,8 +10,9 @@
 <div id="issue-messages-container" class="messages-container">
     <div class="message-box type-error hidden" id="viewissue_error">
     </div>
-    <div class="message-box type-error <?php if (!$issue->isBlocking()) echo 'hidden'; ?>" data-dynamic-field-value data-field="blocking-message" data-issue-id="<?= $issue->getId(); ?>">
-        <span class="content"><?php echo __('This issue is blocking the next release'); ?></span>
+    <div id="blocking_field" class="message-box type-error <?php if (!$issue->isBlocking()) echo 'hidden'; ?>" data-dynamic-field-value data-field="blocking" data-issue-id="<?= $issue->getId(); ?>">
+        <?= fa_image_tag('exclamation-circle', ['class' => 'icon']); ?>
+        <span class="message"><?= __('This issue is blocking the next release'); ?></span>
     </div>
     <div class="message-box type-info <?php if (!$issue->isDuplicate()) echo 'hidden'; ?>" data-dynamic-field-value data-field="duplicate-message" data-issue-id="<?= $issue->getId(); ?>">
         <?php if ($issue->isDuplicate()): ?>

@@ -6623,6 +6623,9 @@ input[data-interactive-toggle].submitting + label .indicator {
     .list-mode .list-item:last-child,
     .list-mode .list-item:hover:last-child {
       margin-bottom: 0; }
+    .list-mode .list-item.hidden,
+    .list-mode .list-item:hover.hidden {
+      display: none; }
     .list-mode .list-item.disabled,
     .list-mode .list-item:hover.disabled {
       color: rgba(100, 100, 100, 0.4); }

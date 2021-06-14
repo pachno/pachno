@@ -39,11 +39,11 @@
                 <?php endif; ?>
                 <?php if ($issue->canEditMilestone()): ?>
                     <?php if ($issue->isOpen()): ?>
-                        <a class="list-item disabled <?php if (!$issue->isBlocking()) echo 'hidden'; ?>">
+                        <a class="trigger-not-blocking list-item <?php if (!$issue->isBlocking()) echo 'hidden'; ?>" data-trigger-issue-update data-field="blocking" data-field-value="0" data-issue-id="<?= $issue->getId(); ?>">
                             <?= fa_image_tag('certificate', ['class' => ['mark_not_blocking icon']]); ?>
                             <span class="name"><?php echo __("Mark as not blocking the next release"); ?></span>
                         </a>
-                        <a class="list-item disabled <?php if ($issue->isBlocking()) echo 'hidden'; ?>">
+                        <a class="trigger-blocking list-item <?php if ($issue->isBlocking()) echo 'hidden'; ?>" data-trigger-issue-update data-field="blocking" data-field-value="1" data-issue-id="<?= $issue->getId(); ?>">
                             <?= fa_image_tag('certificate', ['class' => ['mark_blocking icon']]); ?>
                             <span class="name"><?php echo __("Mark as blocking the next release"); ?></span>
                         </a>
@@ -61,30 +61,9 @@
                     <?php endif; ?>
                     <div class="list-item separator"></div>
                 <?php endif; ?>
-                <?php if ((!isset($multi) || !$multi) && $issue->isUpdateable() && $issue->canAttachLinks()): ?>
-                    <?php if ($issue->canAttachLinks()): ?>
-                        <a href="javascript:void(0);" class="list-item disabled" id="attach_link_button" onclick="Pachno.Main.Profile.clearPopupsAndButtons();Pachno.UI.Backdrop.show('<?php echo make_url('get_partial_for_backdrop', array('key' => 'attachlink', 'issue_id' => $issue->getID())); ?>');">
-                            <?php echo fa_image_tag('link', ['class' => 'icon']); ?>
-                            <span class="name"><?= __('Attach a link'); ?></span>
-                        </a>
-                    <?php endif; ?>
-                <?php endif; ?>
-                <?php if ($issue->isUpdateable() && \pachno\core\framework\Settings::isUploadsEnabled() && $issue->canAttachFiles()): ?>
-                    <?php if (\pachno\core\framework\Settings::isUploadsEnabled() && $issue->canAttachFiles()): ?>
-                        <a href="javascript:void(0);" class="list-item disabled" id="attach_file_button" onclick="Pachno.Main.Profile.clearPopupsAndButtons();Pachno.Main.showUploader('<?php echo make_url('get_partial_for_backdrop', array('key' => 'uploader', 'mode' => 'issue', 'issue_id' => $issue->getID())); ?>');">
-                            <?php echo fa_image_tag('paperclip', ['class' => 'icon']); ?>
-                            <span class="name"><?= __('Attach a file'); ?></span>
-                        </a>
-                    <?php else: ?>
-                        <a href="javascript:void(0);" class="list-item disabled" id="attach_file_button" onclick="Pachno.UI.Message.error('<?php echo __('File uploads are not enabled'); ?>', '<?php echo __('Before you can upload attachments, file uploads needs to be activated'); ?>');">
-                            <?php echo fa_image_tag('paperclip', ['class' => 'icon']); ?>
-                            <span class="name"><?= __('Attach a file'); ?></span>
-                        </a>
-                    <?php endif; ?>
-                <?php endif; ?>
                 <?php if ($issue->isUpdateable()): ?>
                     <?php if ($issue->canEditAffectedComponents() || $issue->canEditAffectedBuilds() || $issue->canEditAffectedEditions()): ?>
-                        <a id="affected_add_button" class="list-item disabled" href="javascript:void(0);" onclick="Pachno.Main.Profile.clearPopupsAndButtons();Pachno.UI.Backdrop.show('<?php echo make_url('get_partial_for_backdrop', array('key' => 'issue_add_item', 'issue_id' => $issue->getID())); ?>');">
+                        <a id="affected_add_button" class="list-item trigger-backdrop" href="javascript:void(0);" data-url="<?php echo make_url('get_partial_for_backdrop', ['key' => 'issue_add_item', 'issue_id' => $issue->getID()]); ?>">
                             <?php echo fa_image_tag('cubes', ['class' => 'affected_items icon']); ?>
                             <span class="name"><?= __('Add affected item'); ?></span>
                         </a>

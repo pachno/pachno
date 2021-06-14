@@ -133,6 +133,10 @@
       margin-bottom: 0;
     }
 
+    &.hidden {
+      display: none;
+    }
+
     &.disabled {
       color: rgba(100, 100, 100, .4);
 

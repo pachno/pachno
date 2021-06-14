@@ -936,7 +936,7 @@
         /**
          * Return the current owner
          *
-         * @return common\Identifiable
+         * @return ?common\Identifiable
          */
         public function getOwner()
         {
@@ -1007,7 +1007,7 @@
         /**
          * Returns the category
          *
-         * @return Category
+         * @return ?Category
          */
         public function getCategory()
         {
@@ -2149,7 +2149,7 @@
         /**
          * Returns the editions for this issue
          *
-         * @return array Returns an array with 'edition' (Edition), 'status' (Datatype), 'confirmed' (boolean) and 'a_id'
+         * @return array<string, int|Edition>
          */
         public function getEditions()
         {
@@ -2246,7 +2246,7 @@
         /**
          * Returns the builds for this issue
          *
-         * @return array Returns an array with 'build' (\pachno\core\entities\Build), 'status' (\pachno\core\entities\Datatype), 'confirmed' (boolean) and 'a_id'
+         * @return array<string, int|Build>
          */
         public function getBuilds()
         {
@@ -2293,7 +2293,7 @@
         /**
          * Returns the components for this issue
          *
-         * @return array Returns an array with 'component' (\pachno\core\entities\Component), 'status' (\pachno\core\entities\Datatype), 'confirmed' (boolean) and 'a_id'
+         * @return array<string, int|Component>
          */
         public function getComponents()
         {
@@ -3213,9 +3213,9 @@
         /**
          * Returns the assigned milestone if any
          *
-         * @return Milestone
+         * @return ?Milestone
          */
-        public function getMilestone()
+        public function getMilestone(): ?Milestone
         {
             return $this->_b2dbLazyLoad('_milestone');
         }
@@ -4190,7 +4190,7 @@
         /**
          * Returns the severity
          *
-         * @return Severity
+         * @return ?Severity
          */
         public function getSeverity()
         {
@@ -4220,7 +4220,7 @@
         /**
          * Returns the priority
          *
-         * @return Priority
+         * @return ?Priority
          */
         public function getPriority(): ?Priority
         {
@@ -4552,7 +4552,33 @@
                 'tags' => [],
                 'transitions' => [],
                 'available_statuses' => [],
+                'affected_items' => [
+                    'builds' => [],
+                    'components' => [],
+                    'editions' => [],
+                ]
             ];
+
+            foreach ($this->getBuilds() as $data) {
+                $json['affected_items']['builds'][] = [
+                    'id' => $data['a_id'],
+                    'build' => $data['build']->toJSON()
+                ];
+            }
+
+            foreach ($this->getComponents() as $data) {
+                $json['affected_items']['components'][] = [
+                    'id' => $data['a_id'],
+                    'component' => $data['component']->toJSON()
+                ];
+            }
+
+            foreach ($this->getEditions() as $data) {
+                $json['affected_items']['editions'][] = [
+                    'id' => $data['a_id'],
+                    'edition' => $data['edition']->toJSON()
+                ];
+            }
 
             foreach ($this->getAvailableStatuses() as $status) {
                 $json['available_statuses'][] = $status->toJSON();

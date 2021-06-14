@@ -2003,6 +2003,10 @@
 
                     $issue->save();
                     break;
+                case 'blocking':
+                    $issue->setBlocking($request['value']);
+                    $issue->save();
+                    break;
                 default:
                     $custom_field = entities\CustomDatatype::getByKey($request['field']);
                     if (!$custom_field instanceof entities\CustomDatatype) {
@@ -2081,6 +2085,8 @@
                 case 'pain_likelihood':
                 case 'pain_effect':
                     return $issue->canEditUserPain();
+                case 'blocking':
+                    return $issue->canEditBlockerStatus();
                 default:
                     if ($customdatatype = entities\CustomDatatype::getByKey($field)) {
                         $key = $customdatatype->getKey();
@@ -3431,95 +3437,8 @@
             }
         }
 
-        public function runToggleAffectedConfirmed(Request $request)
-        {
-            try {
-                $issue = Issues::getTable()->selectById($request['issue_id']);
-                $itemtype = $request['affected_type'];
-
-                if (!(($itemtype == 'build' && $issue->canEditAffectedBuilds()) || ($itemtype == 'component' && $issue->canEditAffectedComponents()) || ($itemtype == 'edition' && $issue->canEditAffectedEditions()))) {
-                    throw new Exception($this->getI18n()->__('You are not allowed to do this'));
-                }
-
-                $affected_id = $request['affected_id'];
-                $confirmed = true;
-
-                switch ($itemtype) {
-                    case 'edition':
-                        if (!$issue->getProject()->isEditionsEnabled()) {
-                            throw new Exception($this->getI18n()->__('Editions are disabled'));
-                        }
-
-                        $editions = $issue->getEditions();
-                        if (!array_key_exists($affected_id, $editions)) {
-                            throw new Exception($this->getI18n()->__('This edition is not affected by this issue'));
-                        }
-                        $edition = $editions[$affected_id];
-
-                        if ($edition['confirmed'] == true) {
-                            $issue->confirmAffectedEdition($edition['edition'], false);
-                            $confirmed = false;
-                        } else {
-                            $issue->confirmAffectedEdition($edition['edition']);
-                            $confirmed = true;
-                        }
-
-                        break;
-                    case 'component':
-                        if (!$issue->getProject()->isComponentsEnabled()) {
-                            throw new Exception($this->getI18n()->__('Components are disabled'));
-                        }
-
-                        $components = $issue->getComponents();
-                        if (!array_key_exists($affected_id, $components)) {
-                            throw new Exception($this->getI18n()->__('This component is not affected by this issue'));
-                        }
-                        $component = $components[$affected_id];
-
-                        if ($component['confirmed'] == true) {
-                            $issue->confirmAffectedComponent($component['component'], false);
-                            $confirmed = false;
-                        } else {
-                            $issue->confirmAffectedComponent($component['component']);
-                            $confirmed = true;
-                        }
-
-                        break;
-                    case 'build':
-                        if (!$issue->getProject()->isBuildsEnabled()) {
-                            throw new Exception($this->getI18n()->__('Releases are disabled'));
-                        }
-
-                        $builds = $issue->getBuilds();
-                        if (!array_key_exists($affected_id, $builds)) {
-                            throw new Exception($this->getI18n()->__('This release is not affected by this issue'));
-                        }
-                        $build = $builds[$affected_id];
-
-                        if ($build['confirmed'] == true) {
-                            $issue->confirmAffectedBuild($build['build'], false);
-                            $confirmed = false;
-                        } else {
-                            $issue->confirmAffectedBuild($build['build']);
-                            $confirmed = true;
-                        }
-
-                        break;
-                    default:
-                        throw new Exception('Internal error');
-                }
-
-                return $this->renderJSON(['confirmed' => $confirmed, 'text' => ($confirmed) ? $this->getI18n()->__('Confirmed') : $this->getI18n()->__('Unconfirmed')]);
-            } catch (Exception $e) {
-                $this->getResponse()->setHttpStatus(400);
-
-                return $this->renderJSON(['error' => $e->getMessage()]);
-            }
-        }
-
         public function runRemoveAffected(Request $request)
         {
-            framework\Context::loadLibrary('ui');
             try {
                 $issue = Issues::getTable()->selectById($request['issue_id']);
 
@@ -3582,83 +3501,7 @@
                         throw new Exception('Internal error');
                 }
 
-                $editions = [];
-                $components = [];
-                $builds = [];
-
-                if ($issue->getProject()->isEditionsEnabled()) {
-                    $editions = $issue->getEditions();
-                }
-
-                if ($issue->getProject()->isComponentsEnabled()) {
-                    $components = $issue->getComponents();
-                }
-
-                if ($issue->getProject()->isBuildsEnabled()) {
-                    $builds = $issue->getBuilds();
-                }
-
-                $count = count($editions) + count($components) + count($builds) - 1;
-
-                return $this->renderJSON(['message' => $message, 'itemcount' => $count]);
-            } catch (Exception $e) {
-                $this->getResponse()->setHttpStatus(400);
-
-                return $this->renderJSON(['error' => framework\Context::getI18n()->__('An internal error has occured')]);
-            }
-        }
-
-        public function runStatusAffected(Request $request)
-        {
-            framework\Context::loadLibrary('ui');
-            try {
-                $issue = Issues::getTable()->selectById($request['issue_id']);
-                $status = tables\ListTypes::getTable()->selectById($request['status_id']);
-                if (!$issue->canEditIssue()) {
-                    $this->getResponse()->setHttpStatus(400);
-
-                    return $this->renderJSON(['error' => framework\Context::getI18n()->__('You are not allowed to do this')]);
-                }
-
-                switch ($request['affected_type']) {
-                    case 'edition':
-                        if (!$issue->getProject()->isEditionsEnabled()) {
-                            $this->getResponse()->setHttpStatus(400);
-
-                            return $this->renderJSON(['error' => framework\Context::getI18n()->__('Editions are disabled')]);
-                        }
-                        $editions = $issue->getEditions();
-                        $edition = $editions[$request['affected_id']];
-
-                        $issue->setAffectedEditionStatus($edition['edition'], $status);
-                        break;
-                    case 'component':
-                        if (!$issue->getProject()->isComponentsEnabled()) {
-                            $this->getResponse()->setHttpStatus(400);
-
-                            return $this->renderJSON(['error' => framework\Context::getI18n()->__('Components are disabled')]);
-                        }
-                        $components = $issue->getComponents();
-                        $component = $components[$request['affected_id']];
-
-                        $issue->setAffectedcomponentStatus($component['component'], $status);
-                        break;
-                    case 'build':
-                        if (!$issue->getProject()->isBuildsEnabled()) {
-                            $this->getResponse()->setHttpStatus(400);
-
-                            return $this->renderJSON(['error' => framework\Context::getI18n()->__('Releases are disabled')]);
-                        }
-                        $builds = $issue->getBuilds();
-                        $build = $builds[$request['affected_id']];
-
-                        $issue->setAffectedbuildStatus($build['build'], $status);
-                        break;
-                    default:
-                        throw new Exception('Internal error');
-                }
-
-                return $this->renderJSON(['colour' => $status->getColor(), 'name' => $status->getName()]);
+                return $this->renderJSON(['message' => $message, 'issue' => $issue->toJSON()]);
             } catch (Exception $e) {
                 $this->getResponse()->setHttpStatus(400);
 
@@ -3668,7 +3511,6 @@
 
         public function runAddAffected(Request $request)
         {
-            framework\Context::loadLibrary('ui');
             try {
                 $issue = Issues::getTable()->selectById($request['issue_id']);
                 $statuses = entities\Status::getAll();
@@ -3699,7 +3541,7 @@
                             $itemtype = 'edition';
                             $item = $result;
                             $itemtypename = framework\Context::getI18n()->__('Edition');
-                            $content = get_component_html('main/affecteditem', ['item' => $item, 'itemtype' => $itemtype, 'itemtypename' => $itemtypename, 'issue' => $issue, 'statuses' => $statuses]);
+                            $content = $this->getComponentHTML('main/affecteditem', ['item' => $item, 'itemtype' => $itemtype, 'itemtypename' => $itemtypename, 'issue' => $issue, 'statuses' => $statuses]);
                         }
 
                         $message = framework\Context::getI18n()->__('Edition <b>%edition</b> is now affected by this issue', ['%edition' => $edition->getName()], true);
@@ -3730,7 +3572,7 @@
                             $itemtype = 'component';
                             $item = $result;
                             $itemtypename = framework\Context::getI18n()->__('Component');
-                            $content = get_component_html('main/affecteditem', ['item' => $item, 'itemtype' => $itemtype, 'itemtypename' => $itemtypename, 'issue' => $issue, 'statuses' => $statuses]);
+                            $content = $this->getComponentHTML('main/affecteditem', ['item' => $item, 'itemtype' => $itemtype, 'itemtypename' => $itemtypename, 'issue' => $issue, 'statuses' => $statuses]);
                         }
 
                         $message = framework\Context::getI18n()->__('Component <b>%component</b> is now affected by this issue', ['%component' => $component->getName()], true);
@@ -3761,7 +3603,7 @@
                             $itemtype = 'build';
                             $item = $result;
                             $itemtypename = framework\Context::getI18n()->__('Release');
-                            $content = get_component_html('main/affecteditem', ['item' => $item, 'itemtype' => $itemtype, 'itemtypename' => $itemtypename, 'issue' => $issue, 'statuses' => $statuses]);
+                            $content = $this->getComponentHTML('main/affecteditem', ['item' => $item, 'itemtype' => $itemtype, 'itemtypename' => $itemtypename, 'issue' => $issue, 'statuses' => $statuses]);
                         }
 
                         $message = framework\Context::getI18n()->__('Release <b>%build</b> is now affected by this issue', ['%build' => $build->getName()], true);
@@ -3775,21 +3617,7 @@
                 $components = [];
                 $builds = [];
 
-                if ($issue->getProject()->isEditionsEnabled()) {
-                    $editions = $issue->getEditions();
-                }
-
-                if ($issue->getProject()->isComponentsEnabled()) {
-                    $components = $issue->getComponents();
-                }
-
-                if ($issue->getProject()->isBuildsEnabled()) {
-                    $builds = $issue->getBuilds();
-                }
-
-                $count = count($editions) + count($components) + count($builds);
-
-                return $this->renderJSON(['content' => $content, 'message' => $message, 'itemcount' => $count]);
+                return $this->renderJSON(['content' => $content, 'message' => $message]);
             } catch (Exception $e) {
                 $this->getResponse()->setHttpStatus(400);
 

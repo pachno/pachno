@@ -3786,11 +3786,12 @@ var Issue = /*#__PURE__*/function () {
         var value = $element.data('identifiable-value');
         issue.postAndUpdate('owned_by', value, identifiable_type);
       });
-      $body.off('click', "input[data-trigger-issue-update][data-issue-id=\"".concat(this.id, "\"]"));
-      $body.on('click', "input[data-trigger-issue-update][data-issue-id=\"".concat(this.id, "\"]"), function () {
+      $body.off('click', "[data-trigger-issue-update][data-issue-id=\"".concat(this.id, "\"]"));
+      $body.on('click', "[data-trigger-issue-update][data-issue-id=\"".concat(this.id, "\"]"), function () {
         var $element = jquery__WEBPACK_IMPORTED_MODULE_1___default()(this);
+        var value = $element.data('field-value') !== undefined ? $element.data('field-value') : $element.val();
         $element.addClass('submitting');
-        issue.postAndUpdate($element.data('field'), $element.val()).then(function () {
+        issue.postAndUpdate($element.data('field'), value).then(function () {
           $element.removeClass('submitting');
         });
       });
@@ -3857,6 +3858,18 @@ var Issue = /*#__PURE__*/function () {
       _pachno__WEBPACK_IMPORTED_MODULE_2__.default.on(_pachno__WEBPACK_IMPORTED_MODULE_2__.default.EVENTS.issue.removeFile, function (PachnoApplication, data) {
         if (data.issue_id != issue.id) return;
         jquery__WEBPACK_IMPORTED_MODULE_1___default()("[data-attachment][data-file-id=\"".concat(data.file_id, "\"]")).remove();
+        _pachno__WEBPACK_IMPORTED_MODULE_2__.default.UI.Dialog.dismiss();
+        _pachno__WEBPACK_IMPORTED_MODULE_2__.default.fetch(data.url, {
+          method: 'DELETE'
+        }).then(function (json) {
+          issue.updateFromJson(json.issue);
+          issue.updateVisibleValues();
+        });
+      });
+      _pachno__WEBPACK_IMPORTED_MODULE_2__.default.on(_pachno__WEBPACK_IMPORTED_MODULE_2__.default.EVENTS.issue.removeAffectedItem, function (PachnoApplication, data) {
+        if (data.issue_id != issue.id) return;
+        _pachno__WEBPACK_IMPORTED_MODULE_2__.default.UI.Dialog.setSubmitting();
+        jquery__WEBPACK_IMPORTED_MODULE_1___default()("[data-affected-item][data-affected-item-id=\"".concat(data.id, "\"]")).remove();
         _pachno__WEBPACK_IMPORTED_MODULE_2__.default.UI.Dialog.dismiss();
         _pachno__WEBPACK_IMPORTED_MODULE_2__.default.fetch(data.url, {
           method: 'DELETE'
@@ -4251,6 +4264,19 @@ var Issue = /*#__PURE__*/function () {
                 $element.removeClass('hidden');
               } else {
                 $element.addClass('hidden');
+              }
+
+              break;
+
+            case 'blocking':
+              if (this[_field]) {
+                $element.removeClass('hidden');
+                jquery__WEBPACK_IMPORTED_MODULE_1___default()(".trigger-blocking[data-issue-id=\"".concat(this.id, "\"]")).addClass('hidden');
+                jquery__WEBPACK_IMPORTED_MODULE_1___default()(".trigger-not-blocking[data-issue-id=\"".concat(this.id, "\"]")).removeClass('hidden');
+              } else {
+                $element.addClass('hidden');
+                jquery__WEBPACK_IMPORTED_MODULE_1___default()(".trigger-blocking[data-issue-id=\"".concat(this.id, "\"]")).removeClass('hidden');
+                jquery__WEBPACK_IMPORTED_MODULE_1___default()(".trigger-not-blocking[data-issue-id=\"".concat(this.id, "\"]")).addClass('hidden');
               }
 
               break;
@@ -5013,7 +5039,8 @@ var PachnoApplication = /*#__PURE__*/function () {
           updateDone: 'issue-update-done',
           updateJson: 'issue-update-json',
           updateJsonComplete: 'issue-update-json-complete',
-          loadDynamicChoices: 'issue-load-dynamic-choices'
+          loadDynamicChoices: 'issue-load-dynamic-choices',
+          removeAffectedItem: 'issue-remove-affected-item'
         },
         upload: {
           complete: 'upload-complete'
