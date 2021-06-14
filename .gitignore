@@ -3,7 +3,7 @@ vendor/
 cache/*
 core/config/b2db.yml
 public/.htaccess
-./installed
+installed
 files/*
 modules/*
 
