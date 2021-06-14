@@ -2812,6 +2812,14 @@
                         break;
                     case 'reportissue':
                         $this->_loadSelectedProjectAndIssueTypeFromRequestForReportIssueAction($request);
+                        if (!$this->selected_project instanceof Project) {
+                            throw new Exception($this->getI18n()->__('This project does not exist'));
+                        }
+
+                        if ($this->selected_project->isLocked()) {
+                            throw new Exception($this->getI18n()->__('This project is locked'));
+                        }
+
                         if ($this->selected_project instanceof Project && !$this->selected_project->isLocked() && $this->getUser()->canReportIssues($this->selected_project)) {
                             $template_name = 'main/reportissuecontainer';
                             $options['selected_project'] = $this->selected_project;

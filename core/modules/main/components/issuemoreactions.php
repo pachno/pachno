@@ -1,9 +1,11 @@
 <?php
 
     use pachno\core\entities\Issue;
+    use pachno\core\entities\User;
 
     /**
      * @var Issue $issue
+     * @var USer $pachno_user
      */
 
 ?>
@@ -94,7 +96,10 @@
                                 <?php echo javascript_link_tag(fa_image_tag('list-alt', ['class' => 'icon']).'<span class="name">'.__('Add a new task').'</span>', array('class' => 'list-item disabled', 'onclick' => "Pachno.UI.Backdrop.show('".make_url('get_partial_for_backdrop', array('key' => 'reportissue', 'project_id' => $issue->getProject()->getId(), 'parent_issue_id' => $issue->getID(), 'issuetype_id' => $board->getTaskIssuetypeID(), 'lock_issuetype' => 1))."');", 'title' => __('Add a new task'))); ?>
                             <?php endif; ?>
                         <?php else: ?>
-                            <?php echo javascript_link_tag(fa_image_tag('plus', ['class' => 'icon']).'<span class="name">'.__('Create a related issue / subtask').'</span>', array('class' => 'list-item disabled', 'onclick' => "Pachno.Main.Profile.clearPopupsAndButtons();Pachno.UI.Backdrop.show('".make_url('get_partial_for_backdrop', array('key' => 'reportissue', 'project_id' => $issue->getProject()->getId(), 'parent_issue_id' => $issue->getID()))."');", 'title' => __('Create a new child issue'))); ?>
+                            <a href="javascript:void(0);" class="list-item trigger-backdrop" data-url="<?= make_url('get_partial_for_backdrop', ['key' => 'reportissue', 'project_id' => $issue->getProject()->getId(), 'parent_issue_id' => $issue->getID()]); ?>">
+                                <?= fa_image_tag('plus', ['class' => 'icon']); ?>
+                                <span class="name"><?= __('Create a related issue / subtask'); ?></span>
+                            </a>
                         <?php endif; ?>
                     <?php endif; ?>
                     <?php if ($issue->canAddRelatedIssues()): ?>
