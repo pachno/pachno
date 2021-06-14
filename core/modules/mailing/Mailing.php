@@ -25,7 +25,6 @@
     use Swift_Mailer;
     use Swift_MailTransport;
     use Swift_Message;
-    use Swift_Mime_Message;
     use Swift_SendmailTransport;
     use Swift_SmtpTransport;
 
@@ -627,7 +626,7 @@ EOT;
             }
         }
 
-        protected function _addProjectEmailAddress(Swift_Mime_Message $message, Project $project = null)
+        protected function _addProjectEmailAddress(Swift_Message $message, Project $project = null)
         {
             if ($project instanceof Project) {
                 $address = $this->getSetting(self::SETTING_PROJECT_FROM_ADDRESS . $project->getID());
