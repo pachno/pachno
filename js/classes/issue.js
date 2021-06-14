@@ -89,6 +89,7 @@ class Issue {
         this.number_of_comments = parseInt(json.number_of_comments);
         this.number_of_subscribers = parseInt(json.number_of_subscribers);
         this.number_of_child_issues = parseInt(json.number_of_child_issues);
+        this.number_of_affected_items = parseInt(json.number_of_affected_items);
 
         this.processed = false;
     }
@@ -502,9 +503,11 @@ class Issue {
                 case 'number_of_subscribers':
                     $element.html(this.number_of_subscribers);
                     break;
+                case 'number_of_affected_items':
                 case 'number_of_files':
                 case 'number_of_comments':
                 case 'number_of_child_issues':
+                    debugger;
                     let $number_value_element = $element.find('.value');
                     if ($number_value_element.length) {
                         $number_value_element.html(this[field]);

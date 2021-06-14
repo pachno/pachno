@@ -49,7 +49,7 @@
     <div id="viewissue_attached_information_container" class="fields-list-container" data-issue-id="<?= $issue->getID(); ?>">
         <div class="header">
             <span class="icon"><?= fa_image_tag('paperclip'); ?></span>
-            <span class="name"><?php echo __('Attachments'); ?><span id="viewissue_uploaded_attachments_count" class="count-badge" data-dynamic-field-value data-field="number_of_files" data-issue-id="<?= $issue->getId(); ?>"><?= count($issue->getFiles()); ?></span></span>
+            <span class="name"><?php echo __('Attachments'); ?><span id="viewissue_uploaded_attachments_count" class="count-badge" data-dynamic-field-value data-field="number_of_files" data-issue-id="<?= $issue->getId(); ?>"><?= $issue->getNumberOfFiles(); ?></span></span>
             <button type="button" class="button secondary trigger-file-upload">
                 <?= fa_image_tag('file-upload', ['class' => 'icon']); ?>
                 <span class="name"><?= __('Add file'); ?></span>

@@ -18,7 +18,6 @@ use pachno\core\framework\Context;
      * @var Status[] $statuses
      * @var \pachno\core\entities\Issuetype[] $issuetypes
      * @var mixed[][] $fields_list
-     * @var integer $affected_count
      * @var CustomDatatype[][] $customfields_list
      */
 ?>
@@ -171,9 +170,9 @@ use pachno\core\framework\Context;
         </li>
     </ul>
 </div>
-<div id="viewissue_affected_container" class="fields-list-container <?= (!$affected_count) ? 'not-visible' : ''; ?>">
+<div id="viewissue_affected_container" class="fields-list-container">
     <div class="header">
-        <span class="name"><?= __('Affected by this issue %count', ['%count' => '']); ?><span id="viewissue_affects_count" class="count-badge"><?= $affected_count; ?></span></span>
+        <span class="name" data-dynamic-field-value data-field="number_of_affected_items" data-issue-id="<?= $issue->getId(); ?>"><?= __('Affected by this issue %count', ['%count' => '']); ?><span id="viewissue_affected_items_count" class="count-badge value"><?= $issue->getNumberOfAffectedItems(); ?></span></span>
     </div>
     <div id="viewissue_affected">
         <?php include_component('main/issueaffected', array('issue' => $issue)); ?>

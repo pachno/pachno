@@ -204,7 +204,6 @@
                 $this->editions = ($this->issue->getProject()->isEditionsEnabled()) ? $this->issue->getEditions() : [];
                 $this->components = ($this->issue->getProject()->isComponentsEnabled()) ? $this->issue->getComponents() : [];
                 $this->builds = ($this->issue->getProject()->isBuildsEnabled()) ? $this->issue->getBuilds() : [];
-                $this->affected_count = count($this->editions) + count($this->components) + count($this->builds);
                 $this->issuetypes = $this->project->getIssuetypeScheme()->getIssuetypes();
             } else {
                 $fields_list = [];

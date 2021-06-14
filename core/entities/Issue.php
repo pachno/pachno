@@ -121,21 +121,21 @@
         /**
          * The affected editions for this issue
          *
-         * @var array
+         * @var ?array
          */
         protected $_editions = null;
 
         /**
          * The affected builds for this issue
          *
-         * @var array
+         * @var ?array
          */
         protected $_builds = null;
 
         /**
          * The affected components for this issue
          *
-         * @var array
+         * @var ?array
          */
         protected $_components = null;
 
@@ -2158,15 +2158,19 @@
             return $this->_editions;
         }
 
+        public function getNumberOfAffectedItems(): int
+        {
+            $this->_populateAffected();
+            return count($this->_editions) + count($this->_components) + count($this->_builds);
+        }
+
         /**
          * Populates the affected items
          */
         protected function _populateAffected()
         {
-            if ($this->_editions === null && $this->_builds === null && $this->_components === null) {
+            if ($this->_editions === null) {
                 $this->_editions = [];
-                $this->_builds = [];
-                $this->_components = [];
 
                 if ($res = tables\IssueAffectsEdition::getTable()->getByIssueID($this->getID())) {
                     foreach ($res as $row) {
@@ -2184,6 +2188,10 @@
                         }
                     }
                 }
+            }
+
+            if ($this->_builds === null) {
+                $this->_builds = [];
 
                 if ($res = tables\IssueAffectsBuild::getTable()->getByIssueID($this->getID())) {
                     foreach ($res as $row) {
@@ -2201,6 +2209,10 @@
                         }
                     }
                 }
+            }
+
+            if ($this->_components === null) {
+                $this->_components = [];
 
                 if ($res = tables\IssueAffectsComponent::getTable()->getByIssueID($this->getID())) {
                     foreach ($res as $row) {
@@ -3579,8 +3591,6 @@
          *
          * @return boolean
          * @see removeAffectedComponent()
-         *
-         * @see removeAffectedItem()
          * @see removeAffectedBuild()
          */
         public function removeAffectedEdition($item)
@@ -3588,6 +3598,7 @@
             if (tables\IssueAffectsEdition::getTable()->deleteByIssueIDandEditionID($this->getID(), $item->getID())) {
                 $this->touch();
                 $this->addLogEntry(LogItem::ACTION_ISSUE_REMOVE_AFFECTED_ITEM, Context::getI18n()->__("'%item_name' removed", ['%item_name' => $item->getName()]));
+                $this->_editions = null;
 
                 return true;
             }
@@ -3602,8 +3613,6 @@
          *
          * @return boolean
          * @see removeAffectedComponent()
-         *
-         * @see removeAffectedItem()
          * @see removeAffectedEdition()
          */
         public function removeAffectedBuild($item)
@@ -3611,6 +3620,7 @@
             if (tables\IssueAffectsBuild::getTable()->deleteByIssueIDandBuildID($this->getID(), $item->getID())) {
                 $this->touch();
                 $this->addLogEntry(LogItem::ACTION_ISSUE_REMOVE_AFFECTED_ITEM, Context::getI18n()->__("'%item_name' removed", ['%item_name' => $item->getName()]));
+                $this->_builds = null;
 
                 return true;
             }
@@ -3625,8 +3635,6 @@
          *
          * @return boolean
          * @see removeAffectedBuild()
-         *
-         * @see removeAffectedItem()
          * @see removeAffectedEdition()
          */
         public function removeAffectedComponent($item)
@@ -3634,6 +3642,7 @@
             if (tables\IssueAffectsComponent::getTable()->deleteByIssueIDandComponentID($this->getID(), $item->getID())) {
                 $this->touch();
                 $this->addLogEntry(LogItem::ACTION_ISSUE_REMOVE_AFFECTED_ITEM, Context::getI18n()->__("'%item_name' removed", ['%item_name' => $item->getName()]));
+                $this->_components = null;
 
                 return true;
             }
@@ -4549,6 +4558,7 @@
                 'number_of_files' => $this->getNumberOfFiles(),
                 'number_of_subscribers' => count($this->getSubscribers()),
                 'number_of_child_issues' => count($this->getChildIssues()),
+                'number_of_affected_items' => $this->getNumberOfAffectedItems(),
                 'tags' => [],
                 'transitions' => [],
                 'available_statuses' => [],
