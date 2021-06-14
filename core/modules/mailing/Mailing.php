@@ -408,8 +408,7 @@ EOT;
          */
         public function getSwiftMessage($subject, $message_plain, $message_html)
         {
-            require_once PACHNO_VENDOR_PATH . 'swiftmailer' . DS . 'swiftmailer' . DS . 'lib' . DS . 'swift_required.php';
-            $message = Swift_Message::newInstance();
+            $message = new Swift_Message();
             $message->setSubject($subject);
             $message->setFrom([$this->getEmailFromAddress() => $this->getEmailFromName()]);
             $message->setBody($message_plain);
@@ -465,14 +464,9 @@ EOT;
         public function getMailer()
         {
             if ($this->mailer === null) {
-                require_once PACHNO_VENDOR_PATH . DS . 'swiftmailer' . DS . 'swiftmailer' . DS . 'lib' . DS . 'swift_required.php';
                 switch ($this->getMailerType()) {
-                    case self::MAIL_TYPE_SENDMAIL:
-                        $command = $this->getSendmailCommand();
-                        $transport = ($command) ? Swift_SendmailTransport::newInstance($command) : Swift_SendmailTransport::newInstance();
-                        break;
                     case self::MAIL_TYPE_SMTP:
-                        $transport = Swift_SmtpTransport::newInstance($this->getSmtpHost(), $this->getSmtpPort());
+                        $transport = new Swift_SmtpTransport($this->getSmtpHost(), $this->getSmtpPort());
                         if ($this->getSmtpUsername()) {
                             $transport->setUsername($this->getSmtpUsername());
                             $transport->setPassword($this->getSmtpPassword());
@@ -480,12 +474,13 @@ EOT;
                         if ($this->getSmtpTimeout()) $transport->setTimeout($this->getSmtpTimeout());
                         if (in_array($this->getSmtpEncryption(), ['ssl', 'tls'])) $transport->setEncryption($this->getSmtpEncryption());
                         break;
+                    case self::MAIL_TYPE_SENDMAIL:
                     case self::MAIL_TYPE_PHP:
                     default:
-                        $transport = Swift_MailTransport::newInstance();
-                        break;
+                        $command = $this->getSendmailCommand();
+                        $transport = new Swift_SendmailTransport($command);
                 }
-                $mailer = Swift_Mailer::newInstance($transport);
+                $mailer = new Swift_Mailer($transport);
                 $this->mailer = $mailer;
             }
 
@@ -501,7 +496,9 @@ EOT;
 
         public function getSendmailCommand()
         {
-            return $this->getSetting('sendmail_command');
+            $setting = $this->getSetting('sendmail_command');
+
+            return $setting ?? '/usr/sbin/sendmail -bs';
         }
 
         public function getSmtpHost()

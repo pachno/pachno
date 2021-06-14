@@ -64,8 +64,7 @@
 
             if ($res) {
                 while ($row = $res->getNextRow()) {
-                    require_once PACHNO_VENDOR_PATH . 'swiftmailer' . DS . 'swiftmailer' . DS . 'lib' . DS . 'swift_required.php';
-                    $message = Swift_Message::newInstance();
+                    $message = new Swift_Message();
                     $message->setSubject($row->get(self::SUBJECT));
                     $message->setFrom(unserialize($row->get(self::FROM)));
                     $message->setTo(unserialize($row->get(self::TO)));
