@@ -91,9 +91,9 @@
 
         public const HAS_DOWNLOADS = 'projects.has_downloads';
 
-        public const QA = 'projects.qa_responsible';
+        public const QA_RESPONSIBLE_USER = 'projects.qa_responsible_user';
 
-        public const QA_TYPE = 'projects.qa_responsible_type';
+        public const QA_RESPONSIBLE_TEAM = 'projects.qa_responsible_team';
 
         public const LOCKED = 'projects.locked';
 
@@ -257,6 +257,37 @@
 
             $criteria = new Criteria();
             $criteria->where(self::OWNER_USER, $user_id);
+            $criteria->where(self::SCOPE, framework\Context::getScope()->getID());
+            $query->or($criteria);
+
+            $criteria = new Criteria();
+            $criteria->where(self::QA_RESPONSIBLE_USER, $user_id);
+            $criteria->where(self::SCOPE, framework\Context::getScope()->getID());
+            $query->or($criteria);
+
+            return $this->select($query);
+        }
+
+        /**
+         * @param $team_id
+         * @return Project[]
+         */
+        public function getByTeamID($team_id)
+        {
+            $query = $this->getQuery();
+
+            $criteria = new Criteria();
+            $criteria->where(self::LEADER_USER, $team_id);
+            $criteria->where(self::SCOPE, framework\Context::getScope()->getID());
+            $query->where($criteria);
+
+            $criteria = new Criteria();
+            $criteria->where(self::OWNER_USER, $team_id);
+            $criteria->where(self::SCOPE, framework\Context::getScope()->getID());
+            $query->or($criteria);
+
+            $criteria = new Criteria();
+            $criteria->where(self::QA_RESPONSIBLE_TEAM, $team_id);
             $criteria->where(self::SCOPE, framework\Context::getScope()->getID());
             $query->or($criteria);
 

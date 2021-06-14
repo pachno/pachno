@@ -45,6 +45,11 @@
         padding-left: 0;
       }
 
+      &.narrow {
+        flex: 1 1 30%;
+        max-width: 30em;
+      }
+
       > li {
         font-size: .9rem;
         font-weight: $theme-font-weight-regular;

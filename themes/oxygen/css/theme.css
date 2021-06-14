@@ -11546,6 +11546,9 @@ textarea.markItUpEditor:focus {
     flex-direction: column; }
     .dashboard.layout_standard .dashboard_column + .dashboard_column {
       padding-left: 0; }
+    .dashboard.layout_standard .dashboard_column.narrow {
+      flex: 1 1 30%;
+      max-width: 30em; }
     .dashboard.layout_standard .dashboard_column > li {
       font-size: .9rem;
       font-weight: 400;

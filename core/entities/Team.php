@@ -215,6 +215,10 @@
                 foreach ($project_ids as $project_id) {
                     $this->_associated_projects[$project_id] = Project::getB2DBTable()->selectById($project_id);
                 }
+                $assigned_projects = tables\Projects::getTable()->getByTeamID($this->getID());
+                foreach ($assigned_projects as $project) {
+                    $this->_associated_projects[$project->getID()] = $project;
+                }
             }
 
             return $this->_associated_projects;
