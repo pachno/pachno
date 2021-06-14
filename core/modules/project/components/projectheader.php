@@ -66,7 +66,7 @@
         </button>
     <?php endif; ?>
     <?php if ($pachno_response->getPage() == 'project_roadmap' && $pachno_user->canManageProjectReleases($project)): ?>
-        <button class="button primary trigger-backdrop" data-url="<?php echo make_url('get_partial_for_backdrop', ['key' => 'milestone', 'project_id' => $project->getID()]); ?>');"><?= fa_image_tag('plus-square'); ?><span><?= __('Create milestone'); ?></span></button>
+        <button class="button primary trigger-backdrop" data-url="<?php echo make_url('get_partial_for_backdrop', ['key' => 'milestone', 'project_id' => $project->getID()]); ?>"><?= fa_image_tag('plus-square'); ?><span><?= __('Create milestone'); ?></span></button>
     <?php endif; ?>
     <?php if ($pachno_response->getPage() == 'project_releases' && $pachno_user->canEditProjectDetails($project)): ?>
         <a href="javascript:void(0);" class="button primary trigger-backdrop" data-url="<?= make_url('get_partial_for_backdrop', ['key' => 'project_build', 'project_id' => $project->getId()]); ?>">
