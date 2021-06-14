@@ -14,6 +14,10 @@
         <?= fa_image_tag('exclamation-circle', ['class' => 'icon']); ?>
         <span class="message"><?= __('This issue is blocking the next release'); ?></span>
     </div>
+    <div id="blocking_field" class="message-box type-warning <?php if (!$issue->isLocked()) echo 'hidden'; ?>" data-dynamic-field-value data-field="locked" data-issue-id="<?= $issue->getId(); ?>">
+        <?= fa_image_tag('user-lock', ['class' => 'icon']); ?>
+        <span class="message"><?= __('Access to this issue is restricted, which means only users with access to internal issues can see this issue.'); ?></span>
+    </div>
     <div class="message-box type-info <?php if (!$issue->isDuplicate()) echo 'hidden'; ?>" data-dynamic-field-value data-field="duplicate-message" data-issue-id="<?= $issue->getId(); ?>">
         <?php if ($issue->isDuplicate()): ?>
             <?php echo fa_image_tag('info-circle', ['class' => 'icon']); ?>

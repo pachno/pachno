@@ -245,7 +245,7 @@
             if (!$issue->canEditIssueDetails()) {
                 $this->getResponse()->setHttpStatus(403);
 
-                return $this->forward403($this->getI18n()->__("You don't have permission to move this issue"));
+                return $this->renderJSON(['error' => $this->getI18n()->__("You don't have permission to move this issue")]);
             }
 
             if (!$project instanceof Project) {
@@ -264,7 +264,7 @@
                 if (!$issue->canEditIssueDetails()) {
                     $this->getResponse()->setHttpStatus(403);
 
-                    return $this->forward403($this->getI18n()->__("You don't have permission to move this issue"));
+                    return $this->renderJSON(['error' => $this->getI18n()->__("You don't have permission to move this issue")]);
                 }
 
                 $issue->clearUserWorkingOnIssue();
@@ -289,7 +289,7 @@
                 framework\Context::setMessage('issue_error', framework\Context::getI18n()->__('The issue was not moved, since the project is the same'));
             }
 
-            return $this->forward($issue->getUrl());
+            return $this->renderJSON(['forward' => $issue->getUrl()]);
         }
 
         /**
@@ -2007,6 +2007,10 @@
                     $issue->setBlocking($request['value']);
                     $issue->save();
                     break;
+                case 'locked':
+                    $issue->setLocked($request['value']);
+                    $issue->save();
+                    break;
                 default:
                     $custom_field = entities\CustomDatatype::getByKey($request['field']);
                     if (!$custom_field instanceof entities\CustomDatatype) {
@@ -2087,6 +2091,8 @@
                     return $issue->canEditUserPain();
                 case 'blocking':
                     return $issue->canEditBlockerStatus();
+                case 'locked':
+                    return $issue->canEditAccessPolicy();
                 default:
                     if ($customdatatype = entities\CustomDatatype::getByKey($field)) {
                         $key = $customdatatype->getKey();

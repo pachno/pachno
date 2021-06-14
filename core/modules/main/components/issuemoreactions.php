@@ -130,15 +130,24 @@
                     <?php endif; ?>
                 <?php endif; ?>
                 <?php if ($issue->canEditSpentTime()): ?>
-                    <a href="javascript:void(0)" class="list-item disabled" onclick="Pachno.Main.Profile.clearPopupsAndButtons();Pachno.UI.Backdrop.show('<?php echo make_url('get_partial_for_backdrop', array('key' => 'issue_spenttimes', 'issue_id' => $issue->getID(), 'initial_view' => 'entry')); ?>');"><?php echo fa_image_tag('clock', ['class' => 'icon']); ?><span class="name"><?= __('Log time spent'); ?></span></a>
+                    <a href="javascript:void(0)" class="list-item trigger-backdrop" data-url="<?= make_url('get_partial_for_backdrop', array('key' => 'issue_spenttimes', 'issue_id' => $issue->getID())); ?>"><?php echo fa_image_tag('clock', ['class' => 'icon']); ?><span class="name"><?= __('Log time spent'); ?></span></a>
                 <?php endif; ?>
                 <?php if ($issue->canEditAccessPolicy()): ?>
                     <div class="list-item separator"></div>
-                    <a href="javascript:void(0);" class="list-item disabled" onclick="Pachno.Main.Profile.clearPopupsAndButtons();Pachno.UI.Backdrop.show('<?php echo make_url('get_partial_for_backdrop', array('key' => 'issue_permissions', 'issue_id' => $issue->getID())); ?>');"><?php echo fa_image_tag('lock', ['class' => 'access_policy icon']); ?><span class="name"><?= __("Update issue access policy"); ?></span></a>
-                    <a href="javascript:void(0);" class="list-item disabled" onclick="Pachno.Main.Profile.clearPopupsAndButtons();Pachno.UI.Backdrop.show('<?php echo make_url('get_partial_for_backdrop', array('key' => 'issue_subscribers', 'issue_id' => $issue->getID())); ?>');"><?php echo fa_image_tag('star', ['class' => 'subscriber_list icon']); ?><span class="name"><?= __("Manage issue subscribers"); ?></span></a>
+                    <a class="trigger-not-locked list-item <?php if ($issue->isLocked()) echo 'hidden'; ?>" data-trigger-issue-update data-field="locked" data-field-value="1" data-issue-id="<?= $issue->getId(); ?>">
+                        <?= fa_image_tag('user-lock', ['class' => ['icon']]); ?>
+                        <span class="name"><?php echo __("Restrict access to this issue"); ?></span>
+                    </a>
+                    <a class="trigger-locked list-item <?php if (!$issue->isLocked()) echo 'hidden'; ?>" data-trigger-issue-update data-field="locked" data-field-value="0" data-issue-id="<?= $issue->getId(); ?>">
+                        <?= fa_image_tag('lock-open', ['class' => ['icon']]); ?>
+                        <span class="name"><?php echo __("Remove access restrictions for this issue"); ?></span>
+                    </a>
                 <?php endif; ?>
                 <?php if ($issue->canEditIssueDetails()): ?>
-                    <a href="javascript:void(0);" class="list-item disabled" onclick="Pachno.Main.Profile.clearPopupsAndButtons();Pachno.UI.Backdrop.show('<?php echo make_url('get_partial_for_backdrop', array('key' => 'move_issue', 'issue_id' => $issue->getID(), 'multi' => (int) (isset($multi) && $multi))); ?>');"><?php echo fa_image_tag('exchange-alt', ['class' => 'icon']); ?><span class="name"><?= __("Move issue to another project"); ?></span></a>
+                    <a href="javascript:void(0);" class="list-item trigger-backdrop" data-url="<?php echo make_url('get_partial_for_backdrop', ['key' => 'move_issue', 'issue_id' => $issue->getID(), 'multi' => (int) (isset($multi) && $multi)]); ?>">
+                        <?php echo fa_image_tag('exchange-alt', ['class' => 'icon']); ?>
+                        <span class="name"><?= __("Move issue to another project"); ?></span>
+                    </a>
                 <?php endif; ?>
                 <?php if ($issue->canDeleteIssue()): ?>
                     <div class="list-item separator"></div>

@@ -61,6 +61,7 @@ class Issue {
         this.available_statuses = json.available_statuses;
 
         this.blocking = json.blocking;
+        this.locked = json.locked;
         this.closed = json.closed;
         this.deleted = json.deleted;
         this.state = json.state;
@@ -569,6 +570,17 @@ class Issue {
                         $element.addClass('hidden');
                         $(`.trigger-blocking[data-issue-id="${this.id}"]`).removeClass('hidden');
                         $(`.trigger-not-blocking[data-issue-id="${this.id}"]`).addClass('hidden');
+                    }
+                    break;
+                case 'locked':
+                    if (this[field]) {
+                        $element.removeClass('hidden');
+                        $(`.trigger-locked[data-issue-id="${this.id}"]`).addClass('hidden');
+                        $(`.trigger-not-locked[data-issue-id="${this.id}"]`).removeClass('hidden');
+                    } else {
+                        $element.addClass('hidden');
+                        $(`.trigger-locked[data-issue-id="${this.id}"]`).removeClass('hidden');
+                        $(`.trigger-not-locked[data-issue-id="${this.id}"]`).addClass('hidden');
                     }
                     break;
                 case 'editable':

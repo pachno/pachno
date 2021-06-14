@@ -8686,11 +8686,11 @@ nav.sidebar {
       display: none; }
     .flexible-table .row + .row.header {
       margin-top: 1em; }
-    .flexible-table .row:not(.disabled):hover .column:not(.invisible):not(.header):not(.disabled) {
+    .flexible-table .row:not(.disabled):not(.blocking):not(.locked):hover .column:not(.invisible):not(.header):not(.disabled) {
       background-color: #F1F1F1; }
-      .flexible-table .row:not(.disabled):hover .column:not(.invisible):not(.header):not(.disabled) .button.secondary {
+      .flexible-table .row:not(.disabled):not(.blocking):not(.locked):hover .column:not(.invisible):not(.header):not(.disabled) .button.secondary {
         background-color: rgba(255, 255, 255, 0.65); }
-      .flexible-table .row:not(.disabled):hover .column:not(.invisible):not(.header):not(.disabled) .button.secondary.active {
+      .flexible-table .row:not(.disabled):not(.blocking):not(.locked):hover .column:not(.invisible):not(.header):not(.disabled) .button.secondary.active {
         background-color: rgba(225, 225, 225, 0.65); }
     .flexible-table .row.selected .column:not(.invisible) {
       background-color: #F1F1CA; }
@@ -8700,9 +8700,25 @@ nav.sidebar {
       color: #888;
       text-decoration: line-through; }
     .flexible-table .row.blocking .column:not(.invisible) {
-      background-color: #FCC; }
+      background-color: #AF3E4D;
+      color: #FFF; }
+    .flexible-table .row.blocking a:not(.button):not(.list-item),
+    .flexible-table .row.blocking .fancy-checkbox + label {
+      color: #FFF; }
     .flexible-table .row.blocking:hover .column:not(.invisible) {
-      background-color: #E0aC9C; }
+      background-color: #973542;
+      color: #FFF; }
+      .flexible-table .row.blocking:hover .column:not(.invisible) a:not(.button):not(.list-item),
+      .flexible-table .row.blocking:hover .column:not(.invisible) .fancy-checkbox + label {
+        color: #FFF; }
+    .flexible-table .row.locked .column:not(.invisible) {
+      background-color: #F4D58D;
+      color: #232323; }
+    .flexible-table .row.locked a:not(.button):not(.list-item),
+    .flexible-table .row.locked .fancy-checkbox + label {
+      color: #232323; }
+    .flexible-table .row.locked:hover .column:not(.invisible) {
+      background-color: #d2b777; }
   .flexible-table .body.children {
     margin-left: 25px; }
   .flexible-table .column {

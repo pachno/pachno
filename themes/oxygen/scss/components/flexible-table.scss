@@ -20,7 +20,7 @@
       margin-top: 1em;
     }
 
-    &:not(.disabled):hover {
+    &:not(.disabled):not(.blocking):not(.locked):hover {
       .column {
         &:not(.invisible):not(.header):not(.disabled) {
           background-color: #F1F1F1;
@@ -57,12 +57,42 @@
 
     &.blocking {
       .column:not(.invisible) {
-        background-color: #FCC;
+        background-color: $theme-color-error;
+        color: #FFF;
+      }
+
+      a:not(.button):not(.list-item),
+      .fancy-checkbox + label {
+        color: #FFF;
       }
 
       &:hover {
         .column:not(.invisible) {
-          background-color: #E0aC9C;
+          background-color: $theme-color-error-hover;
+          color: #FFF;
+
+          a:not(.button):not(.list-item),
+          .fancy-checkbox + label {
+            color: #FFF;
+          }
+        }
+      }
+    }
+
+    &.locked {
+      .column:not(.invisible) {
+        background-color: $theme-color-warning;
+        color: $theme-text-color;
+      }
+
+      a:not(.button):not(.list-item),
+      .fancy-checkbox + label {
+        color: $theme-text-color;
+      }
+
+      &:hover {
+        .column:not(.invisible) {
+          background-color: $theme-color-warning-hover;
         }
       }
     }

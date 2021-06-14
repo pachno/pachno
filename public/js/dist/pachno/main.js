@@ -3691,6 +3691,7 @@ var Issue = /*#__PURE__*/function () {
 
       this.available_statuses = json.available_statuses;
       this.blocking = json.blocking;
+      this.locked = json.locked;
       this.closed = json.closed;
       this.deleted = json.deleted;
       this.state = json.state;
@@ -4279,6 +4280,19 @@ var Issue = /*#__PURE__*/function () {
                 $element.addClass('hidden');
                 jquery__WEBPACK_IMPORTED_MODULE_1___default()(".trigger-blocking[data-issue-id=\"".concat(this.id, "\"]")).removeClass('hidden');
                 jquery__WEBPACK_IMPORTED_MODULE_1___default()(".trigger-not-blocking[data-issue-id=\"".concat(this.id, "\"]")).addClass('hidden');
+              }
+
+              break;
+
+            case 'locked':
+              if (this[_field]) {
+                $element.removeClass('hidden');
+                jquery__WEBPACK_IMPORTED_MODULE_1___default()(".trigger-locked[data-issue-id=\"".concat(this.id, "\"]")).addClass('hidden');
+                jquery__WEBPACK_IMPORTED_MODULE_1___default()(".trigger-not-locked[data-issue-id=\"".concat(this.id, "\"]")).removeClass('hidden');
+              } else {
+                $element.addClass('hidden');
+                jquery__WEBPACK_IMPORTED_MODULE_1___default()(".trigger-locked[data-issue-id=\"".concat(this.id, "\"]")).removeClass('hidden');
+                jquery__WEBPACK_IMPORTED_MODULE_1___default()(".trigger-not-locked[data-issue-id=\"".concat(this.id, "\"]")).addClass('hidden');
               }
 
               break;

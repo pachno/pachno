@@ -804,6 +804,12 @@
 
                 return true;
             }
+            if ($this->isLocked() && !$user->hasProjectPermission(Permission::PERMISSION_PROJECT_INTERNAL_ACCESS_ISSUES, $this->getProject())) {
+                Logging::log('done checking, not allowed to access internal issues');
+
+                return false;
+            }
+
             if ($user->hasPermission(Permission::PERMISSION_PROJECT_ACCESS_ALL_ISSUES, $this->getProjectID()) === true) {
                 Logging::log('done checking, allowed since this user may see all issues in this project');
 

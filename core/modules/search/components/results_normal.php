@@ -92,7 +92,7 @@ $current_spent_time = $current_estimated_time;
                 <?php endif; ?>
             </div>
     <?php endif; ?>
-    <div class="row <?php if ($issue->isClosed()): ?> closed<?php endif; ?><?php if ($issue->isBlocking()): ?> blocking<?php endif; ?> priority_<?php echo ($issue->getPriority() instanceof Priority) ? $issue->getPriority()->getValue() : 0; ?>" id="issue_<?php echo $issue->getID(); ?>">
+    <div class="row <?php if ($issue->isClosed()): ?> closed<?php endif; ?><?php if ($issue->isBlocking()): ?> blocking<?php endif; ?><?php if ($issue->isLocked()): ?> locked<?php endif; ?> priority_<?php echo ($issue->getPriority() instanceof Priority) ? $issue->getPriority()->getValue() : 0; ?>" id="issue_<?php echo $issue->getID(); ?>">
         <div class="column info-icons invisible">
             <?php if ($issue->getNumberOfUserComments()): ?>
                 <?= fa_image_tag('comment', [], 'far'); ?>

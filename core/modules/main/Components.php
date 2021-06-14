@@ -512,19 +512,6 @@
             $this->al_items = [];
         }
 
-        public function componentIssuePermissions()
-        {
-            $al_items = $this->issue->getAccessList();
-
-            foreach ($al_items as $k => $item) {
-                if ($item['target'] instanceof entities\User && $item['target']->getID() == $this->getUser()->getID()) {
-                    unset($al_items[$k]);
-                }
-            }
-
-            $this->al_items = $al_items;
-        }
-
         public function componentIssueSubscribers()
         {
             $this->users = $this->issue->getSubscribers();
