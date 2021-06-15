@@ -109,7 +109,7 @@
         </div>
     </div>
     <div class="form-container <?php if (!$selected_issuetype instanceof Issuetype) echo 'hidden'; ?>" id="report_form" data-fields-url="<?= make_url('getreportissuefields', array('project_key' => $selected_project->getKey())); ?>">
-        <form action="<?= make_url('project_reportissue', array('project_key' => $selected_project->getKey())); ?>" method="post" accept-charset="<?= Context::getI18n()->getCharset(); ?>" id="report_issue_form" data-simple-submit>
+        <form action="<?= make_url('project_reportissue', array('project_key' => $selected_project->getKey())); ?>" method="post" accept-charset="<?= Context::getI18n()->getCharset(); ?>" id="report_issue_form" data-simple-submit data-update-issues data-update-container="#related_child_issues_inline" data-update-insert>
             <div class="form-row content-with-sidebar-container">
                 <div class="content">
                     <input type="hidden" name="project_id" id="project_id" value="<?= $selected_project->getID(); ?>">

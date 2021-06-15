@@ -1199,7 +1199,19 @@
                                 tables\IssueFiles::getTable()->addByIssueIDandFileID($issue->getID(), $file->getID());
                             }
                         }
-                        return $this->renderJSON(['issue' => $issue->toJSON()]);
+                        $json_issues = [];
+                        $component = '';
+                        if ($issue->isChildIssue()) {
+                            foreach ($issue->getParentIssues() as $parent_issue) {
+                                $json_issues[] = $parent_issue->toJSON();
+                                $component = $this->getComponentHTML('main/relatedissue', ['issue' => $issue, 'related_issue' => $parent_issue]);
+                            }
+                        }
+                        return $this->renderJSON([
+                            'issue' => $issue->toJSON(),
+                            'component' => $component,
+                            'issues' => $json_issues
+                        ]);
                     } catch (Exception $e) {
                         if ($request['return_format'] == 'planning') {
                             $this->getResponse()->setHttpStatus(400);
@@ -1603,10 +1615,13 @@
 
             if (isset($this->parent_issue))
                 $issue->addParentIssue($this->parent_issue);
+
             if (isset($fields_array['edition']) && $this->selected_edition instanceof entities\Edition)
                 $issue->addAffectedEdition($this->selected_edition);
+
             if (isset($fields_array['build']) && $this->selected_build instanceof entities\Build)
                 $issue->addAffectedBuild($this->selected_build);
+
             if (isset($fields_array['component']) && $this->selected_component instanceof entities\Component)
                 $issue->addAffectedComponent($this->selected_component);
 
