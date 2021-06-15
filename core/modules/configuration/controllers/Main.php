@@ -82,9 +82,9 @@
          * check for updates
          *
          * @param framework\Request $request
-         * @return bool
+         * @return ?framework\JsonOutput
          */
-        public function runCheckUpdates(framework\Request $request): bool
+        public function runCheckUpdates(framework\Request $request): ?framework\JsonOutput
         {
             $latest_version = framework\Context::getLatestAvailableVersionInformation();
 

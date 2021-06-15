@@ -81,6 +81,9 @@
         <?php endif; ?>
     </span>
     <div class="action-container">
-        <a class="button secondary highlight" id="update_button" href="javascript:void(0);" onclick="Pachno.Config.updateCheck('<?php echo make_url('configure_update_check'); ?>');"><?php echo __('Check for updates'); ?></a>
+        <button class="button secondary highlight trigger-check-for-update" data-url="<?php echo make_url('configure_update_check'); ?>">
+            <?php echo __('Check for updates'); ?>
+            <?= fa_image_tag('spinner', ['class' => 'fa-spin icon indicator']); ?>
+        </button>
     </div>
 <?php endif; ?>

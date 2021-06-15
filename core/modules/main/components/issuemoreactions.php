@@ -13,7 +13,7 @@
     <?php $moreactions_url = array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID()); ?>
     <?php if (isset($board)) $moreactions_url['board_id'] = $board->getID(); ?>
     <?php if (isset($estimator_mode)) $moreactions_url['estimator_mode'] = $estimator_mode; ?>
-    <div class="dropdown-container dynamic_menu" data-menu-url="<?php echo make_url('issue_moreactions', $moreactions_url); ?>" data-dynamic-field-value data-field="menu" data-issue-id="<?= $issue->getId(); ?>">
+    <div class="dropdown-container dynamic_menu <?php if (isset($mode)) echo $mode; ?>" data-menu-url="<?php echo make_url('issue_moreactions', $moreactions_url); ?>" data-dynamic-field-value data-field="menu" data-issue-id="<?= $issue->getId(); ?>">
         <div class="list-mode">
             <div class="list-item disabled">
                 <span class="icon"><?= fa_image_tag('spinner', ['class' => 'fa-spin']); ?></span>
@@ -50,12 +50,12 @@
                             <span class="name"><?php echo __("Mark as blocking the next release"); ?></span>
                         </a>
                     <?php else: ?>
-                        <div class="list-item disabled" id="more_actions_mark_notblocking_link_<?php echo $issue->getID(); ?>"<?php if (!$issue->isBlocking()): ?> style="display: none;"<?php endif; ?>>
+                        <div class="list-item disabled tooltip-container" id="more_actions_mark_notblocking_link_<?php echo $issue->getID(); ?>"<?php if (!$issue->isBlocking()): ?> style="display: none;"<?php endif; ?>>
                             <?= fa_image_tag('certificate', ['class' => ['mark_not_blocking icon']]); ?>
                             <span class="name"><?= __("Mark as not blocking the next release"); ?></span>
                             <span class="tooltip rightie"><?php echo __('This action is not available when this issue is closed'); ?></span>
                         </div>
-                        <div class="list-item disabled" id="more_actions_mark_blocking_link_<?php echo $issue->getID(); ?>"<?php if ($issue->isBlocking()): ?> style="display: none;"<?php endif; ?>>
+                        <div class="list-item disabled tooltip-container" id="more_actions_mark_blocking_link_<?php echo $issue->getID(); ?>"<?php if ($issue->isBlocking()): ?> style="display: none;"<?php endif; ?>>
                             <?= fa_image_tag('certificate', ['class' => ['mark_blocking icon']]); ?>
                             <span class="name"><?= __("Mark as blocking the next release"); ?></span>
                             <span class="tooltip rightie"><?php echo __('This action is not available when this issue is closed'); ?></span>
@@ -63,27 +63,17 @@
                     <?php endif; ?>
                     <div class="list-item separator"></div>
                 <?php endif; ?>
-                <?php if ($issue->isUpdateable()): ?>
-                    <?php if ($issue->canEditAffectedComponents() || $issue->canEditAffectedBuilds() || $issue->canEditAffectedEditions()): ?>
-                        <a id="affected_add_button" class="list-item trigger-backdrop" href="javascript:void(0);" data-url="<?php echo make_url('get_partial_for_backdrop', ['key' => 'issue_add_item', 'issue_id' => $issue->getID()]); ?>">
+                <?php if ($issue->canEditAffectedComponents() || $issue->canEditAffectedBuilds() || $issue->canEditAffectedEditions()): ?>
+                    <a id="affected_add_button" class="list-item trigger-backdrop" href="javascript:void(0);" data-url="<?php echo make_url('get_partial_for_backdrop', ['key' => 'issue_add_item', 'issue_id' => $issue->getID()]); ?>">
+                        <?php echo fa_image_tag('cubes', ['class' => 'affected_items icon']); ?>
+                        <span class="name"><?= __('Add affected item'); ?></span>
+                    </a>
+                <?php else: ?>
+                    <div class="list-item disabled">
+                        <a id="affected_add_button" href="javascript:void(0);" onclick="Pachno.UI.Message.error('<?php echo __('You are not allowed to add an item to this list'); ?>');">
                             <?php echo fa_image_tag('cubes', ['class' => 'affected_items icon']); ?>
                             <span class="name"><?= __('Add affected item'); ?></span>
                         </a>
-                    <?php else: ?>
-                        <div class="list-item disabled">
-                            <a id="affected_add_button" href="javascript:void(0);" onclick="Pachno.UI.Message.error('<?php echo __('You are not allowed to add an item to this list'); ?>');">
-                                <?php echo fa_image_tag('cubes', ['class' => 'affected_items icon']); ?>
-                                <span class="name"><?= __('Add affected item'); ?></span>
-                            </a>
-                        </div>
-                    <?php endif; ?>
-                <?php elseif ($issue->canEditAffectedComponents() || $issue->canEditAffectedBuilds() || $issue->canEditAffectedEditions()): ?>
-                    <div class="list-item disabled">
-                        <a href="javascript:void(0);">
-                            <?php echo fa_image_tag('cubes', ['class' => 'affected_items']); ?>
-                            <span class="name"><?= __("Add affected item"); ?></span>
-                        </a>
-                        <span class="tooltip rightie"><?php echo __('This action is not available when this issue is closed'); ?></span>
                     </div>
                 <?php endif; ?>
                 <div class="list-item separator"></div>
@@ -102,27 +92,20 @@
                             </a>
                         <?php endif; ?>
                     <?php endif; ?>
-                    <?php if ($issue->canAddRelatedIssues()): ?>
-                        <a href="javascript:void(0)" class="list-item trigger-backdrop" id="relate_to_existing_issue_button" data-url="<?php echo make_url('get_partial_for_backdrop', ['key' => 'relate_issue', 'issue_id' => $issue->getID()]); ?>">
-                            <?php echo fa_image_tag('share-alt', ['class' => 'icon']); ?>
-                            <span class="name"><?= __('Relate to an existing issue'); ?></span>
-                        </a>
-                    <?php endif; ?>
                 <?php else: ?>
                     <?php if ($issue->canAddRelatedIssues() && $pachno_user->canReportIssues($issue->getProject())): ?>
-                        <a class="list-item disabled" href="javascript:void(0)">
+                        <a class="list-item disabled tooltip-container" href="javascript:void(0)">
                             <?php echo fa_image_tag('list-alt', ['class' => 'icon']); ?>
                             <span class="name"><?= __("Create a new related issue"); ?></span>
                             <span class="tooltip rightie"><?php echo __('This action is not available at this stage in the workflow'); ?></span>
                         </a>
                     <?php endif; ?>
-                    <?php if ($issue->canAddRelatedIssues()): ?>
-                        <a class="list-item disabled">
-                            <?php echo fa_image_tag('sign-in-alt', ['class' => 'icon']); ?>
-                            <span><?= __("Relate to an existing issue"); ?></span>
-                            <span class="tooltip rightie"><?php echo __('This action is not available at this stage in the workflow'); ?></span>
-                        </a>
-                    <?php endif; ?>
+                <?php endif; ?>
+                <?php if ($issue->canAddRelatedIssues()): ?>
+                    <a href="javascript:void(0)" class="list-item trigger-backdrop" id="relate_to_existing_issue_button" data-url="<?php echo make_url('get_partial_for_backdrop', ['key' => 'relate_issue', 'issue_id' => $issue->getID()]); ?>">
+                        <?php echo fa_image_tag('share-alt', ['class' => 'icon']); ?>
+                        <span class="name"><?= __('Relate to an existing issue'); ?></span>
+                    </a>
                 <?php endif; ?>
                 <div class="list-item separator"></div>
                 <?php if (!isset($times) || $times): ?>
@@ -130,7 +113,7 @@
                         <?php if ($issue->isUpdateable()): ?>
                             <a href="javascript:void(0);" class="list-item disabled" onclick="Pachno.Main.Profile.clearPopupsAndButtons();$('#estimated_time_<?php echo $issue->getID(); ?>_change').toggle('block');" title="<?php echo ($issue->hasEstimatedTime()) ? __('Change estimate') : __('Estimate this issue'); ?>"><?php echo fa_image_tag('clock', ['class' => 'icon']); ?><span class="name"><?= (($issue->hasEstimatedTime()) ? __('Change estimate') : __('Estimate this issue')); ?></span></a>
                         <?php else: ?>
-                            <a href="javascript:void(0);" class="list-item disabled"><?php echo fa_image_tag('clock', ['class' => 'icon']); ?><span class="name"><?= __("Change estimate"); ?></span><div class="tooltip rightie"><?php echo __('This action is not available at this stage in the workflow'); ?></div></a>
+                            <a href="javascript:void(0);" class="list-item disabled tooltip-container"><?php echo fa_image_tag('clock', ['class' => 'icon']); ?><span class="name"><?= __("Change estimate"); ?></span><div class="tooltip rightie"><?php echo __('This action is not available at this stage in the workflow'); ?></div></a>
                         <?php endif; ?>
                     <?php endif; ?>
                 <?php endif; ?>
@@ -156,7 +139,7 @@
                 <?php endif; ?>
                 <?php if ($issue->canDeleteIssue()): ?>
                     <div class="list-item separator"></div>
-                    <a href="javascript:void(0)" class="list-item disabled danger" onclick="Pachno.Main.Profile.clearPopupsAndButtons();Pachno.UI.Dialog.show('<?php echo __('Permanently delete this issue?'); ?>', '<?php echo __('Are you sure you wish to delete this issue? It will remain in the database for your records, but will not be accessible via Pachno.'); ?>', {yes: {href: '<?php echo make_url('deleteissue', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID())); ?><?php if (isset($_SERVER['HTTP_REFERER'])): ?>?referer=<?php echo \pachno\core\framework\Response::escape($_SERVER['HTTP_REFERER']); ?><?php echo ($issue->getMilestone()) ? '#roadmap_milestone_' . $issue->getMilestone()->getID() : ''; endif; ?>' }, no: {click: Pachno.UI.Dialog.dismiss}});"><?php echo fa_image_tag('times', ['class' => 'icon']); ?><span class="name"><?= __("Permanently delete this issue"); ?></span></a>
+                    <a href="javascript:void(0)" class="list-item danger" onclick="Pachno.UI.Dialog.show('<?php echo __('Permanently delete this issue?'); ?>', '<?php echo __('Are you sure you wish to delete this issue? It will remain in the database for your records, but will not be accessible via Pachno.'); ?>', {yes: {click: function() { Pachno.trigger(Pachno.EVENTS.issue.triggerDelete, { url: '<?php echo make_url('viewissue', ['project_key' => $issue->getProject()->getKey(), 'issue_no' => $issue->getIssueNo()]); ?>', issue_id: <?= $issue->getID(); ?> });}}, no: {click: Pachno.UI.Dialog.dismiss}});"><?php echo fa_image_tag('times', ['class' => 'icon']); ?><span class="name"><?= __("Permanently delete this issue"); ?></span></a>
                 <?php endif; ?>
             <?php else: ?>
                 <div class="list-item disabled"><span class="name"><?php echo __('No additional actions available'); ?></span></div>

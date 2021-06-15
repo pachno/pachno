@@ -60,6 +60,23 @@
 
             $issue = $this->_getIssueFromRequest($request);
 
+            if ($request->isDelete()) {
+                if (!$issue instanceof entities\Issue || !$issue->hasAccess()) {
+                    $this->getResponse()->setHttpStatus(400);
+                    return $this->renderJSON(['error' => $this->getI18n()->__('This issue does not exist')]);
+                }
+
+                if (!$issue->canDeleteIssue()) {
+                    $this->getResponse()->setHttpStatus(400);
+                    return $this->renderJSON(['error' => $this->getI18n()->__('You are not allowed to delete this issue')]);
+                }
+
+                $issue->deleteIssue();
+                $issue->save();
+
+                return $this->renderJSON(['message' => $this->getI18n()->__('The issue has been deleted')]);
+            }
+
             if ($issue instanceof entities\Issue) {
                 if (!array_key_exists('viewissue_list', $_SESSION) || !is_array($_SESSION['viewissue_list'])) {
                     $_SESSION['viewissue_list'] = [];

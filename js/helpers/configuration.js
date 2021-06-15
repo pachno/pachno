@@ -1,5 +1,6 @@
 import $ from "jquery";
 import Pachno from "../classes/pachno";
+import UI from "./ui";
 
 const setClientContact = function (url, field, $link, $container) {
     const user_id = $link.data('identifiable-value');
@@ -67,13 +68,35 @@ const removeMember = function (PachnoApplication, data) {
         });
 }
 
+const checkForUpdate = function (event) {
+    const $button = $(this);
+
+    event.preventDefault();
+    event.stopPropagation();
+    $button.parent().addClass('submitting');
+    $button.attr('disabled', true);
+
+    Pachno.fetch($button.data('url'), { method: 'get' })
+        .then(json => {
+            $button.removeAttr('disabled');
+            $button.parent().removeClass('submitting');
+        })
+        .catch(error => {
+            $button.removeAttr('disabled');
+            $button.parent().removeClass('submitting');
+        });
+}
+
 const setupListeners = function () {
     const $body = $("body");
 
-    $body.on('click', ".trigger-assign-to-client", addMember);
-    $body.on('click', ".trigger-assign-to-team", addMember);
+    $body.on('click', '.trigger-assign-to-client', addMember);
+    $body.on('click', '.trigger-assign-to-team', addMember);
     Pachno.on(Pachno.EVENTS.client.removeUser, removeMember);
     Pachno.on(Pachno.EVENTS.team.removeUser, removeMember);
+
+    $body.off('click', '.trigger-check-for-update');
+    $body.on('click', '.trigger-check-for-update', checkForUpdate);
 
     $body.off('click', '.trigger-set-client-external-contact');
     $body.on('click', '.trigger-set-client-external-contact', function (event) {

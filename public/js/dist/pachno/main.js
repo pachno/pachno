@@ -5052,6 +5052,7 @@ var PachnoApplication = /*#__PURE__*/function () {
           update: 'issue-update',
           triggerUpdate: 'issue-trigger-update',
           triggerEdit: 'issue-trigger-edit',
+          triggerDelete: 'issue-trigger-delete',
           updateDone: 'issue-update-done',
           updateJson: 'issue-update-json',
           updateJsonComplete: 'issue-update-json-complete',
@@ -7319,6 +7320,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! jquery */ "./node_modules/jquery/dist/jquery.js");
 /* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(jquery__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var _classes_pachno__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../classes/pachno */ "./js/classes/pachno.js");
+/* harmony import */ var _ui__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./ui */ "./js/helpers/ui.js");
+
 
 
 
@@ -7387,12 +7390,31 @@ var removeMember = function removeMember(PachnoApplication, data) {
   });
 };
 
+var checkForUpdate = function checkForUpdate(event) {
+  var $button = jquery__WEBPACK_IMPORTED_MODULE_0___default()(this);
+  event.preventDefault();
+  event.stopPropagation();
+  $button.parent().addClass('submitting');
+  $button.attr('disabled', true);
+  _classes_pachno__WEBPACK_IMPORTED_MODULE_1__.default.fetch($button.data('url'), {
+    method: 'get'
+  }).then(function (json) {
+    $button.removeAttr('disabled');
+    $button.parent().removeClass('submitting');
+  })["catch"](function (error) {
+    $button.removeAttr('disabled');
+    $button.parent().removeClass('submitting');
+  });
+};
+
 var setupListeners = function setupListeners() {
   var $body = jquery__WEBPACK_IMPORTED_MODULE_0___default()("body");
-  $body.on('click', ".trigger-assign-to-client", addMember);
-  $body.on('click', ".trigger-assign-to-team", addMember);
+  $body.on('click', '.trigger-assign-to-client', addMember);
+  $body.on('click', '.trigger-assign-to-team', addMember);
   _classes_pachno__WEBPACK_IMPORTED_MODULE_1__.default.on(_classes_pachno__WEBPACK_IMPORTED_MODULE_1__.default.EVENTS.client.removeUser, removeMember);
   _classes_pachno__WEBPACK_IMPORTED_MODULE_1__.default.on(_classes_pachno__WEBPACK_IMPORTED_MODULE_1__.default.EVENTS.team.removeUser, removeMember);
+  $body.off('click', '.trigger-check-for-update');
+  $body.on('click', '.trigger-check-for-update', checkForUpdate);
   $body.off('click', '.trigger-set-client-external-contact');
   $body.on('click', '.trigger-set-client-external-contact', function (event) {
     event.preventDefault();
@@ -8017,6 +8039,23 @@ var setupListeners = function setupListeners() {
     var $element = jquery__WEBPACK_IMPORTED_MODULE_0___default()(this);
     var issue = _classes_pachno__WEBPACK_IMPORTED_MODULE_1__.default.getIssue($element.data('issue-id'));
     issue.postAndUpdate('cover_image', 0);
+  });
+  _classes_pachno__WEBPACK_IMPORTED_MODULE_1__.default.on(_classes_pachno__WEBPACK_IMPORTED_MODULE_1__.default.EVENTS.issue.triggerDelete, function (PachnoApplication, data) {
+    var url = data.url;
+    var issue_id = data.issue_id;
+    _classes_pachno__WEBPACK_IMPORTED_MODULE_1__.default.UI.Dialog.setSubmitting();
+    _classes_pachno__WEBPACK_IMPORTED_MODULE_1__.default.fetch(url, {
+      method: 'DELETE'
+    }).then(function (json) {
+      jquery__WEBPACK_IMPORTED_MODULE_0___default()("[data-issue][data-issue-id=\"".concat(issue_id, "\"]")).remove();
+      var $issueDeletedMessage = jquery__WEBPACK_IMPORTED_MODULE_0___default()('#issue_deleted_message');
+
+      if (jquery__WEBPACK_IMPORTED_MODULE_0___default()('[data-issue]').length === 0 && $issueDeletedMessage.length > 0) {
+        $issueDeletedMessage.removeClass('hidden');
+      }
+
+      _classes_pachno__WEBPACK_IMPORTED_MODULE_1__.default.UI.Dialog.dismiss();
+    });
   });
 };
 

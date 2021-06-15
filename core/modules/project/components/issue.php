@@ -6,7 +6,7 @@
      */
 
 ?>
-<div id="issue_<?php echo $issue->getID(); ?>" class="viewissue-container <?php if ($issue->isBlocking()) echo ' blocking'; ?>">
+<div id="issue_<?php echo $issue->getID(); ?>" class="viewissue-container <?php if ($issue->isBlocking()) echo ' blocking'; ?>" data-issue data-issue-id="<?= $issue->getID(); ?>">
     <?php include_component('project/viewissueheader', ['issue' => $issue]); ?>
     <div id="issue-container" class="issue-card">
         <div id="issue-main-container" class="issue-card-main">
@@ -53,4 +53,14 @@
             <?php include_component('main/viewissuefields', ['issue' => $issue]); ?>
         </div>
     </div>
+</div>
+<div id="issue_deleted_message" class="hidden">
+    <span class="message-box type-error">
+        <span class="message">
+            <span class="title"><?php echo __("This issue has been deleted"); ?></span>
+            <span class="message">
+                <?php echo __("This message will disappear when you reload the page."); ?>
+            </span>
+        </span>
+    </span>
 </div>

@@ -2184,30 +2184,6 @@
         }
 
         /**
-         * Delete an issue
-         *
-         * @param Request $request
-         */
-        public function runDeleteIssue(Request $request)
-        {
-            $issue = Issues::getTable()->selectById($request['issue_id']);
-
-            if (!$issue instanceof Issue || $issue->isDeleted()) {
-                return $this->return404(framework\Context::getI18n()->__('This issue does not exist'));
-            }
-
-            if (!$issue->canDeleteIssue()) {
-                $this->getResponse()->setHttpStatus(400);
-                return $this->renderJSON(['error' => $this->getI18n()->__('You are not allowed to delete this issue')]);
-            }
-
-            $issue->deleteIssue();
-            $issue->save();
-
-            return $this->renderJSON(['message' => $this->getI18n()->__('The issue has been deleted')]);
-        }
-
-        /**
          * Find users and show selection links
          *
          * @param Request $request The request object

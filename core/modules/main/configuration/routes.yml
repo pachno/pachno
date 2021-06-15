@@ -367,13 +367,6 @@ viewissue_related_issues:
     parameters: [ ]
     csrf_enabled: false
 
-deleteissue:
-    route: /:project_key/issues/:issue_id/delete
-    module: main
-    action: deleteIssue
-    parameters: [ ]
-    csrf_enabled: false
-
 lock_issue:
     route: /lock/issue/:issue_id
     module: main
@@ -496,5 +489,5 @@ viewissue:
     module: project
     action: viewIssue
     parameters: [ ]
-    methods: ['GET']
+    methods: ['GET', 'DELETE']
     csrf_enabled: false

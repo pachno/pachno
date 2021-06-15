@@ -148,15 +148,6 @@
             framework\Context::getCache()->clearCacheKeys([framework\Cache::KEY_MAIN_MENU_LINKS]);
         }
 
-        public function loadFixtures(Scope $scope)
-        {
-            $scope_id = $scope->getID();
-
-            $this->addMainMenuLink('https://pachno.com', 'Pachno homepage', 1, $scope_id);
-            $this->addMainMenuLink(null, null, 2, $scope_id);
-            $this->addMainMenuLink('https://projects.pach.no', 'Online issue tracker', 4, $scope_id);
-        }
-
         public function addMainMenuLink($url = null, $description = null, $link_order = null, $scope = null)
         {
             return $this->addLink('main_menu', 0, $url, $description, $link_order, $scope);

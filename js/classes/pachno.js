@@ -71,6 +71,7 @@ class PachnoApplication {
                 update: 'issue-update',
                 triggerUpdate: 'issue-trigger-update',
                 triggerEdit: 'issue-trigger-edit',
+                triggerDelete: 'issue-trigger-delete',
                 updateDone: 'issue-update-done',
                 updateJson: 'issue-update-json',
                 updateJsonComplete: 'issue-update-json-complete',

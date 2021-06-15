@@ -35,7 +35,7 @@
                 if ($update_available) {
                     $uptodate = false;
                     $title = framework\Context::getI18n()->__('Pachno is out of date');
-                    $message = framework\Context::getI18n()->__('The latest version is %ver. Update now from pachno.com.', ['%ver' => $latest_version->nicever]);
+                    $message = framework\Context::getI18n()->__('The latest version is %ver. Update now from pach.no', ['%ver' => $latest_version->nicever]);
                     $title_color = "yellow";
                     $exit_code = self::OUTDATED;
                 } else {

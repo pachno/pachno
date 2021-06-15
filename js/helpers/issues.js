@@ -55,6 +55,22 @@ const setupListeners = () => {
         issue.postAndUpdate('cover_image', 0);
     });
 
+    Pachno.on(Pachno.EVENTS.issue.triggerDelete, function (PachnoApplication, data) {
+        const url = data.url;
+        const issue_id = data.issue_id;
+
+        Pachno.UI.Dialog.setSubmitting();
+
+        Pachno.fetch(url, { method: 'DELETE' })
+            .then(json => {
+                $(`[data-issue][data-issue-id="${issue_id}"]`).remove();
+                const $issueDeletedMessage = $('#issue_deleted_message');
+                if ($('[data-issue]').length === 0 && $issueDeletedMessage.length > 0) {
+                    $issueDeletedMessage.removeClass('hidden');
+                }
+                Pachno.UI.Dialog.dismiss();
+            })
+    });
 }
 
 export {

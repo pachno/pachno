@@ -1,3 +1,5 @@
+@import '../variables';
+
 .related-issues-list {
   display: flex;
   flex-direction: column;
@@ -20,7 +22,6 @@
       margin-bottom: .5em;
       transition: border .25s ease-in-out;
       border: none;
-      cursor: pointer;
       color: $theme-text-color;
 
       .count-badge {
@@ -34,6 +35,14 @@
 
       .issue-title {
         flex: 1 1 auto;
+        margin-left: .25em;
+
+        &,
+        &:hover {
+          color: $theme-text-color;
+          border: none;
+          text-decoration: none;
+        }
       }
 
       .information {

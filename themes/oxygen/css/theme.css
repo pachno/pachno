@@ -54,6 +54,7 @@
 @import url("https://fonts.googleapis.com/css?family=DM+Sans:700|Fira+Sans:200,300,300i,400,400i,600,600i|Fira+Mono:400,500,700&subset=cyrillic,cyrillic-ext,latin-ext&display=swap");
 @import url("https://fonts.googleapis.com/css?family=DM+Sans:700|Fira+Sans:200,300,300i,400,400i,600,600i|Fira+Mono:400,500,700&subset=cyrillic,cyrillic-ext,latin-ext&display=swap");
 @import url("https://fonts.googleapis.com/css?family=DM+Sans:700|Fira+Sans:200,300,300i,400,400i,600,600i|Fira+Mono:400,500,700&subset=cyrillic,cyrillic-ext,latin-ext&display=swap");
+@import url("https://fonts.googleapis.com/css?family=DM+Sans:700|Fira+Sans:200,300,300i,400,400i,600,600i|Fira+Mono:400,500,700&subset=cyrillic,cyrillic-ext,latin-ext&display=swap");
 body,
 td,
 th {
@@ -7982,6 +7983,8 @@ input[data-interactive-toggle].submitting + label .indicator {
     align-content: flex-start;
     align-items: flex-start;
     justify-content: flex-start; }
+    .content-with-sidebar > div:not(.sidebar):not(.fixed-position).hidden {
+      display: none; }
 
 nav.sidebar {
   box-sizing: border-box;
@@ -9633,7 +9636,6 @@ textarea.markItUpEditor:focus {
     margin-bottom: .5em;
     transition: border .25s ease-in-out;
     border: none;
-    cursor: pointer;
     color: #232323; }
     .related-issues-list .related-issue .count-badge, .related-issues-list .related-issue:hover .count-badge {
       margin-left: 0; }
@@ -9641,7 +9643,12 @@ textarea.markItUpEditor:focus {
       font-size: .8em;
       margin-right: .35em; }
     .related-issues-list .related-issue .issue-title, .related-issues-list .related-issue:hover .issue-title {
-      flex: 1 1 auto; }
+      flex: 1 1 auto;
+      margin-left: .25em; }
+      .related-issues-list .related-issue .issue-title, .related-issues-list .related-issue .issue-title:hover, .related-issues-list .related-issue:hover .issue-title, .related-issues-list .related-issue:hover .issue-title:hover {
+        color: #232323;
+        border: none;
+        text-decoration: none; }
     .related-issues-list .related-issue .information, .related-issues-list .related-issue:hover .information {
       display: flex;
       flex-direction: row;
