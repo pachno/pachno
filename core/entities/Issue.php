@@ -6,6 +6,7 @@
     use Exception;
     use pachno\core\entities\common\Identifiable;
     use pachno\core\entities\common\Ownable;
+    use pachno\core\entities\tables\Issues;
     use pachno\core\entities\tables\IssueTypes;
     use pachno\core\entities\tables\Permissions;
     use pachno\core\entities\traits\Commentable;
@@ -527,14 +528,14 @@
         /**
          * List of issues this issue depends on
          *
-         * @var array
+         * @var ?array
          */
         protected $_parent_issues;
 
         /**
          * List of issues that depends on this issue
          *
-         * @var array
+         * @var ?array
          */
         protected $_child_issues;
 
@@ -2398,6 +2399,15 @@
             }
         }
 
+        public function clearCachedItems()
+        {
+            $this->_parent_issues = null;
+            $this->_child_issues = null;
+            $this->_editions = null;
+            $this->_components = null;
+            $this->_builds = null;
+        }
+
         /**
          * Return issues relating to this
          *
@@ -2847,12 +2857,11 @@
         /**
          * Remove a dependant issue
          *
-         * @param integer $issue_id The issue ID to remove
+         * @param Issue $related_issue The issue to remove
          */
-        public function removeDependantIssue($issue_id)
+        public function removeDependantIssue(Issue $related_issue): ?Issue
         {
-            if ($row = tables\IssueRelations::getTable()->getIssueRelation($this->getID(), $issue_id)) {
-                $related_issue = Issue::getB2DBTable()->selectById($issue_id);
+            if ($row = tables\IssueRelations::getTable()->getIssueRelation($this->getID(), $related_issue->getID())) {
                 $relation_id = $row->get(tables\IssueRelations::ID);
                 if ($row->get(tables\IssueRelations::PARENT_ID) == $this->getID()) {
                     $this->_removeChildIssue($related_issue, $relation_id);
@@ -2860,9 +2869,13 @@
                     $this->_removeParentIssue($related_issue, $relation_id);
                 }
                 $this->touch();
+                $this->clearCachedItems();
                 $related_issue->touch();
+                $related_issue->clearCachedItems();
                 tables\IssueRelations::getTable()->rawDeleteById($relation_id);
             }
+
+            return $related_issue;
         }
 
         /**
@@ -6067,7 +6080,7 @@
 
         public function isChildIssue()
         {
-            return (bool)count($this->getParentIssues());
+            return (bool) count($this->getParentIssues());
         }
 
         /**

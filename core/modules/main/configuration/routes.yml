@@ -338,13 +338,6 @@ viewissue_relate_issues:
       format: json
     csrf_enabled: false
 
-viewissue_remove_related_issue:
-    route: /:project_key/issues/:issue_id/remove/related/issue/:related_issue_id
-    module: main
-    action: removeRelatedIssue
-    parameters: [ ]
-    csrf_enabled: false
-
 viewissue_find_duplicated_issue:
     route: /:project_key/find_issues/:issue_id/duplicated
     module: main

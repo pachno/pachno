@@ -14,7 +14,8 @@
       height 0.25s ease-in-out;
     height: auto;
 
-    &.not-visible {
+    &.not-visible,
+    &.hidden {
       opacity: 0;
       transform: scaleX(0);
       height: 1px;

@@ -290,6 +290,13 @@ const submitForm = function ($form, options = {}) {
         }
     }
 
+    if ($form.data('update-issues') !== undefined) {
+        if (options.success === undefined) {
+            options.success = {};
+        }
+        options.success.update_issues_from_json = true;
+    }
+
     return formSubmitHelper(url, $form.attr('id'), options)
         .then((json) => {
             $form.removeClass('submitting');

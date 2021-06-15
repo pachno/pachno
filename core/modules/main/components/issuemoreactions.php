@@ -106,6 +106,12 @@
                         <?php echo fa_image_tag('share-alt', ['class' => 'icon']); ?>
                         <span class="name"><?= __('Relate to an existing issue'); ?></span>
                     </a>
+                    <?php if ($issue->isChildIssue()): ?>
+                        <a href="javascript:void(0)" class="list-item" onclick="Pachno.UI.Dialog.show('<?php echo __('Convert to standalone issue?'); ?>', '<?php echo __('Please confirm that you want to turn this issue into a standalone issue'); ?>', {yes: {click: function() { Pachno.trigger(Pachno.EVENTS.issue.removeParentIssue, { url: '<?php echo make_url('viewissue_remove_parent_issue', ['project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID()]); ?>', issue_id: <?= $issue->getID(); ?> });}}, no: {click: Pachno.UI.Dialog.dismiss}});">
+                            <?php echo fa_image_tag('unlink', ['class' => 'icon']); ?>
+                            <span class="name"><?= __("Convert to standalone issue"); ?></span>
+                        </a>
+                    <?php endif; ?>
                 <?php endif; ?>
                 <div class="list-item separator"></div>
                 <?php if (!isset($times) || $times): ?>

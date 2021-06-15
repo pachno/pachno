@@ -83,10 +83,10 @@
             </div>
         </div>
     </div>
-    <div id="viewissue_related_information_container" class="fields-list-container <?php if (!$issue->countChildIssues()) echo 'not-visible'; ?>">
+    <div id="viewissue_related_information_container" class="fields-list-container <?php if (!$issue->countChildIssues()) echo 'hidden'; ?>">
         <div class="header">
             <span class="icon"><?= fa_image_tag('list-alt', [], 'far'); ?></span>
-            <span class="name"><?= __('Subtasks'); ?><span id="viewissue_related_issues_count" class="count-badge"><?= $issue->countChildIssues(); ?></span></span>
+            <span class="name" data-dynamic-field-value data-issue-id="<?= $issue->getId(); ?>" data-field="number_of_child_issues"><?= __('Subtasks'); ?><span id="viewissue_related_issues_count" class="count-badge value"><?= $issue->countChildIssues(); ?></span></span>
         </div>
         <div id="viewissue_related_information" class="related-issues content">
             <div class="related-issues-list" id="related_child_issues_inline">
@@ -94,7 +94,6 @@
                     <?php include_component('main/relatedissue', ['issue' => $child_issue, 'related_issue' => $issue, 'backdrop' => $backdrop]); ?>
                 <?php endforeach; ?>
             </div>
-            <div id="no_related_issues"<?php if (count($issue->getChildIssues()) > 0): ?> style="display: none;"<?php endif; ?>><?php echo __('This issue does not have any child issues'); ?></div>
         </div>
     </div>
     <?php include_component('main/issuemaincustomfields', ['issue' => $issue]); ?>

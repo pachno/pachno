@@ -9,7 +9,7 @@
 
 ?>
 <?php if ($grouped_issues): ?>
-    <form id="viewissue_relate_issues_form" action="<?= make_url('viewissue_relate_issues', ['project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID()]); ?>" method="post" accept-charset="<?= \pachno\core\framework\Settings::getCharset(); ?>" data-simple-submit data-auto-close>
+    <form id="viewissue_relate_issues_form" action="<?= make_url('viewissue_relate_issues', ['project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID()]); ?>" method="post" accept-charset="<?= \pachno\core\framework\Settings::getCharset(); ?>" data-simple-submit data-auto-close data-update-issues data-update-container="#related_child_issues_inline" data-update-insert>
         <div class="flexible-table">
             <div class="row header">
                 <div class="column header info-icons"></div>

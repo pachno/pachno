@@ -170,7 +170,7 @@ use pachno\core\framework\Context;
         </li>
     </ul>
 </div>
-<div id="viewissue_affected_container" class="fields-list-container">
+<div id="viewissue_affected_container" class="fields-list-container <?php if (!$issue->getNumberOfAffectedItems()) echo 'hidden'; ?>">
     <div class="header">
         <span class="name" data-dynamic-field-value data-field="number_of_affected_items" data-issue-id="<?= $issue->getId(); ?>"><?= __('Affected by this issue %count', ['%count' => '']); ?><span id="viewissue_affected_items_count" class="count-badge value"><?= $issue->getNumberOfAffectedItems(); ?></span></span>
     </div>

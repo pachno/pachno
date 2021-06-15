@@ -1,6 +1,7 @@
 import $ from "jquery";
 import {clearFormSubmit, is_string} from "../tools/tools";
 import UI from "./ui";
+import Pachno from "../classes/pachno";
 
 let fetch_debugger = undefined;
 
@@ -204,7 +205,7 @@ export const fetchHelper = function (url, options) {
             })
             .then((json, responseText) => {
                 if (json || (options.success && options.success.update)) {
-                    if (json && json.forward != undefined) {
+                    if (json && json.forward !== undefined) {
                         document.location = json.forward;
                     } else {
                         if (options.success && options.success.update) {
@@ -262,6 +263,17 @@ export const fetchHelper = function (url, options) {
                             UI.Message.success(json.title, json.content);
                         } else if (json && (json.message)) {
                             UI.Message.success(json.message);
+                        }
+                        if (json && options.success && options.success.update_issues_from_json) {
+                            if (json.issue !== undefined) {
+                                Pachno.trigger(Pachno.EVENTS.issue.updateJson, {json: json.issue});
+                            }
+                            if (json.issues !== undefined) {
+                                for (const json_issue of json.issues) {
+                                    Pachno.addIssue(json_issue);
+                                    Pachno.trigger(Pachno.EVENTS.issue.updateJson, {json: json_issue});
+                                }
+                            }
                         }
                         if ($form !== undefined && json.new_values !== undefined) {
                             for (const field in json.new_values) {

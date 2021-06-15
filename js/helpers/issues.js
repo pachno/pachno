@@ -71,6 +71,32 @@ const setupListeners = () => {
                 Pachno.UI.Dialog.dismiss();
             })
     });
+
+    Pachno.on(Pachno.EVENTS.issue.removeParentIssue, function (PachnoApplication, data) {
+        const url = data.url;
+        const issue_id = data.issue_id;
+
+        Pachno.UI.Dialog.setSubmitting();
+
+        Pachno.fetch(url, { method: 'DELETE', success: { update_issues_from_json: true } })
+            .then(json => {
+                $(`[data-issue][data-issue-id="${issue_id}"]`).remove();
+                for (const json_issue of json.issues) {
+                    if (parseInt(json_issue.id) !== issue_id) {
+                        continue;
+                    }
+
+                    Pachno.UI.Dialog.show(
+                        Pachno.T.issue.go_to_converted_issue.title,
+                        Pachno.T.issue.go_to_converted_issue.message,
+                        {
+                            yes: { href: json_issue.href },
+                            no: { click: Pachno.UI.Dialog.dismiss }
+                        }
+                    );
+                }
+            })
+    });
 }
 
 export {

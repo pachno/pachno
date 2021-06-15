@@ -20,7 +20,7 @@
     </div>
     <div class="backdrop_detail_content">
         <div class="form-container">
-            <form id="viewissue_add_item_form" method="post" action="<?= make_url('add_affected', ['project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID()]); ?>" method="post" accept-charset="<?= \pachno\core\framework\Settings::getCharset(); ?>" data-simple-submit data-auto-close data-update-container="#affected_list" data-update-insert>
+            <form id="viewissue_add_item_form" method="post" action="<?= make_url('add_affected', ['project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID()]); ?>" method="post" accept-charset="<?= \pachno\core\framework\Settings::getCharset(); ?>" data-simple-submit data-auto-close data-update-container="#affected_list" data-update-insert data-update-issues>
                 <div class="form-row">
                     <div class="helper-text">
                         <?= __('Please select the type and item you wish to add as affected by this issue.'); ?>

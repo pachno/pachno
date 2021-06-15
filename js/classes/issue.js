@@ -516,8 +516,30 @@ class Issue {
                     }
                     if (this[field] > 0) {
                         $element.removeClass('hidden');
+                        if (field === 'number_of_child_issues') {
+                            const $relatedInformationContainer = $('#viewissue_related_information_container');
+                            if ($relatedInformationContainer.length > 0) {
+                                $relatedInformationContainer.removeClass('hidden');
+                            }
+                        } else if (field === 'number_of_affected_items') {
+                            const $affectedContainer = $('#viewissue_affected_container');
+                            if ($affectedContainer.length > 0) {
+                                $affectedContainer.removeClass('hidden');
+                            }
+                        }
                     } else {
                         $element.addClass('hidden');
+                        if (field === 'number_of_child_issues') {
+                            const $relatedInformationContainer = $('#viewissue_related_information_container');
+                            if ($relatedInformationContainer.length > 0) {
+                                $relatedInformationContainer.addClass('hidden');
+                            }
+                        } else if (field === 'number_of_affected_items') {
+                            const $affectedContainer = $('#viewissue_affected_container');
+                            if ($affectedContainer.length > 0) {
+                                $affectedContainer.addClass('hidden');
+                            }
+                        }
                     }
                     break;
                 case 'closed-message':

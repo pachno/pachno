@@ -11,7 +11,11 @@
   },
   "issue": {
     "value_not_set": "Not determined",
-    "unknown_value": "Unknown"
+    "unknown_value": "Unknown",
+    "go_to_converted_issue": {
+      "title": "Go to the new issue?",
+      "message": "Do you want to navigate to the issue that you just converted?"
+    }
   },
   "roadmap": {
     "percent_complete": "%percentage% completed"

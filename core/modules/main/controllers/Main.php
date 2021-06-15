@@ -1926,7 +1926,7 @@
                     $new_parent_issue = tables\Issues::getTable()->selectById($request['value']);
                     foreach ($issue->getParentIssues() as $parent_issue) {
                         if (!$new_parent_issue instanceof entities\Issue || $parent_issue->getID() !== $new_parent_issue->getID()) {
-                            $issue->removeDependantIssue($parent_issue->getID());
+                            $issue->removeDependantIssue($parent_issue);
                         }
                     }
 
@@ -3246,30 +3246,39 @@
             return $this->renderJSON(['content' => $this->getComponentHTML('main/findduplicateissues', $parameters)]);
         }
 
-        public function runRemoveRelatedIssue(Request $request)
+        /**
+         * @Route(name="viewissue_remove_parent_issue", url="/:project_key/issues/:issue_id/parent_issue/:csrf_token", methods="DELETE")
+         * @CsrfProtected
+
+         * @param Request $request
+         * @return framework\JsonOutput
+         */
+        public function runRemoveParentIssue(Request $request): framework\JsonOutput
         {
             try {
-                try {
-                    $issue_id = (int)$request['issue_id'];
-                    $related_issue_id = (int)$request['related_issue_id'];
-                    $issue = null;
-                    $related_issue = null;
-                    if ($issue_id && $related_issue_id) {
-                        $issue = Issues::getTable()->selectById($issue_id);
-                        $related_issue = Issues::getTable()->selectById($related_issue_id);
-                    }
-                    if (!$issue instanceof Issue || !$related_issue instanceof Issue) {
-                        throw new Exception('');
-                    }
-                    $issue->removeDependantIssue($related_issue->getID());
-                } catch (Exception $e) {
-                    throw new Exception($this->getI18n()->__('Please provide a valid issue number and a valid related issue number'));
+                $issue = Issues::getTable()->selectById($request['issue_id']);
+                if (!$issue instanceof Issue) {
+                    throw new Exception('This issue does not exist');
                 }
 
-                return $this->renderJSON(['message' => $this->getI18n()->__('The issues are no longer related')]);
+                $json_issues = [];
+
+                foreach ($issue->getParentIssues() as $parent_issue) {
+                    $issue->removeDependantIssue($parent_issue);
+                    tables\IssueRelations::getTable()->clearRelationCache();
+                    $json_issues[] = $parent_issue->toJSON();
+                }
+
+                $issue->clearCachedItems();
+                tables\IssueRelations::getTable()->clearRelationCache();
+                $json_issues[] = $issue->toJSON();
+
+                return $this->renderJSON([
+                    'message' => $this->getI18n()->__('The issues are no longer related'),
+                    'issues' => $json_issues
+                ]);
             } catch (Exception $e) {
                 $this->getResponse()->setHttpStatus(400);
-
                 return $this->renderJSON(['error' => $e->getMessage()]);
             }
         }
@@ -3334,6 +3343,7 @@
             $cc = 0;
             $message = framework\Context::getI18n()->__('Unknown error');
             $content = '';
+            $json_issues = [];
             if (count($related_issues)) {
                 $mode = $request['relate_action'];
                 foreach ($related_issues as $issue_id) {
@@ -3344,6 +3354,7 @@
                         } else {
                             $issue->addParentIssue($related_issue);
                         }
+                        $json_issues[] = $related_issue->toJSON();
                         $cc++;
                         $content .= $this->getComponentHTML('main/relatedissue', ['issue' => $related_issue, 'related_issue' => $issue]);
                     } catch (Exception $e) {
@@ -3357,10 +3368,14 @@
             }
 
             if ($cc > 0) {
-                return $this->renderJSON(['content' => $content, 'message' => framework\Context::getI18n()->__('The related issue was added'), 'count' => count($issue->getChildIssues())]);
+                $json_issues[] = $issue->toJSON();
+                return $this->renderJSON([
+                    'content' => $content,
+                    'issues' => $json_issues,
+                    'message' => ($cc > 1) ? framework\Context::getI18n()->__('The related issues were added') : framework\Context::getI18n()->__('The related issue was added')
+                ]);
             } else {
                 $this->getResponse()->setHttpStatus(400);
-
                 return $this->renderJSON(['error' => framework\Context::getI18n()->__('An error occured when relating issues: %error', ['%error' => $message])]);
             }
         }
@@ -3603,11 +3618,11 @@
                         throw new Exception('Internal error');
                 }
 
-                $editions = [];
-                $components = [];
-                $builds = [];
-
-                return $this->renderJSON(['content' => $content, 'message' => $message]);
+                return $this->renderJSON([
+                    'content' => $content,
+                    'issue' => $issue->toJSON(),
+                    'message' => $message
+                ]);
             } catch (Exception $e) {
                 $this->getResponse()->setHttpStatus(400);
 

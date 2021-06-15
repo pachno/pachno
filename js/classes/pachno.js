@@ -76,7 +76,8 @@ class PachnoApplication {
                 updateJson: 'issue-update-json',
                 updateJsonComplete: 'issue-update-json-complete',
                 loadDynamicChoices: 'issue-load-dynamic-choices',
-                removeAffectedItem: 'issue-remove-affected-item'
+                removeAffectedItem: 'issue-remove-affected-item',
+                removeParentIssue: 'issue-remove-parent-issue'
             },
             upload: {
                 complete: 'upload-complete',

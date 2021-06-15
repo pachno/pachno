@@ -612,7 +612,7 @@
 
                                     foreach ($issue->getParentIssues() as $parent_issue) {
                                         if (!$swimlane->getIdentifierIssue() instanceof entities\Issue || $parent_issue->getID() !== $swimlane->getIdentifierIssue()->getID()) {
-                                            $issue->removeDependantIssue($parent_issue->getID());
+                                            $issue->removeDependantIssue($parent_issue);
                                         }
                                     }
 
@@ -654,7 +654,7 @@
                     $new_parent_issue = tables\Issues::getTable()->selectById($request['parent_issue_id']);
                     foreach ($issue->getParentIssues() as $parent_issue) {
                         if (!$new_parent_issue instanceof entities\Issue || $parent_issue->getID() !== $new_parent_issue->getID()) {
-                            $issue->removeDependantIssue($parent_issue->getID());
+                            $issue->removeDependantIssue($parent_issue);
                         }
                     }
 
@@ -707,7 +707,7 @@
                         $new_parent_issue = tables\Issues::getTable()->selectById($request['parent_issue_id']);
                         foreach ($issue->getParentIssues() as $parent_issue) {
                             if (!$new_parent_issue instanceof entities\Issue || $parent_issue->getID() !== $new_parent_issue->getID()) {
-                                $issue->removeDependantIssue($parent_issue->getID());
+                                $issue->removeDependantIssue($parent_issue);
                             }
                         }
 

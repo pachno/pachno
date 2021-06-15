@@ -8,7 +8,7 @@
 /***/ ((module) => {
 
 "use strict";
-module.exports = JSON.parse('{"common":{"mentions":{"user_search_placeholder":"Start typing to search"}},"agile":{"add_card":"Add card","add_card_here":"Add card","add_swimlane":"Add a swimlane"},"issue":{"value_not_set":"Not determined","unknown_value":"Unknown"},"roadmap":{"percent_complete":"%percentage% completed"}}');
+module.exports = JSON.parse('{"common":{"mentions":{"user_search_placeholder":"Start typing to search"}},"agile":{"add_card":"Add card","add_card_here":"Add card","add_swimlane":"Add a swimlane"},"issue":{"value_not_set":"Not determined","unknown_value":"Unknown","go_to_converted_issue":{"title":"Go to the new issue?","message":"Do you want to navigate to the issue that you just converted?"}},"roadmap":{"percent_complete":"%percentage% completed"}}');
 
 /***/ }),
 
@@ -4206,8 +4206,36 @@ var Issue = /*#__PURE__*/function () {
 
               if (this[_field] > 0) {
                 $element.removeClass('hidden');
+
+                if (_field === 'number_of_child_issues') {
+                  var $relatedInformationContainer = jquery__WEBPACK_IMPORTED_MODULE_1___default()('#viewissue_related_information_container');
+
+                  if ($relatedInformationContainer.length > 0) {
+                    $relatedInformationContainer.removeClass('hidden');
+                  }
+                } else if (_field === 'number_of_affected_items') {
+                  var $affectedContainer = jquery__WEBPACK_IMPORTED_MODULE_1___default()('#viewissue_affected_container');
+
+                  if ($affectedContainer.length > 0) {
+                    $affectedContainer.removeClass('hidden');
+                  }
+                }
               } else {
                 $element.addClass('hidden');
+
+                if (_field === 'number_of_child_issues') {
+                  var _$relatedInformationContainer = jquery__WEBPACK_IMPORTED_MODULE_1___default()('#viewissue_related_information_container');
+
+                  if (_$relatedInformationContainer.length > 0) {
+                    _$relatedInformationContainer.addClass('hidden');
+                  }
+                } else if (_field === 'number_of_affected_items') {
+                  var _$affectedContainer = jquery__WEBPACK_IMPORTED_MODULE_1___default()('#viewissue_affected_container');
+
+                  if (_$affectedContainer.length > 0) {
+                    _$affectedContainer.addClass('hidden');
+                  }
+                }
               }
 
               break;
@@ -5057,7 +5085,8 @@ var PachnoApplication = /*#__PURE__*/function () {
           updateJson: 'issue-update-json',
           updateJsonComplete: 'issue-update-json-complete',
           loadDynamicChoices: 'issue-load-dynamic-choices',
-          removeAffectedItem: 'issue-remove-affected-item'
+          removeAffectedItem: 'issue-remove-affected-item',
+          removeParentIssue: 'issue-remove-parent-issue'
         },
         upload: {
           complete: 'upload-complete'
@@ -7605,6 +7634,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(jquery__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var _tools_tools__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../tools/tools */ "./js/tools/tools.js");
 /* harmony import */ var _ui__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./ui */ "./js/helpers/ui.js");
+/* harmony import */ var _classes_pachno__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../classes/pachno */ "./js/classes/pachno.js");
+function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
+
 
 
 
@@ -7807,7 +7844,7 @@ var fetchHelper = function fetchHelper(url, options) {
       });
     }).then(function (json, responseText) {
       if (json || options.success && options.success.update) {
-        if (json && json.forward != undefined) {
+        if (json && json.forward !== undefined) {
           document.location = json.forward;
         } else {
           if (options.success && options.success.update) {
@@ -7872,6 +7909,33 @@ var fetchHelper = function fetchHelper(url, options) {
             _ui__WEBPACK_IMPORTED_MODULE_2__.default.Message.success(json.title, json.content);
           } else if (json && json.message) {
             _ui__WEBPACK_IMPORTED_MODULE_2__.default.Message.success(json.message);
+          }
+
+          if (json && options.success && options.success.update_issues_from_json) {
+            if (json.issue !== undefined) {
+              _classes_pachno__WEBPACK_IMPORTED_MODULE_3__.default.trigger(_classes_pachno__WEBPACK_IMPORTED_MODULE_3__.default.EVENTS.issue.updateJson, {
+                json: json.issue
+              });
+            }
+
+            if (json.issues !== undefined) {
+              var _iterator = _createForOfIteratorHelper(json.issues),
+                  _step;
+
+              try {
+                for (_iterator.s(); !(_step = _iterator.n()).done;) {
+                  var json_issue = _step.value;
+                  _classes_pachno__WEBPACK_IMPORTED_MODULE_3__.default.addIssue(json_issue);
+                  _classes_pachno__WEBPACK_IMPORTED_MODULE_3__.default.trigger(_classes_pachno__WEBPACK_IMPORTED_MODULE_3__.default.EVENTS.issue.updateJson, {
+                    json: json_issue
+                  });
+                }
+              } catch (err) {
+                _iterator.e(err);
+              } finally {
+                _iterator.f();
+              }
+            }
           }
 
           if ($form !== undefined && json.new_values !== undefined) {
@@ -7940,7 +8004,7 @@ var fetchHelper = function fetchHelper(url, options) {
         _ui__WEBPACK_IMPORTED_MODULE_2__.default.Backdrop.reset();
       }
 
-      Pachno.trigger(EVENTS.updated);
+      _classes_pachno__WEBPACK_IMPORTED_MODULE_3__.default.trigger(EVENTS.updated);
       resolve(json);
     })["catch"](function (error) {
       console.error(error);
@@ -7991,6 +8055,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(jquery__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var _classes_pachno__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../classes/pachno */ "./js/classes/pachno.js");
 /* harmony import */ var _widgets_editor__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../widgets/editor */ "./js/widgets/editor/index.js");
+function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
 
 
 
@@ -8055,6 +8125,45 @@ var setupListeners = function setupListeners() {
       }
 
       _classes_pachno__WEBPACK_IMPORTED_MODULE_1__.default.UI.Dialog.dismiss();
+    });
+  });
+  _classes_pachno__WEBPACK_IMPORTED_MODULE_1__.default.on(_classes_pachno__WEBPACK_IMPORTED_MODULE_1__.default.EVENTS.issue.removeParentIssue, function (PachnoApplication, data) {
+    var url = data.url;
+    var issue_id = data.issue_id;
+    _classes_pachno__WEBPACK_IMPORTED_MODULE_1__.default.UI.Dialog.setSubmitting();
+    _classes_pachno__WEBPACK_IMPORTED_MODULE_1__.default.fetch(url, {
+      method: 'DELETE',
+      success: {
+        update_issues_from_json: true
+      }
+    }).then(function (json) {
+      jquery__WEBPACK_IMPORTED_MODULE_0___default()("[data-issue][data-issue-id=\"".concat(issue_id, "\"]")).remove();
+
+      var _iterator = _createForOfIteratorHelper(json.issues),
+          _step;
+
+      try {
+        for (_iterator.s(); !(_step = _iterator.n()).done;) {
+          var json_issue = _step.value;
+
+          if (parseInt(json_issue.id) !== issue_id) {
+            continue;
+          }
+
+          _classes_pachno__WEBPACK_IMPORTED_MODULE_1__.default.UI.Dialog.show(_classes_pachno__WEBPACK_IMPORTED_MODULE_1__.default.T.issue.go_to_converted_issue.title, _classes_pachno__WEBPACK_IMPORTED_MODULE_1__.default.T.issue.go_to_converted_issue.message, {
+            yes: {
+              href: json_issue.href
+            },
+            no: {
+              click: _classes_pachno__WEBPACK_IMPORTED_MODULE_1__.default.UI.Dialog.dismiss
+            }
+          });
+        }
+      } catch (err) {
+        _iterator.e(err);
+      } finally {
+        _iterator.f();
+      }
     });
   });
 };
@@ -9200,6 +9309,14 @@ var submitForm = function submitForm($form) {
         update: $form.data('update-container')
       };
     }
+  }
+
+  if ($form.data('update-issues') !== undefined) {
+    if (options.success === undefined) {
+      options.success = {};
+    }
+
+    options.success.update_issues_from_json = true;
   }
 
   return (0,_fetch__WEBPACK_IMPORTED_MODULE_2__.formSubmitHelper)(url, $form.attr('id'), options).then(function (json) {

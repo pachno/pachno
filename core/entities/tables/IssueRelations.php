@@ -36,6 +36,11 @@
 
         protected $_relations_cache = [];
 
+        public function clearRelationCache()
+        {
+            $this->_relations_cache = [];
+        }
+
         public function getRelatedIssues($issue_id)
         {
             if (!array_key_exists($issue_id, $this->_relations_cache)) {

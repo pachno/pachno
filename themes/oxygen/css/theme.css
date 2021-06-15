@@ -11201,11 +11201,11 @@ textarea.markItUpEditor:focus {
     transform-origin: top center;
     transition: transform 0.25s ease-in-out, opacity 0.25s ease-in-out, height 0.25s ease-in-out;
     height: auto; }
-    .viewissue-container .issue-card .fields-list-container.not-visible {
+    .viewissue-container .issue-card .fields-list-container.not-visible, .viewissue-container .issue-card .fields-list-container.hidden {
       opacity: 0;
       transform: scaleX(0);
       height: 1px; }
-      .viewissue-container .issue-card .fields-list-container.not-visible.force-visible {
+      .viewissue-container .issue-card .fields-list-container.not-visible.force-visible, .viewissue-container .issue-card .fields-list-container.hidden.force-visible {
         opacity: 1;
         transform: scaleX(1);
         height: auto; }
@@ -14502,11 +14502,11 @@ DEL {
   transform-origin: top center;
   transition: transform 0.25s ease-in-out, opacity 0.25s ease-in-out, height 0.25s ease-in-out;
   height: auto; }
-  #issue-card-popup > .backdrop_detail_content .fields-list-container.not-visible {
+  #issue-card-popup > .backdrop_detail_content .fields-list-container.not-visible, #issue-card-popup > .backdrop_detail_content .fields-list-container.hidden {
     opacity: 0;
     transform: scaleX(0);
     height: 1px; }
-    #issue-card-popup > .backdrop_detail_content .fields-list-container.not-visible.force-visible {
+    #issue-card-popup > .backdrop_detail_content .fields-list-container.not-visible.force-visible, #issue-card-popup > .backdrop_detail_content .fields-list-container.hidden.force-visible {
       opacity: 1;
       transform: scaleX(1);
       height: auto; }

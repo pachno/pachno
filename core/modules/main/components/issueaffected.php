@@ -15,4 +15,3 @@
         <?php endforeach; ?>
     <?php endif; ?>
 </div>
-<div id="no_affected" <?php if ($count != 0): ?>style="display: none;"<?php endif; ?> class="faded_out"><?php echo __('There are no items'); ?></div>
