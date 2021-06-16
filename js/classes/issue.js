@@ -878,9 +878,10 @@ class Issue {
         if (this.blocking) classes.push('blocking');
         if (this.cover_image) classes.push('with-cover');
         const background = (this.cover_image) ? `background-image: url('${this.cover_image.url}');` : '';
+        const card_url = this.board_id !== undefined ? `${this.card_url}/board_id/${this.board_id}` : this.card_url;
 
         let html = `
-<div id="whiteboard_issue_${this.id}" draggable="true" data-dynamic-field-value data-field="cover_image_toggle" data-issue-id="${this.id}" class="whiteboard-issue trigger-backdrop ${classes.join(' ')}" data-issue-id="${this.id}" data-url="${this.card_url}/board_id/${this.board_id}">
+<div id="whiteboard_issue_${this.id}" draggable="true" data-dynamic-field-value data-field="cover_image_toggle" data-issue-id="${this.id}" class="whiteboard-issue trigger-backdrop ${classes.join(' ')}" data-issue-id="${this.id}" data-url="${card_url}">
     <div class="issue-header" style="${background}" data-dynamic-field-value data-field="cover_image" data-issue-id="${this.id}">
         <span class="issue-number">${this.issue_no}</span>
         <span class="issue-title" data-dynamic-field-value data-field="title" data-issue-id="${this.id}">${this.title}</span>

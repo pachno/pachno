@@ -3105,7 +3105,9 @@
                         break;
                     case 'viewissue':
                         $template_name = 'project/viewissuecard';
-                        $options['board'] = tables\AgileBoards::getTable()->selectById($request['board_id']);
+                        if ($request->hasParameter('board_id')) {
+                            $options['board'] = tables\AgileBoards::getTable()->selectById($request['board_id']);
+                        }
                         break;
                     case 'userscopes':
                         if (!framework\Context::getScope()->isDefault())
