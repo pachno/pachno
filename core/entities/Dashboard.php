@@ -188,19 +188,19 @@
                         $dv_issues->setDetail(0);
                         $dv_issues->save();
 
-                        $dv_logged = new DashboardView();
-                        $dv_logged->setDashboard($this);
-                        $dv_logged->setColumn(2);
-                        $dv_logged->setType(DashboardView::VIEW_LOGGED_ACTIONS);
-                        $dv_logged->setDetail(0);
-                        $dv_logged->save();
-
                         $dv_timers = new DashboardView();
                         $dv_timers->setDashboard($this);
                         $dv_timers->setColumn(2);
                         $dv_timers->setType(DashboardView::VIEW_TIMERS);
                         $dv_timers->setDetail(0);
                         $dv_timers->save();
+
+                        $dv_logged = new DashboardView();
+                        $dv_logged->setDashboard($this);
+                        $dv_logged->setColumn(2);
+                        $dv_logged->setType(DashboardView::VIEW_LOGGED_ACTIONS);
+                        $dv_logged->setDetail(0);
+                        $dv_logged->save();
                         break;
                     case self::TYPE_PROJECT:
 //                        $dv_project_info = new DashboardView();
