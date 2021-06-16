@@ -148,6 +148,16 @@
       }
     }
 
+    &.auto {
+      flex: 1 1 auto;
+      min-width: 0;
+      max-width: none;
+
+      + .column:not(.small) {
+        max-width: none;
+      }
+    }
+
     &.hidden {
       display: none;
     }
@@ -538,14 +548,14 @@ fieldset {
   }
 }
 
-> textarea,
-> input[type=text],
-> input[type=password],
-> input[type=search],
-> input[type=url],
-> input[type=password],
-> input[type=email],
-> .input {
+textarea,
+input[type=text],
+input[type=password],
+input[type=search],
+input[type=url],
+input[type=password],
+input[type=email],
+.input {
   flex: 1 1 100%;
   padding: .65em .15em .25em .15em;
   font-size: 1.1em;

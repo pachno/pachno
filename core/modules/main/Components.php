@@ -556,25 +556,12 @@
 
         public function componentIssueEstimator()
         {
-            $times = [];
-            switch ($this->field) {
-                case 'estimated_time':
-                    $times['months'] = $this->issue->getEstimatedMonths();
-                    $times['weeks'] = $this->issue->getEstimatedWeeks();
-                    $times['days'] = $this->issue->getEstimatedDays();
-                    $times['hours'] = $this->issue->getEstimatedHours();
-                    $times['minutes'] = $this->issue->getEstimatedMinutes();
-                    $this->points = $this->issue->getEstimatedPoints();
-                    break;
-                case 'spent_time';
-                    $times['months'] = 0;
-                    $times['weeks'] = 0;
-                    $times['days'] = 0;
-                    $times['hours'] = 0;
-                    $times['minutes'] = 0;
-                    $this->points = 0;
-                    break;
-            }
+            $times['months'] = $this->issue->getEstimatedMonths();
+            $times['weeks'] = $this->issue->getEstimatedWeeks();
+            $times['days'] = $this->issue->getEstimatedDays();
+            $times['hours'] = $this->issue->getEstimatedHours();
+            $times['minutes'] = $this->issue->getEstimatedMinutes();
+            $this->points = $this->issue->getEstimatedPoints();
             $this->times = $times;
             $this->project_key = $this->issue->getProject()->getKey();
             $this->issue_id = $this->issue->getID();

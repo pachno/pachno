@@ -117,7 +117,7 @@
                 <?php if (!isset($times) || $times): ?>
                     <?php if ($issue->canEditEstimatedTime()): ?>
                         <?php if ($issue->isUpdateable()): ?>
-                            <a href="javascript:void(0);" class="list-item disabled" onclick="Pachno.Main.Profile.clearPopupsAndButtons();$('#estimated_time_<?php echo $issue->getID(); ?>_change').toggle('block');" title="<?php echo ($issue->hasEstimatedTime()) ? __('Change estimate') : __('Estimate this issue'); ?>"><?php echo fa_image_tag('clock', ['class' => 'icon']); ?><span class="name"><?= (($issue->hasEstimatedTime()) ? __('Change estimate') : __('Estimate this issue')); ?></span></a>
+                            <a href="javascript:void(0);" class="list-item trigger-backdrop" data-url="<?= make_url('get_partial_for_backdrop', array('key' => 'issue_estimate', 'issue_id' => $issue->getID())); ?>" title="<?php echo ($issue->hasEstimatedTime()) ? __('Change estimate') : __('Estimate this issue'); ?>"><?php echo fa_image_tag('clock', ['class' => 'icon']); ?><span class="name"><?= (($issue->hasEstimatedTime()) ? __('Change estimate') : __('Estimate this issue')); ?></span></a>
                         <?php else: ?>
                             <a href="javascript:void(0);" class="list-item disabled tooltip-container"><?php echo fa_image_tag('clock', ['class' => 'icon']); ?><span class="name"><?= __("Change estimate"); ?></span><div class="tooltip rightie"><?php echo __('This action is not available at this stage in the workflow'); ?></div></a>
                         <?php endif; ?>
@@ -152,15 +152,4 @@
             <?php endif; ?>
         </div>
     </div>
-    <?php if (!isset($times) || $times): ?>
-        <?php if ($issue->canEditEstimatedTime()): ?>
-            <?php $estimator_params = array('issue' => $issue, 'field' => 'estimated_time', 'instant_save' => true); ?>
-            <?php if (isset($estimator_mode)) $estimator_params['mode'] = $estimator_mode; ?>
-            <?php if (isset($board)): ?>
-                <?php include_component('main/issueestimator', array_merge($estimator_params, compact('board'))); ?>
-            <?php else: ?>
-                <?php include_component('main/issueestimator', $estimator_params); ?>
-            <?php endif; ?>
-        <?php endif; ?>
-    <?php endif; ?>
 <?php endif; ?>

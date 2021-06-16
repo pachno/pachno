@@ -7441,6 +7441,22 @@ input[data-interactive-toggle].submitting + label .indicator {
       .form-container .form > .column.small + .column:not(.small),
       .form-container .form > .row > .column.small + .column:not(.small) {
         max-width: none; }
+    .form-container > .column.auto,
+    .form-container > .row > .column.auto,
+    .form-container form > .column.auto,
+    .form-container form > .row > .column.auto,
+    .form-container .form > .column.auto,
+    .form-container .form > .row > .column.auto {
+      flex: 1 1 auto;
+      min-width: 0;
+      max-width: none; }
+      .form-container > .column.auto + .column:not(.small),
+      .form-container > .row > .column.auto + .column:not(.small),
+      .form-container form > .column.auto + .column:not(.small),
+      .form-container form > .row > .column.auto + .column:not(.small),
+      .form-container .form > .column.auto + .column:not(.small),
+      .form-container .form > .row > .column.auto + .column:not(.small) {
+        max-width: none; }
     .form-container > .column.hidden,
     .form-container > .row > .column.hidden,
     .form-container form > .column.hidden,
@@ -7690,229 +7706,229 @@ fieldset {
     fieldset legend span {
       padding: 0 2em; }
 
-> textarea,
-> input[type=text],
-> input[type=password],
-> input[type=search],
-> input[type=url],
-> input[type=password],
-> input[type=email],
-> .input {
+textarea,
+input[type=text],
+input[type=password],
+input[type=search],
+input[type=url],
+input[type=password],
+input[type=email],
+.input {
   flex: 1 1 100%;
   padding: .65em .15em .25em .15em;
   font-size: 1.1em;
   box-sizing: border-box;
   font-weight: 300; }
-  > textarea.invisible,
-  > input[type=text].invisible,
-  > input[type=password].invisible,
-  > input[type=search].invisible,
-  > input[type=url].invisible,
-  > input[type=password].invisible,
-  > input[type=email].invisible,
-  > .input.invisible {
+  textarea.invisible,
+  input[type=text].invisible,
+  input[type=password].invisible,
+  input[type=search].invisible,
+  input[type=url].invisible,
+  input[type=password].invisible,
+  input[type=email].invisible,
+  .input.invisible {
     background-color: transparent;
     border: 1px solid transparent;
     border-radius: 4px;
     padding: .35rem;
     flex: 1 1 auto; }
-    > textarea.invisible.title,
-    > input[type=text].invisible.title,
-    > input[type=password].invisible.title,
-    > input[type=search].invisible.title,
-    > input[type=url].invisible.title,
-    > input[type=password].invisible.title,
-    > input[type=email].invisible.title,
-    > .input.invisible.title {
+    textarea.invisible.title,
+    input[type=text].invisible.title,
+    input[type=password].invisible.title,
+    input[type=search].invisible.title,
+    input[type=url].invisible.title,
+    input[type=password].invisible.title,
+    input[type=email].invisible.title,
+    .input.invisible.title {
       font-weight: 400; }
-    > textarea.invisible.inline,
-    > input[type=text].invisible.inline,
-    > input[type=password].invisible.inline,
-    > input[type=search].invisible.inline,
-    > input[type=url].invisible.inline,
-    > input[type=password].invisible.inline,
-    > input[type=email].invisible.inline,
-    > .input.invisible.inline {
+    textarea.invisible.inline,
+    input[type=text].invisible.inline,
+    input[type=password].invisible.inline,
+    input[type=search].invisible.inline,
+    input[type=url].invisible.inline,
+    input[type=password].invisible.inline,
+    input[type=email].invisible.inline,
+    .input.invisible.inline {
       flex: 0 0 auto; }
-    > textarea.invisible + label,
-    > input[type=text].invisible + label,
-    > input[type=password].invisible + label,
-    > input[type=search].invisible + label,
-    > input[type=url].invisible + label,
-    > input[type=password].invisible + label,
-    > input[type=email].invisible + label,
-    > .input.invisible + label {
+    textarea.invisible + label,
+    input[type=text].invisible + label,
+    input[type=password].invisible + label,
+    input[type=search].invisible + label,
+    input[type=url].invisible + label,
+    input[type=password].invisible + label,
+    input[type=email].invisible + label,
+    .input.invisible + label {
       opacity: 0;
       transform: translateY(-100%);
       margin-bottom: -1.8em; }
-    > textarea.invisible:hover,
-    > input[type=text].invisible:hover,
-    > input[type=password].invisible:hover,
-    > input[type=search].invisible:hover,
-    > input[type=url].invisible:hover,
-    > input[type=password].invisible:hover,
-    > input[type=email].invisible:hover,
-    > .input.invisible:hover {
+    textarea.invisible:hover,
+    input[type=text].invisible:hover,
+    input[type=password].invisible:hover,
+    input[type=search].invisible:hover,
+    input[type=url].invisible:hover,
+    input[type=password].invisible:hover,
+    input[type=email].invisible:hover,
+    .input.invisible:hover {
       border: 1px solid transparent;
       background-color: rgba(0, 0, 0, 0.05);
       cursor: pointer; }
-    > textarea.invisible:focus,
-    > input[type=text].invisible:focus,
-    > input[type=password].invisible:focus,
-    > input[type=search].invisible:focus,
-    > input[type=url].invisible:focus,
-    > input[type=password].invisible:focus,
-    > input[type=email].invisible:focus,
-    > .input.invisible:focus {
+    textarea.invisible:focus,
+    input[type=text].invisible:focus,
+    input[type=password].invisible:focus,
+    input[type=search].invisible:focus,
+    input[type=url].invisible:focus,
+    input[type=password].invisible:focus,
+    input[type=email].invisible:focus,
+    .input.invisible:focus {
       background: #FFF;
       border-color: #0c8990; }
-      > textarea.invisible:focus.with-label,
-      > input[type=text].invisible:focus.with-label,
-      > input[type=password].invisible:focus.with-label,
-      > input[type=search].invisible:focus.with-label,
-      > input[type=url].invisible:focus.with-label,
-      > input[type=password].invisible:focus.with-label,
-      > input[type=email].invisible:focus.with-label,
-      > .input.invisible:focus.with-label {
+      textarea.invisible:focus.with-label,
+      input[type=text].invisible:focus.with-label,
+      input[type=password].invisible:focus.with-label,
+      input[type=search].invisible:focus.with-label,
+      input[type=url].invisible:focus.with-label,
+      input[type=password].invisible:focus.with-label,
+      input[type=email].invisible:focus.with-label,
+      .input.invisible:focus.with-label {
         padding-bottom: 2rem; }
-      > textarea.invisible:focus:hover,
-      > input[type=text].invisible:focus:hover,
-      > input[type=password].invisible:focus:hover,
-      > input[type=search].invisible:focus:hover,
-      > input[type=url].invisible:focus:hover,
-      > input[type=password].invisible:focus:hover,
-      > input[type=email].invisible:focus:hover,
-      > .input.invisible:focus:hover {
+      textarea.invisible:focus:hover,
+      input[type=text].invisible:focus:hover,
+      input[type=password].invisible:focus:hover,
+      input[type=search].invisible:focus:hover,
+      input[type=url].invisible:focus:hover,
+      input[type=password].invisible:focus:hover,
+      input[type=email].invisible:focus:hover,
+      .input.invisible:focus:hover {
         cursor: text; }
-      > textarea.invisible:focus + label,
-      > input[type=text].invisible:focus + label,
-      > input[type=password].invisible:focus + label,
-      > input[type=search].invisible:focus + label,
-      > input[type=url].invisible:focus + label,
-      > input[type=password].invisible:focus + label,
-      > input[type=email].invisible:focus + label,
-      > .input.invisible:focus + label {
+      textarea.invisible:focus + label,
+      input[type=text].invisible:focus + label,
+      input[type=password].invisible:focus + label,
+      input[type=search].invisible:focus + label,
+      input[type=url].invisible:focus + label,
+      input[type=password].invisible:focus + label,
+      input[type=email].invisible:focus + label,
+      .input.invisible:focus + label {
         display: none; }
-  > textarea.name-input-enhance,
-  > input[type=text].name-input-enhance,
-  > input[type=password].name-input-enhance,
-  > input[type=search].name-input-enhance,
-  > input[type=url].name-input-enhance,
-  > input[type=password].name-input-enhance,
-  > input[type=email].name-input-enhance,
-  > .input.name-input-enhance {
+  textarea.name-input-enhance,
+  input[type=text].name-input-enhance,
+  input[type=password].name-input-enhance,
+  input[type=search].name-input-enhance,
+  input[type=url].name-input-enhance,
+  input[type=password].name-input-enhance,
+  input[type=email].name-input-enhance,
+  .input.name-input-enhance {
     font-size: 1.4em;
     padding: .5em .3em;
     font-weight: 400; }
-    > textarea.name-input-enhance:not(.invisible),
-    > input[type=text].name-input-enhance:not(.invisible),
-    > input[type=password].name-input-enhance:not(.invisible),
-    > input[type=search].name-input-enhance:not(.invisible),
-    > input[type=url].name-input-enhance:not(.invisible),
-    > input[type=password].name-input-enhance:not(.invisible),
-    > input[type=email].name-input-enhance:not(.invisible),
-    > .input.name-input-enhance:not(.invisible) {
+    textarea.name-input-enhance:not(.invisible),
+    input[type=text].name-input-enhance:not(.invisible),
+    input[type=password].name-input-enhance:not(.invisible),
+    input[type=search].name-input-enhance:not(.invisible),
+    input[type=url].name-input-enhance:not(.invisible),
+    input[type=password].name-input-enhance:not(.invisible),
+    input[type=email].name-input-enhance:not(.invisible),
+    .input.name-input-enhance:not(.invisible) {
       border-bottom-width: 2px; }
-  > textarea.code-input-6,
-  > input[type=text].code-input-6,
-  > input[type=password].code-input-6,
-  > input[type=search].code-input-6,
-  > input[type=url].code-input-6,
-  > input[type=password].code-input-6,
-  > input[type=email].code-input-6,
-  > .input.code-input-6 {
+  textarea.code-input-6,
+  input[type=text].code-input-6,
+  input[type=password].code-input-6,
+  input[type=search].code-input-6,
+  input[type=url].code-input-6,
+  input[type=password].code-input-6,
+  input[type=email].code-input-6,
+  .input.code-input-6 {
     max-width: 10rem; }
-  > textarea.number, > textarea.prefix-and-key, > textarea:not(.invisible).number,
-  > input[type=text].number,
-  > input[type=text].prefix-and-key,
-  > input[type=text]:not(.invisible).number,
-  > input[type=password].number,
-  > input[type=password].prefix-and-key,
-  > input[type=password]:not(.invisible).number,
-  > input[type=search].number,
-  > input[type=search].prefix-and-key,
-  > input[type=search]:not(.invisible).number,
-  > input[type=url].number,
-  > input[type=url].prefix-and-key,
-  > input[type=url]:not(.invisible).number,
-  > input[type=password].number,
-  > input[type=password].prefix-and-key,
-  > input[type=password]:not(.invisible).number,
-  > input[type=email].number,
-  > input[type=email].prefix-and-key,
-  > input[type=email]:not(.invisible).number,
-  > .input.number,
-  > .input.prefix-and-key,
-  > .input:not(.invisible).number {
+  textarea.number, textarea.prefix-and-key, textarea:not(.invisible).number,
+  input[type=text].number,
+  input[type=text].prefix-and-key,
+  input[type=text]:not(.invisible).number,
+  input[type=password].number,
+  input[type=password].prefix-and-key,
+  input[type=password]:not(.invisible).number,
+  input[type=search].number,
+  input[type=search].prefix-and-key,
+  input[type=search]:not(.invisible).number,
+  input[type=url].number,
+  input[type=url].prefix-and-key,
+  input[type=url]:not(.invisible).number,
+  input[type=password].number,
+  input[type=password].prefix-and-key,
+  input[type=password]:not(.invisible).number,
+  input[type=email].number,
+  input[type=email].prefix-and-key,
+  input[type=email]:not(.invisible).number,
+  .input.number,
+  .input.prefix-and-key,
+  .input:not(.invisible).number {
     width: 10rem;
     flex: 0 0 auto; }
-    > textarea.number.small, > textarea.prefix-and-key.small, > textarea:not(.invisible).number.small,
-    > input[type=text].number.small,
-    > input[type=text].prefix-and-key.small,
-    > input[type=text]:not(.invisible).number.small,
-    > input[type=password].number.small,
-    > input[type=password].prefix-and-key.small,
-    > input[type=password]:not(.invisible).number.small,
-    > input[type=search].number.small,
-    > input[type=search].prefix-and-key.small,
-    > input[type=search]:not(.invisible).number.small,
-    > input[type=url].number.small,
-    > input[type=url].prefix-and-key.small,
-    > input[type=url]:not(.invisible).number.small,
-    > input[type=password].number.small,
-    > input[type=password].prefix-and-key.small,
-    > input[type=password]:not(.invisible).number.small,
-    > input[type=email].number.small,
-    > input[type=email].prefix-and-key.small,
-    > input[type=email]:not(.invisible).number.small,
-    > .input.number.small,
-    > .input.prefix-and-key.small,
-    > .input:not(.invisible).number.small {
+    textarea.number.small, textarea.prefix-and-key.small, textarea:not(.invisible).number.small,
+    input[type=text].number.small,
+    input[type=text].prefix-and-key.small,
+    input[type=text]:not(.invisible).number.small,
+    input[type=password].number.small,
+    input[type=password].prefix-and-key.small,
+    input[type=password]:not(.invisible).number.small,
+    input[type=search].number.small,
+    input[type=search].prefix-and-key.small,
+    input[type=search]:not(.invisible).number.small,
+    input[type=url].number.small,
+    input[type=url].prefix-and-key.small,
+    input[type=url]:not(.invisible).number.small,
+    input[type=password].number.small,
+    input[type=password].prefix-and-key.small,
+    input[type=password]:not(.invisible).number.small,
+    input[type=email].number.small,
+    input[type=email].prefix-and-key.small,
+    input[type=email]:not(.invisible).number.small,
+    .input.number.small,
+    .input.prefix-and-key.small,
+    .input:not(.invisible).number.small {
       width: 5rem; }
-  > textarea.version,
-  > input[type=text].version,
-  > input[type=password].version,
-  > input[type=search].version,
-  > input[type=url].version,
-  > input[type=password].version,
-  > input[type=email].version,
-  > .input.version {
+  textarea.version,
+  input[type=text].version,
+  input[type=password].version,
+  input[type=search].version,
+  input[type=url].version,
+  input[type=password].version,
+  input[type=email].version,
+  .input.version {
     width: 3em;
     flex: 0 0 auto;
     min-width: 3em; }
-  > textarea.medium, > textarea:not(.invisible).medium,
-  > input[type=text].medium,
-  > input[type=text]:not(.invisible).medium,
-  > input[type=password].medium,
-  > input[type=password]:not(.invisible).medium,
-  > input[type=search].medium,
-  > input[type=search]:not(.invisible).medium,
-  > input[type=url].medium,
-  > input[type=url]:not(.invisible).medium,
-  > input[type=password].medium,
-  > input[type=password]:not(.invisible).medium,
-  > input[type=email].medium,
-  > input[type=email]:not(.invisible).medium,
-  > .input.medium,
-  > .input:not(.invisible).medium {
+  textarea.medium, textarea:not(.invisible).medium,
+  input[type=text].medium,
+  input[type=text]:not(.invisible).medium,
+  input[type=password].medium,
+  input[type=password]:not(.invisible).medium,
+  input[type=search].medium,
+  input[type=search]:not(.invisible).medium,
+  input[type=url].medium,
+  input[type=url]:not(.invisible).medium,
+  input[type=password].medium,
+  input[type=password]:not(.invisible).medium,
+  input[type=email].medium,
+  input[type=email]:not(.invisible).medium,
+  .input.medium,
+  .input:not(.invisible).medium {
     width: 20rem;
     flex: 0 0 auto; }
-  > textarea:focus + label,
-  > textarea:active + label,
-  > input[type=text]:focus + label,
-  > input[type=text]:active + label,
-  > input[type=password]:focus + label,
-  > input[type=password]:active + label,
-  > input[type=search]:focus + label,
-  > input[type=search]:active + label,
-  > input[type=url]:focus + label,
-  > input[type=url]:active + label,
-  > input[type=password]:focus + label,
-  > input[type=password]:active + label,
-  > input[type=email]:focus + label,
-  > input[type=email]:active + label,
-  > .input:focus + label,
-  > .input:active + label {
+  textarea:focus + label,
+  textarea:active + label,
+  input[type=text]:focus + label,
+  input[type=text]:active + label,
+  input[type=password]:focus + label,
+  input[type=password]:active + label,
+  input[type=search]:focus + label,
+  input[type=search]:active + label,
+  input[type=url]:focus + label,
+  input[type=url]:active + label,
+  input[type=password]:focus + label,
+  input[type=password]:active + label,
+  input[type=email]:focus + label,
+  input[type=email]:active + label,
+  .input:focus + label,
+  .input:active + label {
     color: #0c8990; }
 
 .content-with-sidebar {

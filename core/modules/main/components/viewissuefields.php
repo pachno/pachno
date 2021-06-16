@@ -184,19 +184,12 @@ use pachno\core\framework\Context;
         <span class="name"><?= __('Times and dates'); ?></span>
     </div>
     <ul class="issue_details fields-list" id="issue_details_fieldslist_time">
-        <li id="estimated_time_field" class="issue-field <?php if (!$issue->isEstimatedTimeVisible()): ?> hidden<?php endif; ?> <?php if ($issue->isUpdateable() && $issue->canEditEstimatedTime()) echo 'editable'; ?>">
-            <div id="estimated_time_content" class="value fancy-dropdown-container">
-                <div class="fancy-dropdown">
-                    <label><?= __('Estimated time'); ?></label>
-                    <span class="value" data-dynamic-field-value data-field="estimated_time" data-issue-id="<?= $issue->getId(); ?>">
-                        <?= ($issue->hasEstimatedTime()) ? Issue::getFormattedTime($issue->getEstimatedTime()) : __('Not estimated'); ?>
-                    </span>
-                    <?php if ($issue->isUpdateable() && $issue->canEditEstimatedTime()): ?>
-                        <?php echo fa_image_tag('angle-down', ['class' => 'expander']); ?>
-                        <div class="dropdown-container">
-                        </div>
-                    <?php endif; ?>
-                </div>
+        <li id="estimated_time_field" class="issue-field <?php if (!$issue->isEstimatedTimeVisible()): ?> hidden<?php endif; ?> <?php if ($issue->canEditEstimatedTime()) echo 'trigger-backdrop'; ?>" data-url="<?= make_url('get_partial_for_backdrop', array('key' => 'issue_estimate', 'issue_id' => $issue->getID())); ?>">
+            <div id="estimated_time_content" class="field-container <?php if ($issue->canEditEstimatedTime()) echo 'editable'; ?>" data-dynamic-field-value data-field="estimated_time" data-issue-id="<?= $issue->getId(); ?>">
+                <span class="label"><?= __('Estimated time'); ?></span>
+                <span class="value">
+                    <span><?= ($issue->hasEstimatedTime()) ? Issue::getFormattedTime($issue->getEstimatedTime(true, true)) : __('No time estimated'); ?></span>
+                </span>
             </div>
         </li>
         <li id="spent_time_field" class="issue-field <?php if (!$issue->isSpentTimeVisible()): ?> hidden<?php endif; ?> <?php if ($issue->canEditEstimatedTime()) echo 'trigger-backdrop'; ?>" data-url="<?= make_url('get_partial_for_backdrop', array('key' => 'issue_spenttimes', 'issue_id' => $issue->getID())); ?>">

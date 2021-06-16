@@ -2877,6 +2877,9 @@
                         $template_name = 'main/issuespenttimes';
                         $options['initial_view'] = $request->getParameter('initial_view', 'list');
                         break;
+                    case 'issue_estimate':
+                        $template_name = 'main/issueestimate';
+                        break;
                     case 'issue_spenttime':
                         $template_name = 'main/issuespenttime';
                         $options['entry_id'] = $request->getParameter('entry_id');

@@ -423,7 +423,7 @@
          */
         protected $_dashboards = null;
 
-        protected $time_units_indexes = [1 => 'months', 2 => 'weeks', 3 => 'days', 4 => 'hours', 5 => 'minutes'];
+        protected $time_units_indexes = [1 => 'months', 2 => 'weeks', 3 => 'days', 4 => 'hours'];
 
         public static function getValidSubprojects(Project $project)
         {
