@@ -105,7 +105,7 @@ use pachno\core\helpers\TextParser;
                         <?php include_component('main/identifiableselector', array(
                             'html_id'             => $field.'_change',
                             'header'             => __('Select a user'),
-                            'callback'             => "Pachno.Issues.Field.set('" . make_url('issue_setfield', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => $field, 'identifiable_type' => 'user', $field.'_value' => '%identifiable_value')) . "', '".$field."');",
+                            'callback'             => "Pachno.Issues.Field.set('" . make_url('edit_issue', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => $field, 'identifiable_type' => 'user', $field.'_value' => '%identifiable_value')) . "', '".$field."');",
                             'clear_link_text'    => __('Clear currently selected user'),
                             'base_id'            => $field,
                             'include_teams'        => false,
@@ -114,7 +114,7 @@ use pachno\core\helpers\TextParser;
                         <?php include_component('main/identifiableselector', array(
                             'html_id'             => $field.'_change',
                             'header'             => __('Select a team'),
-                            'callback'             => "Pachno.Issues.Field.set('" . make_url('issue_setfield', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => $field, 'identifiable_type' => 'team', $field.'_value' => '%identifiable_value')) . "', '".$field."');",
+                            'callback'             => "Pachno.Issues.Field.set('" . make_url('edit_issue', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => $field, 'identifiable_type' => 'team', $field.'_value' => '%identifiable_value')) . "', '".$field."');",
                             'clear_link_text'    => __('Clear currently selected team'),
                             'base_id'            => $field,
                             'include_teams'        => true,
@@ -124,7 +124,7 @@ use pachno\core\helpers\TextParser;
                         <?php include_component('main/identifiableselector', array(
                             'html_id'             => $field.'_change',
                             'header'             => __('Select a client'),
-                            'callback'             => "Pachno.Issues.Field.set('" . make_url('issue_setfield', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => $field, 'identifiable_type' => 'client', $field.'_value' => '%identifiable_value')) . "', '".$field."');",
+                            'callback'             => "Pachno.Issues.Field.set('" . make_url('edit_issue', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => $field, 'identifiable_type' => 'client', $field.'_value' => '%identifiable_value')) . "', '".$field."');",
                             'clear_link_text'    => __('Clear currently selected client'),
                             'base_id'            => $field,
                             'include_clients'    => true,
@@ -135,24 +135,24 @@ use pachno\core\helpers\TextParser;
                         <div class="list-mode" id="<?= $field; ?>_change">
                             <div class="header"><?= $info['change_header']; ?></div>
                             <?php if (array_key_exists('choices', $info) && is_array($info['choices'])): ?>
-                                <a href="javascript:void(0);" class="list-item" onclick="Pachno.Issues.Field.set('<?= make_url('issue_setfield', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => $field, $field . '_value' => "")); ?>', '<?= $field; ?>');">
+                                <a href="javascript:void(0);" class="list-item" onclick="Pachno.Issues.Field.set('<?= make_url('edit_issue', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => $field, $field . '_value' => "")); ?>', '<?= $field; ?>');">
                                     <span class="name"><?= $info['clear']; ?></span>
                                 </a>
                                 <div class="list-item separator"></div>
                                 <?php foreach ($info['choices'] ?: array() as $choice): ?>
-                                <a href="javascript:void(0);" class="list-item" onclick="Pachno.Issues.Field.set('<?= make_url('issue_setfield', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => $field, $field . '_value' => $choice->getID())); ?>', '<?= $field; ?>');">
+                                <a href="javascript:void(0);" class="list-item" onclick="Pachno.Issues.Field.set('<?= make_url('edit_issue', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => $field, $field . '_value' => $choice->getID())); ?>', '<?= $field; ?>');">
                                     <span class="icon"><?= fa_image_tag('list'); ?></span>
                                     <span class="name"><?= __($choice->getName()); ?></span>
                                 </a>
                             <?php endforeach; ?>
                             <?php elseif ($info['type'] == DatatypeBase::DATE_PICKER || $info['type'] == DatatypeBase::DATETIME_PICKER): ?>
-                                <a href="javascript:void(0);" class="list-item" onclick="Pachno.Issues.Field.set('<?= make_url('issue_setfield', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => $field, $field . '_value' => "")); ?>', '<?= $field; ?>');">
+                                <a href="javascript:void(0);" class="list-item" onclick="Pachno.Issues.Field.set('<?= make_url('edit_issue', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => $field, $field . '_value' => "")); ?>', '<?= $field; ?>');">
                                     <span class="name"><?= $info['clear']; ?></span>
                                 </a>
                                 <div class="list-item separator"></div>
                                 <div class="list-item" id="customfield_<?= $field; ?>_calendar_container" style="padding: 0;"></div>
                             <?php if ($info['type'] == DatatypeBase::DATETIME_PICKER): ?>
-                                <form id="customfield_<?= $field; ?>_form" method="post" class="list-item" accept-charset="<?= Context::getI18n()->getCharset(); ?>" action="" onsubmit="Pachno.Issues.Field.set('<?= make_url('issue_setfield', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => $field)); ?>', '<?= $field; ?>', 'customfield_<?= $field; ?>');return false;">
+                                <form id="customfield_<?= $field; ?>_form" method="post" class="list-item" accept-charset="<?= Context::getI18n()->getCharset(); ?>" action="" onsubmit="Pachno.Issues.Field.set('<?= make_url('edit_issue', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => $field)); ?>', '<?= $field; ?>', 'customfield_<?= $field; ?>');return false;">
                                     <div class="header"><?= __('Time'); ?></div>
                                     <input type="text" id="customfield_<?= $field; ?>_hour" value="00" style="width: 20px; font-size: 0.9em; text-align: center;">&nbsp;:&nbsp;
                                     <input type="text" id="customfield_<?= $field; ?>_minute" value="00" style="width: 20px; font-size: 0.9em; text-align: center;">
@@ -173,7 +173,7 @@ use pachno\core\helpers\TextParser;
                                     //                var value = Math.floor(date.setUTCMinutes(parseInt($('#customfield_<?//= $field; ?>//_minute').value)) / 1000);
                                     //                <?php //else: ?>
                                     //                var value = Math.floor(date.getTime() / 1000);
-                                    //                Pachno.Issues.Field.set('<?//= make_url('issue_setfield', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => $field)); ?>//?<?//= $field; ?>//_value='+value, '<?//= $field; ?>//');
+                                    //                Pachno.Issues.Field.set('<?//= make_url('edit_issue', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => $field)); ?>//?<?//= $field; ?>//_value='+value, '<?//= $field; ?>//');
                                     //                <?php //endif; ?>
                                     //                $('#<?//= $field; ?>//_value').value = value;
                                     //            }
@@ -201,7 +201,7 @@ use pachno\core\helpers\TextParser;
                                     //});
                                 </script>
                             <?php else: ?>
-                                <a href="javascript:void(0);" class="list-item" onclick="Pachno.Issues.Field.set('<?= make_url('issue_setfield', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => $field, $field . '_value' => "")); ?>', '<?= $field; ?>');">
+                                <a href="javascript:void(0);" class="list-item" onclick="Pachno.Issues.Field.set('<?= make_url('edit_issue', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => $field, $field . '_value' => "")); ?>', '<?= $field; ?>');">
                                     <span class="name"><?= $info['clear']; ?></span>
                                 </a>
                                 <div class="list-item separator"></div>
@@ -212,7 +212,7 @@ use pachno\core\helpers\TextParser;
                             case DatatypeBase::EDITIONS_CHOICE:
                                 ?>
                                 <?php foreach ($issue->getProject()->getEditions() as $choice): ?>
-                                <a href="javascript:void(0);" class="list-item" onclick="Pachno.Issues.Field.set('<?= make_url('issue_setfield', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => $field, $field . '_value' => $choice->getID())); ?>', '<?= $field; ?>');">
+                                <a href="javascript:void(0);" class="list-item" onclick="Pachno.Issues.Field.set('<?= make_url('edit_issue', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => $field, $field . '_value' => $choice->getID())); ?>', '<?= $field; ?>');">
                                     <span class="icon"><?= fa_image_tag('window-restore'); ?></span>
                                     <span class="name"><?= __($choice->getName()); ?></span>
                                 </a>
@@ -222,7 +222,7 @@ use pachno\core\helpers\TextParser;
                             case DatatypeBase::MILESTONE_CHOICE:
                                 ?>
                                 <?php foreach ($issue->getProject()->getMilestonesForIssues() as $choice): ?>
-                                <a href="javascript:void(0);" class="list-item" onclick="Pachno.Issues.Field.set('<?= make_url('issue_setfield', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => $field, $field . '_value' => $choice->getID())); ?>', '<?= $field; ?>');">
+                                <a href="javascript:void(0);" class="list-item" onclick="Pachno.Issues.Field.set('<?= make_url('edit_issue', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => $field, $field . '_value' => $choice->getID())); ?>', '<?= $field; ?>');">
                                     <span class="icon"><?= fa_image_tag('chart-line'); ?></span>
                                     <span class="name"><?= __($choice->getName()); ?></span>
                                 </a>
@@ -232,7 +232,7 @@ use pachno\core\helpers\TextParser;
                             case DatatypeBase::STATUS_CHOICE:
                                 ?>
                                 <?php foreach (Status::getAll() as $choice): ?>
-                                <a href="javascript:void(0);" class="list-item" onclick="Pachno.Issues.Field.set('<?= make_url('issue_setfield', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => $field, $field . '_value' => $choice->getID())); ?>', '<?= $field; ?>');">
+                                <a href="javascript:void(0);" class="list-item" onclick="Pachno.Issues.Field.set('<?= make_url('edit_issue', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => $field, $field . '_value' => $choice->getID())); ?>', '<?= $field; ?>');">
                                                 <span class="status-badge" style="background-color: <?= ($choice instanceof Status) ? $choice->getColor() : '#FFF'; ?>;">
                                                     <span id="status_content">&nbsp;&nbsp;</span>
                                                 </span>
@@ -244,7 +244,7 @@ use pachno\core\helpers\TextParser;
                             case DatatypeBase::COMPONENTS_CHOICE:
                                 ?>
                                 <?php foreach ($issue->getProject()->getComponents() as $choice): ?>
-                                <a href="javascript:void(0);" class="list-item" onclick="Pachno.Issues.Field.set('<?= make_url('issue_setfield', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => $field, $field . '_value' => $choice->getID())); ?>', '<?= $field; ?>');">
+                                <a href="javascript:void(0);" class="list-item" onclick="Pachno.Issues.Field.set('<?= make_url('edit_issue', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => $field, $field . '_value' => $choice->getID())); ?>', '<?= $field; ?>');">
                                     <span class="icon"><?= fa_image_tag('cube'); ?></span>
                                     <span class="name"><?= __($choice->getName()); ?></span>
                                 </a>
@@ -254,7 +254,7 @@ use pachno\core\helpers\TextParser;
                             case DatatypeBase::RELEASES_CHOICE:
                                 ?>
                                 <?php foreach ($issue->getProject()->getBuilds() as $choice): ?>
-                                <a href="javascript:void(0);" class="list-item" onclick="Pachno.Issues.Field.set('<?= make_url('issue_setfield', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => $field, $field . '_value' => $choice->getID())); ?>', '<?= $field; ?>');">
+                                <a href="javascript:void(0);" class="list-item" onclick="Pachno.Issues.Field.set('<?= make_url('edit_issue', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => $field, $field . '_value' => $choice->getID())); ?>', '<?= $field; ?>');">
                                     <span class="icon"><?= fa_image_tag('compact-dist'); ?></span>
                                     <span class="name"><?= __($choice->getName()); ?></span>
                                 </a>
@@ -266,7 +266,7 @@ use pachno\core\helpers\TextParser;
                                     var_dump($info);
                                     /*?>
                                     <div class="list-item">
-                                        <form id="<?= $field; ?>_form" action="<?= make_url('issue_setfield', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => $field)); ?>" method="post" onSubmit="Pachno.Issues.Field.set('<?= make_url('issue_setfield', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => $field)) ?>', '<?= $field; ?>', '<?= $field; ?>'); return false;">
+                                        <form id="<?= $field; ?>_form" action="<?= make_url('edit_issue', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => $field)); ?>" method="post" onSubmit="Pachno.Issues.Field.set('<?= make_url('edit_issue', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => $field)) ?>', '<?= $field; ?>', '<?= $field; ?>'); return false;">
                                             <input type="text" name="<?= $field; ?>_value" value="<?= $info['name'] ?>" /><?= __('%save or %cancel', array('%save' => '<input type="submit" value="'.__('Save').'">', '%cancel' => '<a href="#" onclick="$(\''.$field.'_change\').hide(); return false;">'.__('cancel').'</a>')); ?>
                                         </form>
                                     </div>
@@ -277,7 +277,7 @@ use pachno\core\helpers\TextParser;
                                     var_dump($info);
                                     /*?>
                                     <div class="list-item">
-                                        <form id="<?= $field; ?>_form" action="<?= make_url('issue_setfield', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => $field)); ?>" method="post" onSubmit="Pachno.Issues.Field.set('<?= make_url('issue_setfield', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => $field)) ?>', '<?= $field; ?>', '<?= $field; ?>'); return false;">
+                                        <form id="<?= $field; ?>_form" action="<?= make_url('edit_issue', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => $field)); ?>" method="post" onSubmit="Pachno.Issues.Field.set('<?= make_url('edit_issue', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => $field)) ?>', '<?= $field; ?>', '<?= $field; ?>'); return false;">
                                             <?php include_component('main/textarea', array('area_name' => $field.'_value', 'target_type' => 'issue', 'target_id' => $issue->getID(), 'area_id' => $field.'_value', 'height' => '100px', 'width' => '100%', 'value' => $info['name'])); ?>
                                             <br><?= __('%save or %cancel', array('%save' => '<input type="submit" value="'.__('Save').'">', '%cancel' => '<a href="#" onclick="$(\''.$field.'_change\').hide(); return false;">'.__('cancel').'</a>')); ?>
                                         </form>

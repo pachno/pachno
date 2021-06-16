@@ -115,30 +115,6 @@
     }
   }
 
-  fieldset {
-    border: 0;
-    border-top: 1px solid rgba(200, 200, 200, .8);
-    padding: .5em 8em;
-    max-width: 80%;
-    margin: .5em auto 0 auto;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-
-    legend {
-      background-color: transparent;
-      border: none;
-      display: flex;
-      flex-direction: row;
-      align-items: center;
-
-      span {
-        padding: 0 2em;
-      }
-    }
-  }
-
   > .column,
   > .row > .column,
   form > .column,
@@ -446,108 +422,6 @@
       }
     }
 
-    > textarea,
-    > input[type=text],
-    > input[type=password],
-    > input[type=search],
-    > input[type=url],
-    > input[type=password],
-    > input[type=email],
-    > .input {
-      flex: 1 1 100%;
-      padding: .65em .15em .25em .15em;
-      font-size: 1.1em;
-      box-sizing: border-box;
-      font-weight: $theme-font-weight-light;
-
-      &.invisible {
-        background-color: transparent;
-        border: 1px solid transparent;
-        border-radius: 4px;
-        padding: .35rem;
-        flex: 1 1 auto;
-
-        &.title {
-          font-weight: $theme-font-weight-regular;
-        }
-
-        &.inline {
-          flex: 0 0 auto;
-        }
-
-        + label {
-          opacity: 0;
-          transform: translateY(-100%);
-          margin-bottom: -1.8em;
-        }
-
-        &:hover {
-          border: 1px solid transparent;
-          background-color: rgba(0, 0, 0, .05);
-          cursor: pointer;
-        }
-
-        &:focus {
-          background: #FFF;
-          border-color: $theme-primary;
-
-          &.with-label {
-            padding-bottom: 2rem;
-          }
-
-          &:hover {
-            cursor: text;
-          }
-
-          + label {
-            display: none;
-          }
-        }
-      }
-
-      &.name-input-enhance {
-        font-size: 1.4em;
-        padding: .5em .3em;
-        font-weight: $theme-font-weight-regular;
-
-        &:not(.invisible) {
-          border-bottom-width: 2px;
-        }
-      }
-
-      &.code-input-6 {
-        max-width: 10rem;
-      }
-
-      &.number,
-      &.prefix-and-key,
-      &:not(.invisible).number {
-        width: 10rem;
-        flex: 0 0 auto;
-
-        &.small {
-          width: 5rem;
-        }
-      }
-
-      &.version {
-        width: 3em;
-        flex: 0 0 auto;
-        min-width: 3em;
-      }
-
-      &.medium,
-      &:not(.invisible).medium {
-        width: 20rem;
-        flex: 0 0 auto;
-      }
-
-      &:focus + label,
-      &:active + label {
-        color: $theme-primary;
-      }
-    }
-
     &.search-container {
       input[type=search] {
         flex: 1 1 auto;
@@ -638,5 +512,130 @@
       }
     }
   }
+}
 
+fieldset {
+  border: 0;
+  border-top: 1px solid rgba(200, 200, 200, .8);
+  padding: .5em 8em;
+  max-width: 80%;
+  margin: .5em auto 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+
+  legend {
+    background-color: transparent;
+    border: none;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+
+    span {
+      padding: 0 2em;
+    }
+  }
+}
+
+> textarea,
+> input[type=text],
+> input[type=password],
+> input[type=search],
+> input[type=url],
+> input[type=password],
+> input[type=email],
+> .input {
+  flex: 1 1 100%;
+  padding: .65em .15em .25em .15em;
+  font-size: 1.1em;
+  box-sizing: border-box;
+  font-weight: $theme-font-weight-light;
+
+  &.invisible {
+    background-color: transparent;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    padding: .35rem;
+    flex: 1 1 auto;
+
+    &.title {
+      font-weight: $theme-font-weight-regular;
+    }
+
+    &.inline {
+      flex: 0 0 auto;
+    }
+
+    + label {
+      opacity: 0;
+      transform: translateY(-100%);
+      margin-bottom: -1.8em;
+    }
+
+    &:hover {
+      border: 1px solid transparent;
+      background-color: rgba(0, 0, 0, .05);
+      cursor: pointer;
+    }
+
+    &:focus {
+      background: #FFF;
+      border-color: $theme-primary;
+
+      &.with-label {
+        padding-bottom: 2rem;
+      }
+
+      &:hover {
+        cursor: text;
+      }
+
+      + label {
+        display: none;
+      }
+    }
+  }
+
+  &.name-input-enhance {
+    font-size: 1.4em;
+    padding: .5em .3em;
+    font-weight: $theme-font-weight-regular;
+
+    &:not(.invisible) {
+      border-bottom-width: 2px;
+    }
+  }
+
+  &.code-input-6 {
+    max-width: 10rem;
+  }
+
+  &.number,
+  &.prefix-and-key,
+  &:not(.invisible).number {
+    width: 10rem;
+    flex: 0 0 auto;
+
+    &.small {
+      width: 5rem;
+    }
+  }
+
+  &.version {
+    width: 3em;
+    flex: 0 0 auto;
+    min-width: 3em;
+  }
+
+  &.medium,
+  &:not(.invisible).medium {
+    width: 20rem;
+    flex: 0 0 auto;
+  }
+
+  &:focus + label,
+  &:active + label {
+    color: $theme-primary;
+  }
 }

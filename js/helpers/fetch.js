@@ -102,6 +102,10 @@ export const fetchHelper = function (url, options) {
             throw new Error('Cannot send form data when using GET method');
         }
 
+        if (options.form && $form.length === 0) {
+            throw new Error('Trying to post a form without an id');
+        }
+
         const onLoading = () => {
             if (options.loading) {
                 if (fetch_debugger !== undefined) {
@@ -232,7 +236,11 @@ export const fetchHelper = function (url, options) {
                                     }
 
                                     if ($form_container.length) {
-                                        $(content).insertBefore($form_container);
+                                        if (options.success.update.list) {
+                                            $form_container.append($(content));
+                                        } else {
+                                            $(content).insertBefore($form_container);
+                                        }
                                     } else {
                                         $(update_element).append(content);
                                     }

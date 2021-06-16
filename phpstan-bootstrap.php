@@ -9,3 +9,4 @@
     defined('PACHNO_INTERNAL_MODULES_PATH') || define('PACHNO_INTERNAL_MODULES_PATH', PACHNO_CORE_PATH . 'modules' . DS);
     defined('PACHNO_MODULES_PATH') || define('PACHNO_MODULES_PATH', PACHNO_PATH . 'modules' . DS);
     defined('PACHNO_PUBLIC_FOLDER_NAME') || define('PACHNO_PUBLIC_FOLDER_NAME', '');
+    defined('NOW') || define('NOW', time());

@@ -11,6 +11,7 @@
   .row {
     display: flex;
     flex: 0 0 auto;
+    align-items: stretch;
 
     &.hidden {
       display: none;
@@ -25,7 +26,7 @@
         &:not(.invisible):not(.header):not(.disabled) {
           background-color: #F1F1F1;
 
-          .button.secondary {
+          .button.secondary:not(.danger) {
             background-color: rgba(255, 255, 255, .65);
           }
 
@@ -106,27 +107,15 @@
     flex: 0 0 170px;
     display: flex;
     align-items: center;
+    align-content: center;
     padding: .35rem;
     box-sizing: border-box;
     border-bottom: 1px dashed rgba(12, 137, 144, .4);
+    max-width: none;
+    min-width: 0;
 
     &.hidden {
       display: none;
-    }
-
-    a,
-    a:hover {
-      &:not(.button):not(.list-item) {
-        display: flex;
-        align-items: center;
-        border: none;
-        font-weight: $theme-font-weight-light;
-        padding: .2em;
-      }
-    }
-
-    .count-badge {
-      font-size: 1em;
     }
 
     &.header {
@@ -171,8 +160,34 @@
 
     &.list {
       flex-direction: column;
-      align-items: flex-start;
+      align-items: stretch;
+      align-content: stretch;
       justify-content: center;
+
+      &,
+      &.name-container {
+        overflow: visible;
+        text-overflow: unset;
+      }
+
+      .line {
+        padding: 0;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: flex-start;
+        flex-wrap: nowrap;
+
+        &:not(.hidden) {
+          ~ .line {
+            padding-top: .75em;
+          }
+        }
+
+        &.hidden {
+          display: none;
+        }
+      }
     }
 
     &.grid {
@@ -219,10 +234,6 @@
       img {
         width: 100%;
       }
-    }
-
-    .button.secondary {
-      color: #141823;
     }
 
     &.sca_action_selector,
@@ -272,6 +283,7 @@
       flex-direction: column;
       align-items: flex-start;
       justify-content: center;
+      overflow: visible;
 
       &.hidden {
         display: none;
@@ -304,6 +316,11 @@
       font-size: 0.8em;
     }
 
+    &label {
+      text-transform: none;
+      color: $theme-text-color;
+    }
+
     .fas,
     .far {
       margin-right: .35rem;
@@ -313,9 +330,66 @@
       }
     }
 
-    &label {
-      text-transform: none;
-      color: $theme-text-color;
+    a,
+    a:hover {
+      &:not(.button):not(.list-item) {
+        display: flex;
+        align-items: center;
+        border: none;
+        font-weight: $theme-font-weight-light;
+        padding: .2em;
+      }
+    }
+
+    .count-badge {
+      font-size: 1em;
+    }
+
+    .button.secondary {
+      color: #141823;
+    }
+
+    input {
+      &[type=text],
+      &[type=search],
+      &[type=password] {
+        flex: 1 1 100%;
+        padding: .35em;
+        font-size: 1.05em;
+
+        &.number {
+          flex: 0 0 4em;
+          max-width: 4em;
+        }
+      }
+
+      ~ input {
+        &[type=text],
+        &[type=search],
+        &[type=password] {
+          margin-left: .35em;
+        }
+      }
+
+      ~ button,
+      ~ .button {
+        margin-left: .35em;
+      }
+
+      ~ .fancy-dropdown-container {
+        margin-left: .35em;
+      }
+    }
+
+    button,
+    .button {
+      ~ input {
+        &[type=text],
+        &[type=search],
+        &[type=password] {
+          margin-left: .35em;
+        }
+      }
     }
   }
 }

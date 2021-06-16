@@ -27,6 +27,8 @@
      * @property entities\Project $project
      * @property entities\WorkflowTransition $transition
      * @property entities\LogItem $item
+     * @property entities\IssueSpentTime $entry
+     * @property entities\IssueSpentTime[] $timers
      *
      */
     class Components extends framework\ActionComponent
@@ -341,16 +343,14 @@
 
         public function componentNotifications()
         {
-            $this->filter_first_notification = !is_null($this->first_notification_id) && is_numeric($this->first_notification_id);
-            $notifications = $this->getUser()->getNotifications($this->first_notification_id, $this->last_notification_id);
-            if ($this->filter_first_notification) {
-                $this->notifications = $notifications;
-            } else {
-                $this->notifications = count($notifications) ? array_slice($notifications, 0, 25) : [];
-            }
+            $this->notifications = $this->getUser()->getNotifications();
             $this->num_unread = $this->getUser()->getNumberOfUnreadNotifications();
             $this->num_read = $this->getUser()->getNumberOfReadNotifications();
-            $this->desktop_notifications_new_tab = $this->getUser()->isDesktopNotificationsNewTabEnabled();
+        }
+
+        public function componentTimers()
+        {
+            $this->timers = $this->getUser()->getTimers();
         }
 
         public function componentNotification_text()
@@ -527,6 +527,11 @@
             $this->comments = entities\Comment::getRecentCommentsByAuthor($this->getUser()->getID());
         }
 
+        public function componentDashboardViewTimers()
+        {
+            $this->timers = $this->getUser()->getTimers();
+        }
+
         public function componentDashboardViewLoggedActions()
         {
             $this->log_items = tables\LogItems::getTable()->getByUserID($this->getUser()->getID(), 35);
@@ -613,6 +618,12 @@
             $this->invisible = $this->invisible ?? false;
             $this->mentionable = isset($this->target_type) && isset($this->target_id);
             $this->markuppable = $this->markuppable ?? ($this->syntaxClass == Settings::getSyntaxClass(Settings::SYNTAX_MD));
+        }
+
+        public function componentEditSpentTimeEntry()
+        {
+            $this->entry = $this->entry ?? new entities\IssueSpentTime();
+            $this->url = $this->getRouting()->generate('issue_edittimespent', ['project_key' => $this->issue->getProject()->getKey(), 'issue_id' => $this->issue->getID(), 'entry_id' => $this->entry->getId()]);
         }
 
     }

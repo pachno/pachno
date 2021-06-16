@@ -6,7 +6,7 @@
                 clicked.addClass('selected');
                 $('#debug-frames-container').children().each(function () {
                     let container = $(this);
-                    (container.id == tab) ? container.addClass('selected') : container.removeClass('selected');
+                    (container.attr('id') == tab) ? container.addClass('selected') : container.removeClass('selected');
                 });
             }
         </script>

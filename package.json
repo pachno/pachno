@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "air-datepicker": "^2.2.3",
+    "dayjs": "^1.10.5",
     "debounce": "^1.2.0",
     "easymde": "^2.14.0",
     "interactjs": "^1.10.3",

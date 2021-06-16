@@ -11,13 +11,13 @@
     <?php endif; ?>
     <?php if ($field == 'estimated_time' && (!isset($clear) || $clear == true)): ?>
         <li>
-            <a href="javascript:void(0);" onclick="Pachno.Issues.Field.set('<?php echo make_url('issue_setfield', array('project_key' => $project_key, 'issue_id' => $issue_id, 'field' => $field, 'value' => 0)); ?>', '<?php echo $field; ?>');"><?php echo ($field == 'estimated_time') ? __('Clear current estimate') : __('Clear time spent on this issue'); ?></a>
+            <a href="javascript:void(0);" onclick="Pachno.Issues.Field.set('<?php echo make_url('edit_issue', array('project_key' => $project_key, 'issue_id' => $issue_id, 'field' => $field, 'value' => 0)); ?>', '<?php echo $field; ?>');"><?php echo ($field == 'estimated_time') ? __('Clear current estimate') : __('Clear time spent on this issue'); ?></a>
         </li>
     <?php endif; ?>
     <li class="separator"></li>
     <li class="dropdown_content nohover form_container">
 <?php if (!isset($save) || $save == true): ?>
-    <form id="<?php echo $field . '_' . $issue_id; ?>_form" method="post" accept-charset="<?php echo \pachno\core\framework\Context::getI18n()->getCharset(); ?>" action="" onsubmit="Pachno.Issues.Field.setTime('<?php echo make_url('issue_setfield', array('project_key' => $project_key, 'issue_id' => $issue_id, 'field' => $field)); ?>', '<?php echo $field; ?>', <?php echo $issue_id; ?>);return false;">
+    <form id="<?php echo $field . '_' . $issue_id; ?>_form" method="post" accept-charset="<?php echo \pachno\core\framework\Context::getI18n()->getCharset(); ?>" action="" onsubmit="Pachno.Issues.Field.setTime('<?php echo make_url('edit_issue', array('project_key' => $project_key, 'issue_id' => $issue_id, 'field' => $field)); ?>', '<?php echo $field; ?>', <?php echo $issue_id; ?>);return false;">
         <input type="hidden" name="do_save" value="<?php echo (integer) (isset($instant_save) && $instant_save); ?>">
 <?php endif; ?>
         <label for="<?php echo $field . '_' . $issue_id; ?>_input">

@@ -534,7 +534,14 @@
             if ($this->getLeaderID() == $user->getID()) return true;
             if ($this->getQaResponsibleID() == $user->getID()) return true;
 
-            return $user->hasPermission(Permission::PERMISSION_PROJECT_ACCESS, $this->getID());
+            return $user->hasPermission(Permission::PERMISSION_PROJECT_ACCESS_DASHBOARD, $this->getID()) ||
+                $user->hasPermission(Permission::PERMISSION_PROJECT_ACCESS_BOARDS, $this->getID()) ||
+                $user->hasPermission(Permission::PERMISSION_PROJECT_ACCESS_ISSUES, $this->getID()) ||
+                $user->hasPermission(Permission::PERMISSION_PROJECT_ACCESS_ALL_ISSUES, $this->getID()) ||
+                $user->hasPermission(Permission::PERMISSION_PROJECT_ACCESS_RELEASES, $this->getID()) ||
+                $user->hasPermission(Permission::PERMISSION_PROJECT_ACCESS_TIME_LOGGING, $this->getID()) ||
+                $user->hasPermission(Permission::PERMISSION_PROJECT_ACCESS_DOCUMENTATION, $this->getID()) ||
+                $user->hasPermission(Permission::PERMISSION_PROJECT_ACCESS_CODE, $this->getID());
         }
 
         /**

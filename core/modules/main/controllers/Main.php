@@ -1769,29 +1769,61 @@
             }
         }
 
-        public function runIssueEditTimeSpent(Request $request)
+        /**
+         * @Route(name="issue_edittimespent", url="/:project_key/issues/:issue_id/timespent/:entry_id/:csrf_token")
+         * @CsrfProtected
+         *
+         * @param Request $request
+         *
+         * @return framework\JsonOutput
+         */
+        public function runIssueEditTimeSpent(Request $request): framework\JsonOutput
         {
             $entry_id = $request['entry_id'];
-            $spenttime = ($entry_id) ? tables\IssueSpentTimes::getTable()->selectById($entry_id) : new entities\IssueSpentTime();
+            $issue_id = $request['issue_id'];
+            $issue = Issues::getTable()->selectById($issue_id);
 
-            if ($issue_id = $request['issue_id']) {
-                try {
-                    $issue = Issues::getTable()->selectById($issue_id);
-                } catch (Exception $e) {
-                    $this->getResponse()->setHttpStatus(400);
-
-                    return $this->renderText('fail');
-                }
-            } else {
+            if (!$issue instanceof Issue) {
                 $this->getResponse()->setHttpStatus(400);
-
-                return $this->renderText('no issue');
+                return $this->renderJSON(['error' => $this->getI18n()->__('This issue does not exist')]);
             }
 
-            framework\Context::loadLibrary('common');
-            $spenttime->editOrAdd($issue, $this->getUser(), array_only_with_default($request->getParameters(), array_merge(['timespent_manual', 'timespent_specified_type', 'timespent_specified_value', 'timespent_activitytype', 'timespent_comment', 'edited_at'], Timeable::getUnitsWithPoints())));
+            if ($entry_id) {
+                $entry = tables\IssueSpentTimes::getTable()->selectById($entry_id);
+            } else {
+                $entry = new entities\IssueSpentTime();
+                $entry->setIssue($issue);
+                $entry->setUser($this->getUser());
+            }
 
-            return $this->renderJSON(['edited' => 'ok', 'issue_id' => $issue_id, 'timesum' => array_sum($spenttime->getIssue()->getSpentTime()), 'spenttime' => Issue::getFormattedTime($spenttime->getIssue()->getSpentTime(true, true)), 'percentbar' => $this->getComponentHTML('main/percentbar', ['percent' => $issue->getEstimatedPercentCompleted(), 'height' => 3]), 'timeentries' => $this->getComponentHTML('main/issuespenttimes', ['issue' => $spenttime->getIssue()])]);
+            if (!$entry instanceof entities\IssueSpentTime) {
+                $this->getResponse()->setHttpStatus(400);
+                return $this->renderJSON(['error' => $this->getI18n()->__('This entry does not exist')]);
+            }
+
+            if ($request->isDelete()) {
+                $entry->delete();
+                $issue->save();
+
+                return $this->renderJSON([
+                    'message' => $this->getI18n()->__('The time entry was deleted'),
+                    'issue' => $issue->toJSON()
+                ]);
+            }
+
+            try {
+                $entry->updateFromRequest($request);
+                $entry->saveFromRequest($request);
+            } catch (Exception $e) {
+                $this->getResponse()->setHttpStatus(400);
+                return $this->renderJSON(['error' => $e->getMessage()]);
+            }
+
+            return $this->renderJSON([
+                'component' => $this->getComponentHTML('main/editspenttimeentry', ['entry' => $entry, 'issue' => $issue]),
+                'issue' => $issue->toJSON(),
+                'entry' => $entry->toJSON()
+            ]);
         }
 
         /**
@@ -1881,8 +1913,8 @@
                         if ($request->hasParameter('points')) $issue->setEstimatedPoints($request['points']);
                     }
                     $return_details['changed']['estimated_time'] = [
-                        'value' => Issue::getFormattedTime($issue->getEstimatedTime(true, true)),
-                        'values' => $issue->getEstimatedTime(true, true)
+                        'value' => Issue::getFormattedTime($issue->getEstimatedTime()),
+                        'values' => $issue->getEstimatedTime()
                     ];
                     break;
                 case 'posted_by':
@@ -2777,8 +2809,9 @@
                         break;
                     case 'notifications':
                         $template_name = 'main/notifications';
-                        $options['first_notification_id'] = $request['first_notification_id'];
-                        $options['last_notification_id'] = $request['last_notification_id'];
+                        break;
+                    case 'timers':
+                        $template_name = 'main/timers';
                         break;
                     case 'workflow_transition':
                         $transition = tables\WorkflowTransitions::getTable()->selectById($request['transition_id']);

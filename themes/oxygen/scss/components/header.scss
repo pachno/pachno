@@ -98,7 +98,7 @@ header {
       justify-content: flex-start;
       align-self: center;
 
-      a {
+      > a {
         display: flex;
         flex-direction: row;
         align-items: center;
@@ -119,7 +119,7 @@ header {
       }
     }
 
-    .button.secondary {
+    .button.secondary.header-button {
       color: $text-color;
     }
   }

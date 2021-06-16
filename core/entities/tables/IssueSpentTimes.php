@@ -2,12 +2,16 @@
 
     namespace pachno\core\entities\tables;
 
+    use b2db\Criteria;
     use b2db\Criterion;
     use b2db\Query;
     use b2db\QueryColumnSort;
     use b2db\Row;
+    use b2db\Saveable;
     use b2db\Table;
     use b2db\Update;
+    use pachno\core\entities\IssueSpentTime;
+    use pachno\core\framework\Context;
 
     /**
      * Issue spent times table
@@ -24,6 +28,9 @@
      *
      * @package pachno
      * @subpackage tables
+     *
+     * @method IssueSpentTime selectById($id, Query $query = null, $join = 'all')
+     * @method IssueSpentTime[] select(Query $query, $join = 'all')
      *
      * @Table(name="issue_spenttimes")
      * @Entity(class="\pachno\core\entities\IssueSpentTime")
@@ -258,6 +265,7 @@
         {
             $query = $this->getQuery();
             $query->where(self::ISSUE_ID, $issue_id);
+            $query->where('issue_spenttimes.completed', true);
             $query->addSelectionColumn(self::SPENT_POINTS, 'points', Query::DB_SUM);
             $query->addSelectionColumn(self::SPENT_MINUTES, 'minutes', Query::DB_SUM);
             $query->addSelectionColumn(self::SPENT_HOURS, 'hours', Query::DB_SUM);
@@ -285,6 +293,38 @@
             $update->add('issue_spenttimes.completed', true);
 
             $this->rawUpdate($update);
+        }
+
+        public function getAutoTimersByUserId($user_id)
+        {
+            $query = $this->getQuery();
+            $criteria = new Criteria();
+            $criteria->where('issue_spenttimes.completed', false);
+            $criteria->and(self::SCOPE, Context::getScope()->getID());
+            $query->where($criteria);
+            $criteria = new Criteria();
+            $criteria->where('issue_spenttimes.paused', true);
+            $criteria->and(self::SCOPE, Context::getScope()->getID());
+            $criteria->and('issue_spenttimes.completed', false);
+            $query->or($criteria);
+
+            return $this->select($query);
+        }
+
+        public function countAutoTimersByUserId($user_id)
+        {
+            $query = $this->getQuery();
+            $criteria = new Criteria();
+            $criteria->where('issue_spenttimes.completed', false);
+            $criteria->and(self::SCOPE, Context::getScope()->getID());
+            $query->where($criteria);
+            $criteria = new Criteria();
+            $criteria->where('issue_spenttimes.paused', true);
+            $criteria->and(self::SCOPE, Context::getScope()->getID());
+            $criteria->and('issue_spenttimes.completed', false);
+            $query->or($criteria);
+
+            return $this->count($query);
         }
 
     }

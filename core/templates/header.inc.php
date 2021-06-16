@@ -65,17 +65,32 @@
                 </a>
             <?php endif; ?>
             <div class="notifications-container dropper-container" id="user_notifications_container">
-                <a href="javascript:void(0);" class="dropper disabled">
+                <a href="javascript:void(0);" class="dropper <?php if (!$pachno_user->getNumberOfUnreadNotifications()) echo 'disabled'; ?> dynamic_menu_link">
                     <?= fa_image_tag('bell', ['class' => 'icon']); ?>
-                    <span id="user_notifications_count" class="notifications-indicator"><?= image_tag('spinning_16_white.gif'); ?></span>
+                    <span id="user_notifications_count" class="notifications-indicator"><?= $pachno_user->getNumberOfUnreadNotifications(); ?></span>
                 </a>
-                <div class="notifications dropdown-container list-mode" id="user_notifications" data-url="<?= make_url('get_partial_for_backdrop', ['key' => 'notifications']); ?>">
-                    <div class="header">
-                        <span><?= __('Your notifications'); ?></span>
-                        <button class="button icon secondary" href="javascript:void(0);" onclick="Pachno.Main.Notifications.markAllRead();"><?= fa_image_tag('check'); ?></button>
+                <div class="notifications dropdown-container list-mode dynamic_menu populate-once" id="user_notifications" data-menu-url="<?= make_url('get_partial_for_backdrop', ['key' => 'notifications']); ?>">
+                    <div class="list-item">
+                        <span class="icon">
+                            <?= fa_image_tag('spinner', ['class' => 'fa-spin']); ?>
+                        </span>
                     </div>
-                    <div id="user_notifications_list" class="nano"></div>
-                    <?= fa_image_tag('spinner', ['class' => 'fa-spin indicator']); ?>
+                </div>
+            </div>
+            <div class="notifications-container dropper-container" id="user_timers_container">
+                <a href="javascript:void(0);" class="dropper <?php if (!$pachno_user->getNumberOfOngoingTimers()) echo 'disabled'; ?> dynamic_menu_link">
+                    <?= fa_image_tag('stopwatch', ['class' => 'icon']); ?>
+                    <span id="user_timers_count" class="notifications-indicator"><?= $pachno_user->getNumberOfOngoingTimers(); ?></span>
+                </a>
+                <div class="timers dropdown-container list-mode dynamic_menu" id="user_timers" data-menu-url="<?= make_url('get_partial_for_backdrop', ['key' => 'timers']); ?>">
+                    <div class="header">
+                        <span><?= __('Ongoing timers'); ?></span>
+                    </div>
+                    <div class="list-item">
+                        <span class="icon">
+                            <?= fa_image_tag('spinner', ['class' => 'fa-spin']); ?>
+                        </span>
+                    </div>
                 </div>
             </div>
         <?php endif; ?>
@@ -86,7 +101,7 @@
             </a>
         <?php else: ?>
             <div class="dropper-container">
-                <button href="javascript:void(0);" class="button secondary dropper header-user-info avatar-container">
+                <button class="button secondary dropper header-user-info avatar-container header-button">
                     <span class="avatar medium">
                         <?= image_tag($pachno_user->getAvatarURL(true), array('alt' => '[avatar]', 'id' => 'header_avatar'), true); ?>
                     </span>

@@ -40,4 +40,20 @@
             </span>
         </div>
     </div>
+    <div class="list-item multiline faq expandable">
+        <span class="icon"><?= fa_image_tag('question-circle'); ?></span>
+        <span class="name">
+            <span class="title"><?= __("What's the difference between a milestone and a release?"); ?></span>
+        </span>
+        <?= fa_image_tag('angle-down', ['class' => 'expander']); ?>
+    </div>
+    <div class="submenu">
+        <div class="list-item multiline faq">
+            <span class="name">
+                <span class="description">
+                    <?= __('Milestones and releases have one key difference: milestones are for grouping development efforts, but releases are snapshots of the software / project at a given time designed to help you deliver updates to users or testers. While a release can be linked to a milestone to represent the state of the project at that time - and sometimes you may want to release at every milestone completion - they serve two different purposes.'); ?>
+                </span>
+            </span>
+        </div>
+    </div>
 </div>

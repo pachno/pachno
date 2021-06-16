@@ -10,6 +10,7 @@ input, select, textarea, .input {
   vertical-align: middle;
   font-weight: $theme-font-weight-regular;
   background-color: #FFF;
+  flex: 1 1 auto;
 }
 
 input[type="text"],

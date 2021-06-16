@@ -290,7 +290,8 @@ input, select, textarea, .input {
   padding: 2px;
   vertical-align: middle;
   font-weight: 400;
-  background-color: #FFF; }
+  background-color: #FFF;
+  flex: 1 1 auto; }
 
 input[type="text"],
 input[type="email"],
@@ -4553,61 +4554,7 @@ ul#edition_table > li > div.faded_out {
   right: 155px;
   margin-top: 3px; }
 
-/* Issue time tracking - time spent */
-.issue_timespent_form ul > li {
-  margin-bottom: 5px; }
-
-.issue_timespent_form > li {
-  margin-bottom: 5px; }
-
-.issue_timespent_form input[type="submit"] {
-  padding: 4px 5px; }
-
-#timespent_list td:nth-child(2) {
-  font-size: 1em !important; }
-
-#timespent_list {
-  border-spacing: 2px 5px;
-  margin-top: 0;
-  width: 100%; }
-
-#timespent_list th {
-  background-color: #fff;
-  color: #555;
-  text-transform: uppercase;
-  font-size: 0.9em; }
-
-#timespent_list .button-group > a {
-  margin-left: 2px; }
-
-.issue_timespent_form .tooltip {
-  transition-delay: 1s; }
-
 /* Issue access policy */
-.issue_access_list > .faded_out {
-  margin-left: -6px; }
-
-.issue_access_list {
-  padding: 5px; }
-
-.issue_access_list > li {
-  margin-bottom: 5px; }
-
-.issue_access_policy_box #acl-users-teams-selector h4,
-.report-issue-custom-access-check #acl-users-teams-selector h4 {
-  font-weight: 400;
-  margin-left: 5px; }
-
-.issue_access_policy_box #acl-users-teams-selector h4 .button,
-.report-issue-custom-access-check #acl-users-teams-selector h4 .button {
-  padding: 3px 7px;
-  margin-top: -2px; }
-
-.acl-delete-item-link {
-  float: right;
-  margin-bottom: -5px;
-  margin-left: 2px; }
-
 ul#subscribers_list > li {
   margin-bottom: 5px; }
 
@@ -6687,8 +6634,8 @@ input[data-interactive-toggle].submitting + label .indicator {
       .list-mode .list-item:hover.selected > a .name {
         color: #232323;
         font-weight: 400; }
-    .list-mode .list-item.multiline .icon,
-    .list-mode .list-item:hover.multiline .icon {
+    .list-mode .list-item.multiline .icon:not(.time-tracking-icon),
+    .list-mode .list-item:hover.multiline .icon:not(.time-tracking-icon) {
       font-size: 1.2em; }
     .list-mode .list-item.multiline span.name,
     .list-mode .list-item:hover.multiline span.name {
@@ -6713,8 +6660,10 @@ input[data-interactive-toggle].submitting + label .indicator {
           border-bottom: none; }
       .list-mode .list-item.multiline span.name .description,
       .list-mode .list-item:hover.multiline span.name .description {
-        display: inline-block;
-        text-align: left; }
+        display: flex;
+        text-align: left;
+        align-items: center;
+        justify-content: flex-start; }
         .list-mode .list-item.multiline span.name .description span,
         .list-mode .list-item.multiline span.name .description .button,
         .list-mode .list-item:hover.multiline span.name .description span,
@@ -6852,11 +6801,11 @@ input[data-interactive-toggle].submitting + label .indicator {
       justify-content: center;
       flex-direction: row;
       box-sizing: border-box; }
-      .list-mode .list-item .icon:not(.issuetype-icon),
-      .list-mode .list-item:hover .icon:not(.issuetype-icon) {
+      .list-mode .list-item .icon:not(.issuetype-icon):not(.time-tracking-icon),
+      .list-mode .list-item:hover .icon:not(.issuetype-icon):not(.time-tracking-icon) {
         padding: .35em .65em .35em 0; }
-        .list-mode .list-item .icon:not(.issuetype-icon):not(:first-child),
-        .list-mode .list-item:hover .icon:not(.issuetype-icon):not(:first-child) {
+        .list-mode .list-item .icon:not(.issuetype-icon):not(.time-tracking-icon):not(:first-child),
+        .list-mode .list-item:hover .icon:not(.issuetype-icon):not(.time-tracking-icon):not(:first-child) {
           padding: .25em .15em;
           flex: 0 0 30px; }
       .list-mode .list-item .icon.issuetype-icon,
@@ -7292,6 +7241,11 @@ input[data-interactive-toggle].submitting + label .indicator {
     z-index: 200000;
     text-transform: none;
     font-weight: 500; }
+    .tooltip-container .tooltip .count-badge {
+      display: inline-flex;
+      background: rgba(255, 255, 255, 0.8);
+      color: #232323;
+      font-size: 1em; }
     .tooltip-container .tooltip.from-above {
       bottom: auto;
       top: 35px; }
@@ -7446,24 +7400,6 @@ input[data-interactive-toggle].submitting + label .indicator {
       .form-container form > .row.aligned .column:last-child .form-row .helper-text {
         text-align: end;
         justify-content: flex-end; }
-  .form-container fieldset {
-    border: 0;
-    border-top: 1px solid rgba(200, 200, 200, 0.8);
-    padding: .5em 8em;
-    max-width: 80%;
-    margin: .5em auto 0 auto;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column; }
-    .form-container fieldset legend {
-      background-color: transparent;
-      border: none;
-      display: flex;
-      flex-direction: row;
-      align-items: center; }
-      .form-container fieldset legend span {
-        padding: 0 2em; }
   .form-container > .column,
   .form-container > .row > .column,
   .form-container form > .column,
@@ -7686,230 +7622,6 @@ input[data-interactive-toggle].submitting + label .indicator {
       .form-container .form-row > label:not(.button) .icon {
         flex: 0 0 24px;
         margin-right: .5em; }
-    .form-container .form-row > textarea,
-    .form-container .form-row > input[type=text],
-    .form-container .form-row > input[type=password],
-    .form-container .form-row > input[type=search],
-    .form-container .form-row > input[type=url],
-    .form-container .form-row > input[type=password],
-    .form-container .form-row > input[type=email],
-    .form-container .form-row > .input {
-      flex: 1 1 100%;
-      padding: .65em .15em .25em .15em;
-      font-size: 1.1em;
-      box-sizing: border-box;
-      font-weight: 300; }
-      .form-container .form-row > textarea.invisible,
-      .form-container .form-row > input[type=text].invisible,
-      .form-container .form-row > input[type=password].invisible,
-      .form-container .form-row > input[type=search].invisible,
-      .form-container .form-row > input[type=url].invisible,
-      .form-container .form-row > input[type=password].invisible,
-      .form-container .form-row > input[type=email].invisible,
-      .form-container .form-row > .input.invisible {
-        background-color: transparent;
-        border: 1px solid transparent;
-        border-radius: 4px;
-        padding: .35rem;
-        flex: 1 1 auto; }
-        .form-container .form-row > textarea.invisible.title,
-        .form-container .form-row > input[type=text].invisible.title,
-        .form-container .form-row > input[type=password].invisible.title,
-        .form-container .form-row > input[type=search].invisible.title,
-        .form-container .form-row > input[type=url].invisible.title,
-        .form-container .form-row > input[type=password].invisible.title,
-        .form-container .form-row > input[type=email].invisible.title,
-        .form-container .form-row > .input.invisible.title {
-          font-weight: 400; }
-        .form-container .form-row > textarea.invisible.inline,
-        .form-container .form-row > input[type=text].invisible.inline,
-        .form-container .form-row > input[type=password].invisible.inline,
-        .form-container .form-row > input[type=search].invisible.inline,
-        .form-container .form-row > input[type=url].invisible.inline,
-        .form-container .form-row > input[type=password].invisible.inline,
-        .form-container .form-row > input[type=email].invisible.inline,
-        .form-container .form-row > .input.invisible.inline {
-          flex: 0 0 auto; }
-        .form-container .form-row > textarea.invisible + label,
-        .form-container .form-row > input[type=text].invisible + label,
-        .form-container .form-row > input[type=password].invisible + label,
-        .form-container .form-row > input[type=search].invisible + label,
-        .form-container .form-row > input[type=url].invisible + label,
-        .form-container .form-row > input[type=password].invisible + label,
-        .form-container .form-row > input[type=email].invisible + label,
-        .form-container .form-row > .input.invisible + label {
-          opacity: 0;
-          transform: translateY(-100%);
-          margin-bottom: -1.8em; }
-        .form-container .form-row > textarea.invisible:hover,
-        .form-container .form-row > input[type=text].invisible:hover,
-        .form-container .form-row > input[type=password].invisible:hover,
-        .form-container .form-row > input[type=search].invisible:hover,
-        .form-container .form-row > input[type=url].invisible:hover,
-        .form-container .form-row > input[type=password].invisible:hover,
-        .form-container .form-row > input[type=email].invisible:hover,
-        .form-container .form-row > .input.invisible:hover {
-          border: 1px solid transparent;
-          background-color: rgba(0, 0, 0, 0.05);
-          cursor: pointer; }
-        .form-container .form-row > textarea.invisible:focus,
-        .form-container .form-row > input[type=text].invisible:focus,
-        .form-container .form-row > input[type=password].invisible:focus,
-        .form-container .form-row > input[type=search].invisible:focus,
-        .form-container .form-row > input[type=url].invisible:focus,
-        .form-container .form-row > input[type=password].invisible:focus,
-        .form-container .form-row > input[type=email].invisible:focus,
-        .form-container .form-row > .input.invisible:focus {
-          background: #FFF;
-          border-color: #0c8990; }
-          .form-container .form-row > textarea.invisible:focus.with-label,
-          .form-container .form-row > input[type=text].invisible:focus.with-label,
-          .form-container .form-row > input[type=password].invisible:focus.with-label,
-          .form-container .form-row > input[type=search].invisible:focus.with-label,
-          .form-container .form-row > input[type=url].invisible:focus.with-label,
-          .form-container .form-row > input[type=password].invisible:focus.with-label,
-          .form-container .form-row > input[type=email].invisible:focus.with-label,
-          .form-container .form-row > .input.invisible:focus.with-label {
-            padding-bottom: 2rem; }
-          .form-container .form-row > textarea.invisible:focus:hover,
-          .form-container .form-row > input[type=text].invisible:focus:hover,
-          .form-container .form-row > input[type=password].invisible:focus:hover,
-          .form-container .form-row > input[type=search].invisible:focus:hover,
-          .form-container .form-row > input[type=url].invisible:focus:hover,
-          .form-container .form-row > input[type=password].invisible:focus:hover,
-          .form-container .form-row > input[type=email].invisible:focus:hover,
-          .form-container .form-row > .input.invisible:focus:hover {
-            cursor: text; }
-          .form-container .form-row > textarea.invisible:focus + label,
-          .form-container .form-row > input[type=text].invisible:focus + label,
-          .form-container .form-row > input[type=password].invisible:focus + label,
-          .form-container .form-row > input[type=search].invisible:focus + label,
-          .form-container .form-row > input[type=url].invisible:focus + label,
-          .form-container .form-row > input[type=password].invisible:focus + label,
-          .form-container .form-row > input[type=email].invisible:focus + label,
-          .form-container .form-row > .input.invisible:focus + label {
-            display: none; }
-      .form-container .form-row > textarea.name-input-enhance,
-      .form-container .form-row > input[type=text].name-input-enhance,
-      .form-container .form-row > input[type=password].name-input-enhance,
-      .form-container .form-row > input[type=search].name-input-enhance,
-      .form-container .form-row > input[type=url].name-input-enhance,
-      .form-container .form-row > input[type=password].name-input-enhance,
-      .form-container .form-row > input[type=email].name-input-enhance,
-      .form-container .form-row > .input.name-input-enhance {
-        font-size: 1.4em;
-        padding: .5em .3em;
-        font-weight: 400; }
-        .form-container .form-row > textarea.name-input-enhance:not(.invisible),
-        .form-container .form-row > input[type=text].name-input-enhance:not(.invisible),
-        .form-container .form-row > input[type=password].name-input-enhance:not(.invisible),
-        .form-container .form-row > input[type=search].name-input-enhance:not(.invisible),
-        .form-container .form-row > input[type=url].name-input-enhance:not(.invisible),
-        .form-container .form-row > input[type=password].name-input-enhance:not(.invisible),
-        .form-container .form-row > input[type=email].name-input-enhance:not(.invisible),
-        .form-container .form-row > .input.name-input-enhance:not(.invisible) {
-          border-bottom-width: 2px; }
-      .form-container .form-row > textarea.code-input-6,
-      .form-container .form-row > input[type=text].code-input-6,
-      .form-container .form-row > input[type=password].code-input-6,
-      .form-container .form-row > input[type=search].code-input-6,
-      .form-container .form-row > input[type=url].code-input-6,
-      .form-container .form-row > input[type=password].code-input-6,
-      .form-container .form-row > input[type=email].code-input-6,
-      .form-container .form-row > .input.code-input-6 {
-        max-width: 10rem; }
-      .form-container .form-row > textarea.number, .form-container .form-row > textarea.prefix-and-key, .form-container .form-row > textarea:not(.invisible).number,
-      .form-container .form-row > input[type=text].number,
-      .form-container .form-row > input[type=text].prefix-and-key,
-      .form-container .form-row > input[type=text]:not(.invisible).number,
-      .form-container .form-row > input[type=password].number,
-      .form-container .form-row > input[type=password].prefix-and-key,
-      .form-container .form-row > input[type=password]:not(.invisible).number,
-      .form-container .form-row > input[type=search].number,
-      .form-container .form-row > input[type=search].prefix-and-key,
-      .form-container .form-row > input[type=search]:not(.invisible).number,
-      .form-container .form-row > input[type=url].number,
-      .form-container .form-row > input[type=url].prefix-and-key,
-      .form-container .form-row > input[type=url]:not(.invisible).number,
-      .form-container .form-row > input[type=password].number,
-      .form-container .form-row > input[type=password].prefix-and-key,
-      .form-container .form-row > input[type=password]:not(.invisible).number,
-      .form-container .form-row > input[type=email].number,
-      .form-container .form-row > input[type=email].prefix-and-key,
-      .form-container .form-row > input[type=email]:not(.invisible).number,
-      .form-container .form-row > .input.number,
-      .form-container .form-row > .input.prefix-and-key,
-      .form-container .form-row > .input:not(.invisible).number {
-        width: 10rem;
-        flex: 0 0 auto; }
-        .form-container .form-row > textarea.number.small, .form-container .form-row > textarea.prefix-and-key.small, .form-container .form-row > textarea:not(.invisible).number.small,
-        .form-container .form-row > input[type=text].number.small,
-        .form-container .form-row > input[type=text].prefix-and-key.small,
-        .form-container .form-row > input[type=text]:not(.invisible).number.small,
-        .form-container .form-row > input[type=password].number.small,
-        .form-container .form-row > input[type=password].prefix-and-key.small,
-        .form-container .form-row > input[type=password]:not(.invisible).number.small,
-        .form-container .form-row > input[type=search].number.small,
-        .form-container .form-row > input[type=search].prefix-and-key.small,
-        .form-container .form-row > input[type=search]:not(.invisible).number.small,
-        .form-container .form-row > input[type=url].number.small,
-        .form-container .form-row > input[type=url].prefix-and-key.small,
-        .form-container .form-row > input[type=url]:not(.invisible).number.small,
-        .form-container .form-row > input[type=password].number.small,
-        .form-container .form-row > input[type=password].prefix-and-key.small,
-        .form-container .form-row > input[type=password]:not(.invisible).number.small,
-        .form-container .form-row > input[type=email].number.small,
-        .form-container .form-row > input[type=email].prefix-and-key.small,
-        .form-container .form-row > input[type=email]:not(.invisible).number.small,
-        .form-container .form-row > .input.number.small,
-        .form-container .form-row > .input.prefix-and-key.small,
-        .form-container .form-row > .input:not(.invisible).number.small {
-          width: 5rem; }
-      .form-container .form-row > textarea.version,
-      .form-container .form-row > input[type=text].version,
-      .form-container .form-row > input[type=password].version,
-      .form-container .form-row > input[type=search].version,
-      .form-container .form-row > input[type=url].version,
-      .form-container .form-row > input[type=password].version,
-      .form-container .form-row > input[type=email].version,
-      .form-container .form-row > .input.version {
-        width: 3em;
-        flex: 0 0 auto;
-        min-width: 3em; }
-      .form-container .form-row > textarea.medium, .form-container .form-row > textarea:not(.invisible).medium,
-      .form-container .form-row > input[type=text].medium,
-      .form-container .form-row > input[type=text]:not(.invisible).medium,
-      .form-container .form-row > input[type=password].medium,
-      .form-container .form-row > input[type=password]:not(.invisible).medium,
-      .form-container .form-row > input[type=search].medium,
-      .form-container .form-row > input[type=search]:not(.invisible).medium,
-      .form-container .form-row > input[type=url].medium,
-      .form-container .form-row > input[type=url]:not(.invisible).medium,
-      .form-container .form-row > input[type=password].medium,
-      .form-container .form-row > input[type=password]:not(.invisible).medium,
-      .form-container .form-row > input[type=email].medium,
-      .form-container .form-row > input[type=email]:not(.invisible).medium,
-      .form-container .form-row > .input.medium,
-      .form-container .form-row > .input:not(.invisible).medium {
-        width: 20rem;
-        flex: 0 0 auto; }
-      .form-container .form-row > textarea:focus + label,
-      .form-container .form-row > textarea:active + label,
-      .form-container .form-row > input[type=text]:focus + label,
-      .form-container .form-row > input[type=text]:active + label,
-      .form-container .form-row > input[type=password]:focus + label,
-      .form-container .form-row > input[type=password]:active + label,
-      .form-container .form-row > input[type=search]:focus + label,
-      .form-container .form-row > input[type=search]:active + label,
-      .form-container .form-row > input[type=url]:focus + label,
-      .form-container .form-row > input[type=url]:active + label,
-      .form-container .form-row > input[type=password]:focus + label,
-      .form-container .form-row > input[type=password]:active + label,
-      .form-container .form-row > input[type=email]:focus + label,
-      .form-container .form-row > input[type=email]:active + label,
-      .form-container .form-row > .input:focus + label,
-      .form-container .form-row > .input:active + label {
-        color: #0c8990; }
     .form-container .form-row.search-container input[type=search] {
       flex: 1 1 auto;
       margin-right: 1em;
@@ -7961,6 +7673,250 @@ input[data-interactive-toggle].submitting + label .indicator {
           background-color: rgba(225, 225, 225, 0.2); }
       .form-container .form-row > .fancy-dropdown-container .fancy-dropdown.invisible.active, .form-container .form-row > .fancy-dropdown-container .fancy-dropdown.invisible.active:hover {
         border: 2px solid #0c8990; }
+
+fieldset {
+  border: 0;
+  border-top: 1px solid rgba(200, 200, 200, 0.8);
+  padding: .5em 8em;
+  max-width: 80%;
+  margin: .5em auto 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column; }
+  fieldset legend {
+    background-color: transparent;
+    border: none;
+    display: flex;
+    flex-direction: row;
+    align-items: center; }
+    fieldset legend span {
+      padding: 0 2em; }
+
+> textarea,
+> input[type=text],
+> input[type=password],
+> input[type=search],
+> input[type=url],
+> input[type=password],
+> input[type=email],
+> .input {
+  flex: 1 1 100%;
+  padding: .65em .15em .25em .15em;
+  font-size: 1.1em;
+  box-sizing: border-box;
+  font-weight: 300; }
+  > textarea.invisible,
+  > input[type=text].invisible,
+  > input[type=password].invisible,
+  > input[type=search].invisible,
+  > input[type=url].invisible,
+  > input[type=password].invisible,
+  > input[type=email].invisible,
+  > .input.invisible {
+    background-color: transparent;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    padding: .35rem;
+    flex: 1 1 auto; }
+    > textarea.invisible.title,
+    > input[type=text].invisible.title,
+    > input[type=password].invisible.title,
+    > input[type=search].invisible.title,
+    > input[type=url].invisible.title,
+    > input[type=password].invisible.title,
+    > input[type=email].invisible.title,
+    > .input.invisible.title {
+      font-weight: 400; }
+    > textarea.invisible.inline,
+    > input[type=text].invisible.inline,
+    > input[type=password].invisible.inline,
+    > input[type=search].invisible.inline,
+    > input[type=url].invisible.inline,
+    > input[type=password].invisible.inline,
+    > input[type=email].invisible.inline,
+    > .input.invisible.inline {
+      flex: 0 0 auto; }
+    > textarea.invisible + label,
+    > input[type=text].invisible + label,
+    > input[type=password].invisible + label,
+    > input[type=search].invisible + label,
+    > input[type=url].invisible + label,
+    > input[type=password].invisible + label,
+    > input[type=email].invisible + label,
+    > .input.invisible + label {
+      opacity: 0;
+      transform: translateY(-100%);
+      margin-bottom: -1.8em; }
+    > textarea.invisible:hover,
+    > input[type=text].invisible:hover,
+    > input[type=password].invisible:hover,
+    > input[type=search].invisible:hover,
+    > input[type=url].invisible:hover,
+    > input[type=password].invisible:hover,
+    > input[type=email].invisible:hover,
+    > .input.invisible:hover {
+      border: 1px solid transparent;
+      background-color: rgba(0, 0, 0, 0.05);
+      cursor: pointer; }
+    > textarea.invisible:focus,
+    > input[type=text].invisible:focus,
+    > input[type=password].invisible:focus,
+    > input[type=search].invisible:focus,
+    > input[type=url].invisible:focus,
+    > input[type=password].invisible:focus,
+    > input[type=email].invisible:focus,
+    > .input.invisible:focus {
+      background: #FFF;
+      border-color: #0c8990; }
+      > textarea.invisible:focus.with-label,
+      > input[type=text].invisible:focus.with-label,
+      > input[type=password].invisible:focus.with-label,
+      > input[type=search].invisible:focus.with-label,
+      > input[type=url].invisible:focus.with-label,
+      > input[type=password].invisible:focus.with-label,
+      > input[type=email].invisible:focus.with-label,
+      > .input.invisible:focus.with-label {
+        padding-bottom: 2rem; }
+      > textarea.invisible:focus:hover,
+      > input[type=text].invisible:focus:hover,
+      > input[type=password].invisible:focus:hover,
+      > input[type=search].invisible:focus:hover,
+      > input[type=url].invisible:focus:hover,
+      > input[type=password].invisible:focus:hover,
+      > input[type=email].invisible:focus:hover,
+      > .input.invisible:focus:hover {
+        cursor: text; }
+      > textarea.invisible:focus + label,
+      > input[type=text].invisible:focus + label,
+      > input[type=password].invisible:focus + label,
+      > input[type=search].invisible:focus + label,
+      > input[type=url].invisible:focus + label,
+      > input[type=password].invisible:focus + label,
+      > input[type=email].invisible:focus + label,
+      > .input.invisible:focus + label {
+        display: none; }
+  > textarea.name-input-enhance,
+  > input[type=text].name-input-enhance,
+  > input[type=password].name-input-enhance,
+  > input[type=search].name-input-enhance,
+  > input[type=url].name-input-enhance,
+  > input[type=password].name-input-enhance,
+  > input[type=email].name-input-enhance,
+  > .input.name-input-enhance {
+    font-size: 1.4em;
+    padding: .5em .3em;
+    font-weight: 400; }
+    > textarea.name-input-enhance:not(.invisible),
+    > input[type=text].name-input-enhance:not(.invisible),
+    > input[type=password].name-input-enhance:not(.invisible),
+    > input[type=search].name-input-enhance:not(.invisible),
+    > input[type=url].name-input-enhance:not(.invisible),
+    > input[type=password].name-input-enhance:not(.invisible),
+    > input[type=email].name-input-enhance:not(.invisible),
+    > .input.name-input-enhance:not(.invisible) {
+      border-bottom-width: 2px; }
+  > textarea.code-input-6,
+  > input[type=text].code-input-6,
+  > input[type=password].code-input-6,
+  > input[type=search].code-input-6,
+  > input[type=url].code-input-6,
+  > input[type=password].code-input-6,
+  > input[type=email].code-input-6,
+  > .input.code-input-6 {
+    max-width: 10rem; }
+  > textarea.number, > textarea.prefix-and-key, > textarea:not(.invisible).number,
+  > input[type=text].number,
+  > input[type=text].prefix-and-key,
+  > input[type=text]:not(.invisible).number,
+  > input[type=password].number,
+  > input[type=password].prefix-and-key,
+  > input[type=password]:not(.invisible).number,
+  > input[type=search].number,
+  > input[type=search].prefix-and-key,
+  > input[type=search]:not(.invisible).number,
+  > input[type=url].number,
+  > input[type=url].prefix-and-key,
+  > input[type=url]:not(.invisible).number,
+  > input[type=password].number,
+  > input[type=password].prefix-and-key,
+  > input[type=password]:not(.invisible).number,
+  > input[type=email].number,
+  > input[type=email].prefix-and-key,
+  > input[type=email]:not(.invisible).number,
+  > .input.number,
+  > .input.prefix-and-key,
+  > .input:not(.invisible).number {
+    width: 10rem;
+    flex: 0 0 auto; }
+    > textarea.number.small, > textarea.prefix-and-key.small, > textarea:not(.invisible).number.small,
+    > input[type=text].number.small,
+    > input[type=text].prefix-and-key.small,
+    > input[type=text]:not(.invisible).number.small,
+    > input[type=password].number.small,
+    > input[type=password].prefix-and-key.small,
+    > input[type=password]:not(.invisible).number.small,
+    > input[type=search].number.small,
+    > input[type=search].prefix-and-key.small,
+    > input[type=search]:not(.invisible).number.small,
+    > input[type=url].number.small,
+    > input[type=url].prefix-and-key.small,
+    > input[type=url]:not(.invisible).number.small,
+    > input[type=password].number.small,
+    > input[type=password].prefix-and-key.small,
+    > input[type=password]:not(.invisible).number.small,
+    > input[type=email].number.small,
+    > input[type=email].prefix-and-key.small,
+    > input[type=email]:not(.invisible).number.small,
+    > .input.number.small,
+    > .input.prefix-and-key.small,
+    > .input:not(.invisible).number.small {
+      width: 5rem; }
+  > textarea.version,
+  > input[type=text].version,
+  > input[type=password].version,
+  > input[type=search].version,
+  > input[type=url].version,
+  > input[type=password].version,
+  > input[type=email].version,
+  > .input.version {
+    width: 3em;
+    flex: 0 0 auto;
+    min-width: 3em; }
+  > textarea.medium, > textarea:not(.invisible).medium,
+  > input[type=text].medium,
+  > input[type=text]:not(.invisible).medium,
+  > input[type=password].medium,
+  > input[type=password]:not(.invisible).medium,
+  > input[type=search].medium,
+  > input[type=search]:not(.invisible).medium,
+  > input[type=url].medium,
+  > input[type=url]:not(.invisible).medium,
+  > input[type=password].medium,
+  > input[type=password]:not(.invisible).medium,
+  > input[type=email].medium,
+  > input[type=email]:not(.invisible).medium,
+  > .input.medium,
+  > .input:not(.invisible).medium {
+    width: 20rem;
+    flex: 0 0 auto; }
+  > textarea:focus + label,
+  > textarea:active + label,
+  > input[type=text]:focus + label,
+  > input[type=text]:active + label,
+  > input[type=password]:focus + label,
+  > input[type=password]:active + label,
+  > input[type=search]:focus + label,
+  > input[type=search]:active + label,
+  > input[type=url]:focus + label,
+  > input[type=url]:active + label,
+  > input[type=password]:focus + label,
+  > input[type=password]:active + label,
+  > input[type=email]:focus + label,
+  > input[type=email]:active + label,
+  > .input:focus + label,
+  > .input:active + label {
+    color: #0c8990; }
 
 .content-with-sidebar {
   display: flex;
@@ -8684,14 +8640,15 @@ nav.sidebar {
   width: 100%; }
   .flexible-table .row {
     display: flex;
-    flex: 0 0 auto; }
+    flex: 0 0 auto;
+    align-items: stretch; }
     .flexible-table .row.hidden {
       display: none; }
     .flexible-table .row + .row.header {
       margin-top: 1em; }
     .flexible-table .row:not(.disabled):not(.blocking):not(.locked):hover .column:not(.invisible):not(.header):not(.disabled) {
       background-color: #F1F1F1; }
-      .flexible-table .row:not(.disabled):not(.blocking):not(.locked):hover .column:not(.invisible):not(.header):not(.disabled) .button.secondary {
+      .flexible-table .row:not(.disabled):not(.blocking):not(.locked):hover .column:not(.invisible):not(.header):not(.disabled) .button.secondary:not(.danger) {
         background-color: rgba(255, 255, 255, 0.65); }
       .flexible-table .row:not(.disabled):not(.blocking):not(.locked):hover .column:not(.invisible):not(.header):not(.disabled) .button.secondary.active {
         background-color: rgba(225, 225, 225, 0.65); }
@@ -8728,20 +8685,14 @@ nav.sidebar {
     flex: 0 0 170px;
     display: flex;
     align-items: center;
+    align-content: center;
     padding: .35rem;
     box-sizing: border-box;
-    border-bottom: 1px dashed rgba(12, 137, 144, 0.4); }
+    border-bottom: 1px dashed rgba(12, 137, 144, 0.4);
+    max-width: none;
+    min-width: 0; }
     .flexible-table .column.hidden {
       display: none; }
-    .flexible-table .column a:not(.button):not(.list-item),
-    .flexible-table .column a:hover:not(.button):not(.list-item) {
-      display: flex;
-      align-items: center;
-      border: none;
-      font-weight: 300;
-      padding: .2em; }
-    .flexible-table .column .count-badge {
-      font-size: 1em; }
     .flexible-table .column.header {
       font-size: 0.8em;
       background: transparent;
@@ -8768,8 +8719,23 @@ nav.sidebar {
       color: #888; }
     .flexible-table .column.list {
       flex-direction: column;
-      align-items: flex-start;
+      align-items: stretch;
+      align-content: stretch;
       justify-content: center; }
+      .flexible-table .column.list, .flexible-table .column.list.name-container {
+        overflow: visible;
+        text-overflow: unset; }
+      .flexible-table .column.list .line {
+        padding: 0;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: flex-start;
+        flex-wrap: nowrap; }
+        .flexible-table .column.list .line:not(.hidden) ~ .line {
+          padding-top: .75em; }
+        .flexible-table .column.list .line.hidden {
+          display: none; }
     .flexible-table .column.grid {
       flex: 0 0 300px;
       flex-direction: row;
@@ -8797,8 +8763,6 @@ nav.sidebar {
           margin-left: -.2em; }
       .flexible-table .column.info-icons img {
         width: 100%; }
-    .flexible-table .column .button.secondary {
-      color: #141823; }
     .flexible-table .column.sca_action_selector, .flexible-table .column.sca_actions {
       flex: 0 0 50px;
       display: flex;
@@ -8827,7 +8791,8 @@ nav.sidebar {
       display: flex;
       flex-direction: column;
       align-items: flex-start;
-      justify-content: center; }
+      justify-content: center;
+      overflow: visible; }
       .flexible-table .column.multiline.hidden {
         display: none; }
       .flexible-table .column.multiline .title {
@@ -8846,15 +8811,45 @@ nav.sidebar {
     .flexible-table .column.smaller {
       font-weight: 300;
       font-size: 0.8em; }
+    .flexible-table .columnlabel {
+      text-transform: none;
+      color: #232323; }
     .flexible-table .column .fas,
     .flexible-table .column .far {
       margin-right: .35rem; }
       .flexible-table .column .fas:last-child,
       .flexible-table .column .far:last-child {
         margin-right: 0; }
-    .flexible-table .columnlabel {
-      text-transform: none;
-      color: #232323; }
+    .flexible-table .column a:not(.button):not(.list-item),
+    .flexible-table .column a:hover:not(.button):not(.list-item) {
+      display: flex;
+      align-items: center;
+      border: none;
+      font-weight: 300;
+      padding: .2em; }
+    .flexible-table .column .count-badge {
+      font-size: 1em; }
+    .flexible-table .column .button.secondary {
+      color: #141823; }
+    .flexible-table .column input[type=text], .flexible-table .column input[type=search], .flexible-table .column input[type=password] {
+      flex: 1 1 100%;
+      padding: .35em;
+      font-size: 1.05em; }
+      .flexible-table .column input[type=text].number, .flexible-table .column input[type=search].number, .flexible-table .column input[type=password].number {
+        flex: 0 0 4em;
+        max-width: 4em; }
+    .flexible-table .column input ~ input[type=text], .flexible-table .column input ~ input[type=search], .flexible-table .column input ~ input[type=password] {
+      margin-left: .35em; }
+    .flexible-table .column input ~ button,
+    .flexible-table .column input ~ .button {
+      margin-left: .35em; }
+    .flexible-table .column input ~ .fancy-dropdown-container {
+      margin-left: .35em; }
+    .flexible-table .column button ~ input[type=text], .flexible-table .column button ~ input[type=search], .flexible-table .column button ~ input[type=password],
+    .flexible-table .column .button ~ input[type=text],
+    .flexible-table .column .button ~ input[type=search],
+    .flexible-table .column .button ~ input[type=password] {
+      margin-left: .35em; }
 
 header {
   display: flex;
@@ -8933,7 +8928,7 @@ header {
       align-items: center;
       justify-content: flex-start;
       align-self: center; }
-      header .header-strip .notifications-container a {
+      header .header-strip .notifications-container > a {
         display: flex;
         flex-direction: row;
         align-items: center;
@@ -8942,12 +8937,12 @@ header {
         color: rgba(255, 255, 255, 0.8);
         border: none;
         text-decoration: none; }
-        header .header-strip .notifications-container a .icon {
+        header .header-strip .notifications-container > a .icon {
           flex: 0 0 20px; }
-        header .header-strip .notifications-container a span {
+        header .header-strip .notifications-container > a span {
           white-space: nowrap;
           flex: 1 1 auto; }
-    header .header-strip .button.secondary {
+    header .header-strip .button.secondary.header-button {
       color: rgba(255, 255, 255, 0.9); }
   header .menu-strip {
     display: flex;
@@ -10982,6 +10977,78 @@ textarea.markItUpEditor:focus {
 .milestone_virtual_status .tooltip {
   font-size: 0.9em;
   opacity: 1; }
+
+.time-tracking-buttons {
+  display: flex;
+  flex-direction: row;
+  align-content: flex-end;
+  justify-items: flex-end;
+  align-items: center; }
+  .time-tracking-buttons .value-container,
+  .time-tracking-buttons .trigger-pause-time-tracking,
+  .time-tracking-buttons .trigger-resume-time-tracking,
+  .time-tracking-buttons .trigger-cancel-time-tracking,
+  .time-tracking-buttons .trigger-stop-time-tracking {
+    display: none; }
+  .time-tracking-buttons.tracking .value-container,
+  .time-tracking-buttons.tracking .trigger-stop-time-tracking,
+  .time-tracking-buttons.tracking .trigger-cancel-time-tracking {
+    display: flex; }
+  .time-tracking-buttons.tracking .value-container {
+    flex: 1 1 auto; }
+  .time-tracking-buttons.tracking:not(.paused) .trigger-pause-time-tracking,
+  .time-tracking-buttons.tracking:not(.paused) .icon-running {
+    display: flex; }
+  .time-tracking-buttons.tracking:not(.paused) .trigger-resume-time-tracking,
+  .time-tracking-buttons.tracking:not(.paused) .icon-paused {
+    display: none; }
+  .time-tracking-buttons.tracking.paused .trigger-pause-time-tracking,
+  .time-tracking-buttons.tracking.paused .icon-running {
+    display: none; }
+  .time-tracking-buttons.tracking.paused .trigger-resume-time-tracking,
+  .time-tracking-buttons.tracking.paused .icon-paused {
+    display: inline-flex; }
+  .time-tracking-buttons.tracking.paused .icon-paused {
+    margin: 0 .25em; }
+  .time-tracking-buttons.tracking.paused .value-container {
+    background-color: rgba(200, 200, 200, 0.3); }
+  .time-tracking-buttons.tracking .value-container {
+    flex-direction: row;
+    align-items: center;
+    justify-items: center;
+    margin-right: .35em;
+    background-color: #0cd8b6;
+    color: #FFF;
+    font-size: 1em; }
+    .time-tracking-buttons.tracking .value-container .icon {
+      margin-right: .25em; }
+  .time-tracking-buttons.tracking .trigger-start-time-tracking {
+    display: none; }
+  .time-tracking-buttons.tracking button.secondary.highlight {
+    margin: 0;
+    font-size: 0.9em;
+    border-color: #00adc7; }
+    .time-tracking-buttons.tracking button.secondary.highlight.danger {
+      border-color: #AF3E4D; }
+    .time-tracking-buttons.tracking button.secondary.highlight:not(:last-child) {
+      border-top-right-radius: 0;
+      border-bottom-right-radius: 0; }
+      .time-tracking-buttons.tracking button.secondary.highlight:not(:last-child) + button:not(:last-child):not(.trigger-resume-time-tracking) {
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0; }
+    .time-tracking-buttons.tracking button.secondary.highlight:last-child {
+      border-top-left-radius: 0;
+      border-bottom-left-radius: 0; }
+
+.list-item .time-tracking-buttons {
+  display: none; }
+  .list-item .time-tracking-buttons.tracking {
+    display: inline-flex; }
+    .list-item .time-tracking-buttons.tracking .icon, .list-item .time-tracking-buttons.tracking .icon:first-child {
+      font-size: .9em;
+      flex: 0 0 auto;
+      margin: 0 .25em 0 0;
+      padding: 0; }
 
 .viewissue-container,
 .content-with-sidebar > div:not(.sidebar):not(.fixed-position).viewissue-container {
@@ -14236,6 +14303,78 @@ DEL {
   .backdrop_detail_header .backdrop_detail_header .closer a:hover {
     color: #faa; }
 
+.time-tracking-buttons {
+  display: flex;
+  flex-direction: row;
+  align-content: flex-end;
+  justify-items: flex-end;
+  align-items: center; }
+  .time-tracking-buttons .value-container,
+  .time-tracking-buttons .trigger-pause-time-tracking,
+  .time-tracking-buttons .trigger-resume-time-tracking,
+  .time-tracking-buttons .trigger-cancel-time-tracking,
+  .time-tracking-buttons .trigger-stop-time-tracking {
+    display: none; }
+  .time-tracking-buttons.tracking .value-container,
+  .time-tracking-buttons.tracking .trigger-stop-time-tracking,
+  .time-tracking-buttons.tracking .trigger-cancel-time-tracking {
+    display: flex; }
+  .time-tracking-buttons.tracking .value-container {
+    flex: 1 1 auto; }
+  .time-tracking-buttons.tracking:not(.paused) .trigger-pause-time-tracking,
+  .time-tracking-buttons.tracking:not(.paused) .icon-running {
+    display: flex; }
+  .time-tracking-buttons.tracking:not(.paused) .trigger-resume-time-tracking,
+  .time-tracking-buttons.tracking:not(.paused) .icon-paused {
+    display: none; }
+  .time-tracking-buttons.tracking.paused .trigger-pause-time-tracking,
+  .time-tracking-buttons.tracking.paused .icon-running {
+    display: none; }
+  .time-tracking-buttons.tracking.paused .trigger-resume-time-tracking,
+  .time-tracking-buttons.tracking.paused .icon-paused {
+    display: inline-flex; }
+  .time-tracking-buttons.tracking.paused .icon-paused {
+    margin: 0 .25em; }
+  .time-tracking-buttons.tracking.paused .value-container {
+    background-color: rgba(200, 200, 200, 0.3); }
+  .time-tracking-buttons.tracking .value-container {
+    flex-direction: row;
+    align-items: center;
+    justify-items: center;
+    margin-right: .35em;
+    background-color: #0cd8b6;
+    color: #FFF;
+    font-size: 1em; }
+    .time-tracking-buttons.tracking .value-container .icon {
+      margin-right: .25em; }
+  .time-tracking-buttons.tracking .trigger-start-time-tracking {
+    display: none; }
+  .time-tracking-buttons.tracking button.secondary.highlight {
+    margin: 0;
+    font-size: 0.9em;
+    border-color: #00adc7; }
+    .time-tracking-buttons.tracking button.secondary.highlight.danger {
+      border-color: #AF3E4D; }
+    .time-tracking-buttons.tracking button.secondary.highlight:not(:last-child) {
+      border-top-right-radius: 0;
+      border-bottom-right-radius: 0; }
+      .time-tracking-buttons.tracking button.secondary.highlight:not(:last-child) + button:not(:last-child):not(.trigger-resume-time-tracking) {
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0; }
+    .time-tracking-buttons.tracking button.secondary.highlight:last-child {
+      border-top-left-radius: 0;
+      border-bottom-left-radius: 0; }
+
+.list-item .time-tracking-buttons {
+  display: none; }
+  .list-item .time-tracking-buttons.tracking {
+    display: inline-flex; }
+    .list-item .time-tracking-buttons.tracking .icon, .list-item .time-tracking-buttons.tracking .icon:first-child {
+      font-size: .9em;
+      flex: 0 0 auto;
+      margin: 0 .25em 0 0;
+      padding: 0; }
+
 #issue-card-popup > .backdrop_detail_header {
   text-transform: none;
   align-items: center;
@@ -15552,39 +15691,46 @@ header {
         opacity: 1; }
     header .header-strip #header_config_link {
       margin-top: auto; }
-    header .header-strip .notifications-container a:not(.button):not(.list-item):not(.closer) {
-      padding: .75em;
-      font-size: 1.2em; }
-      header .header-strip .notifications-container a:not(.button):not(.list-item):not(.closer) .icon {
-        margin: 0;
-        flex: 0 0 auto; }
-      header .header-strip .notifications-container a:not(.button):not(.list-item):not(.closer) .notifications-indicator {
-        display: none; }
+      header .header-strip #header_config_link + .notifications-container {
+        margin-top: 0; }
+    header .header-strip .notifications-container {
+      margin-top: auto; }
+      header .header-strip .notifications-container a:not(.button):not(.list-item):not(.closer) {
+        padding: .75em;
+        position: relative;
+        font-size: 1.2em; }
+        header .header-strip .notifications-container a:not(.button):not(.list-item):not(.closer) .icon {
+          margin: 0;
+          flex: 0 0 auto; }
+        header .header-strip .notifications-container a:not(.button):not(.list-item):not(.closer) .notifications-indicator {
+          display: flex;
+          position: absolute;
+          right: -.25em;
+          bottom: -.25em;
+          padding: .15em .35em;
+          border-radius: 2px;
+          font-size: .8em;
+          box-shadow: rgba(99, 99, 99, 0.2) 0 2px 8px 0;
+          background-color: #0cd8b6; }
+        header .header-strip .notifications-container a:not(.button):not(.list-item):not(.closer).disabled .notifications-indicator {
+          display: none; }
     header .header-strip .dropper-container + .dropper-container {
       margin: 0; }
     header .header-strip .dropper-container:last-child {
       margin-bottom: .75em; }
-    header .header-strip .dropper-container button,
-    header .header-strip .dropper-container .button {
-      padding: .75em; }
-      header .header-strip .dropper-container button.secondary,
-      header .header-strip .dropper-container .button.secondary {
-        border: 2px solid transparent;
-        border-radius: 8px; }
-        header .header-strip .dropper-container button.secondary.active,
-        header .header-strip .dropper-container .button.secondary.active {
-          border-color: #FFF;
-          background-color: transparent; }
     header .header-strip .dropper-container .avatar {
       margin: 0; }
     header .header-strip .dropper-container .dropdown-indicator {
       display: none; }
     header .header-strip .dropper-container .dropdown-container {
+      display: block;
       top: auto;
       right: auto;
       left: 4.3em;
       bottom: .4em;
-      transform-origin: bottom left; }
+      transform-origin: bottom left;
+      min-width: 30em;
+      height: 40em; }
     header .header-strip .name-container {
       display: none; }
 

@@ -35,7 +35,7 @@
 
         public const VIEW_RECENT_COMMENTS = 4;
 
-        public const VIEW_FRIENDS = 5;
+        public const VIEW_TIMERS = 5;
 
         public const VIEW_PROJECTS = 6;
 
@@ -243,10 +243,11 @@
 
         public function shouldBePreloaded()
         {
-            return in_array($this->getType(), [self::VIEW_FRIENDS,
+            return in_array($this->getType(), [
                 self::VIEW_PROJECT_DOWNLOADS,
                 self::VIEW_PROJECT_INFO,
-                self::VIEW_PROJECT_UPCOMING]);
+                self::VIEW_PROJECT_UPCOMING
+            ]);
         }
 
         public function isTransparent()
@@ -285,6 +286,7 @@
                         SavedSearch::PREDEFINED_SEARCH_TEAM_ASSIGNED_OPEN_ISSUES => ['title' => $i18n->__('Open issues assigned to my teams'), 'description' => $i18n->__('Shows all issues assigned to any of your teams')]];
                     $searches['info'][self::VIEW_PROJECTS] = [0 => ['title' => $i18n->__("Your projects"), 'description' => $i18n->__('A widget that shows projects you are involved in')]];
                     $searches['info'][self::VIEW_MILESTONES] = [0 => ['title' => $i18n->__("Upcoming milestones / sprints"), 'description' => $i18n->__('A widget that shows all upcoming milestones or sprints for any projects you are involved in')]];
+                    $searches['info'][self::VIEW_TIMERS] = [0 => ['title' => $i18n->__("Active timers"), 'description' => $i18n->__('A widget that shows all ongoing issue timers')]];
                     break;
                 case self::TYPE_PROJECT:
                     $searches['statistics'] = [];
@@ -436,6 +438,8 @@
                     return 'main/dashboardviewusermilestones';
                 case self::VIEW_PROJECTS:
                     return 'main/dashboardviewuserprojects';
+                case self::VIEW_TIMERS:
+                    return 'main/dashboardviewtimers';
             }
         }
 

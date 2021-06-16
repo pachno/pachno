@@ -381,21 +381,6 @@ issue_gettempfieldvalue:
     parameters: [ ]
     csrf_enabled: false
 
-issue_setfield:
-    route: '/:project_key/issues/:issue_id/:field/:csrf_token/*'
-    methods: ['POST']
-    module: main
-    action: issueSetField
-    parameters: [ ]
-    csrf_enabled: true
-
-issue_edittimespent:
-    route: /:project_key/issues/:issue_id/timespent/:entry_id
-    module: main
-    action: issueEditTimeSpent
-    parameters: [ ]
-    csrf_enabled: false
-
 issue_deletetimespent:
     route: /:project_key/issues/:issue_id/timespent/:entry_id/remove
     module: main

@@ -306,7 +306,7 @@
                         $this->_points['estimated'] += $res->get('estimated_points');
                         $this->_points['spent'] += $res->get('spent_points');
                         $this->_hours['estimated'] += $res->get('estimated_hours');
-                        $this->_hours['spent'] += round($res->get('spent_hours') / 100, 2);
+                        $this->_hours['spent'] += $res->get('spent_hours');
                         $this->_minutes['estimated'] += $res->get('estimated_minutes');
                         $this->_minutes['spent'] += $res->get('spent_minutes');
                     }
@@ -653,9 +653,6 @@
                 $spent_times = tables\IssueSpentTimes::getTable()->getSpentTimesByDateAndIssueIDs($this->getStartingDate(), $this->getScheduledDate(), $issues);
 
                 $burndown = [];
-                foreach ($spent_times['hours'] as $key => $val) {
-                    $spent_times['hours'][$key] = round($spent_times['hours'][$key] / 100, 2);
-                }
                 $total_estimations_hours = array_sum($estimations['hours']);
                 if (array_sum($spent_times['hours']) > $total_estimations_hours) $total_estimations_hours = array_sum($spent_times['hours']);
                 $prev_key = null;
@@ -664,7 +661,6 @@
                         $total_estimations_hours -= $spent_times['hours'][$prev_key];
                     } else {
                         if (isset($spent_times['hours_spent_before'])) {
-                            $spent_times['hours_spent_before'] = round($spent_times['hours_spent_before'] / 100, 2);
                             $total_estimations_hours -= $spent_times['hours_spent_before'];
                         }
                     }

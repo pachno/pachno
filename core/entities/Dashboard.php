@@ -194,6 +194,13 @@
                         $dv_logged->setType(DashboardView::VIEW_LOGGED_ACTIONS);
                         $dv_logged->setDetail(0);
                         $dv_logged->save();
+
+                        $dv_timers = new DashboardView();
+                        $dv_timers->setDashboard($this);
+                        $dv_timers->setColumn(2);
+                        $dv_timers->setType(DashboardView::VIEW_TIMERS);
+                        $dv_timers->setDetail(0);
+                        $dv_timers->save();
                         break;
                     case self::TYPE_PROJECT:
 //                        $dv_project_info = new DashboardView();

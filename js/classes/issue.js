@@ -4,7 +4,7 @@ import Pachno from "./pachno";
 import Uploader from "./uploader";
 import {TYPES as QuicksearchTypes} from "./quicksearch";
 import {getEditor} from "../widgets/editor";
-import {throttle} from 'throttle-debounce';
+import dayjs from "dayjs";
 import {SwimlaneTypes} from "./board";
 
 class Issue {
@@ -28,6 +28,63 @@ class Issue {
         });
     }
 
+    /**
+     * @param json.id
+     * @param json.issue_no
+     * @param json.created_at
+     * @param json.created_at_iso
+     * @param json.updated_at
+     * @param json.updated_at_iso
+     * @param json.updated_at_full
+     * @param json.updated_at_friendly
+     * @param json.updated_at_datetime
+     * @param json.card_url
+     * @param json.href
+     * @param json.more_actions_url
+     * @param json.save_url
+     * @param json.choices_url
+     * @param json.backdrop_url
+     * @param json.cover_image
+     * @param json.project
+     * @param json.transitions
+     * @param json.transitions.status_ids
+     * @param json.available_statuses
+     * @param json.blocking
+     * @param json.locked
+     * @param json.deleted
+     * @param json.closed
+     * @param json.state
+     * @param json.editable
+     * @param json.description
+     * @param json.description_formatted
+     * @param json.reproduction_steps
+     * @param json.reproduction_steps_formatted
+     * @param json.assigned_to
+     * @param json.category
+     * @param json.issue_type
+     * @param json.milestone
+     * @param json.parent_issue_id
+     * @param json.priority
+     * @param json.posted_by
+     * @param json.severity
+     * @param json.reproducability
+     * @param json.resolution
+     * @param json.status
+     * @param json.title
+     * @param json.percent_complete
+     * @param json.time.estimated.formatted
+     * @param json.time.estimated.values
+     * @param json.time.spent.formatted
+     * @param json.time.spent.values
+     * @param json.time.is_tracking
+     * @param json.time.current_user_tracking.started_at
+     * @param json.time.is_tracked_by.id
+     * @param json.number_of_files
+     * @param json.number_of_comments
+     * @param json.number_of_subscribers
+     * @param json.number_of_child_issues
+     * @param json.number_of_affected_items
+     */
     updateFromJson(json) {
         this.id = json.id;
         this.issue_no = json.issue_no;
@@ -66,6 +123,9 @@ class Issue {
         this.deleted = json.deleted;
         this.state = json.state;
         this.editable = json.editable;
+        this.is_time_tracking = json.time.is_tracking;
+        this.is_time_tracking_current_user = json.time.current_user_tracking !== '';
+        this.current_time_tracking = json.time.current_user_tracking;
 
         this.description = json.description;
         this.description_formatted = json.description_formatted;
@@ -85,6 +145,9 @@ class Issue {
         this.status = json.status;
         this.title = json.title;
         this.percent_complete = json.percent_complete;
+
+        this.estimated_time = json.time.estimated;
+        this.spent_time = json.time.spent;
 
         this.number_of_files = parseInt(json.number_of_files);
         this.number_of_comments = parseInt(json.number_of_comments);
@@ -115,6 +178,28 @@ class Issue {
                     resolve();
                 });
         })
+    }
+
+    fetchAndUpdate(url, method) {
+        const issue = this;
+        Pachno.UI.Dialog.setSubmitting();
+        Pachno.UI.Dialog.dismiss();
+
+        Pachno.trigger(Pachno.EVENTS.issue.update, {id: this.id});
+
+        return new Promise(function (resolve, reject) {
+            Pachno.fetch(url, { method, success: { update_issues_from_json: true } })
+                .then((json) => {
+                    Pachno.trigger(Pachno.EVENTS.issue.updateDone, {id: issue.id});
+                    Pachno.trigger(Pachno.EVENTS.issue.updateJson, {json: json.issue});
+
+                    resolve();
+                });
+        });
+    }
+
+    deleteAndUpdate(url) {
+        return this.fetchAndUpdate(url, 'DELETE');
     }
 
     triggerEditField(field) {
@@ -253,28 +338,24 @@ class Issue {
                 return;
 
             $(`[data-attachment][data-file-id="${data.file_id}"]`).remove();
-            Pachno.UI.Dialog.dismiss();
-
-            Pachno.fetch(data.url, {method: 'DELETE'})
-                .then((json) => {
-                    issue.updateFromJson(json.issue);
-                    issue.updateVisibleValues();
-                })
+            issue.deleteAndUpdate(data.url);
         });
 
         Pachno.on(Pachno.EVENTS.issue.removeAffectedItem, function (PachnoApplication, data) {
             if (data.issue_id != issue.id)
                 return;
 
-            Pachno.UI.Dialog.setSubmitting();
             $(`[data-affected-item][data-affected-item-id="${data.id}"]`).remove();
-            Pachno.UI.Dialog.dismiss();
+            issue.deleteAndUpdate(data.url);
+        });
 
-            Pachno.fetch(data.url, {method: 'DELETE'})
-                .then((json) => {
-                    issue.updateFromJson(json.issue);
-                    issue.updateVisibleValues();
-                })
+        Pachno.on(Pachno.EVENTS.issue.removeSpentTime, function (PachnoApplication, data) {
+            if (data.issue_id != issue.id)
+                return;
+
+            $(`[data-spent-time-entry][data-spent-time-entry-id="${data.id}"]`).remove();
+            const url = (data.auto) ? issue.current_time_tracking.url : data.url;
+            issue.deleteAndUpdate(url);
         });
 
         Pachno.on(Pachno.EVENTS.upload.complete, function (PachnoApplication, data) {
@@ -619,6 +700,42 @@ class Issue {
                     break;
                 case 'percent_complete':
                     $($element.find('.percent_filled')).css({width: this.percent_complete + '%'});
+                    break;
+                case 'spent_time':
+                    let $spent_time_value_element = $element.find('.value');
+                    $spent_time_value_element.html((this.spent_time.formatted !== '') ? this.spent_time.formatted : Pachno.T.issue.time_spent_none);
+                    break;
+                case 'estimated_time':
+                    let $estimated_time_value_element = $element.find('.value');
+                    $estimated_time_value_element.html((this.estimated_time.formatted !== '') ? this.estimated_time.formatted : Pachno.T.issue.time_estimated_none);
+                    break;
+                case 'time_tracking':
+                    if (this.is_time_tracking && this.is_time_tracking_current_user) {
+                        let time_tracking_start_date = new Date(this.current_time_tracking.started_at * 1000);
+                        $element.find('.time-start-value').html(dayjs(time_tracking_start_date).format('DD/MM/YY HH:mm'));
+                        let started_at = this.current_time_tracking.edited_at * 1000 - this.current_time_tracking.elapsed_time.time * 1000;
+                        $element.find('[data-interactive-timer]').data('started-at', started_at);
+                        $element.addClass('tracking');
+                        $element.find('.value').html('--:--');
+                        if (this.current_time_tracking.is_paused) {
+                            let elapsed_minutes = String(this.current_time_tracking.elapsed_time.minutes).padStart(2, '0');
+                            let elapsed_hours = String(this.current_time_tracking.elapsed_time.hours).padStart(2, '0');
+                            let elapsed_days = String(this.current_time_tracking.elapsed_time.days).padStart(2, '0');
+                            let time_string = `${elapsed_hours}:${elapsed_minutes}`;
+                            if (this.current_time_tracking.elapsed_time.days > 0) {
+                                time_string = `${elapsed_days}:${time_string}`;
+                            }
+                            $element.find('.value').html(time_string);
+                            $element.find('[data-interactive-timer]').data('paused', true);
+                            $element.addClass('paused');
+                        } else {
+                            $element.removeClass('paused');
+                            $element.find('[data-interactive-timer]').removeData('paused');
+                        }
+                    } else {
+                        $element.find('[data-interactive-timer]').removeData('started-at');
+                        $element.removeClass('tracking');
+                    }
                     break;
             }
         }

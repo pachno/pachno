@@ -35,5 +35,129 @@
         }
       }
     }
+
+  }
+}
+
+.time-tracking-buttons {
+  display: flex;
+  flex-direction: row;
+  align-content: flex-end;
+  justify-items: flex-end;
+  align-items: center;
+
+  .value-container,
+  .trigger-pause-time-tracking,
+  .trigger-resume-time-tracking,
+  .trigger-cancel-time-tracking,
+  .trigger-stop-time-tracking {
+    display: none;
+  }
+
+  &.tracking {
+    .value-container,
+    .trigger-stop-time-tracking,
+    .trigger-cancel-time-tracking {
+      display: flex;
+    }
+
+    .value-container {
+      flex: 1 1 auto;
+    }
+
+    &:not(.paused) {
+      .trigger-pause-time-tracking,
+      .icon-running {
+        display: flex;
+      }
+
+      .trigger-resume-time-tracking,
+      .icon-paused {
+        display: none;
+      }
+    }
+
+    &.paused {
+      .trigger-pause-time-tracking,
+      .icon-running {
+        display: none;
+      }
+
+      .trigger-resume-time-tracking,
+      .icon-paused {
+        display: inline-flex;
+      }
+
+      .icon-paused {
+        margin: 0 .25em;
+      }
+
+      .value-container {
+        background-color: rgba(200, 200, 200, .3);
+      }
+    }
+
+    .value-container {
+      flex-direction: row;
+      align-items: center;
+      justify-items: center;
+      margin-right: .35em;
+      background-color: $theme-secondary-color;
+      color: #FFF;
+      font-size: 1em;
+
+      .icon {
+        margin-right: .25em;
+      }
+    }
+
+    .trigger-start-time-tracking {
+      display: none;
+    }
+
+    button.secondary.highlight {
+      margin: 0;
+      font-size: 0.9em;
+      border-color: $theme-primary-color;
+
+      &.danger {
+        border-color: $theme-color-error;
+      }
+
+      &:not(:last-child) {
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+
+        + button:not(:last-child):not(.trigger-resume-time-tracking) {
+          border-top-left-radius: 0;
+          border-bottom-left-radius: 0;
+        }
+      }
+
+      &:last-child {
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+      }
+    }
+  }
+}
+
+.list-item {
+  .time-tracking-buttons {
+    display: none;
+
+    &.tracking {
+      display: inline-flex;
+
+      .icon {
+        &,
+        &:first-child {
+          font-size: .9em;
+          flex: 0 0 auto;
+          margin: 0 .25em 0 0;
+          padding: 0;
+        }
+      }
+    }
   }
 }

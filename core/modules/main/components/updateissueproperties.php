@@ -445,7 +445,7 @@
                                 </div>
                             </div>
                             <div id="transition_popup_set_stop_working_specify_log_div_<?= $transition->getID(); ?>" class="lightyellowbox issue_timespent_form" style="display: none;">
-                                <?php include_component('main/issuespenttimeentry', compact('issue')); ?>
+                                <?php // include_component('main/issuespenttimeentry', compact('issue')); ?>
                             </div>
                         <?php else: ?>
                             <input type="hidden" name="did" id="transition_popup_set_stop_working_no_log_<?= $transition->getID(); ?>" value="nothing">

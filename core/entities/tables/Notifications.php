@@ -132,13 +132,18 @@
             return $this->populateFromResultset(($resultset->count()) ? $resultset : null);
         }
 
-        public function getByUserID($user_id)
+        /**
+         * @param $user_id
+         * @return ?Notification[]
+         */
+        public function getByUserID($user_id): ?array
         {
             $query = $this->getQuery();
             $query->where(self::USER_ID, $user_id);
             $query->where(self::SCOPE, framework\Context::getScope()->getID());
             $query->where(self::TRIGGERED_BY_UID, $user_id, Criterion::NOT_EQUALS);
             $query->addOrderBy(self::ID, 'DESC');
+            $query->setLimit(100);
 
             return $this->select($query);
         }

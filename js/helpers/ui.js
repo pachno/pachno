@@ -277,6 +277,11 @@ const autoSubmitForm = function (event) {
 const submitForm = function ($form, options = {}) {
     const url = options.url || $form.data('url') || $form.attr('action');
 
+    if ($form.attr('id') === undefined) {
+        console.error($form);
+        throw new Error('Trying to post a form without an id');
+    }
+
     if ($form.data('update-container')) {
         if ($form.data('update-insert') !== undefined) {
             options.success = { update: { element: $form.data('update-container'), insertion: true }};
@@ -487,6 +492,16 @@ const setupListeners = function() {
     $body.on('blur', 'form[data-interactive-form]:not(.submitting) input[type=text], form[data-interactive-form]:not(.submitting) textarea', (event) => submitInteractiveForm(event, $(event.target).parents('form')));
     $body.on('change', 'form[data-interactive-form]:not(.submitting) input[type=radio], form[data-interactive-form]:not(.submitting) input[type=checkbox]', (event) => submitInteractiveForm(event, $(event.target).parents('form')));
     $body.on('click', 'form[data-interactive-form]:not(.submitting) input[type=radio], form[data-interactive-form]:not(.submitting) input[type=checkbox]', (event) => submitInteractiveForm(event, $(event.target).parents('form')));
+
+    $body.on('click', '.flexible-table .toggle-line', function (event) {
+        event.preventDefault();
+        event.stopPropagation();
+        const $toggler = $(this);
+        const $container = $toggler.parents('.line');
+        const $next = $container.next().length ? $container.next() : $container.parents('.column').find('.line').first();
+        $container.addClass('hidden');
+        $next.removeClass('hidden');
+    })
 }
 
 export default UI;

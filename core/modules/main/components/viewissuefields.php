@@ -38,7 +38,7 @@ use pachno\core\framework\Context;
                     <ul id="shortname_change" class="popup_box more_actions_dropdown with-header">
                         <li class="header"><?= __('Set issue label'); ?></li>
                         <li class="nohover">
-                            <form id="shortname_form" action="<?= make_url('issue_setfield', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => 'shortname')); ?>" method="post" onSubmit="Pachno.Issues.Field.set('<?= make_url('issue_setfield', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => 'shortname')) ?>', 'shortname', 'shortname'); return false;">
+                            <form id="shortname_form" action="<?= make_url('edit_issue', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => 'shortname')); ?>" method="post" onSubmit="Pachno.Issues.Field.set('<?= make_url('edit_issue', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => 'shortname')) ?>', 'shortname', 'shortname'); return false;">
                                 <input type="text" name="shortname_value" value="<?= $issue->getShortname(); ?>" /><?= __('%save or %cancel', array('%save' => '<input type="submit" value="'.__('Save').'">', '%cancel' => '<a href="#" onclick="$(\'shortname_change\').hide(); return false;">'.__('cancel').'</a>')); ?>
                             </form>
                         </li>
@@ -98,12 +98,12 @@ use pachno\core\framework\Context;
                     <ul class="popup_box more_actions_dropdown with-header" id="pain_bug_type_change">
                         <li class="header"><?= __('Triage bug type'); ?></li>
                         <li>
-                            <a href="javascript:void(0);" onclick="Pachno.Issues.Field.set('<?= make_url('issue_setfield', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => 'pain_bug_type', 'pain_bug_type_id' => 0)); ?>', 'pain_bug_type');"><?= __('Clear bug type'); ?></a>
+                            <a href="javascript:void(0);" onclick="Pachno.Issues.Field.set('<?= make_url('edit_issue', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => 'pain_bug_type', 'pain_bug_type_id' => 0)); ?>', 'pain_bug_type');"><?= __('Clear bug type'); ?></a>
                         </li>
                         <li class="list-item separator"></li>
                         <?php foreach (Issue::getPainTypesOrLabel('pain_bug_type') as $choice_id => $choice): ?>
                             <li>
-                                <a href="javascript:void(0);" onclick="Pachno.Issues.Field.set('<?= make_url('issue_setfield', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => 'pain_bug_type', 'pain_bug_type_id' => $choice_id)); ?>', 'pain_bug_type');"><?= $choice; ?></a>
+                                <a href="javascript:void(0);" onclick="Pachno.Issues.Field.set('<?= make_url('edit_issue', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => 'pain_bug_type', 'pain_bug_type_id' => $choice_id)); ?>', 'pain_bug_type');"><?= $choice; ?></a>
                             </li>
                         <?php endforeach; ?>
                         <li id="pain_bug_type_spinning" style="margin-top: 3px; display: none;"><?= image_tag('spinning_20.gif', array('style' => 'float: left; margin-right: 5px;')) . '&nbsp;' . __('Please wait'); ?>...</li>
@@ -124,12 +124,12 @@ use pachno\core\framework\Context;
                     <ul class="popup_box more_actions_dropdown with-header" id="pain_likelihood_change">
                         <li class="header"><?= __('Triage likelihood'); ?></li>
                         <li>
-                            <a href="javascript:void(0);" onclick="Pachno.Issues.Field.set('<?= make_url('issue_setfield', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => 'pain_likelihood', 'pain_likelihood_id' => 0)); ?>', 'pain_likelihood');"><?= __('Clear likelihood'); ?></a>
+                            <a href="javascript:void(0);" onclick="Pachno.Issues.Field.set('<?= make_url('edit_issue', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => 'pain_likelihood', 'pain_likelihood_id' => 0)); ?>', 'pain_likelihood');"><?= __('Clear likelihood'); ?></a>
                         </li>
                         <li class="list-item separator"></li>
                         <?php foreach (Issue::getPainTypesOrLabel('pain_likelihood') as $choice_id => $choice): ?>
                             <li>
-                                <a href="javascript:void(0);" onclick="Pachno.Issues.Field.set('<?= make_url('issue_setfield', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => 'pain_likelihood', 'pain_likelihood_id' => $choice_id)); ?>', 'pain_likelihood');"><?= $choice; ?></a>
+                                <a href="javascript:void(0);" onclick="Pachno.Issues.Field.set('<?= make_url('edit_issue', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => 'pain_likelihood', 'pain_likelihood_id' => $choice_id)); ?>', 'pain_likelihood');"><?= $choice; ?></a>
                             </li>
                         <?php endforeach; ?>
                         <li id="pain_likelihood_spinning" style="margin-top: 3px; display: none;"><?= image_tag('spinning_20.gif', array('style' => 'float: left; margin-right: 5px;')) . '&nbsp;' . __('Please wait'); ?>...</li>
@@ -150,12 +150,12 @@ use pachno\core\framework\Context;
                     <ul class="popup_box more_actions_dropdown with-header" id="pain_effect_change">
                         <li class="header"><?= __('Triage effect'); ?></li>
                         <li>
-                            <a href="javascript:void(0);" onclick="Pachno.Issues.Field.set('<?= make_url('issue_setfield', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => 'pain_effect', 'pain_effect_id' => 0)); ?>', 'pain_effect');"><?= __('Clear effect'); ?></a>
+                            <a href="javascript:void(0);" onclick="Pachno.Issues.Field.set('<?= make_url('edit_issue', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => 'pain_effect', 'pain_effect_id' => 0)); ?>', 'pain_effect');"><?= __('Clear effect'); ?></a>
                         </li>
                         <li class="list-item separator"></li>
                         <?php foreach (Issue::getPainTypesOrLabel('pain_effect') as $choice_id => $choice): ?>
                             <li>
-                                <a href="javascript:void(0);" onclick="Pachno.Issues.Field.set('<?= make_url('issue_setfield', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => 'pain_effect', 'pain_effect_id' => $choice_id)); ?>', 'pain_effect');"><?= $choice; ?></a>
+                                <a href="javascript:void(0);" onclick="Pachno.Issues.Field.set('<?= make_url('edit_issue', array('project_key' => $issue->getProject()->getKey(), 'issue_id' => $issue->getID(), 'field' => 'pain_effect', 'pain_effect_id' => $choice_id)); ?>', 'pain_effect');"><?= $choice; ?></a>
                             </li>
                         <?php endforeach; ?>
                         <li id="pain_effect_spinning" style="margin-top: 3px; display: none;"><?= image_tag('spinning_20.gif', array('style' => 'float: left; margin-right: 5px;')) . '&nbsp;' . __('Please wait'); ?>...</li>
@@ -189,7 +189,7 @@ use pachno\core\framework\Context;
                 <div class="fancy-dropdown">
                     <label><?= __('Estimated time'); ?></label>
                     <span class="value" data-dynamic-field-value data-field="estimated_time" data-issue-id="<?= $issue->getId(); ?>">
-                        <?= ($issue->hasEstimatedTime()) ? Issue::getFormattedTime($issue->getEstimatedTime(true, true)) : __('Not estimated'); ?>
+                        <?= ($issue->hasEstimatedTime()) ? Issue::getFormattedTime($issue->getEstimatedTime()) : __('Not estimated'); ?>
                     </span>
                     <?php if ($issue->isUpdateable() && $issue->canEditEstimatedTime()): ?>
                         <?php echo fa_image_tag('angle-down', ['class' => 'expander']); ?>
@@ -199,11 +199,11 @@ use pachno\core\framework\Context;
                 </div>
             </div>
         </li>
-        <li id="spent_time_field" class="<?php if (!$issue->isSpentTimeVisible()): ?> hidden<?php endif; ?> <?php if ($issue->canEditEstimatedTime()) echo 'trigger-backdrop'; ?>" data-url="<?= make_url('get_partial_for_backdrop', array('key' => 'issue_spenttimes', 'issue_id' => $issue->getID())); ?>">
-            <div id="estimated_time_content" class="field-container <?php if ($issue->canEditEstimatedTime()) echo 'editable'; ?>">
+        <li id="spent_time_field" class="issue-field <?php if (!$issue->isSpentTimeVisible()): ?> hidden<?php endif; ?> <?php if ($issue->canEditEstimatedTime()) echo 'trigger-backdrop'; ?>" data-url="<?= make_url('get_partial_for_backdrop', array('key' => 'issue_spenttimes', 'issue_id' => $issue->getID())); ?>">
+            <div id="estimated_time_content" class="field-container <?php if ($issue->canEditEstimatedTime()) echo 'editable'; ?>" data-dynamic-field-value data-field="spent_time" data-issue-id="<?= $issue->getId(); ?>">
                 <span class="label"><?= __('Time spent'); ?></span>
-                <span class="value" data-dynamic-field-value data-field="spent_time" data-issue-id="<?= $issue->getId(); ?>">
-                    <span><?= ($issue->hasSpentTime()) ? Issue::getFormattedTime($issue->getSpentTime(true, true)) : __('Not estimated'); ?></span>
+                <span class="value">
+                    <span><?= ($issue->hasSpentTime()) ? Issue::getFormattedTime($issue->getSpentTime(true, true)) : __('No time spent'); ?></span>
                 </span>
             </div>
         </li>

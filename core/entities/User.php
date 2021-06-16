@@ -5,10 +5,12 @@
     use b2db\Row;
     use DateTimeZone;
     use Exception;
+    use pachno\core\entities\common\Identifiable;
     use pachno\core\entities\common\IdentifiableEventContainer;
     use pachno\core\entities\tables\ClientMembers;
     use pachno\core\entities\tables\Dashboards;
     use pachno\core\entities\tables\Issues;
+    use pachno\core\entities\tables\IssueSpentTimes;
     use pachno\core\entities\tables\Notifications;
     use pachno\core\entities\tables\NotificationSettings;
     use pachno\core\entities\tables\Permissions;
@@ -358,6 +360,14 @@
         protected $_notifications = null;
 
         /**
+         * List of user's timers
+         *
+         * @var IssueSpentTime[]
+         * @Relates(class="\pachno\core\entities\IssueSpentTime", collection=true, foreign_column="user_id", orderby="edited_at")
+         */
+        protected $_timers = null;
+
+        /**
          * List of user's dashboards
          *
          * @var Dashboard[]
@@ -390,6 +400,8 @@
         protected $_read_notifications_count = null;
 
         protected $_filter_first_notification = null;
+
+        protected $_ongoing_timers_count = null;
 
         protected $_permissions_cache = [];
 
@@ -1711,6 +1723,11 @@
             framework\Logging::log('Checking permission for user ID: ' . $user_id . ', group ID ' . $group_id . ',team IDs ' . implode(',', $team_ids));
 
             $allowed = framework\Context::permissionCheck($module_name, $permission_type, $target_id, $user_id, $group_id, $team_ids, $client_ids);
+
+            if ($allowed === null) {
+                $allowed = framework\Context::permissionCheck($module_name, $permission_type, $target_id, 0, 0, [], []);
+            }
+
             if ($allowed === null) {
                 framework\Logging::log('... Done checking permission ' . $permission_type . ', target id' . $target_id . ', module ' . $module_name . ', no matching rules found.');
             } else {
@@ -2125,40 +2142,36 @@
          *
          * @return Notification[]
          */
-        public function getNotifications($first_notification_id = null, $last_notification_id = null)
+        public function getNotifications()
         {
-            $this->_populateNotifications($first_notification_id, $last_notification_id);
+            $this->_populateNotifications();
 
             return $this->_notifications['all'];
         }
 
-        protected function _populateNotifications($first_notification_id = null, $last_notification_id = null)
+        protected function _populateNotifications()
         {
-            $filter_first_notification = !is_null($first_notification_id) && is_numeric($first_notification_id);
-            if ($filter_first_notification) {
-                $this->_notifications = null;
-                $this->_filter_first_notification = true;
-            } elseif (!$filter_first_notification && $this->_filter_first_notification) {
-                $this->_notifications = null;
-                $this->_filter_first_notification = false;
-            }
             if (!is_array($this->_notifications)) {
-                $this->_notifications = Notifications::getTable()->getByUserIDAndGroupableMinutes($this->getID(), $this->getNotificationSetting(framework\Settings::SETTINGS_USER_NOTIFY_GROUPED_NOTIFICATIONS, false, 'core')->getValue());
                 $notifications = ['unread' => [], 'read' => [], 'all' => []];
-                $db_notifcations = $this->_notifications;
-                foreach ($db_notifcations as $notification) {
-                    if ($filter_first_notification && $notification->getID() <= $first_notification_id) break;
-                    if (!$filter_first_notification && !is_null($last_notification_id) && $notification->getID() >= $last_notification_id) continue;
+                $db_notifications = Notifications::getTable()->getByUserId($this->getID());
+                foreach ($db_notifications as $notification) {
                     if ($notification->getTriggeredByUser()->getID() == $this->getID()) continue;
+                    if (!$notification->getTarget() instanceof Identifiable) {
+                        $notification->delete();
+                        continue;
+                    }
 
-                    array_push($notifications['all'], $notification);
+                    $notifications['all'][] = $notification;
                     if ($notification->isRead()) {
-                        array_push($notifications['read'], $notification);
+                        $notifications['read'][] = $notification;
                     } else {
-                        array_push($notifications['unread'], $notification);
+                        $notifications['unread'][] = $notification;
                     }
                 }
-                $notifications = array_reverse($notifications);
+                $notifications['all'] = array_reverse($notifications['all']);
+                $notifications['unread'] = array_reverse($notifications['unread']);
+                $notifications['read'] = array_reverse($notifications['read']);
+
                 $this->_notifications = $notifications;
                 $this->_unread_notifications_count = count($notifications['unread']);
                 $this->_read_notifications_count = count($notifications['read']);
@@ -2219,6 +2232,31 @@
             $this->_populateNotificationsCounts();
 
             return $this->_unread_notifications_count;
+        }
+
+        public function getNumberOfOngoingTimers()
+        {
+            if ($this->_timers !== null) {
+                return count($this->_timers);
+            }
+
+            if ($this->_ongoing_timers_count === null) {
+                $this->_ongoing_timers_count = IssueSpentTimes::getTable()->countAutoTimersByUserId($this->getID());
+            }
+
+            return $this->_ongoing_timers_count;
+        }
+
+        /**
+         * @return IssueSpentTime[]
+         */
+        public function getTimers(): array
+        {
+            if ($this->_timers === null) {
+                $this->_timers = IssueSpentTimes::getTable()->getAutoTimersByUserId($this->getID());
+            }
+
+            return $this->_timers;
         }
 
         protected function _populateNotificationsCounts()

@@ -90,20 +90,6 @@ const toggleNotifications = function (toggle_classes) {
 
 const setupListeners = function () {
     $("body").on("click", "#user_notifications_container", toggleNotifications);
-    Pachno.fetch(Pachno.data_url, {
-        method: 'GET',
-        success: {
-            callback: function (json) {
-                const $user_notifications_count = $('#user_notifications_count');
-                if ($user_notifications_count.length) {
-                    $user_notifications_count.html(json.unread_notifications_count);
-                    if (parseInt(json.unread_notifications_count) > 0) {
-                        $user_notifications_count.addClass('unread');
-                    }
-                }
-            }
-        }
-    });
 };
 
 // Pachno.Main.Notifications.Web.GrantPermissionOrSendTest = function (title, body, icon) {

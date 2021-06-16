@@ -28,6 +28,13 @@
     text-transform: none;
     font-weight: $theme-font-weight-bold;
 
+    .count-badge {
+      display: inline-flex;
+      background: rgba(255, 255, 255, .8);
+      color: $theme-text-color;
+      font-size: 1em;
+    }
+
     &.from-above {
       bottom: auto;
       top: 35px;

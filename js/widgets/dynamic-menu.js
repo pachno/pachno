@@ -12,7 +12,7 @@ const loadDynamicMenu = function ($menu) {
         method: 'GET',
         success: {
             callback: function (json) {
-                const $newMenu = $(json.menu);
+                const $newMenu = json.menu !== undefined ? $(json.menu) : $(json.content);
                 $newMenu.data('menu-url', url);
                 if (populateOnce) {
                     $newMenu.addClass('populate-once');

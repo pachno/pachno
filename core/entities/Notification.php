@@ -4,6 +4,7 @@
 
     use pachno\core\entities\common\IdentifiableScoped;
     use pachno\core\entities\tables\Articles;
+    use pachno\core\entities\tables\Issues;
     use pachno\core\framework\Event;
 
     /**
@@ -225,7 +226,7 @@
                         case self::TYPE_ISSUE_UPDATED:
                         case self::TYPE_ISSUE_CREATED:
                         case self::TYPE_ISSUE_MENTIONED:
-                            $this->_target = Issue::getB2DBTable()->selectById((int)$this->_target_id);
+                            $this->_target = Issues::getTable()->selectById((int)$this->_target_id);
                             break;
                         case self::TYPE_ARTICLE_CREATED:
                         case self::TYPE_ARTICLE_UPDATED:

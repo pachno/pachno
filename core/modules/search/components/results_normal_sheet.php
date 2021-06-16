@@ -99,7 +99,7 @@ $headers = array(__("Project"), __("Issue type"), __("Issue number"), __("Issue 
             $sheet->setCellValueByColumnAndRow(15, $cc, \pachno\core\framework\Context::getI18n()->formatTime($issue->getPosted(), 21));
             $sheet->setCellValueByColumnAndRow(16, $cc, \pachno\core\framework\Context::getI18n()->formatTime($issue->getLastUpdatedTime(), 21));
             $sheet->setCellValueByColumnAndRow(17, $cc, $issue->getPercentCompleted() . '%');
-            $sheet->setCellValueByColumnAndRow(18, $cc, (!$issue->hasEstimatedTime()) ? '-' : \pachno\core\entities\Issue::getFormattedTime($issue->getEstimatedTime(true, true)));
+            $sheet->setCellValueByColumnAndRow(18, $cc, (!$issue->hasEstimatedTime()) ? '-' : \pachno\core\entities\Issue::getFormattedTime($issue->getEstimatedTime()));
             $sheet->setCellValueByColumnAndRow(19, $cc, (!$issue->hasSpentTime()) ? '-' : \pachno\core\entities\Issue::getFormattedTime($issue->getSpentTime(true, true)));
             $sheet->setCellValueByColumnAndRow(20, $cc, $issue->getUserpain());
             $sheet->setCellValueByColumnAndRow(21, $cc, $issue->getVotes());

@@ -13,6 +13,17 @@
             <?php if ($issue->getPriority() instanceof \pachno\core\entities\Priority): ?>
                 <span class="priority priority_<?= $issue->getPriority()->getValue(); ?>"><?= fa_image_tag($issue->getPriority()->getFontAwesomeIcon(), [], $issue->getPriority()->getFontAwesomeIconStyle()) . $issue->getPriority()->getName(); ?></span>
             <?php endif; ?>
+            <div class="time-tracking-buttons tooltip-container <?php if ($issue->isTimeTrackingCurrentUser()) echo 'tracking'; ?>" data-dynamic-field-value data-field="time_tracking" data-issue-id="<?= $issue->getId(); ?>">
+                <div class="tooltip from-above">
+                    <?= fa_image_tag('user-clock', ['class' => 'icon']); ?>
+                    <span><?= __('Time tracking started at %time', ['%time' => '<span class="time-start-value"></span>']); ?><span class="icon-paused count-badge"><?= __('Paused'); ?></span></span>
+                </div>
+                <span class="value-container count-badge" data-interactive-timer <?php if ($issue->isTimeTrackingCurrentUser()): ?>data-started-at="<?= $issue->getTimeTrackingCurrentUser()->getEditedAt() * 1000 - $issue->getTimeTrackingCurrentUser()->getElapsedTime() * 1000; ?>"<?php endif; ?>>
+                    <?= fa_image_tag('clock', ['class' => 'icon icon-running time-tracking-icon']); ?>
+                    <?= fa_image_tag('pause', ['class' => 'icon icon-paused time-tracking-icon']); ?>
+                    <span class="value">--:--</span>
+                </span>
+            </div>
         </span>
     </span>
 </a>

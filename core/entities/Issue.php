@@ -2966,26 +2966,21 @@
         /**
          * Returns an array with the estimated time
          *
-         * @param bool $append_minutes
-         * @param bool $subtract_hours
-         *
          * @return array
          */
-        public function getEstimatedTime($append_minutes = false, $subtract_hours = false)
+        public function getEstimatedTime()
         {
-            return ['months' => (int)$this->_estimated_months, 'weeks' => (int)$this->_estimated_weeks, 'days' => (int)$this->_estimated_days, 'hours' => (int)$this->getEstimatedHours($append_minutes), 'minutes' => (int)$this->getEstimatedMinutes($subtract_hours), 'points' => (int)$this->_estimated_points];
+            return ['months' => (int)$this->_estimated_months, 'weeks' => (int)$this->_estimated_weeks, 'days' => (int)$this->_estimated_days, 'hours' => (int)$this->getEstimatedHours(), 'minutes' => (int)$this->getEstimatedMinutes(), 'points' => (int)$this->_estimated_points];
         }
 
         /**
          * Returns the estimated hours
          *
-         * @param bool $append_minutes
-         *
          * @return integer
          */
-        public function getEstimatedHours($append_minutes = false): int
+        public function getEstimatedHours(): int
         {
-            return (int)$this->_estimated_hours + ($append_minutes ? (int)floor($this->getEstimatedMinutes() / 60) : 0);
+            return (int)$this->_estimated_hours;
         }
 
         /**
@@ -3001,15 +2996,11 @@
         /**
          * Returns the estimated minutes
          *
-         * @param bool $subtract_hours
-         *
          * @return integer
          */
-        public function getEstimatedMinutes($subtract_hours = false): int
+        public function getEstimatedMinutes(): int
         {
-            $minutes = (int)$this->_estimated_minutes;
-
-            return $subtract_hours ? $minutes % 60 : $minutes;
+            return (int)$this->_estimated_minutes;
         }
 
         /**
@@ -3025,14 +3016,11 @@
         /**
          * Returns an array with the spent time
          *
-         * @param bool $append_minutes
-         * @param bool $subtract_hours
-         *
          * @return array
          */
-        public function getSpentTime($append_minutes = false, $subtract_hours = false)
+        public function getSpentTime()
         {
-            return ['months' => (int)$this->_spent_months, 'weeks' => (int)$this->_spent_weeks, 'days' => (int)$this->_spent_days, 'hours' => (int)$this->getSpentHours($append_minutes), 'minutes' => (int)$this->getSpentMinutes($subtract_hours), 'points' => (int)$this->_spent_points];
+            return ['months' => (int)$this->_spent_months, 'weeks' => (int)$this->_spent_weeks, 'days' => (int)$this->_spent_days, 'hours' => (int)$this->getSpentHours(), 'minutes' => (int)$this->getSpentMinutes(), 'points' => (int)$this->_spent_points];
         }
 
         /**
@@ -3042,9 +3030,9 @@
          *
          * @return integer
          */
-        public function getSpentHours($append_minutes = false): int
+        public function getSpentHours(): int
         {
-            return (int)round($this->_spent_hours / 100, 2) + ($append_minutes ? (int)floor($this->getSpentMinutes() / 60) : 0);
+            return (int) $this->_spent_hours;
         }
 
         /**
@@ -3060,15 +3048,11 @@
         /**
          * Returns the spent minutes
          *
-         * @param bool $subtract_hours
-         *
          * @return integer
          */
-        public function getSpentMinutes($subtract_hours = false): int
+        public function getSpentMinutes(): int
         {
-            $minutes = (int)$this->_spent_minutes;
-
-            return $subtract_hours ? $minutes % 60 : $minutes;
+            return (int) $this->_spent_minutes;
         }
 
         /**
@@ -3478,14 +3462,11 @@
         /**
          * Returns the estimated hours and minutes formatted
          *
-         * @param bool $append_minutes
-         * @param bool $subtract_hours
-         *
          * @return integer|string
          */
-        public function getEstimatedHoursAndMinutes($append_minutes = false, $subtract_hours = false)
+        public function getEstimatedHoursAndMinutes()
         {
-            return common\Timeable::formatHoursAndMinutes($this->getEstimatedHours($append_minutes), $this->getEstimatedMinutes($subtract_hours));
+            return common\Timeable::formatHoursAndMinutes($this->getEstimatedHours(), $this->getEstimatedMinutes());
         }
 
         /**
@@ -3501,29 +3482,23 @@
         /**
          * Returns the spent hours and minutes formatted
          *
-         * @param bool $append_minutes
-         * @param bool $subtract_hours
-         *
          * @return integer|string
          */
-        public function getSpentHoursAndMinutes($append_minutes = false, $subtract_hours = false)
+        public function getSpentHoursAndMinutes()
         {
-            return common\Timeable::formatHoursAndMinutes($this->getSpentHours($append_minutes), $this->getSpentMinutes($subtract_hours));
+            return common\Timeable::formatHoursAndMinutes($this->getSpentHours(), $this->getSpentMinutes());
         }
 
         /**
          * Returns an array with the spent time
          *
-         * @param bool $append_minutes
-         * @param bool $subtract_hours
-         *
          * @return array
          * @see getSpentTime()
          *
          */
-        public function getTimeSpent($append_minutes = false, $subtract_hours = false)
+        public function getTimeSpent()
         {
-            return $this->getSpentTime($append_minutes, $subtract_hours);
+            return $this->getSpentTime();
         }
 
         /**
@@ -3991,7 +3966,7 @@
          *
          * @return IssueSpentTime[]
          */
-        public function getSpentTimes()
+        public function getSpentTimes(): array
         {
             $this->_populateSpentTimes();
 
@@ -4558,6 +4533,19 @@
                 'reproduction_steps' => $this->getReproductionSteps(),
                 'reproduction_steps_formatted' => $this->getParsedReproductionSteps(),
                 'issue_type' => $this->getIssueType()->toJSON(false),
+                'time' => [
+                    'is_tracking' => $this->isTimeTracking(),
+                    'is_tracked_by' => array_map(fn($user) => $user->toJson(), $this->getTimeTrackingUsers()),
+                    'current_user_tracking' => ($this->isTimeTrackingCurrentUser()) ? $this->getTimeTrackingCurrentUser()->toJSON() : null,
+                    'spent' => [
+                        'values' => $this->getSpentTime(true, true),
+                        'formatted' => ($this->hasSpentTime()) ? self::getFormattedTime($this->getSpentTime(true, true)) : ''
+                    ],
+                    'estimated' => [
+                        'values' => $this->getEstimatedTime(),
+                        'formatted' => ($this->hasEstimatedTime()) ? self::getFormattedTime($this->getEstimatedTime()) : ''
+                    ],
+                ],
                 'cover_image' => ($this->getCoverImageFile() instanceof File) ? $this->getCoverImageFile()->toJSON() : null,
                 'href' => $this->getUrl(),
                 'more_actions_url' => $this->getMoreActionsUrl(),
@@ -4668,7 +4656,7 @@
                             $identifiable = false;
                             break;
                         case 'estimated_time':
-                            $value = $this->getEstimatedTime(true, true);
+                            $value = $this->getEstimatedTime();
                             $identifiable = false;
                             break;
                         case 'spent_time':
@@ -5360,7 +5348,6 @@
                                             $old_time[$time_unit] = $this->{'_spent_' . $time_unit};
                                         }
                                     }
-                                    $old_time['hours'] = round($old_time['hours'] / 100, 2);
                                     $old_formatted_time = (array_sum($old_time) > 0) ? Issue::getFormattedTime($old_time) : Context::getI18n()->__('No time spent');
                                     $new_formatted_time = ($this->hasSpentTime()) ? Issue::getFormattedTime($this->getSpentTime()) : Context::getI18n()->__('No time spent');
                                     $this->addLogEntry(LogItem::ACTION_ISSUE_UPDATE_TIME_SPENT, $old_formatted_time . ' &rArr; ' . $new_formatted_time, serialize($old_time), serialize($this->getSpentTime()));
@@ -5624,7 +5611,7 @@
          *
          * @return string
          */
-        public static function getFormattedTime($time, $strict = true)
+        public static function getFormattedTime($time, $strict = true, $include_placeholder = true)
         {
             $values = [];
             $i18n = Context::getI18n();
@@ -5653,7 +5640,7 @@
                 $text .= ($time['points'] == 1) ? $i18n->__('1 point') : $i18n->__('%number_of points', ['%number_of' => $time['points']]);
             }
 
-            return ($text != '') ? $text : $i18n->__('No time');
+            return ($text != '' || !$include_placeholder) ? $text : $i18n->__('No time');
         }
 
         public function checkTaskStates()
@@ -6159,6 +6146,54 @@
             }
 
             return $json;
+        }
+
+        public function isTimeTracking(): bool
+        {
+            foreach ($this->getSpentTimes() as $spentTime) {
+                if (!$spentTime->isCompleted()) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public function isTimeTrackingCurrentUser(): bool
+        {
+            foreach ($this->getSpentTimes() as $spentTime) {
+                if (!$spentTime->isCompleted() && $spentTime->getUser()->getID() === Context::getUser()->getID()) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public function getTimeTrackingCurrentUser(): ?IssueSpentTime
+        {
+            foreach ($this->getSpentTimes() as $spentTime) {
+                if (!$spentTime->isCompleted() && $spentTime->getUser()->getID() === Context::getUser()->getID()) {
+                    return $spentTime;
+                }
+            }
+
+            return null;
+        }
+
+        /**
+         * @return array<User>
+         */
+        public function getTimeTrackingUsers(): array
+        {
+            $users = [];
+            foreach ($this->getSpentTimes() as $spentTime) {
+                if (!$spentTime->isCompleted()) {
+                    $users[$spentTime->getUser()->getID()] = $spentTime->getUser();
+                }
+            }
+
+            return array_values($users);
         }
 
     }

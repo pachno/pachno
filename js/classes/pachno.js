@@ -77,7 +77,10 @@ class PachnoApplication {
                 updateJsonComplete: 'issue-update-json-complete',
                 loadDynamicChoices: 'issue-load-dynamic-choices',
                 removeAffectedItem: 'issue-remove-affected-item',
-                removeParentIssue: 'issue-remove-parent-issue'
+                removeParentIssue: 'issue-remove-parent-issue',
+                removeSpentTime: 'issue-remove-spent-time',
+                pauseSpentTime: 'issue-pause-spent-time',
+                stopSpentTime: 'issue-stop-spent-time'
             },
             upload: {
                 complete: 'upload-complete',
@@ -109,8 +112,13 @@ class PachnoApplication {
         this.quicksearch = undefined;
         this.debugger = undefined;
         this.listeners = {};
+        this._user_id = 0;
         this.language = document.body.dataset.language;
         this.issues = {};
+    }
+
+    get user_id() {
+        return this._user_id;
     }
 
     initialize(options) {
@@ -118,6 +126,7 @@ class PachnoApplication {
         this.basepath = options.basepath;
         this.data_url = options.dataUrl;
         this.upload_url = options.uploadUrl;
+        this._user_id = options.user_id;
         this.quicksearch = new Quicksearch(options.autocompleterUrl);
 
         this.trigger(this.EVENTS.quicksearchAddDefaultChoice, {
@@ -298,6 +307,7 @@ $(document).ready(() => {
     const debugUrl = $body.data('debug-url');
     const autocompleterUrl = $body.data('autocompleter-url');
     const uploadUrl = $body.data('upload-url');
+    const user_id = $body.data('user-id');
 
     Pachno.initialize({
         debug,
@@ -305,7 +315,8 @@ $(document).ready(() => {
         dataUrl,
         debugUrl,
         uploadUrl,
-        autocompleterUrl
+        autocompleterUrl,
+        user_id
     });
 
     Pachno.trigger(Pachno.EVENTS.ready);

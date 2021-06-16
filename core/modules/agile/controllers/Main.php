@@ -564,7 +564,7 @@
 
                 $epic->addChildIssue($issue, true);
 
-                return $this->renderJSON(['issue_id' => $issue->getID(), 'epic_id' => $epic->getID(), 'closed_pct' => $epic->getEstimatedPercentCompleted(), 'num_child_issues' => $epic->countChildIssues(), 'estimate' => Issue::getFormattedTime($epic->getEstimatedTime(true, true))]);
+                return $this->renderJSON(['issue_id' => $issue->getID(), 'epic_id' => $epic->getID(), 'closed_pct' => $epic->getEstimatedPercentCompleted(), 'num_child_issues' => $epic->countChildIssues(), 'estimate' => Issue::getFormattedTime($epic->getEstimatedTime())]);
             } catch (Exception $e) {
                 $this->getResponse()->setHttpStatus(400);
 

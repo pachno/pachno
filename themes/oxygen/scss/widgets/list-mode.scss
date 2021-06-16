@@ -256,7 +256,7 @@
     }
 
     &.multiline {
-      .icon {
+      .icon:not(.time-tracking-icon) {
         //margin-right: .5em;
         font-size: 1.2em;
       }
@@ -286,8 +286,10 @@
         }
 
         & .description {
-          display: inline-block;
+          display: flex;
           text-align: left;
+          align-items: center;
+          justify-content: flex-start;
 
           span,
           .button {
@@ -444,7 +446,7 @@
       flex-direction: row;
       box-sizing: border-box;
 
-      &:not(.issuetype-icon) {
+      &:not(.issuetype-icon):not(.time-tracking-icon) {
         padding: .35em .65em .35em 0;
 
         &:not(:first-child) {

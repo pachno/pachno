@@ -42,7 +42,7 @@ $current_spent_time = $current_estimated_time;
         $current_spent_time = $current_estimated_time;
     endif;
     $current_count++;
-    $estimate = $issue->getEstimatedTime(true, true);
+    $estimate = $issue->getEstimatedTime();
     $spenttime = $issue->getSpentTime(true, true);
     foreach ($current_estimated_time as $key => $value) $current_estimated_time[$key] += $estimate[$key];
     foreach ($current_spent_time as $key => $value) $current_spent_time[$key] += ($spenttime[$key]);
@@ -174,7 +174,7 @@ $current_spent_time = $current_estimated_time;
             <?php echo ($issue->getMilestone() instanceof Milestone) ? $issue->getMilestone()->getName() : '-'; ?>
         </div>
         <div class="column sc_estimated_time<?php if (!$issue->hasEstimatedTime()): ?> faded_out<?php endif; ?> <?php if (!in_array('estimated_time', $visible_columns)) echo 'hidden'; ?>">
-            <?php echo (!$issue->hasEstimatedTime()) ? '-' : Issue::getFormattedTime($issue->getEstimatedTime(true, true)); ?>
+            <?php echo (!$issue->hasEstimatedTime()) ? '-' : Issue::getFormattedTime($issue->getEstimatedTime()); ?>
         </div>
         <div class="column sc_spent_time<?php if (!$issue->hasSpentTime()): ?> faded_out<?php endif; ?> <?php if (!in_array('spent_time', $visible_columns)) echo 'hidden'; ?>">
             <?php echo (!$issue->hasSpentTime() || !$issue->isSpentTimeVisible()) ? '-' : Issue::getFormattedTime($issue->getSpentTime(true, true)); ?>

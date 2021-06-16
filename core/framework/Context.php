@@ -1297,7 +1297,7 @@
                         // permission should be applied to all users.
                         if (($uid != 0 && $uid == $permission['uid']) ||
                             ($gid != 0 && $gid == $permission['gid']) ||
-                            ($permission['uid'] == 0 && $permission['gid'] == 0 && $permission['tid'] == 0 && $permission['client_id'] == 0) ||
+                            (!$permission['uid'] && !$permission['gid'] && !$permission['tid'] && !$permission['client_id']) ||
                             (count($team_ids) != 0 && in_array($permission['tid'], $team_ids)) ||
                             (count($client_ids) != 0 && in_array($permission['client_id'], $client_ids))) {
                             // Calculate the permissions weight, and apply its
@@ -2303,7 +2303,7 @@
             if ($token == self::getRequest()->getParameter('csrf_token'))
                 return true;
 
-            $message = self::getI18n()->__('An authentication error occured. Please reload your page and try again');
+            $message = self::getI18n()->__('An authentication error occurred. Please reload your page and try again');
             throw new exceptions\CSRFFailureException($message);
         }
 

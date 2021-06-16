@@ -8,7 +8,7 @@
 /***/ ((module) => {
 
 "use strict";
-module.exports = JSON.parse('{"common":{"mentions":{"user_search_placeholder":"Start typing to search"}},"agile":{"add_card":"Add card","add_card_here":"Add card","add_swimlane":"Add a swimlane"},"issue":{"value_not_set":"Not determined","unknown_value":"Unknown","go_to_converted_issue":{"title":"Go to the new issue?","message":"Do you want to navigate to the issue that you just converted?"}},"roadmap":{"percent_complete":"%percentage% completed"}}');
+module.exports = JSON.parse('{"common":{"mentions":{"user_search_placeholder":"Start typing to search"}},"agile":{"add_card":"Add card","add_card_here":"Add card","add_swimlane":"Add a swimlane"},"issue":{"value_not_set":"Not determined","unknown_value":"Unknown","time_spent_none":"No time spent","time_estimated_none":"Not estimated","go_to_converted_issue":{"title":"Go to the new issue?","message":"Do you want to navigate to the issue that you just converted?"}},"roadmap":{"percent_complete":"%percentage% completed"}}');
 
 /***/ }),
 
@@ -3607,7 +3607,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _uploader__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./uploader */ "./js/classes/uploader.js");
 /* harmony import */ var _quicksearch__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./quicksearch */ "./js/classes/quicksearch.js");
 /* harmony import */ var _widgets_editor__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../widgets/editor */ "./js/widgets/editor/index.js");
-/* harmony import */ var throttle_debounce__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! throttle-debounce */ "./node_modules/throttle-debounce/esm/index.js");
+/* harmony import */ var dayjs__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! dayjs */ "./node_modules/dayjs/dayjs.min.js");
+/* harmony import */ var dayjs__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(dayjs__WEBPACK_IMPORTED_MODULE_6__);
 /* harmony import */ var _board__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./board */ "./js/classes/board.js");
 function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
 
@@ -3656,6 +3657,64 @@ var Issue = /*#__PURE__*/function () {
       }
     });
   }
+  /**
+   * @param json.id
+   * @param json.issue_no
+   * @param json.created_at
+   * @param json.created_at_iso
+   * @param json.updated_at
+   * @param json.updated_at_iso
+   * @param json.updated_at_full
+   * @param json.updated_at_friendly
+   * @param json.updated_at_datetime
+   * @param json.card_url
+   * @param json.href
+   * @param json.more_actions_url
+   * @param json.save_url
+   * @param json.choices_url
+   * @param json.backdrop_url
+   * @param json.cover_image
+   * @param json.project
+   * @param json.transitions
+   * @param json.transitions.status_ids
+   * @param json.available_statuses
+   * @param json.blocking
+   * @param json.locked
+   * @param json.deleted
+   * @param json.closed
+   * @param json.state
+   * @param json.editable
+   * @param json.description
+   * @param json.description_formatted
+   * @param json.reproduction_steps
+   * @param json.reproduction_steps_formatted
+   * @param json.assigned_to
+   * @param json.category
+   * @param json.issue_type
+   * @param json.milestone
+   * @param json.parent_issue_id
+   * @param json.priority
+   * @param json.posted_by
+   * @param json.severity
+   * @param json.reproducability
+   * @param json.resolution
+   * @param json.status
+   * @param json.title
+   * @param json.percent_complete
+   * @param json.time.estimated.formatted
+   * @param json.time.estimated.values
+   * @param json.time.spent.formatted
+   * @param json.time.spent.values
+   * @param json.time.is_tracking
+   * @param json.time.current_user_tracking.started_at
+   * @param json.time.is_tracked_by.id
+   * @param json.number_of_files
+   * @param json.number_of_comments
+   * @param json.number_of_subscribers
+   * @param json.number_of_child_issues
+   * @param json.number_of_affected_items
+   */
+
 
   _createClass(Issue, [{
     key: "updateFromJson",
@@ -3696,6 +3755,9 @@ var Issue = /*#__PURE__*/function () {
       this.deleted = json.deleted;
       this.state = json.state;
       this.editable = json.editable;
+      this.is_time_tracking = json.time.is_tracking;
+      this.is_time_tracking_current_user = json.time.current_user_tracking !== '';
+      this.current_time_tracking = json.time.current_user_tracking;
       this.description = json.description;
       this.description_formatted = json.description_formatted;
       this.reproduction_steps = json.reproduction_steps;
@@ -3713,6 +3775,8 @@ var Issue = /*#__PURE__*/function () {
       this.status = json.status;
       this.title = json.title;
       this.percent_complete = json.percent_complete;
+      this.estimated_time = json.time.estimated;
+      this.spent_time = json.time.spent;
       this.number_of_files = parseInt(json.number_of_files);
       this.number_of_comments = parseInt(json.number_of_comments);
       this.number_of_subscribers = parseInt(json.number_of_subscribers);
@@ -3747,6 +3811,37 @@ var Issue = /*#__PURE__*/function () {
           resolve();
         });
       });
+    }
+  }, {
+    key: "fetchAndUpdate",
+    value: function fetchAndUpdate(url, method) {
+      var issue = this;
+      _pachno__WEBPACK_IMPORTED_MODULE_2__.default.UI.Dialog.setSubmitting();
+      _pachno__WEBPACK_IMPORTED_MODULE_2__.default.UI.Dialog.dismiss();
+      _pachno__WEBPACK_IMPORTED_MODULE_2__.default.trigger(_pachno__WEBPACK_IMPORTED_MODULE_2__.default.EVENTS.issue.update, {
+        id: this.id
+      });
+      return new Promise(function (resolve, reject) {
+        _pachno__WEBPACK_IMPORTED_MODULE_2__.default.fetch(url, {
+          method: method,
+          success: {
+            update_issues_from_json: true
+          }
+        }).then(function (json) {
+          _pachno__WEBPACK_IMPORTED_MODULE_2__.default.trigger(_pachno__WEBPACK_IMPORTED_MODULE_2__.default.EVENTS.issue.updateDone, {
+            id: issue.id
+          });
+          _pachno__WEBPACK_IMPORTED_MODULE_2__.default.trigger(_pachno__WEBPACK_IMPORTED_MODULE_2__.default.EVENTS.issue.updateJson, {
+            json: json.issue
+          });
+          resolve();
+        });
+      });
+    }
+  }, {
+    key: "deleteAndUpdate",
+    value: function deleteAndUpdate(url) {
+      return this.fetchAndUpdate(url, 'DELETE');
     }
   }, {
     key: "triggerEditField",
@@ -3860,25 +3955,18 @@ var Issue = /*#__PURE__*/function () {
       _pachno__WEBPACK_IMPORTED_MODULE_2__.default.on(_pachno__WEBPACK_IMPORTED_MODULE_2__.default.EVENTS.issue.removeFile, function (PachnoApplication, data) {
         if (data.issue_id != issue.id) return;
         jquery__WEBPACK_IMPORTED_MODULE_1___default()("[data-attachment][data-file-id=\"".concat(data.file_id, "\"]")).remove();
-        _pachno__WEBPACK_IMPORTED_MODULE_2__.default.UI.Dialog.dismiss();
-        _pachno__WEBPACK_IMPORTED_MODULE_2__.default.fetch(data.url, {
-          method: 'DELETE'
-        }).then(function (json) {
-          issue.updateFromJson(json.issue);
-          issue.updateVisibleValues();
-        });
+        issue.deleteAndUpdate(data.url);
       });
       _pachno__WEBPACK_IMPORTED_MODULE_2__.default.on(_pachno__WEBPACK_IMPORTED_MODULE_2__.default.EVENTS.issue.removeAffectedItem, function (PachnoApplication, data) {
         if (data.issue_id != issue.id) return;
-        _pachno__WEBPACK_IMPORTED_MODULE_2__.default.UI.Dialog.setSubmitting();
         jquery__WEBPACK_IMPORTED_MODULE_1___default()("[data-affected-item][data-affected-item-id=\"".concat(data.id, "\"]")).remove();
-        _pachno__WEBPACK_IMPORTED_MODULE_2__.default.UI.Dialog.dismiss();
-        _pachno__WEBPACK_IMPORTED_MODULE_2__.default.fetch(data.url, {
-          method: 'DELETE'
-        }).then(function (json) {
-          issue.updateFromJson(json.issue);
-          issue.updateVisibleValues();
-        });
+        issue.deleteAndUpdate(data.url);
+      });
+      _pachno__WEBPACK_IMPORTED_MODULE_2__.default.on(_pachno__WEBPACK_IMPORTED_MODULE_2__.default.EVENTS.issue.removeSpentTime, function (PachnoApplication, data) {
+        if (data.issue_id != issue.id) return;
+        jquery__WEBPACK_IMPORTED_MODULE_1___default()("[data-spent-time-entry][data-spent-time-entry-id=\"".concat(data.id, "\"]")).remove();
+        var url = data.auto ? issue.current_time_tracking.url : data.url;
+        issue.deleteAndUpdate(url);
       });
       _pachno__WEBPACK_IMPORTED_MODULE_2__.default.on(_pachno__WEBPACK_IMPORTED_MODULE_2__.default.EVENTS.upload.complete, function (PachnoApplication, data) {
         if (data.issue_id != issue.id) return;
@@ -4346,6 +4434,49 @@ var Issue = /*#__PURE__*/function () {
               jquery__WEBPACK_IMPORTED_MODULE_1___default()($element.find('.percent_filled')).css({
                 width: this.percent_complete + '%'
               });
+              break;
+
+            case 'spent_time':
+              var $spent_time_value_element = $element.find('.value');
+              $spent_time_value_element.html(this.spent_time.formatted !== '' ? this.spent_time.formatted : _pachno__WEBPACK_IMPORTED_MODULE_2__.default.T.issue.time_spent_none);
+              break;
+
+            case 'estimated_time':
+              var $estimated_time_value_element = $element.find('.value');
+              $estimated_time_value_element.html(this.estimated_time.formatted !== '' ? this.estimated_time.formatted : _pachno__WEBPACK_IMPORTED_MODULE_2__.default.T.issue.time_estimated_none);
+              break;
+
+            case 'time_tracking':
+              if (this.is_time_tracking && this.is_time_tracking_current_user) {
+                var time_tracking_start_date = new Date(this.current_time_tracking.started_at * 1000);
+                $element.find('.time-start-value').html(dayjs__WEBPACK_IMPORTED_MODULE_6___default()(time_tracking_start_date).format('DD/MM/YY HH:mm'));
+                var started_at = this.current_time_tracking.edited_at * 1000 - this.current_time_tracking.elapsed_time.time * 1000;
+                $element.find('[data-interactive-timer]').data('started-at', started_at);
+                $element.addClass('tracking');
+                $element.find('.value').html('--:--');
+
+                if (this.current_time_tracking.is_paused) {
+                  var elapsed_minutes = String(this.current_time_tracking.elapsed_time.minutes).padStart(2, '0');
+                  var elapsed_hours = String(this.current_time_tracking.elapsed_time.hours).padStart(2, '0');
+                  var elapsed_days = String(this.current_time_tracking.elapsed_time.days).padStart(2, '0');
+                  var time_string = "".concat(elapsed_hours, ":").concat(elapsed_minutes);
+
+                  if (this.current_time_tracking.elapsed_time.days > 0) {
+                    time_string = "".concat(elapsed_days, ":").concat(time_string);
+                  }
+
+                  $element.find('.value').html(time_string);
+                  $element.find('[data-interactive-timer]').data('paused', true);
+                  $element.addClass('paused');
+                } else {
+                  $element.removeClass('paused');
+                  $element.find('[data-interactive-timer]').removeData('paused');
+                }
+              } else {
+                $element.find('[data-interactive-timer]').removeData('started-at');
+                $element.removeClass('tracking');
+              }
+
               break;
           }
         }
@@ -5032,6 +5163,7 @@ var PachnoApplication = /*#__PURE__*/function () {
     this.quicksearch = undefined;
     this["debugger"] = undefined;
     this.listeners = {};
+    this._user_id = 0;
     this.language = document.body.dataset.language;
     this.issues = {};
   }
@@ -5086,7 +5218,10 @@ var PachnoApplication = /*#__PURE__*/function () {
           updateJsonComplete: 'issue-update-json-complete',
           loadDynamicChoices: 'issue-load-dynamic-choices',
           removeAffectedItem: 'issue-remove-affected-item',
-          removeParentIssue: 'issue-remove-parent-issue'
+          removeParentIssue: 'issue-remove-parent-issue',
+          removeSpentTime: 'issue-remove-spent-time',
+          pauseSpentTime: 'issue-pause-spent-time',
+          stopSpentTime: 'issue-stop-spent-time'
         },
         upload: {
           complete: 'upload-complete'
@@ -5112,12 +5247,18 @@ var PachnoApplication = /*#__PURE__*/function () {
       return translations[this.language] || translations.en_US;
     }
   }, {
+    key: "user_id",
+    get: function get() {
+      return this._user_id;
+    }
+  }, {
     key: "initialize",
     value: function initialize(options) {
       this.debug = options.debug;
       this.basepath = options.basepath;
       this.data_url = options.dataUrl;
       this.upload_url = options.uploadUrl;
+      this._user_id = options.user_id;
       this.quicksearch = new _quicksearch__WEBPACK_IMPORTED_MODULE_23__.default(options.autocompleterUrl);
       this.trigger(this.EVENTS.quicksearchAddDefaultChoice, {
         icon: {
@@ -5324,13 +5465,15 @@ jquery__WEBPACK_IMPORTED_MODULE_0___default()(document).ready(function () {
   var debugUrl = $body.data('debug-url');
   var autocompleterUrl = $body.data('autocompleter-url');
   var uploadUrl = $body.data('upload-url');
+  var user_id = $body.data('user-id');
   Pachno.initialize({
     debug: debug,
     webroot: webroot,
     dataUrl: dataUrl,
     debugUrl: debugUrl,
     uploadUrl: uploadUrl,
-    autocompleterUrl: autocompleterUrl
+    autocompleterUrl: autocompleterUrl,
+    user_id: user_id
   });
   Pachno.trigger(Pachno.EVENTS.ready);
 });
@@ -7731,6 +7874,10 @@ var fetchHelper = function fetchHelper(url, options) {
       throw new Error('Cannot send form data when using GET method');
     }
 
+    if (options.form && $form.length === 0) {
+      throw new Error('Trying to post a form without an id');
+    }
+
     var onLoading = function onLoading() {
       if (options.loading) {
         if (fetch_debugger !== undefined) {
@@ -7873,7 +8020,11 @@ var fetchHelper = function fetchHelper(url, options) {
                 }
 
                 if ($form_container.length) {
-                  jquery__WEBPACK_IMPORTED_MODULE_0___default()(content).insertBefore($form_container);
+                  if (options.success.update.list) {
+                    $form_container.append(jquery__WEBPACK_IMPORTED_MODULE_0___default()(content));
+                  } else {
+                    jquery__WEBPACK_IMPORTED_MODULE_0___default()(content).insertBefore($form_container);
+                  }
                 } else {
                   jquery__WEBPACK_IMPORTED_MODULE_0___default()(update_element).append(content);
                 }
@@ -8110,6 +8261,50 @@ var setupListeners = function setupListeners() {
     var issue = _classes_pachno__WEBPACK_IMPORTED_MODULE_1__.default.getIssue($element.data('issue-id'));
     issue.postAndUpdate('cover_image', 0);
   });
+  $body.off('click', '.trigger-start-time-tracking');
+  $body.on('click', '.trigger-start-time-tracking', function (event) {
+    event.preventDefault();
+    event.stopPropagation();
+    var $element = jquery__WEBPACK_IMPORTED_MODULE_0___default()(this);
+    $element.parent().addClass('submitting');
+    $element.attr('disabled', true);
+    var issue = _classes_pachno__WEBPACK_IMPORTED_MODULE_1__.default.getIssue($element.data('issue-id'));
+    var url = $element.data('url');
+    issue.fetchAndUpdate(url, 'POST').then(function () {
+      $element.parent().removeClass('submitting');
+      $element.removeAttr('disabled');
+    });
+  });
+
+  var updateTimeTracking = function updateTimeTracking($element, parameters) {
+    $element.parent().addClass('submitting');
+    $element.attr('disabled', true);
+    var issue = _classes_pachno__WEBPACK_IMPORTED_MODULE_1__.default.getIssue($element.data('issue-id'));
+    var url = issue.current_time_tracking.url + parameters;
+    issue.fetchAndUpdate(url, 'POST').then(function () {
+      $element.parent().removeClass('submitting');
+      $element.removeAttr('disabled');
+    });
+  };
+
+  $body.off('click', '.trigger-stop-time-tracking');
+  $body.on('click', '.trigger-stop-time-tracking', function (event) {
+    event.preventDefault();
+    event.stopPropagation();
+    updateTimeTracking(jquery__WEBPACK_IMPORTED_MODULE_0___default()(this), '?is_completed=1&is_paused=1');
+  });
+  $body.off('click', '.trigger-pause-time-tracking');
+  $body.on('click', '.trigger-pause-time-tracking', function (event) {
+    event.preventDefault();
+    event.stopPropagation();
+    updateTimeTracking(jquery__WEBPACK_IMPORTED_MODULE_0___default()(this), '?is_completed=0&is_paused=1');
+  });
+  $body.off('click', '.trigger-resume-time-tracking');
+  $body.on('click', '.trigger-resume-time-tracking', function (event) {
+    event.preventDefault();
+    event.stopPropagation();
+    updateTimeTracking(jquery__WEBPACK_IMPORTED_MODULE_0___default()(this), '?is_completed=0&is_paused=0');
+  });
   _classes_pachno__WEBPACK_IMPORTED_MODULE_1__.default.on(_classes_pachno__WEBPACK_IMPORTED_MODULE_1__.default.EVENTS.issue.triggerDelete, function (PachnoApplication, data) {
     var url = data.url;
     var issue_id = data.issue_id;
@@ -8166,6 +8361,57 @@ var setupListeners = function setupListeners() {
       }
     });
   });
+
+  var updateInteractiveTimers = function updateInteractiveTimers() {
+    var $timers = jquery__WEBPACK_IMPORTED_MODULE_0___default()('[data-interactive-timer]');
+
+    var _iterator2 = _createForOfIteratorHelper($timers),
+        _step2;
+
+    try {
+      for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
+        var element = _step2.value;
+        var $element = jquery__WEBPACK_IMPORTED_MODULE_0___default()(element);
+
+        if ($element.data('started-at') === undefined || $element.data('paused') !== undefined) {
+          continue;
+        }
+
+        var started_date = new Date($element.data('started-at'));
+        var now_date = new Date(Date.now());
+        var diff = Math.abs(now_date - started_date) / 1000;
+        var days = Math.floor(diff / 86400);
+        diff -= days * 86400;
+        days = String(days).padStart(2, '0'); // calculate (and subtract) whole hours
+
+        var hours = Math.floor(diff / 3600) % 24;
+        diff -= hours * 3600;
+        hours = String(hours).padStart(2, '0'); // calculate (and subtract) whole minutes
+
+        var minutes = Math.floor(diff / 60) % 60;
+        diff -= minutes * 60;
+        minutes = String(minutes).padStart(2, '0'); // what's left is seconds
+
+        var seconds = diff % 60;
+        seconds = String(seconds).padStart(2, '0');
+        var time_string = "".concat(hours, ":").concat(minutes);
+
+        if (days > 0) {
+          time_string = "".concat(days, ":").concat(time_string);
+        }
+
+        $element.find('.value').html(time_string);
+      }
+    } catch (err) {
+      _iterator2.e(err);
+    } finally {
+      _iterator2.f();
+    }
+
+    setTimeout(updateInteractiveTimers, 1000);
+  };
+
+  updateInteractiveTimers();
 };
 
 
@@ -9285,6 +9531,11 @@ var submitForm = function submitForm($form) {
   var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
   var url = options.url || $form.data('url') || $form.attr('action');
 
+  if ($form.attr('id') === undefined) {
+    console.error($form);
+    throw new Error('Trying to post a form without an id');
+  }
+
   if ($form.data('update-container')) {
     if ($form.data('update-insert') !== undefined) {
       options.success = {
@@ -9506,6 +9757,15 @@ var setupListeners = function setupListeners() {
   $body.on('click', 'form[data-interactive-form]:not(.submitting) input[type=radio], form[data-interactive-form]:not(.submitting) input[type=checkbox]', function (event) {
     return submitInteractiveForm(event, jquery__WEBPACK_IMPORTED_MODULE_0___default()(event.target).parents('form'));
   });
+  $body.on('click', '.flexible-table .toggle-line', function (event) {
+    event.preventDefault();
+    event.stopPropagation();
+    var $toggler = jquery__WEBPACK_IMPORTED_MODULE_0___default()(this);
+    var $container = $toggler.parents('.line');
+    var $next = $container.next().length ? $container.next() : $container.parents('.column').find('.line').first();
+    $container.addClass('hidden');
+    $next.removeClass('hidden');
+  });
 };
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (UI);
@@ -9711,7 +9971,7 @@ var loadDynamicMenu = function loadDynamicMenu($menu) {
     method: 'GET',
     success: {
       callback: function callback(json) {
-        var $newMenu = jquery__WEBPACK_IMPORTED_MODULE_0___default()(json.menu);
+        var $newMenu = json.menu !== undefined ? jquery__WEBPACK_IMPORTED_MODULE_0___default()(json.menu) : jquery__WEBPACK_IMPORTED_MODULE_0___default()(json.content);
         $newMenu.data('menu-url', url);
 
         if (populateOnce) {
@@ -11585,22 +11845,6 @@ var toggleNotifications = function toggleNotifications(toggle_classes) {
 
 var setupListeners = function setupListeners() {
   jquery__WEBPACK_IMPORTED_MODULE_0___default()("body").on("click", "#user_notifications_container", toggleNotifications);
-  _classes_pachno__WEBPACK_IMPORTED_MODULE_1__.default.fetch(_classes_pachno__WEBPACK_IMPORTED_MODULE_1__.default.data_url, {
-    method: 'GET',
-    success: {
-      callback: function callback(json) {
-        var $user_notifications_count = jquery__WEBPACK_IMPORTED_MODULE_0___default()('#user_notifications_count');
-
-        if ($user_notifications_count.length) {
-          $user_notifications_count.html(json.unread_notifications_count);
-
-          if (parseInt(json.unread_notifications_count) > 0) {
-            $user_notifications_count.addClass('unread');
-          }
-        }
-      }
-    }
-  });
 }; // Pachno.Main.Notifications.Web.GrantPermissionOrSendTest = function (title, body, icon) {
 //     if (!Notify.needsPermission) {
 //         Pachno.Main.Notifications.Web.Send(title, body, 'test', icon);
@@ -24252,6 +24496,16 @@ module.exports = function cssWithMappingToString(item) {
 
   return [content].join("\n");
 };
+
+/***/ }),
+
+/***/ "./node_modules/dayjs/dayjs.min.js":
+/*!*****************************************!*\
+  !*** ./node_modules/dayjs/dayjs.min.js ***!
+  \*****************************************/
+/***/ (function(module) {
+
+!function(t,e){ true?module.exports=e():0}(this,(function(){"use strict";var t=1e3,e=6e4,n=36e5,r="millisecond",i="second",s="minute",u="hour",a="day",o="week",f="month",h="quarter",c="year",d="date",$="Invalid Date",l=/^(\d{4})[-/]?(\d{1,2})?[-/]?(\d{0,2})[^0-9]*(\d{1,2})?:?(\d{1,2})?:?(\d{1,2})?[.:]?(\d+)?$/,y=/\[([^\]]+)]|Y{1,4}|M{1,4}|D{1,2}|d{1,4}|H{1,2}|h{1,2}|a|A|m{1,2}|s{1,2}|Z{1,2}|SSS/g,M={name:"en",weekdays:"Sunday_Monday_Tuesday_Wednesday_Thursday_Friday_Saturday".split("_"),months:"January_February_March_April_May_June_July_August_September_October_November_December".split("_")},m=function(t,e,n){var r=String(t);return!r||r.length>=e?t:""+Array(e+1-r.length).join(n)+t},g={s:m,z:function(t){var e=-t.utcOffset(),n=Math.abs(e),r=Math.floor(n/60),i=n%60;return(e<=0?"+":"-")+m(r,2,"0")+":"+m(i,2,"0")},m:function t(e,n){if(e.date()<n.date())return-t(n,e);var r=12*(n.year()-e.year())+(n.month()-e.month()),i=e.clone().add(r,f),s=n-i<0,u=e.clone().add(r+(s?-1:1),f);return+(-(r+(n-i)/(s?i-u:u-i))||0)},a:function(t){return t<0?Math.ceil(t)||0:Math.floor(t)},p:function(t){return{M:f,y:c,w:o,d:a,D:d,h:u,m:s,s:i,ms:r,Q:h}[t]||String(t||"").toLowerCase().replace(/s$/,"")},u:function(t){return void 0===t}},D="en",v={};v[D]=M;var p=function(t){return t instanceof _},S=function(t,e,n){var r;if(!t)return D;if("string"==typeof t)v[t]&&(r=t),e&&(v[t]=e,r=t);else{var i=t.name;v[i]=t,r=i}return!n&&r&&(D=r),r||!n&&D},w=function(t,e){if(p(t))return t.clone();var n="object"==typeof e?e:{};return n.date=t,n.args=arguments,new _(n)},O=g;O.l=S,O.i=p,O.w=function(t,e){return w(t,{locale:e.$L,utc:e.$u,x:e.$x,$offset:e.$offset})};var _=function(){function M(t){this.$L=S(t.locale,null,!0),this.parse(t)}var m=M.prototype;return m.parse=function(t){this.$d=function(t){var e=t.date,n=t.utc;if(null===e)return new Date(NaN);if(O.u(e))return new Date;if(e instanceof Date)return new Date(e);if("string"==typeof e&&!/Z$/i.test(e)){var r=e.match(l);if(r){var i=r[2]-1||0,s=(r[7]||"0").substring(0,3);return n?new Date(Date.UTC(r[1],i,r[3]||1,r[4]||0,r[5]||0,r[6]||0,s)):new Date(r[1],i,r[3]||1,r[4]||0,r[5]||0,r[6]||0,s)}}return new Date(e)}(t),this.$x=t.x||{},this.init()},m.init=function(){var t=this.$d;this.$y=t.getFullYear(),this.$M=t.getMonth(),this.$D=t.getDate(),this.$W=t.getDay(),this.$H=t.getHours(),this.$m=t.getMinutes(),this.$s=t.getSeconds(),this.$ms=t.getMilliseconds()},m.$utils=function(){return O},m.isValid=function(){return!(this.$d.toString()===$)},m.isSame=function(t,e){var n=w(t);return this.startOf(e)<=n&&n<=this.endOf(e)},m.isAfter=function(t,e){return w(t)<this.startOf(e)},m.isBefore=function(t,e){return this.endOf(e)<w(t)},m.$g=function(t,e,n){return O.u(t)?this[e]:this.set(n,t)},m.unix=function(){return Math.floor(this.valueOf()/1e3)},m.valueOf=function(){return this.$d.getTime()},m.startOf=function(t,e){var n=this,r=!!O.u(e)||e,h=O.p(t),$=function(t,e){var i=O.w(n.$u?Date.UTC(n.$y,e,t):new Date(n.$y,e,t),n);return r?i:i.endOf(a)},l=function(t,e){return O.w(n.toDate()[t].apply(n.toDate("s"),(r?[0,0,0,0]:[23,59,59,999]).slice(e)),n)},y=this.$W,M=this.$M,m=this.$D,g="set"+(this.$u?"UTC":"");switch(h){case c:return r?$(1,0):$(31,11);case f:return r?$(1,M):$(0,M+1);case o:var D=this.$locale().weekStart||0,v=(y<D?y+7:y)-D;return $(r?m-v:m+(6-v),M);case a:case d:return l(g+"Hours",0);case u:return l(g+"Minutes",1);case s:return l(g+"Seconds",2);case i:return l(g+"Milliseconds",3);default:return this.clone()}},m.endOf=function(t){return this.startOf(t,!1)},m.$set=function(t,e){var n,o=O.p(t),h="set"+(this.$u?"UTC":""),$=(n={},n[a]=h+"Date",n[d]=h+"Date",n[f]=h+"Month",n[c]=h+"FullYear",n[u]=h+"Hours",n[s]=h+"Minutes",n[i]=h+"Seconds",n[r]=h+"Milliseconds",n)[o],l=o===a?this.$D+(e-this.$W):e;if(o===f||o===c){var y=this.clone().set(d,1);y.$d[$](l),y.init(),this.$d=y.set(d,Math.min(this.$D,y.daysInMonth())).$d}else $&&this.$d[$](l);return this.init(),this},m.set=function(t,e){return this.clone().$set(t,e)},m.get=function(t){return this[O.p(t)]()},m.add=function(r,h){var d,$=this;r=Number(r);var l=O.p(h),y=function(t){var e=w($);return O.w(e.date(e.date()+Math.round(t*r)),$)};if(l===f)return this.set(f,this.$M+r);if(l===c)return this.set(c,this.$y+r);if(l===a)return y(1);if(l===o)return y(7);var M=(d={},d[s]=e,d[u]=n,d[i]=t,d)[l]||1,m=this.$d.getTime()+r*M;return O.w(m,this)},m.subtract=function(t,e){return this.add(-1*t,e)},m.format=function(t){var e=this;if(!this.isValid())return $;var n=t||"YYYY-MM-DDTHH:mm:ssZ",r=O.z(this),i=this.$locale(),s=this.$H,u=this.$m,a=this.$M,o=i.weekdays,f=i.months,h=function(t,r,i,s){return t&&(t[r]||t(e,n))||i[r].substr(0,s)},c=function(t){return O.s(s%12||12,t,"0")},d=i.meridiem||function(t,e,n){var r=t<12?"AM":"PM";return n?r.toLowerCase():r},l={YY:String(this.$y).slice(-2),YYYY:this.$y,M:a+1,MM:O.s(a+1,2,"0"),MMM:h(i.monthsShort,a,f,3),MMMM:h(f,a),D:this.$D,DD:O.s(this.$D,2,"0"),d:String(this.$W),dd:h(i.weekdaysMin,this.$W,o,2),ddd:h(i.weekdaysShort,this.$W,o,3),dddd:o[this.$W],H:String(s),HH:O.s(s,2,"0"),h:c(1),hh:c(2),a:d(s,u,!0),A:d(s,u,!1),m:String(u),mm:O.s(u,2,"0"),s:String(this.$s),ss:O.s(this.$s,2,"0"),SSS:O.s(this.$ms,3,"0"),Z:r};return n.replace(y,(function(t,e){return e||l[t]||r.replace(":","")}))},m.utcOffset=function(){return 15*-Math.round(this.$d.getTimezoneOffset()/15)},m.diff=function(r,d,$){var l,y=O.p(d),M=w(r),m=(M.utcOffset()-this.utcOffset())*e,g=this-M,D=O.m(this,M);return D=(l={},l[c]=D/12,l[f]=D,l[h]=D/3,l[o]=(g-m)/6048e5,l[a]=(g-m)/864e5,l[u]=g/n,l[s]=g/e,l[i]=g/t,l)[y]||g,$?D:O.a(D)},m.daysInMonth=function(){return this.endOf(f).$D},m.$locale=function(){return v[this.$L]},m.locale=function(t,e){if(!t)return this.$L;var n=this.clone(),r=S(t,e,!0);return r&&(n.$L=r),n},m.clone=function(){return O.w(this.$d,this)},m.toDate=function(){return new Date(this.valueOf())},m.toJSON=function(){return this.isValid()?this.toISOString():null},m.toISOString=function(){return this.$d.toISOString()},m.toString=function(){return this.$d.toUTCString()},M}(),b=_.prototype;return w.prototype=b,[["$ms",r],["$s",i],["$m",s],["$H",u],["$W",a],["$M",f],["$y",c],["$D",d]].forEach((function(t){b[t[1]]=function(e){return this.$g(e,t[0],t[1])}})),w.extend=function(t,e){return t.$i||(t(e,_,w),t.$i=!0),w},w.locale=S,w.isDayjs=p,w.unix=function(t){return w(1e3*t)},w.en=v[D],w.Ls=v,w.p={},w}));
 
 /***/ }),
 
@@ -48583,162 +48837,6 @@ module.exports = function (list, options) {
     lastIdentifiers = newLastIdentifiers;
   };
 };
-
-/***/ }),
-
-/***/ "./node_modules/throttle-debounce/esm/index.js":
-/*!*****************************************************!*\
-  !*** ./node_modules/throttle-debounce/esm/index.js ***!
-  \*****************************************************/
-/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "debounce": () => (/* binding */ debounce),
-/* harmony export */   "throttle": () => (/* binding */ throttle)
-/* harmony export */ });
-/* eslint-disable no-undefined,no-param-reassign,no-shadow */
-
-/**
- * Throttle execution of a function. Especially useful for rate limiting
- * execution of handlers on events like resize and scroll.
- *
- * @param  {number}    delay -          A zero-or-greater delay in milliseconds. For event callbacks, values around 100 or 250 (or even higher) are most useful.
- * @param  {boolean}   [noTrailing] -   Optional, defaults to false. If noTrailing is true, callback will only execute every `delay` milliseconds while the
- *                                    throttled-function is being called. If noTrailing is false or unspecified, callback will be executed one final time
- *                                    after the last throttled-function call. (After the throttled-function has not been called for `delay` milliseconds,
- *                                    the internal counter is reset).
- * @param  {Function}  callback -       A function to be executed after delay milliseconds. The `this` context and all arguments are passed through, as-is,
- *                                    to `callback` when the throttled-function is executed.
- * @param  {boolean}   [debounceMode] - If `debounceMode` is true (at begin), schedule `clear` to execute after `delay` ms. If `debounceMode` is false (at end),
- *                                    schedule `callback` to execute after `delay` ms.
- *
- * @returns {Function}  A new, throttled, function.
- */
-function throttle (delay, noTrailing, callback, debounceMode) {
-  /*
-   * After wrapper has stopped being called, this timeout ensures that
-   * `callback` is executed at the proper times in `throttle` and `end`
-   * debounce modes.
-   */
-  var timeoutID;
-  var cancelled = false; // Keep track of the last time `callback` was executed.
-
-  var lastExec = 0; // Function to clear existing timeout
-
-  function clearExistingTimeout() {
-    if (timeoutID) {
-      clearTimeout(timeoutID);
-    }
-  } // Function to cancel next exec
-
-
-  function cancel() {
-    clearExistingTimeout();
-    cancelled = true;
-  } // `noTrailing` defaults to falsy.
-
-
-  if (typeof noTrailing !== 'boolean') {
-    debounceMode = callback;
-    callback = noTrailing;
-    noTrailing = undefined;
-  }
-  /*
-   * The `wrapper` function encapsulates all of the throttling / debouncing
-   * functionality and when executed will limit the rate at which `callback`
-   * is executed.
-   */
-
-
-  function wrapper() {
-    for (var _len = arguments.length, arguments_ = new Array(_len), _key = 0; _key < _len; _key++) {
-      arguments_[_key] = arguments[_key];
-    }
-
-    var self = this;
-    var elapsed = Date.now() - lastExec;
-
-    if (cancelled) {
-      return;
-    } // Execute `callback` and update the `lastExec` timestamp.
-
-
-    function exec() {
-      lastExec = Date.now();
-      callback.apply(self, arguments_);
-    }
-    /*
-     * If `debounceMode` is true (at begin) this is used to clear the flag
-     * to allow future `callback` executions.
-     */
-
-
-    function clear() {
-      timeoutID = undefined;
-    }
-
-    if (debounceMode && !timeoutID) {
-      /*
-       * Since `wrapper` is being called for the first time and
-       * `debounceMode` is true (at begin), execute `callback`.
-       */
-      exec();
-    }
-
-    clearExistingTimeout();
-
-    if (debounceMode === undefined && elapsed > delay) {
-      /*
-       * In throttle mode, if `delay` time has been exceeded, execute
-       * `callback`.
-       */
-      exec();
-    } else if (noTrailing !== true) {
-      /*
-       * In trailing throttle mode, since `delay` time has not been
-       * exceeded, schedule `callback` to execute `delay` ms after most
-       * recent execution.
-       *
-       * If `debounceMode` is true (at begin), schedule `clear` to execute
-       * after `delay` ms.
-       *
-       * If `debounceMode` is false (at end), schedule `callback` to
-       * execute after `delay` ms.
-       */
-      timeoutID = setTimeout(debounceMode ? clear : exec, debounceMode === undefined ? delay - elapsed : delay);
-    }
-  }
-
-  wrapper.cancel = cancel; // Return the wrapper function.
-
-  return wrapper;
-}
-
-/* eslint-disable no-undefined */
-/**
- * Debounce execution of a function. Debouncing, unlike throttling,
- * guarantees that a function is only executed a single time, either at the
- * very beginning of a series of calls, or at the very end.
- *
- * @param  {number}   delay -         A zero-or-greater delay in milliseconds. For event callbacks, values around 100 or 250 (or even higher) are most useful.
- * @param  {boolean}  [atBegin] -     Optional, defaults to false. If atBegin is false or unspecified, callback will only be executed `delay` milliseconds
- *                                  after the last debounced-function call. If atBegin is true, callback will be executed only at the first debounced-function call.
- *                                  (After the throttled-function has not been called for `delay` milliseconds, the internal counter is reset).
- * @param  {Function} callback -      A function to be executed after delay milliseconds. The `this` context and all arguments are passed through, as-is,
- *                                  to `callback` when the debounced-function is executed.
- *
- * @returns {Function} A new, debounced function.
- */
-
-function debounce (delay, atBegin, callback) {
-  return callback === undefined ? throttle(delay, atBegin, false) : throttle(delay, callback, atBegin !== false);
-}
-
-
-//# sourceMappingURL=index.js.map
-
 
 /***/ }),
 
