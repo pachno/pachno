@@ -6801,13 +6801,10 @@ input[data-interactive-toggle].submitting + label .indicator {
       justify-content: center;
       flex-direction: row;
       box-sizing: border-box; }
-      .list-mode .list-item .icon:not(.issuetype-icon):not(.time-tracking-icon),
-      .list-mode .list-item:hover .icon:not(.issuetype-icon):not(.time-tracking-icon) {
-        padding: .35em .65em .35em 0; }
-        .list-mode .list-item .icon:not(.issuetype-icon):not(.time-tracking-icon):not(:first-child),
-        .list-mode .list-item:hover .icon:not(.issuetype-icon):not(.time-tracking-icon):not(:first-child) {
-          padding: .25em .15em;
-          flex: 0 0 30px; }
+      .list-mode .list-item .icon:not(.issuetype-icon):not(.time-tracking-icon):not(:first-child),
+      .list-mode .list-item:hover .icon:not(.issuetype-icon):not(.time-tracking-icon):not(:first-child) {
+        padding: .25em .15em;
+        flex: 0 0 30px; }
       .list-mode .list-item .icon.issuetype-icon,
       .list-mode .list-item:hover .icon.issuetype-icon {
         flex: 0 0 30px;
