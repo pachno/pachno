@@ -348,7 +348,6 @@
                     $times = Timeable::getZeroedUnitsWithPoints();
                     $times[$request['timespent_specified_type']] = $request['timespent_specified_value'];
                 }
-                $times['hours'] *= 100;
                 $this->setSpentPoints($times['points']);
                 $this->setSpentMinutes($times['minutes']);
                 $this->setSpentHours($times['hours']);
