@@ -7310,8 +7310,13 @@ var setupListeners = function setupListeners() {
 
   _classes_pachno__WEBPACK_IMPORTED_MODULE_1__.default.on(_classes_pachno__WEBPACK_IMPORTED_MODULE_1__.default.EVENTS.article.delete, function (PachnoApplication, data) {
     _classes_pachno__WEBPACK_IMPORTED_MODULE_1__.default.UI.Dialog.setSubmitting();
+    jquery__WEBPACK_IMPORTED_MODULE_0___default()('[data-article][data-id=' + data.article_id + ']').remove();
     _classes_pachno__WEBPACK_IMPORTED_MODULE_1__.default.fetch(data.url, {
       method: 'DELETE'
+    }).then(function (json) {
+      if (json.forward === undefined) {
+        _classes_pachno__WEBPACK_IMPORTED_MODULE_1__.default.UI.Dialog.dismiss();
+      }
     });
   });
   jquery__WEBPACK_IMPORTED_MODULE_0___default()('body').on('change', '.article.editable .trigger-toggle-checklist', function (event) {

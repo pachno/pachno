@@ -14,7 +14,7 @@
 <div class="backdrop_box huge edit_agileboard">
     <div class="backdrop_detail_header">
         <span><?= ($client->getId()) ? __('Edit client') : __('Create new client'); ?></span>
-        <a href="javascript:void(0);" class="closer" onclick="Pachno.UI.Backdrop.reset();"><?= fa_image_tag('times'); ?></a>
+        <a href="javascript:void(0);" class="closer"><?= fa_image_tag('times'); ?></a>
     </div>
     <div id="backdrop_detail_content" class="backdrop_detail_content with-sidebar">
         <div class="sidebar">

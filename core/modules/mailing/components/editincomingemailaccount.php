@@ -19,7 +19,7 @@
 <div class="backdrop_box large">
     <div class="backdrop_detail_header">
         <span><?php echo ($account->getId()) ? __('Edit incoming email account') : __('Add new incoming email account'); ?></span>
-        <a href="javascript:void(0);" class="closer" onclick="Pachno.UI.Backdrop.reset();"><?= fa_image_tag('times'); ?></a>
+        <a href="javascript:void(0);" class="closer"><?= fa_image_tag('times'); ?></a>
     </div>
     <form accept-charset="<?php echo \pachno\core\framework\Context::getI18n()->getCharset(); ?>" id="incoming_email_account_form" action="<?php echo make_url('mailing_save_incoming_account', array('project_key' => $project->getKey())); ?>" method="post" id="build_form" onsubmit="Pachno.Modules.mailing.saveIncomingEmailAccount('<?php echo make_url('mailing_save_incoming_account', array('project_key' => $project->getKey())); ?>');return false;">
         <div id="backdrop_detail_content" class="backdrop_detail_content">

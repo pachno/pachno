@@ -14081,6 +14081,25 @@ DEL {
   width: auto;
   white-space: normal; }
 
+.redirect-article a {
+  color: #00adc7;
+  border-bottom: 1px dotted #00adc7; }
+  .redirect-article a.article-link {
+    background-color: rgba(240, 240, 240, 0.3);
+    border-bottom: none;
+    padding: .1em .25em;
+    border-radius: 4px;
+    text-decoration: none;
+    font-size: .95em;
+    font-weight: 500;
+    display: inline-block;
+    box-sizing: border-box; }
+    .redirect-article a.article-link.invalid {
+      color: #D62246; }
+    .redirect-article a.article-link .indicator {
+      font-size: .8em;
+      opacity: .7; }
+
 /* END: modules/publish/ contributions styling */
 .fullpage_backdrop {
   background-color: rgba(255, 255, 255, 0.7);

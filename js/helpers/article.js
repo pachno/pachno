@@ -91,7 +91,13 @@ const setupListeners = () => {
 
     Pachno.on(Pachno.EVENTS.article.delete, function (PachnoApplication, data) {
         Pachno.UI.Dialog.setSubmitting();
-        Pachno.fetch(data.url, { method: 'DELETE' });
+        $('[data-article][data-id=' + data.article_id + ']').remove();
+        Pachno.fetch(data.url, { method: 'DELETE' })
+            .then(json => {
+                if (json.forward === undefined) {
+                    Pachno.UI.Dialog.dismiss();
+                }
+            });
     });
 
     $('body').on('change', '.article.editable .trigger-toggle-checklist', function (event) {

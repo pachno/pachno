@@ -65,7 +65,7 @@
          *
          * @return Article[]
          */
-        public function getManualSidebarArticles($is_category, Project $project = null): array
+        public function getSidebarArticles($is_category, Project $project = null): array
         {
             $query = $this->getQuery();
             $query->where(self::SCOPE, framework\Context::getScope()->getID());
@@ -676,6 +676,35 @@
             $query->where('articles.redirect_article_id', 0);
 
             $this->rawDelete($query);
+        }
+
+        /**
+         * @return ?Article
+         */
+        public function getArticleBySlug($slug): ?Article
+        {
+            $query = $this->getQuery();
+            $query->where('articles.redirect_slug', $slug);
+
+            return $this->selectOne($query);
+        }
+
+        /**
+         * @return Article[]
+         */
+        public function getRedirectArticles(?Project $project): array
+        {
+            $query = $this->getQuery();
+            $query->where('articles.redirect_slug', '', Criterion::NOT_EQUALS);
+            $query->where('articles.redirect_slug', null, Criterion::IS_NOT_NULL);
+
+            if ($project instanceof Project) {
+                $query->where('articles.project_id', $project->getID());
+            } else {
+                $query->where('articles.project_id', 0);
+            }
+
+            return $this->select($query);
         }
 
     }

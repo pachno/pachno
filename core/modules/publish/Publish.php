@@ -262,8 +262,8 @@
             }
 
             $wiki_url = ($event->getSubject() instanceof Project && $event->getSubject()->hasWikiURL()) ? $event->getSubject()->getWikiURL() : null;
-            $top_level_articles = Articles::getTable()->getManualSidebarArticles(false, $article->getProject());
-            $top_level_categories = Articles::getTable()->getManualSidebarArticles(true, $article->getProject());
+            $top_level_articles = Articles::getTable()->getSidebarArticles(false, $article->getProject());
+            $top_level_categories = Articles::getTable()->getSidebarArticles(true, $article->getProject());
             $overview_article = $article;
             usort($top_level_articles, '\pachno\core\entities\Article::sortArticleChildren');
             usort($top_level_categories, '\pachno\core\entities\Article::sortArticleChildren');
@@ -553,6 +553,34 @@
             $this->loadArticles(null, $overwrite, $scope);
             if (framework\Context::isCLI())
                 Command::cli_echo("... done\n");
+        }
+
+        /**
+         * @Listener(module="core", identifier="get_backdrop_partial")
+         * @param Event $event
+         */
+        public function listenGetBackdropPartial(Event $event)
+        {
+            $request = $event->getParameter('request');
+
+            switch ($request['key']) {
+                case 'publish_edit_redirect_article':
+                    $event->setReturnValue('publish/editredirectarticle');
+                    if ($article_id = $request->getParameter('article_id')) {
+                        $article = Articles::getTable()->selectById($article_id);
+                    } else {
+                        $article = new Article();
+                        if ($request['project_id']) {
+                            $article->setProject($request['project_id']);
+                        }
+                        if ($request['redirect_article_id']) {
+                            $article->setRedirectArticle($request['redirect_article_id']);
+                        }
+                    }
+                    $event->addToReturnList($article, 'article');
+                    $event->setProcessed(true);
+                    break;
+            }
         }
 
         /**

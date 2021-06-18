@@ -589,7 +589,7 @@
                                     case 'article':
                                         $overview_article = Articles::getTable()->getOrCreateMainPage($target->getProject());
                                         $mentionables[] = ['id' => $overview_article->getID(), 'name' => $overview_article->getName(), 'icon' => ['name' => 'file', 'type' => 'far']];
-                                        foreach (Articles::getTable()->getManualSidebarArticles(false, $target->getProject()) as $article) {
+                                        foreach (Articles::getTable()->getSidebarArticles(false, $target->getProject()) as $article) {
                                             $mentionables[] = ['id' => $article->getID(), 'name' => $article->getName(), 'icon' => ['name' => 'file', 'type' => 'far']];
                                         }
                                         if (count($mentionables) > 10) {

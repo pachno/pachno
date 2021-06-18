@@ -592,9 +592,9 @@
         }
 
         /**
-         * @return Project
+         * @return ?Project
          */
-        public function getProject()
+        public function getProject(): ?Project
         {
             return $this->_b2dbLazyLoad('_project_id');
         }
@@ -837,9 +837,9 @@
         /**
          * Return the redirect article (if any)
          *
-         * @return Article
+         * @return ?Article
          */
-        public function getRedirectArticle()
+        public function getRedirectArticle(): ?Article
         {
             return $this->_b2dbLazyLoad('_redirect_article_id');
         }
@@ -1266,6 +1266,15 @@
         public function setRedirectSlug($redirect_slug)
         {
             $this->_redirect_slug = $redirect_slug;
+        }
+
+        public function getRedirectUrl()
+        {
+            if ($this->getProject() instanceof Project) {
+                return Context::getRouting()->generate('publish_project_redirect_article', ['project_key' => $this->getProject()->getKey(), 'slug' => $this->_redirect_slug]);
+            }
+
+            return Context::getRouting()->generate('publish_global_redirect_article', ['slug' => $this->_redirect_slug]);
         }
 
         public function getCategoryParentsArray()

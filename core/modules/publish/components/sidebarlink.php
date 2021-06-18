@@ -1,6 +1,7 @@
 <?php
 
     use pachno\core\entities\Article;
+    use pachno\core\framework\Context;
 
     /**
      * @var Article $main_article
@@ -29,7 +30,7 @@
             <?= ($main_article->isMainPage()) ? fa_image_tag('file-invoice', ['class' => 'icon']) : fa_image_tag('file-alt', ['class' => 'icon'], 'far'); ?>
         <?php endif; ?>
         <a class="name" href="<?= $main_article->getLink(); ?>"><?= ($main_article->isMainPage()) ? __('Overview') : $main_article->getName(); ?></a>
-        <?php if (!$main_article->isMainPage() && $pachno_user->canCreateArticlesInProject($article->getProject())): ?>
+        <?php if (!$main_article->isMainPage() && $pachno_user->canCreateArticlesInProject(Context::getCurrentProject())): ?>
             <a href="<?= $new_article_url; ?>" class="button secondary icon new-page-button">
                 <?= fa_image_tag('plus'); ?>
             </a>
@@ -40,5 +41,5 @@
     <?php endif; ?>
 </div>
 <?php if ($main_article->isCategory() || $has_children): ?>
-    <?php include_component('publish/manualsidebarlinkchildren', compact('main_article', 'parents', 'article', 'is_selected', 'is_parent', 'has_children', 'children')); ?>
+    <?php include_component('publish/sidebarlinkchildren', compact('main_article', 'parents', 'article', 'is_selected', 'is_parent', 'has_children', 'children')); ?>
 <?php endif; ?>

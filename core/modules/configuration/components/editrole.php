@@ -13,7 +13,7 @@
 <div class="backdrop_box large edit_agileboard">
     <div class="backdrop_detail_header">
         <span><?php echo ($role->getId()) ? __('Edit role') : __('Create new role'); ?></span>
-        <a href="javascript:void(0);" class="closer" onclick="Pachno.UI.Backdrop.reset();"><?= fa_image_tag('times'); ?></a>
+        <a href="javascript:void(0);" class="closer"><?= fa_image_tag('times'); ?></a>
     </div>
     <div id="backdrop_detail_content" class="backdrop_detail_content">
         <div class="form-container">

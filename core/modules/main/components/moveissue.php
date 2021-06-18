@@ -10,7 +10,7 @@
 <div class="backdrop_box medium" id="viewissue_move_issue_div">
     <div class="backdrop_detail_header">
         <span><?= __('Move issue to a different project'); ?></span>
-        <a href="javascript:void(0);" class="closer" onclick="Pachno.UI.Backdrop.reset();"><?= fa_image_tag('times'); ?></a>
+        <a href="javascript:void(0);" class="closer"><?= fa_image_tag('times'); ?></a>
     </div>
     <div id="backdrop_detail_content" class="backdrop_detail_content">
         <div class="form-container">

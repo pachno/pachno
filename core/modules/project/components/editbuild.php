@@ -14,7 +14,7 @@
 <div class="backdrop_box large">
     <div class="backdrop_detail_header">
         <span><?php echo ($build->getId()) ? __('Edit release details') : __('Add new release'); ?></span>
-        <a href="javascript:void(0);" class="closer" onclick="Pachno.UI.Backdrop.reset();"><?= fa_image_tag('times'); ?></a>
+        <a href="javascript:void(0);" class="closer"><?= fa_image_tag('times'); ?></a>
     </div>
     <div class="form-container">
         <form accept-charset="<?php echo \pachno\core\framework\Context::getI18n()->getCharset(); ?>" action="<?php echo make_url('configure_projects_build', ['project_id' => $project->getID()]); ?>" method="post" id="build_<?= $build->getId(); ?>_form" enctype="multipart/form-data">

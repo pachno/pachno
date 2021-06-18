@@ -17,6 +17,7 @@
      * actions for the publish module
      *
      * @property Article $article
+     * @property Article[] $articles
      * @property Project $selected_project
      *
      * @Routes(name_prefix="publish_")
@@ -50,20 +51,16 @@
                 }
             }
 
-            $this->article = Articles::getTable()->selectById($article_id);
-//            }
-//            elseif ($this->article_name)
-//            {
-//                $this->article = Articles::getTable()->getArticleByName($this->article_name);
-//            }
+            if ($article_id) {
+                $this->article = Articles::getTable()->selectById($article_id);
+                if (!$this->article instanceof Article) {
+                    $this->article = new Article();
+                    $this->article->setProject($this->selected_project);
+                    $this->article->setName($article_name);
+                }
 
-            if (!$this->article instanceof Article) {
-                $this->article = new Article();
-                $this->article->setProject($this->selected_project);
-                $this->article->setName($article_name);
+                framework\Context::getModule('publish')->setCurrentArticle($this->article);
             }
-
-            framework\Context::getModule('publish')->setCurrentArticle($this->article);
         }
 
         public function runSpecialArticle(Request $request)
@@ -78,7 +75,7 @@
         /**
          * Show an article
          *
-         * @Route(name="global_redirect_articles", url="/r/docs")
+         * @Route(name="global_redirect_articles", url="/docs/r")
          * @param Request $request
          */
         public function runGlobalRedirectArticles(Request $request)
@@ -89,12 +86,95 @@
         /**
          * Show an article
          *
-         * @Route(name="project_redirect_articles", url="/:project_key/r/docs")
+         * @Route(name="global_redirect_article", url="/docs/r/:slug")
+         * @param Request $request
+         */
+        public function runGlobalRedirectArticle(Request $request)
+        {
+            $this->redirect('redirectarticle');
+        }
+
+        /**
+         * Show an article
+         *
+         * @Route(name="project_redirect_articles", url="/:project_key/docs/r")
          * @param Request $request
          */
         public function runProjectRedirectArticles(Request $request)
         {
             $this->redirect('redirectarticles');
+        }
+
+        /**
+         * Show an article
+         *
+         * @Route(name="project_redirect_article", url="/:project_key/docs/r/:slug")
+         * @param Request $request
+         */
+        public function runProjectRedirectArticle(Request $request)
+        {
+            $this->redirect('redirectarticle');
+        }
+
+        /**
+         * @Route(name="edit_redirect_article", url="/docs/r/:article_id/edit", methods="POST")
+         * Redirect article
+         *
+         * @param Request $request
+         */
+        public function runRedirectArticle(Request $request)
+        {
+            if ($request->isPost()) {
+                if ($request['article_id']) {
+                    $article = Articles::getTable()->selectById($request['article_id']);
+                } else {
+                    $article = new Article();
+                    if ($request['project_id']) {
+                        $article->setProject($request['project_id']);
+                    }
+                }
+
+                $article->setRedirectSlug($request['slug']);
+                $article->setRedirectArticle($request['redirect_article_id']);
+                $article->save();
+
+                return $this->renderJSON([
+                    'content' => $this->getComponentHTML('publish/redirectarticle', ['article' => $article])
+                ]);
+            }
+
+            $slug = $request['slug'];
+            $article = Articles::getTable()->getArticleBySlug($slug);
+
+            if ($article instanceof Article && $article->getRedirectArticle() instanceof Article) {
+                return $this->forward($article->getRedirectArticle()->getLink());
+            }
+
+            return $this->return404();
+        }
+
+        /**
+         * @Route(name="find_redirect_articles", url="/docs/r/:article_id/find", methods="POST")
+         * @param Request $request
+         * @return framework\JsonOutput
+         */
+        public function runFindRedirectArticleTargets(Request $request): framework\JsonOutput
+        {
+            if (!trim($request['find'])) {
+                $this->getResponse()->setHttpStatus(400);
+                return $this->renderJSON(['errors' => ['find' => $this->getI18n()->__('Please enter something to search for')]]);
+            }
+
+            $articles = Articles::getTable()->findArticlesContaining($request['find']);
+
+            return $this->renderJSON([
+                'content' => $this->getComponentHTML('publish/redirectarticletargets', ['articles' => $articles])
+            ]);
+        }
+
+        public function runRedirectArticles(Request $request)
+        {
+            $this->articles = Articles::getTable()->getRedirectArticles(framework\Context::getCurrentProject());
         }
 
         /**
@@ -267,8 +347,9 @@
                     $forward_url = $main_article->getLink();
                 }
                 $this->article->delete();
+                $options = ($this->article->isRedirect()) ? ['message' => $this->getI18n()->__('The named link was deleted')] : ['forward' => $forward_url];
 
-                return $this->renderJSON(['forward' => $forward_url]);
+                return $this->renderJSON($options);
             } catch (Exception $e) {
                 $this->getResponse()->setHttpStatus(400);
 
@@ -398,7 +479,7 @@
                     if ($request->hasParameter('return_value')) {
                         switch ($request->getParameter('return_value')) {
                             case 'sidebarlink':
-                                return $this->renderJSON(['component' => $this->getComponentHTML('publish/manualsidebarlink', [
+                                return $this->renderJSON(['component' => $this->getComponentHTML('publish/sidebarlink', [
                                     'parents' => [],
                                     'article' => $this->article,
                                     'is_selected' => false,
@@ -437,7 +518,7 @@
 
             $this->attachments = $this->article->getFiles();
             $this->parents = $this->article->getCategoryParentsArray();
-            $top_level_categories = Articles::getTable()->getManualSidebarArticles(true, $this->article->getProject());
+            $top_level_categories = Articles::getTable()->getSidebarArticles(true, $this->article->getProject());
             usort($top_level_categories, '\pachno\core\entities\Article::sortArticleChildren');
             $this->top_level_categories = $top_level_categories;
 
@@ -454,7 +535,7 @@
             $main_article = $this->article;
             $selected_article = Articles::getTable()->selectById($request['selected_article_id']);
 
-            $menu = $this->getComponentHTML('publish/manualsidebarlinkchildren', [
+            $menu = $this->getComponentHTML('publish/sidebarlinkchildren', [
                 'main_article' => $main_article,
                 'article' => $selected_article,
                 'is_selected' => false,

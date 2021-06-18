@@ -8,7 +8,7 @@
 <div class="backdrop_box medium" id="client_users">
     <div class="backdrop_detail_header">
         <span><?= __('Editing scopes for user %username', ['%username' => $user->getUsername()]); ?></span>
-        <a href="javascript:void(0);" class="closer" onclick="Pachno.UI.Backdrop.reset();"><?= fa_image_tag('times'); ?></a>
+        <a href="javascript:void(0);" class="closer"><?= fa_image_tag('times'); ?></a>
     </div>
     <div id="backdrop_detail_content" class="backdrop_detail_content">
         <div class="form-container">

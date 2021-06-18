@@ -7,7 +7,7 @@
 <div class="backdrop_box large" id="add_dashboard_views">
     <div class="backdrop_detail_header">
         <span><?php echo __('Add dashboard view'); ?></span>
-        <a href="javascript:void(0);" class="closer" onclick="Pachno.UI.Backdrop.reset();" class="button"><?php echo fa_image_tag('times'); ?></a>
+        <a href="javascript:void(0);" class="closer" class="button"><?php echo fa_image_tag('times'); ?></a>
     </div>
     <div id="backdrop_detail_content" class="backdrop_detail_content">
         <div class="project_left">

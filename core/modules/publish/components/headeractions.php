@@ -1,21 +1,42 @@
 <?php
 
 use pachno\core\entities\Article;
-use pachno\core\framework\Context;
+    use pachno\core\entities\Project;
+    use pachno\core\framework\Context;
+    use pachno\core\framework\Routing;
 
 /**
- * @var Article $article
+ * @var ?Article $article
+ * @var Routing $pachno_routing
  */
 
 ?>
 <div class="action-container">
-    <?php if ($article->canEdit()): ?>
+    <?php if (!$article instanceof Article): ?>
+        <?php /* if (in_array($pachno_routing->getCurrentRoute()->getName(), ['publish_project_redirect_articles', 'publish_global_redirect_articles'])): ?>
+            <button class="button secondary highlight trigger-backdrop" data-url="<?php echo make_url('get_partial_for_backdrop', ['key' => 'publish_edit_redirect_article', 'project_id' => Context::isProjectContext() ? Context::getCurrentProject()->getID() : 0]); ?>">
+                <?php echo fa_image_tag('link', ['class' => 'icon']); ?>
+                <span class="name"><?= __('Create new named link'); ?></span>
+            </button>
+        <?php endif; */ ?>
+        <?php if (Context::getCurrentProject() instanceof Project): ?>
+            <a href="<?= make_url('publish_project_article_edit', ['article_id' => 0, 'project_key' => Context::getCurrentProject()->getKey()]); ?>" class="button primary">
+                <?= fa_image_tag('plus', ['class' => 'icon']); ?>
+                <span class="name"><?= __('Create page'); ?></span>
+            </a>
+        <?php else: ?>
+            <a href="<?= make_url('publish_article_edit', ['article_id' => 0]); ?>" class="button primary">
+                <?= fa_image_tag('plus', ['class' => 'icon']); ?>
+                <span class="name"><?= __('Create page'); ?></span>
+            </a>
+        <?php endif; ?>
+    <?php elseif ($article->canEdit()): ?>
         <a href="<?= $article->getLink('edit'); ?>" class="button secondary">
             <?= fa_image_tag('edit', ['class' => 'icon']); ?>
             <span class="name"><?= __('Edit'); ?></span>
         </a>
         <?php if ($article->isMainPage()): ?>
-            <?php if ($article->getProject() instanceof \pachno\core\entities\Project): ?>
+            <?php if ($article->getProject() instanceof Project): ?>
                 <a href="<?= make_url('publish_project_article_edit', ['article_id' => 0, 'project_key' => $article->getProject()->getKey()]); ?>" class="button primary">
                     <?= fa_image_tag('plus', ['class' => 'icon']); ?>
                     <span class="name"><?= __('Create page'); ?></span>
@@ -36,7 +57,7 @@ use pachno\core\framework\Context;
                 <div class="dropdown-container">
                     <div class="list-mode">
                         <?php if ($article->isCategory()): ?>
-                            <?php if ($article->getProject() instanceof \pachno\core\entities\Project): ?>
+                            <?php if ($article->getProject() instanceof Project): ?>
                                 <a href="<?= make_url('publish_project_article_edit', ['article_id' => 0, 'parent_article_id' => $article->getID(), 'project_key' => $article->getProject()->getKey()]); ?>?category_id=<?= $article->getID(); ?>" class="list-item multiline">
                                     <?= fa_image_tag('file-alt', ['class' => 'icon'], 'far'); ?>
                                     <span class="name">
@@ -124,7 +145,7 @@ use pachno\core\framework\Context;
             </div>
         <?php endif; ?>
     <?php endif; ?>
-    <?php if ($article->getID()): ?>
+    <?php if ($article instanceof Article && $article->getID()): ?>
         <div class="toggle-favourite-container tooltip-container">
             <?php if ($pachno_user->isGuest()): ?>
                 <button class="button secondary disabled" disabled>
@@ -167,6 +188,10 @@ use pachno\core\framework\Context;
                     <?php endif; ?>
                     <?php if ($pachno_user->canCreateArticlesInProject($article->getProject())): ?>
                         <div class="list-item separator"></div>
+                        <a href="javascript:void(0);" class="list-item trigger-backdrop" data-url="<?php echo make_url('get_partial_for_backdrop', ['key' => 'publish_edit_redirect_article', 'redirect_article_id' => $article->getID(), 'project_id' => Context::isProjectContext() ? Context::getCurrentProject()->getID() : 0]); ?>">
+                            <?= fa_image_tag('link', ['class' => 'icon']); ?>
+                            <span class="name"><?= __('Create named link'); ?></span>
+                        </a>
                         <div class="list-item trigger-copy-popup">
                             <?= fa_image_tag('copy', ['class' => 'icon'], 'far'); ?>
                             <span class="name"><?= __('Copy page'); ?></span>
@@ -188,7 +213,7 @@ use pachno\core\framework\Context;
                                 <span class="name"><?= __('This page cannot be deleted'); ?></span>
                             </div>
                         <?php else: ?>
-                            <a href="javascript:void(0);" onclick="Pachno.UI.Dialog.show('<?= ($article->isCategory()) ? __('Delete this category?') : __('Delete this page?'); ?>', '<?= $article->isCategory() ? __('Do you really want to delete this category?') : __('Do you really want to delete this page?'); ?>', {yes: {click: function () { Pachno.trigger(Pachno.EVENTS.article.delete, { url: '<?= make_url('publish_article_delete', ['article_id' => $article->getID()]); ?>' }) }}, no: {click: Pachno.UI.Dialog.dismiss}})" class="list-item danger">
+                            <a href="javascript:void(0);" onclick="Pachno.UI.Dialog.show('<?= ($article->isCategory()) ? __('Delete this category?') : __('Delete this page?'); ?>', '<?= $article->isCategory() ? __('Do you really want to delete this category?') : __('Do you really want to delete this page?'); ?>', {yes: {click: function () { Pachno.trigger(Pachno.EVENTS.article.delete, { url: '<?= make_url('publish_article_delete', ['article_id' => $article->getID()]); ?>', article_id: <?= $article->getID(); ?> }) }}, no: {click: Pachno.UI.Dialog.dismiss}})" class="list-item danger">
                                 <?= fa_image_tag('times', ['class' => 'icon']); ?>
                                 <span class="name"><?= $article->isCategory() ? __('Delete this category') : __('Delete this page'); ?></span>
                             </a>
@@ -196,6 +221,6 @@ use pachno\core\framework\Context;
                     <?php endif; ?>
                 </div>
             </div>
-        <?php endif; ?>
-    </div>
+        </div>
+    <?php endif; ?>
 </div>

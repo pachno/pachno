@@ -17,7 +17,7 @@
 ?>
 <div class="content-with-sidebar article-container">
 <?php if ($article instanceof \pachno\core\entities\Article): ?>
-    <?php include_component('manualsidebar', ['article' => $article]); ?>
+    <?php include_component('sidebar', ['article' => $article]); ?>
     <div class="main_area" data-simplebar>
         <div class="fullpage_backdrop" id="copy_article_form_container" style="display: none;">
             <div class="fullpage_backdrop_content">

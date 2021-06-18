@@ -6,7 +6,7 @@
 <div class="backdrop_box large edit_agileboard">
     <div class="backdrop_detail_header">
         <span><?= (!$item instanceof \pachno\core\entities\CustomDatatype || $item->getId()) ? __('Edit field options') : __('Create new field'); ?></span>
-        <a href="javascript:void(0);" class="closer" onclick="Pachno.UI.Backdrop.reset();"><?= fa_image_tag('times'); ?></a>
+        <a href="javascript:void(0);" class="closer"><?= fa_image_tag('times'); ?></a>
     </div>
     <div id="backdrop_detail_content" class="backdrop_detail_content">
         <?php if ($item instanceof \pachno\core\entities\CustomDatatype && !$item->getId()): ?>

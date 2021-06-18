@@ -2,7 +2,7 @@
     <div id="change_workflow_box">
         <div class="backdrop_detail_header">
             <span><?= ($invite) ? __('Add or invite team members') : __('Add people'); ?></span>
-            <a href="javascript:void(0);" class="closer" onclick="Pachno.UI.Backdrop.reset();"><?= fa_image_tag('times'); ?></a>
+            <a href="javascript:void(0);" class="closer"><?= fa_image_tag('times'); ?></a>
         </div>
         <div id="backdrop_detail_content" class="backdrop_detail_content">
             <div class="form-container">

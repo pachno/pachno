@@ -898,7 +898,7 @@
         </body>
     </file>
 
-    <file source-language="en" datatype="php" original="core/modules/publish/templates/_manualsidebarlink.inc.php">
+    <file source-language="en" datatype="php" original="core/modules/publish/templates/_sidebarlink.inc.php">
         <body>
             <trans-unit id="3b878279a04dc47d60932cb294d96259">
                 <source>Overview</source>
@@ -948,7 +948,7 @@
         </body>
     </file>
 
-    <file source-language="en" datatype="php" original="core/modules/publish/templates/_manualsidebar.inc.php">
+    <file source-language="en" datatype="php" original="core/modules/publish/templates/_sidebar.inc.php">
         <body>
             <trans-unit id="5b6cf869265c13af8566f192b4ab3d2a">
                 <source>Documentation</source>
