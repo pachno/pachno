@@ -1371,7 +1371,12 @@
         public function isMainPage()
         {
             $name = str_replace(' ', '', mb_strtolower(trim($this->getName())));
-            return $name == 'mainpage';
+            if (!$name == 'mainpage') {
+                return false;
+            }
+
+            $mainpage = Articles::getTable()->getOrCreateMainPage($this->getProject());
+            return ($mainpage->getID() === $this->getID());
         }
 
         protected function convertLine($content_line, &$blocks = null)
