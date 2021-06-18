@@ -685,6 +685,7 @@
         {
             $query = $this->getQuery();
             $query->where('articles.redirect_slug', $slug);
+            $query->where(self::SCOPE, framework\Context::getScope()->getID());
 
             return $this->selectOne($query);
         }
@@ -697,6 +698,7 @@
             $query = $this->getQuery();
             $query->where('articles.redirect_slug', '', Criterion::NOT_EQUALS);
             $query->where('articles.redirect_slug', null, Criterion::IS_NOT_NULL);
+            $query->where(self::SCOPE, framework\Context::getScope()->getID());
 
             if ($project instanceof Project) {
                 $query->where('articles.project_id', $project->getID());
