@@ -53,14 +53,15 @@
 
             if ($article_id) {
                 $this->article = Articles::getTable()->selectById($article_id);
-                if (!$this->article instanceof Article) {
-                    $this->article = new Article();
-                    $this->article->setProject($this->selected_project);
-                    $this->article->setName($article_name);
-                }
-
-                framework\Context::getModule('publish')->setCurrentArticle($this->article);
             }
+
+            if (!$this->article instanceof Article) {
+                $this->article = new Article();
+                $this->article->setProject($this->selected_project);
+                $this->article->setName($article_name);
+            }
+
+            framework\Context::getModule('publish')->setCurrentArticle($this->article);
         }
 
         public function runSpecialArticle(Request $request)
