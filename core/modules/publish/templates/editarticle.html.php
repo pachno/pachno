@@ -226,25 +226,31 @@
             </span>
         </div>
     </form>
-    <div class="form-container" style="display: none;" id="parent_selector_container">
-        <form class="fullpage_backdrop" onsubmit="Pachno.Main.loadParentArticles(this);return false;" action="<?php echo make_url('publish_article_parents', array('article_id' => $article->getId())); ?>">
+    <div class="fullpage_backdrop" style="display: none;" id="parent_selector_container">
+        <div class="fullpage_backdrop_content">
             <div class="backdrop_box medium">
                 <div class="backdrop_detail_header">
                     <span><?php echo __('Move page'); ?></span>
                     <a href="javascript:void(0);" onclick="$('#parent_selector_container').hide();" class="closer"><?php echo fa_image_tag('times'); ?></a>
                 </div>
                 <div class="backdrop_detail_content">
-                    <div class="form-row unified">
-                        <input type="search" name="find_article" id="parent_article_name_search">
-                        <input type="submit" class="button secondary highlight" value="<?php echo __('Find'); ?>">
-                    </div>
-                    <?php echo image_tag('spinning_32.gif', array('id' => 'parent_selector_container_indicator', 'style' => 'display: none;')); ?>
-                    <div id="parent_articles_list" class="list-mode">
-
+                    <div class="form-container">
+                        <form id="move-page-form" action="<?php echo make_url('publish_article_parents', ['article_id' => $article->getId()]); ?>" data-simple-submit data-update-container="#parent_articles_list">
+                            <div class="form-row unified">
+                                <input type="search" name="find_article" id="parent_article_name_search">
+                                <button type="submit" class="button secondary highlight">
+                                    <?= fa_image_tag('search', ['class' => 'icon']); ?>
+                                    <span class="name"><?= __('Find'); ?></span>
+                                    <?= fa_image_tag('spinner', ['class' => 'fa-spin indicator']); ?>
+                                </button>
+                            </div>
+                            <?php echo image_tag('spinning_32.gif', array('id' => 'parent_selector_container_indicator', 'style' => 'display: none;')); ?>
+                            <div id="parent_articles_list" class="list-mode"></div>
+                        </form>
                     </div>
                 </div>
             </div>
-        </form>
+        </div>
     </div>
     <input type="hidden" id="article_serialized" value="">
 </div>

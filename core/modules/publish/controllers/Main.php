@@ -391,7 +391,9 @@
             });
             $article = $this->article;
 
-            return $this->renderJSON(['list' => $this->getComponentHTML('publish/getavailableparents', compact('parent_articles', 'article_counts', 'article'))]);
+            return $this->renderJSON([
+                'content' => $this->getComponentHTML('publish/getavailableparents', compact('parent_articles', 'article_counts', 'article'))
+            ]);
         }
 
         /**

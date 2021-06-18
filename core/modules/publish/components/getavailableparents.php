@@ -10,7 +10,7 @@
 
 ?>
 <?php if ($article->getParentArticle() instanceof Article): ?>
-    <a href="javascript:void(0);" onclick="$('#parent_article_id_input').setValue(0);$('#parent_selector_container').hide();$('#parent_move_message').show();" class="list-item multiline">
+    <a href="javascript:void(0);" onclick="$('#parent_article_id_input').val(0);$('#parent_selector_container').hide();$('#parent_move_message').show();" class="list-item multiline">
         <?= fa_image_tag('unlink', ['class' => 'icon']); ?>
         <span class="name">
             <span class="title"><?= __('Move to separate article'); ?></span>
@@ -25,7 +25,7 @@
     <span class="list-item separator"></span>
 <?php endif; ?>
 <?php foreach ($parent_articles as $parent_article): ?>
-    <a href="javascript:void(0);" onclick="$('#parent_article_id_input').setValue('<?php echo $parent_article->getID(); ?>');$('#parent_selector_container').hide();$('#parent_move_message').show();" class="list-item <?php if ($parent_article->isCategory() || isset($article_counts[$parent_article->getID()])) echo 'multiline'; ?>">
+    <a href="javascript:void(0);" onclick="$('#parent_article_id_input').val('<?php echo $parent_article->getID(); ?>');$('#parent_selector_container').hide();$('#parent_move_message').show();" class="list-item <?php if ($parent_article->isCategory() || isset($article_counts[$parent_article->getID()])) echo 'multiline'; ?>">
         <?php if ($parent_article->isCategory()): ?>
             <?= fa_image_tag('layer-group', ['class' => 'icon']); ?>
         <?php else: ?>
