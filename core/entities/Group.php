@@ -92,11 +92,11 @@
                 tables\UserScopes::getTable()->addUserToScope($guestuser_id, $scope->getID(), $guest_group->getID(), true);
                 tables\UserScopes::getTable()->addUserToScope($adminuser_id, $scope->getID(), $admin_group->getID(), true);
             } else {
-                $default_scope_id = Settings::getDefaultScopeID();
-                $default_user_id = (int)Settings::get(Settings::SETTING_DEFAULT_USER_ID, 'core', $default_scope_id);
-                tables\UserScopes::getTable()->addUserToScope($default_user_id, $scope->getID(), $user_group->getID(), true);
+//                $default_scope_id = Settings::getDefaultScopeID();
+//                $default_user_id = (int) Settings::get(Settings::SETTING_DEFAULT_USER_ID, 'core', $default_scope_id);
+                tables\UserScopes::getTable()->addUserToScope(2, $scope->getID(), $user_group->getID(), true);
                 tables\UserScopes::getTable()->addUserToScope(1, $scope->getID(), $admin_group->getID());
-                Settings::saveSetting(Settings::SETTING_DEFAULT_USER_ID, $default_user_id, 'core', $scope->getID());
+                Settings::saveSetting(Settings::SETTING_DEFAULT_USER_ID, 2, 'core', $scope->getID());
             }
 
             Permission::loadFixtures($scope, $user_group, $admin_group, $guest_group);
