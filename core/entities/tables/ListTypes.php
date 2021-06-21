@@ -5,6 +5,7 @@
     use b2db\Criterion;
     use b2db\Query;
     use b2db\QueryColumnSort;
+    use b2db\Saveable;
     use b2db\Update;
     use pachno\core\entities\Datatype;
     use pachno\core\entities\DatatypeBase;
@@ -16,6 +17,7 @@
      * @method static ListTypes getTable()
      * @method DatatypeBase[] select(Query $query, $join = 'all')
      * @method DatatypeBase selectOne(Query $query, $join = 'all')
+     * @method DatatypeBase selectById($id, Query $query = null, $join = 'all')
      *
      * @package pachno
      * @subpackage tables

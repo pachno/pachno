@@ -707,7 +707,7 @@
 
         public static function getDefaultUserID()
         {
-            return (int)self::get(self::SETTING_DEFAULT_USER_ID);
+            return (int) self::get(self::SETTING_DEFAULT_USER_ID);
         }
 
         public static function allowRegistration()
