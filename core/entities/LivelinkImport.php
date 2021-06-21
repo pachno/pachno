@@ -25,6 +25,11 @@
     class LivelinkImport extends IdentifiableScoped
     {
 
+        public const STATUS_CREATED = 0;
+        public const STATUS_IMPORTING = 1;
+        public const STATUS_IMPORTED = 2;
+        public const STATUS_IMPORTED_ERROR = 3;
+
         /**
          * @var User
          * @Column(type="integer", length=10)
@@ -48,6 +53,11 @@
          * @Column(type="integer", length=10)
          */
         protected $_completed_at;
+
+        /**
+         * @Column(type="integer", length=10)
+         */
+        protected $_status = self::STATUS_CREATED;
 
         /**
          * @Column(type="serializable", length=1000)
@@ -122,6 +132,16 @@
             if ($is_new) {
                 $this->_created_at = NOW;
             }
+        }
+
+        public function setStatus(int $status)
+        {
+            $this->_status = $status;
+        }
+
+        public function getStatus(): int
+        {
+            return $this->_status;
         }
 
     }

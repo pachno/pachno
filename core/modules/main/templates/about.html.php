@@ -24,7 +24,7 @@
     <br>
     <br>
     <span class="faded_out">
-        <a href="https://pachno.com" target="_blank">Pachno</a>, Copyright &copy; 2002 - <?php echo date('Y'); ?> <b>Pachno team</b><br>
+        <a href="https://pach.no" target="_blank">Pachno</a>, Copyright &copy; 2002 - <?php echo date('Y'); ?> <b>Pachno team</b><br>
         <?php echo __('Licensed under the MPL 2.0, read it at %link_to_MPL', array('%link_to_MPL' => '<a href="http://opensource.org/licenses/MPL-2.0">opensource.org</a>')); ?>.<br>
     </span>
 </div>

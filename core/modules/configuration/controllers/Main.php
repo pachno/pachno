@@ -99,7 +99,7 @@
                 if ($update_available) {
                     $updated = false;
                     $title = framework\Context::getI18n()->__('Pachno is out of date');
-                    $message = framework\Context::getI18n()->__('The latest version is %ver. Update now from pachno.com.', ['%ver' => $latest_version['nicever']]);
+                    $message = framework\Context::getI18n()->__('The latest version is %ver. Update now from https://pach.no', ['%ver' => $latest_version['nicever']]);
                 } else {
                     $updated = true;
                     $title = framework\Context::getI18n()->__('Pachno is up to date');

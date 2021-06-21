@@ -420,7 +420,7 @@
 
         public static function get($name, $module = 'core', $scope = null, $uid = 0, $return_object = false)
         {
-            if (Context::isInstallmode() && !Context::getScope() instanceof Scope) {
+            if (!Context::isReadySetup() && !Context::getScope() instanceof Scope) {
                 return null;
             }
             if ($scope instanceof Scope) {

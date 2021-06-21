@@ -63,7 +63,7 @@
         /**
          * The current user
          *
-         * @var User
+         * @var ?User
          */
         protected static $_user;
 
@@ -387,15 +387,21 @@
 
                 return true;
             } catch (Exception $e) {
-                if (self::isCLI()) {
-                    Logging::log("Couldn't set up default scope.", 'main', Logging::LEVEL_FATAL);
-                    throw new Exception("Could not load default scope. Error message was: " . $e->getMessage());
-                } elseif (!self::isInstallmode()) {
-                    Logging::log("Couldn't find a scope for hostname {$_SERVER['HTTP_HOST']}", 'main', Logging::LEVEL_FATAL);
-                    Logging::log($e->getMessage(), 'main', Logging::LEVEL_FATAL);
-                    throw new Exception("Could not load scope. This is usually because the scopes table doesn't have a scope for this hostname");
+                if (self::isReadySetup()) {
+                    if (self::isCLI()) {
+                        Logging::log("Couldn't set up default scope.", 'main', Logging::LEVEL_FATAL);
+                        throw new Exception("Could not load default scope. Error message was: " . $e->getMessage());
+                    } else {
+                        Logging::log("Couldn't find a scope for hostname {$_SERVER['HTTP_HOST']}", 'main', Logging::LEVEL_FATAL);
+                        Logging::log($e->getMessage(), 'main', Logging::LEVEL_FATAL);
+                        throw new Exception("Could not load scope. This is usually because the scopes table doesn't have a scope for this hostname");
+                    }
                 } else {
-                    Logging::log("Couldn't find a scope for hostname {$_SERVER['HTTP_HOST']}, but we're in installmode so continuing anyway");
+                    if (self::isCLI()) {
+                        Logging::log("Couldn't find a scope but we're in installmode so continuing anyway");
+                    } else {
+                        Logging::log("Couldn't find a scope for hostname {$_SERVER['HTTP_HOST']}, but we're in installmode so continuing anyway");
+                    }
                 }
             }
         }
@@ -1579,7 +1585,7 @@
                 // point. Permissions also must be cached at this point,
                 // and not together with self::initializeUser since i18n
                 // system must be initialised beforehand.
-                if (!self::isInstallmode())
+                if (self::isReadySetup())
                     self::_cacheAvailablePermissions();
             }
         }
@@ -1626,12 +1632,13 @@
                 if (!self::isCLI() && !ini_get('session.auto_start'))
                     self::initializeSession();
 
-                Logging::log('Loading B2DB');
+                Logging::log('Loading b2db');
 
-                if (array_key_exists('b2db', self::$_configuration))
+                if (array_key_exists('b2db', self::$_configuration)) {
                     Core::initialize(self::$_configuration['b2db'], self::getCache());
-                else
+                } else {
                     Core::initialize([], self::getCache());
+                }
 
                 if (self::isReadySetup() && !Core::isInitialized()) {
                     throw new exceptions\ConfigurationException("Pachno seems installed, but B2DB isn't configured.", exceptions\ConfigurationException::NO_B2DB_CONFIGURATION);
@@ -1639,10 +1646,12 @@
 
                 Logging::log('...done (Initializing B2DB)');
 
-                if (Core::isInitialized() && self::isReadySetup()) {
+                if (Core::isInitialized() && !self::isInstallmode()) {
                     Logging::log('Database connection details found, connecting');
                     Core::doConnect();
                     Logging::log('...done (Database connection details found, connecting)');
+                } else {
+                    Logging::log('Not initializing database connection since we are in install mode');
                 }
 
                 Logging::log('...done');
@@ -1658,7 +1667,7 @@
                 Logging::log('done (loading scope)');
 
                 self::loadInternalModules();
-                if (!self::isInstallmode()) {
+                if (self::isReadySetup()) {
                     self::setupCoreListeners();
                     self::loadModules();
                 }
@@ -1689,7 +1698,7 @@
             if (!is_readable(PACHNO_PATH . 'installed')) {
                 self::$_installmode = true;
             } elseif (is_readable(PACHNO_PATH . 'upgrade')) {
-                self::$_installmode = true;
+                self::$_installmode = false;
                 self::$_upgrademode = true;
                 self::getCache()->disable();
             } else {
@@ -1728,7 +1737,7 @@
                 }
             }
 
-            if (!self::isReadySetup() || !$configuration) {
+            if (!self::isInstallmode() || !$configuration) {
                 Logging::log('Loading configuration from files', 'core');
                 $config_filename = PACHNO_CONFIGURATION_PATH . "settings.yml";
                 $b2db_filename = PACHNO_CONFIGURATION_PATH . "b2db.yml";
@@ -1797,7 +1806,9 @@
             foreach (self::$_internal_module_paths as $modulename) {
                 $classname = "\\pachno\\core\\modules\\{$modulename}\\" . ucfirst($modulename);
                 self::$_internal_modules[$modulename] = new $classname($modulename);
-                self::$_internal_modules[$modulename]->initialize();
+                if (self::isReadySetup()) {
+                    self::$_internal_modules[$modulename]->initialize();
+                }
             }
 
             Logging::log('...done (loading internal modules)');
@@ -1813,8 +1824,6 @@
         protected static function setupI18n()
         {
             Logging::log('Initializing i18n');
-//        if (true || !self::isCLI())
-//        {
             $language = (self::$_user instanceof User) ? self::$_user->getLanguage() : Settings::getLanguage();
 
             if (self::$_user instanceof User && self::$_user->getLanguage() == 'sys') {
@@ -1858,8 +1867,9 @@
                 self::$_current_controller_method = $controllerMethod;
                 self::$_current_controller_module = $moduleName;
 
-                if (!self::isInstallmode())
+                if (self::isReadySetup()) {
                     self::initializeUser();
+                }
 
                 self::setupI18n();
 
@@ -1868,8 +1878,9 @@
                 // point. Permissions also must be cached at this point,
                 // and not together with self::initializeUser since i18n
                 // system must be initialised beforehand.
-                if (!self::isInstallmode())
+                if (self::isReadySetup()) {
                     self::_cacheAvailablePermissions();
+                }
 
                 if (self::$_redirect_login == 'login') {
 
@@ -2471,9 +2482,9 @@
 
             // Set-up client and retrieve version information.
             $client = new \GuzzleHttp\Client([
-                'base_uri' => 'https://pachno.com/',
+                'base_uri' => 'https://pach.no/',
                 'http_errors' => false]);
-            $response = $client->request('GET', '/updatecheck.php');
+            $response = $client->request('GET', '/version.json');
 
             // Verify status code.
             if ($response->getStatusCode() == 200) {

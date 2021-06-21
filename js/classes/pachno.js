@@ -104,6 +104,10 @@ class PachnoApplication {
         return translations[this.language] || translations.en_US;
     }
 
+    get $() {
+        return $;
+    }
+
     constructor() {
         this.debug = false;
         this.basepath = '';

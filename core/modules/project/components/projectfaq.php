@@ -10,7 +10,7 @@
     <div class="form-row">
         <h3>
             <span><?= __('Help / FAQ'); ?></span>
-            <a class="button secondary" href="https://pachno.com/help?from=project_help" target="_blank">
+            <a class="button secondary" href="https://pach.no/help?from=project_help" target="_blank">
                 <?= fa_image_tag('globe', ['class' => 'icon']); ?>
                 <span class="name"><?= __('Visit online help'); ?></span>
             </a>

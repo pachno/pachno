@@ -82,7 +82,7 @@
                                     </a>
                                 <?php endif; ?>
                                 <?php \pachno\core\framework\Event::createNew('core', 'user_dropdown_reg')->trigger(); ?>
-                                <a href="https://pachno.com/help/<?= \pachno\core\framework\Context::getRouting()->getCurrentRoute()->getName(); ?>" id="global_help_link" class="list-item">
+                                <a href="https://pach.no/help?page=<?= \pachno\core\framework\Context::getRouting()->getCurrentRoute()->getName(); ?>" id="global_help_link" class="list-item">
                                     <?= fa_image_tag('question-circle', ['class' => 'icon']); ?>
                                     <span class="name"><?= __('Help for this page'); ?></span>
                                 </a>

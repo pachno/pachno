@@ -19,7 +19,7 @@
         <?php \pachno\core\framework\Event::createNew('core', 'layout.php::header-begins')->trigger(); ?>
         <meta name="description" content="Pachno, friendly issue tracking">
         <meta name="keywords" content="pachno friendly issue tracking">
-        <meta name="author" content="pachno.com">
+        <meta name="author" content="https://pach.no">
         <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0"/>
         <meta http-equiv="X-UA-Compatible" content="IE=Edge">
         <base href="<?= rtrim(Context::getWebroot(), '/'); ?>">
@@ -37,7 +37,7 @@
         <?php [$localcss, $externalcss] = $pachno_response->getStylesheets(); ?>
         <?php foreach ($localcss as $css): ?>
             <?php if ( ! empty($minified)) : $pathinfo = pathinfo($css); $css = $pathinfo['dirname'] . '/' . $pathinfo['filename'] . $minified . '.' . $pathinfo['extension']; endif; ?>
-            <link rel="stylesheet" href="<?php print $css; ?>">
+            <link rel="stylesheet" href="<?php print $css; ?>?bust=<?= (Context::isDebugMode()) ? $rand : $pachno_version; ?>">
         <?php endforeach; ?>
         <?php foreach ($externalcss as $css): ?>
             <link rel="stylesheet" href="<?= $css; ?>">

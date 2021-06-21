@@ -44,7 +44,12 @@
                 } catch (Exception $e) {
                     $this->cliEcho("\n");
                     $this->cliEcho("\n---------------------\n");
-                    $this->cliEcho("An error occured during the upgrade:\n", 'red', 'bold');
+                    if (isset($result) && $result === true) {
+                        $this->cliEcho("The upgrade procedure ran correctly, but an error occured trying to remove the upgrade file.\n", 'red', 'bold');
+                        $this->cliEcho("It should be safe to manually remove the file 'upgrade' and continue as if the upgrade completed.\n", 'red', 'bold');
+                    } else {
+                        $this->cliEcho("An error occured during the upgrade:\n", 'red', 'bold');
+                    }
                     $this->cliEcho($e->getMessage() . "\n");
                     $this->cliEcho("---------------------\n");
                 }

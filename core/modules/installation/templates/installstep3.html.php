@@ -55,7 +55,7 @@
                     Your web server must be correctly set up with URL rewriting enabled
                 </span>
                 <span>
-                    For information on how to configure URL rewriting for your web server, see <a href="https://pachno.com/support" target="_blank"><span>pachno.com &raquo; Support</span><?= fa_image_tag('external-link-alt', ['class' => 'icon external'], 'fas'); ?></a>
+                    For information on how to configure URL rewriting for your web server, see <a href="https://projects.pach.no/pachno/docs/r/install" target="_blank"><span>Pachno installation docs</span><?= fa_image_tag('external-link-alt', ['class' => 'icon external'], 'fas'); ?></a>
                 </span>
             </span>
         </div>

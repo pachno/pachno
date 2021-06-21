@@ -17,7 +17,7 @@
         <div class="contact-container">
             <a href="https://pachno.zulipchat.com" class="button secondary" target="_blank"><?= fa_image_tag('comments', ['class' => 'icon'], 'far'); ?><span>Zulip chat</span></a>
             <a href="https://twitter.com/pachnopm" class="button secondary" target="_blank"><?= fa_image_tag('twitter', ['class' => 'icon'], 'fab'); ?><span>@pachnopm</span></a>
-            <a href="mailto:feedback@pachno.com" class="button secondary"><?= fa_image_tag('at', ['class' => 'icon']); ?><span>feedback@pachno.com</span></a>
+            <a href="mailto:feedback@pach.no" class="button secondary"><?= fa_image_tag('at', ['class' => 'icon']); ?><span>feedback@pach.no</span></a>
         </div>
         <input type="submit" class="button primary" style="margin-left: auto;" value="Agree and continue" id="start_installation">
     </form>

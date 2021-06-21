@@ -33,7 +33,11 @@
      * @property bool $pcre_ok
      * @property bool $dom_ok
      * @property bool $docblock_ok
+     * @property bool $upgrade_available
+     * @property bool $upgrade_complete
+     * @property bool $permissions_ok
      * @property string $php_ver
+     * @property string $current_version
      * @property string $pcre_ver
      * @property string $error
      *
@@ -426,7 +430,24 @@
 
         public function runUpgrade(framework\Request $request)
         {
-            // [$current_version, $upgrade_available] = framework\Settings::getUpgradeStatus();
+            if (!framework\Context::isUpgrademode()) {
+                return $this->forward($this->getRouting()->generate('home'));
+            }
+
+            [$this->current_version, $this->upgrade_available] = framework\Settings::getUpgradeStatus();
+            $this->permissions_ok = is_writable(PACHNO_PATH . 'installed');
+
+            if ($this->upgrade_available && $request->isPost())
+            {
+                $upgrader = new Upgrade();
+                $this->upgrade_complete = $upgrader->upgrade($request);
+
+                if ($this->upgrade_complete)
+                {
+                    $this->current_version = framework\Settings::getVersion(false, false);
+                    $this->upgrade_available = false;
+                }
+            }
         }
 
     }

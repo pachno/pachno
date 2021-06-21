@@ -10,7 +10,7 @@
 <p><?= __('Link accounts from external services such as GitHub, GitLab, etc to enable linking or importing projects'); ?></p>
 <?php if (!$module->hasConnectors()): ?>
     <p class="livelink-intro">
-        <?= __('Download integration plugins from %configure_modules or visit %pachno_com to get started.', ['%pachno_com' => link_tag('https://pachno.com', fa_image_tag('globe') . ' pachno.com'), '%configure_modules' => link_tag(make_url('configure_modules'), __('Configuration center') . '&nbsp;&raquo;&nbsp;' . __('Modules'))]); ?>
+        <?= __('Download integration plugins from %configure_modules or visit %pachno_com to get started.', ['%pachno_com' => link_tag('https://pach.no/modules', fa_image_tag('globe') . ' pach.no/modules'), '%configure_modules' => link_tag(make_url('configure_modules'), __('Configuration center') . '&nbsp;&raquo;&nbsp;' . __('Modules'))]); ?>
     </p>
 <?php else: ?>
     <ul id="livelink-connector-accounts" class="livelink_connector_accounts">

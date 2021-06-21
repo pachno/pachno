@@ -52,10 +52,9 @@
             $this->cliEcho("\n");
             $this->cliEcho("How to support future development\n", Command::COLOR_GREEN, Command::STYLE_BOLD);
             $this->cliEcho("Even though this software has been provided to you free of charge,\ndeveloping it would not have been possible without support from our users.\n");
-            $this->cliEcho("By making a donation, or buying a support contract you can help us continue development.\n\n");
             $this->cliEcho("If this software is valuable to you - please consider supporting it.\n\n");
             $this->cliEcho("More information about supporting Pachno's development can be found here:\n");
-            $this->cliEcho("https://pachno.com/support\n\n", 'blue', 'underline');
+            $this->cliEcho("https://pach.no/features?feature=opensource\n\n", 'blue', 'underline');
             $this->cliEcho("Press ENTER to continue ...");
 
             $this->pressEnterToContinue();
@@ -216,7 +215,7 @@
                     do {
                         $this->cliEcho("URL rewriting\n", 'cyan', Command::STYLE_BOLD);
                         $this->cliEcho("Pachno uses a technique called \"url rewriting\" - which allows for pretty\nURLs such as ") . $this->cliEcho('/issue/1', Command::COLOR_WHITE, Command::STYLE_BOLD) . $this->cliEcho(' instead of ') . $this->cliEcho("viewissue.php?issue_id=1\n", Command::COLOR_WHITE, Command::STYLE_BOLD);
-                        $this->cliEcho("Make sure you have read the URL_REWRITE document located in the root\nfolder, or at https://pachno.com before you continue\n");
+                        $this->cliEcho("Make sure you have read the URL_REWRITE document located in the root\nfolder before you continue\n");
 
                         if (!$this->hasProvidedArgument('url_subdir')) {
                             $this->cliEcho("Press ENTER to continue ... ");
@@ -371,7 +370,7 @@
                         $this->cliEcho("The installation was completed successfully!\n", Command::COLOR_GREEN, Command::STYLE_BOLD);
                         $this->cliEcho("\nTo use Pachno, access http://example.com" . $url_subdir . "index.php with a web-browser.\n");
                         $this->cliEcho("The default username is ") . $this->cliEcho('Administrator') . $this->cliEcho(' and the password is ') . $this->cliEcho('admin');
-                        $this->cliEcho("\n\nFor support, please visit ") . $this->cliEcho('https://pachno.com/', 'blue', 'underline');
+                        $this->cliEcho("\n\nFor support, please visit ") . $this->cliEcho('https://pach.no/features?feature=opensource', 'blue', 'underline');
                         $this->cliEcho("\n");
                     } catch (Exception $e) {
                         throw $e;

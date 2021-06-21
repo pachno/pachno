@@ -5248,6 +5248,11 @@ var PachnoApplication = /*#__PURE__*/function () {
       return translations[this.language] || translations.en_US;
     }
   }, {
+    key: "$",
+    get: function get() {
+      return (jquery__WEBPACK_IMPORTED_MODULE_0___default());
+    }
+  }, {
     key: "user_id",
     get: function get() {
       return this._user_id;

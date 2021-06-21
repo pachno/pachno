@@ -8,7 +8,7 @@
     <Url type="application/x-suggestions+json" template="<?php echo (\pachno\core\framework\Context::isProjectContext()) ? make_url('project_quicksearch', array('project_key' => \pachno\core\framework\Context::getCurrentProject()->getKey(), 'format' => 'json'), false) : make_url('quicksearch', array('format' => 'json'), false); ?>?fs[text][o]=%3A&amp;fs[text][v]={searchTerms}"/>
     <AdultContent>false</AdultContent>
     <OutputEncoding><?php echo \pachno\core\framework\Context::getI18n()->getCharset(); ?></OutputEncoding>
-    <Contact>support@pachno.com</Contact>
+    <Contact>support@pach.no</Contact>
     <Query role="example" searchTerms="opensearch"/>
     <Attribution>No copyright</Attribution>
     <SyndicationRight>open</SyndicationRight>

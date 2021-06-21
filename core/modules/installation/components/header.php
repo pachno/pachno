@@ -19,7 +19,9 @@
         <meta name="author" content="zegenie">
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
         <link rel="shortcut icon" href="images/favicon_inverted.png">
-        <script type="text/javascript" src="js/install.js"></script>
+        <?php if ($mode != 'upgrade'): ?>
+            <script type="text/javascript" src="js/install.js"></script>
+        <?php endif; ?>
         <style type="text/css">
             <?php include PACHNO_PATH . 'themes' . DS . 'oxygen' . DS . 'css' . DS . 'theme.css'; ?>
         </style>
@@ -113,8 +115,8 @@
             .scope_upgrade li label { display: inline-block; width: 180px; vertical-align: middle; text-align: right; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
             .scope_upgrade li select { width: 250px; }
 
-            .progress_buttons { padding: 30px 15px 15px 15px; text-align: right; display: block; height: 30px; }
-            .progress_buttons .button-next { float: right; }
+            .progress_buttons { padding: 30px 15px 15px 15px; text-align: right; display: block; min-height: 30px; }
+            .progress_buttons .button-next, .progress_buttons .button-finish { float: right; }
             .progress_buttons .button-previous { float: left; }
 
             ul.backuplist { margin: 15px 0; padding: 0; }
@@ -323,10 +325,23 @@
                 border-top: 1px solid #DDD;
                 padding: 15px;
             }
+            .highlight {
+                border-bottom: 2px solid #00adc7;
+                display: inline-flex;
+                align-items: center;
+            }
+
+            .highlight .icon {
+                margin: 0 .5em;
+            }
+
 
         </style>
     </head>
     <body>
+        <?php if ($mode == 'upgrade'): ?>
+            <script type="text/javascript" src="js/dist/pachno/main.js?bust=<?= \pachno\core\framework\Settings::getVersion(); ?>"></script>
+        <?php endif; ?>
         <div class="installation_container">
             <div class="header_container">
                 <div class="logo_image_container"><img src="/logo_white_192.png" alt="Pachno - Installation"></div>

@@ -364,7 +364,7 @@
             $this->forward403unless($this->_checkProjectAccess(entities\Permission::PERMISSION_PROJECT_ACCESS_DASHBOARD));
 
             if (!function_exists('imagecreatetruecolor')) {
-                return $this->return404(Context::getI18n()->__('The libraries to generate images are not installed. Please see https://pachno.com for more information'));
+                return $this->return404(Context::getI18n()->__('The libraries to generate images are not installed. Please see https://projects.pach.no/pachno/docs/r/faq for more information'));
             }
 
             $this->getResponse()->setContentType('image/png');
