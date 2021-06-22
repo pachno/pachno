@@ -3,6 +3,7 @@
     use pachno\core\entities\Module;
     use pachno\core\framework\interfaces\ModuleInterface;
     use pachno\core\framework\CoreModule;
+    use pachno\core\framework\Context;
 
     /**
      * @var Module $module
@@ -11,8 +12,12 @@
 ?>
 <div class="row module <?php if (!$module instanceof CoreModule && !$module->isEnabled()) echo ' disabled'; ?> <?php if (!$module instanceof CoreModule && $module->isOutdated()) echo ' can-update out-of-date'; ?>" id="module_<?php echo $module->getName(); ?>" data-module-key="<?php echo $module->getName(); ?>" <?php if (!$module instanceof CoreModule): ?>data-version="<?php echo $module->getVersion(); ?>"<?php endif; ?>>
     <div class="column info-icons centered">
-        <?php if ($module->getID()): ?>
-            <input type="checkbox" class="fancy-checkbox" name="enabled" data-interactive-toggle value="1" id="toggle_enable_module_<?= $module->getId(); ?>_input" data-url="<?= make_url('configure_toggle_disable_module', array('module_key' => $module->getName())); ?>" <?php if ($module->isEnabled()) echo ' checked'; ?>><label class="button secondary icon" for="toggle_enable_module_<?= $module->getId(); ?>_input"><?= fa_image_tag('spinner', ['class' => 'fa-spin icon indicator']) . fa_image_tag('toggle-on', ['class' => 'icon checked']) . fa_image_tag('toggle-off', ['class' => 'icon unchecked']); ?></label>
+        <?php if (Context::isModuleLoaded($module->getName()) && $module->getID()): ?>
+            <?php if (Context::getScope()->isDefault()): ?>
+                <input type="checkbox" class="fancy-checkbox" name="enabled" data-interactive-toggle value="1" id="toggle_enable_module_<?= $module->getId(); ?>_input" data-url="<?= make_url('configure_toggle_disable_module', array('module_key' => $module->getName())); ?>" <?php if (Context::getModule($module->getName())->isEnabled()) echo ' checked'; ?>><label class="button secondary icon" for="toggle_enable_module_<?= $module->getId(); ?>_input"><?= fa_image_tag('spinner', ['class' => 'fa-spin icon indicator']) . fa_image_tag('toggle-on', ['class' => 'icon checked']) . fa_image_tag('toggle-off', ['class' => 'icon unchecked']); ?></label>
+            <?php else: ?>
+                <?= fa_image_tag('puzzle-piece', ['class' => 'icon']); ?>
+            <?php endif; ?>
         <?php else: ?>
             <?= fa_image_tag('certificate', ['class' => 'icon']); ?>
         <?php endif; ?>
@@ -66,6 +71,12 @@
             <?php else: ?>
                 <?php echo link_tag(make_url('configure_install_module', ['module_key' => $module->getName()]), __('Install'), array('class' => 'button primary')); ?>
             <?php endif; ?>
+        <?php else: ?>
+            <?php if (!Context::isModuleLoaded($module->getName())): ?>
+                <?php echo link_tag(make_url('configure_install_module', ['module_key' => $module->getName()]), __('Enable module'), array('class' => 'button primary')); ?>
+            <?php elseif (!$module instanceof CoreModule): ?>
+                <a href="javascript:void(0);" class="button danger" onclick="$('#uninstall_module_<?php echo $module->getID(); ?>').toggle();"><span class="name"><?php echo __('Disable module'); ?></span></a>
+            <?php endif; ?>
         <?php endif; ?>
     </div>
 </div>
@@ -95,11 +106,17 @@
     <div class="fullpage_backdrop_content">
         <div class="backdrop_box medium">
             <div class="backdrop_detail_header">
-                <span><?php echo __('Really uninstall "%module_name"?', array('%module_name' => $module->getLongname())); ?></span>
+                <span><?php echo (Context::getScope()->isDefault()) ? __('Really uninstall "%module_name"?', ['%module_name' => $module->getLongname()]) : __('Really disable "%module_name"?', ['%module_name' => $module->getLongname()]); ?></span>
                 <a href="javascript:void(0);" class="closer" onclick="$('#uninstall_module_<?php echo $module->getID(); ?>').hide();"><?php echo image_tag('times'); ?></a>
             </div>
             <div class="backdrop_detail_content">
-                <span class="question_header"><?php echo __('Uninstalling this module will permanently prevent users from accessing it or any associated data. If you just want to prevent access to the module temporarily, disable the module instead.'); ?></span><br>
+                <span class="question_header">
+                    <?php if (Context::getScope()->isDefault()): ?>
+                        <?php echo __('Uninstalling this module will permanently prevent users from accessing it or any associated data. If you just want to prevent access to the module temporarily, disable the module instead.'); ?>
+                    <?php else: ?>
+                        <?php echo __('Disabling this module will permanently prevent users from accessing it or any associated data.'); ?>
+                    <?php endif; ?>
+                </span>
             </div>
             <div class="backdrop_details_submit" id="uninstall_module_controls_<?php echo $module->getID(); ?>">
                 <?php echo link_tag(make_url('configure_uninstall_module', array('module_key' => $module->getName())), __('Yes'), array('class' => 'button primary')); ?>

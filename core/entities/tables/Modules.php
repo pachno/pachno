@@ -51,10 +51,10 @@
 
         public const SCOPE = 'modules.scope';
 
-        public function getAll()
+        public function getByScopeId($scope_id)
         {
             $query = $this->getQuery();
-            $query->where(self::SCOPE, framework\Context::getScope()->getID());
+            $query->where(self::SCOPE, $scope_id);
             $modules = [];
 
             if ($res = $this->rawSelect($query)) {
@@ -68,6 +68,11 @@
             }
 
             return $modules;
+        }
+
+        public function getAll()
+        {
+            return $this->getByScopeId(framework\Context::getScope()->getID());
         }
 
         public function getAllNames()

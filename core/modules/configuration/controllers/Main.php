@@ -730,6 +730,9 @@
             $this->module_message = framework\Context::getMessageAndClear('module_message');
             $this->module_error = framework\Context::getMessageAndClear('module_error');
             $this->modules = framework\Context::getAllModules();
+            if (!framework\Context::getScope()->isDefault()) {
+                $this->available_modules = tables\Modules::getTable()->getByScopeId(framework\Settings::getDefaultScopeID());
+            }
             $this->writable = is_writable(PACHNO_MODULES_PATH);
             $this->can_install_modules = entities\Module::canInstallModules() && $this->writable;
             $this->uninstalled_modules = framework\Context::getUninstalledModules();
@@ -876,10 +879,12 @@
             try {
                 if ($request['mode'] == 'install' && file_exists(PACHNO_MODULES_PATH . $request['module_key'] . DS . ucfirst($request['module_key']) . '.php')) {
                     if ($module = entities\Module::installModule($request['module_key'])) {
-                        if ($module->hasComposerDependencies()) {
+                        if (framework\Context::getScope()->isDefault() && $module->hasComposerDependencies()) {
                             framework\Context::setMessage('module_message', framework\Context::getI18n()->__('The module "%module_name" was installed successfully, including dependencies. Before you can use the new module, you have to run %composer_update from the main pachno directory.', ['%module_name' => $module->getLongName(), '%composer_update' => '<span class="command_box">composer update</span>']));
-                        } else {
+                        } elseif (framework\Context::getScope()->isDefault()) {
                             framework\Context::setMessage('module_message', framework\Context::getI18n()->__('The module "%module_name" was installed successfully', ['%module_name' => $module->getLongName()]));
+                        } else {
+                            framework\Context::setMessage('module_message', framework\Context::getI18n()->__('The module "%module_name" was enabled successfully', ['%module_name' => $module->getLongName()]));
                         }
                     } else {
                         framework\Context::setMessage('module_error', framework\Context::getI18n()->__('There was an error during the installation of the module "%module_name"', ['%module_name' => $request['module_key']]));
@@ -900,7 +905,11 @@
                                 break;
                             case 'uninstall':
                                 $module->uninstall();
-                                framework\Context::setMessage('module_message', framework\Context::getI18n()->__('The module "%module_name" was uninstalled successfully', ['%module_name' => $module->getLongName()]));
+                                if (framework\Context::getScope()->isDefault()) {
+                                    framework\Context::setMessage('module_message', framework\Context::getI18n()->__('The module "%module_name" was uninstalled successfully', ['%module_name' => $module->getLongName()]));
+                                } else {
+                                    framework\Context::setMessage('module_message', framework\Context::getI18n()->__('The module "%module_name" was disabled successfully', ['%module_name' => $module->getLongName()]));
+                                }
                                 break;
                             case 'update':
                                 try {
@@ -919,22 +928,6 @@
                 throw $e;
             }
             $this->forward(framework\Context::getRouting()->generate('configure_modules'));
-        }
-
-        /**
-         * Configure the selected theme
-         *
-         * @param framework\Request $request
-         * @Route(name="themes", url="/configure/themes")
-         */
-        public function runConfigureThemes(framework\Request $request)
-        {
-            $this->themes = framework\Context::getThemes();
-            $this->writable = is_writable(PACHNO_PATH . 'themes');
-            $this->writable_link = is_writable(PACHNO_PATH . PACHNO_PUBLIC_FOLDER_NAME . DS . 'themes');
-            $this->theme_message = framework\Context::getMessageAndClear('theme_message');
-            $this->theme_error = framework\Context::getMessageAndClear('theme_error');
-            $this->is_default_scope = framework\Context::getScope()->isDefault();
         }
 
         /**

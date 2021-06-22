@@ -9,6 +9,7 @@
      * @var Response $pachno_response
      * @var Module[][] $modules
      * @var Module[] $uninstalled_modules
+     * @var Module[] $available_modules
      * @var bool $is_default_scope
      * @var bool $writable
      * @var bool $can_install_modules
@@ -96,17 +97,24 @@
                             </div>
                         <?php endif; ?>
                     <?php else: ?>
-                        <div class="onboarding large">
-                            <div class="image-container"><?= image_tag('/unthemed/onboarding_configure_modules_none.png', [], true); ?></div>
-                            <div class="helper-text">
-                                <span><?= __('Available modules will be listed here.'); ?></span>
-                                <span><a class="button primary" href="https://pach.no/modules" target="_blank"><?= __('Find modules online'); ?></a></span>
+                        <?php if (!count($available_modules)): ?>
+                            <div class="onboarding large">
+                                <div class="image-container"><?= image_tag('/unthemed/onboarding_configure_modules_none.png', [], true); ?></div>
+                                <div class="helper-text">
+                                    <span><?= __('Available modules will be listed here.'); ?></span>
+                                    <span><a class="button primary" href="https://pach.no/modules" target="_blank"><?= __('Find modules online'); ?></a></span>
+                                </div>
                             </div>
-                        </div>
+                        <?php endif; ?>
                     <?php endif; ?>
                 <?php endif; ?>
                 <?php if (\pachno\core\framework\Context::getScope()->isDefault()): ?>
                     <?php foreach ($uninstalled_modules as $module_key => $module): ?>
+                        <?php include_component('modulebox', array('module' => $module, 'is_default_scope' => $is_default_scope)); ?>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <?php foreach ($available_modules as $module_key => $module): ?>
+                        <?php if (Context::isModuleLoaded($module_key)) continue; ?>
                         <?php include_component('modulebox', array('module' => $module, 'is_default_scope' => $is_default_scope)); ?>
                     <?php endforeach; ?>
                 <?php endif; ?>

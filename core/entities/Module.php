@@ -125,8 +125,11 @@
             $transaction = Core::startTransaction();
             try {
                 $module = tables\Modules::getTable()->installModule($module_name, $scope_id);
-                if ($module->hasComposerDependencies()) {
-                    $module->addSectionsToComposerJson();
+                $module->install($scope_id);
+                if (framework\Context::getScope()->isDefault()) {
+                    if ($module->hasComposerDependencies()) {
+                        $module->addSectionsToComposerJson();
+                    }
                 }
             } catch (Exception $e) {
                 $transaction->rollback();
