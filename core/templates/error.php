@@ -102,6 +102,9 @@
                         <?php elseif ($exception->getCode() == \pachno\core\framework\exceptions\ConfigurationException::UPGRADE_REQUIRED): ?>
                             You need to upgrade to this version of Pachno before you can continue.<br>
                             Please see the <a href='https://projects.pach.no/pachno/docs/r/upgrade'>upgrade instructions</a> for more information.
+                        <?php elseif ($exception->getCode() == \pachno\core\framework\exceptions\ConfigurationException::UPGRADE_NON_RESET_COMPOSER_JSON): ?>
+                            You need to reset modifications in <span class="command_box"><?= PACHNO_PATH; ?>composer.json</span> before you can continue.<br>
+                            Please see the <a href='https://projects.pach.no/pachno/docs/r/upgrade'>upgrade instructions</a> for more information.
                         <?php elseif ($exception->getCode() == \pachno\core\framework\exceptions\ConfigurationException::NO_B2DB_CONFIGURATION): ?>
                             The database configuration file <span class="command_box"><?= PACHNO_CONFIGURATION_PATH; ?>b2db.yml</span> could not be read.<br>
                             This file is generated during installation, so this error should not occur.<br>

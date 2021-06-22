@@ -51,8 +51,8 @@
 <?php \pachno\core\framework\Event::createNew('core', 'project/templates/projectheader/after-spacer', $project)->trigger(); ?>
 <div class="action-container">
     <?php if ($pachno_response->getPage() === 'project_dashboard'): ?>
-        <?= javascript_link_tag(fa_image_tag('edit', ['class' => 'icon']) . '<span class="name">' . __('Customize dashboard') . '</span>', ['title' => __('Customize dashboard'), 'onclick' => "Pachno.UI.Backdrop.show('" . make_url('get_partial_for_backdrop', ['key' => 'dashboard_config', 'dashboard_id' => $project->getDefaultDashboard()->getID(), 'target_type' => DashboardView::TYPE_PROJECT, 'previous_route']) . "');", 'class' => 'button secondary']); ?>
         <?php if ($pachno_user->canEditProjectDetails($project)): ?>
+            <?= javascript_link_tag(fa_image_tag('edit', ['class' => 'icon']) . '<span class="name">' . __('Customize dashboard') . '</span>', ['title' => __('Customize dashboard'), 'onclick' => "Pachno.UI.Backdrop.show('" . make_url('get_partial_for_backdrop', ['key' => 'dashboard_config', 'dashboard_id' => $project->getDefaultDashboard()->getID(), 'target_type' => DashboardView::TYPE_PROJECT, 'previous_route']) . "');", 'class' => 'button secondary']); ?>
             <a href="<?= make_url('project_settings', ['project_key' => $project->getKey()]); ?>" class="button secondary">
                 <?= fa_image_tag('cog', ['class' => 'icon']); ?>
                 <span class="name"><?= __('Settings'); ?></span>

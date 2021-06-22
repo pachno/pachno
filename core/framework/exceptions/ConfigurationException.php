@@ -23,5 +23,7 @@
 
         public const PERMISSION_DENIED = 5;
 
+        public const UPGRADE_NON_RESET_COMPOSER_JSON = 6;
+
     }
 

@@ -137,7 +137,12 @@
             return $this->rawDelete($query);
         }
 
-        public function installModule($identifier, $scope)
+        /**
+         * @param $identifier
+         * @param $scope
+         * @return Module|framework\CoreModule
+         */
+        public function installModule($identifier, $scope): framework\interfaces\ModuleInterface
         {
             $core_classname = "\\pachno\\core\\modules\\" . $identifier . "\\" . ucfirst($identifier);
             if (class_exists($core_classname)) {

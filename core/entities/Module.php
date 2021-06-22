@@ -7,6 +7,9 @@
     use b2db\Update;
     use Exception;
     use GuzzleHttp\Client as GuzzleClient;
+    use Nadar\PhpComposerReader\ComposerReader;
+    use Nadar\PhpComposerReader\Package;
+    use Nadar\PhpComposerReader\RequireSection;
     use pachno\core\entities\common\IdentifiableScoped;
     use pachno\core\entities\tables\Modules;
     use pachno\core\framework;
@@ -87,14 +90,33 @@
 
         protected $_has_config_settings = false;
 
+        protected $_has_composer_dependencies = false;
+
+        protected $_composer_name = '';
+
+        public static function canInstallModules(): bool
+        {
+            $reader = new ComposerReader(PACHNO_PATH . 'composer.json');
+
+            if (!$reader->canRead()) {
+                return false;
+            }
+
+            if (!$reader->canWrite()) {
+                return false;
+            }
+
+            return true;
+        }
+
         /**
          * Installs a module
          *
          * @param string $module_name the module key
          *
-         * @return boolean Whether the install succeeded or not
+         * @return Module The module after it is installed
          */
-        public static function installModule($module_name, $scope = null)
+        public static function installModule(string $module_name, $scope = null): Module
         {
             $scope_id = ($scope) ? $scope->getID() : framework\Context::getScope()->getID();
             if (!framework\Context::getScope() instanceof Scope) throw new Exception('No scope??');
@@ -103,8 +125,9 @@
             $transaction = Core::startTransaction();
             try {
                 $module = tables\Modules::getTable()->installModule($module_name, $scope_id);
-                $module->install($scope_id);
-                $transaction->commitAndEnd();
+                if ($module->hasComposerDependencies()) {
+                    $module->addSectionsToComposerJson();
+                }
             } catch (Exception $e) {
                 $transaction->rollback();
                 throw $e;
@@ -290,10 +313,66 @@
         {
         }
 
+        public function addSectionsToComposerJson()
+        {
+            $reader = new ComposerReader(PACHNO_PATH . 'composer.json');
+            $repositories = $reader->contentSection('repositories', null);
+            $found = false;
+            foreach ($repositories as $repository) {
+                if ($repository['type'] === 'path' && $repository['url'] === 'modules/' . $this->getName()) {
+                    $found = true;
+                }
+            }
+            if (!$found) {
+                $repositories[] = [
+                    'type' => 'path',
+                    'url' => 'modules/' . $this->getName()
+                ];
+                $reader->updateSection('repositories', $repositories);
+                $reader->save();
+            }
+            $require_section = new RequireSection($reader);
+            $found = false;
+            foreach ($require_section as $package) {
+                if ($package->name === $this->getComposerName()) {
+                    $found = true;
+                }
+            }
+            if (!$found) {
+                $new_package = new Package($reader, $this->getComposerName(), '@dev');
+                $require_section->add($new_package)->save();
+            }
+        }
+
+        public function removeSectionsFromComposerJson()
+        {
+            $reader = new ComposerReader(PACHNO_PATH . 'composer.json');
+            $repositories = $reader->contentSection('repositories', null);
+            foreach ($repositories as $index => $repository) {
+                if ($repository['type'] === 'path' && $repository['url'] === 'modules/' . $this->getName()) {
+                    unset($repositories[$index]);
+                }
+            }
+            $reader->updateSection('repositories', $repositories);
+            $reader->save();
+
+            $require_section = new RequireSection($reader);
+            foreach ($require_section as $package) {
+                if ($package->name === $this->getComposerName()) {
+                    $require_section->remove($this->getComposerName())->save();
+                    break;
+                }
+            }
+        }
+
         final public function uninstall($scope = null)
         {
             $this->_uninstall();
             $this->delete();
+            if ($this->hasComposerDependencies()) {
+                $this->removeSectionsFromComposerJson();
+            }
+
             $scope = ($scope === null) ? framework\Context::getScope()->getID() : $scope;
             framework\Settings::deleteModuleSettings($this->getName(), $scope);
             framework\Context::deleteModulePermissions($this->getName(), $scope);
@@ -531,6 +610,16 @@
         public function postAccountSettings(framework\Request $request)
         {
 
+        }
+
+        public function getComposerName()
+        {
+            return $this->_composer_name;
+        }
+
+        public function hasComposerDependencies()
+        {
+            return $this->_has_composer_dependencies;
         }
 
     }

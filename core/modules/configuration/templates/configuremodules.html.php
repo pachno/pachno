@@ -11,6 +11,7 @@
      * @var Module[] $uninstalled_modules
      * @var bool $is_default_scope
      * @var bool $writable
+     * @var bool $can_install_modules
      */
 
     $pachno_response->setTitle(__('Configure modules'));
@@ -37,22 +38,30 @@
             <?php if ($module_message !== null): ?>
                 <div class="message-box type-info" id="module_message">
                     <?= fa_image_tag('exclamation-circle'); ?>
-                    <span class="message"><?= $module_message; ?></span>
-                </div>
-            <?php endif; ?>
-            <?php if (count($outdated_modules) > 0): ?>
-                <div class="message-box type-warning" id="outdated_module_message">
                     <span class="message">
-                        <?= fa_image_tag('exclamation-circle'); ?>
-                        <?php if ($is_default_scope): ?>
-                            <?= __('You have %count outdated modules. They have been disabled until you upgrade them, you can upgrade them on this page.', array('%count' => count($outdated_modules))); ?>
-                        <?php else: ?>
-                            <?= __('You have %count outdated modules. They have been disabled until they are updated by an administrator.', array('%count' => count($outdated_modules))); ?>
-                        <?php endif; ?>
+                        <span><?= $module_message; ?></span>
                     </span>
                 </div>
             <?php endif; ?>
             <?php if ($is_default_scope): ?>
+                <?php if (!$can_install_modules): ?>
+                    <div class="message-box type-warning" id="module_installation_not_possible">
+                        <?= fa_image_tag('exclamation-circle'); ?>
+                        <span class="message"><?= __('Automatic installation of modules is not possible. Please make sure that both the modules/ path and composer.json is writable.'); ?></span>
+                    </div>
+                <?php endif; ?>
+                <?php if (count($outdated_modules) > 0): ?>
+                    <div class="message-box type-warning" id="outdated_module_message">
+                        <span class="message">
+                            <?= fa_image_tag('exclamation-circle'); ?>
+                            <?php if ($is_default_scope): ?>
+                                <?= __('You have %count outdated modules. They have been disabled until you upgrade them, you can upgrade them on this page.', array('%count' => count($outdated_modules))); ?>
+                            <?php else: ?>
+                                <?= __('You have %count outdated modules. They have been disabled until they are updated by an administrator.', array('%count' => count($outdated_modules))); ?>
+                            <?php endif; ?>
+                        </span>
+                    </div>
+                <?php endif; ?>
                 <h3>
                     <span><?= __('Featured modules'); ?></span>
                     <span class="button-group">

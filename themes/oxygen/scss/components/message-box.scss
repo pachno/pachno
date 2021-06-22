@@ -73,6 +73,21 @@
     flex: 0 0 auto;
     flex-direction: column;
     align-items: flex-end;
+
+    .button {
+      &.secondary {
+        &,
+        &.highlight {
+          background-color: rgba(255, 255, 255, .2);
+          color: #FFF;
+          border: 1px solid transparent;
+
+          &:hover {
+            border-color: rgba(255, 255, 255, .4);
+          }
+        }
+      }
+    }
   }
 
   .image-container {

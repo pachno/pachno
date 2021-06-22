@@ -264,7 +264,7 @@
 
         protected static $_ver_mn = 0;
 
-        protected static $_ver_rev = 1;
+        protected static $_ver_rev = 2;
 
         protected static $_ver_name = "Amethyst";
 

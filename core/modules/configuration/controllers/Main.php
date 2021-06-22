@@ -4,6 +4,7 @@
 
     use Exception;
     use InvalidArgumentException;
+    use Nadar\PhpComposerReader\ComposerReader;
     use pachno\core\entities;
     use pachno\core\entities\CustomDatatype;
     use pachno\core\entities\tables;
@@ -730,6 +731,7 @@
             $this->module_error = framework\Context::getMessageAndClear('module_error');
             $this->modules = framework\Context::getAllModules();
             $this->writable = is_writable(PACHNO_MODULES_PATH);
+            $this->can_install_modules = entities\Module::canInstallModules() && $this->writable;
             $this->uninstalled_modules = framework\Context::getUninstalledModules();
             $this->outdated_modules = framework\Context::getOutdatedModules();
             $this->is_default_scope = framework\Context::getScope()->isDefault();
@@ -874,7 +876,11 @@
             try {
                 if ($request['mode'] == 'install' && file_exists(PACHNO_MODULES_PATH . $request['module_key'] . DS . ucfirst($request['module_key']) . '.php')) {
                     if ($module = entities\Module::installModule($request['module_key'])) {
-                        framework\Context::setMessage('module_message', framework\Context::getI18n()->__('The module "%module_name" was installed successfully', ['%module_name' => $module->getLongName()]));
+                        if ($module->hasComposerDependencies()) {
+                            framework\Context::setMessage('module_message', framework\Context::getI18n()->__('The module "%module_name" was installed successfully, including dependencies. Before you can use the new module, you have to run %composer_update from the main pachno directory.', ['%module_name' => $module->getLongName(), '%composer_update' => '<span class="command_box">composer update</span>']));
+                        } else {
+                            framework\Context::setMessage('module_message', framework\Context::getI18n()->__('The module "%module_name" was installed successfully', ['%module_name' => $module->getLongName()]));
+                        }
                     } else {
                         framework\Context::setMessage('module_error', framework\Context::getI18n()->__('There was an error during the installation of the module "%module_name"', ['%module_name' => $request['module_key']]));
                     }

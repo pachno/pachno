@@ -12,6 +12,7 @@
     use pachno\core\entities\Permission;
     use pachno\core\entities\Project;
     use pachno\core\entities\Scope;
+    use pachno\core\entities\tables\Modules;
     use pachno\core\entities\tables\Permissions;
     use pachno\core\entities\tables\Scopes;
     use pachno\core\entities\User;
@@ -929,24 +930,20 @@
             if (self::isInstallmode())
                 return;
 
-            if (self::isUpgrademode()) {
-                self::$_modules = Module::getB2DBTable()->getAllNames();
-
-                return;
-            }
-
             Logging::log('getting modules from database');
-            self::$_modules = Module::getB2DBTable()->getAll();
+            self::$_modules = Modules::getTable()->getAll();
             Logging::log('done (setting up module objects)');
 
-            Logging::log('initializing modules');
-            if (!empty(self::$_modules)) {
-                foreach (self::$_modules as $module) {
-                    $module->initialize();
+            if (!self::isUpgrademode()) {
+                Logging::log('initializing modules');
+                if (!empty(self::$_modules)) {
+                    foreach (self::$_modules as $module) {
+                        $module->initialize();
+                    }
+                    Logging::log('done (initializing modules)');
+                } else {
+                    Logging::log('no modules found');
                 }
-                Logging::log('done (initializing modules)');
-            } else {
-                Logging::log('no modules found');
             }
             Logging::log('...done (loading modules)');
         }

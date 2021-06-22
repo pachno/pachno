@@ -3,6 +3,7 @@
     namespace pachno\core\modules\installation;
 
     use Exception;
+    use Nadar\PhpComposerReader\ComposerReader;
     use pachno\core\entities\Scope;
     use pachno\core\framework;
     use pachno\core\framework\cli\Command;
@@ -49,9 +50,22 @@
                 Command::cli_echo("Gathering information before upgrading...\n\n");
             }
 
+            $reader = new ComposerReader(PACHNO_PATH . 'composer.json');
+            $repositories = $reader->contentSection('repositories', null);
+            if (count($repositories)) {
+                throw new framework\exceptions\ConfigurationException('Invalid composer.json contents', framework\exceptions\ConfigurationException::UPGRADE_NON_RESET_COMPOSER_JSON);
+            }
+
             switch ($this->current_version) {
                 case '1.0.0':
                     $this->_upgradeFrom1_0_0($request);
+            }
+
+            framework\Context::loadModules();
+            foreach (framework\Context::getModules() as $module) {
+                if ($module->hasComposerDependencies()) {
+                    $module->addSectionsToComposerJson();
+                }
             }
 
             $existing_installed_content = file_get_contents(PACHNO_PATH . 'installed');
