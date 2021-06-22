@@ -141,7 +141,7 @@
                 </div>
             </div>
         <?php endif; ?>
-    <?php elseif ($upgrade_complete): ?>
+    <?php elseif (isset($upgrade_complete) && $upgrade_complete): ?>
         <div class="installation_progress">
             <h5>Upgrade progress</h5>
             <div class="progress_bar"><div class="filler" style="width: 100%;"></div></div>
@@ -154,12 +154,15 @@
             <a href="<?php echo make_url('auth_logout'); ?>" class="button">Finish</a>
         </div>
     <?php else: ?>
-        <h4>No upgrade necessary!</h4>
+        <h4>Pachno is being upgraded.</h4>
         <p>
-            Make sure that the file <span class="command_box"><?php echo PACHNO_PATH . 'upgrade'; ?></span> is removed before you click the "Finish" button below.
+            Please wait while the upgrade is finishing.
         </p>
-        <div class="progress_buttons">
-            <a href="<?php echo make_url('home'); ?>" class="button button-next">Finish</a>
+        <br>
+        <div class="message-box type-warning">
+            <span class="message">
+                <span>If you are an administrator and are seeing this message after completing the upgrade, remember to remove the <span class="command_box">upgrade</span> file present in your pachno directory</span>
+            </span>
         </div>
     <?php endif; ?>
 </div>
