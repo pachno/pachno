@@ -17,7 +17,7 @@
 
         public function do_execute()
         {
-            if ($this->getProvidedArgument('prepare', false) !== null) {
+            if ($this->getProvidedArgument('prepare', '') !== '') {
                 $this->cliEcho('Preparing for upgrade ...');
                 framework\Context::loadModules();
                 foreach (framework\Context::getModules() as $module) {
