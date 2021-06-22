@@ -21,7 +21,7 @@
      * @package pachno
      * @subpackage main
      *
-     * @Table(name="\pachno\core\entities\tables\IssueSpentTimes")
+     * @Table(name="\pachno\core\entities\tables\IssueTags")
      */
     class IssueTag extends IdentifiableScoped
     {

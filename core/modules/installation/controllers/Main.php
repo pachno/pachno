@@ -89,8 +89,9 @@
         {
             $this->getResponse()->setDecoration(framework\Response::DECORATE_NONE);
 
-            if (($step = $request['step']) && $step >= 1 && $step <= 6) {
+            if (($step = (int) $request['step']) && $step >= 1 && $step <= 6) {
                 if ($step >= 5) {
+                    Core::doConnect();
                     $scope = new Scope(1);
                     framework\Context::setScope($scope);
                 }
@@ -345,6 +346,7 @@
                 framework\Context::reinitializeI18n('en_US');
 
                 framework\Logging::log('Loading fixtures for default scope');
+                Core::doConnect();
                 $scope = new Scope();
                 $scope->addHostname('*');
                 $scope->setName('The default scope');

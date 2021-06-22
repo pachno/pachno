@@ -1,7 +1,6 @@
 # Pachno open collaboration platform 
 
 [![Build Status](https://travis-ci.org/pachno/pachno.png?branch=master)](https://travis-ci.org/pachno/pachno) 
-[![Join the chat at https://gitter.im/pachno/general](https://badges.gitter.im/pachno/general.svg)](https://gitter.im/pachno/general?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 Pachno is an open source platform for collaboration: issue tracking, project management, documentation, code and more. 
 

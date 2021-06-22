@@ -2,7 +2,7 @@ INSTALLATION
 ============
 
 NOTE: For the latest installation notes, troubleshooting and tips,
-visit the FAQ: https://projects.pach.no/pachno/docs/FAQ
+visit the FAQ: https://projects.pach.no/pachno/docs/r/install
 
 GENERAL INSTALLATION NOTES
 --------------------------

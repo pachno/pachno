@@ -1737,7 +1737,7 @@
                 }
             }
 
-            if (!self::isInstallmode() || !$configuration) {
+            if (!self::isInstallmode() || !isset($configuration) || !$configuration) {
                 Logging::log('Loading configuration from files', 'core');
                 $config_filename = PACHNO_CONFIGURATION_PATH . "settings.yml";
                 $b2db_filename = PACHNO_CONFIGURATION_PATH . "b2db.yml";
