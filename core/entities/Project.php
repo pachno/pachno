@@ -2226,7 +2226,6 @@
         public function canVoteOnIssues()
         {
             return !framework\Context::getUser()->isGuest();
-//            return (bool)$this->permissionCheck('canvoteforissues');
         }
 
         public function getParentID()

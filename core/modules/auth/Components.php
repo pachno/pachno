@@ -38,7 +38,7 @@
                 $this->referer = framework\Context::getRouting()->generate('dashboard');
             endif;
 
-            if (framework\Settings::isLoginRequired()) {
+            if (framework\Settings::isLoginRequired() == framework\Settings::LOGIN_REQUIRED_READ) {
                 $authentication_backend = framework\Settings::getAuthenticationBackend();
                 if ($authentication_backend->getAuthenticationMethod() == AuthenticationProvider::AUTHENTICATION_TYPE_TOKEN) {
                     framework\Context::getResponse()->deleteCookie('username');

@@ -153,7 +153,7 @@
 
             $settings = [];
             $settings[framework\Settings::SETTING_THEME_NAME] = 'oxygen';
-            $settings[framework\Settings::SETTING_REQUIRE_LOGIN] = false;
+            $settings[framework\Settings::SETTING_REQUIRE_LOGIN] = framework\Settings::LOGIN_REQUIRED_WRITE;
             $settings[framework\Settings::SETTING_DEFAULT_USER_IS_GUEST] = true;
             $settings[framework\Settings::SETTING_ALLOW_REGISTRATION] = true;
             $settings[framework\Settings::SETTING_RETURN_FROM_LOGIN] = 'referer';

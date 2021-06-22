@@ -82,6 +82,12 @@
 
         public const SYNTAX_EDITOR_JS = 4;
 
+        public const LOGIN_REQUIRED_NONE = 0;
+
+        public const LOGIN_REQUIRED_WRITE = 1;
+
+        public const LOGIN_REQUIRED_READ = 2;
+
         public const SETTING_ADMIN_GROUP = 'admingroup';
 
         public const SETTING_ALLOW_REGISTRATION = 'allowreg';
@@ -678,7 +684,7 @@
 
         public static function isLoginRequired()
         {
-            return (bool)self::get(self::SETTING_REQUIRE_LOGIN);
+            return (int) self::get(self::SETTING_REQUIRE_LOGIN);
         }
 
         public static function isElevatedLoginRequired()

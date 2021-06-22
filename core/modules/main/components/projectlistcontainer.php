@@ -1,5 +1,7 @@
 <?php
 
+    use pachno\core\framework\Settings;
+
     /** @var \pachno\core\entities\User $pachno_user */
 
 ?>
@@ -33,7 +35,7 @@
                     <?php endif; ?>
                 <?php elseif ($project_state == 'archived'): ?>
                     <?= __("There are no archived projects."); ?>
-                <?php elseif (!$pachno_user->isGuest()): ?>
+                <?php elseif (!$pachno_user->isGuest() || Settings::isLoginRequired() !== Settings::LOGIN_REQUIRED_READ): ?>
                     <?= __("You don't have access to any projects yet."); ?>
                 <?php else: ?>
                     <span><?= __("Log in to see projects in this space"); ?></span>

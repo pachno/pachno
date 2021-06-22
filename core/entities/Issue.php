@@ -816,6 +816,11 @@
 
                 return true;
             }
+            if ($user->hasProjectPermission(Permission::PERMISSION_PROJECT_ACCESS_ISSUES, $this->getProject()) === true) {
+                Logging::log('done checking, not allowed to access issues not posted by themselves');
+
+                return true;
+            }
             if ($user->hasPermission(Permission::PERMISSION_PROJECT_ACCESS_ALL_ISSUES) === false) {
                 Logging::log('done checking, not allowed to access issues not posted by themselves');
 

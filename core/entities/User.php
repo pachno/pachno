@@ -645,7 +645,7 @@
                     break;
             }
 
-            if (!$user instanceof User && !framework\Settings::isLoginRequired()) {
+            if (!$user instanceof User && framework\Settings::isLoginRequired() !== framework\Settings::LOGIN_REQUIRED_READ) {
                 $user = framework\Settings::getDefaultUser();
             }
 
@@ -659,7 +659,7 @@
                         throw new Exception('This account does not have access to this scope');
                     }
                 }
-            } elseif (framework\Settings::isLoginRequired()) {
+            } elseif (framework\Settings::isLoginRequired() == framework\Settings::LOGIN_REQUIRED_READ) {
                 throw new Exception('Login required');
             } else {
                 throw new Exception('No such login');
@@ -1644,16 +1644,17 @@
          *
          * @param string $permission The page key
          * @param Project $project
+         * @param bool $anonymous_write_access Whether this is a write access which requires elevated anonymous access if guest user
          *
          * @return boolean
          */
-        public function hasProjectPermission($permission, Project $project)
+        public function hasProjectPermission($permission, Project $project, bool $anonymous_write_access = false)
         {
             if ($project->isArchived()) return false;
             if ($this->canSaveConfiguration()) return true;
             if ($project->getOwner() instanceof User && $project->getOwner()->getID() == $this->getID()) return true;
 
-            $allowed = $this->hasPermission($permission, $project->getID());
+            $allowed = $this->hasPermission($permission, $project->getID(), 'core', $anonymous_write_access);
 
             return $allowed ?? false;
         }
@@ -1685,10 +1686,11 @@
          * @param string $permission_type Type of permission to check. Available values depend on module specified.
          * @param mixed $target_id [optional] Target (object) ID, if applicable. Should be non-negative integer or string. Default is 0.
          * @param string $module_name [optional] Module to which the $permission_type is applicable. Default is 'core'.
+         * @param bool $anonymous_write_access Whether this is a write access which requires elevated anonymous access if guest user
          *
          * @return mixed If permission matching the specified criteria has been found in database (cache, to be more precise), returns permission value (true or false). If no matching permission has been found, returns null. Receiving null means the caller needs to apply a default rule (allow or deny), which depends on caller implementation.
          */
-        public function hasPermission($permission_type, $target_id = 0, $module_name = 'core')
+        public function hasPermission($permission_type, $target_id = 0, $module_name = 'core', bool $anonymous_write_access = false)
         {
             // Parts of code seem to expected to be able to pass-in target_id as
             // null. Assume this means target_id 0.
@@ -1708,7 +1710,7 @@
 
             // Obtain group, team, and role memberships for the user.
             $user_id = $this->getID();
-            $group_id = (int)$this->getGroupID();
+            $group_id = (int)$this->getGroupID($anonymous_write_access);
             $teams = $this->getTeams();
             $team_ids = [];
             foreach ($teams as $team) {
@@ -1742,13 +1744,14 @@
 
         /**
          * Return this users group ID if any
+         * @param bool $write_access_check Whether this is a write access which requires elevated anonymous access if guest user
          *
          * @return integer
          */
-        public function getGroupID()
+        public function getGroupID(bool $write_access_check = false)
         {
             if (is_object($this->getGroup())) {
-                return $this->getGroup()->getID();
+                return $this->getGroup($write_access_check)->getID();
             }
 
             return null;
@@ -1861,7 +1864,7 @@
         {
             if ($project->isArchived()) return false;
 
-            return $this->hasProjectPermission(Permission::PERMISSION_PROJECT_CREATE_ISSUES, $project);
+            return $this->hasProjectPermission(Permission::PERMISSION_PROJECT_CREATE_ISSUES, $project, true);
         }
 
         /**
@@ -1880,14 +1883,14 @@
             switch ($comment_type) {
                 case Comment::TYPE_ARTICLE:
                     if ($project instanceof Project) {
-                        return $this->hasProjectPermission(Permission::PERMISSION_PROJECT_EDIT_DOCUMENTATION_POST_COMMENTS, $project) || $this->hasProjectPermission(Permission::PERMISSION_MANAGE_PROJECT_MODERATE_DOCUMENTATION, $project);
+                        return $this->hasProjectPermission(Permission::PERMISSION_PROJECT_EDIT_DOCUMENTATION_POST_COMMENTS, $project, true) || $this->hasProjectPermission(Permission::PERMISSION_MANAGE_PROJECT_MODERATE_DOCUMENTATION, $project, true);
                     }
 
                     return $this->hasPermission(Permission::PERMISSION_MANAGE_SITE_DOCUMENTATION);
                 case Comment::TYPE_ISSUE:
-                    return $this->hasProjectPermission(Permission::PERMISSION_EDIT_ISSUES_COMMENTS, $project) || $this->hasProjectPermission(Permission::PERMISSION_EDIT_ISSUES_COMMENTS . Permission::PERMISSION_OWN_SUFFIX, $project) || $this->hasProjectPermission(Permission::PERMISSION_EDIT_ISSUES_MODERATE_COMMENTS, $project);
+                    return $this->hasProjectPermission(Permission::PERMISSION_EDIT_ISSUES_COMMENTS, $project, true) || $this->hasProjectPermission(Permission::PERMISSION_EDIT_ISSUES_COMMENTS . Permission::PERMISSION_OWN_SUFFIX, $project, true) || $this->hasProjectPermission(Permission::PERMISSION_EDIT_ISSUES_MODERATE_COMMENTS, $project, true);
                 case Comment::TYPE_COMMIT:
-                    return $this->hasProjectPermission(Permission::PERMISSION_PROJECT_DEVELOPER, $project) || $this->hasProjectPermission(Permission::PERMISSION_PROJECT_DEVELOPER_DISCUSS_CODE, $project);
+                    return $this->hasProjectPermission(Permission::PERMISSION_PROJECT_DEVELOPER, $project, true) || $this->hasProjectPermission(Permission::PERMISSION_PROJECT_DEVELOPER_DISCUSS_CODE, $project, true);
             }
 
             return false;
@@ -2888,10 +2891,11 @@
 
         /**
          * Returns the user group
+         * @param bool $write_access_check Whether this is a write access which requires elevated anonymous access if guest user
          *
          * @return Group
          */
-        public function getGroup()
+        public function getGroup(bool $write_access_check = false)
         {
             if (!is_object($this->_group_id)) {
                 try {
@@ -2905,6 +2909,10 @@
                     }
                 } catch (Exception $e) {
                 }
+            }
+
+            if ($this->isGuest() && framework\Settings::isLoginRequired() !== framework\Settings::LOGIN_REQUIRED_READ) {
+                return (framework\Settings::isLoginRequired() === framework\Settings::LOGIN_REQUIRED_WRITE && $write_access_check) ? $this->_group_id : framework\Settings::getDefaultGroup();
             }
 
             return $this->_group_id;
