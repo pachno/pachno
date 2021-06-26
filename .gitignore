@@ -18,3 +18,4 @@ pachno.log
 .idea
 .eslintrc.js
 *-VBoxSVC-*.log
+/composer.phar

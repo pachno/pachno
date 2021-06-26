@@ -116,21 +116,22 @@
          *
          * @return Module The module after it is installed
          */
-        public static function installModule(string $module_name, $scope = null): Module
+        public static function installModule(string $module_name, Scope $scope = null): framework\interfaces\ModuleInterface
         {
             $scope_id = ($scope) ? $scope->getID() : framework\Context::getScope()->getID();
             if (!framework\Context::getScope() instanceof Scope) throw new Exception('No scope??');
 
             framework\Logging::log('installing module ' . $module_name);
-            $transaction = Core::startTransaction();
             try {
+                $transaction = Core::startTransaction();
                 $module = tables\Modules::getTable()->installModule($module_name, $scope_id);
                 $module->install($scope_id);
                 if (framework\Context::getScope()->isDefault()) {
-                    if ($module->hasComposerDependencies()) {
+                    if ($module instanceof self && $module->hasComposerDependencies()) {
                         $module->addSectionsToComposerJson();
                     }
                 }
+                $transaction->commit();
             } catch (Exception $e) {
                 $transaction->rollback();
                 throw $e;
