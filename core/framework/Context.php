@@ -2449,6 +2449,16 @@
             return !empty(self::$_configuration['core']['minified_assets']);
         }
 
+        public static function getBaseOnlineUrl(): string
+        {
+            return self::$_configuration['core']['base_pachno_url'];
+        }
+
+        public static function getOnlineVerifySsl(): bool
+        {
+            return self::$_configuration['core']['pachno_ssl_verify'] ?? true;
+        }
+
         /**
          * Retrieves information about the latest available version from the official website.
          *
@@ -2479,7 +2489,7 @@
 
             // Set-up client and retrieve version information.
             $client = new \GuzzleHttp\Client([
-                'base_uri' => 'https://pach.no/',
+                'base_uri' => self::getBaseOnlineUrl(),
                 'http_errors' => false]);
             $response = $client->request('GET', '/version.json');
 

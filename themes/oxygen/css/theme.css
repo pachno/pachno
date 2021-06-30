@@ -5579,65 +5579,65 @@ input.icon.secondary:disabled {
     background: transparent;
     color: rgba(200, 200, 200, 0.3); }
 
-button.danger,
-.button.danger,
-input.button.danger,
-button.icon.danger,
-.button.icon.danger,
-input.icon.danger {
+button.danger:not([disabled]),
+.button.danger:not([disabled]),
+input.button.danger:not([disabled]),
+button.icon.danger:not([disabled]),
+.button.icon.danger:not([disabled]),
+input.icon.danger:not([disabled]) {
   background-color: #cb1a00;
   color: #FFF; }
-  button.danger .icon,
-  .button.danger .icon,
-  input.button.danger .icon,
-  button.icon.danger .icon,
-  .button.icon.danger .icon,
-  input.icon.danger .icon {
+  button.danger:not([disabled]) .icon,
+  .button.danger:not([disabled]) .icon,
+  input.button.danger:not([disabled]) .icon,
+  button.icon.danger:not([disabled]) .icon,
+  .button.icon.danger:not([disabled]) .icon,
+  input.icon.danger:not([disabled]) .icon {
     color: #FFF; }
-  button.danger:hover,
-  .button.danger:hover,
-  input.button.danger:hover,
-  button.icon.danger:hover,
-  .button.icon.danger:hover,
-  input.icon.danger:hover {
+  button.danger:not([disabled]):hover,
+  .button.danger:not([disabled]):hover,
+  input.button.danger:not([disabled]):hover,
+  button.icon.danger:not([disabled]):hover,
+  .button.icon.danger:not([disabled]):hover,
+  input.icon.danger:not([disabled]):hover {
     background-color: #9e1200;
     color: #FFF; }
-    button.danger:hover .icon,
-    .button.danger:hover .icon,
-    input.button.danger:hover .icon,
-    button.icon.danger:hover .icon,
-    .button.icon.danger:hover .icon,
-    input.icon.danger:hover .icon {
+    button.danger:not([disabled]):hover .icon,
+    .button.danger:not([disabled]):hover .icon,
+    input.button.danger:not([disabled]):hover .icon,
+    button.icon.danger:not([disabled]):hover .icon,
+    .button.icon.danger:not([disabled]):hover .icon,
+    input.icon.danger:not([disabled]):hover .icon {
       color: #FFF; }
-  button.danger.secondary,
-  .button.danger.secondary,
-  input.button.danger.secondary,
-  button.icon.danger.secondary,
-  .button.icon.danger.secondary,
-  input.icon.danger.secondary {
+  button.danger:not([disabled]).secondary,
+  .button.danger:not([disabled]).secondary,
+  input.button.danger:not([disabled]).secondary,
+  button.icon.danger:not([disabled]).secondary,
+  .button.icon.danger:not([disabled]).secondary,
+  input.icon.danger:not([disabled]).secondary {
     background: transparent;
     color: #cb1a00; }
-    button.danger.secondary .icon,
-    .button.danger.secondary .icon,
-    input.button.danger.secondary .icon,
-    button.icon.danger.secondary .icon,
-    .button.icon.danger.secondary .icon,
-    input.icon.danger.secondary .icon {
+    button.danger:not([disabled]).secondary .icon,
+    .button.danger:not([disabled]).secondary .icon,
+    input.button.danger:not([disabled]).secondary .icon,
+    button.icon.danger:not([disabled]).secondary .icon,
+    .button.icon.danger:not([disabled]).secondary .icon,
+    input.icon.danger:not([disabled]).secondary .icon {
       color: #cb1a00; }
-    button.danger.secondary:hover,
-    .button.danger.secondary:hover,
-    input.button.danger.secondary:hover,
-    button.icon.danger.secondary:hover,
-    .button.icon.danger.secondary:hover,
-    input.icon.danger.secondary:hover {
+    button.danger:not([disabled]).secondary:hover,
+    .button.danger:not([disabled]).secondary:hover,
+    input.button.danger:not([disabled]).secondary:hover,
+    button.icon.danger:not([disabled]).secondary:hover,
+    .button.icon.danger:not([disabled]).secondary:hover,
+    input.icon.danger:not([disabled]).secondary:hover {
       background-color: #cb1a00;
       color: #FFF; }
-      button.danger.secondary:hover .icon,
-      .button.danger.secondary:hover .icon,
-      input.button.danger.secondary:hover .icon,
-      button.icon.danger.secondary:hover .icon,
-      .button.icon.danger.secondary:hover .icon,
-      input.icon.danger.secondary:hover .icon {
+      button.danger:not([disabled]).secondary:hover .icon,
+      .button.danger:not([disabled]).secondary:hover .icon,
+      input.button.danger:not([disabled]).secondary:hover .icon,
+      button.icon.danger:not([disabled]).secondary:hover .icon,
+      .button.icon.danger:not([disabled]).secondary:hover .icon,
+      input.icon.danger:not([disabled]).secondary:hover .icon {
         color: #FFF; }
 
 .button-group {
@@ -12499,48 +12499,6 @@ dl.info {
     width: 100%;
     margin-top: 0; }
 
-.available_plugins_container .plugin.installed {
-  opacity: 0.5; }
-
-.plugins-list .plugin-actions .button.update-button {
-  display: none; }
-
-.plugin.theme .enable-button, .plugin.theme.enabled .button-more-actions {
-  display: none; }
-
-.plugin.theme.disabled .enable-button {
-  display: inline-block; }
-
-.plugins-list .plugin.can-update .plugin-actions .button.update-button {
-  display: inline-block; }
-
-.plugins-list .plugin > h1 {
-  margin: 0;
-  padding: 0;
-  font-size: 1.3em;
-  color: #888;
-  text-transform: uppercase; }
-
-.plugins-list .plugin .description {
-  padding: 5px 0;
-  margin-top: 10px;
-  font-size: 1.1em; }
-
-.plugin-website-link {
-  display: block;
-  margin: 15px 0 0 0;
-  text-align: right;
-  clear: both; }
-
-.available_plugins_container .plugin .status-badge {
-  display: none; }
-
-.available_plugins_container .plugin.installed .status-badge {
-  display: block; }
-
-.available_plugins_container .plugin.installed .plugin-actions .button {
-  display: none; }
-
 .rating {
   display: flex;
   flex-direction: row;
@@ -14124,6 +14082,8 @@ DEL {
   align-items: center;
   justify-content: center;
   transition: background-color .25s ease-in-out; }
+  .fullpage_backdrop.hidden {
+    display: none; }
   .fullpage_backdrop.see-through {
     background-color: rgba(255, 255, 255, 0); }
   .fullpage_backdrop.docked-right, .fullpage_backdrop.docked-left {
@@ -14208,6 +14168,14 @@ DEL {
         .fullpage_backdrop .fullpage_backdrop_content .backdrop_box .backdrop_detail_content.onboarding-popup .content {
           padding: 1.5em;
           font-size: 1.05em; }
+        .fullpage_backdrop .fullpage_backdrop_content .backdrop_box .backdrop_detail_content .content {
+          flex: 1 1 auto;
+          padding: 1em;
+          font-size: 1.1em;
+          box-sizing: border-box;
+          background-color: #FFF; }
+          .fullpage_backdrop .fullpage_backdrop_content .backdrop_box .backdrop_detail_content .content.hidden {
+            display: none; }
         .fullpage_backdrop .fullpage_backdrop_content .backdrop_box .backdrop_detail_content.with-sidebar {
           flex-direction: row;
           align-items: stretch;

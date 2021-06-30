@@ -348,23 +348,34 @@
                     switch ($request['say']) {
                         case 'install-module':
                             try {
-                                entities\Module::downloadModule($request['module_key']);
+                                if (framework\Context::getScope()->isDefault()) {
+                                    if ((bool) $request['download']) {
+                                        entities\Module::downloadModule($request['module_key']);
+                                    } elseif ((bool) $request['install_update']) {
+                                        entities\Module::extractModuleArchive($request['module_key']);
+                                    }
+                                }
                                 $module = entities\Module::installModule($request['module_key']);
+                                if (framework\Context::getScope()->isDefault() && $module->hasComposerDependencies()) {
+                                    $data['message'] = framework\Context::getI18n()->__('The module "%module_name" was installed successfully, including dependencies. Before you can use the new module, you have to run %composer_update from the main pachno directory.', ['%module_name' => $module->getLongName(), '%composer_update' => '<span class="command_box">composer update</span>']);
+                                } elseif (framework\Context::getScope()->isDefault()) {
+                                    $data['message'] = framework\Context::getI18n()->__('The module "%module_name" was installed successfully', ['%module_name' => $module->getLongName()]);
+                                } else {
+                                    $data['message'] = framework\Context::getI18n()->__('The module "%module_name" was enabled successfully', ['%module_name' => $module->getLongName()]);
+                                }
                                 $data['installed'] = true;
                                 $data['module_key'] = $request['module_key'];
-                                $data['module'] = $this->getComponentHTML('configuration/modulebox', ['module' => $module]);
+                                $data['module'] = $this->getComponentHTML('configuration/module', ['module' => $module]);
+                                $data['message'] = $this->getI18n()->__('The module has been installed');
                             } catch (framework\exceptions\ModuleDownloadException $e) {
                                 $this->getResponse()->setHttpStatus(400);
                                 switch ($e->getCode()) {
                                     case framework\exceptions\ModuleDownloadException::JSON_NOT_FOUND:
                                         return $this->renderJSON(['message' => $this->getI18n()->__('An error occured when trying to retrieve the module data')]);
-                                        break;
                                     case framework\exceptions\ModuleDownloadException::FILE_NOT_FOUND:
                                         return $this->renderJSON(['message' => $this->getI18n()->__('The module could not be downloaded')]);
-                                        break;
                                     case framework\exceptions\ModuleDownloadException::READONLY_TARGET:
                                         return $this->renderJSON(['title' => $this->getI18n()->__('Error extracting module zip'), 'message' => $this->getI18n()->__('Could not extract the module into the destination folder. Make sure you have write access to the modules folder and try again.')]);
-                                        break;
                                 }
                             } catch (Exception $e) {
                                 $this->getResponse()->setHttpStatus(400);
@@ -372,6 +383,39 @@
                                 return $this->renderJSON(['message' => $this->getI18n()->__('An error occured when trying to install the module: ' . $e->getMessage())]);
                             }
                             break;
+                        case 'uninstall-module':
+                            try {
+                                $module = framework\Context::getModule($request['module_key']);
+                                $module->uninstall();
+                                $data['uninstalled'] = true;
+                                $data['module_key'] = $request['module_key'];
+                                $data['module'] = $this->getComponentHTML('configuration/module', ['module' => $module]);
+                                if (framework\Context::getScope()->isDefault()) {
+                                    $data['message'] = $this->getI18n()->__('The module has been uninstalled');
+                                } else {
+                                    $data['message'] = $this->getI18n()->__('The module has been disabled');
+                                }
+                            } catch (Exception $e) {
+                                $this->getResponse()->setHttpStatus(400);
+                                if (!framework\Context::getScope()->isDefault()) {
+                                    return $this->renderJSON(['message' => $this->getI18n()->__('An error occured when trying to disable the module: ' . $e->getMessage())]);
+                                }
+                                return $this->renderJSON(['message' => $this->getI18n()->__('An error occured when trying to uninstall the module: ' . $e->getMessage())]);
+                            }
+                            break;
+                        case 'toggle-module':
+                            $module = framework\Context::getModule($request['module_key']);
+                            if ($module->getType() !== framework\interfaces\ModuleInterface::MODULE_AUTH) {
+                                if ($module->isEnabled()) {
+                                    $module->disable();
+                                } else {
+                                    $module->enable();
+                                }
+                            }
+                            return $this->renderJSON([
+                                'enabled' => $module->isEnabled(),
+                                'message' => ($module->isEnabled()) ? $this->getI18n()->__('The module is enabled') : $this->getI18n()->__('The module is disabled')
+                            ]);
                         case 'notificationstatus':
                             $notification = tables\Notifications::getTable()->selectById($request['notification_id']);
                             $data['notification_id'] = $request['notification_id'];
@@ -412,6 +456,10 @@
                 } else {
                     switch ($request['say']) {
                         case 'get_module_updates':
+                            if (!framework\Context::getScope()->isDefault() || framework\Settings::getConfigurationAccessLevel() != Settings::ACCESS_FULL) {
+                                return $this->renderJSON([]);
+                            }
+
                             $addons_param = [];
                             $addons_json = [];
                             foreach ($request->getParameter('addons', []) as $addon) {
@@ -419,9 +467,16 @@
                             }
                             if (count($addons_param)) {
                                 try {
-                                    $client = new Net_Http_Client();
-                                    $client->get('https://pachno.local/addons/index.json?' . implode('&', $addons_param));
-                                    $addons_json = json_decode($client->getBody(), true);
+                                    $client = new \GuzzleHttp\Client([
+                                        'base_uri' => framework\Context::getBaseOnlineUrl(),
+                                        'verify' => framework\Context::getOnlineVerifySsl(),
+                                        'http_errors' => false
+                                    ]);
+                                    $response = $client->request('GET', '/modules/index.json?' . implode('&', $addons_param));
+
+                                    if ($response->getStatusCode() == 200) {
+                                        $addons_json = json_decode($response->getBody(), true, 512, JSON_THROW_ON_ERROR);
+                                    }
                                 } catch (Exception $e) {
                                 }
 
@@ -429,7 +484,6 @@
                             }
 
                             return $this->renderJSON([]);
-                            break;
                         case 'getsearchcounts':
                             $counts_json = [];
                             foreach ($request['search_ids'] as $search_id) {

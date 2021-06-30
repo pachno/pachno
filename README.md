@@ -39,5 +39,5 @@ we'd love to get you onboard! Here, you get to influence in a meaningful way. In
 * testing and QA
 
 If you want to pop by and chat, join us on https://pachno.zulipchat.com 
-Prefer to get your hands dirty? Have a look at our issues on https://live.pach.no/pachno (not live yet)
+Prefer to get your hands dirty? Have a look at our issues on https://projects.pach.no/pachno
 Visit our online community at https://forum.pach.no

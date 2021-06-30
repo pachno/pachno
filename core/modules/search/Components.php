@@ -110,7 +110,6 @@
         {
             $this->custom_columns = entities\CustomDatatype::getAll();
             $this->cc = (isset($this->cc)) ? $this->cc : 0;
-            require realpath(THEBUGGENIE_VENDOR_PATH) . DS . 'phpoffice' . DS . 'phpspreadsheet' . DS . 'src' . DS . 'PhpSpreadsheet'  . DS . 'Spreadsheet.php';
             $spreadsheet = new Spreadsheet();
             $this->spreadsheet = $spreadsheet;
             $this->sheet = $spreadsheet->getActiveSheet();

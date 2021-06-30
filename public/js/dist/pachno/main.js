@@ -8743,14 +8743,13 @@ var getModuleUpdates = function getModuleUpdates() {
 
       if (json_plugin !== undefined) {
         if (plugin.data('version') != json_plugin.version) {
-          plugin.addClass('can-update');
+          plugin.find('can-update').removeClass('hidden');
           var link = jquery__WEBPACK_IMPORTED_MODULE_1___default()(type + '_' + plugin.data('module-key') + '_download_location');
-          link.attr('href', json_plugin.download); // $('body').on('click', '.update-module-menu-item', function (e) {
-          //     var p luginbox = $(this).parents('li.'+type);
-          //     $('#update_module_help_' + pluginbox.data('id')).show();
-          //     if (!Pachno.Core.Pollers.pluginupdatepoller)
-          //         Pachno.Core.Pollers.pluginupdatepoller = new PeriodicalExecuter(Pachno.Core.validatePluginUpdateUploadedPoller(type, pluginbox.data('module-key')), 5);
-          // });
+          link.attr('href', json_plugin.download);
+          jquery__WEBPACK_IMPORTED_MODULE_1___default()('body').on('click', '.update-module-menu-item', function (e) {
+            var plugin_box = jquery__WEBPACK_IMPORTED_MODULE_1___default()(this).parents('li.' + type);
+            jquery__WEBPACK_IMPORTED_MODULE_1___default()('#update_module_help_' + plugin_box.data('id')).toggleClass('hidden');
+          });
         }
       }
     });
@@ -8762,31 +8761,42 @@ var getAvailableModules = function getAvailableModules() {
     method: 'GET',
     data: '&say=get_modules',
     success: {
-      update: '#available_modules_container',
-      callback: function callback() {
-        jquery__WEBPACK_IMPORTED_MODULE_1___default()('body').on('click', '.module .install-button', installModule);
-      }
+      update: '#available_modules_container'
     }
   });
 };
 
 var installModule = function installModule() {
   var $button = jquery__WEBPACK_IMPORTED_MODULE_1___default()(this);
-  var type = 'module';
   var $module = $button.parents('.module');
+  var moduleKey = $button.data('key');
+  var is_update = $button.data('update') !== undefined;
   $module.addClass('submitting');
   $button.prop('disabled', true);
   _classes_pachno__WEBPACK_IMPORTED_MODULE_0__.default.fetch(_classes_pachno__WEBPACK_IMPORTED_MODULE_0__.default.data_url, {
     method: 'POST',
     data: {
       say: 'install-module',
-      module_key: $button.data('key')
+      module_key: moduleKey,
+      download: is_update ? 1 : 0,
+      install_update: $button.data('install-update') !== undefined ? 1 : 0
     },
     success: {
       callback: function callback(json) {
         if (json.installed) {
-          jquery__WEBPACK_IMPORTED_MODULE_1___default()('#online-module-' + json[type + '_key']).addClass('installed');
-          jquery__WEBPACK_IMPORTED_MODULE_1___default()('#installed-modules-list').append(json[type]);
+          if (jquery__WEBPACK_IMPORTED_MODULE_1___default()('#online-module-' + moduleKey).length) {
+            jquery__WEBPACK_IMPORTED_MODULE_1___default()('#online-module-' + moduleKey).addClass('installed');
+          }
+
+          if (jquery__WEBPACK_IMPORTED_MODULE_1___default()('#module_' + moduleKey).length) {
+            jquery__WEBPACK_IMPORTED_MODULE_1___default()('#module_' + moduleKey).replaceWith(json.module);
+          } else {
+            jquery__WEBPACK_IMPORTED_MODULE_1___default()('#installed-modules-list').append(json.module);
+          }
+
+          if (!is_update) {
+            getModuleUpdates();
+          }
         }
       }
     },
@@ -8799,12 +8809,45 @@ var installModule = function installModule() {
   });
 };
 
+var uninstallModule = function uninstallModule() {
+  var $button = jquery__WEBPACK_IMPORTED_MODULE_1___default()(this);
+  var $module = $button.parents('.module');
+  var moduleKey = $button.data('key');
+  $module.addClass('submitting');
+  $button.prop('disabled', true);
+  _classes_pachno__WEBPACK_IMPORTED_MODULE_0__.default.fetch(_classes_pachno__WEBPACK_IMPORTED_MODULE_0__.default.data_url, {
+    method: 'POST',
+    data: {
+      say: 'uninstall-module',
+      module_key: moduleKey
+    },
+    failure: {
+      callback: function callback() {
+        $module.removeClass('submitting');
+        $button.prop('disabled', false);
+      }
+    }
+  }).then(function (json) {
+    if (json.uninstalled) {
+      if (jquery__WEBPACK_IMPORTED_MODULE_1___default()('#online-module-' + moduleKey).length) {
+        jquery__WEBPACK_IMPORTED_MODULE_1___default()('#online-module-' + moduleKey).removeClass('installed');
+      }
+
+      jquery__WEBPACK_IMPORTED_MODULE_1___default()('#module_' + moduleKey).replaceWith(json.module);
+      jquery__WEBPACK_IMPORTED_MODULE_1___default()('#uninstall_module_' + moduleKey).addClass('hidden');
+    }
+  });
+};
+
 var setupListeners = function setupListeners() {
   _classes_pachno__WEBPACK_IMPORTED_MODULE_0__.default.on(_classes_pachno__WEBPACK_IMPORTED_MODULE_0__.default.EVENTS.ready, function () {
     if (jquery__WEBPACK_IMPORTED_MODULE_1___default()('#available_modules_container').length) {
       getModuleUpdates();
       getAvailableModules();
     }
+
+    jquery__WEBPACK_IMPORTED_MODULE_1___default()('body').on('click', '.module .trigger-install-module', installModule);
+    jquery__WEBPACK_IMPORTED_MODULE_1___default()('body').on('click', '.trigger-uninstall-module', uninstallModule);
   });
 };
 
@@ -9592,7 +9635,7 @@ var submitForm = function submitForm($form) {
     if ($form.data('auto-close') !== undefined) {
       UI.Backdrop.reset();
     } else if ($form.data('auto-close-container') !== undefined) {
-      $form.parents('.fullpage_backdrop').hide();
+      $form.parents('.fullpage_backdrop').addClass('hidden');
     }
 
     _classes_pachno__WEBPACK_IMPORTED_MODULE_1__.default.trigger(_classes_pachno__WEBPACK_IMPORTED_MODULE_1__.default.EVENTS.formSubmitResponse, {

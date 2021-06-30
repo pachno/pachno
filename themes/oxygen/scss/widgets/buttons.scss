@@ -267,36 +267,38 @@ input.button.danger,
 button.icon.danger,
 .button.icon.danger,
 input.icon.danger {
-  background-color: #cb1a00;
-  color: #FFF;
-
-  .icon {
-    color: #FFF;
-  }
-
-  &:hover {
-    background-color: #9e1200;
+  &:not([disabled]) {
+    background-color: #cb1a00;
     color: #FFF;
 
     .icon {
       color: #FFF;
     }
-  }
-
-  &.secondary {
-    background: transparent;
-    color: #cb1a00;
-
-    .icon {
-      color: #cb1a00;
-    }
 
     &:hover {
-      background-color: #cb1a00;
+      background-color: #9e1200;
       color: #FFF;
 
       .icon {
         color: #FFF;
+      }
+    }
+
+    &.secondary {
+      background: transparent;
+      color: #cb1a00;
+
+      .icon {
+        color: #cb1a00;
+      }
+
+      &:hover {
+        background-color: #cb1a00;
+        color: #FFF;
+
+        .icon {
+          color: #FFF;
+        }
       }
     }
   }

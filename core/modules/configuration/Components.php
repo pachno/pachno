@@ -18,6 +18,7 @@
      * @property ?entities\Client $client
      * @property ?entities\Team $team
      * @property ?entities\Role $role
+     * @property ?string[] $icons
      * @property ?string $members_url
      * @property ?string $form_url
      *
@@ -31,27 +32,26 @@
             $this->icons = entities\Issuetype::getIcons();
         }
 
-        public function componentModulebox()
+        public function componentModule()
         {
-            $this->is_default_scope = (isset($this->is_default_scope)) ? $this->is_default_scope : framework\Context::getScope()->isDefault();
         }
 
         public function componentOnlineModules()
         {
+            $modules = [];
             try {
                 $client = new Net_Http_Client();
                 $client->setVerifyPeer(false);
                 $client->get('https://pachno.local/addons/index.json');
-                $json_modules = json_decode($client->getBody());
-            } catch (Exception $e) {
-            }
+                $json_modules = json_decode($client->getBody(), true, 512, JSON_THROW_ON_ERROR);
 
-            $modules = [];
-            if (isset($json_modules) && isset($json_modules->featured)) {
-                foreach ($json_modules->featured as $key => $module) {
-                    if (!framework\Context::isModuleLoaded($module->key))
-                        $modules[] = $module;
+                if (isset($json_modules) && isset($json_modules->featured)) {
+                    foreach ($json_modules->featured as $key => $module) {
+                        if (!framework\Context::isModuleLoaded($module->key))
+                            $modules[] = $module;
+                    }
                 }
+            } catch (Exception $e) {
             }
 
             $this->modules = $modules;

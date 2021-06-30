@@ -314,7 +314,7 @@ const submitForm = function ($form, options = {}) {
             if ($form.data('auto-close') !== undefined) {
                 UI.Backdrop.reset();
             } else if ($form.data('auto-close-container') !== undefined) {
-                $form.parents('.fullpage_backdrop').hide();
+                $form.parents('.fullpage_backdrop').addClass('hidden');
             }
 
             Pachno.trigger(Pachno.EVENTS.formSubmitResponse, { form: $form.attr('id'), json });

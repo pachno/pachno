@@ -868,69 +868,6 @@
         }
 
         /**
-         * Perform an action on a module
-         *
-         * @param framework\Request $request The request object
-         */
-        public function runModuleAction(framework\Request $request)
-        {
-            $this->forward403unless($this->access_level == framework\Settings::ACCESS_FULL);
-
-            try {
-                if ($request['mode'] == 'install' && file_exists(PACHNO_MODULES_PATH . $request['module_key'] . DS . ucfirst($request['module_key']) . '.php')) {
-                    if ($module = entities\Module::installModule($request['module_key'])) {
-                        if (framework\Context::getScope()->isDefault() && $module->hasComposerDependencies()) {
-                            framework\Context::setMessage('module_message', framework\Context::getI18n()->__('The module "%module_name" was installed successfully, including dependencies. Before you can use the new module, you have to run %composer_update from the main pachno directory.', ['%module_name' => $module->getLongName(), '%composer_update' => '<span class="command_box">composer update</span>']));
-                        } elseif (framework\Context::getScope()->isDefault()) {
-                            framework\Context::setMessage('module_message', framework\Context::getI18n()->__('The module "%module_name" was installed successfully', ['%module_name' => $module->getLongName()]));
-                        } else {
-                            framework\Context::setMessage('module_message', framework\Context::getI18n()->__('The module "%module_name" was enabled successfully', ['%module_name' => $module->getLongName()]));
-                        }
-                    } else {
-                        framework\Context::setMessage('module_error', framework\Context::getI18n()->__('There was an error during the installation of the module "%module_name"', ['%module_name' => $request['module_key']]));
-                    }
-                } else {
-                    $module = framework\Context::getModule($request['module_key']);
-                    if ($module->getID())
-                        switch ($request['mode']) {
-                            case 'toggleDisable':
-                                if ($module->getType() !== framework\interfaces\ModuleInterface::MODULE_AUTH) {
-                                    if ($module->isEnabled()) {
-                                        $module->disable();
-                                    } else {
-                                        $module->enable();
-                                    }
-                                }
-                                return $this->renderJSON(['enabled' => $module->isEnabled()]);
-                                break;
-                            case 'uninstall':
-                                $module->uninstall();
-                                if (framework\Context::getScope()->isDefault()) {
-                                    framework\Context::setMessage('module_message', framework\Context::getI18n()->__('The module "%module_name" was uninstalled successfully', ['%module_name' => $module->getLongName()]));
-                                } else {
-                                    framework\Context::setMessage('module_message', framework\Context::getI18n()->__('The module "%module_name" was disabled successfully', ['%module_name' => $module->getLongName()]));
-                                }
-                                break;
-                            case 'update':
-                                try {
-                                    $module->upgrade();
-                                    framework\Context::setMessage('module_message', framework\Context::getI18n()->__('The module "%module_name" was successfully upgraded and can now be used again', ['%module_name' => $module->getName()]));
-                                } catch (\Exception $e) {
-                                    framework\Context::setMessage('module_error', framework\Context::getI18n()->__('The module "%module_name" was not successfully upgraded', ['%module_name' => $module->getName()]));
-                                    throw $e;
-                                }
-                                break;
-                        }
-                }
-            } catch (\Exception $e) {
-                framework\Logging::log('Trying to run action ' . $request['mode'] . ' on module ' . $request['module_key'] . ' made an exception: ' . $e->getMessage(), framework\Logging::LEVEL_FATAL);
-                framework\Context::setMessage('module_error', framework\Context::getI18n()->__('This module (%module_name) does not exist', ['%module_name' => $request['module_key']]));
-                throw $e;
-            }
-            $this->forward(framework\Context::getRouting()->generate('configure_modules'));
-        }
-
-        /**
          * Perform the module update for a specific module
          *
          * @param framework\Request $request
@@ -978,36 +915,6 @@
         }
 
         /**
-         * Download the update file for a specific theme
-         *
-         * @param framework\Request $request
-         * @Route(name="download_theme_update", url="/configure/themes/:theme_key/update/download")
-         */
-        public function runDownloadThemeUpdate(framework\Request $request)
-        {
-            try {
-                entities\Module::downloadTheme($request['theme_key']);
-                framework\Context::setMessage('theme_message', $this->getI18n()->__('The theme was updated'));
-                $url = $this->getRouting()->generate('configuration_themes');
-            } catch (framework\exceptions\ModuleDownloadException $e) {
-                $url = $this->getRouting()->generate('configuration_themes');
-                switch ($e->getCode()) {
-                    case framework\exceptions\ModuleDownloadException::JSON_NOT_FOUND:
-                        framework\Context::setMessage('theme_error', $this->getI18n()->__('An error occured when trying to retrieve the theme update data'));
-                        break;
-                    case framework\exceptions\ModuleDownloadException::FILE_NOT_FOUND:
-                        framework\Context::setMessage('theme_error', $this->getI18n()->__('The theme update could not be downloaded'));
-                        break;
-                }
-            } catch (Exception $e) {
-                framework\Context::setMessage('module_error', $this->getI18n()->__('An error occured when trying to retrieve the theme'));
-                $url = $this->getRouting()->generate('configuration_themes');
-            }
-
-            return $this->forward($url);
-        }
-
-        /**
          * Download the update file for a specific module
          *
          * @param framework\Request $request
@@ -1020,17 +927,22 @@
                 $url = $this->getRouting()->generate('configuration_module_update', ['module_key' => $request['module_key']]);
             } catch (framework\exceptions\ModuleDownloadException $e) {
                 $url = $this->getRouting()->generate('configure_modules');
-                switch ($e->getCode()) {
-                    case framework\exceptions\ModuleDownloadException::JSON_NOT_FOUND:
-                        framework\Context::setMessage('module_error', $this->getI18n()->__('An error occured when trying to retrieve the module data'));
-                        break;
-                    case framework\exceptions\ModuleDownloadException::FILE_NOT_FOUND:
-                        framework\Context::setMessage('module_error', $this->getI18n()->__('The module could not be downloaded'));
-                        break;
-                }
             } catch (Exception $e) {
-                framework\Context::setMessage('module_error', $this->getI18n()->__('An error occured when trying to retrieve the module'));
-                $url = $this->getRouting()->generate('configure_modules');
+                if ($e instanceof framework\exceptions\ModuleDownloadException) {
+                    switch ($e->getCode()) {
+                        case framework\exceptions\ModuleDownloadException::JSON_NOT_FOUND:
+                            framework\Context::setMessage('module_error', $this->getI18n()->__('An error occured when trying to retrieve the module data'));
+                            break;
+                        case framework\exceptions\ModuleDownloadException::FILE_NOT_FOUND:
+                            framework\Context::setMessage('module_error', $this->getI18n()->__('The module could not be downloaded'));
+                            break;
+                    }
+                } else {
+
+                }
+                $message = $this->getI18n()->__('An error occured when trying to retrieve the module: %error', ['%error' => $error]);
+                $this->getResponse()->setHttpStatus(400);
+                return $this->renderJSON(['error' => $message]);
             }
 
             return $this->forward($url);

@@ -83,7 +83,7 @@
                     <div class="column header actions"></div>
                 </div>
                 <?php foreach ($modules[Context::EXTERNAL_MODULES] as $module_key => $module): ?>
-                    <?php include_component('modulebox', array('module' => $module, 'is_default_scope' => $is_default_scope)); ?>
+                    <?php include_component('configuration/module', ['module' => $module]); ?>
                 <?php endforeach; ?>
                 <?php if (!count($modules[Context::EXTERNAL_MODULES])): ?>
                     <?php if (\pachno\core\framework\Context::getScope()->isDefault()): ?>
@@ -110,12 +110,12 @@
                 <?php endif; ?>
                 <?php if (\pachno\core\framework\Context::getScope()->isDefault()): ?>
                     <?php foreach ($uninstalled_modules as $module_key => $module): ?>
-                        <?php include_component('modulebox', array('module' => $module, 'is_default_scope' => $is_default_scope)); ?>
+                        <?php include_component('configuration/module', ['module' => $module]); ?>
                     <?php endforeach; ?>
                 <?php else: ?>
                     <?php foreach ($available_modules as $module_key => $module): ?>
                         <?php if (Context::isModuleLoaded($module_key)) continue; ?>
-                        <?php include_component('modulebox', array('module' => $module, 'is_default_scope' => $is_default_scope)); ?>
+                        <?php include_component('configuration/module', ['module' => $module]); ?>
                     <?php endforeach; ?>
                 <?php endif; ?>
             </div>

@@ -132,6 +132,7 @@
                     }
                 }
                 $transaction->commit();
+                framework\Context::addModule($module, $module_name);
             } catch (Exception $e) {
                 $transaction->rollback();
                 throw $e;
@@ -166,69 +167,32 @@
         }
 
         /**
-         * @param $module_key
+         * @param string $module_key
          *
          * @throws framework\exceptions\ModuleDownloadException
          */
-        public static function downloadModule($module_key)
+        public static function downloadModule(string $module_key)
         {
-            self::downloadPlugin('addon', $module_key);
+            $client = new GuzzleClient(['base_uri' => framework\Context::getBaseOnlineUrl()]);
+            $filename = PACHNO_CACHE_PATH . 'module_' . $module_key . '.zip';
+            $response = $client->get('/modules/' . $module_key . '/download');
+            if ($response->getStatusCode() != 200) {
+                throw new framework\exceptions\ModuleDownloadException("", framework\exceptions\ModuleDownloadException::JSON_NOT_FOUND);
+            }
+            file_put_contents($filename, $response->getBody());
+            self::extractModuleArchive($module_key);
         }
 
-        /**
-         * @param $plugin_type
-         * @param $plugin_key
-         *
-         * @throws framework\exceptions\ModuleDownloadException
-         */
-        public static function downloadPlugin($plugin_type, $plugin_key)
+        public static function extractModuleArchive(string $module_key)
         {
-//            try {
-                $client = new GuzzleClient(['base_uri' => 'https://thebuggenie.com']);
-//                $response = $client->get('/' . $plugin_type . 's/' . $plugin_key . '.json');
-//
-//                if ($response->getStatusCode() === 200) {
-//                    $plugin_json = json_decode($response->getBody());
-//                }
-//            } catch (Exception $e) {
-//                throw $e;
-//            }
-
-//            if (isset($plugin_json) && $plugin_json !== false) {
-                $filename = PACHNO_CACHE_PATH . $plugin_type . '_' . $plugin_key . '.zip';
-                $response = $client->get('/' . $plugin_type . 's/' . $plugin_key . '/download');
-                if ($response->getStatusCode() != 200) {
-                    throw new framework\exceptions\ModuleDownloadException("", framework\exceptions\ModuleDownloadException::JSON_NOT_FOUND);
-                }
-                file_put_contents($filename, $response->getBody());
-                $module_zip = new ZipArchive();
-                $module_zip->open($filename);
-                switch ($plugin_type) {
-                    case 'addon':
-                        $target_folder = PACHNO_MODULES_PATH;
-                        break;
-                    case 'theme':
-                        $target_folder = PACHNO_PATH . 'themes';
-                        break;
-                }
-                if (!is_writable($target_folder)) {
-                    throw new framework\exceptions\ModuleDownloadException("", framework\exceptions\ModuleDownloadException::READONLY_TARGET);
-                }
-                $module_zip->extractTo(realpath($target_folder));
-                $module_zip->close();
-//            } else {
-//                throw new framework\exceptions\ModuleDownloadException("", framework\exceptions\ModuleDownloadException::FILE_NOT_FOUND);
-//            }
-        }
-
-        /**
-         * @param $module_key
-         *
-         * @throws framework\exceptions\ModuleDownloadException
-         */
-        public static function downloadTheme($theme_key)
-        {
-            self::downloadPlugin('theme', $theme_key);
+            $filename = PACHNO_CACHE_PATH . 'module_' . $module_key . '.zip';
+            $module_zip = new ZipArchive();
+            $module_zip->open($filename);
+            if (!is_writable(PACHNO_MODULES_PATH)) {
+                throw new framework\exceptions\ModuleDownloadException("", framework\exceptions\ModuleDownloadException::READONLY_TARGET);
+            }
+            $module_zip->extractTo(realpath(PACHNO_MODULES_PATH));
+            $module_zip->close();
         }
 
         /**
@@ -376,6 +340,9 @@
             if ($this->hasComposerDependencies()) {
                 $this->removeSectionsFromComposerJson();
             }
+            $this->_id = 0;
+            $this->_enabled = false;
+            framework\Context::unloadModule($this->getName());
 
             $scope = ($scope === null) ? framework\Context::getScope()->getID() : $scope;
             framework\Settings::deleteModuleSettings($this->getName(), $scope);

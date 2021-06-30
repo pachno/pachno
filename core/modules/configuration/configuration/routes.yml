@@ -681,56 +681,6 @@ configure_modules:
       section: 15
     csrf_enabled: false
 
-configure_toggle_disable_module:
-    route: /configure/modules/disable/:module_key
-    module: configuration
-    action: moduleAction
-    parameters:
-      config_module: core
-      section: 15
-      mode: toggleDisable
-    csrf_enabled: false
-
-configure_enable_module:
-    route: /configure/modules/enable/:module_key
-    module: configuration
-    action: moduleAction
-    parameters:
-      config_module: core
-      section: 15
-      mode: enable
-    csrf_enabled: false
-
-configure_uninstall_module:
-    route: /configure/modules/uninstall/:module_key
-    module: configuration
-    action: moduleAction
-    parameters:
-      config_module: core
-      section: 15
-      mode: uninstall
-    csrf_enabled: false
-
-configure_install_module:
-    route: /configure/modules/install/:module_key
-    module: configuration
-    action: moduleAction
-    parameters:
-      config_module: core
-      section: 15
-      mode: install
-    csrf_enabled: false
-
-configure_update_module:
-    route: /configure/modules/update
-    module: configuration
-    action: moduleAction
-    parameters:
-      config_module: core
-      section: 15
-      mode: update
-    csrf_enabled: false
-
 configure_module:
     route: /configure/module/:config_module
     module: configuration
@@ -738,15 +688,6 @@ configure_module:
     parameters:
       config_module: core
       section: 15
-    csrf_enabled: false
-
-configure_get_permissions:
-    route: /configure/permissions/:permissions_type/for/:permissions_target_type/:permissions_target
-    module: configuration
-    action: getPermissions
-    parameters:
-      config_module: core
-      section: 5
     csrf_enabled: false
 
 configure_users_import_user:

@@ -18,6 +18,10 @@
   justify-content: center;
   transition: background-color .25s ease-in-out;
 
+  &.hidden {
+    display: none;
+  }
+
   &.see-through {
     background-color: rgba(255, 255, 255, 0);
   }
@@ -150,6 +154,18 @@
           .content {
             padding: 1.5em;
             font-size: 1.05em;
+          }
+        }
+
+        .content {
+          flex: 1 1 auto;
+          padding: 1em;
+          font-size: 1.1em;
+          box-sizing: border-box;
+          background-color: #FFF;
+
+          &.hidden {
+            display: none;
           }
         }
 
