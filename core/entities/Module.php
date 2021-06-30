@@ -122,8 +122,8 @@
             if (!framework\Context::getScope() instanceof Scope) throw new Exception('No scope??');
 
             framework\Logging::log('installing module ' . $module_name);
+            $transaction = Core::startTransaction();
             try {
-                $transaction = Core::startTransaction();
                 $module = tables\Modules::getTable()->installModule($module_name, $scope_id);
                 $module->install($scope_id);
                 if (framework\Context::getScope()->isDefault()) {
