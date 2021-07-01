@@ -27,8 +27,8 @@
     </div>
     <div class="column">
         <?php if ($module->getID()): ?>
-            <div class="status-badge module_status plugin_status outdated">
-                <?php echo __('Needs update'); ?>
+            <div class="status-badge module_status can-update outdated hidden">
+                <?php echo __('Update available'); ?>
             </div>
         <?php else: ?>
             <div class="status-badge module_status plugin_status outdated">
@@ -147,13 +147,13 @@
                         <a href="javascript:void(0);" class="closer" onclick="$('#uninstall_module_<?php echo $module->getID(); ?>').toggleClass('hidden');"><?php echo fa_image_tag('times'); ?></a>
                     </div>
                     <div class="backdrop_detail_content">
-                    <span class="content">
-                        <?php if (Context::getScope()->isDefault()): ?>
-                            <?php echo __('Uninstalling this module will permanently prevent users from accessing it or any associated data. If you just want to prevent access to the module temporarily, disable the module instead.'); ?>
-                        <?php else: ?>
-                            <?php echo __('Disabling this module will permanently prevent users from accessing it or any associated data.'); ?>
-                        <?php endif; ?>
-                    </span>
+                        <span class="content">
+                            <?php if (Context::getScope()->isDefault()): ?>
+                                <?php echo __('Uninstalling this module will permanently prevent users from accessing it or any associated data. If you just want to prevent access to the module temporarily, disable the module instead.'); ?>
+                            <?php else: ?>
+                                <?php echo __('Disabling this module will permanently prevent users from accessing it or any associated data.'); ?>
+                            <?php endif; ?>
+                        </span>
                         <div class="backdrop_buttons">
                             <button class="button secondary" onclick="$('#uninstall_module_<?php echo $module->getID(); ?>').toggleClass('hidden');"><?php echo __('No'); ?></button>
                             <button class="button primary trigger-uninstall-module danger" data-key="<?= $module->getName(); ?>">

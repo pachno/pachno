@@ -27,6 +27,10 @@
     padding: .3em;
   }
 
+  &.hidden {
+    display: none;
+  }
+
   &.core {
     background-color: rgba(150, 150, 150, 0.2);
     color: #888;
@@ -41,7 +45,7 @@
   }
 
   &.outdated {
-    background-color: rgba(177, 143, 210, 0.1);
-    display: none;
+    background-color: $theme-secondary-color;
+    color: #FFF;
   }
 }

@@ -9704,6 +9704,8 @@ textarea.markItUpEditor:focus {
   .status-badge .name {
     height: auto;
     padding: .3em; }
+  .status-badge.hidden {
+    display: none; }
   .status-badge.core {
     background-color: rgba(150, 150, 150, 0.2);
     color: #888; }
@@ -9712,8 +9714,8 @@ textarea.markItUpEditor:focus {
   .status-badge.disabled {
     background-color: rgba(150, 150, 150, 0.1); }
   .status-badge.outdated {
-    background-color: rgba(177, 143, 210, 0.1);
-    display: none; }
+    background-color: #0cd8b6;
+    color: #FFF; }
 
 #file_upload_dummy,
 #file_upload_dummy_label {
@@ -14175,6 +14177,8 @@ DEL {
         .fullpage_backdrop .fullpage_backdrop_content .backdrop_box .backdrop_detail_content.dialog {
           border-radius: .75em;
           padding: 1em .5em; }
+          .fullpage_backdrop .fullpage_backdrop_content .backdrop_box .backdrop_detail_content.dialog .count-badge {
+            font-size: 1em; }
         .fullpage_backdrop .fullpage_backdrop_content .backdrop_box .backdrop_detail_content.onboarding-popup .content {
           padding: 1.5em;
           font-size: 1.05em; }
@@ -14237,33 +14241,6 @@ DEL {
         .fullpage_backdrop .fullpage_backdrop_content .backdrop_box .backdrop_buttons .button + button,
         .fullpage_backdrop .fullpage_backdrop_content .backdrop_box .backdrop_buttons .button + .button {
           margin-left: auto; }
-
-#dialog_backdrop_content,
-#dialog_backdrop_modal_content {
-  width: 600px;
-  overflow: hidden; }
-  #dialog_backdrop_content h3,
-  #dialog_backdrop_modal_content h3 {
-    margin: 5px;
-    padding: 0 0 7px 0;
-    color: #999;
-    border-bottom: 1px dotted #b9b9b9;
-    font-weight: 400; }
-  #dialog_backdrop_content #dialog_content,
-  #dialog_backdrop_content #dialog_modal_content,
-  #dialog_backdrop_modal_content #dialog_content,
-  #dialog_backdrop_modal_content #dialog_modal_content {
-    padding: 0 7px;
-    font-size: 1em;
-    margin: 0;
-    z-index: 1;
-    background-color: transparent; }
-  #dialog_backdrop_content #dialog_indicator,
-  #dialog_backdrop_modal_content #dialog_indicator {
-    display: inline-block;
-    margin-right: 5px;
-    vertical-align: middle;
-    float: none; }
 
 .backdrop_detail_header {
   box-shadow: none;

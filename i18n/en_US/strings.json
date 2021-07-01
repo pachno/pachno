@@ -21,5 +21,14 @@
   },
   "roadmap": {
     "percent_complete": "%percentage% completed"
+  },
+  "configuration": {
+    "update_available": {
+      "header": "Pachno %version is available",
+      "content": "An updated version of Pachno is available! Do you want to open the pach.no website to read more about version %version"
+    },
+    "up_to_date": {
+      "message": "Pachno is up to date"
+    }
   }
 }

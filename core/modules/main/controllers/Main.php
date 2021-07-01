@@ -509,8 +509,6 @@
                         case 'get_modules':
                             return $this->renderJSON(['component' => $this->getComponentHTML('configuration/onlinemodules')]);
                             break;
-                        case 'get_themes':
-                            return $this->renderComponent('configuration/onlinethemes');
                             break;
                         case 'get_usernames':
                             $users = tables\Users::getTable()->getByUserIDs(explode(',', $request['user_ids']));

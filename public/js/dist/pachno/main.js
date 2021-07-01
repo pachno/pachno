@@ -8,7 +8,7 @@
 /***/ ((module) => {
 
 "use strict";
-module.exports = JSON.parse('{"common":{"mentions":{"user_search_placeholder":"Start typing to search"}},"agile":{"add_card":"Add card","add_card_here":"Add card","add_swimlane":"Add a swimlane"},"issue":{"value_not_set":"Not determined","unknown_value":"Unknown","time_spent_none":"No time spent","time_estimated_none":"Not estimated","go_to_converted_issue":{"title":"Go to the new issue?","message":"Do you want to navigate to the issue that you just converted?"}},"roadmap":{"percent_complete":"%percentage% completed"}}');
+module.exports = JSON.parse('{"common":{"mentions":{"user_search_placeholder":"Start typing to search"}},"agile":{"add_card":"Add card","add_card_here":"Add card","add_swimlane":"Add a swimlane"},"issue":{"value_not_set":"Not determined","unknown_value":"Unknown","time_spent_none":"No time spent","time_estimated_none":"Not estimated","go_to_converted_issue":{"title":"Go to the new issue?","message":"Do you want to navigate to the issue that you just converted?"}},"roadmap":{"percent_complete":"%percentage% completed"},"configuration":{"update_available":{"header":"Pachno %version is available","content":"An updated version of Pachno is available! Do you want to open the pach.no website to read more about version %version"},"up_to_date":{"message":"Pachno is up to date"}}}');
 
 /***/ }),
 
@@ -7503,8 +7503,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! jquery */ "./node_modules/jquery/dist/jquery.js");
 /* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(jquery__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var _classes_pachno__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../classes/pachno */ "./js/classes/pachno.js");
-/* harmony import */ var _ui__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./ui */ "./js/helpers/ui.js");
-
 
 
 
@@ -7584,6 +7582,19 @@ var checkForUpdate = function checkForUpdate(event) {
   }).then(function (json) {
     $button.removeAttr('disabled');
     $button.parent().removeClass('submitting');
+
+    if (json.update_available == 1) {
+      _classes_pachno__WEBPACK_IMPORTED_MODULE_1__.default.UI.Dialog.show(_classes_pachno__WEBPACK_IMPORTED_MODULE_1__.default.T.configuration.update_available.header.replace('%version', json.version), _classes_pachno__WEBPACK_IMPORTED_MODULE_1__.default.T.configuration.update_available.content.replace('%version', '<span class="count-badge">' + json.version + '</span>'), {
+        yes: {
+          href: 'https://pach.no/releases/latest'
+        },
+        no: {
+          click: _classes_pachno__WEBPACK_IMPORTED_MODULE_1__.default.UI.Dialog.dismiss
+        }
+      });
+    } else {
+      _classes_pachno__WEBPACK_IMPORTED_MODULE_1__.default.UI.Message.success(_classes_pachno__WEBPACK_IMPORTED_MODULE_1__.default.T.configuration.up_to_date.message);
+    }
   })["catch"](function (error) {
     $button.removeAttr('disabled');
     $button.parent().removeClass('submitting');

@@ -91,27 +91,15 @@
 
             if ($latest_version === null) {
                 $this->getResponse()->setHttpStatus(400);
-                $updated = null;
-                $title = framework\Context::getI18n()->__('Failed to check for updates');
-                $message = framework\Context::getI18n()->__('The response from Pachno website was invalid');
-            } else {
-                $update_available = framework\Context::isUpdateAvailable($latest_version);
 
-                if ($update_available) {
-                    $updated = false;
-                    $title = framework\Context::getI18n()->__('Pachno is out of date');
-                    $message = framework\Context::getI18n()->__('The latest version is %ver. Update now from https://pach.no', ['%ver' => $latest_version['nicever']]);
-                } else {
-                    $updated = true;
-                    $title = framework\Context::getI18n()->__('Pachno is up to date');
-                    $message = framework\Context::getI18n()->__('The latest version is %ver', ['%ver' => $latest_version['nicever']]);
-                }
+                return $this->renderJSON([
+                    'error' => framework\Context::getI18n()->__('The response from Pachno website was invalid')
+                ]);
             }
 
             return $this->renderJSON([
-                'uptodate' => $updated,
-                'title' => $title,
-                'message' => $message
+                'update_available' => framework\Context::isUpdateAvailable($latest_version['version']),
+                'version' => $latest_version['version']
             ]);
         }
 

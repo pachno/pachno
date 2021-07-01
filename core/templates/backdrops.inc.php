@@ -47,15 +47,11 @@
 </div>
 <div class="fullpage_backdrop" id="dialog_backdrop" style="display: none;">
     <div id="dialog_backdrop_content" class="fullpage_backdrop_content">
-        <div class="backdrop_box small">
+        <div class="backdrop_box mediumsmall">
             <div class="backdrop_detail_header"><span id="dialog_title"></span></div>
             <div class="backdrop_detail_content dialog">
-                <p id="dialog_content"></p>
-            </div>
-            <div class="backdrop_details_submit">
-                <span class="explanation"></span>
-                <div class="dialog-query-buttons">
-                    <?= fa_image_tag('spinner', ['class' => 'indicator fa-spin']); ?>
+                <div id="dialog_content" class="content"></div>
+                <div class="backdrop_buttons">
                     <a href="javascript:void(0)" id="dialog_no" class="button secondary"><span><?php echo __('No'); ?></span></a>
                     <a href="javascript:void(0)" id="dialog_yes" class="button primary"><span><?php echo __('Yes'); ?></span></a>
                 </div>

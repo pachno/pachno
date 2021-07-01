@@ -148,6 +148,10 @@
         &.dialog {
           border-radius: .75em;
           padding: 1em .5em;
+
+          .count-badge {
+            font-size: 1em;
+          }
         }
 
         &.onboarding-popup {
@@ -251,36 +255,6 @@
         }
       }
     }
-  }
-}
-
-#dialog_backdrop_content,
-#dialog_backdrop_modal_content {
-  width: 600px;
-  overflow: hidden;
-
-  h3 {
-    margin: 5px;
-    padding: 0 0 7px 0;
-    color: #999;
-    border-bottom: 1px dotted rgb(185, 185, 185);
-    font-weight: $theme-font-weight-regular;
-  }
-
-  #dialog_content,
-  #dialog_modal_content {
-    padding: 0 7px;
-    font-size: 1em;
-    margin: 0;
-    z-index: 1;
-    background-color: transparent;
-  }
-
-  #dialog_indicator {
-    display: inline-block;
-    margin-right: 5px;
-    vertical-align: middle;
-    float: none;
   }
 }
 

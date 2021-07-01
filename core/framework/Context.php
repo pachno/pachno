@@ -2490,7 +2490,9 @@
             // Set-up client and retrieve version information.
             $client = new \GuzzleHttp\Client([
                 'base_uri' => self::getBaseOnlineUrl(),
-                'http_errors' => false]);
+                'verify' => self::getOnlineVerifySsl(),
+                'http_errors' => false
+            ]);
             $response = $client->request('GET', '/version.json');
 
             // Verify status code.
@@ -2516,16 +2518,7 @@
          */
         public static function isUpdateAvailable($version)
         {
-            $update_available = false;
-
-            // Check if we are out of date.
-            if ($version->maj > Settings::getMajorVer()) {
-                $update_available = true;
-            } elseif ($version->min > Settings::getMinorVer() && ($version->maj == Settings::getMajorVer())) {
-                $update_available = true;
-            } elseif ($version->rev > Settings::getRevision() && ($version->maj == Settings::getMajorVer()) && ($version->min == Settings::getMinorVer())) {
-                $update_available = true;
-            }
+            $update_available = version_compare($version, Settings::getVersion());
 
             return $update_available;
         }

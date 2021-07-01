@@ -1,6 +1,5 @@
 import $ from "jquery";
 import Pachno from "../classes/pachno";
-import UI from "./ui";
 
 const setClientContact = function (url, field, $link, $container) {
     const user_id = $link.data('identifiable-value');
@@ -80,6 +79,18 @@ const checkForUpdate = function (event) {
         .then(json => {
             $button.removeAttr('disabled');
             $button.parent().removeClass('submitting');
+            if (json.update_available == 1) {
+                Pachno.UI.Dialog.show(
+                    Pachno.T.configuration.update_available.header.replace('%version', json.version),
+                    Pachno.T.configuration.update_available.content.replace('%version', '<span class="count-badge">' + json.version + '</span>'),
+                    {
+                        yes: { href: 'https://pach.no/releases/latest' },
+                        no: { click: Pachno.UI.Dialog.dismiss }
+                    }
+                )
+            } else {
+                Pachno.UI.Message.success(Pachno.T.configuration.up_to_date.message);
+            }
         })
         .catch(error => {
             $button.removeAttr('disabled');
