@@ -40,15 +40,17 @@
         {
             $modules = [];
             try {
-                $client = new Net_Http_Client();
-                $client->setVerifyPeer(false);
-                $client->get('https://pachno.local/addons/index.json');
-                $json_modules = json_decode($client->getBody(), true, 512, JSON_THROW_ON_ERROR);
+                $client = new \GuzzleHttp\Client([
+                    'base_uri' => framework\Context::getBaseOnlineUrl(),
+                    'verify' => framework\Context::getOnlineVerifySsl(),
+                    'http_errors' => false
+                ]);
+                $response = $client->request('GET', '/modules/index.json');
+                $json_modules = json_decode($response->getBody(), true, 512, JSON_THROW_ON_ERROR);
 
-                if (isset($json_modules) && isset($json_modules->featured)) {
-                    foreach ($json_modules->featured as $key => $module) {
-                        if (!framework\Context::isModuleLoaded($module->key))
-                            $modules[] = $module;
+                if (isset($json_modules) && isset($json_modules['featured'])) {
+                    foreach ($json_modules['featured'] as $key => $module) {
+                        $modules[] = $module;
                     }
                 }
             } catch (Exception $e) {

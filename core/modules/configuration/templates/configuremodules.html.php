@@ -25,7 +25,7 @@
             <h1><?= __('Configure modules'); ?></h1>
             <div class="helper-text">
                 <div class="image-container"><?= image_tag('/unthemed/onboarding_configuration_modules_icon.png', [], true); ?></div>
-                <?php if (\pachno\core\framework\Context::getScope()->isDefault()): ?>
+                <?php if (Context::getScope()->isDefault()): ?>
                     <span class="description"><?= __('Manage existing modules or download and install new modules for Pachno here.'); ?></span>
                 <?php else: ?>
                     <span class="description"><?= __('Enable or disable modules for Pachno here.'); ?></span>
@@ -86,16 +86,14 @@
                     <?php include_component('configuration/module', ['module' => $module]); ?>
                 <?php endforeach; ?>
                 <?php if (!count($modules[Context::EXTERNAL_MODULES])): ?>
-                    <?php if (\pachno\core\framework\Context::getScope()->isDefault()): ?>
-                        <?php if (!count($uninstalled_modules)): ?>
-                            <div class="onboarding large">
-                                <div class="image-container"><?= image_tag('/unthemed/onboarding_configure_modules_none.png', [], true); ?></div>
-                                <div class="helper-text">
-                                    <span><?= __('Modules enhance and extend the functionality in Pachno.'); ?></span>
-                                    <span><a class="button primary" href="https://pach.no/modules" target="_blank"><?= __('Find modules online'); ?></a></span>
-                                </div>
+                    <?php if (Context::getScope()->isDefault()): ?>
+                        <div class="onboarding large <?php if (count($uninstalled_modules)) echo 'hidden'; ?>">
+                            <div class="image-container"><?= image_tag('/unthemed/onboarding_configure_modules_none.png', [], true); ?></div>
+                            <div class="helper-text">
+                                <span><?= __('Modules enhance and extend the functionality in Pachno.'); ?></span>
+                                <span><a class="button primary" href="https://pach.no/modules" target="_blank"><?= __('Find modules online'); ?></a></span>
                             </div>
-                        <?php endif; ?>
+                        </div>
                     <?php else: ?>
                         <?php if (!count($available_modules)): ?>
                             <div class="onboarding large">
@@ -108,7 +106,7 @@
                         <?php endif; ?>
                     <?php endif; ?>
                 <?php endif; ?>
-                <?php if (\pachno\core\framework\Context::getScope()->isDefault()): ?>
+                <?php if (Context::getScope()->isDefault()): ?>
                     <?php foreach ($uninstalled_modules as $module_key => $module): ?>
                         <?php include_component('configuration/module', ['module' => $module]); ?>
                     <?php endforeach; ?>

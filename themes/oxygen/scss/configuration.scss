@@ -530,6 +530,20 @@
       margin-left: .5em;
     }
 
+    .installed-status {
+      display: none;
+    }
+
+    &.installed {
+      .installed-status {
+        display: inline-flex;
+      }
+
+      button.trigger-install-module {
+        display: none;
+      }
+    }
+
     &.out-of-date {
       .plugin_status.outofdate {
         display: inline-block;

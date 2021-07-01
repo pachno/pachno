@@ -70,7 +70,8 @@ const installModule = function () {
                     if ($('#module_' + moduleKey).length) {
                         $('#module_' + moduleKey).replaceWith(json.module);
                     } else {
-                        $('#installed-modules-list').append(json.module);
+                        $('#modules-list .onboarding').addClass('hidden');
+                        $('#modules-list').append(json.module);
                     }
                     if (!is_update) {
                         getModuleUpdates();

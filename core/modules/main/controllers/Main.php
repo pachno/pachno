@@ -366,7 +366,6 @@
                                 $data['installed'] = true;
                                 $data['module_key'] = $request['module_key'];
                                 $data['module'] = $this->getComponentHTML('configuration/module', ['module' => $module]);
-                                $data['message'] = $this->getI18n()->__('The module has been installed');
                             } catch (framework\exceptions\ModuleDownloadException $e) {
                                 $this->getResponse()->setHttpStatus(400);
                                 switch ($e->getCode()) {

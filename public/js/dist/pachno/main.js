@@ -8791,7 +8791,8 @@ var installModule = function installModule() {
           if (jquery__WEBPACK_IMPORTED_MODULE_1___default()('#module_' + moduleKey).length) {
             jquery__WEBPACK_IMPORTED_MODULE_1___default()('#module_' + moduleKey).replaceWith(json.module);
           } else {
-            jquery__WEBPACK_IMPORTED_MODULE_1___default()('#installed-modules-list').append(json.module);
+            jquery__WEBPACK_IMPORTED_MODULE_1___default()('#modules-list .onboarding').addClass('hidden');
+            jquery__WEBPACK_IMPORTED_MODULE_1___default()('#modules-list').append(json.module);
           }
 
           if (!is_update) {

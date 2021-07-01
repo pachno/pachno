@@ -407,6 +407,12 @@ input[type="checkbox"].semi-checked {
     }
   }
 
+  .command_box {
+    background-color: rgba(255, 255, 255, .15);
+    border-color: rgba(255, 255, 255, .25);
+    color: $theme-text-color-inverse;
+  }
+
   .dismiss_me {
     flex: 0 0 auto;
     font-weight: $theme-font-weight-bold;

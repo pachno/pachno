@@ -173,7 +173,11 @@
          */
         public static function downloadModule(string $module_key)
         {
-            $client = new GuzzleClient(['base_uri' => framework\Context::getBaseOnlineUrl()]);
+            $client = new \GuzzleHttp\Client([
+                'base_uri' => framework\Context::getBaseOnlineUrl(),
+                'verify' => framework\Context::getOnlineVerifySsl(),
+                'http_errors' => false
+            ]);
             $filename = PACHNO_CACHE_PATH . 'module_' . $module_key . '.zip';
             $response = $client->get('/modules/' . $module_key . '/download');
             if ($response->getStatusCode() != 200) {

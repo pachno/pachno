@@ -551,6 +551,10 @@ input[type="checkbox"].semi-checked {
       font-weight: 400;
       width: 100%;
       flex: 0 0 auto; }
+  .popup_message .command_box {
+    background-color: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.25);
+    color: #FFF; }
   .popup_message .dismiss_me {
     flex: 0 0 auto;
     font-weight: 500;
@@ -12726,6 +12730,12 @@ dl.info {
     padding: .75em; }
   .plugins-list .configurable-component.module + .module {
     margin-left: .5em; }
+  .plugins-list .configurable-component.module .installed-status {
+    display: none; }
+  .plugins-list .configurable-component.module.installed .installed-status {
+    display: inline-flex; }
+  .plugins-list .configurable-component.module.installed button.trigger-install-module {
+    display: none; }
   .plugins-list .configurable-component.module.out-of-date .plugin_status.outofdate {
     display: inline-block; }
 
