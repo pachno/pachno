@@ -374,6 +374,7 @@
                                     case framework\exceptions\ModuleDownloadException::FILE_NOT_FOUND:
                                         return $this->renderJSON(['message' => $this->getI18n()->__('The module could not be downloaded')]);
                                     case framework\exceptions\ModuleDownloadException::READONLY_TARGET:
+                                    case framework\exceptions\ModuleDownloadException::EXTRACT_ERROR:
                                         return $this->renderJSON(['title' => $this->getI18n()->__('Error extracting module zip'), 'message' => $this->getI18n()->__('Could not extract the module into the destination folder. Make sure you have write access to the modules folder and try again.')]);
                                 }
                             } catch (Exception $e) {

@@ -21,5 +21,7 @@
 
         public const READONLY_TARGET = 4;
 
+        public const EXTRACT_ERROR = 5;
+
     }
 

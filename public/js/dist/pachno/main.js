@@ -8743,7 +8743,7 @@ var getModuleUpdates = function getModuleUpdates() {
 
       if (json_plugin !== undefined) {
         if (plugin.data('version') != json_plugin.version) {
-          plugin.find('can-update').removeClass('hidden');
+          plugin.find('.can-update').removeClass('hidden');
           var link = jquery__WEBPACK_IMPORTED_MODULE_1___default()(type + '_' + plugin.data('module-key') + '_download_location');
           link.attr('href', json_plugin.download);
           jquery__WEBPACK_IMPORTED_MODULE_1___default()('body').on('click', '.update-module-menu-item', function (e) {

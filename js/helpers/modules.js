@@ -22,7 +22,7 @@ const getModuleUpdates = function () {
                 const json_plugin = json[plugin.data('module-key')];
                 if (json_plugin !== undefined) {
                     if (plugin.data('version') != json_plugin.version) {
-                        plugin.find('can-update').removeClass('hidden');
+                        plugin.find('.can-update').removeClass('hidden');
                         let link = $(type + '_'+plugin.data('module-key')+'_download_location');
                         link.attr('href', json_plugin.download);
                         $('body').on('click', '.update-module-menu-item', function (e) {
