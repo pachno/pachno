@@ -24,6 +24,10 @@
     "code": {
       "code": "string"
     },
+    "codeBlock": {
+      "text": "string",
+      "language": "string"
+    },
     "image": {
       "file": {
         "type": "array",

@@ -85,7 +85,13 @@
                 case 'code':
                     $code = $block['data']['code'];
 
-                    $content[] = "<code class='block'>{$code}</code>";
+                    $content[] = "<pre><code class='block'>{$code}</code></pre>";
+                    break;
+                case 'codeBlock':
+                    $code = $block['data']['text'];
+                    $language = $block['data']['language'];
+
+                    $content[] = "<pre class='{$language}'><code class='block'>{$code}</code></pre>";
                     break;
                 case 'link':
                     $url = $block['data']['link'];

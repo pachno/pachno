@@ -11,6 +11,7 @@ import 'simplebar';
 import 'simplebar/dist/simplebar.css';
 import 'air-datepicker/dist/js/datepicker';
 import 'air-datepicker/dist/js/i18n/datepicker.en';
+import hljs from 'highlight.js';
 
 export const EVENTS = {
     update: 'widgets-update'
@@ -34,6 +35,7 @@ const updateWidgets = function () {
 
         Pachno.trigger(EVENTS.update);
 
+        hljs.highlightAll();
         resolve();
     });
 }

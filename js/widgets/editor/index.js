@@ -4,6 +4,7 @@ import EditorJS from '@editorjs/editorjs';
 
 import Checklist from '@editorjs/checklist';
 import CodeTool from '@editorjs/code';
+import CodeMirror from '@editorjs/codemirror';
 import Delimiter from '@editorjs/delimiter';
 import Header from '@editorjs/header';
 import InlineCode from '@editorjs/inline-code';
@@ -87,7 +88,17 @@ const initializeEditorJsArea = function () {
             },
             code: {
                 class: CodeTool,
-                inlineToolbar: false
+                inlineToolbar: false,
+                toolbox: {
+                    title: Pachno.T.common.editorjs.tools.code
+                }
+            },
+            codeBlock: {
+                class: CodeMirror,
+                inlineToolbar: false,
+                toolbox: {
+                    title: Pachno.T.common.editorjs.tools.codeMirror
+                }
             },
             table: {
                 class: TableTool,

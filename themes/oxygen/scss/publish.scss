@@ -477,30 +477,23 @@
     }
   }
 
-  pre,
   code {
     padding: 3px;
     margin: 5px 0 5px 0;
     line-height: 1.4;
-    background-color: #F1F1F1;
     border: 1px solid #B4B4B4;
     border-radius: 3px;
     font-family: $theme-font-family-mono;
     font-weight: $theme-font-weight-light;
     font-size: .9em;
-    color: $theme-text-color-lighter;
 
     &.block {
       display: block;
-      padding: .35em;
+      padding: 1em;
+      margin: 1em 0;
+      background: #282c34;
+      color: #abb2bf;
     }
-  }
-
-  /* Undo some of the default styling done for code tag if it is nested
-     with pre tag. */
-  pre code {
-    padding: 0;
-    border: none;
   }
 
   mark {

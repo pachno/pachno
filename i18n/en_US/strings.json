@@ -2,6 +2,12 @@
   "common": {
     "mentions": {
       "user_search_placeholder": "Start typing to search"
+    },
+    "editorjs": {
+      "tools": {
+        "code": "Code block (auto-detect language)",
+        "codeMirror": "Code block (specify language)"
+      }
     }
   },
   "agile": {
