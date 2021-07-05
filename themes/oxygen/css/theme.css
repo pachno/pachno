@@ -279,7 +279,8 @@ code {
   border-radius: 2px;
   font-size: 0.9em;
   font-family: "Fira Mono", monospace;
-  letter-spacing: 0; }
+  letter-spacing: 0;
+  white-space: pre; }
 
 input, select, textarea, .input {
   font-family: "Fira Sans", "Open Sans", sans-serif;

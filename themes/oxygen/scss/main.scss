@@ -206,6 +206,7 @@ code {
   font-size: 0.9em;
   font-family: $theme-font-family-mono;
   letter-spacing: 0;
+  white-space: pre;
 }
 
 @import "inputs.scss";
