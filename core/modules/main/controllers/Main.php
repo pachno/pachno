@@ -1016,59 +1016,6 @@
          *
          * @param Request $request
          */
-        public function runAccountRemovePassword(Request $request)
-        {
-            $passwords = $this->getUser()->getApplicationPasswords();
-            foreach ($passwords as $password) {
-                if ($password->getID() == $request['id']) {
-                    $password->delete();
-
-                    return $this->renderJSON(['message' => $this->getI18n()->__('The application password has been deleted')]);
-                }
-            }
-
-            $this->getResponse()->setHttpStatus(400);
-
-            return $this->renderJSON(['error' => $this->getI18n()->__('Cannot delete this application-specific password')]);
-        }
-
-        /**
-         * Add a new application password: ajax action
-         *
-         * @param Request $request
-         */
-        public function runAccountAddPassword(Request $request)
-        {
-            $this->forward403unless($this->getUser()->hasPageAccess('account'));
-            $name = trim($request['name']);
-            if ($name) {
-                framework\Logging::log('Adding new application password for user.', 'account', framework\Logging::LEVEL_INFO);
-                $password = new entities\ApplicationPassword();
-                $password->setUser($this->getUser());
-                $password->setName($name);
-                $visible_password = strtolower(entities\User::createPassword());
-                // Internally creates a hash from this visible password & crypts that hash for storage
-                $password->setPassword($visible_password);
-                $password->save();
-                $spans = '';
-
-                for ($cc = 0; $cc < 4; $cc++) {
-                    $spans .= '<span>' . substr($visible_password, $cc * 4, 4) . '</span>';
-                }
-
-                return $this->renderJSON(['password' => $spans]);
-            } else {
-                $this->getResponse()->setHttpStatus(400);
-
-                return $this->renderJSON(['error' => $this->getI18n()->__('Please enter a valid name')]);
-            }
-        }
-
-        /**
-         * Change password ajax action
-         *
-         * @param Request $request
-         */
         public function runAccountChangePassword(Request $request)
         {
             $this->forward403unless($this->getUser()->hasPageAccess('account'));

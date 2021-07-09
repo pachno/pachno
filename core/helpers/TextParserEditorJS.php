@@ -49,7 +49,8 @@
             switch ($block['type']) {
                 case 'paragraph':
                     foreach ($block['data'] as $content_data) {
-                        $content[] = "<p>{$content_data}</p>";
+                        $text = nl2br($content_data);
+                        $content[] = "<p>{$text}</p>";
                     }
                     break;
                 case 'list':

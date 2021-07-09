@@ -92,6 +92,36 @@ const setupListeners = function () {
     const $body = $('body');
     $body.on('click', Pachno.TRIGGERS.showLogin, showLogin)
     $body.on('click', ".trigger-invite-user", inviteUser);
+
+    Pachno.on(Pachno.EVENTS.profile.twofactor.triggerDisable, function (PachnoApplication, data) {
+        const url = data.url;
+        Pachno.fetch(url, {method: 'POST'})
+            .then((json) => {
+                if (json.disabled === 'ok') {
+                    $('#account_2fa_enabled').hide();
+                    $('#account_2fa_disabled').show();
+                }
+                Pachno.UI.Dialog.dismiss();
+            })
+            .catch((error) => {
+                console.error(error);
+            });
+    });
+
+    Pachno.on(Pachno.EVENTS.profile.applicationPasswords.triggerDelete, (_, data) => {
+        const $existing_password_row = $(`[data-application-password][data-id="${data.id}"]`);
+
+        if ($existing_password_row.length) {
+            $existing_password_row.remove();
+            if ($('[data-application-password]').length === 0) {
+                $('#application-passwords-container').remove();
+            }
+        }
+
+        Pachno.UI.Dialog.dismiss();
+        Pachno.fetch(data.url, { method: 'DELETE' });
+    });
+
 }
 
 export default setupListeners;

@@ -199,20 +199,6 @@ upload_file:
     parameters: [ ]
     csrf_enabled: false
 
-account_add_application_password:
-    route: '/account/add/password/*'
-    module: main
-    action: accountAddPassword
-    parameters: [ ]
-    csrf_enabled: true
-
-account_remove_application_password:
-    route: /account/remove/password/:id/:csrf_token
-    module: main
-    action: accountRemovePassword
-    parameters: [ ]
-    csrf_enabled: true
-
 account_regenerate_rss_key:
     route: /account/regenerate/rsskey/:csrf_token
     module: main

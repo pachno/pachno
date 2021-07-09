@@ -6,13 +6,6 @@ configure:
       section: 0
     csrf_enabled: false
 
-configure_update_check:
-    route: /configure/check/updates
-    module: configuration
-    action: checkUpdates
-    parameters: [ ]
-    csrf_enabled: false
-
 configure_authentication:
     route: /configure/authentication
     module: configuration

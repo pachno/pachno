@@ -60,6 +60,14 @@ class PachnoApplication {
                 deleteComponent: 'configuration-delete-component',
                 generatePassword: 'configuration-generate-password'
             },
+            profile: {
+                twofactor: {
+                    triggerDisable: 'profile-2fa-trigger-disable'
+                },
+                applicationPasswords: {
+                    triggerDelete: 'profile-application-passwords-delete'
+                }
+            },
             project: {
                 removeAssignee: 'project-remove-assignee',
             },

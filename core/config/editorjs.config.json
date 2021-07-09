@@ -3,7 +3,7 @@
     "header": {
       "text": {
         "type": "string",
-        "allowedTags": "i,u,a[href]"
+        "allowedTags": "i,u,a[href|rel|target]"
       },
       "level": {
         "type": "int",
@@ -13,11 +13,11 @@
     "warning": {
       "title": {
         "type": "string",
-        "allowedTags": "i,u,a[href]"
+        "allowedTags": "i,u,a[href|rel|target]"
       },
       "message": {
         "type": "string",
-        "allowedTags": "i,b,u,a[href],span[data-user-id|data-article-id|data-issue-id|class],br,code,mark,pre,source"
+        "allowedTags": "i,b,u,a[href|rel|target],span[data-user-id|data-article-id|data-issue-id|class],br,code,mark,pre,source"
       }
     },
     "delimiter": {},
@@ -73,7 +73,7 @@
     "paragraph": {
       "text": {
         "type": "string",
-        "allowedTags": "i,b,u,a[href],span[data-user-id|data-article-id|data-issue-id|class],br,code,mark,pre,source"
+        "allowedTags": "i,b,u,a[href|rel|target],span[data-user-id|data-article-id|data-issue-id|class],br,code,mark,pre,source,p"
       }
     },
     "list": {
@@ -86,7 +86,7 @@
         "data": {
           "-": {
             "type": "string",
-            "allowedTags": "i,b,u,a[href],span[data-user-id|data-article-id|data-issue-id|class],br,code,mark,pre,source"
+            "allowedTags": "i,b,u,a[href|rel|target],span[data-user-id|data-article-id|data-issue-id|class],br,code,mark,pre,source"
           }
         }
       }
@@ -100,7 +100,7 @@
             "data": {
               "text": {
                 "type": "string",
-                "allowedTags": "i,b,u,a[href],span[data-user-id|data-article-id|data-issue-id|class],br,code,mark,pre,source"
+                "allowedTags": "i,b,u,a[href|rel|target],span[data-user-id|data-article-id|data-issue-id|class],br,code,mark,pre,source"
               },
               "checked": {
                 "type": "boolean",
@@ -114,7 +114,7 @@
     "quote": {
       "text": {
         "type": "string",
-        "allowedTags": "i,b,u,a[href]"
+        "allowedTags": "i,b,u,a[href|rel|target]"
       },
       "caption": {
         "type": "string"
@@ -135,7 +135,7 @@
             "data": {
               "-": {
                 "type": "string",
-                "allowedTags": "i,b,u,a[href],span[data-user-id|data-article-id|data-issue-id|class],br,code,mark,pre,source",
+                "allowedTags": "i,b,u,a[href|rel|target],span[data-user-id|data-article-id|data-issue-id|class],br,code,mark,pre,source",
                 "required": false
               }
             }

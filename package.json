@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "@editorjs/codemirror": "github:alexiej/editorjs-codemirror",
+    "@editorjs/underline": "^1.0.0",
     "air-datepicker": "^2.2.3",
     "dayjs": "^1.10.5",
     "debounce": "^1.2.0",
@@ -42,6 +43,7 @@
     "autoprefixer": "^10.2.5",
     "babel-loader": "^8.2.2",
     "css-loader": "^5.2.4",
+    "editorjs-hyperlink": "^1.0.6",
     "editorjs-table": "^1.4.9",
     "editorjs-undo": "^0.1.4",
     "eslint": "^7.20.0",

@@ -228,8 +228,6 @@
             $this->setDecoration(self::DECORATE_NONE);
             switch ($request_content_type) {
                 case 'xml':
-                    $this->setContentType('application/xml');
-                    break;
                 case 'rss':
                     $this->setContentType('application/xml');
                     break;

@@ -26,6 +26,10 @@
                     }
                     $event->setProcessed(true);
                     break;
+                case 'application-password':
+                    $event->setReturnValue('profile/createapplicationpassword');
+                    $event->setProcessed(true);
+                    break;
             }
         }
 

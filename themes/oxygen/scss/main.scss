@@ -1097,18 +1097,25 @@ a.not_clickable:hover {
 .application_password_preview {
   background-color: #f1f1f1;
   border: 1px solid rgba(200, 200, 200, 0.4);
-  display: block;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
   font-size: 2em;
   margin: 40px auto;
   padding: 20px;
   text-align: center;
   width: 300px;
+
+  span {
+    flex: 0 0 auto;
+
+    + span {
+      margin-left: .5em;
+    }
+  }
 }
 
-.application_password_preview span {
-  display: inline;
-  margin: 0 0 0 8px;
-}
 
 .user_dropdown .user_avatar {
   padding: 2px;

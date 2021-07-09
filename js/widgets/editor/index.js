@@ -9,6 +9,8 @@ import Delimiter from '@editorjs/delimiter';
 import Header from '@editorjs/header';
 import InlineCode from '@editorjs/inline-code';
 import LinkTool from '@editorjs/link';
+import Underline from '@editorjs/underline';
+import Hyperlink from 'editorjs-hyperlink';
 import Marker from '@editorjs/marker';
 import List from './list';
 import Quote from '@editorjs/quote';
@@ -58,8 +60,20 @@ const initializeEditorJsArea = function () {
         tools: {
             header: Header,
             link: LinkTool,
+            underline: Underline,
             inlineCode: InlineCode,
             marker: Marker,
+            hyperlink: {
+                class: Hyperlink,
+                config: {
+                    shortcut: 'CMD+L',
+                    target: '_blank',
+                    rel: 'nofollow',
+                    availableTargets: ['_blank', '_self'],
+                    availableRels: ['author', 'noreferrer'],
+                    validate: false,
+                }
+            },
             delimiter: Delimiter,
             image: {
                 class: ImageTool,

@@ -229,7 +229,7 @@
         /**
          * Get all steps in this issuetype
          *
-         * @return IssueType[] An array of Issuetype objects
+         * @return Issuetype[] An array of Issuetype objects
          */
         public function getIssuetypes()
         {

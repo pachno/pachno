@@ -2090,7 +2090,10 @@
 
                 foreach ($project_ids as $project_id) {
                     try {
-                        $this->_associated_projects[$project_id] = tables\Projects::getTable()->selectById($project_id);
+                        $project = tables\Projects::getTable()->selectById($project_id);
+                        if ($project instanceof Project && !$project->isDeleted()) {
+                            $this->_associated_projects[$project_id] = tables\Projects::getTable()->selectById($project_id);
+                        }
                     } catch (Exception $e) {
                     }
                 }

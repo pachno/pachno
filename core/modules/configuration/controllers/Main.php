@@ -80,12 +80,14 @@
         }
 
         /**
-         * check for updates
+         * Check for updates and return a JSON-encoded data object with version information
+         *
+         * @Route(name="update_check", url="/check/updates")
          *
          * @param framework\Request $request
-         * @return ?framework\JsonOutput
+         * @return framework\JsonOutput
          */
-        public function runCheckUpdates(framework\Request $request): ?framework\JsonOutput
+        public function runCheckUpdates(framework\Request $request): framework\JsonOutput
         {
             $latest_version = framework\Context::getLatestAvailableVersionInformation();
 
