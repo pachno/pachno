@@ -24,7 +24,7 @@
          */
         public function runAccount(Request $request)
         {
-            $this->forward403unless($this->getUser()->hasPermission(entities\Permission::PERMISSION_PAGE_ACCESS_ACCOUNT));
+            $this->forward403if($this->getUser()->isGuest());
             $categories = entities\Category::getAll();
             $projects = [];
             $project_subscription_key = Settings::SETTINGS_USER_SUBSCRIBE_NEW_ISSUES_MY_PROJECTS;
