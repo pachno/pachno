@@ -1,0 +1,35 @@
+# .htaccess file for Pachno
+
+# Follow symlinks.
+Options +SymlinksIfOwnerMatch
+# Options +FollowSymlinks
+
+# Apply rewrite rules for pretty URLs.
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    # If you have a non-typical set-up, you can set the RewriteBase in order to
+    # make sure that base URLs when generating rewritten URLs are set correctly.
+    #
+    # For example:
+    #
+    # Rewrite Base /
+    #
+    # Rewrite Base /dev/pachno
+    #
+    RewriteBase /
+
+    # Try serving a file (if non-zero size), file or directory pointed to by
+    # symlink, or directory directly. If so, serve that file/directory
+    # unmodified, and do not apply any further rewrite rules.
+    RewriteCond %{REQUEST_FILENAME} -s [OR]
+    RewriteCond %{REQUEST_FILENAME} -l [OR]
+    RewriteCond %{REQUEST_FILENAME} -d
+    RewriteRule ^.*$ - [L]
+
+    # Redirect any other request to front controller. Use case-insensitive
+    # matching, making sure to append any additional query strings
+    # passed-in. Once the rewrite has been done, do not apply any further
+    # rewrite rules.
+    RewriteRule ^(.*)$ index.php?url=$1 [NC,QSA,L]
+
+</IfModule>
