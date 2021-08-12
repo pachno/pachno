@@ -12,7 +12,11 @@
      * @var User $pachno_user
      */
 
-    $pachno_response->setTitle($article->getName());
+    if ($article->getProject() instanceof \pachno\core\entities\Project) {
+        $pachno_response->setTitle($article->getProject()->getName() . ' ~ ' . $article->getName());
+    } else {
+        $pachno_response->setTitle($article->getName());
+    }
 
 ?>
 <div class="content-with-sidebar article-container">
