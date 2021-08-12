@@ -700,8 +700,9 @@
 
                         return $this->renderJSON(['error' => $this->getI18n()->__('The transition failed because of an error in the workflow. Check your workflow configuration.')]);
                     }
-                    if ($status === null)
+                    if ($status === null) {
                         $status = $issue->getStatus();
+                    }
 
                     if ($request->hasParameter('parent_issue_id')) {
                         $new_parent_issue = tables\Issues::getTable()->selectById($request['parent_issue_id']);
@@ -727,6 +728,7 @@
                         $category = ($request['category_id']) ? tables\ListTypes::getTable()->selectById($request['category_id']) : null;
                         $issue->setCategory($category);
                     }
+                    $issue->save();
 
                     $closed = $issue->isClosed();
                     $issues[] = $issue->toJSON();
