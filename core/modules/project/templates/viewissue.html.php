@@ -29,7 +29,6 @@
         <?php include_component('project/sidebar', ['collapsed' => true]); ?>
         <?php include_component('project/issue', ['issue' => $issue]); ?>
     </div>
-    <?php include_component('main/issue_workflow_transition', compact('issue')); ?>
     <?php if ($pachno_user->isViewissueTutorialEnabled()): ?>
         <?php //include_component('main/tutorial_viewissue', compact('issue')); ?>
     <?php endif; ?>
