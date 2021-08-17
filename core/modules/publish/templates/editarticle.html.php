@@ -9,13 +9,14 @@
      */
 
     use pachno\core\entities\Article;
+    use pachno\core\entities\tables\Articles;
 
     if ($article->getID()) {
         $back_link = $article->getLink();
     } elseif ($article->getParentArticle() instanceof Article) {
         $back_link = $article->getParentArticle()->getLink();
     } else {
-        $back_link = \pachno\core\modules\publish\Publish::getArticleLink('Main Page', \pachno\core\framework\Context::getCurrentProject());
+        $back_link = Articles::getTable()->getOrCreateMainPage(\pachno\core\framework\Context::getCurrentProject());
     }
 
     $pachno_response->setTitle(__('Editing %article_name', array('%article_name' => $article->getName())));

@@ -7,17 +7,26 @@
     use b2db\QueryColumnSort;
     use b2db\Saveable;
     use b2db\Update;
+    use pachno\core\entities\ActivityType;
+    use pachno\core\entities\Category;
     use pachno\core\entities\Datatype;
     use pachno\core\entities\DatatypeBase;
+    use pachno\core\entities\Priority;
+    use pachno\core\entities\Reproducability;
+    use pachno\core\entities\Resolution;
+    use pachno\core\entities\Role;
+    use pachno\core\entities\Severity;
+    use pachno\core\entities\Status;
+    use pachno\core\entities\Tag;
     use pachno\core\framework;
 
     /**
      * List types table
      *
      * @method static ListTypes getTable()
-     * @method DatatypeBase[] select(Query $query, $join = 'all')
-     * @method DatatypeBase selectOne(Query $query, $join = 'all')
-     * @method DatatypeBase selectById($id, Query $query = null, $join = 'all')
+     * @method DatatypeBase[]|Status[]|Category[]|Priority[]|Resolution[]|Role[]|Reproducability[]|Severity[]|ActivityType[]|Tag[] select(Query $query, $join = 'all')
+     * @method DatatypeBase|Status|Category|Priority|Resolution|Role|Reproducability|Severity|ActivityType|Tag selectOne(Query $query, $join = 'all')
+     * @method DatatypeBase|Status|Category|Priority|Resolution|Role|Reproducability|Severity|ActivityType|Tag selectById($id, Query $query = null, $join = 'all')
      *
      * @package pachno
      * @subpackage tables

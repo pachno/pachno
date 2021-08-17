@@ -32,6 +32,27 @@
       "file": {
         "type": "array",
         "data": {
+          "id": {
+            "type": "string",
+            "required": false
+          },
+          "type": {
+            "type": "string",
+            "required": false
+          },
+          "content_type": {
+            "type": "string",
+            "required": false
+          },
+          "icon": {
+            "type": "string",
+            "required": false
+          },
+          "is_image": {
+            "type": "string",
+            "canBeOnly": ["1", "0"],
+            "required": false
+          },
           "url": {
             "type": "string",
             "required": true
@@ -72,6 +93,16 @@
     },
     "paragraph": {
       "text": {
+        "type": "string",
+        "allowedTags": "i,b,u,a[href|rel|target],span[data-user-id|data-article-id|data-issue-id|class],br,code,mark,pre,source,p"
+      }
+    },
+    "alert": {
+      "type": {
+        "type": "string",
+        "canBeOnly": ["primary", "secondary", "info", "success", "warning", "danger", "light", "dark"]
+      },
+      "message": {
         "type": "string",
         "allowedTags": "i,b,u,a[href|rel|target],span[data-user-id|data-article-id|data-issue-id|class],br,code,mark,pre,source,p"
       }

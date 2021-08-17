@@ -815,7 +815,7 @@
         /**
          * Return the parent article (if any)
          *
-         * @return Article
+         * @return ?Article
          */
         public function getParentArticle()
         {

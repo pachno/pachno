@@ -934,7 +934,7 @@
                 $password = entities\User::createPassword();
                 $user = new entities\User();
                 $user->setUsername($username);
-                $user->setRealname($realname);
+                $user->setRealname($username);
                 $user->setGroup(Settings::getDefaultGroup());
                 $user->setEnabled();
                 $user->setPassword($password);
@@ -2350,7 +2350,10 @@
                     }
                     $saved_file->save();
 
-                    $json = ['file' => $saved_file->toJSON()];
+                    $json = [
+                        'success' => 1,
+                        'file' => $saved_file->toJSON()
+                    ];
                     if ($request['issue_id']) {
                         $issue = Issues::getTable()->selectById($request['issue_id']);
                         if ($issue instanceof Issue && $issue->hasAccess() && $issue->canAttachFiles()) {

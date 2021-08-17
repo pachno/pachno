@@ -119,6 +119,14 @@
                     $content[] = "<span>{$message}</span>";
                     $content[] = "</div>";
                     break;
+                case 'alert':
+                    $type = $block['data']['type'];
+                    $message = $block['data']['message'];
+
+                    $content[] = "<div class='message-box cdx-alert-{$type}'>";
+                    $content[] = "<span class='message'>{$message}</span>";
+                    $content[] = "</div>";
+                    break;
                 case 'table':
                     $content[] = "<table>";
                     foreach ($block['data']['content'] as $row) {

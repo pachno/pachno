@@ -2,6 +2,8 @@
 
 namespace pachno\core\helpers\EditorJS;
 
+use pachno\core\framework\Context;
+
 /**
  * Class BlockHandler
  *
@@ -93,6 +95,9 @@ class BlockHandler
         foreach ($rules as $key => $value) {
             if (($key != self::DEFAULT_ARRAY_KEY) && (isset($value['required']) ? $value['required'] : true)) {
                 if (!isset($blockData[$key])) {
+                    if (Context::isDebugMode()) {
+                        Context::getDebugger()->watch('block', $blockData);
+                    }
                     throw new EditorJSException("Not found required param `$key`");
                 }
             }
@@ -103,6 +108,9 @@ class BlockHandler
          */
         foreach ($blockData as $key => $value) {
             if (!is_int($key) && !isset($rules[$key])) {
+                if (Context::isDebugMode()) {
+                    Context::getDebugger()->watch('block', $blockData);
+                }
                 throw new EditorJSException("Found extra param `$key`");
             }
         }

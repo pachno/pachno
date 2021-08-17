@@ -13,6 +13,7 @@ class Quicksearch {
         this.default_choices = [];
         this.choices = [];
         this.visible_choices = [];
+        this.trigger_keyboard = true;
         this.$results_container = $('#quicksearch-results');
         this.$input = $('#quicksearch-input');
     }
@@ -282,10 +283,22 @@ class Quicksearch {
         }
     }
 
+    disableKeyboardTrigger() {
+        this.trigger_keyboard = false;
+    }
+
+    enableKeyboardTrigger() {
+        this.trigger_keyboard = true;
+    }
+
     setupListeners() {
         const quicksearch = this;
 
         $body.on('keydown', function (event) {
+            if (!quicksearch.trigger_keyboard) {
+                return;
+            }
+
             if (['INPUT', 'TEXTAREA'].indexOf(event.target.nodeName) !== -1) {
                 return;
             }

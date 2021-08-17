@@ -1029,11 +1029,11 @@
         /**
          * Set the category
          *
-         * @param integer $category_id The category ID to change to
+         * @param int|Category|null $category The category ID to change to
          */
-        public function setCategory($category_id)
+        public function setCategory($category)
         {
-            $this->_addChangedProperty('_category', $category_id);
+            $this->_addChangedProperty('_category', $category);
         }
 
         /**
@@ -3243,11 +3243,11 @@
         /**
          * Set the milestone
          *
-         * @param integer|Milestone $milestone_id The milestone id to assign
+         * @param int|Milestone|null $milestone The milestone id to assign
          */
-        public function setMilestone($milestone_id)
+        public function setMilestone($milestone)
         {
-            $this->_addChangedProperty('_milestone', $milestone_id);
+            $this->_addChangedProperty('_milestone', $milestone);
         }
 
         /**
@@ -4118,11 +4118,11 @@
         /**
          * Set the resolution
          *
-         * @param integer $resolution_id The resolution ID you want to set it to
+         * @param int|Resolution|null $resolution The resolution ID you want to set it to
          */
-        public function setResolution($resolution_id)
+        public function setResolution($resolution)
         {
-            $this->_addChangedProperty('_resolution', $resolution_id);
+            $this->_addChangedProperty('_resolution', $resolution);
         }
 
         /**
@@ -4178,11 +4178,11 @@
         /**
          * Set the reproducability
          *
-         * @param integer $reproducability_id The reproducability id to change to
+         * @param int|Reproducability|null $reproducability The reproducability id to change to
          */
-        public function setReproducability($reproducability_id)
+        public function setReproducability($reproducability)
         {
-            $this->_addChangedProperty('_reproducability', $reproducability_id);
+            $this->_addChangedProperty('_reproducability', $reproducability);
         }
 
         /**
@@ -4208,11 +4208,11 @@
         /**
          * Set the severity
          *
-         * @param integer $severity_id The severity ID you want to set it to
+         * @param int|Severity|null $severity The severity ID you want to set it to
          */
-        public function setSeverity($severity_id)
+        public function setSeverity($severity)
         {
-            $this->_addChangedProperty('_severity', $severity_id);
+            $this->_addChangedProperty('_severity', $severity);
         }
 
         /**
@@ -4238,11 +4238,11 @@
         /**
          * Set the priority
          *
-         * @param integer $priority_id The priority id to change to
+         * @param int|Priority|null $priority The priority id to change to
          */
-        public function setPriority($priority_id)
+        public function setPriority($priority)
         {
-            $this->_addChangedProperty('_priority', $priority_id);
+            $this->_addChangedProperty('_priority', $priority);
         }
 
         /**

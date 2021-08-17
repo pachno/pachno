@@ -9,7 +9,7 @@
   border: none;
   align-items: center;
   border-radius: 5px;
-  font-weight: $theme-font-weight-bold;
+  font-weight: $theme-font-weight-regular;
 
   &.hidden {
     display: none;
@@ -39,6 +39,17 @@
     }
   }
 
+  &.cdx-alert-primary,
+  &.cdx-alert-secondary,
+  &.cdx-alert-info,
+  &.cdx-alert-success,
+  &.cdx-alert-warning,
+  &.cdx-alert-danger,
+  &.cdx-alert-light,
+  &.cdx-alert-dark {
+    border: none;
+  }
+
   .fas,
   .fab,
   .far {
@@ -55,7 +66,11 @@
   .title {
     flex: 1 1 auto;
     font-size: 1.1em;
-    font-weight: $theme-font-weight-bold;
+    font-weight: $theme-font-weight-heavy;
+  }
+
+  b {
+    font-weight: $theme-font-weight-heavy;
   }
 
   .message {

@@ -9281,7 +9281,7 @@ textarea.markItUpEditor:focus {
   border: none;
   align-items: center;
   border-radius: 5px;
-  font-weight: 500; }
+  font-weight: 400; }
   .message-box.hidden {
     display: none; }
   .message-box.type-error {
@@ -9298,6 +9298,8 @@ textarea.markItUpEditor:focus {
     background: #0cd8b6; }
     .message-box.type-info .command_box {
       background-color: rgba(100, 100, 100, 0.3); }
+  .message-box.cdx-alert-primary, .message-box.cdx-alert-secondary, .message-box.cdx-alert-info, .message-box.cdx-alert-success, .message-box.cdx-alert-warning, .message-box.cdx-alert-danger, .message-box.cdx-alert-light, .message-box.cdx-alert-dark {
+    border: none; }
   .message-box .fas,
   .message-box .fab,
   .message-box .far {
@@ -9310,7 +9312,9 @@ textarea.markItUpEditor:focus {
   .message-box .title {
     flex: 1 1 auto;
     font-size: 1.1em;
-    font-weight: 500; }
+    font-weight: 600; }
+  .message-box b {
+    font-weight: 600; }
   .message-box .message {
     flex: 1 1 auto;
     font-size: 1em;

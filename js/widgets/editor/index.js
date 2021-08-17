@@ -17,6 +17,7 @@ import Quote from '@editorjs/quote';
 import TableTool from 'editorjs-table';
 import Warning from '@editorjs/warning';
 import ImageTool from '@editorjs/image';
+import Alert from 'editorjs-alert';
 
 import Mention from './mention';
 import MentionableParagraph from './paragraph';
@@ -29,6 +30,9 @@ const editors = {};
 const initializeEditorJsArea = function () {
     const $editor_element = $(this);
     const editor_element = $editor_element[0];
+
+    Pachno.quicksearch.disableKeyboardTrigger();
+
     if ($editor_element.data('processed')) {
         return;
     }
@@ -79,8 +83,8 @@ const initializeEditorJsArea = function () {
                 class: ImageTool,
                 config: {
                     endpoints: {
-                        byFile: 'http://localhost:8008/uploadFile', // Your backend file uploader endpoint
-                        byUrl: 'http://localhost:8008/fetchUrl', // Your endpoint that provides uploading by Url
+                        byFile: Pachno.upload_url, // Your backend file uploader endpoint
+                        byUrl: Pachno.upload_url, // Your endpoint that provides uploading by Url
                     }
                 }
             },
@@ -91,6 +95,18 @@ const initializeEditorJsArea = function () {
                     titlePlaceholder: $editor_element.data('warning-title-placeholder'),
                     messagePlaceholder: $editor_element.data('warning-message-placeholder')
                 }
+            },
+            alert: {
+                class: Alert,
+                inlineToolbar: true,
+                shortcut: 'CMD+SHIFT+A',
+                toolbox: {
+                    title: Pachno.T.common.editorjs.tools.alert.title
+                },
+                config: {
+                    defaultType: 'primary',
+                    messagePlaceholder: Pachno.T.common.editorjs.tools.alert.placeholder,
+                },
             },
             checklist: {
                 class: Checklist,

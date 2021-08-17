@@ -6,7 +6,11 @@
     "editorjs": {
       "tools": {
         "code": "Code block (auto-detect language)",
-        "codeMirror": "Code block (specify language)"
+        "codeMirror": "Code block (specify language)",
+        "alert": {
+          "title": "Highlighted message",
+          "placeholder": "Enter a message here to highlight it"
+        }
       }
     }
   },
