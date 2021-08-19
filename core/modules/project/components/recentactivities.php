@@ -8,9 +8,9 @@ use pachno\core\framework\Context;
 
 ?>
 <div id="tab_<?php echo $id ?>_pane"<?php if ($default_displayed !== true): ?> style="display: none;"<?php endif;?>>
-    <?php if (isset($link)): echo $link; endif; ?>
+    <?php if (isset($link)) echo $link; ?>
     <?php if (count($issues) > 0): ?>
-        <table cellpadding=0 cellspacing=0 class="recent_activities" style="margin-top: 5px;">
+        <table class="recent_activities">
         <?php foreach ($issues as $issue): ?>
             <?php if ($issue->isDeleted()): continue; endif; ?>
             <tr>
@@ -36,12 +36,6 @@ use pachno\core\framework\Context;
             <div class="helper-text">
                 <?php echo __($empty); ?>
             </div>
-        </div>
-        <div class="button-container">
-            <a href="<?= make_url('project_issues', ['project_key' => Context::getCurrentProject()->getKey()]); ?>" class="button secondary highlight">
-                <?= fa_image_tag('search', ['class' => 'icon']); ?>
-                <span class="name"><?= __('Find other issues'); ?></span>
-            </a>
         </div>
     <?php endif; ?>
 </div>

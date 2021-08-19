@@ -18,7 +18,7 @@ use pachno\core\framework;
             <?= link_tag(make_url('configure_projects'), fa_image_tag('cog'), ['class' => 'button icon secondary']); ?>
         <?php endif; ?>
         <?php if ($pachno_user->canCreateProjects() || $pachno_user->canSaveConfiguration()): ?>
-            <button class="button secondary highlight project-quick-edit" onclick="Pachno.UI.Backdrop.show('<?= make_url('get_partial_for_backdrop', ['key' => 'project_config']); ?>');"><?= fa_image_tag('plus-square'); ?><span><?= __('Create a project'); ?></span></button>
+            <button class="button secondary highlight" onclick="Pachno.UI.Backdrop.show('<?= make_url('get_partial_for_backdrop', ['key' => 'project_config']); ?>');"><?= fa_image_tag('plus-square'); ?><span><?= __('Create a project'); ?></span></button>
         <?php endif; ?>
     </div>
 <?php endif; ?>

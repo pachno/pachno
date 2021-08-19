@@ -294,8 +294,7 @@
                     framework\Context::loadLibrary('ui');
                     foreach (Issuetype::getAll() as $id => $issuetype) {
                         $issuetype_icons[$id] = [
-                            'title' => $i18n->__('Recent issues: %issuetype', ['%issuetype' => $issuetype->getName()]),
-                            'header' => '<span>' . $i18n->__('Recent issues %issuetype', ['%issuetype' => '']) . '</span><span>' . fa_image_tag($issuetype->getFontAwesomeIcon(), ['class' => 'issuetype-icon issuetype-' . $issuetype->getIcon()]) . $issuetype->getName() . '</span>',
+                            'title' => $i18n->__('Recent %issuetype issues', ['%issuetype' => '<span class="issuetype-icon issuetype-' . $issuetype->getIcon() . '">' . fa_image_tag($issuetype->getFontAwesomeIcon()) . $issuetype->getName() . '</span>']),
                             'description' => $i18n->__('Show recent issues of type %issuetype', ['%issuetype' => $issuetype->getName()])
                         ];
                     }
@@ -333,46 +332,6 @@
                 return self::TYPE_CLIENT;
         }
 
-        /**
-         * Return whether or not this dashboard view has a title header
-         *
-         * @return bool
-         */
-        public function hasHeader(): bool
-        {
-            foreach (self::getAvailableViews($this->getTargetType()) as $type => $views) {
-                if (array_key_exists($this->getType(), $views) && array_key_exists($this->getDetail(), $views[$this->getType()])) {
-                    $header = $views[$this->getType()][$this->getDetail()]['header'] ?? false;
-
-                    return (bool)$header;
-                    break;
-                }
-            }
-
-            return false;
-        }
-
-        public function getHeader()
-        {
-            $header = framework\Context::getI18n()->__('Unknown dashboard item');
-
-            if ($this->getType() == self::VIEW_SAVED_SEARCH) {
-                $search = tables\SavedSearches::getTable()->selectById($this->getDetail());
-                if ($search instanceof SavedSearch) {
-                    $header = $search->getName();
-                }
-            } else {
-                foreach (self::getAvailableViews($this->getTargetType()) as $type => $views) {
-                    if (array_key_exists($this->getType(), $views) && array_key_exists($this->getDetail(), $views[$this->getType()])) {
-                        $header = $views[$this->getType()][$this->getDetail()]['header'] ?? $views[$this->getType()][$this->getDetail()]['title'];
-                        break;
-                    }
-                }
-            }
-
-            return $header;
-        }
-
         public function getTitle()
         {
             $title = framework\Context::getI18n()->__('Unknown dashboard item');
@@ -391,6 +350,55 @@
             }
 
             return $title;
+        }
+
+        public function hasHeaderButton()
+        {
+            switch ($this->getType()) {
+                case self::VIEW_PROJECTS:
+                case self::VIEW_PREDEFINED_SEARCH:
+                case self::VIEW_SAVED_SEARCH:
+                case self::VIEW_PROJECT_TEAM:
+                case self::VIEW_PROJECT_UPCOMING:
+                case self::VIEW_PROJECT_RECENT_ACTIVITIES:
+                case self::VIEW_PROJECT_DOWNLOADS:
+                case self::VIEW_PROJECT_RECENT_ISSUES:
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        public function getHeaderButton()
+        {
+            $user = framework\Context::getUser();
+            $project = framework\Context::getCurrentProject();
+
+            switch ($this->getType()) {
+                case self::VIEW_PROJECTS:
+                    if ($user->canCreateProjects() || $user->canSaveConfiguration()) {
+                        return '<button class="button secondary highlight" onclick="Pachno.UI.Backdrop.show(\'' . make_url('get_partial_for_backdrop', ['key' => 'project_config']) . '\');">' . fa_image_tag('plus-square') . '<span>' . __('Create a project') . '</span></button>';
+                    }
+                    break;
+                case self::VIEW_PROJECT_DOWNLOADS:
+                    if ($user->canEditProjectDetails($project) && $project->isBuildsEnabled()) {
+                        return '<a href="' . make_url('project_releases', ['project_key' => $project->getKey()]) . '" class="button secondary">' . fa_image_tag('cloud-download-alt', ['class' => 'icon']) . '<span>' . __('Manage releases') . '</span></a>';
+                    }
+                    break;
+                case self::VIEW_PROJECT_TEAM:
+                    if ($user->canEditProjectDetails($project)) {
+                        return '<a href="' . make_url('project_settings', ['project_key' => $project->getKey()]) . '" class="button secondary">' . fa_image_tag('users', ['class' => 'icon']) . '<span>' . __('Set up project team') . '</span></a>';
+                    }
+                    break;
+                case self::VIEW_PROJECT_UPCOMING:
+                    return '<a href="' . make_url('project_roadmap', ['project_key' => $project->getKey()]) . '" class="button secondary">' . fa_image_tag('tasks', ['class' => 'icon']) . '<span>' . __('Open project roadmap') . '</span></a>';
+                case self::VIEW_PROJECT_RECENT_ACTIVITIES:
+                    return '<a href="' . make_url('project_timeline', ['project_key' => $project->getKey()]) . '" class="button secondary">' . fa_image_tag('stream', ['class' => 'icon']) . '<span>' . __('Show complete timeline') . '</span></a>';
+                case self::VIEW_PROJECT_RECENT_ISSUES:
+                    return '<a href="' . make_url('project_issues', ['project_key' => $project->getKey()]) . '" class="button secondary">' . fa_image_tag('search', ['class' => 'icon']) . '<span>' . __('Open project issues search') . '</span></a>';
+            }
+
+            return '';
         }
 
         public function setDashboard($dashboard)

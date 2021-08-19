@@ -5542,6 +5542,19 @@ input.button.icon:hover {
   color: #646464;
   padding: 7px 10px;
   box-sizing: border-box; }
+  button.icon .fas,
+  button.icon .far,
+  .button.icon .fas,
+  .button.icon .far,
+  input.button.icon .fas,
+  input.button.icon .far,
+  button.icon:hover .fas,
+  button.icon:hover .far,
+  .button.icon:hover .fas,
+  .button.icon:hover .far,
+  input.button.icon:hover .fas,
+  input.button.icon:hover .far {
+    margin: 0; }
 
 .icon .fas, .icon .far {
   min-width: 16px; }
@@ -11746,6 +11759,17 @@ textarea.markItUpEditor:focus {
             .dashboard.layout_standard .dashboard_column > li .container_div .header .fas:first-child,
             .dashboard.layout_standard .dashboard_column > li .container_div .header .far:first-child {
               margin-left: 0; }
+            .dashboard.layout_standard .dashboard_column > li .container_div .header .fas:last-child,
+            .dashboard.layout_standard .dashboard_column > li .container_div .header .far:last-child {
+              margin-right: 0; }
+          .dashboard.layout_standard .dashboard_column > li .container_div .header .issuetype-icon {
+            width: auto;
+            margin-left: .5em;
+            padding-left: 1em;
+            padding-right: 1em; }
+          .dashboard.layout_standard .dashboard_column > li .container_div .header button,
+          .dashboard.layout_standard .dashboard_column > li .container_div .header .button {
+            font-size: .9em; }
 
 .dashboard.layout_standard ul.dashboard_column > li img.mover, .dashboard.layout_standard ul.dashboard_column > li img.remover {
   float: right;

@@ -217,6 +217,11 @@ input.button.icon:hover {
   color: rgb(100, 100, 100);
   padding: 7px 10px;
   box-sizing: border-box;
+
+  .fas,
+  .far {
+    margin: 0;
+  }
 }
 .icon .fas, .icon .far {
   min-width: 16px;

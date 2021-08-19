@@ -141,6 +141,22 @@
               &:first-child {
                 margin-left: 0;
               }
+
+              &:last-child {
+                margin-right: 0;
+              }
+            }
+
+            .issuetype-icon {
+              width: auto;
+              margin-left: .5em;
+              padding-left: 1em;
+              padding-right: 1em;
+            }
+
+            button,
+            .button {
+              font-size: .9em;
             }
           }
         }
