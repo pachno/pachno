@@ -582,7 +582,7 @@
             setcookie($key, $value, [
                 'expires' => $expiration,
                 'path' => Context::getWebroot(),
-                'samesite' => 'Strict',
+                'samesite' => 'Lax',
                 'secure' => $secure
             ]);
 
@@ -602,7 +602,7 @@
             setcookie($key, '', [
                 'expires' => NOW - 36000,
                 'path' => (Context::getWebroot() != '/') ? Context::getWebroot() : '',
-                'samesite' => 'Strict',
+                'samesite' => 'Lax',
                 'secure' => $secure
             ]);
 
