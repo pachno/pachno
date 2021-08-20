@@ -6,9 +6,14 @@
             <?= fa_image_tag('angle-down', ['class' => 'expander']); ?>
             <div class="dropdown-container list-mode">
                 <?php foreach ($languages as $language_code => $language): ?>
-                    <input type="radio" name="<?php echo \pachno\core\framework\Settings::SETTING_DEFAULT_LANGUAGE; ?>" id="setting_<?php echo \pachno\core\framework\Settings::SETTING_DEFAULT_LANGUAGE; ?>_<?= $language_code; ?>" value="<?php echo $language_code; ?>" <?php if (\pachno\core\framework\Settings::getLanguage() == $language_code): ?> checked<?php endif; ?> class="fancy-checkbox">
-                    <label for="setting_<?php echo \pachno\core\framework\Settings::SETTING_DEFAULT_LANGUAGE; ?>_<?= $language_code; ?>" class="list-item">
-                        <span class="name value"><?php echo $language; ?></span>
+                    <input type="radio" name="<?php echo \pachno\core\framework\Settings::SETTING_DEFAULT_LANGUAGE; ?>" id="setting_<?php echo \pachno\core\framework\Settings::SETTING_DEFAULT_LANGUAGE; ?>_<?= $language_code; ?>" value="<?php echo $language_code; ?>" <?php if (\pachno\core\framework\Settings::getLanguage() == $language_code): ?> checked<?php endif; ?> class="fancy-checkbox" <?php if (!$language['available']) echo 'disabled'; ?>>
+                    <label for="setting_<?php echo \pachno\core\framework\Settings::SETTING_DEFAULT_LANGUAGE; ?>_<?= $language_code; ?>" class="list-item <?php if (!$language['available']) echo 'disabled'; ?>">
+                        <span class="name value">
+                            <?php echo $language['language']; ?>
+                        </span>
+                        <?php if (!$language['available']): ?>
+                            <span>(<?= __('Missing translations'); ?>)</span>
+                        <?php endif; ?>
                     </label>
                 <?php endforeach; ?>
             </div>

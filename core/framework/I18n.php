@@ -65,13 +65,19 @@
             return $options;
         }
 
-        public static function getLanguages()
+        /**
+         * @return array<string, array<string, string|boolean>>
+         */
+        public static function getLanguages(): array
         {
             $retarr = [];
             $cp_handle = opendir(PACHNO_PATH . 'i18n');
             while ($classfile = readdir($cp_handle)) {
                 if (mb_strstr($classfile, '.') == '' && file_exists(PACHNO_PATH . 'i18n/' . $classfile . '/language')) {
-                    $retarr[$classfile] = file_get_contents(PACHNO_PATH . 'i18n/' . $classfile . '/language');
+                    $retarr[$classfile] = [
+                        'language' => file_get_contents(PACHNO_PATH . 'i18n/' . $classfile . '/language'),
+                        'available' => file_exists(PACHNO_PATH . 'i18n/' . $classfile . '/strings.xlf') && file_exists(PACHNO_PATH . 'i18n/' . $classfile . '/strings.json')
+                    ];
                 }
             }
 

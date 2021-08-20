@@ -1841,7 +1841,7 @@
         {
             Logging::log('Dispatching');
             try {
-                if (($route = self::getRouting()->getRouteFromUrl(self::getRequest()->getParameter('url', null, false))) || self::isInstallmode()) {
+                if (($route = self::getRouting()->getRouteFromUrl(self::getRequest()->getParameter('url', '', false))) || self::isInstallmode()) {
 
                     if (self::isUpgrademode()) {
                         $route = new Route('installation_upgrade', 'installation', 'upgrade');
@@ -1920,11 +1920,6 @@
                     return true;
                 }
 
-            } catch (TemplateNotFoundException $e) {
-                Core::closeDBLink();
-                //header("HTTP/1.0 404 Not Found", true, 404);
-                throw $e;
-
             } catch (ActionNotFoundException $e) {
                 Core::closeDBLink();
                 header("HTTP/1.0 404 Not Found", true, 404);
@@ -1950,7 +1945,7 @@
 
                 if (!self::isCLI() && self::getRequest()->isResponseFormatAccepted('application/json', false)) {
                     self::getResponse()->setContentType('application/json');
-                    $message = json_encode(['message' => $message]);
+                    $message = json_encode(['message' => $message], JSON_THROW_ON_ERROR);
                 }
 
                 self::getResponse()->renderHeaders();
@@ -1958,7 +1953,6 @@
 
             } catch (Exception $e) {
                 Core::closeDBLink();
-                //header("HTTP/1.0 404 Not Found", true, 404);
                 throw $e;
             }
         }

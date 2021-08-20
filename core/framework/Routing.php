@@ -438,9 +438,9 @@
          *
          * @param string $url The url to retrieve details from
          *
-         * @return Route
+         * @return ?Route
          */
-        public function getRouteFromUrl($url)
+        public function getRouteFromUrl(string $url): ?Route
         {
             Logging::log("URL is '" . htmlentities($url, ENT_COMPAT, 'utf-8') . "'", 'routing');
             // an URL should start with a '/', mod_rewrite doesn't respect that, but no-mod_rewrite version does.

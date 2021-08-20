@@ -12,7 +12,7 @@
 
 <xliff version="1.2">
 
-    <file datatype="php" original="Auth_ldap.php" source-language="en" target-language="fr-FR">
+    <file datatype="php" original="Auth_ldap.php" source-language="en-US" target-language="fr-FR">
         <body>
             <trans-unit id="a9a70cd6177209344c8eab46cf98610f">
                 <source>Failed to connect to server</source>
@@ -57,7 +57,7 @@
         </body>
     </file>
 
-    <file datatype="php" original="controllers/Main.php" source-language="en" target-language="fr-FR">
+    <file datatype="php" original="controllers/Main.php" source-language="en-US" target-language="fr-FR">
         <body>
             <trans-unit id="cb8d5c7c914be3251488798536b30992">
                 <source>Failed to validate groups</source>
@@ -102,7 +102,7 @@
         </body>
     </file>
 
-    <file datatype="php" original="templates/_settings.inc.php" source-language="en" target-language="fr-FR">
+    <file datatype="php" original="templates/_settings.inc.php" source-language="en-US" target-language="fr-FR">
         <body>
             <trans-unit id="37a03f17e0b79877922a2a83ec11b146">
                 <source>Use this page to set up the connection details for your LDAP or Active Directory server. It is highly recommended that you read the online help before use, as misconfiguration may prevent you from accessing configuration pages to rectify issues.</source>

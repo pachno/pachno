@@ -278,11 +278,14 @@
                                                         <span class="icon"><?= fa_image_tag('check-circle', ['class' => 'checked'], 'far') . fa_image_tag('circle', ['class' => 'unchecked'], 'far'); ?></span>
                                                         <span class="name value"><?= __('Use global setting - %lang', array('%lang' => Settings::getLanguage())); ?></span>
                                                     </label>
-                                                    <?php foreach ($languages as $lang_code => $lang_desc): ?>
-                                                        <input type="radio" name="profile_language" class="fancy-checkbox" id="profile_language_<?= $lang_code; ?>" value="<?= $lang_code; ?>"<?php if ($pachno_user->getLanguage() == $lang_code): ?> checked<?php endif; ?>>
-                                                        <label class="list-item" for="profile_language_<?= $lang_code; ?>">
+                                                    <?php foreach ($languages as $language_code => $language): ?>
+                                                        <input type="radio" name="profile_language" class="fancy-checkbox" id="profile_language_<?= $language_code; ?>" value="<?= $language_code; ?>"<?php if ($pachno_user->getLanguage() == $language_code): ?> checked<?php endif; ?> <?php if (!$language['available']) echo 'disabled'; ?>>
+                                                        <label class="list-item <?php if (!$language['available']) echo 'disabled'; ?>" for="profile_language_<?= $language_code; ?>">
                                                             <span class="icon"><?= fa_image_tag('check-circle', ['class' => 'checked'], 'far') . fa_image_tag('circle', ['class' => 'unchecked'], 'far'); ?></span>
-                                                            <span class="name value"><?= $lang_desc; ?> <?php if (Settings::getLanguage() == $lang_code): ?> <?= __('(site default)'); endif;?></span>
+                                                            <span class="name value"><?= $language['language']; ?> <?php if (Settings::getLanguage() == $language_code): ?> <?= __('(site default)'); endif;?></span>
+                                                            <?php if (!$language['available']): ?>
+                                                                <span>(<?= __('Missing translations'); ?>)</span>
+                                                            <?php endif; ?>
                                                         </label>
                                                     <?php endforeach; ?>
                                                 </div>
