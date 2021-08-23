@@ -5,7 +5,7 @@
 <!-- please visit https://projects.pach.no/pachno/docs/152110/Translating+Pachno -->
 
 <!-- Number of Sections: 436 -->
-<!-- Number of Strings: 3589 -->
+<!-- Number of Strings: 3588 -->
 <!-- Keys extracted from sources on: 2021 Aug 23. -->
 <!-- Translations extracted from Transifex on: -->
 
@@ -1793,9 +1793,6 @@
             </trans-unit>
             <trans-unit id="d33594c259b9144db500a7f4796aee40">
                 <source>Team overview</source>
-            </trans-unit>
-            <trans-unit id="737c4df99e3f35fa0d77798d5ee35515">
-                <source>This functionality is not available in the alpha</source>
             </trans-unit>
             <trans-unit id="3d1f92a565d3b1a61880236e33c49bf3">
                 <source>Timeline</source>
