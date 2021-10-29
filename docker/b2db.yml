@@ -1,0 +1,6 @@
+b2db:
+    driver: mysql
+    username: myuser
+    password: "mypass"
+    dsn: "mysql:host=pachno_db;dbname=pachno"
+    tableprefix: 'pachno_'

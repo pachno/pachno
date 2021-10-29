@@ -1,0 +1,27 @@
+version: "3"
+services:
+    pachno_db:
+        image: mysql:5.7
+        command: --default-authentication-plugin=mysql_native_password
+        restart: always
+        environment:
+            MYSQL_DATABASE: pachno
+            MYSQL_USER: myuser
+            MYSQL_PASSWORD: mypass
+            MYSQL_RANDOM_ROOT_PASSWORD: "yes"
+        volumes:
+            - pachno_db-data:/var/lib/mysql
+        expose:
+            - "3306"
+    pachno_web:
+        # image: gitlab.eemi.tech:5050/zino/pachno
+        build: .
+        depends_on: 
+            - pachno_db
+        expose:
+            - "80"
+        ports:
+            - "9000:80"
+        restart: always
+volumes:
+    pachno_db-data:
