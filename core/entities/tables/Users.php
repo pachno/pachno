@@ -90,7 +90,7 @@
          */
         public function getByUsername($username): ?User
         {
-            if (trim($username) == '') {
+            if ($username == null || trim($username) == '') {
                 return null;
             }
 

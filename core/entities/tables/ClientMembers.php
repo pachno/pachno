@@ -2,6 +2,7 @@
 
     namespace pachno\core\entities\tables;
 
+    use b2db\Criterion;
     use b2db\Insertion;
     use pachno\core\framework;
 
@@ -108,9 +109,12 @@
 
         public function removeUserFromClient($user_id, $client_id)
         {
+            if (empty($client_id)) {
+                return;
+            }
             $query = $this->getQuery();
             $query->where(self::SCOPE, framework\Context::getScope()->getID());
-            $query->where(self::CLIENT_ID, $client_id);
+            $query->where(self::CLIENT_ID, $client_id, Criterion::IN);
             $query->where(self::USER_ID, $user_id);
             $this->rawDelete($query);
         }

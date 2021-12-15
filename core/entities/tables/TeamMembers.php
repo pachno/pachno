@@ -117,13 +117,12 @@
 
         public function removeUserFromTeam($user_id, $team_ids)
         {
+            if (empty($team_ids)) {
+                return;
+            }
             $query = $this->getQuery();
             $query->where(self::SCOPE, framework\Context::getScope()->getID());
-            if (is_array($team_ids)) {
-                $query->where(self::TEAM_ID, $team_ids, Criterion::IN);
-            } else {
-                $query->where(self::TEAM_ID, $team_ids);
-            }
+            $query->where(self::TEAM_ID, $team_ids, Criterion::IN);
             $query->where(self::USER_ID, $user_id);
             $this->rawDelete($query);
         }

@@ -163,7 +163,7 @@
             if ($this->_num_members !== null) {
                 $this->_num_members--;
             }
-            tables\TeamMembers::getTable()->removeUserFromTeam($user->getID(), $this->getID());
+            tables\TeamMembers::getTable()->removeUserFromTeam($user->getID(), [$this->getID()]);
         }
 
         /**

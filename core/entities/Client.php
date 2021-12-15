@@ -255,7 +255,7 @@
             if ($this->_num_members !== null) {
                 $this->_num_members--;
             }
-            tables\ClientMembers::getTable()->removeUserFromClient($user->getID(), $this->getID());
+            tables\ClientMembers::getTable()->removeUserFromClient($user->getID(), [$this->getID()]);
         }
 
         public function getNumberOfMembers()
