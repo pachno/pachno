@@ -16,7 +16,7 @@
         "MPL-2.0"
     ],
     "require": {
-        "php": "^7.4",
+        "php": "^7.4|^8.0",
         "pachno/b2db": "^1.0",
         "swiftmailer/swiftmailer": "^6.0",
         "webit/eval-math": "^1.0",
@@ -28,7 +28,7 @@
         "net/http": "^1.1",
         "guzzlehttp/guzzle": "^6.3",
         "scrivo/highlight.php": "^9.0",
-        "ramsey/uuid": "^3.7",
+        "ramsey/uuid": "^4.2",
         "erusev/parsedown": "^1.7",
         "ext-gd": "*",
         "ext-curl": "*",
