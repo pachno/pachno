@@ -80,13 +80,12 @@
                 ->notpath('files')
                 ->notpath('i18n')
                 ->notpath('js')
-                ->notpath('modules')
                 ->notpath('node_modules')
                 ->notpath('public')
                 ->notpath('tests')
                 ->notpath('themes')
                 ->notpath('vendor')
-                ->name('*.php');
+                ->name('/\.php$/');
 
             $this->cliEcho("✔ DONE", 'green', 'bold');
 

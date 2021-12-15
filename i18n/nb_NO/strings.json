@@ -1,0 +1,44 @@
+{
+  "common": {
+    "mentions": {
+      "user_search_placeholder": "Skriv noe for å søke"
+    },
+    "editorjs": {
+      "tools": {
+        "code": "Kode-blokk (velg språk automatisk)",
+        "codeMirror": "Kode-blokk (velg språk manuelt)",
+        "alert": {
+          "title": "Markert melding",
+          "placeholder": "Skriv en melding her for å markere den"
+        }
+      }
+    }
+  },
+  "agile": {
+    "add_card": "Nytt kort",
+    "add_card_here": "Nytt kort",
+    "add_swimlane": "Nytt svømmefelt"
+  },
+  "issue": {
+    "value_not_set": "Ikke valgt",
+    "unknown_value": "Ukjent",
+    "time_spent_none": "Ingen tid brukt",
+    "time_estimated_none": "Ikke estimert",
+    "go_to_converted_issue": {
+      "title": "Gå til den nye saken?",
+      "message": "Vil du navigere til den saken du nettopp endret?"
+    }
+  },
+  "roadmap": {
+    "percent_complete": "%percentage% fullført"
+  },
+  "configuration": {
+    "update_available": {
+      "header": "Pachno %version er tilgjengelig",
+      "content": "En oppdatert versjon av Pachno er tilgjengelig! Vil du åpne nettsiden pach.no for å lese mer om versjon %version"
+    },
+    "up_to_date": {
+      "message": "Seneste versjon av Pachno er installert"
+    }
+  }
+}
